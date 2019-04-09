@@ -30,32 +30,32 @@
                 </label>
                 <div class="ui radio checkbox">
                     <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
-                    <label for="general">${message(code: 'task.general')}</label>
+                    <label for="generalradio">${message(code: 'task.general')}</label>
                 </div>
 
                 <div class="ui radio checkbox">
                     <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
-                    <label for="license">
+                    <label for="licenseradio">
                         <g:message code="task.license.label" default="License"/>
                     </label>
                 </div>
 
                 <div class="ui radio checkbox">
                     <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
-                    <label for="pkg">
+                    <label for="pkgradio">
                         <g:message code="task.pkg.label" default="Pkg"/>
                     </label>
                 </div>
 
                 <div class="ui radio checkbox">
                     <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
-                    <label for="subscription">
+                    <label for="subscriptionradio">
                         <g:message code="task.subscription.label" default="Subscription"/>
                     </label>
                 </div>
                 <div class="ui radio checkbox">
                     <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
-                    <label for="org">
+                    <label for="orgradio">
                         <g:message code="task.org.label" default="Subscription"/>
                     </label>
                 </div>
@@ -112,7 +112,7 @@
                                   class="ui dropdown many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate"
+                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 

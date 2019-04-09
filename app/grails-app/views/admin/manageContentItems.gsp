@@ -42,13 +42,13 @@
 
                 <g:form action="newContentItem" class="ui form">
                     <div class="field">
-                        <label>New Content Item Key</label>
-                        <input name="key" type="text"/>
+                        <label for="key">New Content Item Key</label>
+                        <input id="key" name="key" type="text"/>
                     </div>
 
                       <div class="field">
-                          <label>New Content Item Locale (Or blank for none)</label>
-                            <select name="locale">
+                          <label for="locale">New Content Item Locale (Or blank for none)</label>
+                            <select id="locale" name="locale">
                               <option value="">No Locale (Default)</option>
                               <option value="en_GB">British English</option>
                               <option value="es">Español</option>
@@ -62,8 +62,8 @@
                       </div>
 
                       <div class="field">
-                        <label>New Content (Markdown)</label>
-                        <textarea name="content" rows="5"></textarea>
+                        <label for="content">New Content (Markdown)</label>
+                        <textarea id="content" name="content" rows="5"></textarea>
                       </div>
                       <div class="field">
                         <input type="submit" value="Create" class="ui button"/>

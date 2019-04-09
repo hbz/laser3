@@ -266,14 +266,14 @@
 
           <div class="fields three">
               <div class="field">
-                  <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
-                  <input name="filter" value="${params.filter}"/>
+                  <label for="filter">${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
+                  <input id="filter" name="filter" value="${params.filter}"/>
               </div>
               <div class="field">
-                  <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+                  <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
               </div>
               <div class="field">
-                  <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+                  <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
               </div>
           </div>
           <div class="field">

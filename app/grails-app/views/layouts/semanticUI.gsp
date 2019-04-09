@@ -477,7 +477,7 @@
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
-                        <div class="results" style="overflow-y:scroll;max-height: 400px;min-height: content-box;"></div>
+                        <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
 
                     <g:if test="${contextUser}">
@@ -700,9 +700,9 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
         <%-- global content container --%>
-        <section class="ui main container ${visibilityContextOrgMenu} ">
+        <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
-        </section><!-- .main -->
+        </main><!-- .main -->
 
         <footer id="Footer">
             <div class="clearfix"></div>

@@ -28,11 +28,11 @@
 
             <div class="four wide column">
 
-                <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${params.newDatePaid}" />
+                <semui:datepicker label="financials.datePaid" id="newDatePaid" name="newDatePaid" placeholder="financials.datePaid" value="${params.newDatePaid}" />
 
-                <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${params.newStartDate}" />
+                <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label" value="${params.newStartDate}" />
 
-                <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value ="${params.newEndDate}" />
+                <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label" value ="${params.newEndDate}" />
 
             </div><!-- .column -->
 

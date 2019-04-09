@@ -42,9 +42,9 @@
                 </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="surveyInfo.startDate.label" name="startDate" value="${surveyInfo?.startDate}"/>
+                    <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate" value="${surveyInfo?.startDate}"/>
 
-                    <semui:datepicker label="surveyInfo.endDate.label" name="endDate" value="${surveyInfo?.endDate}"/>
+                    <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate" value="${surveyInfo?.endDate}"/>
                 </div>
 
 

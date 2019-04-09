@@ -22,8 +22,8 @@
 
 		<semui:searchSegment controller="organisation" action="findProviderMatches" method="get">
 			<div class="field">
-				<label>${message(code:'org.findProviderMatches.proposed')}</label>
-				<input type="text" name="proposedProvider" value="${params.proposedProvider}" />
+				<label for="proposedProvider">${message(code:'org.findProviderMatches.proposed')}</label>
+				<input type="text" id="proposedProvider" name="proposedProvider" value="${params.proposedProvider}" />
 			</div>
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>

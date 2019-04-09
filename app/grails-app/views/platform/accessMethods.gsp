@@ -92,13 +92,13 @@
                         </td>
                         <td>
                             <div class="field wide six fieldcontain ">
-                                <semui:datepicker hideLabel="true" name="validFrom" value ="${params.validFrom}">
+                                <semui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
                                 </semui:datepicker>
                             </div>
                         </td>
                         <td>
                             <div class="field wide six fieldcontain  ">
-                                <semui:datepicker  hideLabel="true" name="validTo" value ="${params.validTo}">
+                                <semui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
                                 </semui:datepicker>
                             </div>
                         </td>

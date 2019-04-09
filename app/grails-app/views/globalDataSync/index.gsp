@@ -17,8 +17,8 @@
     <g:form action="index" method="get" class="ui form">
         <div class="two fields">
             <div class="field">
-                <label>${message(code: 'globalDataSync.search.text')}</label>
-                <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}"
+                <label for="q">${message(code: 'globalDataSync.search.text')}</label>
+                <input type="text" id="q" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}"
                        value="${params.q}"/>
             </div>
             <div class="field la-field-right-aligned">
