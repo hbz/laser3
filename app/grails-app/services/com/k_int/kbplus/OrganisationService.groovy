@@ -100,16 +100,18 @@ class OrganisationService {
                     }
                     orgData.add(row)
                 }
-                return exportService.generateXLSXWorkbook(message,titles,orgData)
+                Map sheetData = [:]
+                sheetData[message] = [titleRow:titles,columnData:orgData]
+                return exportService.generateXLSXWorkbook(sheetData)
             case "csv":
                 orgs.each{  org ->
                     List row = []
                     //Name
-                    row.add(org.name ?: '')
+                    row.add(org.name ? org.name.replaceAll(',','') : '')
                     //Shortname
-                    row.add(org.shortname ?: '')
+                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
                     //Sortname
-                    row.add(org.sortname ?: '')
+                    row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add(org.libraryType?.getI10n('value') ?: ' ')

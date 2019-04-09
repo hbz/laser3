@@ -351,7 +351,9 @@ from License as l where (
                 row.add([field:privateProps.join(", "),style:null])
                 rows.add(row)
             }
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(g.message(code:'menu.my.licenses'),titles,rows)
+            Map sheetData = [:]
+            sheetData[g.message(code:'menu.my.licenses')] = [titleRow:titles,columnData:rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -785,7 +787,9 @@ from License as l where (
                     row.add([field: sub.type?.getI10n("value"),style: null])
                     subscriptionData.add(row)
                 }
-                return exportService.generateXLSXWorkbook(g.message(code:'menu.my.subscriptions'),titles,subscriptionData)
+                Map sheetData = [:]
+                sheetData[message(code:'menu.my.subscriptions')] = [titleRow:titles,columnData:subscriptionData]
+                return exportService.generateXLSXWorkbook(sheetData)
             case "csv":
                 subscriptions.each { sub ->
                     List row = []
@@ -1465,7 +1469,7 @@ from License as l where (
             result = setFiltersLists(result, date_restriction)
         }else{
             //Else return IEs
-            def exportQuery = "SELECT ie.ie_id, ${queryStr} order by ti.sort_title asc ".toString()
+            def exportQuery = "SELECT ie.ie_id, ${queryStr}, ie.ie_id order by ti.sort_title asc ".toString()
             result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
         } 
 
@@ -3414,24 +3418,44 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def fsq = filterService.getOrgQuery(params)
         result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-            result.consortiaMemberIds = []
-            Combo.findAllWhere(
-                    toOrg: result.institution,
-                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
-            ).each { cmb ->
-                result.consortiaMemberIds << cmb.fromOrg.id
+        result.consortiaMemberIds = []
+        Combo.findAllWhere(
+                toOrg: result.institution,
+                type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+        ).each { cmb ->
+            result.consortiaMemberIds << cmb.fromOrg.id
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
+        String filename = message(code:'export.my.consortia')+"_"+sdf.format(new Date(System.currentTimeMillis()))
+        if ( params.exportXLS ) {
+            List orgs = (List) result.availableOrgs
+            def message = g.message(code: 'export.all.orgs')
+            SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    }
+                    out.close()
+                }
             }
-
-            if ( params.exportXLS=='yes' ) {
-
-                def orgs = result.availableOrgs
-                def message = g.message(code: 'export.all.orgs')
-                exportOrg(orgs, message, true)
-                return
-            }
-
-        result
-
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -3464,30 +3488,42 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-        if(params.exportXLS) {
-            params.remove("max")
-            params.remove("offset")
-        } else {
-            params << [max: result.max, offset: result.offset]
-        }
-
         if (params.filterPropDef && consortiaMemberIds) {
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
-        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+        List totalConsortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembersCount    = totalConsortiaMembers.size()
+        result.consortiaMembers         = totalConsortiaMembers.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
+        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
+        // Write the output to a file
+        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+message(code: 'export.my.consortia')
+        if ( params.exportXLS ) {
 
-            def orgs = result.consortiaMembers
-
-            def message = g.message(code: 'export.my.consortia')
-
-            exportOrg(orgs, message, true)
-            return
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortiaMembers, message(code:'menu.my.consortia'), true, 'xls')
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
-
-        result
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(totalConsortiaMembers,message(code:'menu.my.consortia'),true,"csv"))
+                    }
+                    out.close()
+                }
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -4102,170 +4138,5 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-    }
-
-    private def exportOrg(orgs, message, addHigherEducationTitles) {
-        try {
-            def titles = [
-                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
-
-            def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-
-
-            if(addHigherEducationTitles)
-            {
-                titles.add(g.message(code: 'org.libraryType.label'))
-                titles.add(g.message(code: 'org.libraryNetwork.label'))
-                titles.add(g.message(code: 'org.funderType.label'))
-                titles.add(g.message(code: 'org.federalState.label'))
-                titles.add(g.message(code: 'org.country.label'))
-            }
-
-            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-            propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
-
-            propList.each {
-                titles.add(it.name)
-            }
-
-            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
-            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-
-            XSSFWorkbook workbook = new XSSFWorkbook()
-            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
-
-            SXSSFSheet sheet = wb.createSheet(message)
-
-            //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
-
-            //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0)
-            headerRow.setHeightInPoints(16.75f)
-            titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index)
-                cell.setCellValue(titlesName)
-            }
-
-            //freeze the first row
-            sheet.createFreezePane(0, 1)
-
-            Row row
-            Cell cell
-            int rownum = 1
-
-            //orgs.sort{it.name}
-            orgs.each{  org ->
-                int cellnum = 0
-                row = sheet.createRow(rownum)
-
-                //Name
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.name ?: "")
-
-                //Shortname
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.shortname ?: "")
-
-                //Sortname
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.sortname ?: "")
-
-
-                if(addHigherEducationTitles) {
-
-                    //libraryType
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
-
-                    //libraryNetwork
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
-
-                    //funderType
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
-
-                    //federalState
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
-
-                    //country
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.country?.getI10n('value') ?: ' ')
-                }
-
-                propList.each { pd ->
-                    String value = ''
-                    org.customProperties.each{ prop ->
-                        if(prop.type.descr == pd.descr && prop.type == pd)
-                        {
-                            if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == String.toString()){
-                                value = prop.stringValue ?: ''
-                            }
-                            else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
-
-                    org.privateProperties.each{ prop ->
-                        if(prop.type.descr == pd.descr && prop.type == pd)
-                        {
-                            if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == String.toString()){
-                                value = prop.stringValue ?: ''
-                            }
-                            else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString() ?: ''
-                            }
-                            else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(value)
-                }
-
-                rownum++
-            }
-
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i)
-            }
-            // Write the output to a file
-            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xlsx"
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-        }
-        catch ( Exception e ) {
-            log.error("Problem",e);
-            response.sendError(500)
-        }
     }
 }

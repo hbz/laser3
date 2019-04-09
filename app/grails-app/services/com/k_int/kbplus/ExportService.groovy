@@ -54,7 +54,9 @@ class ExportService {
 		List output = []
 		output.add(titleRow.join(","))
 		columnData.each { row ->
-			output.add(row.join(","))
+			if(row.size() > 0)
+				output.add(row.join(","))
+			else output.add(" ")
 		}
 		output.join("\n")
 	}
@@ -62,12 +64,9 @@ class ExportService {
 	/**
 		new XSLX export interface - should subsequently collect the Excel export points
 		expect data in structure:
-	 	@param input - {@link XSSFWorkbook} to which the sheet is going to be added
-	 	@param sheetTitle - the title of the sheet
-	 	@param titleRow - {@link List} of column headers [colHeader1, colHeader2, ..., colHeaderN]
-		@param columnData - {@link List} of the rows, each row is a list of {@link Map}s containing the cell value and style to apply (of null if no style has to be applied):
-		 [
-			[
+		 [sheet:
+		 	titleRow: [colHeader1, colHeader2, ..., colHeaderN]
+			columnData:[
 				[field:field1,style:style1], //for row 1
 				[field:field2,style:style2], //for row 2
 				...,
@@ -75,7 +74,7 @@ class ExportService {
 			]
 		 ]
 	 */
-    SXSSFWorkbook generateXLSXWorkbook(title, List titleRow, List columnData) {
+    SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
 		XSSFWorkbook wb = new XSSFWorkbook()
 		XSSFCellStyle csPositive = wb.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
@@ -86,39 +85,50 @@ class ExportService {
 		XSSFCellStyle csNeutral = wb.createCellStyle()
 		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
 		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
-		Sheet sheet = output.createSheet(title)
-		sheet.setAutobreaks(true)
-		int rownum = 0
-		Row headerRow = sheet.createRow(rownum++)
-		headerRow.setHeightInPoints(16.75f)
-		titleRow.eachWithIndex{ colHeader, int i ->
-			Cell cell = headerRow.createCell(i)
-			cell.setCellValue(colHeader)
-		}
-		sheet.createFreezePane(0,1)
-		Row row
-		Cell cell
-		columnData.each { rowData ->
-			int cellnum = 0
-			row = sheet.createRow(rownum)
-			rowData.each { cellData ->
-				cell = row.createCell(cellnum++)
-				cell.setCellValue(cellData.field)
-				switch(cellData.style) {
-					case 'positive': cell.setCellStyle(csPositive)
-						break
-					case 'neutral': cell.setCellStyle(csNeutral)
-						break
-					case 'negative': cell.setCellStyle(csNegative)
-						break
+		sheets.entrySet().each { sheetData ->
+			try {
+				def title = sheetData.key
+				List titleRow = (List) sheetData.value.titleRow
+				List columnData = (List) sheetData.value.columnData
+				Sheet sheet = output.createSheet(title)
+				sheet.setAutobreaks(true)
+				int rownum = 0
+				Row headerRow = sheet.createRow(rownum++)
+				headerRow.setHeightInPoints(16.75f)
+				titleRow.eachWithIndex{ colHeader, int i ->
+					Cell cell = headerRow.createCell(i)
+					cell.setCellValue(colHeader)
+				}
+				sheet.createFreezePane(0,1)
+				Row row
+				Cell cell
+				columnData.each { rowData ->
+					int cellnum = 0
+					row = sheet.createRow(rownum)
+					rowData.each { cellData ->
+						cell = row.createCell(cellnum++)
+						cell.setCellValue(cellData.field)
+						switch(cellData.style) {
+							case 'positive': cell.setCellStyle(csPositive)
+								break
+							case 'neutral': cell.setCellStyle(csNeutral)
+								break
+							case 'negative': cell.setCellStyle(csNegative)
+								break
+						}
+					}
+					rownum++
+				}
+				for(int i = 0;i < titleRow.size(); i++) {
+					sheet.autoSizeColumn(i)
 				}
 			}
-			rownum++
-		}
-		for(int i = 0;i < titleRow.size(); i++) {
-			sheet.autoSizeColumn(i)
+			catch (ClassCastException e) {
+				log.error("Data delivered in inappropriate structure!")
+			}
 		}
         output
     }
@@ -290,7 +300,7 @@ class ExportService {
 	
 	/**
 	 * This function will stream out the list of titles in a CSV format.
-	 * 
+	 *
 	 * @param out - the {@link OutputStream}
 	 * @param entitlements - the list of {@link IssueEntitlement}
 	 */

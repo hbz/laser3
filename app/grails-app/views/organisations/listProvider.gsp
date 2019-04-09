@@ -19,7 +19,7 @@
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="organisations" action="listProvider"
-                            params="${params+[exportXLS:'yes']}">
+                            params="${params+[exportXLS:true]}">
                         ${message(code:'default.button.exports.xls')}
                     </g:link>
                 </semui:exportDropdownItem>
@@ -34,7 +34,7 @@
             </g:if>
             <g:else>
                 <semui:exportDropdownItem>
-                    <g:link class="item" action="listProvider" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls')}</g:link>
+                    <g:link class="item" action="listProvider" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
                 </semui:exportDropdownItem>
                 <semui:exportDropdownItem>
                     <g:link class="item" action="listProvider" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>

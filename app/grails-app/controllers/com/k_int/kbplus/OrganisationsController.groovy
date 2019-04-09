@@ -85,7 +85,8 @@ class OrganisationsController extends AbstractDebugController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
+        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
@@ -93,40 +94,49 @@ class OrganisationsController extends AbstractDebugController {
         def fsq = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
 
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        List orgListTotal  = Org.findAll(fsq.query, fsq.queryParams)
+        result.orgListTotal = orgListTotal.size()
+        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        def message = message(code: 'export.all.orgs')
+        // Write the output to a file
+        String file = message+"_${datetoday}"
+        if ( params.exportXLS ) {
 
-            params.remove('max')
-
-            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-
-            def message = g.message(code: 'export.all.orgs')
-            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             try {
-                SXSSFWorkbook wb = organisationService.exportOrg(orgs, message, true)
-                // Write the output to a file
-                String file = message+"_${datetoday}.xlsx"
+                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true,'xls')
 
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
 
-                return
             }
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
             }
         }
-
-
-        result
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    }
+                    out.close()
+                }
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -213,7 +223,7 @@ class OrganisationsController extends AbstractDebugController {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
                 }
                 out.close()
             }

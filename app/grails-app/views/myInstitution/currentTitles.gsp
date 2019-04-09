@@ -18,7 +18,17 @@
     <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                            params="${params+[format:'csv']}">
+                        ${message(code:'default.button.exports.xls')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="currentTitles" params="${params + [format:'csv']}">CSV Export</g:link>
+                </g:else>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
                 <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
@@ -26,19 +36,19 @@
             <semui:exportDropdownItem>
                 <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
             </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            <%--<semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
-                            data-confirm-term-how="ok" controller="myInstitution" action="manageConsortia"
-                            params="${params+[exportXLS:'yes']}">
+                            data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                            params="${params+[exportXLS:true]}">
                         ${message(code:'default.button.exports.xls')}
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="item" action="manageConsortia" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                    <g:link class="item" action="currentTitles" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                 </g:else>
-            </semui:exportDropdownItem>
+            </semui:exportDropdownItem>--%>
             <g:each in="${transforms}" var="transkey,transval">
                 <semui:exportDropdownItem>
                     <g:link class="item" action="currentTitles" id="${params.id}" params="${params + [format:'xml', transformId:transkey]}"> ${transval.name}</g:link>

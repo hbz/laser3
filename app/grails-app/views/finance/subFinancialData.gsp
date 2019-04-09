@@ -23,8 +23,8 @@
 
         <semui:controlButtons>
             <semui:exportDropdown>
-                <semui:exportDropdownItem>
-                    <g:if test="${params.submit || params.filterSubStatus}">
+                <g:if test="${params.submit || params.filterSubStatus}">
+                    <semui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
                                  data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
@@ -32,11 +32,31 @@
                                  action="financialsExport"
                                  params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </g:if>
-                    <g:else>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item exportCSV js-open-confirm-modal"
+                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartialCSV')}"
+                                 data-confirm-term-how="ok"
+                                 controller="finance"
+                                 action="financialsExport"
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
+                        </g:link>
+                    </semui:exportDropdownItem>
+                </g:if>
+                <g:else>
+                    <semui:exportDropdownItem>
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
-                    </g:else>
-                </semui:exportDropdownItem>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item exportCSV js-open-confirm-modal"
+                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportCSV')}"
+                                 data-confirm-term-how="ok"
+                                 controller="finance"
+                                 action="financialsExport"
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
+                        </g:link>
+                    </semui:exportDropdownItem>
+                </g:else>
             <%--
             <semui:exportDropdownItem>
                 <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
