@@ -688,9 +688,9 @@ class SemanticUiTagLib {
 
         def total = attrs.total
 
-        out << '<div class="ui circular label">'
+        out << '<span class="ui circular label">'
         out << total
-        out << '</div>'
+        out << '</span>'
     }
     def dropdown = { attrs, body ->
         if (!attrs.name) {
