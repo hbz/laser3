@@ -65,7 +65,7 @@ class Task {
         if (license)
             result << [controller: 'license', object: license]
         if (org)
-            result << [controller: 'organisations', object: org]
+            result << [controller: 'organisation', object: org]
         if (pkg)
             result << [controller: 'package', object: pkg]
         if (subscription)

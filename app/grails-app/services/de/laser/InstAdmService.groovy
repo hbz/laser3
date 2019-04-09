@@ -46,7 +46,7 @@ class InstAdmService {
         result
     }
 
-    def createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
+    void createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
 
         try {
             def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
@@ -85,7 +85,7 @@ class InstAdmService {
         }
     }
 
-    def sendMail(User user, String subj, String view, Map model) {
+    void sendMail(User user, String subj, String view, Map model) {
 
         if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
             println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"

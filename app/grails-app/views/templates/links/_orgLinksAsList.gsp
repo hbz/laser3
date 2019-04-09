@@ -9,7 +9,7 @@
             <tr>
                 <th scope="row" class="control-label la-js-dont-hide-this-card">${role?.roleType?.getI10n("value")}</th>
                 <td>
-                    <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
+                    <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
                 </td>
 
                 <td class="right aligned">

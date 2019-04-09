@@ -33,7 +33,7 @@
 						<dt><g:message code="cluster.orgs.label" default="Orgs" /></dt>
 						<dd><ul>
 							<g:each in="${clusterInstance.orgs}" var="o">
-							<li>${o?.roleType?.value} - <g:link controller="organisations" action="show" id="${o?.org?.id}">${o?.org?.name}</g:link></li>
+							<li>${o?.roleType?.value} - <g:link controller="organisation" action="show" id="${o?.org?.id}">${o?.org?.name}</g:link></li>
 							</g:each>
 						</ul></dd>
 					</g:if>

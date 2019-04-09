@@ -1955,8 +1955,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        def debugTimeA = System.currentTimeMillis()
-
         DebugUtil du = new DebugUtil()
         du.setBenchMark('1')
 
@@ -2226,13 +2224,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         // TODO: experimental asynchronous task
         //waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
-
-        def debugTimeB = System.currentTimeMillis()
-        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }

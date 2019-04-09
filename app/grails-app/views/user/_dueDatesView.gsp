@@ -91,7 +91,7 @@
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof Org}">
                                         <i class="icon university la-list-icon"></i>
-                                        <g:link controller="organisations" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                        <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                                     </g:elseif>
                                     <g:else>
                                         ${obj.owner?.name}

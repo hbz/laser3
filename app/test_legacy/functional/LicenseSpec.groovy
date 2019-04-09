@@ -145,7 +145,7 @@ class LicenseSpec extends GebReportingSpec {
 
     def "Change org to have public journal access "() {
         setup: "Custom property page"
-          go '/laser/organisations/config/'+Org.findByName(Data.Org_name).id
+          go '/laser/organisation/config/'+Org.findByName(Data.Org_name).id
           at LicensePage
         when: "Properties are listed, find Public Journal Access"
           addCustomInputProperty(Data.License_publicProp_journals, Data.License_public_journals)

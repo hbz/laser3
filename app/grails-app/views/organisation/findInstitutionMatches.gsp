@@ -9,7 +9,7 @@
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<semui:crumb message="menu.public.all_insts" controller="organisations" action="listInstitution"  />
+		<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 
@@ -21,7 +21,7 @@
 
 		<p>${message(code:'org.findInstitutionMatches.note')}</p>
 
-		<semui:searchSegment controller="organisations" action="findInstitutionMatches" method="get">
+		<semui:searchSegment controller="organisation" action="findInstitutionMatches" method="get">
 			<div class="field">
 				<label>${message(code:'org.findInstitutionMatches.proposed')}</label>
 				<input type="text" name="proposedInstitution" value="${params.proposedInstitution}" />
@@ -56,7 +56,7 @@
 									<td>
 										${institutionInstance.name}
 										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && consortia.get(institutionInstance.id)?.contains(contextService.org.id) && consortia.get(institutionInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
-											<g:link controller="organisations" action="show" id="${institutionInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
+											<g:link controller="organisation" action="show" id="${institutionInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
 										</g:if>
 									</td>
 									<td><ul>
@@ -71,12 +71,12 @@
 									<td>
 									<%-- here: switch if in consortia or not --%>
 										<g:if test="${!consortia.keySet().contains(institutionInstance.id)}">
-											<g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'add',fromOrg:institutionInstance.id]}">
+											<g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:institutionInstance.id]}">
 												<i class="plus icon"></i>
 											</g:link>
 										</g:if>
 										<g:elseif test="${consortia.keySet().contains(institutionInstance.id)}">
-											<g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'remove',fromOrg:institutionInstance.id]}">
+											<g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:institutionInstance.id]}">
 												<i class="minus icon"></i>
 											</g:link>
 										</g:elseif>
@@ -89,7 +89,7 @@
 							<bootstrap:alert class="alert-info">
 								${message(code:'org.findInstitutionMatches.match', args:[params.proposedInstitution])}
 							</bootstrap:alert>
-							<g:link controller="organisations" action="createInstitution" class="ui negative button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
+							<g:link controller="organisation" action="createInstitution" class="ui negative button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedInstitution.isEmpty()}">
 							<bootstrap:alert class="alert-info">
@@ -99,7 +99,7 @@
 					</g:if>
 					<g:elseif test="${params.proposedInstitution && !params.proposedInstitution.isEmpty()}">
 						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_match', args:[params.proposedInstitution])}</bootstrap:alert>
-						<g:link controller="organisations" action="createInstitution" class="ui positive button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.no_matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
+						<g:link controller="organisation" action="createInstitution" class="ui positive button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.no_matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedInstitutionID && !params.proposedInstitutionID.isEmpty()}">
 						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_id_match', args:[params.proposedInstitutionID])}</bootstrap:alert>

@@ -76,16 +76,16 @@ class OnixplLicense implements Permissions {
     title(nullable: false, blank: false)
   }
 
-    def isEditableBy(user) {
+  boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
 
-  def isVisibleBy(user) {
+  boolean isVisibleBy(user) {
     hasPerm('view', user)
   }
 
     // Only admin has permission to change ONIX-PL licenses; anyone can view them.
-    def hasPerm(perm, user) {
+  boolean hasPerm(perm, user) {
         if (perm == 'view') {
             return true
         }

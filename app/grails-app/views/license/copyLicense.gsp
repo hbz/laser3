@@ -61,7 +61,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
 
         <g:each in="${visibleOrgLinks}" var="role">
             <g:if test="${role.org}">
-                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="Organisations" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
+                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
             </g:if>
         </g:each>
         </td>

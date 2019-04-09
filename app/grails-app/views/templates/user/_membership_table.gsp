@@ -26,7 +26,7 @@
                 <% affiCount++ %>
                 <tr>
                     <td>
-                        <g:link controller="organisations" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
+                        <g:link controller="organisation" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
                     </td>
                     <td>
                         <g:message code="cv.roles.${aff.formalRole?.authority}"/>

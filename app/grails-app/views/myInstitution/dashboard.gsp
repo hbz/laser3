@@ -269,7 +269,7 @@
                                 <g:each in="${tsk.getObjects()}" var="tskObj">
                                     <div class="item">
                                         <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
-                                            <g:if test="${tskObj.controller == 'organisations'}">
+                                            <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">

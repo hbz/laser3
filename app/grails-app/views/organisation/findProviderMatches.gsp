@@ -8,7 +8,7 @@
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<semui:crumb message="menu.public.all_provider" controller="organisations" action="listProvider"  />
+		<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 
@@ -20,7 +20,7 @@
 
 		<p>${message(code:'org.findProviderMatches.note')}</p>
 
-		<semui:searchSegment controller="organisations" action="findProviderMatches" method="get">
+		<semui:searchSegment controller="organisation" action="findProviderMatches" method="get">
 			<div class="field">
 				<label>${message(code:'org.findProviderMatches.proposed')}</label>
 				<input type="text" name="proposedProvider" value="${params.proposedProvider}" />
@@ -47,7 +47,7 @@
 							<tbody>
 							<g:each in="${providerMatches}" var="providerInstance">
 								<tr>
-									<td>${providerInstance.name} <g:link controller="organisations" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
+									<td>${providerInstance.name} <g:link controller="organisation" action="show" id="${providerInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
 									<td><ul>
 											<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
 											<g:if test="${providerInstance.impId}">
@@ -64,11 +64,11 @@
 						<bootstrap:alert class="alert-info">
 							${message(code:'org.findProviderMatches.match', args:[params.proposedProvider])}
 						</bootstrap:alert>
-						<g:link controller="organisations" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
+						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:if>
 					<g:else>
 						<bootstrap:alert class="alert-info">${message(code:'org.findProviderMatches.no_match', args:[params.proposedProvider])}</bootstrap:alert>
-						<g:link controller="organisations" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
+						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>
 

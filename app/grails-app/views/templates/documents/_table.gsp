@@ -12,7 +12,7 @@
                 <th>${message(code:'license.docs.table.type', default:'Type')}</th>
                 <%--<th>${message(code:'org.docs.table.target')}</th>
                 <th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
-                <g:if test="${controllerName in ['myInstitution','organisations']}">
+                <g:if test="${controllerName in ['myInstitution','organisation']}">
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
                 <th>${message(code:'default.actions', default:'Actions')}</th>
@@ -67,7 +67,7 @@
                         <%--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisations" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
                                     <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>

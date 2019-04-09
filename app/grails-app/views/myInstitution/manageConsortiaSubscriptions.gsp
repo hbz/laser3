@@ -72,7 +72,7 @@
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
             <div class="field fieldcontain">
@@ -213,7 +213,7 @@
                     ${ jj + 1 }
                 </td>
                 <td>
-                    <g:link controller="organisations" action="show" id="${subscr.id}">
+                    <g:link controller="organisation" action="show" id="${subscr.id}">
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
                     </g:link>
@@ -245,7 +245,7 @@
                 </td>
                 <td>
                     <g:each in="${subCons.providers}" var="p">
-                        <g:link controller="organisations" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
+                        <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
                     </g:each>
                 </td>
                 <td>

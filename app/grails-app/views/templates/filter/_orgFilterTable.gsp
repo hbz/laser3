@@ -93,7 +93,7 @@
             </g:if>
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:checkBox type="text" id="" name="selectedOrgs" value="${org.id}" checked="false"/>
+                    <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
                 </td>
             </g:if>
 
@@ -110,7 +110,7 @@
                             </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisations" action="show" id="${org.id}">
+                        <g:link controller="organisation" action="show" id="${org.id}">
                             <g:if test="${org.shortname}">
                                 ${fieldValue(bean: org, field: "shortname")}
                             </g:if>
@@ -127,7 +127,7 @@
                             </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisations" action="show" id="${org.id}">
+                        <g:link controller="organisation" action="show" id="${org.id}">
                             ${fieldValue(bean: org, field: "name")} <br>
                             <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
                                 (${fieldValue(bean: org, field: "shortname")})
@@ -172,7 +172,7 @@
                                     personRole: pl,
                                     tmplShowDeleteButton: false,
                                     tmplConfigShow: ['E-Mail', 'Mail', 'Phone'],
-                                    controller: 'organisations',
+                                    controller: 'organisation',
                                     action: 'show',
                                     id: org.id
                             ]}"/>
@@ -188,7 +188,7 @@
                                     personRole: pl,
                                     tmplShowDeleteButton: false,
                                     tmplConfigShow: ['E-Mail', 'Mail', 'Phone'],
-                                    controller: 'organisations',
+                                    controller: 'organisation',
                                     action: 'show',
                                     id: org.id
                             ]}"/>
@@ -267,12 +267,12 @@
                 <td>
                     <%-- here: switch if in consortia or not --%>
                     <g:if test="${!consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'add',fromOrg:org.id]}">
+                        <g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:org.id]}">
                             <i class="plus icon"></i>
                         </g:link>
                     </g:if>
                     <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                        <g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'remove',fromOrg:org.id]}">
+                        <g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:org.id]}">
                             <i class="minus icon"></i>
                         </g:link>
                     </g:elseif>

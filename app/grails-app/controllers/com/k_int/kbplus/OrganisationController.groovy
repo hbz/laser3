@@ -15,7 +15,7 @@ import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationsController extends AbstractDebugController {
+class OrganisationController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
@@ -37,47 +37,28 @@ class OrganisationsController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def config() {
+    def settings() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        result.orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        if (! result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         // forbidden access
-        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+        if (! result.editable && result.orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
 
         }
 
-        // TODO: deactived
-      /*
-      if(! orgInstance.customProperties){
-        grails.util.Holders.config.customProperties.org.each{ 
-          def entry = it.getValue()
-          def type = PropertyDefinition.lookupOrCreate(
-                  entry.name,
-                  entry.class,
-                  PropertyDefinition.ORG_CONF,
-                  PropertyDefinition.FALSE,
-                  PropertyDefinition.FALSE,
-                  null
-          )
-          def prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, orgInstance, type)
-          prop.note = entry.note
-          prop.save()
-        }
-      }
-      */
+        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
 
-      if (! orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }
-
-      result.orgInstance = orgInstance
-      result
+        result
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -334,8 +315,6 @@ class OrganisationsController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def show() {
 
-        def debugTimeA = System.currentTimeMillis()
-
         def result = [:]
 
         //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
@@ -466,13 +445,9 @@ class OrganisationsController extends AbstractDebugController {
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
-
-        def debugTimeB = System.currentTimeMillis()
-        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }
@@ -507,16 +482,7 @@ class OrganisationsController extends AbstractDebugController {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
-    }
-
-    @Secured(['ROLE_YODA'])
-    def settings() {
-        Map result = [:]
-        result.orgInstance = Org.get(params.id)
-        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
-
-        result
+        redirect controller: 'organisation', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Deprecated
@@ -573,7 +539,7 @@ class OrganisationsController extends AbstractDebugController {
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+            redirect controller: 'organisation', action: 'show', id: orgInstance.id
 
         }
 
@@ -592,7 +558,7 @@ class OrganisationsController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def edit() {
-        redirect controller: 'organisations', action: 'show', params: params
+        redirect controller: 'organisation', action: 'show', params: params
         return
     }
 

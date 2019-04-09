@@ -200,18 +200,18 @@ class CostItem
 
     @Deprecated
     @Override
-    def isTemplate() {
+    boolean isTemplate() {
         false
     }
 
     @Deprecated
     @Override
-    def hasTemplate() {
+    boolean hasTemplate() {
         false
     }
 
     @Override
-    def getCalculatedType() {
+    String getCalculatedType() {
         def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {

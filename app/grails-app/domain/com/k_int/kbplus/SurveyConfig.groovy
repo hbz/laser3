@@ -76,5 +76,12 @@ class SurveyConfig {
         }
     }
 
+    def getOrgs(){
+
+
+        Org.findAllByIdInList()
+
+    }
+
 
 }

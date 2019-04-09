@@ -48,7 +48,7 @@
 														%{--<td>${j + 1}</td>--}%
 														<td>${subscr.sortname}</td>
 														%{--<td>--}%
-															%{--<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>--}%
+															%{--<g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>--}%
 															%{--<div class="ui list">--}%
 																%{--<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">--}%
 																	%{--<div class="item">--}%
@@ -111,7 +111,7 @@
 													%{--<td>${j + 1}</td>--}%
 													<td>${subscr.sortname}</td>
 													%{--<td>--}%
-														%{--<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>--}%
+														%{--<g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>--}%
 														%{--<div class="ui list">--}%
 															%{--<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">--}%
 																%{--<div class="item">--}%

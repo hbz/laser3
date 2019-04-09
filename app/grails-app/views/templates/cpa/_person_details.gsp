@@ -33,7 +33,7 @@
 
             <g:each in="${person?.roleLinks}" var="role">
                 <div class="item">
-                    <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                    <g:link controller="organisation" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
                 </div>
             </g:each>
 

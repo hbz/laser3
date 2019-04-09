@@ -71,11 +71,23 @@
         <g:set var="filterHostPlat" value="${params.filterHostPlat?params.list('filterHostPlat'):"all"}" />
         <g:set var="filterOtherPlat" value="${params.filterOtherPlat?params.list('filterOtherPlat'):"all"}" />
 
-          <div class="fields">
-              <div class="field eight wide">
 
-                <select name="filterSub" multiple="" class="ui search selection fluid dropdown">
-                  <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%> value="all">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
+          <div class="two fields">
+              <div class="field">
+                  <label>${message(code:'default.search.text', default:'Search text')}</label>
+                  <input type="hidden" name="sort" value="${params.sort}">
+                  <input type="hidden" name="order" value="${params.order}">
+                  <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph')}"/>
+              </div>
+
+              <semui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn" value="${validOn}" />
+
+          </div>
+          <div class="two fields">
+              <div class="field">
+                <label for="filterSub">${message(code:'subscription.plural')}</label>
+                <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
+                  <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%> value="">${message(code:'myinst.currentTitles.all_subs', default:'All Subscriptions')}</option>
                   <g:each in="${subscriptions}" var="s">
                     <option <%= (filterSub.contains(s.id.toString())) ? 'selected="selected"' : '' %> value="${s.id}" title="${s.name}${s.consortia?' ('+s.consortia.name+')':''}">
                       ${s.getNameConcatenated()}
@@ -83,10 +95,10 @@
                   </g:each>
                 </select>
               </div>
-              <div class="field eight wide">
-
-                <select name="filterPvd" multiple="" class="ui search selection fluid dropdown">
-                  <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
+              <div class="field">
+                <label for="filterPvd">${message(code:'default.agency.provider.plural.label')}</label>
+                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                  <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%> value="">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
                   <g:each in="${providers}" var="p">
                     <%
                     def pvdId = p[0].id.toString()
@@ -99,11 +111,11 @@
                 </select>
               </div>
           </div>
-          <div class="fields">
-              <div class="field eight wide">
-
+          <div class="two fields">
+              <div class="field">
+                <label for="filterPvd">${message(code:'default.host.platforms.label')}</label>
                 <select name="filterHostPlat" multiple="" class="ui search selection fluid dropdown">
-                  <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
+                  <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%> value="">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
                   <g:each in="${hostplatforms}" var="hp">
                   <%
                   def hostId = hp[0].id.toString()
@@ -115,10 +127,10 @@
                 </g:each>
               </select>
             </div>
-            <div class="field eight wide">
-
+            <div class="field">
+                <label for="filterPvd">${message(code:'default.all_other.platforms.label')}</label>
                 <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                  <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
+                  <option <%--<%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>--%> value="">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
                   <g:each in="${otherplatforms}" var="op">
 
                   <%
@@ -133,16 +145,8 @@
               </div>
           </div>
 
-            <div class="four fields">
-                <div class="field">
-                  <label>${message(code:'default.search.text', default:'Search text')}</label>
-                  <input type="hidden" name="sort" value="${params.sort}">
-                  <input type="hidden" name="order" value="${params.order}">
-                  <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
-                </div>
-                <div class="field">
-                  <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
-                </div>
+            <div class="two fields">
+
                 <div class="field">
                   <label>${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}</label>
                   <div class="ui checkbox">

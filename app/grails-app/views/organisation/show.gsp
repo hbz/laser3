@@ -42,7 +42,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="ui grid">
+    <div class="ui stackable grid">
         <div class="twelve wide column">
 
             <div class="la-inline-lists">
@@ -175,6 +175,28 @@
                     </div>
                 </div><!-- .card -->
 
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt><g:message code="org.platforms.label" default="Platforms " /></dt>
+                            <dd>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance.platforms.sort { it?.name }}" var="platform">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <strong><g:link controller="platform" action="show"
+                                                                id="${platform.id}">${platform.name}</g:link>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
                 <g:if test="${!institutionalView}">
                     <div class="ui card">
                         <div class="content">
@@ -213,7 +235,7 @@
                                                 <g:render template="/templates/cpa/contact" model="${[
                                                         contact: c,
                                                         tmplShowDeleteButton: true,
-                                                        controller: 'organisations',
+                                                        controller: 'organisation',
                                                         action: 'show',
                                                         id: orgInstance.id,
                                                         editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
@@ -240,7 +262,7 @@
                                                     personRole: pl,
                                                     tmplShowDeleteButton: true,
                                                     tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                    controller: 'organisations',
+                                                    controller: 'organisation',
                                                     action: 'show',
                                                     id: orgInstance.id,
                                                     editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
@@ -282,7 +304,7 @@
                                 <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
                                 <dd>
                                     <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
-                                        <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
+                                        <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                                         (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
                                         ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
                                     </g:each>)
@@ -303,7 +325,7 @@
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
-                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
                                                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                 ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                             </g:each>)
@@ -321,7 +343,7 @@
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
-                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
                                                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                 ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                             </g:each>)
@@ -339,7 +361,7 @@
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
-                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
                                                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                 ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                             </g:each>)

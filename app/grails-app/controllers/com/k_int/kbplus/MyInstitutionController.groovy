@@ -175,7 +175,7 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
-        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+        redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
 
         def result = [:]
         result.institution        = contextService.getOrg()
@@ -1421,26 +1421,21 @@ from License as l where (
         }
 
         if (filterSub) {
-            sub_qry += " AND sub.sub_id in ( :subs ) "
-            qry_params.subs = filterSub.join(", ")
+            sub_qry += " AND sub.sub_id in (" + filterSub.join(", ") + ")"
         }
 
         if (filterOtherPlat) {
-            sub_qry += " AND ap.id in ( :addplats )"
-           qry_params.addplats = filterOtherPlat.join(", ")
+            sub_qry += " AND ap.id in (" + filterOtherPlat.join(", ") + ")"
         }
 
         if (filterHostPlat) {
-            sub_qry += " AND tipp.tipp_plat_fk in ( :plats )"
-            qry_params.plats = filterHostPlat.join(", ")
-
+            sub_qry += " AND tipp.tipp_plat_fk in (" + filterHostPlat.join(", ") + ")"
         }
 
         if (filterPvd) {
             def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
-            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
+            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
             qry_params.cprole = cp
-            qry_params.provider = filterPvd.join(", ")
         }
 
         String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
@@ -2940,19 +2935,6 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        // set language by user settings, create if not existing
-        def uss = UserSettings.get(result.user, UserSettings.KEYS.LANGUAGE)
-        if (uss == UserSettings.SETTING_NOT_FOUND) {
-            uss = UserSettings.add(result.user, UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))
-        }
-
-        RefdataValue rdvLocale = uss.getValue()
-        if (rdvLocale) {
-            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
-            localeResolver.setLocale(request, response, new Locale(rdvLocale.value, rdvLocale.value.toUpperCase()))
-        }
-        // --
-
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(401)
@@ -3478,8 +3460,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             params.list('selectedOrgs').each { soId ->
                 def cmb = Combo.findWhere(
                         toOrg: result.institution,
-                        fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        fromOrg: Org.get(Long.parseLong(soId)),
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 )
                 cmb.delete()
             }
@@ -3675,7 +3657,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         if(params.exportXLS || params.exportCSV) {
             SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))

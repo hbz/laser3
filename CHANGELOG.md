@@ -1,6 +1,30 @@
-0.15-RC
+0.15.1
 
-- TODO
+- added admin function for deleting property definitions
+- bugfix: missing service
+- bugfix: faulty ebook icons
+- bugfix: null pointer
+
+0.15
+
+- added improved document management for institutions
+- reworked and improved user management for institutions
+- reworked views for managing consortia members
+- added new finance enhancements
+- reworked consortia heredity
+- reworked sharing of documents
+- added/reworked api endpoints
+- switched to org based api access
+- added user profile language setting
+- bugfix: faulty property display
+- refactoring legacy code
+- reworked various templates and views
+- lots of ui improvements
+- various minor enhancements and bugfixes
+
+0.14.8
+
+- fixed document type null pointer
 
 0.14.7
 

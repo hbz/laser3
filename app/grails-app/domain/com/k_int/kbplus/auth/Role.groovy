@@ -6,7 +6,6 @@ class Role {
     String roleType
     Set grantedPermissions = []
 
-
     static mapping = {
         cache true
     }

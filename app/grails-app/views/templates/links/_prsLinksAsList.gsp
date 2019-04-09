@@ -5,7 +5,7 @@
         <g:each in="${visiblePrsLinks}" var="pr">
             <g:if test="${pr.org}">
 
-                <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
+                <g:link controller="organisation" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
                 <div class="ui list">
                     <div class="item">
                         <g:if test="${pr.prs.isPublic?.value == "No"}">

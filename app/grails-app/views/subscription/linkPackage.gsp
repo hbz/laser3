@@ -138,7 +138,7 @@
                                     </td>
 
                                     <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}"><g:link
-                                            controller="organisations" action="show"
+                                            controller="organisation" action="show"
                                             id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link></g:if>
                                     <g:else>${hit.providerName}</g:else>
                                     </td>

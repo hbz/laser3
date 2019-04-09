@@ -15,7 +15,18 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: consortiaMembers,
                       tmplShowCheckbox: true,
+                      tmplDisableOrgIds: surveyConfigOrgs?.id,
                       tmplConfigShow: ['sortname', 'name', 'libraryType']
               ]"/>
+
+    <br/>
+    <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />
+
+    <g:if test="${showAddSubMembers}">
+        <br/>
+        <br/>
+    <g:link  class="ui button" controller="survey" action="addSubMembers"
+            id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">${message(code:'showAddSubMembers.button.addSubMembers')} </g:link>
+    </g:if>
 
 </g:form>

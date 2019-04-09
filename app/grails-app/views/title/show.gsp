@@ -90,7 +90,7 @@
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
                     %{--<td>${org.org.id}</td>--}%
-                    <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
+                    <td><g:link controller="organisation" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
                       <semui:xEditable owner="${org}" type="date" field="startDate"/>
@@ -204,8 +204,8 @@
                     <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'default.button.apply_batch.label')}</button></td>
                     <td>
 
-                        <semui:datepicker label="title.show.history.date" name="bulk_start_date" value="${params.bulk_start_date}" />
-                       - <input type="checkbox" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
+                        <semui:datepicker label="title.show.history.date" id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
+                       - <input type="checkbox" id="clear_start_date" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
 
                         <div class="field">
                             <label>${message(code:'tipp.volume')}</label>
@@ -221,8 +221,8 @@
                     </td>
                     <td>
 
-                        <semui:datepicker label="title.show.history.date" name="bulk_end_date" value="${params.bulk_end_date}" />
-                       - <input type="checkbox" name="clear_end_date"/> (${message(code:'title.edit.tipp.clear')})
+                        <semui:datepicker label="title.show.history.date" id="bulk_end_date" name="bulk_end_date" value="${params.bulk_end_date}" />
+                       - <input type="checkbox" id="clear_end_date" name="clear_end_date"/> (${message(code:'title.edit.tipp.clear')})
 
                         <br/>
 

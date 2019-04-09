@@ -8,7 +8,7 @@
 	</head>
 	<body>
 	    <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index" />
+            <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
             <semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	    </semui:breadcrumbs>
 

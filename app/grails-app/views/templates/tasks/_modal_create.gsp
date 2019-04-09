@@ -13,7 +13,7 @@
             <label for="title">
                 <g:message code="task.title.label" default="Title"/>
             </label>
-            <g:textField name="title" required="" value="${taskInstance?.title}"/>
+            <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
@@ -112,7 +112,7 @@
                                   class="ui dropdown many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate"
+                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 
