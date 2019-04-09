@@ -55,11 +55,11 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
 								<td>
-									<semui:datepicker name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+									<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
 									</semui:datepicker>
 								</td>
 								<td>
-									<semui:datepicker name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+									<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
 									</semui:datepicker>
 								</td>
 						<tr>

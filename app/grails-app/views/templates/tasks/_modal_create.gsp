@@ -112,7 +112,7 @@
                                   class="ui dropdown many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate"
+                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 

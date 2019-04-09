@@ -68,9 +68,9 @@
                 </dt>
                 <dd>
                     
-                    <semui:datepicker label ="Von:" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
+                    <semui:datepicker label ="Von:" id="validFrom" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
                     </semui:datepicker>
-                    <semui:datepicker label ="Bis:" name="validTo" placeholder ="default.date.label" value ="${params.validTo}">
+                    <semui:datepicker label ="Bis:" id="validTo" name="validTo" placeholder ="default.date.label" value ="${params.validTo}">
                     </semui:datepicker>
                 </dd>
                 <br /><br />

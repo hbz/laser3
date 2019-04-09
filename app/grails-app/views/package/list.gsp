@@ -31,18 +31,18 @@
           <g:form action="list" method="get" class="ui form">
 
               <div class="field">
-                  <label>${message(code:'package.search.text')}</label>
-                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q}" />
+                  <label for="q">${message(code:'package.search.text')}</label>
+                  <input type="text" id="q"  name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q}" />
               </div>
 
               <div class="four fields">
-                  <semui:datepicker label="package.search.updated_after" name="updateStartDate" value="${params.updateStartDate}" />
+                  <semui:datepicker label="package.search.updated_after" id="updateStartDate" name="updateStartDate" value="${params.updateStartDate}" />
 
-                  <semui:datepicker label="package.search.created_after" name="createStartDate" value="${params.createStartDate}" />
+                  <semui:datepicker label="package.search.created_after" id="createStartDate" name="createStartDate" value="${params.createStartDate}" />
 
-                  <semui:datepicker label="package.search.updated_before" name="updateEndDate" value="${params.updateEndDate}" />
+                  <semui:datepicker label="package.search.updated_before" id="updateEndDate" name="updateEndDate" value="${params.updateEndDate}" />
 
-                  <semui:datepicker label="package.search.created_before" name="createEndDate" value="${params.createEndDate}" />
+                  <semui:datepicker label="package.search.created_before" id="createEndDate" name="createEndDate" value="${params.createEndDate}" />
               </div>
 
 
