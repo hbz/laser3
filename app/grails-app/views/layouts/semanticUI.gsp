@@ -477,7 +477,7 @@
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
-                        <div class="results" style="overflow-y:scroll;max-height: 400px;min-height: content-box;"></div>
+                        <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
 
                     <g:if test="${contextUser}">
