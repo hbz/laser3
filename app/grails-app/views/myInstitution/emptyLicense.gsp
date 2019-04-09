@@ -40,9 +40,9 @@
             </div>
 
             <div class="two fields">
-                <semui:datepicker label="license.startDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
+                <semui:datepicker label="license.startDate" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
-                <semui:datepicker label="license.endDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+                <semui:datepicker label="license.endDate" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
             <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
@@ -111,7 +111,7 @@
                 <tr>
                     <td>
                         <g:link action="show"
-                                controller="licenseDetails"
+                                controller="license"
                                 id="${l.id}">
                             <g:if test="${l.reference}">${l.reference}</g:if>
                             <g:else>${message(code: 'myinst.addLicense.no_ref', args: [l.id])}</g:else>
@@ -156,7 +156,7 @@
 </g:else>
 
 
-<r:script type="text/javascript">
+<r:script>
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });

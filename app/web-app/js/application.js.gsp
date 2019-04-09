@@ -292,7 +292,11 @@ r2d2 = {
 
         // modals
         $(ctxSel + " *[data-semui='modal']").click(function() {
-            $($(this).attr('href') + '.ui.modal').modal({
+            var href = $(this).attr('data-href')
+            if (! href) {
+                href = $(this).attr('href')
+            }
+            $(href + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
@@ -562,10 +566,10 @@ r2d2 = {
                         $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
                         break;
                     case "unlink":
-                        $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                        $('#js-confirmation-button').html('Aufheben<i class="la-chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html('Teilen<i class="share-unslash icon"></i>');
+                        $('#js-confirmation-button').html('Teilen<i class="la-share icon"></i>');
                         break;
                     case "inherit":
                         $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');

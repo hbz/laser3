@@ -53,7 +53,7 @@
                 </g:if>
 
                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
-                    <br><b>${tipp?.title?.firstAuthor}; ${tipp?.title?.firstEditor}${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                    <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()} ${message(code: 'title.firstAuthor.firstEditor.label')}</b>
                 </g:if>
 
                 <br>

@@ -166,7 +166,7 @@
                   <tbody>
                   <g:each in="${linkedSubscriptionsMap}" var="linkedSubscription">
                     <tr>
-                      <td><g:link controller="subscriptionDetails" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
+                      <td><g:link controller="subscription" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
                       <td class="center aligned">
                         <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedSubscription.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
                           <i class="delete icon"></i>
@@ -191,7 +191,7 @@
                 </table>
               </g:form>
                 <div class="ui segment form-actions">
-                    <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
+                    <g:link class="ui button" action="accessPoints" controller="organisation" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
                     <g:link class="ui negative button" action="delete" controller="accessPoint"
                             id="${accessPoint.id}" onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}')"
                     >${message(code:'default.button.delete.label', default:'Delete')}</g:link>

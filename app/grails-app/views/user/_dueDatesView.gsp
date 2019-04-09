@@ -14,7 +14,7 @@
     <g:if test="${dashboard_last_update != null}" >
         <div class="pull-right">
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i></g:if>
-            ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp
+            ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp;<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp;
         </div>
     </g:if>
 <r:script>
@@ -63,35 +63,35 @@
                             <div class="la-flexbox">
                                 <g:if test="${obj instanceof Subscription}">
                                     <i class="icon folder open la-list-icon"></i>
-                                    <g:link controller="subscriptionDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                                    <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${obj instanceof License}">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="licenseDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                                    <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${obj instanceof Task}">
                                     <span data-position="top right" data-tooltip="Aufgabe">
                                         <i class="icon checked calendar la-list-icon"></i>
                                     </span>
                                     <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                                    &nbsp(Status: ${obj.status?.getI10n("value")})
+                                    &nbsp; (Status: ${obj.status?.getI10n("value")})
                                 </g:elseif>
                                 <g:elseif test="${obj instanceof AbstractProperty}">
                                     <g:if test="${obj.owner instanceof Person}">
                                         <i class="icon address book la-list-icon"></i>
-                                        <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp${obj.owner?.last_name}</g:link>
+                                        <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}</g:link>
                                     </g:if>
                                     <g:elseif test="${obj.owner instanceof Subscription}">
                                         <i class="icon folder open la-list-icon"></i>
-                                        <g:link controller="subscriptionDetails" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                        <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof License}">
                                         <i class="icon balance scale la-list-icon"></i>
-                                        <g:link controller="licenseDetails" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
+                                        <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof Org}">
                                         <i class="icon university la-list-icon"></i>
-                                        <g:link controller="organisations" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                        <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                                     </g:elseif>
                                     <g:else>
                                         ${obj.owner?.name}

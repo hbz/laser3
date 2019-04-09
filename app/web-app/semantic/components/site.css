@@ -282,12 +282,8 @@ aside.ui.accordion .title:not(.ui) {
   display: none;
 }
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 50px;
   border-radius: 0 !important;
   border: none !important;
-}
-.landingpage .la-fixed-menu {
-  height: 50px;
 }
 .landingpage .logo {
   height: 50px;
@@ -571,6 +567,7 @@ aside.ui.accordion .title:not(.ui) {
   margin-left: -3px;
 }
 .editable-container.editable-inline {
+  position: absolute;
   z-index: 100;
   margin-top: -20px;
   margin-left: -3px;
@@ -591,4 +588,20 @@ aside.ui.accordion .title:not(.ui) {
   height: 0;
   clear: both;
   visibility: hidden;
+}
+.la-overflow {
+  width: 14em;
+  margin: 0 0 -10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+}
+.la-ellipsis {
+  text-overflow: ellipsis;
+}
+.la-hide-context-orgMenu {
+  padding-top: 60px;
+}
+.la-show-context-orgMenu {
+  padding-top: 105px;
 }

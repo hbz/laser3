@@ -18,7 +18,7 @@
 <semui:messages data="${flash}" />
 
 <div class="pull-right">
-    <input type="submit" class="ui button" value="Neue System Nachricht erstellen" data-semui="modal" href="#modalCreateSystemMessage" />
+    <input type="submit" class="ui button" value="Neue System Nachricht erstellen" data-semui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <table class="ui celled la-table table">

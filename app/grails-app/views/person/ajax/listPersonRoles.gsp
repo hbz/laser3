@@ -26,7 +26,7 @@
                         <g:link controller="${linkController}" action="show" id="${link.title.id}">${link.title.normTitle}</g:link>  <br />
                     </g:if>
 
-                    <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                    <g:link controller="organisation" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                 </div>
                 <div class="field wide four">
                     <g:checkBox name="personRoleDeleteIds.${link?.id}" value="${link?.id}" checked="false" /> ${message('code':'default.button.delete.label')}

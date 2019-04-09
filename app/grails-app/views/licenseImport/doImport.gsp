@@ -45,7 +45,7 @@
             <g:if test="${validationResult.license}">
                 ${message(code:'onix.import.assoc', default:'and associated with')}
                 <g:link action="show"
-                        controller="licenseDetails"
+                        controller="license"
                         class="ui button"
                         id="${validationResult.license.id}">
                     ${message(code:'license.label')} ${validationResult.license.id}

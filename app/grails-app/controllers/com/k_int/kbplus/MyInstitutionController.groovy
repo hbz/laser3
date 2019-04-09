@@ -16,6 +16,9 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
+
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -154,7 +157,7 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
-        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+        redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
 
         def result = [:]
         result.institution        = contextService.getOrg()
@@ -889,7 +892,7 @@ from License as l where (
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'show', id: new_sub.id
+                redirect controller: 'subscription', action: 'show', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
@@ -987,7 +990,7 @@ from License as l where (
                         subInstance.save(flush: true)
                     }
 
-                    redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                    redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
                     return
                 }
             }
@@ -1027,7 +1030,7 @@ from License as l where (
             }
 
             flash.message = message(code: 'license.created.message')
-            redirect controller: 'licenseDetails', action: 'show', params: params, id: licenseInstance.id
+            redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
@@ -1061,7 +1064,7 @@ from License as l where (
                 render view: 'editLicense', model: [licenseInstance: copyLicense]
            /* }else{
                 flash.message = message(code: 'license.created.message')
-                redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
             }*/
         }
     }
@@ -1110,11 +1113,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
-        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.documents = documents.drop(result.offset).take(result.max)
-        result.totalSize = documents.size()
         result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
@@ -1171,7 +1169,7 @@ from License as l where (
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
 
             flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
-            redirect controller: 'subscriptionDetails', action: 'index', params: params, id: new_sub.id
+            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
             flash.message = message(code: 'subscription.unknown.message',default: "Subscription not found")
             redirect action: 'addSubscription', params: params
@@ -1287,26 +1285,21 @@ from License as l where (
         }
 
         if (filterSub) {
-            sub_qry += " AND sub.sub_id in ( :subs ) "
-            qry_params.subs = filterSub.join(", ")
+            sub_qry += " AND sub.sub_id in (" + filterSub.join(", ") + ")"
         }
 
         if (filterOtherPlat) {
-            sub_qry += " AND ap.id in ( :addplats )"
-           qry_params.addplats = filterOtherPlat.join(", ")
+            sub_qry += " AND ap.id in (" + filterOtherPlat.join(", ") + ")"
         }
 
         if (filterHostPlat) {
-            sub_qry += " AND tipp.tipp_plat_fk in ( :plats )"
-            qry_params.plats = filterHostPlat.join(", ")
-
+            sub_qry += " AND tipp.tipp_plat_fk in (" + filterHostPlat.join(", ") + ")"
         }
 
         if (filterPvd) {
             def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
-            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
+            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
             qry_params.cprole = cp
-            qry_params.provider = filterPvd.join(", ")
         }
 
         String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
@@ -2759,7 +2752,7 @@ AND EXISTS (
         new_subscription.save()
 
         if (new_subscription)
-            redirect controller: 'subscriptionDetails', action: 'index', id: new_subscription.id
+            redirect controller: 'subscription', action: 'index', id: new_subscription.id
         else
             redirect action: 'renewalsUpload', params: params
     }
@@ -3261,30 +3254,35 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     cmb.save()
                 }
             }
+
+            redirect action: 'manageConsortia'
         }
 
-        def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        else {
+            def fsq = filterService.getOrgQuery(params)
+            result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.findByValue('Consortium')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
+            result.consortiaMemberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).each { cmb ->
+                result.consortiaMemberIds << cmb.fromOrg.id
+            }
+
+            if ( params.exportXLS=='yes' ) {
+
+                def orgs = result.availableOrgs
+
+                def message = g.message(code: 'menu.public.all_orgs')
+
+                exportOrg(orgs, message, true)
+                return
+            }
+
+            result
         }
 
-        if ( params.exportXLS=='yes' ) {
-
-            def orgs = result.availableOrgs
-
-            def message = g.message(code: 'menu.institutions.all_orgs')
-
-            exportOrg(orgs, message, true)
-            return
-        }
-
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -3306,8 +3304,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             params.list('selectedOrgs').each { soId ->
                 def cmb = Combo.findWhere(
                         toOrg: result.institution,
-                        fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        fromOrg: Org.get(Long.parseLong(soId)),
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 )
                 cmb.delete()
             }
@@ -3333,7 +3331,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             def orgs = result.consortiaMembers
 
-            def message = g.message(code: 'menu.institutions.myConsortia')
+            def message = g.message(code: 'menu.my.consortia')
 
             exportOrg(orgs, message, true)
             return
@@ -3344,7 +3342,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortiaLicenses() {
+    def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
@@ -3477,7 +3475,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         result
     }
@@ -3757,14 +3754,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
 
             if(isEditable){
-                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
-                                                                                              'license.copyAnnouncements'    : 'on',
-                                                                                              'license.copyCustomProperties' : 'on',
-                                                                                              'license.copyDates'            : 'on',
-                                                                                              'license.copyDocs'             : 'on',
-                                                                                              'license.copyLinks'            : 'on',
-                                                                                              'license.copyPrivateProperties': 'on',
-                                                                                              'license.copyTasks'            : 'on']
+                redirect controller: 'license', action: 'processcopyLicense', params: ['baseLicense'                 : license.id,
+                                                                                       'license.copyAnnouncements'   : 'on',
+                                                                                       'license.copyCustomProperties': 'on',
+                                                                                       'license.copyDates'           : 'on',
+                                                                                       'license.copyDocs'             : 'on',
+                                                                                       'license.copyLinks'            : 'on',
+                                                                                       'license.copyPrivateProperties': 'on',
+                                                                                       'license.copyTasks'            : 'on']
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
                 response.sendError(401)

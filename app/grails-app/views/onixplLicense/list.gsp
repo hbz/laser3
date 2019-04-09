@@ -46,7 +46,7 @@
                                 <ul>
                                     <g:each in="${onixplLicenseInstance.licenses}">
                                         <li>
-                                            <g:link controller="licenseDetails" action="show" id="${it.id}">${it}</g:link>
+                                            <g:link controller="license" action="show" id="${it.id}">${it}</g:link>
                                         </li>
                                     </g:each>
                                 </ul>

@@ -1,15 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DebugAnnotation
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import org.apache.commons.net.util.SubnetUtils
-import org.codehaus.groovy.grails.validation.routines.InetAddressValidator
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.*
 import grails.plugin.springsecurity.annotation.Secured
 
 class AccessPointController extends AbstractDebugController {
@@ -80,7 +75,7 @@ class AccessPointController extends AbstractDebugController {
         try {
             accessPoint.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label', default: 'Access Point'), accessPoint.name])
-            redirect controller: 'organisations', action: 'accessPoints', id: orgId
+            redirect controller: 'organisation', action: 'accessPoints', id: orgId
         }
         catch (DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), accessPoint.id])
@@ -131,7 +126,7 @@ class AccessPointController extends AbstractDebugController {
                 orgAccessPoint.properties = params;
                 orgAccessPoint.save(flush: true)
 
-                redirect controller: 'organisations', action: 'accessPoints', orgId: orgId
+                redirect controller: 'organisation', action: 'accessPoints', orgId: orgId
                 break
         }
     }

@@ -26,7 +26,7 @@
             <td>${rparam.getDescription()}</td>
             <td>
                 <g:if test="${rparam.getValueClass().equals(java.sql.Timestamp) || rparam.getValueClass().equals(java.sql.Date) }">
-                    <semui:datepicker name="${rparam.getName()}" placeholder ="default.date.label"  >
+                    <semui:datepicker id="${rparam.getName()}"  name="${rparam.getName()}" placeholder ="default.date.label"  >
                     </semui:datepicker>
                 </g:if>
                 <g:elseif test="${rparam.getName().contains("select")}">
@@ -37,7 +37,7 @@
                     <g:if test="${rparam.getName().contains("search")}">
 
                        <input type="hidden" id="${rparam.getName()}" name="${rparam.getName()}"/>
-                        <script type="text/javascript">
+                        <script>
                             createSelect2Search('#${rparam.getName()}', '${rparam.getValueClass().toString().replace("class ","")}');
                         </script>
                     </g:if>

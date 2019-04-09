@@ -45,12 +45,12 @@
                                 <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
                                     <br />
-                                    <g:link controller="subscriptionDetails" action="changes" id="${change.id}"> ${change.toString()}</g:link>
+                                    <g:link controller="subscription" action="changes" id="${change.id}"> ${change.toString()}</g:link>
                                 </g:if>
                                 <g:if test="${change instanceof com.k_int.kbplus.License}">
                                     <strong>${message(code:'license')}</strong>
                                     <br />
-                                    <g:link controller="licenseDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                    <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
                             </strong>
                         </td>

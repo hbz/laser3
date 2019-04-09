@@ -9,7 +9,7 @@
     <g:each in="${roleLinks}" var="role">
       <tr>
         <g:if test="${role.org}">
-          <td><g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link></td>
+          <td><g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link></td>
           <td>${role?.roleType?.getI10n("value")}</td>
           <td>
             <g:if test="${editmode}">

@@ -9,11 +9,11 @@
         <div class="field">
             <div class="two fields">
 
-                <semui:datepicker class="wide eight" label="numbers.startDate.label" name="startDate"
-                                  placeholder="default.date.label" value="${numbersInstance?.startDate}" required="true"
+                <semui:datepicker class="wide eight" label="numbers.startDate.label" id="startDate" name="startDate"
+                                  placeholder="default.date.label" value="${numbersInstance?.startDate}" required=""
                                   bean="${numbersInstance}"/>
 
-                <semui:datepicker class="wide eight" label="numbers.endDate.label" name="endDate"
+                <semui:datepicker class="wide eight" label="numbers.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${numbersInstance?.endDate}"
                                   bean="${numbersInstance}"/>
 

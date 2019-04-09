@@ -28,7 +28,7 @@
                     </td>
                 </g:if>
                 <td>
-                    <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
+                    <g:link controller="organisation" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
                 </td>
                 <td>
                     <g:if test="${editable}">
@@ -47,6 +47,6 @@
     <input class="ui button"
            value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
            data-semui="modal"
-           href="#prsLinksModal" />
+           data-href="#prsLinksModal" />
 </g:if>
 

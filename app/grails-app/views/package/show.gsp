@@ -288,14 +288,14 @@
 
             <div class="fields">
                 <div class="field">
-                    <semui:datepicker label="package.compare.filter.coverage_startsBefore" name="startsBefore" value="${params.startsBefore}" />
+                    <semui:datepicker label="package.compare.filter.coverage_startsBefore" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
               </div>
               <div class="field">
-                <semui:datepicker label="package.compare.filter.coverage_endsAfter" name="endsAfter" value="${params.endsAfter}" />
+                <semui:datepicker label="package.compare.filter.coverage_endsAfter" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
               </div>
               <g:if test="${params.mode!='advanced'}">
                   <div class="field">
-                        <semui:datepicker label="package.show.atDate" name="asAt" value="${params.asAt}" />
+                        <semui:datepicker label="package.show.atDate" id="asAt" name="asAt" value="${params.asAt}" />
                   </div>
               </g:if>
                 <div class="field">
@@ -334,7 +334,7 @@
                   <table class="ui celled la-table table">
                     <tr>
                         <td>
-                            <semui:datepicker label="subscription.details.coverageStartDate" name="bulk_start_date" value="${params.bulk_start_date}" />
+                            <semui:datepicker label="subscription.details.coverageStartDate"  id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
 
                             <i>${message(code:'default.or', default:'or')}</i>
                             <input type="checkbox" name="clear_start_date" />
@@ -365,7 +365,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <semui:datepicker label="subscription.details.coverageEndDate" name="bulk_end_date" value="${params.bulk_end_date}" />
+                            <semui:datepicker label="subscription.details.coverageEndDate" id="bulk_end_date"  name="bulk_end_date" value="${params.bulk_end_date}" />
 
                                 <i>${message(code:'default.or', default:'or')}</i>
                                 <input type="checkbox" name="clear_end_date"/>

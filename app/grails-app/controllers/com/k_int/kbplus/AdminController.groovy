@@ -3,21 +3,14 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RefdataAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
-import grails.web.Action
-
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -161,9 +154,9 @@ class AdminController extends AbstractDebugController {
         pkg.subscriptions.each{
 
           if(it.subscription.status.value != "Deleted"){
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
           }else{
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
           }
         }
         subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]
@@ -888,7 +881,22 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {
 
-        if (params.cmd == 'replacePropertyDefinition') {
+        if (params.cmd == 'deletePropertyDefinition') {
+            def pd = genericOIDService.resolveOID(params.pd)
+
+            if (pd) {
+                if (! pd.hardData) {
+                    try {
+                        pd.delete(flush:true)
+                        flash.message = "${params.pd} wurde gelöscht."
+                    }
+                    catch(Exception e) {
+                        flash.error = "${params.pd} konnte nicht gelöscht werden."
+                    }
+                }
+            }
+        }
+        else if (params.cmd == 'replacePropertyDefinition') {
             if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
                 def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
                 def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
@@ -1082,55 +1090,6 @@ class AdminController extends AbstractDebugController {
         ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def checkPackageTIPPs() {
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 
-
-    def gokbRecords = []
-
-    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
-    }
-
-
-    params.sort = params.sort ?: 'name'
-    params.order = params.order ?: 'asc'
-
-    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
-
-    result.records?.sort { x, y ->
-      if (params.order == 'desc') {
-        y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-      } else {
-        x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-      }
-    }
-
-    /*if(params.onlyNotEqual) {
-      result.tippsNotEqual = []
-      result.records.each { hit ->
-        if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-          if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
-            result.tippsNotEqual << hit
-          }
-        }
-      }
-      result.records = result.tippsNotEqual
-    }*/
-
-    result.resultsTotal2 = result.records?.size()
-
-    Integer start = params.offset ? params.int('offset') : 0
-    Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-    end = (end > result.records?.size()) ? result.records?.size() : end
-
-    result.records = result.records?.subList(start, end)
-
-
-    result
-  }
 
 }

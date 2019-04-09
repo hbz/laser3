@@ -9,9 +9,7 @@
 </head>
 
 <body>
-    <br />
-    <br />
-    <br />
+    <br>
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">

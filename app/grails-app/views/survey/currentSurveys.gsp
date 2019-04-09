@@ -74,11 +74,11 @@
                     <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                 </td>
 
-                <td>
-
+                <td class="center aligned">
+                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
                 </td>
-                <td>
-
+                <td class="center aligned">
+                    <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
                 </td>
                 <td>
 

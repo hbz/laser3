@@ -2095,3 +2095,12 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .item.la-role-yoda.active {
   border-color: #98B500;
 }
+.subscriptionDetails_copyElementsIntoSubscription .ui.secondary.pointing.menu .item {
+  padding-left: 2.5em !important;
+  padding-right: 2.5em !important;
+}
+@media only screen and (max-width: 767px) {
+  .ui.fixed.stackable.menu {
+    position: relative;
+  }
+}

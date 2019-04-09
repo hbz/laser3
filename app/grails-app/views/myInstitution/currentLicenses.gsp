@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
+                    <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
                 </div>
                 <%--
                 <div class="field">
@@ -128,7 +128,7 @@
                 <tr>
                     <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                   <td>
-                    <g:link action="show" controller="licenseDetails" id="${l.id}">
+                    <g:link action="show" controller="license" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
@@ -137,7 +137,7 @@
                                   <g:if test="${institution?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
-                                      <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                      <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                   </div>
                                   </g:if>
                           </g:if>
@@ -157,7 +157,7 @@
                         <td>
                             <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
                                 <g:if test="${lChild.status?.value != 'Deleted'}">
-                                    <g:link controller="licenseDetails" action="show" id="${lChild.id}">
+                                    <g:link controller="license" action="show" id="${lChild.id}">
                                         ${lChild}
                                     </g:link>
                                     <br/>
@@ -203,7 +203,7 @@
           <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
   <%--
-    <r:script type="text/javascript">
+    <r:script>
 
         $('.license-results input[type="radio"]').click(function () {
             $('.license-options').slideDown('fast');

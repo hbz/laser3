@@ -82,27 +82,31 @@
                               value="${doc?.type?.value}"/>
                 </dd>
             </dl>
-            <dl>
-                <dt>
-                    <label>${message(code:'template.addDocument.shareConf')}</label>
-                </dt>
-                <dd>
-                    <%
-                        String value = "${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"
-                        if(docctx) {
-                            value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
-                        }
-                        List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
-                        List availableConfigs = []
-                        if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
-                            availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
-                        }
-                        else availableConfigs = allConfigs
-                    %>
-                    <laser:select from="${availableConfigs}" class="ui dropdown fluid" name="shareConf"
-                                  optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${value}"/>
-                </dd>
-            </dl>
+
+            <g:if test="${ownobj instanceof Org}">
+                <dl>
+                    <dt>
+                        <label>${message(code:'template.addDocument.shareConf')}</label>
+                    </dt>
+                    <dd>
+                        <%
+                            String value = "${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"
+                            if(docctx) {
+                                value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
+                            }
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
+                            List availableConfigs = []
+                            if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
+                                availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
+                            }
+                            else availableConfigs = allConfigs
+                        %>
+                        <laser:select from="${availableConfigs}" class="ui dropdown fluid" name="shareConf"
+                                      optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${value}"/>
+                    </dd>
+                </dl>
+            </g:if>
+
         </div>
 
     </g:form>

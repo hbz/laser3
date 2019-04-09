@@ -6,14 +6,26 @@
 <table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
     <thead>
         <tr>
-            <th>${message(code:'sidewide.number')}</th>
-            <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
-            <th class="two wide">${message(code:'financials.invoice_total')}</th>
-            <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
-            <th>${message(code:'financials.costItemElement')}</th>
-            <th>${message(code:'financials.forSubscription')}</th>
-            <th>${message(code:'financials.forPackage')}</th>
-            <th></th>
+            <g:if test="${fixedSubscription}">
+                <th>${message(code:'sidewide.number')}</th>
+                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <th></th>
+            </g:if>
+            <g:else>
+                <th>${message(code:'sidewide.number')}</th>
+                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
+                <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
+                <th></th>
+            </g:else>
         </tr>
     </thead>
     <tbody>
@@ -74,7 +86,7 @@
                         ${ci.costItemElement?.getI10n('value')}
                     </td>
                     <td>
-                        <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
+                        <g:link controller="subscription" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
                     </td>
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
@@ -84,14 +96,22 @@
                             <g:if test="${fixedSubscription}">
                                 <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
                                     <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                        <i class="copy-send icon"></i>
+
+                                        <i class="la-copySend icon"></i>
+
+                                        <i class="icon copy-send"></i>
+
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
                                 <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
                                     <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                        <i class="copy-send icon"></i>
+
+                                        <i class="la-copySend icon"></i>
+
+                                        <i class="icon copy-send"></i>
+
                                     </g:link>
                                 </span>
                             </g:else>
@@ -166,13 +186,13 @@
         <semui:paginate mapping="subfinance" params="${params+[view:'subscr']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'subscr']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>
 <!-- _result_tab_subscr.gsp -->

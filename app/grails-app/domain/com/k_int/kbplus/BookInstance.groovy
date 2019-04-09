@@ -47,4 +47,21 @@ class BookInstance extends TitleInstance {
         editionStatement (nullable:true, blank:false);
 
     }
+
+    def getEbookFirstAutorOrFirstEditor(){
+
+        if(firstEditor && firstAuthor)
+        {
+            return firstAuthor + ' ; ' + firstEditor
+        }
+        else if(firstAuthor)
+        {
+            return firstAuthor
+        }
+
+        else if(firstEditor)
+        {
+            return firstEditor
+        }
+    }
 }

@@ -101,7 +101,8 @@ class Org
         customProperties:   OrgCustomProperty,
         privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
-        documents:          DocContext
+        documents:          DocContext,
+        platforms:          Platform
     ]
 
     static mapping = {

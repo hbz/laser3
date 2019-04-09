@@ -307,6 +307,16 @@
           type: array
           items:
             $ref: "#/definitions/Contact"
+        country:
+          type: string
+          description: Mapping RefdataCategory "Country"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+        federalState:
+          type: string
+          description: Mapping RefdataCategory "FederalState"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('FederalState').collect{ it.value }.join(', ') }]
         #fteStudents:
         #  type: integer
         #fteStaff:
@@ -314,6 +324,11 @@
         impId:
           type: string
           example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
+        libraryType:
+          type: string
+          description: Mapping RefdataCategory "LibraryType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LibraryType').collect{ it.value }.join(', ') }]
         persons: # mapping attr prsLinks
           type: array
           items:
@@ -337,6 +352,10 @@
           description: Mapping RefdataCategory "OrgSector"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+        shortname:
+          type: string
+        sortname:
+          type: string
         status:
           type: string
           description: Mapping RefdataCategory

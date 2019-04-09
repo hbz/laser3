@@ -131,7 +131,7 @@
     </div>
   </body>
 
-  <r:script type="text/javascript">
+  <r:script>
 
     function filtersUpdated() {
       $('#newInvoiceNumber').val($('#filterInvoiceNumber').val());

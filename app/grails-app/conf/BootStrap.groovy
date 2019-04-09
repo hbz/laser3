@@ -1496,8 +1496,7 @@ class BootStrap {
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
-
-
+        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)
@@ -1945,10 +1944,10 @@ class BootStrap {
 
         RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for my organisation',de:'nur für meine Organisation'], BOOTSTRAP)
-        //RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP) //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
-        RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
-
-        RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
+        //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
+        //RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
@@ -2256,6 +2255,8 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'], BOOTSTRAP)
 
+        RefdataValue.loc('CostItemElement', [key: 'special funds: central funding', en: 'special funds: central funding', de: 'Sondermittel: Zentralmittel'], BOOTSTRAP)
+
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'], BOOTSTRAP)
@@ -2287,6 +2288,13 @@ class BootStrap {
         RefdataValue.loc('Document Type', [key: 'Renewal', en: 'Renewal', de: 'Renewal'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [key: 'Order', en: 'Order', de: 'Bestellung'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [key: 'Invoice', en: 'Invoice', de: 'Rechnung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Announcement', en: 'Announcement', de: 'Ankündigung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Note', en: 'Note', de: 'Anmerkung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Costs', en: 'Costs', de: 'Preise'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Metadata', en: 'Metadata', de: 'Metadaten'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'KBART', en: 'KBART', de: 'KBART'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Title List', en: 'Title List', de: 'Titelliste'], BOOTSTRAP)
+
 
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
@@ -2350,7 +2358,7 @@ class BootStrap {
         RefdataCategory.loc(RefdataCategory.LIC_STATUS,
                 [en: 'License Status', de: 'Lizenzstatus'], BOOTSTRAP)
 
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)

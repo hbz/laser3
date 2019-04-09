@@ -67,7 +67,7 @@
         - Lists
       summary: Retrieving a list of owner related cost items
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*. Optional identifier/constraint *timestamp* is supported.
 
       parameters:
         - $ref: "#/components/parameters/q"

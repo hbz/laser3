@@ -36,7 +36,7 @@
 
                                     <dt><g:message code="accessMethod.valid_to" default="Valid To" /></dt>
                                     <dd>
-                                        <semui:datepicker hideLabel="true" name="validTo" value ="${accessMethod.validTo}">
+                                        <semui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
                                         </semui:datepicker>
                                     </dd>
 

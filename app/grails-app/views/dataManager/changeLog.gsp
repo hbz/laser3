@@ -28,9 +28,9 @@
         <semui:filter>
             <g:form action="changeLog" controller="dataManager" method="get" class="ui form">
                 <div class="three fields">
-                    <semui:datepicker label="datamanager.changeLog.from_date" name="startDate" placeholder="default.date.label" value="${params.startDate}" />
+                    <semui:datepicker label="datamanager.changeLog.from_date" id="startDate" name="startDate" placeholder="default.date.label" value="${params.startDate}" />
 
-                    <semui:datepicker label="datamanager.changeLog.to_date" name="endDate" placeholder="default.date.label" value="${params.endDate}" />
+                    <semui:datepicker label="datamanager.changeLog.to_date" id="endDate" name="endDate" placeholder="default.date.label" value="${params.endDate}" />
 
                     <div class="field">
                         <label>${message(code:'datamanager.changeLog.actor')}</label>

@@ -141,7 +141,11 @@
                 $html.empty()
 
                 $.each( res, function( i, elem) {
-                    $html.append('<div class="item">( ' + elem.id + ' ) &nbsp; <a target="_blank" href="' + elem.link + '">' + elem.name + '</a></div>')
+                    $html.append('<div class="item">' +
+                        '<div class="right floated content">' + elem.created + ' | ' + elem.updated + '</div>' +
+                        '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name + '</a>' +
+                        '</div>'
+                    )
                 })
 
                 $('#modalConsistencyCheck').modal('show')

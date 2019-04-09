@@ -33,9 +33,9 @@
                  </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" />
+                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
 
-                    <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
+                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
                 <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">

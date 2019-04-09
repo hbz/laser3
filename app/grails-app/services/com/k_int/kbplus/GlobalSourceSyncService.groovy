@@ -6,6 +6,8 @@ import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 import org.springframework.transaction.annotation.*
 
+import java.text.SimpleDateFormat
+
 /*
  *  Implementing new rectypes..
  *  the reconciler closure is responsible for reconciling the previous version of a record and the latest version
@@ -143,6 +145,9 @@ class GlobalSourceSyncService {
   }
 
   def titleConv = { md, synctask ->
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
     log.debug("titleConv.... ${md}");
     def result = [:]
     result.parsed_rec = [:]
@@ -158,8 +163,8 @@ class GlobalSourceSyncService {
     result.parsed_rec.editionDifferentiator = md.gokb.title.editionDifferentiator?.text() ?: null
     result.parsed_rec.editionStatement = md.gokb.title.editionStatement?.text() ?: null
     result.parsed_rec.volumeNumber = md.gokb.title.volumeNumber?.text() ?: null
-    result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ?: null
-    result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ?: null
+    result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ? sdf.parse(md.gokb.title.dateFirstInPrint?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
+    result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ? sdf.parse(md.gokb.title.dateFirstOnline?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
 
     //Ebooks Fields
     result.parsed_rec.firstAuthor = md.gokb.title.firstAuthor?.text() ?: null
@@ -368,7 +373,7 @@ class GlobalSourceSyncService {
     }
 
     def onNewTipp = { ctx, tipp, auto_accept ->
-      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
       log.debug("new tipp: ${tipp}");
       log.debug("identifiers: ${tipp.title.identifiers}");
 
@@ -393,29 +398,31 @@ class GlobalSourceSyncService {
           origin_uri = i.value
         }
       }
-      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id)
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
 
       def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform, gokbId: tipp.platformUuid]);
       def tipp_status_str = tipp.status ? tipp.status.capitalize():'Current'
       def tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,tipp_status_str);
 
       if ( auto_accept ) {
-        def new_tipp = new TitleInstancePackagePlatform()
+        TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
         new_tipp.pkg = ctx;
         new_tipp.platform = plat_instance;
         new_tipp.title = title_instance;
         new_tipp.status = tipp_status;
         new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
         new_tipp.gokbId = tipp.tippUuid ?: null;
+        new_tipp.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
+        new_tipp.accessEndDate =  ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
         // tipp.coverage.each { cov ->
         def cov = tipp.coverage[0]
-        new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null;
+        new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null
         new_tipp.startVolume = cov.startVolume;
         new_tipp.startIssue = cov.startIssue;
-        new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null;
+        new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null
         new_tipp.endVolume = cov.endVolume;
         new_tipp.endIssue = cov.endIssue;
         new_tipp.embargo = cov.embargo;
@@ -439,6 +446,10 @@ class GlobalSourceSyncService {
       else {
         log.debug("Register new tipp event for user to accept or reject");
 
+        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        def sdf2 = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, 'yyyy-MM-dd', locale));
+        def datetoday = sdf2.format(new Date(System.currentTimeMillis()))
+
         def cov = tipp.coverage[0]
         def change_doc = [
                 pkg          : [id: ctx.id],
@@ -447,21 +458,25 @@ class GlobalSourceSyncService {
                 impId        : tipp.tippUuid ?: tipp.tippId,
                 gokbId       : tipp.tippUuid ?: null,
                 status       : [id: tipp_status.id],
-                startDate    : ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null,
+                startDate    : cov.startDate,
                 startVolume  : cov.startVolume,
                 startIssue   : cov.startIssue,
-                endDate      : ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null,
+                endDate      : cov.endDate,
                 endVolume    : cov.endVolume,
                 endIssue     : cov.endIssue,
                 embargo      : cov.embargo,
                 coverageDepth: cov.coverageDepth,
-                coverageNote : cov.coverageNote];
+                coverageNote : cov.coverageNote,
+                accessStartDate  : tipp.accessStart,
+                accessEndDate    : tipp.accessEnd,
+                hostPlatformURL: tipp.url
+        ]
 
         changeNotificationService.registerPendingChange(
                 PendingChange.PROP_PKG,
                 ctx,
                 // pendingChange.message_GS01
-                "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name}",
+                "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name} (${datetoday})",
                 null,
                 [
                         newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
@@ -499,7 +514,7 @@ class GlobalSourceSyncService {
           origin_uri = i.value
         }
       }
-      updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id)
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id, tipp?.title?.gokbId)
 
       def db_tipp = null
 
@@ -595,8 +610,8 @@ class GlobalSourceSyncService {
                           changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                           changeDoc   : change_doc
                   ])
-        } else {
-          throw new RuntimeException("changeDoc is empty. ctx:${ctx}, tipp:${tipp}");
+        } else if(!change_doc && !changeTitle) {
+          throw new RuntimeException("changes could not be recorded but there are some??? ctx:${ctx}, tipp:${tipp}");
         }
       }
       else {
@@ -608,7 +623,7 @@ class GlobalSourceSyncService {
 
       // Find title with ID tipp... in package ctx
 
-      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.impId)
+      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
 
       if(!title_of_tipp_to_update) {
         title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
@@ -781,7 +796,7 @@ class GlobalSourceSyncService {
     md.gokb.package.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
     }
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     int ctr=0
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
@@ -802,26 +817,26 @@ class GlobalSourceSyncService {
               platformId  : tip.platform.'@id'.text(),
               platformUuid: tip.platform.'@uuid'?.text() ?: null,
               coverage    : [],
-              url         : tip.url.text(),
+              url         : tip.url.text() ?: '',
               identifiers : [],
               tippId      : tip.'@id'.text(),
               tippUuid    : tip.'@uuid'?.text()?: '',
-              accessStart : tip.access.'@start'.text(),
-              accessEnd   : tip.access.'@end'.text(),
+              accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+              accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
               medium      : tip.medium.text()
       ];
 
       tip.coverage.each { cov ->
         newtip.coverage.add([
-                startDate    : cov.'@startDate'.text(),
-                endDate      : cov.'@endDate'.text(),
-                startVolume  : cov.'@startVolume'.text(),
-                endVolume    : cov.'@endVolume'.text(),
-                startIssue   : cov.'@startIssue'.text(),
-                endIssue     : cov.'@endIssue'.text(),
-                coverageDepth: cov.'@coverageDepth'.text(),
-                coverageNote : cov.'@coverageNote'.text(),
-                embargo      : cov.'@embargo'.text()
+                startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+                endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+                startVolume  : cov.'@startVolume'.text() ?: '',
+                endVolume    : cov.'@endVolume'.text() ?: '',
+                startIssue   : cov.'@startIssue'.text() ?: '',
+                endIssue     : cov.'@endIssue'.text() ?: '',
+                coverageDepth: cov.'@coverageDepth'.text() ?: '',
+                coverageNote : cov.'@coverageNote'.text() ?: '',
+                embargo      : cov.'@embargo'.text() ?: ''
         ]);
       }
 
@@ -1254,7 +1269,7 @@ class GlobalSourceSyncService {
     return result
   }
 
-  def updatedTitleafterPackageReconcile = { grt, title_id, local_id ->
+  def updatedTitleafterPackageReconcile = { grt, title_id, local_id, title_uuid ->
     //rectype = 2 = Title
     def cfg = rectypes[2]
 
@@ -1263,7 +1278,7 @@ class GlobalSourceSyncService {
 
     uri = uri.replaceAll("packages", "")
 
-    if(title_id == null)
+    if(title_uuid == null)
     {
       return
     }
@@ -1271,11 +1286,15 @@ class GlobalSourceSyncService {
     def oai = new OaiClientLaser()
     def titlerecord = null
 
-    if(record_uuid) {
+    /*if(record_uuid) {
       titlerecord = oai.getRecord(uri, 'titles', record_uuid)
+    }*/
+
+    if(!titlerecord && title_uuid) {
+      titlerecord = oai.getRecord(uri, 'titles', title_uuid)
     }
 
-    if(!titlerecord) {
+    if(!titlerecord && title_id) {
       titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
     }
 
@@ -1283,16 +1302,19 @@ class GlobalSourceSyncService {
     {
       return
     }
+
     def titleinfo = titleConv(titlerecord.metadata, null)
 
     log.debug("TitleRecord:" + titleinfo)
 
     def kbplus_compliant = testTitleCompliance(titleinfo.parsed_rec)
 
+
+
     if (kbplus_compliant?.value == 'No') {
       log.debug("Skip record - not KBPlus compliant");
     } else {
-
+              titleinfo = titleinfo?.parsed_rec ?: titleinfo
               def title_instance = TitleInstance.get(local_id)
 
               if (title_instance == null) {
@@ -1302,12 +1324,15 @@ class GlobalSourceSyncService {
 
               if (title_instance instanceof BookInstance)
               {
-                  title_instance.editionNumber = titleinfo.editionNumber
+
+                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                  //Solange von GOKB kein Integer Feld kommt, weg lassen
+                  //title_instance.editionNumber = titleinfo.editionNumber
                   title_instance.editionDifferentiator = titleinfo.editionDifferentiator
                   title_instance.editionStatement = titleinfo.editionStatement
                   title_instance.volume = titleinfo.volumeNumber
-                  title_instance.dateFirstInPrint = titleinfo.dateFirstInPrint
-                  title_instance.dateFirstOnline = titleinfo.dateFirstOnline
+                  title_instance.dateFirstInPrint =  ((titleinfo.dateFirstInPrint != null) && (titleinfo.dateFirstInPrint.length() > 0)) ? sdf.parse(titleinfo.dateFirstInPrint) : null
+                  title_instance.dateFirstOnline = ((titleinfo.dateFirstOnline != null) && (titleinfo.dateFirstOnline.length() > 0)) ? sdf.parse(titleinfo.dateFirstOnline) : null
 
                   title_instance.firstAuthor = titleinfo.firstAuthor
                   title_instance.firstEditor = titleinfo.firstEditor

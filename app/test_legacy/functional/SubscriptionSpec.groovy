@@ -48,7 +48,7 @@ class SubscriptionSpec extends GebReportingSpec {
         def subrefRole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: subA, org: org).save()
 
-        go "subscriptionDetails/details/"+subA.id
+        go "subscription/details/"+subA.id
 
         then:
         $('h1 span').text() == Data.Subscription_name_A
@@ -86,7 +86,7 @@ class SubscriptionSpec extends GebReportingSpec {
     def "Go to subscription and check title core status"(){
         when:
             def subID = Subscription.findByName( Data.Subscription_name_A).id
-            go '/laser/subscriptionDetails/index/'+ subID
+            go '/laser/subscription/index/'+ subID
         then:
             $("a.editable-click",name:"show_core_assertion_modal").text() == 'False(Never)'
     }
@@ -116,7 +116,7 @@ class SubscriptionSpec extends GebReportingSpec {
             def subID = Subscription.findByName( Data.Subscription_name_A).id
 
         when:
-            go '/laser/subscriptionDetails/index/'+ subID
+            go '/laser/subscription/index/'+ subID
         then:
             $("a.editable-click",name:"show_core_assertion_modal").text() == 'True(Now)'
     }
@@ -131,13 +131,13 @@ class SubscriptionSpec extends GebReportingSpec {
         when:
             $("a.delete-coreDate",text:"Delete").click()
             browser.report("Delete clicked")
-            go '/laser/subscriptionDetails/index/'+ subID
+            go '/laser/subscription/index/'+ subID
         then:
             $("a.editable-click",name:"show_core_assertion_modal").text() == 'False(Never)'
     }
     def "Add and show duplicate identifiers"() {
         setup:
-            go "subscriptionDetails/details/"+Subscription.findByName(Data.Subscription_name_A ).id
+            go "subscription/details/"+Subscription.findByName(Data.Subscription_name_A ).id
             def identStr = "hello:one"
         when: "We add the first ident with no problems"
             $("#select2-chosen-1").click()
@@ -145,7 +145,7 @@ class SubscriptionSpec extends GebReportingSpec {
             Thread.sleep(1000)
             waitFor{$("span.select2-match",text:identStr).head().click()}
             $("#addIdentBtn").click()
-            go "subscriptionDetails/details/"+Subscription.findByName(Data.Subscription_name_B ).id
+            go "subscription/details/"+Subscription.findByName(Data.Subscription_name_B ).id
             $("#select2-chosen-1").click()
             waitFor{ $("#s2id_autogen1_search").value(identStr) }
             Thread.sleep(100)

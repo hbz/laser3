@@ -27,21 +27,48 @@
 <table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
     <thead>
         <tr>
-            <th>${message(code:'sidewide.number')}</th>
-            <th>${message(code:'financials.newCosts.costParticipants')}</th>
-            <th>${message(code:'financials.newCosts.costTitle')}</th>
             <g:if test="${!fixedSubscription}">
-                <th>${message(code:'financials.newCosts.subscriptionHeader')}</th>
+                <th>${message(code:'sidewide.number')}</th>
+                <g:sortableColumn property="orgRoles.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[consSort: true]"/>
+                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true]"/>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true]"/>
+                <th>${message(code:'financials.amountFinal')}</th>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true]"/>
+                <th></th>
             </g:if>
-            <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
-            <th>${message(code:'financials.currency')}</th>
-            <th>${message(code:'financials.invoice_total')}</th>
-            <th>${message(code:'financials.taxRate')}</th>
-            <th>${message(code:'financials.amountFinal')}</th>
-            <th>${message(code:'financials.newCosts.valueInEuro')}</th>
-            <th>${message(code:'financials.dateFrom')}<br/>${message(code:'financials.dateTo')}</th>
-            <th>${message(code:'financials.costItemElement')}</th>
-            <th></th>
+            <g:else>
+                <th>${message(code:'sidewide.number')}</th>
+                <g:sortableColumn property="sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <th>${message(code:'financials.amountFinal')}</th>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <th></th>
+            </g:else>
+        </tr>
+        <tr>
+            <g:if test="${!fixedSubscription}">
+                <th colspan="3"></th>
+                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
+                <th colspan="6"></th>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
+            </g:if>
+            <g:else>
+                <th colspan="9"></th>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+            </g:else>
+            <th colspan="2"></th>
         </tr>
     </thead>
     <tbody>
@@ -282,13 +309,13 @@
         <semui:paginate mapping="subfinance" params="${params+[view:'cons']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${consOffset ? consOffset : '1'}" total="${data.count}"/>
+                        max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'cons']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${consOffset ? consOffset : '1'}" total="${data.count}"/>
+                        max="${max}" offset="${consOffset ? consOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>
 <!-- _result_tab_cons.gsp -->

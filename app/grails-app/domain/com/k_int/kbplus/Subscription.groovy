@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
@@ -12,8 +13,11 @@ import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
+import grails.util.Holders
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
@@ -160,13 +164,13 @@ class Subscription
 
     // TODO: implement
     @Override
-    def isTemplate() {
+    boolean isTemplate() {
         return false
     }
 
     // TODO: implement
     @Override
-    def hasTemplate() {
+    boolean hasTemplate() {
         return false
     }
 
@@ -187,7 +191,7 @@ class Subscription
     }
 
     @Override
-    def updateShare(ShareableTrait sharedObject) {
+    void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
         if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
@@ -207,7 +211,7 @@ class Subscription
     }
 
     @Override
-    def syncAllShares(List<ShareSupport> targets) {
+    void syncAllShares(List<ShareSupport> targets) {
         log.debug('synAllShares: ' + targets)
 
         documents.each{ sharedObject ->
@@ -238,7 +242,7 @@ class Subscription
     }
 
     @Override
-    def getCalculatedType() {
+    String getCalculatedType() {
         def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {
@@ -356,15 +360,15 @@ class Subscription
         return match ? Subscription.get(match?.destination) : null
     }
 
-    def isEditableBy(user) {
+    boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
 
-    def isVisibleBy(user) {
+    boolean isVisibleBy(user) {
         hasPerm('view', user)
     }
 
-    def hasPerm(perm, user) {
+    boolean hasPerm(perm, user) {
         if (perm == 'view' && this.isPublic?.value == 'Yes') {
             return true
         }
@@ -711,5 +715,37 @@ class Subscription
       def types = issueEntitlements?.tipp.title.type.unique()
       types
   }
+
+   def dropdownNamingConvention(Org contextOrg){
+
+       def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+       SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+
+       String period = startDate ? sdf.format(startDate)  : ''
+
+       period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
+
+       period = period ? '('+period+')' : ''
+
+
+
+       if(instanceOf)
+       {
+           def additionalInfo
+
+           if(contextOrg.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id))
+           {
+               additionalInfo = (getSubscriber() ? getSubscriber()?.sortname : '')
+           }else{
+               additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+           }
+
+           return name + ' - ' + status.getI10n('value') + ' ' +period + ' - ' + additionalInfo
+
+       }else {
+
+           return name + ' - ' + status.getI10n('value') + ' ' +period
+       }
+   }
 
 }

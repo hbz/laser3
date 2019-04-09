@@ -842,13 +842,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 50px;
   border-radius: 0 !important;
   border: none !important;
-}
-
-.landingpage .la-fixed-menu {
-  height: 50px;
 }
 
 .landingpage .logo {
@@ -1176,6 +1171,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .editable-container.editable-inline {
+  position: absolute;
   z-index: 100;
   margin-top: -20px;
   margin-left: -3px;
@@ -1200,6 +1196,26 @@ aside.ui.accordion .title:not(.ui) {
   height: 0;
   clear: both;
   visibility: hidden;
+}
+
+.la-overflow {
+  width: 14em;
+  margin: 0 0 -10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.la-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.la-hide-context-orgMenu {
+  padding-top: 60px;
+}
+
+.la-show-context-orgMenu {
+  padding-top: 105px;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
@@ -14487,6 +14503,16 @@ i.icon.la-noChange {
   font-family: 'icomoon';
 }
 
+/**/
+
+i.icon.la-gokb {
+  font-family: 'icomoon';
+}
+
+i.icon.la-gokb.square {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -14543,6 +14569,16 @@ i.icon.la-append:before {
 
 i.icon.la-replace:before {
   content: "\e90d";
+}
+
+/**/
+
+i.icon.la-gokb:before {
+  content: "\e90e";
+}
+
+i.icon.la-gokb.square:before {
+  content: "\e90f";
 }
 
 /*******************************
@@ -19976,6 +20012,12 @@ ol.ui.horizontal.list li:before,
 .ui.segment.la-search {
   background: #f1ebe5;
   border: none;
+}
+
+/* Grey */
+
+.ui.grey.segment:not(.inverted) {
+  border-top: 1px solid #d3dae3 !important;
 }
 /*!
  * # Semantic UI 2.3.1 - Step
@@ -26771,6 +26813,17 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .item.la-role-yoda.active {
   border-color: #98B500;
 }
+
+.subscriptionDetails_copyElementsIntoSubscription .ui.secondary.pointing.menu .item {
+  padding-left: 2.5em !important;
+  padding-right: 2.5em !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .ui.fixed.stackable.menu {
+    position: relative;
+  }
+}
 /*!
  * # Semantic UI 2.3.1 - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -28692,6 +28745,10 @@ Floated Menu / Item
   padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
+}
+
+.ui.table tr th:not(.sortable) a {
+  text-decoration: underline;
 }
 
 /*--------------
@@ -32614,7 +32671,7 @@ a.ui.card:hover,
   height: 17px;
   text-align: center;
   opacity: 0;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -32629,7 +32686,7 @@ a.ui.card:hover,
 
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -32844,7 +32901,7 @@ a.ui.card:hover,
   border-radius: 500rem;
   -webkit-transform: scale(0.46666667);
   transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.87);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Focus */
@@ -33030,7 +33087,7 @@ a.ui.card:hover,
 .ui.toggle.checkbox label {
   min-height: 1.5rem;
   padding-left: 4.5rem;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .ui.toggle.checkbox label {
@@ -33195,6 +33252,99 @@ a.ui.card:hover,
 .dash:before  { content: '\e801'; }
 .plus:before { content: '\e802'; }
 */
+
+/************* laser three toggle icon buttons ***************/
+
+.radio,
+.checkbox.la-toggle-radio {
+  padding: 0;
+}
+
+/* BEFORE */
+
+.ui.checkbox.la-toggle-radio label {
+  font-size: 1.7em;
+  width: 40px;
+  height: 40px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.ui.checkbox.la-toggle-radio label:before {
+  border: none;
+  width: 40px;
+  height: 40px;
+  padding-top: 11px;
+  text-align: center;
+  background-color: #d3dae3;
+  border-radius: 500rem;
+}
+
+.ui.checkbox.la-toggle-radio input:checked ~ label:before {
+  background-color: #d3dae3;
+}
+
+/* AFTER */
+
+.ui.checkbox.la-toggle-radio input:checked ~ label:after,
+.ui.radio.checkbox.la-toggle-radio input:checked ~ label:after {
+  color: #98B500 !important;
+  top: 25px !important;
+  left: 25px !important;
+  background-color: white !important;
+  border-radius: 500rem;
+  -webkit-box-shadow: 0 2px 3px 0 #d3dae3;
+  box-shadow: 0 2px 3px 0 #d3dae3;
+  /*
+  content: "\f00c" !important;
+  font-family: Icons !important;
+  transform: scale(1.5);
+  */
+}
+
+/* APPEND */
+
+.ui.checkbox.la-toggle-radio.la-append label:before {
+  font-family: icomoon;
+  content: "\e90c";
+}
+
+/* REPLACE */
+
+.ui.checkbox.la-toggle-radio.la-replace label:before {
+  font-family: icomoon;
+  content: "\e90d";
+}
+
+/* NO CHANGE */
+
+.ui.checkbox.la-toggle-radio.la-noChange label:before {
+  font-family: Icons;
+  content: "\f05e";
+}
+
+/* COPY LICENCE WITH PACKAGES, TITELS ETC */
+
+table tr td div.willStay {
+  background-color: #D4E096;
+}
+
+table tr td div.willBeReplaced {
+  background-color: #EDC0BA;
+  text-decoration: line-through;
+}
+
+table tr td div.willBeReplacedStrong {
+  background-color: #EDC0BA !important;
+  text-decoration: line-through !important;
+}
+
+.la-element {
+  padding: 4px 0;
+}
+
+.la-element .checkbox {
+  padding-left: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - Dimmer
  * http://github.com/semantic-org/semantic-ui/

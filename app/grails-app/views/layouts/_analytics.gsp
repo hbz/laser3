@@ -1,5 +1,5 @@
 <g:if test="${grailsApplication?.config?.kbplus?.analytics?.code}">
-  <r:script type="text/javascript">
+  <r:script>
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', '${grailsApplication.config.kbplus.analytics.code}']);
       <g:if test="${params.shortcode != null}">

@@ -128,7 +128,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="center aligned four wide column">'
-                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -225,7 +225,7 @@ class SemanticUiTagLib {
                         }
                     }
                     // inherit (from)
-                    else {
+                    else if (obj?.showUIShareButton()) {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
@@ -239,7 +239,7 @@ class SemanticUiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                                     class: 'item'
                             )
-                            out << g.link( 'Verarbeitung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
+                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr], keep: true],
@@ -264,30 +264,42 @@ class SemanticUiTagLib {
             } catch (Exception e) {
             }
         }
-        out << '</dt>'
     }
 
     def listIcon = { attrs, body ->
+        def hideTooltip = attrs.hideTooltip ? false : true
 
         switch (attrs.type) {
             case 'Journal':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon newspaper outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon newspaper outline la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'Database':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon database la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon tablet alternate outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon book la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out <<  'data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon book la-list-icon"></i>'
                 out << '</div>'
                 break
         }
@@ -507,12 +519,13 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
 
     def datepicker = { attrs, body ->
         def inputCssClass = attrs.inputCssClass ?: '';
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
+        def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
 
         def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
@@ -525,7 +538,7 @@ class SemanticUiTagLib {
         }
 
         def classes = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.required ? 'required="true"' : ''
+        def required = attrs.required ? 'required=""' : ''
         def hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
@@ -538,12 +551,12 @@ class SemanticUiTagLib {
 
         out << '<div class="' + classes + '">'
         if (hideLabel) {
-            out << '<label for="' + name + '">' + label + '</label>'
+            out << '<label for="' + id + '">' + label + '</label>'
         }
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'
         out << '<i class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name + '" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
+        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
         out << '</div>'
         out << '</div>'
         out << '</div>'
@@ -630,7 +643,7 @@ class SemanticUiTagLib {
         out << endDate
 
         out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
-        out << '       ?'
+        out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
@@ -732,6 +745,13 @@ class SemanticUiTagLib {
         out << "<span class='ui grey horizontal divider la-date-devider'>"
         out << "        ${message(code:'default.to')}"
         out << "</span>"
+    }
+    def linkIcon = { attrs, body ->
+        out << ' <span style="bottom: -3px" data-position="top right" data-tooltip="Diese URL aufrufen ..">'
+        out << '&nbsp;<a href="${prop.value}" target="_blank" class="ui icon blue la-js-dont-hide-button">'
+        out << '<i class="share square icon"></i>'
+        out << '                           </a>'
+        out << '</span>'
     }
     public SemanticUiTagLib() {}
 

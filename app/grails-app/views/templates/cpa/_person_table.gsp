@@ -1,4 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 
 <table class="ui table la-table">
     <colgroup>
@@ -41,31 +42,37 @@
 
 				<td>
                     <%-- filter by model.restrictToOrg --%>
-					<g:each in="${person?.roleLinks?.findAll{ restrictToOrg ? (it.org == restrictToOrg) : it }}" var="role">
+                    <%
+                        Set<PersonRole> pRoles = person?.roleLinks?.findAll{ restrictToOrg ? (it.org == restrictToOrg) : it }?.sort{it.org.sortname}
+
+                        List<PersonRole> pRolesSorted = []
+                        int countFunctions = 0
+
+                        pRoles.each{ item ->
+                            if (item.functionType) {
+                                pRolesSorted.add(countFunctions++, item)
+                            }
+                            else {
+                                pRolesSorted.push(item)
+                            }
+                        }
+                    %>
+
+					<g:each in="${pRolesSorted}" var="role">
                         <g:if test="${controllerName == 'myInstitution'}">
                             <div class="la-flexbox">
                                 <i class="icon university la-list-icon"></i>
-                                <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
-                            </div>
-                            <div>
-                                <g:if test="${role.functionType}">
-                                    (${role.functionType?.getI10n('value')}) <br />
-                                </g:if>
-                                <g:if test="${role.positionType}">
-                                    (${role.positionType?.getI10n('value')})
-                                </g:if>
+                                <g:link controller="organisation" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
                             </div>
                         </g:if>
-                        <g:else>
-                            <div>
-                                <g:if test="${role.functionType}">
-                                    ${role.functionType?.getI10n('value')} <br />
-                                </g:if>
-                                <g:if test="${role.positionType}">
-                                    ${role.positionType?.getI10n('value')}
-                                </g:if>
-                            </div>
-                        </g:else>
+                        <div>
+                            <g:if test="${role.functionType}">
+                                (${role.functionType?.getI10n('value')}) <br />
+                            </g:if>
+                            <g:if test="${role.positionType}">
+                                (${role.positionType?.getI10n('value')})
+                            </g:if>
+                        </div>
 					</g:each>
                 </td>
                 <td>

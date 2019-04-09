@@ -40,7 +40,7 @@
             </div>
         </g:if>
 
-        <g:if test="${params.owntp == 'organisations'}">
+        <g:if test="${params.owntp == 'organisation'}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
                 <label for="org">
                     <g:message code="task.org.label" default="Org" />
@@ -77,7 +77,7 @@
                     <laser:select id="status" name="status.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}" optionValue="value" optionKey="id" required="" value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}" class="ui dropdown many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required="true" bean="${taskInstance}" />
+                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime', default:'yyyy-MM-dd'), date:taskInstance?.endDate)}" required bean="${taskInstance}" />
 
             </div>
         </div>
@@ -116,7 +116,7 @@
     </g:form>
 
 
-    <script type="text/javascript">
+    <script>
         var ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {

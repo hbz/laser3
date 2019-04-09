@@ -32,11 +32,11 @@ class AuditService {
         result
     }
 
-    def getAuditConfig(AuditableTrait auditable) {
+    AuditConfig getAuditConfig(AuditableTrait auditable) {
         AuditConfig.getConfig(auditable)
     }
 
-    def getAuditConfig(AuditableTrait auditable, String field) {
+    AuditConfig getAuditConfig(AuditableTrait auditable, String field) {
         AuditConfig.getConfig(auditable, field)
     }
 }

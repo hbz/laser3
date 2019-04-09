@@ -2,7 +2,7 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder" %>
 <laser:serviceInjection />
 
-<g:render template="vars" /><%-- setting vars --%>
+<g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
 <g:set var="submitButtonLabel" value="${message(code:'default.button.create_new.label')}" />
@@ -405,21 +405,21 @@
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin">
                 <div class="two fields">
-                    <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                    <semui:datepicker label="financials.datePaid" id="newDatePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <semui:datepicker label="financials.financialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <semui:datepicker label="financials.financialYear" id="newFinancialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
-                    <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
+                    <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                    <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
                 </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">
                 <div class="field">
-                    <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
+                    <semui:datepicker label="financials.invoiceDate" id="newInvoiceDate" name="newInvoiceDate" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
 
                     <label>${message(code:'financials.newCosts.description')}</label>
                     <input type="text" name="newDescription" id="newDescription"
@@ -445,7 +445,7 @@
 
     </g:form>
 
-    <script type="text/javascript">
+    <script>
         /*var costSelectors = {
             lc:   "#newCostInLocalCurrency",
             rate: "#newCostCurrencyRate",
@@ -582,9 +582,9 @@
                 }
                 else if(typeof(input) === 'string') {
                     output = 0.0;
-                    if(input.match(/(\d{1-3}\.?)*\d+,\d{2}/g))
+                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
                         output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
-                    else if(input.match(/(\d{1-3},?)*\d+\.\d{2}/g)) {
+                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
                         output = parseFloat(input.replace(/,/g, ""));
                     }
                     else console.log("Please check over regex!");
