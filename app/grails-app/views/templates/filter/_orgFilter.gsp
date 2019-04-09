@@ -14,8 +14,8 @@
 
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
-                    <label>${message(code: 'org.search.contains')}</label>
-                    <input type="text" name="orgNameContains" value="${params.orgNameContains}"/>
+                    <label for="orgNameContains">${message(code: 'org.search.contains')}</label>
+                    <input type="text" id="orgNameContains" name="orgNameContains" value="${params.orgNameContains}"/>
                 </div>
             </g:if>
 
@@ -25,11 +25,11 @@
 
             <g:if test="${field.equalsIgnoreCase('type')}">
                 <div class="field">
-                    <label>${message(code: 'org.orgType.label')}</label>
+                    <label for="orgType">${message(code: 'org.orgType.label')}</label>
                     <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
                         <g:set var="orgTypes" value="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"/>
                     </g:if>
-                    <laser:select class="ui dropdown" name="orgType"
+                    <laser:select class="ui dropdown" id="orgType" name="orgType"
                                   from="${orgTypes}"
                                   optionKey="id"
                                   optionValue="value"
@@ -40,11 +40,11 @@
 
             <g:if test="${field.equalsIgnoreCase('role')}">
                 <div class="field">
-                    <label>${message(code: 'org.orgRole.label')}</label>
+                    <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
                     <g:if test="${orgRoles == null || orgRoles.isEmpty()}">
                         <g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues('Organisational Role')}"/>
                     </g:if>
-                    <laser:select class="ui dropdown" name="orgRole"
+                    <laser:select class="ui dropdown" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
                                   optionKey="id"
                                   optionValue="value"
@@ -55,8 +55,8 @@
 
             <g:if test="${field.equalsIgnoreCase('sector')}">
                 <div class="field">
-                    <label>${message(code: 'org.sector.label')}</label>
-                    <laser:select class="ui dropdown" name="orgSector"
+                    <label for="orgSector">${message(code: 'org.sector.label')}</label>
+                    <laser:select class="ui dropdown" id="orgSector" name="orgSector"
                                   from="${RefdataCategory.getAllRefdataValues('OrgSector')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -67,8 +67,8 @@
 
             <g:if test="${field.equalsIgnoreCase('federalState')}">
                 <div class="field">
-                    <label>${message(code: 'org.federalState.label')}</label>
-                    <laser:select class="ui dropdown" name="federalState"
+                    <label for="federalState">${message(code: 'org.federalState.label')}</label>
+                    <laser:select class="ui dropdown" id="federalState" name="federalState"
                                   from="${RefdataCategory.getAllRefdataValues('Federal State')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -79,8 +79,8 @@
 
             <g:if test="${field.equalsIgnoreCase('libraryNetwork')}">
                 <div class="field">
-                    <label>${message(code: 'org.libraryNetwork.label')}</label>
-                    <laser:select class="ui dropdown" name="libraryNetwork"
+                    <label for="libraryNetwork">${message(code: 'org.libraryNetwork.label')}</label>
+                    <laser:select class="ui dropdown" id="libraryNetwork" name="libraryNetwork"
                                   from="${RefdataCategory.getAllRefdataValues('Library Network')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -91,8 +91,8 @@
 
             <g:if test="${field.equalsIgnoreCase('libraryType')}">
                 <div class="field">
-                    <label>${message(code: 'org.libraryType.label')}</label>
-                    <laser:select class="ui dropdown" name="libraryType"
+                    <label for="libraryType">${message(code: 'org.libraryType.label')}</label>
+                    <laser:select class="ui dropdown" id="libraryType" name="libraryType"
                                   from="${RefdataCategory.getAllRefdataValues('Library Type')}"
                                   optionKey="id"
                                   optionValue="value"
@@ -103,8 +103,8 @@
 
             <g:if test="${field.equalsIgnoreCase('country')}">
                 <div class="field">
-                    <label>${message(code: 'org.country.label')}</label>
-                    <laser:select class="ui dropdown" name="country"
+                    <label for="country">${message(code: 'org.country.label')}</label>
+                    <laser:select class="ui dropdown" id="country" name="country"
                                   from="${RefdataCategory.getAllRefdataValues('Country')}"
                                   optionKey="id"
                                   optionValue="value"

@@ -67,20 +67,20 @@
 							<td colspan="2">
 
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
-                                    <label>${message(code:'default.compare.filter.insert', default:'Insert')}</label>
+                                    <input type="checkbox" class="hidden" id="insrt" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
+                                    <label for="insrt">${message(code:'default.compare.filter.insert', default:'Insert')}</label>
                                 </div>
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
-                                    <label>${message(code:'default.compare.filter.delete', default:'Delete')}</label>
+                                    <input type="checkbox" class="hidden" id="dlt" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
+                                    <label for="dlt">${message(code:'default.compare.filter.delete', default:'Delete')}</label>
                                 </div>
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
-                                    <label>${message(code:'default.compare.filter.update', default:'Update')}</label>
+                                    <input type="checkbox" class="hidden" id="updt" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
+                                    <label for="updt">${message(code:'default.compare.filter.update', default:'Update')}</label>
                                 </div>
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
-                                    <label>${message(code:'default.compare.filter.no_change', default:'No Change')}</label>
+                                    <input type="checkbox" class="hidden" id="nochng" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
+                                    <label for="nochng">${message(code:'default.compare.filter.no_change', default:'No Change')}</label>
                                 </div>
 
 							</td>		

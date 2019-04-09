@@ -15,8 +15,8 @@
 
             <semui:searchSegment controller="title" action="findTitleMatches" method="get" >
               <div class="field">
-                <label>${message(code:'title.findTitleMatches.proposed')}</label>
-                <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
+                <label for="proposedTitle">${message(code:'title.findTitleMatches.proposed')}</label>
+                <input type="text" id="proposedTitle" name="proposedTitle" value="${params.proposedTitle}" />
               </div>
               <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
