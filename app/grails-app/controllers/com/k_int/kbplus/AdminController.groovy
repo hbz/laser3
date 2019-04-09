@@ -881,7 +881,22 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {
 
-        if (params.cmd == 'replacePropertyDefinition') {
+        if (params.cmd == 'deletePropertyDefinition') {
+            def pd = genericOIDService.resolveOID(params.pd)
+
+            if (pd) {
+                if (! pd.hardData) {
+                    try {
+                        pd.delete(flush:true)
+                        flash.message = "${params.pd} wurde gelöscht."
+                    }
+                    catch(Exception e) {
+                        flash.error = "${params.pd} konnte nicht gelöscht werden."
+                    }
+                }
+            }
+        }
+        else if (params.cmd == 'replacePropertyDefinition') {
             if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
                 def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
                 def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
