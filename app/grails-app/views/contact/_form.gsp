@@ -21,7 +21,7 @@
 		<g:message code="contact.content.label" default="Content" />
 		
 	</label>
-	<g:textField name="content" value="${contactInstance?.content}"/>
+	<g:textField id="content" name="content" value="${contactInstance?.content}"/>
 
 </div>
 

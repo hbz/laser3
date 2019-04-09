@@ -11,7 +11,7 @@
                     </label>
                 </dt>
                 <dd> 
-                    <g:select id="type" name='name'
+                    <g:select id="name" name='name'
                         noSelection="${['null':'Select...']}"
                         from="${['campus','wlan','vpn']}"></g:select>
                 </dd>
@@ -23,6 +23,7 @@
                 </dt>
                 <dd>
                     <laser:select class="values"
+                        id="accessMethod"
                         name="accessMethod"
                         from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Access Method')}"
                         optionKey="id"

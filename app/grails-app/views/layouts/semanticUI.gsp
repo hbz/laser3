@@ -62,7 +62,7 @@
     <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
-                <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+                <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
             <sec:ifAnyGranted roles="ROLE_USER">

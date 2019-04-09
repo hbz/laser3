@@ -16,7 +16,7 @@
 		<g:message code="numbers.number.label" default="Number" />
 		
 	</label>
-	<g:field name="number" type="number" value="${numbersInstance.number}"/>
+	<g:field id="number" name="number" type="number" value="${numbersInstance.number}"/>
 
 </div>
 
@@ -25,7 +25,7 @@
 		<g:message code="numbers.startDate.label" default="Start Date" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:datePicker name="startDate" precision="day"  value="${numbersInstance?.startDate}"  />
+	<g:datePicker id="startDate" name="startDate" precision="day"  value="${numbersInstance?.startDate}"  />
 
 </div>
 
@@ -34,7 +34,7 @@
 		<g:message code="numbers.endDate.label" default="End Date" />
 		
 	</label>
-	<g:datePicker name="endDate" precision="day"  value="${numbersInstance?.endDate}" default="none" noSelection="['': '']" />
+	<g:datePicker id="endDate" name="endDate" precision="day"  value="${numbersInstance?.endDate}" default="none" noSelection="['': '']" />
 
 </div>
 
