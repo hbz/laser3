@@ -53,6 +53,8 @@ grails.project.dependency.resolution = {
         // Added because I'm strugging to get cglib - CGLib is causing problems - not sure what
         mavenRepo "http://central.maven.org/maven2/"
 
+        //mavenRepo "https://mvnrepository.com/artifact/com.agorapulse/gru" // gru
+
         // For shibboleth native-sp
         // mavenRepo "http://projects.k-int.com/nexus-webapp-1.4.0/content/repositories/releases"
         mavenRepo "http://nexus.k-int.com/content/repositories/releases/"
@@ -97,6 +99,8 @@ grails.project.dependency.resolution = {
 
         compile 'org.apache.httpcomponents:httpmime:4.5.1' // upgrade for MultipartEntityBuilder
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
+
+        //test 'com.agorapulse:gru:0.5.1'
 
         test 'org.hamcrest:hamcrest-all:1.3'
         test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion") {

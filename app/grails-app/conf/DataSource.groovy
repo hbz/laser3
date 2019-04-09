@@ -41,7 +41,7 @@ environments {
     }
     test {
         dataSource {
-            dbCreate        = "create-drop"
+            dbCreate        = "none"
             driverClassName = "org.postgresql.Driver"
             dialect         = "org.hibernate.dialect.PostgreSQLDialect"
             username        = "laser"

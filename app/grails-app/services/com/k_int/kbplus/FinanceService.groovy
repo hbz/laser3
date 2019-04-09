@@ -52,7 +52,14 @@ class FinanceService {
         List filterConsQuery = processFilterParams(params,"cons",true)
         List filterSubscrQuery = processFilterParams(params,"subscr",true)
         result.filterPresets = filterConsQuery[1]
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+filterOwnQuery[0],[owner:org,sub:sub]+filterOwnQuery[1])
+        String ownSort
+        if(params.ownSort) {
+            ownSort = " order by ${params.sort} ${params.order}"
+        }
+        else {
+            ownSort = ""
+        }
+        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub]+filterOwnQuery[1])
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownCostItems.size())
@@ -71,7 +78,12 @@ class FinanceService {
             b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
          */
             case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+" order by sortname asc",[owner:org,sub:sub]+filterConsQuery[1])
+                String consSort
+                if(params.consSort)
+                    consSort = " order by ${params.sort} ${params.order}"
+                else
+                    consSort = " order by sortname asc "
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
@@ -94,7 +106,12 @@ class FinanceService {
                 if(sub.getConsortia().id != org.id) {
                     visibility = " and ci.isVisibleForSubscriber = true"
                 }
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
+                String subscrSort
+                if(params.subscrSort)
+                    subscrSort = " order by ${params.sort} ${params.order}"
+                else
+                    subscrSort = ""
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -147,12 +164,19 @@ class FinanceService {
             default: log.info("unhandled view: ${params.view}")
                 break
         }
+        String ownSort
+        if(params.ownSort) {
+            ownSort = " order by ${params.sort} ${params.order}"
+        }
+        else {
+            ownSort = " order by sub.name asc"
+        }
         //get own costs
         List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
-                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted'+filterQueryOwn[0]+' order by sub.name asc',
+                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted'+filterQueryOwn[0]+ownSort,
                 [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1])
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
-                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+' order by sub.name asc',
+                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+ownSort,
                 [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
@@ -167,6 +191,11 @@ class FinanceService {
             result.own.sums = calculateResults(ownSubscriptionCostItems)
         }
         //get consortial costs
+        String consSort
+        if(params.consSort)
+            consSort = " order by ${params.sort} ${params.order}"
+        else
+            consSort = " order by orgRoles.org.sortname asc "
         List<CostItem> consortialSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
                 'join ci.owner orgC ' +
                 'join ci.sub sub ' +
@@ -175,7 +204,7 @@ class FinanceService {
                 'join sub.orgRelations roleMC ' +
                 'join sub.orgRelations orgRoles ' +
                 'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType = :subscrType and subC.status != :statusC and sub.status != :statusM' +
-                filterQueryCons[0] + ' order by orgRoles.org.sortname asc ',
+                filterQueryCons[0] + consSort,
                 [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS,statusC:RDStore.SUBSCRIPTION_DELETED,statusM:RDStore.SUBSCRIPTION_DELETED]+filterQueryCons[1])
         result.cons.costItems = []
         limit = consOffset+max
@@ -189,14 +218,20 @@ class FinanceService {
             result.cons.sums = calculateResults(consortialSubscriptionCostItems)
         }
         //get membership costs
+        String subscrSort
+        if(params.subscrSort)
+            subscrSort = " order by ${params.sort} ${params.order}"
+        else
+            subscrSort = " order by sub.name asc"
         List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
                 'join ci.sub sub ' +
+                'left join ci.subPkg subPkg ' +
                 'join sub.instanceOf subC ' +
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations orgRoles ' +
                 'join ci.owner orgC ' +
                 'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
-                filterQuerySubscr[0] + ' order by sub.name asc',
+                filterQuerySubscr[0] + subscrSort,
                 [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+filterQuerySubscr[1])
         result.subscr.costItems = []
         limit = subscrOffset+max
