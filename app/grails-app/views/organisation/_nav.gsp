@@ -19,7 +19,7 @@
         </g:else>
     </g:if>
 
-    <semui:securedSubNavItem controller="organisation" action="config" params="${[id: params.id]}"
+    <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: params.id]}"
                              message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}" specRoleCheck="ROLE_ORG_EDITOR"/>
 
     <semui:subNavItem controller="organisation" action="documents" params="${[id: params.id]}" message="menu.my.documents" />

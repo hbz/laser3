@@ -1,5 +1,6 @@
-<%@page import="de.laser.helper.RDStore" %>
+<%@page import="de.laser.helper.RDStore; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
+
 <semui:actionsDropdown>
     <g:if test="${editable}">
         <g:if test="${actionName == 'list'}">
@@ -19,6 +20,13 @@
         <g:if test="${actionName == 'users'}">
             <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
         </g:if>
+
+        <%--
+        <g:if test="${actionName == 'settings' && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+            <semui:actionsDropdownItem controller="admin" action="manageOrgSettings" text="manageOrgSettings" params="[org: orgInstance.id]" />
+        </g:if>
+        --%>
+
     </g:if>
     <g:if test="${actionName in ['documents','show'] && (accessService.checkMinUserOrgRole(user, contextService.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>

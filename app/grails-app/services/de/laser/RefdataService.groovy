@@ -10,7 +10,7 @@ class RefdataService {
     def grailsApplication
     def genericOIDService
 
-    Map<String, Object> getUsageDetails() {
+    List getUsageDetails() {
         def detailsMap = [:]
         def usedRdvList = []
 

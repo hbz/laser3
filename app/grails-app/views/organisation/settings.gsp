@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -6,43 +6,81 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <title>${message(code:'laser', default:'LAS:eR')} : Settings</title>
+            <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.confProperties')} &amp; ${message(code:'org.orgSettings')}</title>
+            <g:javascript src="properties.js"/>
     </head>
     <body>
 
-    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+        <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${orgInstance.name}
-    </h1>
+        <%--<semui:controlButtons>
+            <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
+        </semui:controlButtons>--%>
 
-    <g:render template="nav"/>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
-    <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
+        <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-    <semui:messages data="${flash}" />
+        <g:render template="nav" />
 
-    <div class="ui grid">
-        <div class="twelve wide column">
+        <semui:messages data="${flash}" />
 
-            <table class="ui la-table table">
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <g:each in="${settings}" var="os">
-                        <tr>
-                            <td>${os.key}</td>
-                            <td>${os.getValue()}</td>
-                        </tr>
-                    </g:each>
-                </tbody>
-            </table>
 
-        </div>
-    </div>
-  </body>
+        <div class="ui stackable grid">
+            <div class="sixteen wide column">
+
+                <div class="la-inline-lists">
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
+                                ${message(code:'org.confProperties')}
+                            </h5>
+
+                            <div id="custom_props_div_1">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.ORG_CONF,
+                                        ownobj: orgInstance,
+                                        custom_props_div: "custom_props_div_1" ]}"/>
+                            </div>
+                        </div><!-- .content -->
+                    </div><!-- .card -->
+
+                    <r:script language="JavaScript">
+                        $(document).ready(function(){
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+                        });
+                    </r:script>
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
+                                ${message(code:'org.orgSettings')}
+                            </h5>
+
+                            <table class="ui la-table table">
+                                <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <g:each in="${settings}" var="os">
+                                    <tr>
+                                        <td>${os.key}</td>
+                                        <td>${os.getValue()}</td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                        </table>
+                        </div><!-- .content -->
+                    </div>
+
+                </div><!-- .la-inline-lists -->
+
+            </div><!-- .twelve -->
+        </div><!-- .grid -->
+
+    </body>
 </html>
