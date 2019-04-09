@@ -700,9 +700,9 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
         <%-- global content container --%>
-        <section class="ui main container ${visibilityContextOrgMenu} ">
+        <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
-        </section><!-- .main -->
+        </main><!-- .main -->
 
         <footer id="Footer">
             <div class="clearfix"></div>
