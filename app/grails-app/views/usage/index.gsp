@@ -21,8 +21,8 @@
     <g:form action="index" controller="usage" method="get" class="form-inline ui small form">
         <div class="three fields">
             <div class="field fieldcontain">
-                <label>${message(code: 'default.usage.adminPage.supplierLabel')}</label>
-                <g:select class="ui dropdown" name="supplier"
+                <label for="supplier">${message(code: 'default.usage.adminPage.supplierLabel')}</label>
+                <g:select class="ui dropdown" id="supplier" name="supplier"
                               from="${providerList}"
                               optionKey="id"
                               optionDisabled="optionDisabled"
@@ -31,8 +31,8 @@
                               noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
             </div>
             <div class="field fieldcontain">
-                <label>${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" name="institution"
+                <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
+                <g:select class="ui dropdown" id="institution" name="institution"
                           from="${institutionList}"
                           optionKey="id"
                           optionValue="name"
@@ -92,15 +92,15 @@
 
         <div class="two fields">
             <div class="field fieldcontain">
-                <label>${message(code: 'default.usage.adminPage.supplierLabel')}</label>
-                <g:select class="ui dropdown" name="supplier"
+                <label for="supplier">${message(code: 'default.usage.adminPage.supplierLabel')}</label>
+                <g:select class="ui dropdown" id="supplier" name="supplier"
                           from="${natstatProviders}"
                           value="${params.supplier}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
             <div class="field fieldcontain">
-                <label>${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" name="institution"
+                <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
+                <g:select class="ui dropdown" id="institution" name="institution"
                           from="${natstatInstitutions}"
                           value="${params.institution}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>

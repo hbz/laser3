@@ -17,12 +17,12 @@
                     </div><!-- .field -->
                     <div class="two fields">
                         <div class="field">
-                            <label>${message(code:'financials.budgetCode')}</label>
+                            <label for="newBudgetCode">${message(code:'financials.budgetCode')}</label>
                             <input type="text" class="select2 la-full-width" placeholder="${message(code:'financials.budgetCode')}" name="newBudgetCode" id="newBudgetCode" />
                         </div><!-- .field -->
 
                         <div class="field">
-                            <label>Reference/Codes</label>
+                            <label for="newCostItemReference">Reference/Codes</label>
                             <input type="text" name="newReference" placeholder="New Item Reference" id="newCostItemReference" value="${params.newReference}"/>
                         </div>
                     </div>
@@ -33,8 +33,8 @@
                         <input type="text" readonly value="${message(code:'financials.newCosts.UID')}" />
                     </div><!-- .field -->
                     <div class="field">
-                        <label>${message(code:'financials.costItemStatus')}</label>
-                        <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                        <label for="newCostItemStatus">${message(code:'financials.costItemStatus')}</label>
+                        <laser:select  name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                       id="newCostItemStatus"
                                       from="${costItemStatus}"
                                       optionKey="id"
@@ -49,16 +49,16 @@
                     <label>${g.message(code:'financials.newCosts.amount')}</label>
 
                         <div class="field">
-                            <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
+                            <label for="newCostInBillingCurrency">${g.message(code:'financials.newCosts.valueInEuro')}</label>
                             <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" name="newCostInBillingCurrency" placeholder="${g.message(code:'financials.newCosts.valueInEuro')}" id="newCostInBillingCurrency" value="1" step="0.01"/> <br/>
                         </div><!-- .field -->
                         <div class="field">
-                            <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
+                            <label for="newCostCurrencyRate">${g.message(code:'financials.newCosts.exchangeRate')}</label>
                             <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc" name="newCostCurrencyRate" placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" id="newCostCurrencyRate" value="1" step="0.01" /> <br/>
                         </div><!-- .field -->
 
                         <div class="field">
-                            <label>${message(code:'financials.invoice_total')}</label>
+                            <label for="newCostInLocalCurrency">${message(code:'financials.invoice_total')}</label>
                             <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc" name="newCostInLocalCurrency" placeholder="${message(code:'financials.invoice_total')}" id="newCostInLocalCurrency" value="1" step="0.01"/> <br/>
                         </div>
                         <div class="field">
@@ -75,7 +75,7 @@
                 <fieldset class="field la-modal-fieldset-margin">
                 <label>&nbsp;</label>
                     <div class="field">
-                        <label>${message(code:'financials.costItemCategory')}</label>
+                        <label for="newCostItemCategory">${message(code:'financials.costItemCategory')}</label>
                         <laser:select name="newCostItemCategory" title="${g.message(code: 'financials.addNew.costCategory')}" class="ui dropdown"
                                       id="newCostItemCategory"
                                       from="${costItemCategory}"
@@ -85,8 +85,8 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>${message(code:'financials.costItemElement')}</label>
-                        <laser:select name="newCostItemElement" class="ui dropdown"
+                        <label for="newCostItemElement">${message(code:'financials.costItemElement')}</label>
+                        <laser:select id="newCostItemElement" name="newCostItemElement" class="ui dropdown"
                                       from="${costItemElement}"
                                       optionKey="id"
                                       optionValue="value"
@@ -94,8 +94,8 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
+                        <label for="newCostTaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
+                        <laser:select id="newCostTaxType" name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
                                       from="${taxType}"
                                       optionKey="id"
                                       optionValue="value"
@@ -108,7 +108,7 @@
                 <fieldset class="field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
                     <div class="field">
-                        <label>${message(code:'subscription.label')}</label>
+                        <label for="newSubscription">${message(code:'subscription.label')}</label>
                         <input ${inSubMode ? "disabled='disabled' data-filterMode='${fixedSubscription?.class.getName()}:${fixedSubscription?.id}'" : '' }
                                 name="newSubscription" class="la-full-width select2" placeholder="${message(code:'financials.newCosts.newLicence')}" id="newSubscription"
                                 value="${inSubMode ? fixedSubscription?.name : params.newSubscription}" data-subfilter=""/>
@@ -118,7 +118,7 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>${message(code:'package.label')}</label>
+                        <label for="newPackage">${message(code:'package.label')}</label>
                         <g:if test="${inSubMode}">
                             <input class="select2 la-full-width"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" name="newPackage" id="newPackage" />
                         </g:if>
@@ -128,7 +128,7 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
+                        <label for="newIE">${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <g:if test="${inSubMode}">
                             <input name="newIe"  data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="la-full-width select2" id="newIE" value="${params.newIe}">
                         </g:if>
@@ -156,7 +156,7 @@
 
 
                     <div class="field">
-                        <label>${message(code:'default.description.label')}</label>
+                        <label for="newCostItemDescription">${message(code:'default.description.label')}</label>
                         <textarea name="newDescription" placeholder="${message(code:'default.description.label')}" id="newCostItemDescription"/></textarea>
                     </div>
 
@@ -165,13 +165,13 @@
 
                 <fieldset class="field la-modal-fieldset-no-margin">
                 <div class="field">
-                    <label>${message(code:'financials.invoice_number')}</label>
+                    <label for="newInvoiceNumber">${message(code:'financials.invoice_number')}</label>
                     <input type="text" name="newInvoiceNumber" class="input-medium"
                            placeholder="${message(code:'financials.invoice_number')}" id="newInvoiceNumber" value="${params.newInvoiceNumber}"/>
                 </div><!-- .field -->
 
                 <div class="field">
-                    <label>${message(code:'financials.order_number')}</label>
+                    <label for="newOrderNumber">${message(code:'financials.order_number')}</label>
                     <input type="text" name="newOrderNumber" class="input-medium"
                            placeholder="${message(code:'financials.order_number')}" id="newOrderNumber" value="${params.newOrderNumber}"/>
                 </div><!-- .field -->

@@ -48,8 +48,8 @@
         <div class="ui form">
 
             <div class="required field">
-                <label>Titel</label>
-                <input name="title" type="text" value="${title}"/>
+                <label for="title">Titel</label>
+                <input  id="title" name="title" type="text" value="${title}"/>
             </div>
 
             <div class="field">

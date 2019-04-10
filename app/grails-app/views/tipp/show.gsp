@@ -112,8 +112,8 @@
                        <input type="hidden" name="order" value="${params.order}">
                        <div class="fields">
                            <div class="field">
-                               <label>${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
-                               <input name="filter" value="${params.filter}"/>
+                               <label for="filter">${message(code:'tipp.show.filter_pkg', default:'Filters - Package Name')}</label>
+                               <input id="filter" name="filter" value="${params.filter}"/>
                            </div>
                            <div class="field">
                                 <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
