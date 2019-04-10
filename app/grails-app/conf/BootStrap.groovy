@@ -1434,6 +1434,7 @@ class BootStrap {
         RefdataCategory.loc('Subscription Form',          	                [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
         RefdataCategory.loc('Subscription Resource',          	            [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
         RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
+        RefdataCategory.loc('system.customer.type',          	            [en: 'Customer Type', de: 'Kundentyp'], BOOTSTRAP)
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'], BOOTSTRAP)
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
@@ -1988,6 +1989,12 @@ class BootStrap {
 		    RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
 		    RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
 		    RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
+
+        RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
+        RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)
+        RefdataValue.loc('system.customer.type',    [key:'scp.member',          en: 'Institution consortium member', de: 'Konsorte'], BOOTSTRAP)
+        RefdataValue.loc('system.customer.type',    [key:'scp.consortium',      en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'], BOOTSTRAP)
+        RefdataValue.loc('system.customer.type',    [key:'scp.consortium.survey', en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'], BOOTSTRAP)
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'], BOOTSTRAP)
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'], BOOTSTRAP)

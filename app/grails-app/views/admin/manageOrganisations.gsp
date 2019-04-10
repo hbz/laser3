@@ -1,0 +1,46 @@
+<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<!doctype html>
+
+<html>
+    <head>
+        <meta name="layout" content="semanticUI" />
+        <title>${message(code:'laser', default:'LAS:eR')} : Organisationen</title>
+    </head>
+    <body>
+
+    TODO
+    <%--
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <semui:crumb message="menu.my.providers" class="active" />
+        </semui:breadcrumbs>
+
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.my.providers" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
+--%>
+    <%--
+    <semui:messages data="${flash}" />
+    <semui:filter>
+        <g:form action="manageOrganisations" method="get" class="ui form">
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              propList: propList,
+                              orgRoles: orgRoles,
+                              tmplConfigShow: [['name', 'role'], ['country', 'property']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
+                      ]"/>
+        </g:form>
+    </semui:filter>
+
+    <g:render template="/templates/filter/orgFilterTable"
+              model="[orgList: orgList,
+                      tmplShowCheckbox: false,
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
+              ]"/>
+    <semui:paginate total="${orgListTotal}" params="${params}" />
+    --%>
+
+  </body>
+</html>
