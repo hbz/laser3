@@ -423,7 +423,7 @@ class BootStrap {
 
     def createOrgProperties() {
 
-        def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
+        def allDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
 
         def requiredOrgProps = [
             [

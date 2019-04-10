@@ -1,3 +1,10 @@
+0.15.2
+
+- changed some properties (bootstrap)
+- bugfix: documents null pointer
+- bugfix: subscription link formular validation
+- bugfix: profile reminder settings
+
 0.15.1
 
 - added admin function for deleting property definitions
