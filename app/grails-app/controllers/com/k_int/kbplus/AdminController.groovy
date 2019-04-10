@@ -842,7 +842,8 @@ class AdminController extends AbstractDebugController {
     def manageOrganisations() {
         Map<String, Object> result = [:]
 
-
+        result.orgList = Org.findAll()
+        result.orgListTotal = result.orgList.size()
 
         result
     }
