@@ -1,4 +1,4 @@
-
+/*
 Browser.drive {
     go "http://gebish.org"
 
@@ -11,3 +11,4 @@ Browser.drive {
 
     assert title.startsWith("The Book Of Geb")
 }
+*/

@@ -31,9 +31,8 @@
     </g:if>
 
    <semui:messages data="${flash}" />
-
-    <g:set var="counter" value="${-1}" />
-  <g:set var="index" value="${0}"/>
+   <g:set var="counter" value="${-1}" />
+   <g:set var="index" value="${0}"/>
       <g:form action="processRenewal" method="post" enctype="multipart/form-data" params="${params}">
 
 
@@ -50,7 +49,7 @@
                     <tr>
                         <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                         <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                        <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required  /></td>
+                        <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
