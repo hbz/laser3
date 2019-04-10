@@ -212,10 +212,10 @@
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                                <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
-                                <%-- this is part one of ticket #753! --%>
-                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
-
+                                <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                                </sec:ifAnyGranted>
                             </g:if>
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
@@ -474,7 +474,7 @@
                 <div class="right menu">
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)">
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
