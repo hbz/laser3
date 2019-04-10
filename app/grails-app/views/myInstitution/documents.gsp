@@ -19,7 +19,7 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
 
-    <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>
+    <%-- does not work as it is mapped upon a DomainClass attribute <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 
     <g:render template="/templates/documents/table" model="${[instance: Org.get(institution.id), context:'documents', redirect:'documents', owntp: 'org']}"/>
 
