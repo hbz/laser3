@@ -33,7 +33,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj)}" var="prop">
+        <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
