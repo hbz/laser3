@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -9,7 +9,6 @@
     </head>
     <body>
 
-    <h2> TODO </h2>
     <%--
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
@@ -63,11 +62,15 @@
 
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
 
-                <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
+                <%-- <th>${message(code: 'org.sector.label', default: 'Sector')}</th> --%>
 
-                <th>${message(code: 'org.libraryNetworkTableHead.label')}</th>
+                <%-- <th>${message(code: 'org.libraryNetworkTableHead.label')}</th> --%>
 
-                <th>${message(code: 'org.libraryType.label')}</th>
+                <%-- <th>${message(code: 'org.libraryType.label')}</th> --%>
+
+                <th>Kundentyp</th>
+
+                <th>API</th>
 
             </tr>
         </thead>
@@ -135,12 +138,35 @@
                         </g:each>
                     </td>
 
+                    <%--
                     <td>${org.sector?.getI10n('value')}</td>
+                    --%>
 
+                    <%--
                     <td>${org.libraryNetwork?.getI10n('value')}</td>
+                    --%>
 
+                    <%--
                     <td>${org.libraryType?.getI10n('value')}</td>
+                    --%>
 
+                    <td>
+                        <%
+                            def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
+                            if (customerType != OrgSettings.SETTING_NOT_FOUND) {
+                                println customerType.getValue()
+                            }
+                        %>
+                    </td>
+
+                    <td>
+                        <%
+                            def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+                            if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+                                println apiLevel.getValue()
+                            }
+                        %>
+                    </td>
                 </tr>
 
             </g:each>
