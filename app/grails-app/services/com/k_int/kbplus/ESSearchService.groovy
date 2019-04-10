@@ -146,7 +146,7 @@ class ESSearchService{
     StringWriter sw = new StringWriter()
 
     if ( params?.q != null ){
-      sw.write(params.q)
+      sw.write("*${params.q}*")
     }
       
     if(params?.rectype){

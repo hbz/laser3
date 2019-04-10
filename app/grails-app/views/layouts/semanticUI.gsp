@@ -474,7 +474,7 @@
                 <div class="right menu">
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)">
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
