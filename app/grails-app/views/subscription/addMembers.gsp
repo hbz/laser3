@@ -60,9 +60,9 @@
                     <label>Lizenz kopieren</label>
 
                     <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
+                        <input class="hidden" type="checkbox" id="generateSlavedSubs" name="generateSlavedSubs" value="Y" checked="checked"
                                readonly="readonly">
-                        <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
+                        <label for="generateSlavedSubs">${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>
 
                     <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
@@ -90,19 +90,19 @@
                         </div>
 
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="shared">
-                            <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="shared">
+                            <label for="generateSlavedLics1">${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
                         </div>
 
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
+                            <input class="hidden" type="radio" id="generateSlavedLics2"  name="generateSlavedLics" value="explicit">
+                            <label for="generateSlavedLics2">${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
                         </div>
 
                         <g:if test="${subscriptionInstance.owner.derivedLicenses}">
                             <div class="ui radio checkbox">
-                                <input class="hidden" type="radio" name="generateSlavedLics" value="reference" checked="checked">
-                                <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
+                                <input class="hidden" type="radio" id="generateSlavedLics3" name="generateSlavedLics" value="reference" checked="checked">
+                                <label for="generateSlavedLics3">${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
                             </div>
 
                             <div class="generateSlavedLicsReference-wrapper hidden">

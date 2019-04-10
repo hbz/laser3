@@ -78,12 +78,12 @@
                 <input type="hidden" name="order" value="${params.order}">
                 <div class="fields two">
                     <div class="field">
-                        <label>${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
-                        <input name="filter" value="${params.filter}"/>
+                        <label for="filter">${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
+                        <input id="filter" name="filter" value="${params.filter}"/>
                     </div>
                     <div class="field">
-                        <label>${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
-                        <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
+                        <label for="coverageNoteFilter">${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
+                        <input id="coverageNoteFilter" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
                     </div>
                 </div>
                 <div class="three fields">
@@ -121,12 +121,12 @@
                           <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
                           <div class="two fluid fields">
                               <div class="field">
-                                  <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                                  <label for="title">${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" id="title" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
                               </div>
                               <div class="field">
-                                  <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                                  <label for="platform">${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" id="platform" name="platform" baseClass="com.k_int.kbplus.Platform"/>
                               </div>
                           </div>
                           <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>

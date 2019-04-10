@@ -3,14 +3,14 @@
     <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'editNote', id:noteInstance?.id]" method="post">
 
         <div class="field fieldcontain">
-            <label>${message(code:'template.addNote.title')}:</label>
+            <label for="title">${message(code:'template.addNote.title')}:</label>
 
-            <input type="text" name="title" value="${noteInstance?.title}"/>
+            <input type="text" id="title" name="title" value="${noteInstance?.title}"/>
         </div>
         <div class="field fieldcontain">
-            <label>${message(code:'template.addNote.note')}:</label>
+            <label for="content">${message(code:'template.addNote.note')}:</label>
 
-            <textarea name="content">${noteInstance?.content}</textarea>
+            <textarea id="content" name="content">${noteInstance?.content}</textarea>
         </div>
 
     </g:form>

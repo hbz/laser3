@@ -97,13 +97,13 @@
             <input type="hidden" name="cmd" value="newBudgetCode"/>
 
             <div class="field">
-                <label>Beschreibung</label>
-                <input type="text" name="bc"/>
+                <label for="bc">Beschreibung</label>
+                <input type="text" id="bc" name="bc"/>
             </div>
 
             <div class="field">
-                <label>Verwendung</label>
-                <textarea name="descr"></textarea>
+                <label for="descr">Verwendung</label>
+                <textarea id="descr" name="descr"></textarea>
             </div>
 
         </g:form>

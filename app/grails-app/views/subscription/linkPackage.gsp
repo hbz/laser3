@@ -31,8 +31,8 @@
         <input type="hidden" name="id" value="${params.id}"/>
 
         <div class="field">
-            <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
-            <input name="q" value="${params.q}"/>
+            <label for="q">${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+            <input id="q" name="q" value="${params.q}"/>
         </div>
 
         <div class="field">

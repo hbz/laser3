@@ -22,9 +22,9 @@
 
                 <div class="control-group">
                     <div class="field">
-                        <label>Database ID of Title To Deprecate</label>
+                        <label for="titleIdToDeprecate">Database ID of Title To Deprecate</label>
 
-                        <input type="text" name="titleIdToDeprecate" value="${params.titleIdToDeprecate}" />
+                        <input type="text" id="titleIdToDeprecate" name="titleIdToDeprecate" value="${params.titleIdToDeprecate}" />
                     <g:if test="${title_to_deprecate != null}">
                        <h3 class="ui header">Title To Deprecate: <strong>${title_to_deprecate.title}</strong></h3>
                        <p>The following TIPPs will be updated to point at the authorized title</p>
@@ -66,9 +66,9 @@
 
                 <div class="control-group">
                     <div class="field">
-                        <label>Database ID of Correct Title </label>
+                        <label for="correctTitleId">Database ID of Correct Title </label>
 
-                        <input type="text" name="correctTitleId" value="${params.correctTitleId}"/>
+                        <input type="text" id="correctTitleId" name="correctTitleId" value="${params.correctTitleId}"/>
                         <g:if test="${correct_title != null}">
                            <br/>Authorized Title:${correct_title.title}
                         </g:if>
