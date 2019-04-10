@@ -15,7 +15,8 @@ class OrgSettings {
     static enum KEYS {
         API_LEVEL       (String),
         API_KEY         (String),
-        API_PASSWORD    (String)
+        API_PASSWORD    (String),
+        CUSTOMER_TYPE   (RefdataValue, 'system.customer.type')
 
         KEYS(type, rdc) {
             this.type = type

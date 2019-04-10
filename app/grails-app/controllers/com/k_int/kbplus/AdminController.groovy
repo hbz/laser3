@@ -839,6 +839,16 @@ class AdminController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_ADMIN'])
+    def manageOrganisations() {
+        Map<String, Object> result = [:]
+
+        result.orgList = Org.findAll()
+        result.orgListTotal = result.orgList.size()
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def manageNamespaces() {
         def identifierNamespaceInstance = new IdentifierNamespace(params)
 

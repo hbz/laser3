@@ -684,11 +684,21 @@ class AjaxController {
    */
   @Secured(['ROLE_USER'])
   def linkSubscriptions() {
+      boolean linkError = false
     //error when no pair is given!
-    if(!params.keySet().each {it.contains("pair_")}) {
-      flash.error = "Bitte Verknüpfungsziel angeben!"
+    params.keySet().each {
+        if(it.contains("pair_")) {
+            def pairCheck = params.get(it)
+            if(!pairCheck) {
+                linkError = true
+            }
+        }
     }
-    else {
+      if(linkError) {
+          flash.error = "Bitte Verknüpfungsziel angeben!"
+          redirect(url: request.getHeader('referer'))
+          return
+      }
       Subscription context = genericOIDService.resolveOID(params.context)
       Doc linkComment = genericOIDService.resolveOID(params.commentID)
       Links link
@@ -754,7 +764,6 @@ class AjaxController {
       else {
         log.error(link.errors)
       }
-    }
     redirect(url: request.getHeader('referer'))
   }
 

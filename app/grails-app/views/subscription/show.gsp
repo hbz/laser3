@@ -30,26 +30,8 @@
         </g:if>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
-            <%
-                // TODO: custom tag, if more usages
-
-                if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
-                    if (auditService.getAuditConfig(subscriptionInstance.instanceOf, 'name')) {
-                        if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
-                        }
-                        else {
-                            out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack grey"></i></span>'
-                        }
-                    }
-                }
-                else {
-                    if (auditService.getAuditConfig(subscriptionInstance, 'name')) {
-                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
-                    }
-                }
-            %>
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
+            <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
             <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 

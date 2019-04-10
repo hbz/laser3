@@ -27,7 +27,7 @@
 
                     if(docctx.owner.owner?.id == contextService.org.id)
                         inOwnerOrg = true
-                    if(docctx.owner.creator.id == user.id)
+                    if(docctx.owner.creator?.id == user.id)
                         isCreator = true
                     if(docctx.org) {
                         switch(docctx.shareConf) {

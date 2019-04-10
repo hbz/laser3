@@ -26,7 +26,6 @@ class DataloadService {
     def executorService
     def ESWrapperService
     def sessionFactory
-    def edinaPublicationsAPIService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
 
@@ -631,7 +630,8 @@ class DataloadService {
   def doTitleAugment() {
     TitleInstance.findAll().each { ti ->
       if ( ti.getIdentifierValue('SUNCAT' ) == null ) {
-        def lookupResult = edinaPublicationsAPIService.lookup(ti.title)
+          // TODO : remove this legacy
+        def lookupResult = false // edinaPublicationsAPIService.lookup(ti.title)
         if ( lookupResult ) {
           def record = lookupResult.records.record
           if ( record ) {
