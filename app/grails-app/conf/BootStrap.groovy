@@ -225,8 +225,8 @@ class BootStrap {
         log.debug("createOrgConfig ..")
         createOrgConfig()
 
-        //log.debug("createOrgProperties ..")
-        //createOrgProperties()
+        log.debug("createOrgProperties ..")
+        createOrgProperties()
 
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
@@ -422,11 +422,20 @@ class BootStrap {
     }
 
     def createOrgProperties() {
-        /*
-        def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
-        def requiredOrgProps = []
+
+        def allDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
+
+        def requiredOrgProps = [
+            [
+                    name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
+                    expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YN'
+            ],
+
+        ]
+
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
-        */
+
     }
 
     def createLicenseProperties() {
@@ -1108,55 +1117,262 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
 
         def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true],
-                [name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],          descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Metadata Delivery", de: "Metadatenlieferung"],         descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Metadata Source", de: "Metadaten Quelle"],             descr:allDescr, type: OT.String],
-                [name: [en: "Preisvorteil durch weitere Produktteilnahme", de: "Preisvorteil durch weitere Produktteilnahme"], descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Produktabhängigkeit", de: "Produktabhängigkeit"],      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Rabattstaffel", de: "Rabattstaffel"],                  descr:allDescr, type: OT.String],
-                [name: [en: "Bundesweit offen", de: "Bundesweit offen"],            descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Rechnungsstellung durch Anbieter", de: "Rechnungsstellung durch Anbieter"],    descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Mengenrabatt Stichtag", de: "Mengenrabatt Stichtag"],  descr:allDescr, type: OT.Date, cat:'YN'],
-                [name: [en: "Testzeitraum", de: "Testzeitraum"],                    descr:allDescr, type: OT.String],
-                [name: [en: "Unterjähriger Einstieg", de: "Unterjähriger Einstieg"],descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Neueinsteigerrabatt", de: "Neueinsteigerrabatt"],      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Simuser", de: "Simuser"],                              descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Simuser Zahl", de: "Simuser Zahl"],                    descr:allDescr, type: OT.String],
-                [name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],        descr:allDescr, type: OT.String],
-                [name: [en: "Zahlungsziel", de: "Zahlungsziel"],                    descr:allDescr, type: OT.String],
-                [name: [en: "Preis gerundet", de: "Preis gerundet"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Teilzahlung", de: "Teilzahlung"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Statistik", de: "Statistik"],                          descr:allDescr, type: OT.String],
-                [name: [en: "Statistikzugang", de: "Statistikzugang"],              descr:allDescr, type: OT.String],
-                [name: [en: "Simuser", de: "Simuser"],                              descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "KBART", de: "KBART"],                                  descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "reverse charge", de: "reverse charge"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Private Einrichtungen", de: "Private Einrichtungen"],  descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],        descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Rabatt", de: "Rabatt"],                                descr:allDescr, type: OT.String],
-                [name: [en: "Rabatt Zählung", de: "Rabatt Zählung"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Kündigungsfrist", de: "Kündigungsfrist"],              descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Zusätzliche Software erforderlich?", de: "Zusätzliche Software erforderlich?"],    descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Preissteigerung", de: "Preissteigerung"],              descr:allDescr, type: OT.String],
-                [name: [en: "Preis abhängig von", de: "Preis abhängig von"],        descr:allDescr, type: OT.String],
-                [name: [en: "Abbestellquote", de: "Abbestellquote"],                descr:allDescr, type: OT.String],
-                [name: [en: "Bestellnummer im Erwerbungssystem", de: "Bestellnummer im Erwerbungssystem"],      descr:allDescr, type: OT.String],
-                [name: [en: "Zugangskennungen für Nutzer (pro Zeitschrift)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"], descr:allDescr, type: OT.String],
-                [name: [en: "Subscriptionsnummer vom Verlag", de: "Subscriptionsnummer vom Verlag"],            descr:allDescr, type: OT.String],
-                [name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Abbestellgrund", de: "Abbestellgrund"],                descr:allDescr, type: OT.String],
-                [name: [en: "Hosting-Gebühr", de: "Hosting-Gebühr"],                descr:allDescr, type: OT.String],
-                [name: [en: "Pick&Choose-Paket", de: "Pick&Choose-Paket"],          descr:allDescr, type: OT.String],
-                [name: [en: "PDA/EBS-Programm", de: "PDA/EBS-Programm"],            descr:allDescr, type: OT.String],
-                [name: [en: "Produktsigel beantragt", de: "Produktsigel beantragt"],                    descr:allDescr, type: OT.String],
-                [name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],    descr:allDescr, type: OT.Int],
-                [name: [en: "Archivzugriff", de: "Archivzugriff"],                                      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
-                [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],              descr:allDescr, type: OT.String, isUsedForLogic: true],
-                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],        descr:allDescr, type: OT.String, isUsedForLogic: true],
-                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],   descr:allDescr, type: OT.URL, isUsedForLogic: true]
+                [
+                        name: [en: "GASCO Entry", de: "GASCO-Eintrag"],
+                        expl : [en: "", de: "Dieses Merkmal als Konsortialstelle auf \"ja\" setzen, um eine Lizenz im GASCO-Monitor aufzunehmen."],
+                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
+                ],
+                [
+                        name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],
+                        expl : [en: "", de: "Dieses Merkmal setzen, um bei Bedarf im GASCO-Monitor einen anderen Lizenznamen anzugeben als in LAS:eR aufgenommen."],
+                        descr:allDescr, type: OT.String, isUsedForLogic: true
+                ],
+                [
+                        name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],
+                        expl : [en: "", de: "Dieses Merkmal als Konsortialstelle verwenden, um im GASCO-Monitor einen anderen Verhandlungsführer-Namen anzugeben."],
+                        descr:allDescr, type: OT.String, isUsedForLogic: true
+                ],
+                [
+                        name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],
+                        expl : [en: "", de: "Unter welchem Link finden sich Informationen zum Produkt?"],
+                        descr:allDescr, type: OT.URL, isUsedForLogic: true
+                ],
+                [
+                        name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],
+                        expl : [en: "", de: "Wird eine Gelbschaltung in der EZB vorgenommen?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Metadata Delivery", de: "Metadatenlieferung"],
+                        expl : [en: "", de: "Ist eine automatische Metadatenlieferung vorhanden?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Metadata Source", de: "Metadaten Quelle"],
+                        expl : [en: "", de: "Über welche Quelle können die Metadaten bezogen werden?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Preisvorteil durch weitere Produktteilnahme", de: "Preisvorteil durch weitere Produktteilnahme"],
+                        expl : [en: "", de: "Kann durch die Lizenzierung eines weiteren Produktes ein Preisvorteil gesichert werden?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Produktabhängigkeit", de: "Produktabhängigkeit"],
+                        expl : [en: "", de: "Ist die Lizenz von einem anderen Produkt abhängig?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Bundesweit offen", de: "Bundesweit offen"],
+                        expl : [en: "", de: "Hat die Lizenz eine überregionale Ausrichtung?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Rechnungsstellung durch Anbieter", de: "Rechnungsstellung durch Anbieter"],
+                        expl: [en: "", de: "Erfolgt die Rechnungsstellung direkt über den Anbieter?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Mengenrabatt Stichtag", de: "Mengenrabatt Stichtag"],
+                        expl: [en: "", de: "Wann ist der Stichtag für die Findung der erreichten Rabattstufe?"],
+                        descr:allDescr, type: OT.Date, cat:'YN'
+                ],
+                [
+                        name: [en: "Testzeitraum", de: "Testzeitraum"],
+                        expl: [en: "", de: "Wie lange ermöglicht der Anbieter einen kostenfreien Testzugriff?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Unterjähriger Einstieg", de: "Unterjähriger Einstieg"],
+                        expl: [en: "", de: "Ist ein unterjähriger Einstieg in die Lizenz möglich?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Neueinsteigerrabatt", de: "Neueinsteigerrabatt"],
+                        expl : [en: "", de: "Existiert ein zusätzlicher Neueinsteigerpreis?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Simuser", de: "Simuser"],
+                        expl : [en: "", de: "Sind die simuser relevant für die Preisbestimmung?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Simuser Zahl", de: "Simuser Zahl"],
+                        expl : [en: "", de: "Wieviele gleichzeitige Nutzerzugriffe umfasst die Lizenz?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],
+                        expl : [en: "", de: "Zeitpunkt der Rechnung."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Zahlungsziel", de: "Zahlungsziel"],
+                        expl : [en: "", de: "Zahlungsziel"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Preis gerundet", de: "Preis gerundet"],
+                        expl : [en: "", de: "Gerundeter Preis."],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Teilzahlung", de: "Teilzahlung"],
+                        expl : [en: "", de: "Ist bei der Lizenz eine Teilzahlung der Rechnung vorgesehen?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Statistik", de: "Statistik"],
+                        expl : [en: "", de: ""],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Statistikzugang", de: "Statistikzugang"],
+                        expl : [en: "", de: "Mit welchen Zugangsdaten können die Statistiken abgerufen werden?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "StatisticsLink", en: "Statistics Link", de: "Statistik-Link"],
+                        expl : [en: "", de: "Über welchen Link können die Statistiken abgerufen werden?"],
+                        descr:allDescr, type: OT.URL
+                ],
+                [
+                        name: [en: "KBART", de: "KBART"],
+                        expl : [en: "", de: "Existiert ein KBART-Lieferung?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "reverse charge", de: "reverse charge"],
+                        expl: [en: "", de: "Unterliegt die Lizenz dem reverse charge?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Private Einrichtungen", de: "Private Einrichtungen"],
+                        expl: [en: "", de: "Dürfen auch private Einrichtungen an der Lizenz teilnehmen?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],
+                        expl: [en: "", de: "Mehrjahreslaufzeit."],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Rabatt", de: "Rabatt"],
+                        expl: [en: "", de: "Höhe des Rabattes."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Rabattstaffel", de: "Rabattstaffel"],
+                        expl: [en: "", de: "Wie sieht die Rabattstaffel für die Lizenz aus?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Rabatt Zählung", de: "Rabatt Zählung"],
+                        expl: [en: "", de: "Wie wird die Rabatthöhe errechnet? Z.B. durch Zählung aller Teilnehmer bei dem Anbieter…"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Kündigungsfrist", de: "Kündigungsfrist"],
+                        expl: [en: "", de: "Kündigungsfrist."],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Zusätzliche Software erforderlich?", de: "Zusätzliche Software erforderlich?"],
+                        expl : [en: "", de: "Wird für die Lizenzierung eine zusätzliche Software benötigt?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Preissteigerung", de: "Preissteigerung"],
+                        expl: [en: "", de: "Preissteigerung."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Preis abhängig von", de: "Preis abhängig von"],
+                        expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Abbestellquote", de: "Abbestellquote"],
+                        expl: [en: "", de: "Abbestellquote."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Bestellnummer im Erwerbungssystem", de: "Bestellnummer im Erwerbungssystem"],
+                        expl: [en: "", de: "Bestellnummer im Erwerbungssystem."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Zugangskennungen für Nutzer (pro Zeitschrift)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"],
+                        expl: [en: "", de: "Zugangskennungen für Nutzer (pro Zeitschrift)."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
+                        expl : [en: "", de: "Liegt eine Steuerbefreiung für die Lizenz vor?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Subscriptionsnummer vom Verlag", de: "Subskriptionsnummer des Verlags"],
+                        expl: [en: "", de: "Subskriptionsnummer des Verlags."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Subskriptionsnummer des Lieferanten", de: "Subskriptionsnummer des Lieferanten"],
+                        expl: [en: "", de: "Subskriptionsnummer des Lieferanten."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],
+                        expl: [en: "", de: "Existiert ein DBIS-Eintrag?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "DBIS-Link", de: "DBIS-Link"],
+                        expl: [en: "", de: "Link zum DBIS-Eintrag."],
+                        descr:allDescr, type: OT.URL
+                ],
+                [
+                        name: [en: "Abbestellgrund", de: "Abbestellgrund"],
+                        expl: [en: "", de: "Welchen Grund gab es für die Abbestellung?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Hosting-Gebühr", de: "Hosting-Gebühr"],
+                        expl: [en: "", de: "Ist eine Hosting-Gebühr zu entrichten?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "Pick&Choose-Paket", de: "Pick&Choose-Paket"],
+                        expl: [en: "", de: "Handelt es sich um ein Paket mit Einzeltitelauswahl (Pick & Choose)?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "PDA/EBS-Programm", de: "PDA/EBS-Programm"],
+                        expl: [en: "", de: "Basiert die Lizenz auf einem PDA-, EBS- oder EBA-Modell?"],
+                        descr:allDescr, type: OT.String
+                ],
+                                //[name: [en: "Produktsigel beantragt", de: "Produktsigel beantragt"],                    descr:allDescr, type: OT.String],
+                [
+                        name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],
+                        expl: [en: "", de: "Fachstatistik / Klassifikation"],
+                        descr:allDescr, type: OT.Int
+                ],
+                [
+                        name: [en: "Archivzugriff", de: "Archivzugriff"],
+                        expl: [en: "", de: "Gibt es einen Archivzugriff?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],
+                        expl: [en: "", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],
+                        expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
