@@ -1,15 +1,6 @@
 package com.k_int.kbplus
 
- 
-import groovy.util.slurpersupport.GPathResult
-import static groovyx.net.http.ContentType.*
-import static groovyx.net.http.Method.*
 import groovyx.net.http.*
-import org.apache.http.entity.mime.*
-import org.apache.http.entity.mime.content.*
-import java.nio.charset.Charset
-import org.apache.http.*
-import org.apache.http.protocol.*
 
 class EdinaPublicationsAPIService {
 
@@ -30,7 +21,7 @@ class EdinaPublicationsAPIService {
     def result = null
 
     try {
-      target_service.request(GET, ContentType.XML) { request ->
+      target_service.request(Method.GET, ContentType.XML) { request ->
         // uri.path='/'
         uri.query = [
           title:title
