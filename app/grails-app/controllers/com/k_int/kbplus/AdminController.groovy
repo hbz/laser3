@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.SystemEvent
+import de.laser.api.v0.ApiManager
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
@@ -11,6 +12,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
+import org.apache.commons.lang.RandomStringUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -841,6 +843,35 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def manageOrganisations() {
         Map<String, Object> result = [:]
+
+        if (params.cmd == 'changeApiLevel') {
+            Org target = genericOIDService.resolveOID(params.target)
+
+            if (ApiManager.getAllApiLevels().contains(params.apiLevel)) {
+                ApiManager.setApiLevel(target, params.apiLevel)
+            }
+            else if (params.apiLevel == 'Kein Zugriff') {
+                ApiManager.removeApiLevel(target)
+            }
+        }
+        else if (params.cmd == 'changeCustomerType') {
+            Org target = genericOIDService.resolveOID(params.target)
+            RefdataValue customerType = RefdataValue.findWhere(id: params.long('customerType'), owner: RefdataCategory.findByDesc('system.customer.type'))
+
+            if (customerType) {
+                def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+                if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                    oss.rdValue = customerType
+                    oss.save(flush:true)
+                }
+                else {
+                    OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
+                }
+            }
+            else if (RefdataValue.get(params.customerType)?.value == 'generic.null.value') {
+                OrgSettings.delete(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            }
+        }
 
         result.orgList = Org.findAll()
         result.orgListTotal = result.orgList.size()
