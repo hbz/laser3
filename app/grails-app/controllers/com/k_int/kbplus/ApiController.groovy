@@ -692,11 +692,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         Date now = new Date()
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
         response.contentType = 'text/xml'
-        response.setHeader('Content-disposition',"filename=orgData_dump.xml")
+        response.setHeader('Content-disposition',"attachment; filename=orgData_dump.xml")
         response.outputStream.withWriter { osWriter ->
             osWriter.write(writer.toString())
         }
-        response.outputStream.flush()
+        response.outputStream.close()
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])

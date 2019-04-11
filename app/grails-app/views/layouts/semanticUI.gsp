@@ -471,6 +471,7 @@
                                     <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp (Konsorte) für alle Einrichtungen setzen</g:link>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>
+                                    <g:link class="item" controller="api" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                 </div>
                             </div>
 
