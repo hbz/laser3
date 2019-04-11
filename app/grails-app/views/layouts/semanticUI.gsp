@@ -336,7 +336,16 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <div class="ui dropdown item">
+                                ${message(code:'org.plural.label')}
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
+                                    <g:link class="item" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                                </div>
+                            </div>
+
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>

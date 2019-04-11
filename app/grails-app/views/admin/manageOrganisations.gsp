@@ -42,9 +42,9 @@
 
                 <%-- <th>${message(code: 'org.libraryType.label')}</th> --%>
 
-                <th>Kundentyp</th>
+                <th>${message(code:'org.customerType.label')}</th>
 
-                <th>API</th>
+                <th>${message(code:'org.apiLevel.label')}</th>
 
                 <th></th>
             </tr>
@@ -171,19 +171,19 @@
 
     <%-- changing customer type --%>
 
-    <semui:modal id="customerTypeModal" text="Kundentyp ändern" editmodal="editmodal">
+    <semui:modal id="customerTypeModal" message="org.customerType.label" editmodal="editmodal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
             <input type="hidden" name="target" value="" />
 
             <div class="field">
-                <label for="orgName_ct">Organisation</label>
+                <label for="orgName_ct">${message(code:'org.label')}</label>
                 <input type="text" id="orgName_ct" name="orgName" value="" readonly />
             </div>
 
             <div class="field">
-                <label for="customerType">Kundentyp</label>
+                <label for="customerType">${message(code:'org.customerType.label')}</label>
                 <laser:select id="customerType" name="customerType"
                           from="${[RefdataValue.findByValue('generic.null.value')] + RefdataCategory.getAllRefdataValues('system.customer.type')}"
                           optionKey="id"
@@ -205,19 +205,19 @@
 
     <%-- changing api access --%>
 
-    <semui:modal id="apiLevelModal" text="API-Zugriff ändern" editmodal="editmodal">
+    <semui:modal id="apiLevelModal" message="org.apiLevel.label" editmodal="editmodal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
             <input type="hidden" name="target" value=""/>
 
             <div class="field">
-                <label for="orgName_al">Organisation</label>
+                <label for="orgName_al">${message(code:'org.label')}</label>
                 <input type="text" id="orgName_al" name="orgName" value="" readonly />
             </div>
 
             <div class="field">
-                <label for="apiLevel">API-Zugriff</label>
+                <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
                           from="${['Kein Zugriff'] + ApiManager.getAllApiLevels()}"
                           class="ui dropdown"
