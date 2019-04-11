@@ -15,6 +15,7 @@ class SurveyController {
     def contextService
     def subscriptionsQueryService
     def filterService
+    def docstoreService
 
     @Secured(['ROLE_YODA'])
     def currentSurveys() {
@@ -347,11 +348,7 @@ class SurveyController {
         }
 
 
-        params.tab = params.tab ?: 'selectedParticipants'
-
-        if (params.selectedOrgs && params.tab == 'consortiaMembers') {
-
-        }
+        params.tab = params.tab ?: 'selectedSubParticipants'
 
         // new: filter preset
         params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
@@ -370,11 +367,43 @@ class SurveyController {
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.configOrder }
+        result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
-        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id.toString()
+        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
 
-        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID).orgIDs)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+
+        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)
+
+        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)-result.surveyConfigSubOrgs
+        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)-result.selectedParticipants
+
+        result
+
+    }
+
+    @Secured(['ROLE_YODA'])
+    def showSurveyConfigDocs() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfigs = result.surveyInfo.surveyConfigs?.sort { it?.configOrder }
+
+        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0]?.id?.toString()
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         result
 
@@ -401,15 +430,121 @@ class SurveyController {
 
             params.list('selectedOrgs').each { soId ->
                 if(!(soId in surveyConfig.orgIDs)) {
-                    surveyConfig.orgIDs?.add(soId)
+                    surveyConfig.orgIDs?.add(Long.parseLong(soId))
+                    flash.message = g.message(code: "showSurveyParticipants.add.successfully")
                 }
             }
             surveyConfig.save(flush: true)
 
         }
 
-        redirect action: 'showSurveyParticipants', id: params.id, surveyConfigID: params.surveyConfigID
+        redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']
 
+    }
+
+    def deleteSurveyParticipants()
+    {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        if (params.selectedOrgs) {
+
+
+            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            surveyConfig.orgIDs = surveyConfig.orgIDs ?: new ArrayList()
+
+            params.list('selectedOrgs').each { soId ->
+                if(Long.parseLong(soId) in surveyConfig.orgIDs) {
+                    surveyConfig.orgIDs?.remove(Long.parseLong(soId))
+                    flash.message = g.message(code: "showSurveyParticipants.delete.successfully")
+                }
+            }
+            surveyConfig.save(flush: true)
+
+        }
+
+        redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
+
+    }
+
+
+    def addSubMembers()
+    {
+            def result = [:]
+            result.institution = contextService.getOrg()
+            result.user = User.get(springSecurityService.principal.id)
+
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+            if (!result.editable) {
+                flash.error = g.message(code: "default.notAutorized.message")
+                redirect(url: request.getHeader('referer'))
+            }
+
+            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+            def orgs = com.k_int.kbplus.Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()
+
+            if (orgs) {
+
+                surveyConfig.orgIDs = surveyConfig.orgIDs ?: new ArrayList()
+
+                orgs.each { org ->
+                    if(!(org.id in surveyConfig.orgIDs)) {
+                        surveyConfig.orgIDs?.add(org.id)
+                    }
+                }
+                surveyConfig.save(flush: true)
+
+            }
+
+            redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']
+
+    }
+
+    def deleteDocuments() {
+
+        log.debug("deleteDocuments ${params}");
+
+        docstoreService.unifiedDeleteDocuments(params)
+
+        redirect action: 'showSurveyConfigDocs',id: SurveyConfig.get(params.instanceId).surveyInfo.id,  params: [surveyConfigID: params.instanceId]
+    }
+
+    def deleteSurveyInfo() {
+
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyInfo = SurveyInfo.get(params.id)
+
+        surveyInfo.surveyConfigs.each { config ->
+
+            config.documents.each{
+
+                it.delete()
+
+            }
+            it.delete()
+        }
+
+        redirect action: 'currentSurveys'
     }
 
 

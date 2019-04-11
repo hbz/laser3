@@ -9,6 +9,7 @@ import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
+import org.apache.commons.lang.RandomStringUtils
 
 import javax.servlet.http.HttpServletRequest
 
@@ -21,6 +22,35 @@ class ApiManager {
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
     static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
     static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
+
+    static List getAllApiLevels() {
+        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER]
+    }
+
+    static void setApiLevel(Org org, String apiLevel) {
+
+        if (! getAllApiLevels().contains(apiLevel)) {
+            return
+        }
+
+        def oss = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            oss.strValue = apiLevel
+            oss.save(flush:true)
+        }
+        else {
+            OrgSettings.add(org, OrgSettings.KEYS.API_LEVEL, apiLevel)
+            OrgSettings.add(org, OrgSettings.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
+            OrgSettings.add(org, OrgSettings.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
+        }
+    }
+
+    static void removeApiLevel(Org org) {
+
+        OrgSettings.delete(org, OrgSettings.KEYS.API_LEVEL)
+        OrgSettings.delete(org, OrgSettings.KEYS.API_KEY)
+        OrgSettings.delete(org, OrgSettings.KEYS.API_PASSWORD)
+    }
 
     /**
      * @return Object

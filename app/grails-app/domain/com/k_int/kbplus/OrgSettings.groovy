@@ -81,7 +81,7 @@ class OrgSettings {
     static delete(Org org, KEYS key) {
 
         def oss = findWhere(org: org, key: key)
-        oss.delete(flush: true)
+        oss?.delete(flush: true)
     }
 
     /*

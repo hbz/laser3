@@ -1,4 +1,4 @@
-<div class="ui four top attached steps">
+<div class="ui five tablet stackable steps">
     <g:if test="${surveyInfo}">
         <g:link controller="survey" action="showSurveyInfo" id="${surveyInfo.id}"
                 class="step ${actionName == 'showSurveyInfo' ? 'active' : ''}">
@@ -51,11 +51,12 @@
         </div>
     </g:else>
 
-    <g:if test="${surveyInfo && surveyConfigs.size() > 0}">
-        <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
-                class="step ${actionName == 'showSurveyParticipants' ? 'active' : ''}">
 
-            <i class="tasks icon"></i>
+    <g:if test="${surveyInfo && surveyConfigs.size() > 0}">
+        <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
+                class="step ${actionName == 'showSurveyConfigDocs' ? 'active' : ''}">
+
+            <i class="file alternate outline icon"></i>
 
             <div class="content">
                 <div class="title">${message(code: 'showSurveyInfo.step.third.title')}</div>
@@ -67,8 +68,8 @@
     </g:if>
     <g:else>
 
-        <div class="step ${actionName == 'showSurveyParticipants' ? 'active' : ''}">
-            <i class="tasks icon"></i>
+        <div class="step ${actionName == 'showSurveyConfigDocs' ? 'active' : ''}">
+            <i class="file alternate outline icon"></i>
 
             <div class="content">
                 <div class="title">${message(code: 'showSurveyInfo.step.third.title')}</div>
@@ -79,13 +80,41 @@
     </g:else>
 
 
+    <g:if test="${surveyInfo && surveyConfigs.size() > 0}">
+        <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
+                class="step ${actionName == 'showSurveyParticipants' ? 'active' : ''}">
+
+            <i class="tasks icon"></i>
+
+            <div class="content">
+                <div class="title">${message(code: 'showSurveyInfo.step.fourthly.title')}</div>
+
+                <div class="description">${message(code: 'showSurveyInfo.step.fourthly.description')}</div>
+            </div>
+        </g:link>
+
+    </g:if>
+    <g:else>
+
+        <div class="step ${actionName == 'showSurveyParticipants' ? 'active' : ''}">
+            <i class="tasks icon"></i>
+
+            <div class="content">
+                <div class="title">${message(code: 'showSurveyInfo.step.fourthly.title')}</div>
+
+                <div class="description">${message(code: 'showSurveyInfo.step.fourthly.description')}</div>
+            </div>
+        </div>
+    </g:else>
+
+
     <div class="step">
         <i class="chart pie icon"></i>
 
         <div class="content">
-            <div class="title">${message(code: 'showSurveyInfo.step.fourthly.title')}</div>
+            <div class="title">${message(code: 'showSurveyInfo.step.fifth.title')}</div>
 
-            <div class="description">${message(code: 'showSurveyInfo.step.fourthly.description')}</div>
+            <div class="description">${message(code: 'showSurveyInfo.step.fifth.description')}</div>
         </div>
     </div>
 </div>

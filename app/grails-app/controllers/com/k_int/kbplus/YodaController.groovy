@@ -611,6 +611,26 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def updateCustomerType(){
+        RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')
+
+        List<Org> orgs = Org.executeQuery(
+                "SELECT o from Org o join o.orgType ot where ot = :inst",
+                [inst: inst]
+        )
+
+        int count = 0
+        orgs.each{ o ->
+            if (o.setDefaultCustomerType()) {
+                count++
+            }
+        }
+
+        flash.message = "Kundentyp wurde für ${count} Einrichtungen gesetzt. ${orgs.size() - count} Einrichtungen wurden ignoriert .."
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
     def showOldDocumentOwners(){
         List currentDocuments = DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null order by dc.owner.creator.display asc')
         Map result = [currentDocuments:currentDocuments]

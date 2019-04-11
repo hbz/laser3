@@ -1,14 +1,12 @@
-/*
-Browser.drive {
-    go "http://gebish.org"
+/*import geb.Page
 
-    assert title == "Geb - Very Groovy Browser Automation"
+class TestPage extends Page {
 
-    $("div.menu a.manuals").click()
-    waitFor { !$("#manuals-menu").hasClass("animating") }
+    static url = "/login/auth"
 
-    $("#manuals-menu a")[0].click()
+    static at = { title == "LAS:eR : Login" }
 
-    assert title.startsWith("The Book Of Geb")
+    static content = {
+    }
 }
 */
