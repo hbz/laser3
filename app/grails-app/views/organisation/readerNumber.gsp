@@ -26,35 +26,36 @@ ${orgInstance.name}
 
 <g:if test="${editable}">
     <input class="ui button"
-           value="${message(code: 'numbers.create.label')}"
+           value="${message(code: 'readerNumber.create.label')}"
            data-semui="modal"
            data-href="#numbersFormModal"/>
 </g:if>
 
-<g:render template="/numbers/formModal"/>
+<g:render template="/readerNumber/formModal"/>
 
 
-<h5 class="ui header"><g:message code="menu.institutions.numbers" default="Numbers"/></h5>
+<h5 class="ui header"><g:message code="menu.institutions.readerNumbers" default="Numbers"/></h5>
 
 <table class="ui table la-table">
 <thead>
 <tr>
-    <th>${message(code: 'numbers.number.label')}-${message(code: 'numbers.type.label')}</th>
-    <th>${message(code: 'numbers.number.label')}</th>
-    <th>${message(code: 'numbers.startDate.label')}</th>
-    <th>${message(code: 'numbers.endDate.label')}</th>
+    <th>${message(code: 'readerNumber.referenceGroup.label')}</th>
+    <th>${message(code: 'readerNumber.number.label')}</th>
+    <th>${message(code: 'readerNumber.dueDate.label')}</th>
     <th></th>
 </tr>
 </thead>
 <tbody>
 <g:each in="${numbersInstanceList}" var="numbersInstance">
+
     <tr>
-        <td><semui:xEditableRefData config="Number Type" owner="${numbersInstance}" field="type" overwriteEditable="${overwriteEditable}"/></td>
-        <td><semui:xEditable owner="${numbersInstance}" type="number" field="number" overwriteEditable="${overwriteEditable}"/></td>
-        <td><semui:xEditable owner="${numbersInstance}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/></td>
-        <td><semui:xEditable owner="${numbersInstance}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/></td>
+        <td>${numbersInstance.type}</td>
+        <td>${numbersInstance.number}</td>
+        <td>${numbersInstance.dueDate}</td>
+        <td>${numbersInstance.semester}</td>
         <td class="x">
             <g:if test="${editable}">
+                <button type="button" class="ui icon button" data-semui="modal" href="#numbersFormModal_${docctx.id}" data-tooltip="${message(code:"readerNumber.edit.label")}"><i class="pencil icon"></i></button>
                 <g:form controller="numbers" action="delete">
                     <g:hiddenField name="id" value="${numbersInstance?.id}"/>
                     <button class="ui icon negative button" type="submit" name="_action_delete">

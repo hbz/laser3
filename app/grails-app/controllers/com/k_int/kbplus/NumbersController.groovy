@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 
-import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
@@ -20,7 +19,7 @@ class NumbersController extends AbstractDebugController {
     def create() {
 		switch (request.method) {
 		case 'GET':
-        	[numbersInstance: new Numbers(params)]
+        	[numbersInstance: new ReaderNumber(params)]
 			break
 		case 'POST':
 
@@ -33,14 +32,14 @@ class NumbersController extends AbstractDebugController {
 				params.startDate = sdf.parse(params.startDate)
 
 			params.org = Org.get(params.orgid)
-	        def numbersInstance = new Numbers(params)
+	        def numbersInstance = new ReaderNumber(params)
 	        if (! numbersInstance.save(flush: true)) {
-				flash.error = message(code: 'default.not.created.message', args: [message(code: 'numbers.number.label', default: 'Number')])
+				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
                 render view: 'create', model: [numbersInstance: numbersInstance]
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'numbers.label', default: 'Number'), numbersInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'readerNumber.number.label'), numbersInstance.id])
 			redirect(url: request.getHeader('referer'))
 			break
 		}
@@ -51,9 +50,9 @@ class NumbersController extends AbstractDebugController {
     def edit() {
 		switch (request.method) {
 		case 'GET':
-	        def numbersInstance = Numbers.get(params.id)
+	        def numbersInstance = ReaderNumber.get(params.id)
 	        if (! numbersInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 				redirect(url: request.getHeader('referer'))
 	            return
 	        }
@@ -61,9 +60,9 @@ class NumbersController extends AbstractDebugController {
 	        [numbersInstance: numbersInstance]
 			break
 		case 'POST':
-	        def numbersInstance = Numbers.get(params.id)
+	        def numbersInstance = ReaderNumber.get(params.id)
 	        if (! numbersInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 				redirect(url: request.getHeader('referer'))
 	            return
 	        }
@@ -72,8 +71,8 @@ class NumbersController extends AbstractDebugController {
 	            def version = params.version.toLong()
 	            if (numbersInstance.version > version) {
 	                numbersInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'numbers.label', default: 'Numbers')] as Object[],
-	                          "Another user has updated this Numbers while you were editing")
+	                          [message(code: 'readerNumber.label')] as Object[],
+	                          "Another user has updated this ReaderNumber while you were editing")
 	                render view: 'edit', model: [numbersInstance: numbersInstance]
 	                return
 	            }
@@ -86,7 +85,7 @@ class NumbersController extends AbstractDebugController {
 	            return
 	        }
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'numbers.label', default: 'Numbers'), numbersInstance.id])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
 			redirect(url: request.getHeader('referer'))
 			break
 		}
@@ -94,20 +93,20 @@ class NumbersController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def numbersInstance = Numbers.get(params.id)
+        def numbersInstance = ReaderNumber.get(params.id)
         if (! numbersInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			redirect(url: request.getHeader('referer'))
             return
         }
 
         try {
             numbersInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
+			flash.message = message(code: 'default.deleted.message', args: [message(code: 'readerNumber.label'), params.id])
 			redirect(url: request.getHeader('referer'))
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'numbers.label', default: 'Numbers'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'readerNumber.label'), params.id])
 			redirect(url: request.getHeader('referer'))
         }
     }

@@ -130,5 +130,38 @@ class SemanticUiDropdownTagLib {
         out << '<a href="#" class="item"><div class="disabled" data-tooltip="Die Funktion \''+message+'\' ist zur Zeit nicht verfügbar!">'+message+'</div></a>'
 
     }
+
+    def dropdownWithI18nExplanations = { attrs, body ->
+        if (!attrs.name) {
+            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [name]")
+        }
+        if (!attrs.containsKey('from')) {
+            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [from]")
+        }
+        if (!attrs.containsKey('optionExpl')) {
+            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [optionExpl]")
+        }
+
+        out << "<div class='ui fluid selection dropdown ${attrs.class}'>"
+        out << "<input type='hidden' name='${attrs.name}' id='${attrs.id}'>"
+        out << '<i class="dropdown icon"></i>'
+        out << "<div class='default text'>${attrs.noSelection}</div>"
+        out << '<div class="menu">'
+        attrs.from?.each { el ->
+            out << '<div class="item" data-value="'
+            if(attrs.optionKey)
+                out << attrs.optionKey(el)
+            if(attrs.optionExpl) {
+                out << '" data-tooltip="'
+                out << attrs.optionExpl(el)
+            }
+            out << '">'
+            out << attrs.optionValue(el).toString().encodeAsHTML()
+            out << '</div>'
+        }
+        out << '</div>'
+        out << '</div>'
+
+    }
 }
 
