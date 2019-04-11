@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'createSurvey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <semui:crumb message="createSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'createSurvey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
 
 
 <g:render template="steps"/>
@@ -83,8 +83,8 @@
 
             <g:if test="${surveyConfigs.size() > 0}">
                 <br>
-                
-                <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}" class="ui icon button">${message(code: 'showSurveyInfo.nextStep', default: 'Next Step')}</i></g:link>
+
+                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}" class="ui icon button">${message(code: 'showSurveyInfo.nextStep', default: 'Next Step')}</i></g:link>
 
             </g:if>
 
@@ -139,14 +139,27 @@
                             ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
                         </td>
                         <td>
-                            <g:link class="ui negative button"
-                                    controller="survey" action="deleteSurveyConfig" id="${config?.id}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+                            <g:if test="${config?.getCurrentDocs()}">
+                                <span data-position="top right" data-tooltip="${message(code:'showSurveyConfig.delete.existingDocs')}">
+                                    <button class="ui icon button negative" disabled="disabled">
+                                        <i class="trash alternate icon"></i>
+                                    </button>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="Umfrage"
+                                        data-confirm-term-what-detail="${config?.getConfigName()}"
+                                        data-confirm-term-how="delete"
+                                        controller="survey" action="deleteSurveyConfig"
+                                        id="${config?.id}">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:else>
                         </td>
                     </tr>
 
-                    <g:if test="${config.type == 'Subscription'}">
+                    <g:if test="${config?.type == 'Subscription'}">
                         <g:if test="${config?.surveyProperties?.surveyProperty}">
                             <g:each in="${config?.surveyProperties ?}" var="prop" status="x">
                                 <tr>

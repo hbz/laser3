@@ -26,12 +26,11 @@ class SurveyConfig {
     ArrayList orgIDs
 
     static hasMany = [
-            docs: Doc,
+            documents: DocContext,
             surveyProperties: SurveyConfigProperties
     ]
 
     static constraints = {
-        docs (nullable:true, blank:false)
         subscription (nullable:true, blank:false)
         surveyProperty (nullable:true, blank:false)
         orgIDs (nullable:true, blank:false)
@@ -81,6 +80,22 @@ class SurveyConfig {
 
         Org.findAllByIdInList()
 
+    }
+
+    def getCurrentDocs(){
+
+        return documents.findAll {it.status?.value != 'Deleted'}
+    }
+
+    def getConfigName(){
+
+        if(type == 'Subscription'){
+            return subscription?.name
+        }
+        else
+        {
+            return surveyProperty?.getI10n('name')
+        }
     }
 
 
