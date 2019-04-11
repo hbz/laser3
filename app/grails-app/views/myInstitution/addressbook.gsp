@@ -39,16 +39,16 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                 <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
                     <div class="four fields">
                         <div class="field">
-                            <label>${message(code: 'person.filter.name')}</label>
+                            <label for="prs">${message(code: 'person.filter.name')}</label>
                             <div class="ui input">
-                                <input type="text" name="prs" value="${params.prs}"
+                                <input type="text" id="prs" name="prs" value="${params.prs}"
                                        placeholder="${message(code: 'person.filter.name')}" />
                             </div>
                         </div>
                         <div class="field">
-                            <label>${message(code: 'person.filter.org')}</label>
+                            <label for="org">${message(code: 'person.filter.org')}</label>
                             <div class="ui input">
-                                <input type="text" name="org" value="${params.org}"
+                                <input type="text" id="org" name="org" value="${params.org}"
                                        placeholder="${message(code: 'person.filter.org')}" />
                             </div>
                         </div>

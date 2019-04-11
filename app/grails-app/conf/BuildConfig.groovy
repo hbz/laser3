@@ -26,9 +26,10 @@ grails.project.dependency.resolution = {
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
-    def gebVersion = "0.12.2"
-    def seleniumVersion = "2.53.0"
-    def seleniumHtmlunitDriverVersion = "2.52.0"
+
+    def gebVersion = "0.12.2" // '1.0' // "0.12.2"
+    def seleniumVersion = "2.41.0" // '2.45.0' // "2.53.0"
+    def seleniumHtmlunitDriverVersion = "2.41.0" // '2.45.0' // "2.52.0"
 
 
     repositories {
@@ -100,23 +101,28 @@ grails.project.dependency.resolution = {
         compile 'org.apache.httpcomponents:httpmime:4.5.1' // upgrade for MultipartEntityBuilder
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
 
-        //test 'com.agorapulse:gru:0.5.1'
-
         test 'org.hamcrest:hamcrest-all:1.3'
-        test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion") {
-            exclude 'xml-apis'
+        
+        // -- test setup --
+
+        test "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1", {
+            excludes "commons-logging", "httpclient", "xml-apis", "groovy", "groovy-all", "xercesImpl", "nekohtml"
+        }
+
+        test "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion", {
+            excludes 'xml-apis', 'htmlunit'
+        }
+        test 'net.sourceforge.htmlunit:htmlunit:2.13', {
+            excludes "xml-apis", "commons-logging", "xercesImpl"
         }
         test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
         test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
         
-        // http://www.gebish.org/manual/current/build-integrations.html#grails
-        // https://github.com/geb/geb-example-grails
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:$gebVersion"
 
-        runtime ( 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2' ) { 
-          excludes "org.codehaus.groovy", "groovy"
-        }
+        // -- test setup --
+
         //There should be a fix for jdt core on jasperreports version 6.
         // Without exclude jasper report compiling crashes on Java8
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
@@ -126,7 +132,8 @@ grails.project.dependency.resolution = {
         // compile 'cglib:cglib:2.2.2'
         compile "com.lowagie:itext:2.1.7"
 
-        compile group: 'org.codehaus.groovy', name: 'groovy-ant', version: '2.4.14'
+        //compile group: 'org.codehaus.groovy', name: 'groovy-ant', version: '2.4.14'
+        compile 'org.codehaus.groovy:groovy-ant:2.5.0'
 
         compile 'org.apache.commons:commons-lang3:3.7'
     }

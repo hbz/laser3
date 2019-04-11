@@ -6,14 +6,14 @@
         <input type="hidden" name="ownertp" value="${owntp}"/>
 
         <div class="field fieldcontain">
-            <label>${message(code:'template.addNote.title', default: 'Titel')}:</label>
+            <label for="licenseNoteTitle">${message(code:'template.addNote.title', default: 'Titel')}:</label>
 
-            <input type="text" name="licenseNoteTitle" />
+            <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
         </div>
         <div class="field fieldcontain">
-            <label>${message(code:'template.addNote.note', default: 'Note')}:</label>
+            <label for="licenseNote">${message(code:'template.addNote.note', default: 'Note')}:</label>
 
-            <textarea name="licenseNote"></textarea>
+            <textarea id="licenseNote" name="licenseNote"></textarea>
         </div>
     </g:form>
 </semui:modal>

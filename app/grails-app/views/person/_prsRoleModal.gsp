@@ -6,9 +6,9 @@
     <g:form class="ui form" url="[controller: 'person', action: 'addPersonRole', params: [id: personInstance.id]]" method="POST">
 
         <div class="field">
-            <label>Einrichtung</label>
+            <label for="newPrsRoleOrg">Einrichtung</label>
             <g:select class="ui dropdown search"
-                          name="newPrsRoleOrg"
+                      id="newPrsRoleOrg" name="newPrsRoleOrg"
                           from="${Org.findAll().sort{ it.name.toLowerCase() }}"
                           optionKey="id"
                           optionValue="name"
@@ -17,9 +17,9 @@
         </div>
 
         <div class="field">
-            <label>${tmplRoleType}</label>
+            <label for="newPrsRoleType">${tmplRoleType}</label>
             <laser:select class="ui dropdown search"
-                          name="newPrsRoleType"
+                          id="newPrsRoleType" name="newPrsRoleType"
                           from="${roleTypeValues}"
                           optionKey="id"
                           optionValue="value" />

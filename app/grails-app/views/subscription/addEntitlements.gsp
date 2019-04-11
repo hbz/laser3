@@ -37,13 +37,13 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="fields two">
             <div class="field">
-                <label>${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
-                <input name="filter" value="${params.filter}"/>
+                <label for="filter">${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
+                <input id="filter" name="filter" value="${params.filter}"/>
             </div>
 
             <div class="field">
-                <label>${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
-                <select name="pkgfilter">
+                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                <select id="pkgfilter" name="pkgfilter">
                     <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
                     <g:each in="${subscriptionInstance.packages}" var="sp">
                         <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>

@@ -522,6 +522,7 @@ class SemanticUiTagLib {
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
 
     def datepicker = { attrs, body ->
+
         def inputCssClass = attrs.inputCssClass ?: '';
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
@@ -537,8 +538,8 @@ class SemanticUiTagLib {
             value = attrs.value
         }
 
-        def classes = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.required ? 'required=""' : ''
+        def classes = attrs.containsKey('required') ? 'field fieldcontain required' : 'field fieldcontain'
+        def required = attrs.containsKey('required') ? 'required=""' : ''
         def hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
@@ -688,9 +689,9 @@ class SemanticUiTagLib {
 
         def total = attrs.total
 
-        out << '<div class="ui circular label">'
+        out << '<span class="ui circular label">'
         out << total
-        out << '</div>'
+        out << '</span>'
     }
     def dropdown = { attrs, body ->
         if (!attrs.name) {

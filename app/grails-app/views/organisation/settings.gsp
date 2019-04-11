@@ -61,15 +61,15 @@
                             <table class="ui la-table table">
                                 <thead>
                                 <tr>
-                                    <th>Key</th>
-                                    <th>Value</th>
+                                    <th>Merkmal</th>
+                                    <th>Wert</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <g:each in="${settings}" var="os">
                                     <tr>
                                         <td>${os.key}</td>
-                                        <td>${os.getValue()}</td>
+                                        <td>${os.rdValue ? os.getValue()?.getI10n('value') : os.getValue()}</td>
                                     </tr>
                                 </g:each>
                                 </tbody>

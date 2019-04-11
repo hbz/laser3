@@ -30,7 +30,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-
+Filter: TODO
 </semui:filter>
 
 <div>
@@ -46,8 +46,9 @@
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
             <g:sortableColumn params="${params}" property="si.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <th>${message(code: 'surveyInfo.members')}</th>
+            <g:sortableColumn params="${params}" property="si.status" title="${message(code: 'surveyInfo.status.label')}"/>
             <th>${message(code: 'surveyInfo.property')}</th>
+            <th>${message(code: 'surveyInfo.members')}</th>
             <th>${message(code: 'surveyInfo.evaluation')}</th>
             <th></th>
 
@@ -74,12 +75,19 @@
                     <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                 </td>
 
-                <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                <td>
+                    ${s.status?.getI10n('value')}
                 </td>
+
+
                 <td class="center aligned">
                     <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
                 </td>
+
+                <td class="center aligned">
+                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                </td>
+
                 <td>
 
                 </td>
@@ -87,6 +95,16 @@
 
                 <g:if test="${editable}">
                 <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+
+                    %{--<g:link controller="${controllerName}" action="deleteSurveyInfo"
+                            class="ui icon negative button js-open-confirm-modal"
+                            data-confirm-term-what="Umfrage"
+                            data-confirm-term-what-detail="${s.name}"
+                            data-confirm-term-how="delete"
+                            params='[id: "${s.id}"]'>
+                        <i class="trash alternate icon"></i>
+                    </g:link>--}%
+
                 </g:if>
                 </td>
             </tr>

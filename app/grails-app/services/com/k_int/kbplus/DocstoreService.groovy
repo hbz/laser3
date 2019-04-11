@@ -4,8 +4,6 @@ import gov.loc.repository.bagit.BagFactory
 import gov.loc.repository.bagit.PreBag
 import groovy.xml.MarkupBuilder
 import groovyx.net.http.*
-import groovyx.net.http.ContentType.*
-import groovyx.net.http.Method.*
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.util.zip.ZipEntry

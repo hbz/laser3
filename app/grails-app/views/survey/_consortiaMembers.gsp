@@ -22,11 +22,11 @@
     <br/>
     <input type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}" />
 
-    <g:if test="${showAddSubMembers}">
+    <g:if test="${showAddSubMembers && (selectedSubParticipants.size() != surveyConfigSubOrgs.size())}">
         <br/>
         <br/>
     <g:link  class="ui button" controller="survey" action="addSubMembers"
-            id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">${message(code:'showAddSubMembers.button.addSubMembers')} </g:link>
+            id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]">${message(code:'showAddSubMembers.button.addSubMembers')} </g:link>
     </g:if>
 
 </g:form>

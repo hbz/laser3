@@ -26,18 +26,18 @@
 
                     <div class="four fields">
                         <div class="field">
-                            <label>${message(code:'default.search.text')}</label>
-                            <input type="text" name="name" value="${params.name}"/>
+                            <label for="name">${message(code:'default.search.text')}</label>
+                            <input type="text" id="name" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
-                            <label>${message(code:'user.role')}</label>
+                            <label for="authority">${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
-                                      value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
+                                      value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
                         </div>
                         <div class="field">
-                            <label>${message(code:'user.org')}</label>
+                            <label for="org">${message(code:'user.org')}</label>
                             <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
-                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
                         </div>
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
@@ -55,18 +55,18 @@
 
                     <div class="four fields">
                         <div class="field">
-                            <label>${message(code:'default.search.text')}</label>
-                            <input type="text" name="name" value="${params.name}"/>
+                            <label for="name2">${message(code:'default.search.text')}</label>
+                            <input type="text" id="name2" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
-                            <label>${message(code:'user.role')}</label>
+                            <label for="authority">${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui search dropdown"
-                                      value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
+                                      value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
                         </div>
                         <div class="field">
-                            <label>${message(code:'user.org')}</label>
+                            <label for="org">${message(code:'user.org')}</label>
                             <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
-                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
                         </div>
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>

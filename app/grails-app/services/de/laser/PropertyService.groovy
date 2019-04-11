@@ -27,7 +27,7 @@ class PropertyService {
 
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
-            if(pd.type == RefdataValue.toString() && params.filterProp) {
+            if(params.filterProp) {
                 String propGroup
                 if (pd.tenant) {
                     propGroup = "privateProperties"
@@ -60,8 +60,8 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
                         } else {
-                            base_qry += " and gProp.stringValue = :prop ) "
-                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                            base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
+                            base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
                         }
                         break
                     case BigDecimal.toString():
