@@ -36,6 +36,7 @@ class YodaController {
     def costItemUpdateService
     def documentUpdateService
     def quartzScheduler
+    def identifierService
 
     static boolean ftupdate_running = false
 
@@ -620,6 +621,13 @@ class YodaController {
     def updateShareConfigurations(){
         flash.message = "Überarbeite Sichtbarkeitseinstellungen und Eigentümerverhältnisse ..."
         documentUpdateService.updateShareConfigurations()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def generateBatchUID() {
+        flash.message = "Setze UID für Domänen ..."
+        identifierService.checkNullUIDs()
         redirect(url: request.getHeader('referer'))
     }
 

@@ -377,15 +377,6 @@ class ApiService {
         return xml
     }
 
-    /*
-        hic codex data pro organisationibus atque utilisatoribus leget et in repositorium datium scribit
-        We should not think in Latin - this code reads off data from an existing dump and writes them into the database
-     */
-    GPathResult setupLaserData(GPathResult xml) {
-
-        return xml
-    }
-
     GPathResult makeshiftSubscriptionImport(GPathResult xml){
 
         // TODO: in progress - erms-746

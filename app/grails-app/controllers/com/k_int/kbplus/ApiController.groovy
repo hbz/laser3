@@ -351,8 +351,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             dateCreated(o.dateCreated)
                             lastUpdated(o.lastUpdated)
                             categoryId(o.categoryId)
-                            fteStudents(o.fteStudents)
-                            fteStaff(o.fteStaff)
                             sector {
                                 if(o.sector) {
                                     rdc(o.sector.owner.desc)
@@ -401,21 +399,27 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                                     rdv(o.libraryType.value)
                                 }
                             }
-                            costConfigurationPreset {
-                                if(o.costConfigurationPreset) {
-                                    rdc(o.costConfigurationPreset.owner.desc)
-                                    rdv(o.costConfigurationPreset.value)
+                            costConfigurations {
+                                CostItemElementConfiguration.findAllByForOrganisation(o).each { ciecObj ->
+                                    CostItemElementConfiguration ciec = (CostItemElementConfiguration) ciecObj
+                                    costConfiguration {
+                                        rdc(ciec.costItemElement.owner.desc)
+                                        rdv(ciec.costItemElement.value)
+                                        elementSign {
+                                            rdc(ciec.elementSign.owner.desc)
+                                            rdv(ciec.elementSign.value)
+                                        }
+                                    }
                                 }
                             }
                             ids {
                                 o.ids.each { idObj ->
-                                    id {
-                                        IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
-                                        canoncialID(idOcc.identifier) //may not match; no globalUID available
-                                    }
+                                    IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                    id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
                                 }
                             }
                             //outgoing/ingoingCombos: assembled in branch combos
+                            /*
                             links {
                                 o.links.each { linkObj ->
                                     linkElem {
@@ -425,62 +429,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                                             rdc(link.roleType.owner.desc)
                                             rdv(link.roleType.value)
                                         }
-                                        if(link.pkg) pkg(link.pkg.globalUID)
-                                        if(link.sub) sub(link.sub.globalUID)
-                                        if(link.lic) lic(link.lic.globalUID)
                                         if(link.title) title(link.title.globalUID)
                                         if(link.startDate) startDate(link.startDate)
                                         if(link.endDate) endDate(link.endDate)
                                     }
                                 }
                             }
-                            prsLinks {
-                                o.prsLinks.each { linkObj ->
-                                    personRole {
-                                        PersonRole link = (PersonRole) linkObj
-                                        org(link.org.globalUID)
-                                        prs(link.prs.globalUID)
-                                        if(link.positionType) {
-                                            positionType {
-                                                rdc(link.positionType.owner.desc)
-                                                rdv(link.positionType.value)
-                                            }
-                                        }
-                                        if(link.functionType) {
-                                            functionType {
-                                                rdc(link.functionType.owner.desc)
-                                                rdv(link.functionType.value)
-                                            }
-                                        }
-                                        if(link.responsibilityType) {
-                                            responsibilityType {
-                                                rdc(link.responsibilityType.owner.desc)
-                                                rdv(link.responsibilityType.value)
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            //contacts and addresses done on own branches respectively
-                            affiliations {
-                                o.affiliations.each { affObj ->
-                                    affiliation {
-                                        UserOrg affiliation = (UserOrg) affObj
-                                        user(affiliation.user.username)
-                                        org(affiliation.org.globalUID)
-                                        status(affiliation.status)
-                                        if(affiliation.formalRole) {
-                                            formalRole(affiliation.formalRole.authority)
-                                        }
-                                        if(affiliation.dateActioned) {
-                                            dateActioned(affiliation.dateActioned)
-                                        }
-                                        if(affiliation.dateRequested) {
-                                            dateReuested(affiliation.dateRequested)
-                                        }
-                                    }
-                                }
-                            }
+                            */
+                            //prsLinks, affiliations, contacts and addresses done on own branches respectively
+                            /*
                             customProperties {
                                 o.customProperties.each { cpObj ->
                                     OrgCustomProperty customProp = (OrgCustomProperty) cpObj
@@ -501,6 +458,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                                     }
                                 }
                             }
+                            */
                             orgTypes {
                                 o.orgType.each { ot ->
                                     orgType {
@@ -513,6 +471,26 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                     catch (ClassCastException e) {
                         log.error("Help! ${obj} is a non-organisation object among orgs!!!")
+                    }
+                }
+            }
+            affiliations {
+                List affiliations = UserOrg.getAll()
+                affiliations.each { affObj ->
+                    UserOrg userOrg = (UserOrg) affObj
+                    affiliation {
+                        user(userOrg.user.username)
+                        org(userOrg.org.globalUID)
+                        status(userOrg.status)
+                        if(userOrg.formalRole) {
+                            formalRole(userOrg.formalRole.authority)
+                        }
+                        if(userOrg.dateActioned) {
+                            dateActioned(userOrg.dateActioned)
+                        }
+                        if(userOrg.dateRequested) {
+                            dateRequested(userOrg.dateRequested)
+                        }
                     }
                 }
             }
@@ -576,6 +554,33 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                 }
             }
+            personRoles {
+                List orgPersonRoles = PersonRole.findAllByOrgIsNotNull()
+                orgPersonRoles.each { link ->
+                    personRole {
+                        org(link.org.globalUID)
+                        prs(link.prs.globalUID)
+                        if(link.positionType) {
+                            positionType {
+                                rdc(link.positionType.owner.desc)
+                                rdv(link.positionType.value)
+                            }
+                        }
+                        if(link.functionType) {
+                            functionType {
+                                rdc(link.functionType.owner.desc)
+                                rdv(link.functionType.value)
+                            }
+                        }
+                        if(link.responsibilityType) {
+                            responsibilityType {
+                                rdc(link.responsibilityType.owner.desc)
+                                rdv(link.responsibilityType.value)
+                            }
+                        }
+                    }
+                }
+            }
             users {
                 User.getAll().each { userObj ->
                     user {
@@ -591,11 +596,40 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         accountExpired(u.accountExpired)
                         accountLocked(u.accountLocked)
                         passwordExpired(u.passwordExpired)
+
                         //affiliations done already on organisations
                         roles {
                             u.roles.each { rObj ->
                                 UserRole r = (UserRole) rObj
                                 role(r.role.authority)
+                            }
+                        }
+                        settings {
+                            List<UserSettings> us = UserSettings.findAllByUser(u)
+                            us.each { st ->
+                                switch(st.key.type) {
+                                    case Org: setting{
+                                        name(st.key)
+                                        org(st.orgValue ? st.orgValue.globalUID : ' ')
+                                    }
+                                        break
+                                    case RefdataValue:
+                                        if(st.rdValue) {
+                                            setting {
+                                                name(st.key)
+                                                rdValue {
+                                                    rdc(st.rdValue.owner.desc)
+                                                    rdv(st.rdValue.value)
+                                                }
+                                            }
+                                        }
+                                        break
+                                    default: setting{
+                                        name(st.key)
+                                        value(st.getValue())
+                                    }
+                                        break
+                                }
                             }
                         }
                     }
@@ -657,15 +691,12 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         }
         Date now = new Date()
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
-        File f = new File("orgData_dump_${sdf.format(now)}.xml")
-        f.write(writer.toString())
-        /*
         response.contentType = 'text/xml'
-        response.setHeader('Content-disposition',"filename=")
-        response.outputStream << writer.toString()
+        response.setHeader('Content-disposition',"filename=orgData_dump.xml")
+        response.outputStream.withWriter { osWriter ->
+            osWriter.write(writer.toString())
+        }
         response.outputStream.flush()
-        */
-        render (file:f, contentType: "text/xml")
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
