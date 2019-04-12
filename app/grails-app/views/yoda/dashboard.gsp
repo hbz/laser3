@@ -61,9 +61,11 @@
         </div>
     </div>
 
-    <br />
-    <br />
-    <br />
+    <semui:messages data="${flash}" />
+
+        <br />
+        <br />
+
     <%--
     <p>TODO: Offene Beitrittsanfragen</p>
 
