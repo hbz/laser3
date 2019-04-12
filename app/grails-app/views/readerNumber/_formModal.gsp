@@ -13,9 +13,10 @@
                                   placeholder="default.date.label" value="${numbersInstance?.dueDate}" required=""
                                   bean="${numbersInstance}"/>
 
+                <%-- semester should go here
                 <semui:datepicker class="wide eight" label="readerNumber.semester.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${numbersInstance?.endDate}"
-                                  bean="${numbersInstance}"/>
+                                  bean="${numbersInstance}"/>--%>
 
             </div>
         </div>
@@ -28,7 +29,7 @@
                         <g:message code="readerNumber.referenceGroup.label" default="Type" />
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type"
-                                  from="${com.k_int.kbplus.ReaderNumber.getAllRefdataValues('Number Type')}"
+                                  from="${RefdataCategory.getAllRefdataValues('Number Type')}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${numbersInstance?.type?.id}"

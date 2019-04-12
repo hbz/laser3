@@ -138,9 +138,7 @@ class SemanticUiDropdownTagLib {
         if (!attrs.containsKey('from')) {
             throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [from]")
         }
-        if (!attrs.containsKey('optionExpl')) {
-            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [optionExpl]")
-        }
+
 
         out << "<div class='ui fluid selection dropdown ${attrs.class}'>"
         out << "<input type='hidden' name='${attrs.name}' id='${attrs.id}'>"
@@ -151,10 +149,8 @@ class SemanticUiDropdownTagLib {
             out << '<div class="item" data-value="'
             if(attrs.optionKey)
                 out << attrs.optionKey(el)
-            if(attrs.optionExpl) {
-                out << '" data-tooltip="'
-                out << attrs.optionExpl(el)
-            }
+            out << '" data-tooltip="'
+            out <<
             out << '">'
             out << attrs.optionValue(el).toString().encodeAsHTML()
             out << '</div>'
