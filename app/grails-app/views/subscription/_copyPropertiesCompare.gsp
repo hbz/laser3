@@ -24,12 +24,12 @@
                     %>
 
                     <g:set var="subscriptionsCount" value="${subscriptions?.size()}"/>
-                    <thead>
-                        <th class="center aligned">${message(code: 'default.copy.label')}</th>
-                        <th class="center aligned">${message(code: 'default.replace.label')}</th>
-                        <th class="center aligned">${message(code: 'default.doNothing.label')}</th>
-                        <th colspan="${subscriptionsCount}">${message(code:'property.table.property')}</th>
-                    </thead>
+                    %{--<thead>--}%
+                        %{--<th class="center aligned">${message(code: 'default.copy.label')}</th>--}%
+                        %{--<th class="center aligned">${message(code: 'default.replace.label')}</th>--}%
+                        %{--<th class="center aligned">${message(code: 'default.doNothing.label')}</th>--}%
+                        %{--<th colspan="${subscriptionsCount}">${message(code:'property.table.property')}</th>--}%
+                    %{--</thead>--}%
                     <tbody>
                         <g:each in="${groupedProperties}" var="groupedProps">
                             <%-- leave it for debugging
