@@ -1,3 +1,8 @@
+0.15.3
+
+- bugfix: missing service for subscription worksheet generation
+- fixed access for org users view
+
 0.15.2
 
 - changed some properties (bootstrap)
