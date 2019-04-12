@@ -2,11 +2,11 @@ package de.laser.interfaces
 
 interface Permissions {
 
-    def isEditableBy(user)
+    boolean isEditableBy(user)
 
-    def isVisibleBy(user)
+    boolean isVisibleBy(user)
 
-    def hasPerm(perm, user)
+    boolean hasPerm(perm, user)
 
     //def checkPermissions(perm, user)
 }

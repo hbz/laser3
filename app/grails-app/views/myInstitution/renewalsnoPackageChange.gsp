@@ -43,12 +43,12 @@
                 <tr>
                     <th><g:checkBox name="subscription.copyStart" value="${true}"/></th>
                     <th>${message(code: 'default.startDate.label', default: 'Start Date')}</th>
-                    <td><semui:datepicker class="wide eight" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                    <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyEnd" value="${true}"/></th>
                     <th>${message(code: 'default.endDate.label', default: 'End Date')}</th>
-                    <td><semui:datepicker class="wide eight" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                    <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyDocs" value="${true}"/></th>

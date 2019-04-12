@@ -22,6 +22,17 @@
         <g:render template="message" />
     </g:if>
 
+    <div class="ui info message">
+        <div class="header"></div>
+        <p>
+            Hier sehen Sie:
+            <ul>
+                <li>Änderungen am Bestand einer Lizenz</li>
+                <li>Änderung an der Lizenz durch die Konsortialstelle (nur vererbte Änderungen)</li>
+            </ul>
+        </p>
+    </div>
+
     <table class="ui celled la-table table">
           <thead>
             <tr>

@@ -522,9 +522,11 @@ class SemanticUiTagLib {
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
 
     def datepicker = { attrs, body ->
+
         def inputCssClass = attrs.inputCssClass ?: '';
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
+        def id = attrs.id ? "${message(code: attrs.id)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
 
         def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
@@ -536,8 +538,8 @@ class SemanticUiTagLib {
             value = attrs.value
         }
 
-        def classes = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.required ? 'required=""' : ''
+        def classes = attrs.containsKey('required') ? 'field fieldcontain required' : 'field fieldcontain'
+        def required = attrs.containsKey('required') ? 'required=""' : ''
         def hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
@@ -550,12 +552,12 @@ class SemanticUiTagLib {
 
         out << '<div class="' + classes + '">'
         if (hideLabel) {
-            out << '<label for="' + name + '">' + label + '</label>'
+            out << '<label for="' + id + '">' + label + '</label>'
         }
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'
         out << '<i class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name + '" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
+        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '"' + required + '>'
         out << '</div>'
         out << '</div>'
         out << '</div>'
@@ -687,9 +689,9 @@ class SemanticUiTagLib {
 
         def total = attrs.total
 
-        out << '<div class="ui circular label">'
+        out << '<span class="ui circular label">'
         out << total
-        out << '</div>'
+        out << '</span>'
     }
     def dropdown = { attrs, body ->
         if (!attrs.name) {

@@ -106,7 +106,6 @@
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
-
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
                                         <button class="ui icon button js-open-confirm-modal-copycat">

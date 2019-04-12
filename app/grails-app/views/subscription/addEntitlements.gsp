@@ -37,13 +37,13 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="fields two">
             <div class="field">
-                <label>${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
-                <input name="filter" value="${params.filter}"/>
+                <label for="filter">${message(code: 'subscription.compare.filter.title', default: 'Filters - Title')}</label>
+                <input id="filter" name="filter" value="${params.filter}"/>
             </div>
 
             <div class="field">
-                <label>${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
-                <select name="pkgfilter">
+                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                <select id="pkgfilter" name="pkgfilter">
                     <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
                     <g:each in="${subscriptionInstance.packages}" var="sp">
                         <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
@@ -54,12 +54,12 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="three fields">
             <div class="field">
-                <semui:datepicker label="default.startsBefore.label" name="startsBefore"
+                <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore"
                                   value="${params.startsBefore}"/>
             </div>
 
             <div class="field">
-                <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}"/>
+                <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter" value="${params.endsAfter}"/>
             </div>
 
             <div class="field la-field-right-aligned">

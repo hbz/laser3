@@ -1,7 +1,19 @@
+0.15.2
+
+- changed some properties (bootstrap)
+- bugfix: documents null pointer
+- bugfix: subscription link formular validation
+- bugfix: profile reminder settings
+
+0.15.1
+
+- added admin function for deleting property definitions
+- bugfix: missing service
+- bugfix: faulty ebook icons
+- bugfix: null pointer
+
 0.15
 
-- TODO TODO TODO 
-- ...
 - added improved document management for institutions
 - reworked and improved user management for institutions
 - reworked views for managing consortia members
@@ -16,6 +28,10 @@
 - reworked various templates and views
 - lots of ui improvements
 - various minor enhancements and bugfixes
+
+0.14.8
+
+- fixed document type null pointer
 
 0.14.7
 

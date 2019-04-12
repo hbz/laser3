@@ -158,12 +158,12 @@ class License
     }
 
     @Override
-    def isTemplate() {
+    boolean isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
     }
 
     @Override
-    def hasTemplate() {
+    boolean hasTemplate() {
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
@@ -182,7 +182,7 @@ class License
         getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
     }
 
-    def updateShare(ShareableTrait sharedObject) {
+    void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
         if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
@@ -201,7 +201,7 @@ class License
         }
     }
 
-    def syncAllShares(List<ShareSupport> targets) {
+    void syncAllShares(List<ShareSupport> targets) {
         log.debug('synAllShares: ' + targets)
 
         documents.each{ sharedObject ->
@@ -231,7 +231,7 @@ class License
     }
 
     @Override
-    def getCalculatedType() {
+    String getCalculatedType() {
         def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {
@@ -353,15 +353,15 @@ class License
     return reference
   }
 
-    def isEditableBy(user) {
+    boolean isEditableBy(user) {
         hasPerm("edit", user)
     }
 
-    def isVisibleBy(user) {
+    boolean isVisibleBy(user) {
       hasPerm('view', user)
     }
 
-    def hasPerm(perm, user) {
+    boolean hasPerm(perm, user) {
         if (perm == 'view' && this.isPublic?.value == 'Yes') {
             return true
         }

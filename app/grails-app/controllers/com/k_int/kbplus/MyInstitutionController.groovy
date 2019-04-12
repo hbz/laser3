@@ -3304,8 +3304,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             params.list('selectedOrgs').each { soId ->
                 def cmb = Combo.findWhere(
                         toOrg: result.institution,
-                        fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        fromOrg: Org.get(Long.parseLong(soId)),
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 )
                 cmb.delete()
             }
@@ -3475,7 +3475,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         result
     }

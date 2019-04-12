@@ -1,7 +1,6 @@
 package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
-
 import javax.persistence.Transient
 import org.apache.commons.lang.builder.HashCodeBuilder
 
@@ -19,8 +18,8 @@ class UserOrg implements Comparable {
     Long dateActioned
 
     Org org
-    com.k_int.kbplus.auth.User user
-    com.k_int.kbplus.auth.Role formalRole
+    User user
+    Role formalRole
 
     static constraints = {
         dateActioned    (nullable: true)
@@ -29,7 +28,7 @@ class UserOrg implements Comparable {
     }
 
     @Transient
-    def getSortString() {
+    String getSortString() {
         return org?.name + ' ' + formalRole?.authority
     }
 

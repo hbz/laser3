@@ -4,7 +4,7 @@
 	<label for="title">
 		<g:message code="person.title.label" default="Title" />
 	</label>
-	<g:textField name="title" value="${personInstance?.title}"/>
+	<g:textField id="title" name="title" value="${personInstance?.title}"/>
 
 </div>
 
@@ -12,7 +12,7 @@
 	<label for="first_name">
 		<g:message code="person.first_name.label" default="Firstname" />
 	</label>
-	<g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
+	<g:textField id="first_name" name="first_name" required="" value="${personInstance?.first_name}"/>
 
 </div>
 
@@ -21,7 +21,7 @@
 		<g:message code="person.middle_name.label" default="Middlename" />
 		
 	</label>
-	<g:textField name="middle_name" value="${personInstance?.middle_name}"/>
+	<g:textField id="middle_name" name="middle_name" value="${personInstance?.middle_name}"/>
 
 </div>
 
@@ -29,7 +29,7 @@
 	<label for="last_name">
 		<g:message code="person.last_name.label" default="Lastname" />
 	</label>
-	<g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
+	<g:textField id="last_name" name="last_name" required="" value="${personInstance?.last_name}"/>
 
 </div>
 
@@ -122,7 +122,7 @@
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
-    <label for="org">
+    <label for="tenant">
         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
     </label>
     <g:select id="tenant" name="tenant.id" class="ui dropdown" from="${userMemberships}"

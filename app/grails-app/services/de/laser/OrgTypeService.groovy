@@ -13,7 +13,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with orgType 'Agency'; generic
      */
-    def getOrgsForTypeAgency() {
+    List<Org> getOrgsForTypeAgency() {
         Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         )
@@ -22,7 +22,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with orgType 'Provider'; generic
      */
-    def getOrgsForTypeProvider() {
+    List<Org> getOrgsForTypeProvider() {
         Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
         )
@@ -31,7 +31,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with orgType in ('Agency, Broker, Content Provider, Provider, Vendor'); generic
      */
-    def getOrgsForTypeLicensor() {
+    List<Org> getOrgsForTypeLicensor() {
         Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by lower(o.sortname), o.name"
         )
@@ -40,7 +40,7 @@ class OrgTypeService {
     /**
      * @return List<License> with accessible (my) licenses
      */
-    def getCurrentLicenses(Org context) {
+    List<License> getCurrentLicenses(Org context) {
         return License.executeQuery( """
             select l from License as l join l.orgLinks as ogr where
                 ( l.status.value != 'Deleted' ) and
@@ -56,7 +56,7 @@ class OrgTypeService {
     /**
      * @return List<Subscription> with accessible (my) subscriptions
      */
-    def getCurrentSubscriptions(Org context) {
+    List<Subscription> getCurrentSubscriptions(Org context) {
         return Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
                 ( s.status.value != 'Deleted' ) and
@@ -72,7 +72,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with OrgRole relations (type 'Agency') depending on current (my) subscriptions
      */
-    def getCurrentAgencies(Org context) {
+    List<Org> getCurrentAgencies(Org context) {
         List<Org> result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
                 [subscriptions: getCurrentSubscriptions(context),
                  agency: RDStore.OR_AGENCY]
@@ -84,7 +84,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with OrgRole relations (type 'Licensor') depending on current (my) subscriptions
      */
-    def getCurrentLicensors(Org context) {
+    List<Org> getCurrentLicensors(Org context) {
         List<Org> result = OrgRole.findAll("from OrgRole where lic in (:licenses) and roleType = :licensor",
                 [licenses: getCurrentLicenses(context),
                  licensor: RDStore.OR_LICENSOR]
@@ -96,7 +96,7 @@ class OrgTypeService {
     /**
      * @return List<Org> with OrgRole relations (type 'Provider') depending on current (my) subscriptions
      */
-    def getCurrentProviders(Org context) {
+    List<Org> getCurrentProviders(Org context) {
         List<Org> result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :provider",
                 [subscriptions: getCurrentSubscriptions(context),
                  provider: RDStore.OR_PROVIDER]

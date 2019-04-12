@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'createSurvey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <semui:crumb message="createSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'createSurvey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
 
 <g:render template="steps"/>
 <br>
@@ -42,9 +42,9 @@
                 </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="surveyInfo.startDate.label" name="startDate" value="${surveyInfo?.startDate}"/>
+                    <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate" value="${surveyInfo?.startDate}"/>
 
-                    <semui:datepicker label="surveyInfo.endDate.label" name="endDate" value="${surveyInfo?.endDate}"/>
+                    <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate" value="${surveyInfo?.endDate}"/>
                 </div>
 
 

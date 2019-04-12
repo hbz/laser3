@@ -9,13 +9,13 @@
                         <g:message code="accessMethod.type.label" default="accessMethod" />
                     </label>
                     <laser:select class="values"
-                                     name="accessMethod"
+                                     id="accessMethod" name="accessMethod"
                                      from="${com.k_int.kbplus.PlatformAccessMethod.getAllRefdataValues('Access Method')}"
                                      optionKey="id"
                                      optionValue="value" />
                 </div>
                 <div class="field wide six fieldcontain ">
-                    <semui:datepicker label ="accessMethod.valid_from" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
+                    <semui:datepicker label ="accessMethod.valid_from" id="validFrom" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
                     </semui:datepicker>
                     
                 </div>

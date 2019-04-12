@@ -1,7 +1,7 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="ui container center aligned">
-        	<img class="brand-img"  style="float: none;" alt="LAS:eR" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
+        	<img class="brand-img"  style="float: none;" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
             <!--
             <ul class="nav">
                 <li id="home" <g:if test="${active.equals("home")}"> class="active" </g:if>>

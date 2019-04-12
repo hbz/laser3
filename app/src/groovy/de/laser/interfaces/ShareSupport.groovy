@@ -8,7 +8,7 @@ interface ShareSupport {
 
     boolean showUIShareButton()
 
-    def updateShare(ShareableTrait sharedObject)
+    void updateShare(ShareableTrait sharedObject)
 
-    def syncAllShares(List<ShareSupport> targets)
+    void syncAllShares(List<ShareSupport> targets)
 }

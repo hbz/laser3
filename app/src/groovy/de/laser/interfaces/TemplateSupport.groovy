@@ -8,10 +8,10 @@ interface TemplateSupport {
     static CALCULATED_TYPE_PARTICIPATION    = 'Participation'
     static CALCULATED_TYPE_UNKOWN           = 'Unknown'
 
-    def isTemplate()
+    boolean isTemplate()
 
-    def hasTemplate()
+    boolean hasTemplate()
 
-    def getCalculatedType()
+    String getCalculatedType()
 
 }

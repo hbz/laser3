@@ -201,7 +201,7 @@ class ProfileController {
     private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
         def oldValue = userSetting.value
         if (newValue) {
-            if (oldValue instanceof RefdataValue) {//} && ((RefdataValue)oldValue).belongsTo.owner. == com.k_int.kbplus.RefdataCategory.{
+            if (userSetting.key.type == RefdataValue && userSetting.key.rdc == 'YN') {
                 if (newValue == 'Y') {
                     newValue = YN_YES
                 } else {

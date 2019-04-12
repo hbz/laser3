@@ -57,7 +57,7 @@
                   <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph')}"/>
               </div>
 
-              <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
+              <semui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn" value="${validOn}" />
 
           </div>
           <div class="two fields">

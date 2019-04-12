@@ -2,7 +2,7 @@
 <!-- genericFilter.gsp -->
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
-    <label>${message(code: 'subscription.property.search')}
+    <label for="filterPropDef">${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
         <div class="ui  popup ">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
@@ -31,7 +31,7 @@
 <div class="field">
     <label for="filterProp">${message(code: 'subscription.property.value')}</label>
 
-    <input id="filterProp" name="filterProp" type="text"
+    <input id="filterProp" id="filterProp" name="filterProp" type="text"
            placeholder="${message(code: 'license.search.property.ph')}" value="${params.filterProp ?: ''}"/>
 </div>
 

@@ -14,6 +14,8 @@ import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
+import org.hibernate.event.spi.PostInsertEvent
+
 import javax.persistence.Transient
 import grails.util.Holders
 
@@ -101,7 +103,8 @@ class Org
         customProperties:   OrgCustomProperty,
         privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
-        documents:          DocContext
+        documents:          DocContext,
+        platforms:          Platform
     ]
 
     static mapping = {
@@ -186,6 +189,17 @@ class Org
         }
         
         super.beforeInsert()
+    }
+
+    boolean setDefaultCustomerType() {
+        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+
+        if (oss == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, RefdataValue.getByValueAndCategory('scp.member', 'system.customer.type'))
+            return true
+        }
+
+        false
     }
 
     @Override

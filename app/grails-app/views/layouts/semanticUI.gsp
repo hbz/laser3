@@ -59,10 +59,10 @@
         </div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
-    <nav class="ui fixed inverted menu">
+    <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
-                <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+                <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
             <sec:ifAnyGranted roles="ROLE_USER">
@@ -212,10 +212,10 @@
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                                <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
-                                <%-- this is part one of ticket #753! --%>
-                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
-
+                                <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                                </sec:ifAnyGranted>
                             </g:if>
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
@@ -330,13 +330,22 @@
                                         <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
                                     </g:if>
                                     <g:link class="item" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</g:link>
-                                    <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link>
+                                    <%-- <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link> --%>
                                 </div>
                             </div>
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <div class="ui dropdown item">
+                                ${message(code:'org.plural.label')}
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
+                                    <g:link class="item" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                                </div>
+                            </div>
+
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
@@ -455,11 +464,14 @@
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
-                                    <g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>
-                                    <g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>
-                                    <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
-                                    <g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp (Konsorte) für alle Einrichtungen setzen</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>
+                                    <g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                 </div>
                             </div>
 
@@ -474,10 +486,10 @@
                 <div class="right menu">
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)">
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
-                        <div class="results" style="overflow-y:scroll;max-height: 400px;min-height: content-box;"></div>
+                        <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
 
                     <g:if test="${contextUser}">
@@ -536,7 +548,7 @@
 
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>
-        <nav class="ui fixed menu la-contextBar"  >
+        <nav class="ui fixed  stackable  menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">
@@ -700,9 +712,9 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
         <%-- global content container --%>
-        <section class="ui main container ${visibilityContextOrgMenu} ">
+        <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
-        </section><!-- .main -->
+        </main><!-- .main -->
 
         <footer id="Footer">
             <div class="clearfix"></div>

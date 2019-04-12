@@ -181,34 +181,34 @@
 
             <div class="three fields">
                 <div class="field">
-                    <semui:datepicker label="financials.financialYear" name="filterCIFinancialYear" placeholder="filter.placeholder"
+                    <semui:datepicker label="financials.financialYear" id="filterCIFinancialYear" name="filterCIFinancialYear" placeholder="filter.placeholder"
                                       value="${params.filterCIFinancialYear}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.invoice_from" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
+                    <semui:datepicker label="financials.invoice_from" id="filterCIInvoiceFrom" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
                                       value="${params.filterCIInvoiceFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.invoice_to" name="filterCIInvoiceTo" placeholder="filter.placeholder"
+                    <semui:datepicker label="financials.invoice_to" id="filterCIInvoiceTo" name="filterCIInvoiceTo" placeholder="filter.placeholder"
                                       value="${params.filterCIInvoiceTo}"/>
                 </div>
             </div>
 
             <div class="three fields">
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" name="filterCIValidOn" placeholder="filter.placeholder"
+                    <semui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder"
                                       value="${params.filterCIValidOn}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_from" name="filterCIPaidFrom" placeholder="filter.placeholder"
+                    <semui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder"
                                       value="${params.filterCIPaidFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_to" name="filterCIPaidTo" placeholder="filter.placeholder"
+                    <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder"
                                       value="${params.filterCIPaidTo}"/>
                 </div>
             </div>

@@ -54,11 +54,11 @@ class User implements Permissions {
     UserRole.findAllByUser(this).collect { it.role } as Set
   }
 
-  def beforeInsert() {
+  void beforeInsert() {
     encodePassword()
   }
 
-  def beforeUpdate() {
+  void beforeUpdate() {
     if (isDirty('password')) {
       encodePassword()
     }
@@ -101,7 +101,7 @@ class User implements Permissions {
     // refactoring -- tmp changes
 
   @Transient
-  def getDisplayName() {
+  String getDisplayName() {
     def result = null;
     if ( display ) {
       result = display
@@ -193,15 +193,15 @@ class User implements Permissions {
     userPrefs
   }
 
-    def isEditableBy(user) {
+    boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
 
-    def isVisibleBy(user) {
+    boolean isVisibleBy(user) {
         hasPerm('view', user)
     }
 
-    def hasPerm(perm, user) {
+    boolean hasPerm(perm, user) {
         false
     }
 
