@@ -1,49 +1,22 @@
-<%@ page import="de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser', default:'LAS:eR')} : Organisationen</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.admin.manageOrganisations')}</title>
     </head>
     <body>
 
-    <h2> TODO </h2>
-    <%--
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.my.providers" class="active" />
-        </semui:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
+        <semui:crumb message="menu.admin.manageOrganisations" class="active" />
+    </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.my.providers" />
-            <semui:totalNumber total="${orgListTotal}"/>
-        </h1>
---%>
-    <%--
-    <semui:messages data="${flash}" />
-    <semui:filter>
-        <g:form action="manageOrganisations" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
-                      model="[
-                              propList: propList,
-                              orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role'], ['country', 'property']],
-                              tmplConfigFormFilter: true,
-                              useNewLayouter: true
-                      ]"/>
-        </g:form>
-    </semui:filter>
-
-    <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList: orgList,
-                      tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
-              ]"/>
-    <semui:paginate total="${orgListTotal}" params="${params}" />
-    --%>
-
-
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.manageOrganisations" />
+        <semui:totalNumber total="${orgListTotal}"/>
+    </h1>
 
     <table class="ui sortable celled la-table table">
         <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -63,12 +36,17 @@
 
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
 
-                <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
+                <%-- <th>${message(code: 'org.sector.label', default: 'Sector')}</th> --%>
 
-                <th>${message(code: 'org.libraryNetworkTableHead.label')}</th>
+                <%-- <th>${message(code: 'org.libraryNetworkTableHead.label')}</th> --%>
 
-                <th>${message(code: 'org.libraryType.label')}</th>
+                <%-- <th>${message(code: 'org.libraryType.label')}</th> --%>
 
+                <th>${message(code:'org.customerType.label')}</th>
+
+                <th>${message(code:'org.apiLevel.label')}</th>
+
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -80,7 +58,15 @@
                         ${ (params.int('offset') ?: 0)  + i + 1 }<br>
                     </td>
 
-                    <td>${org.sortname}</td>
+                    <td>
+                        ${org.sortname}
+
+                        <g:if test="${org.status?.value == 'Deleted'}">
+                            <span data-tooltip="Diese Organisation wurde as 'gelöscht' markiert." data-position="top left">
+                                <i class="icon minus circle red"></i>
+                            </span>
+                        </g:if>
+                    </td>
 
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}">
@@ -135,18 +121,119 @@
                         </g:each>
                     </td>
 
+                    <%--
                     <td>${org.sector?.getI10n('value')}</td>
+                    --%>
 
+                    <%--
                     <td>${org.libraryNetwork?.getI10n('value')}</td>
+                    --%>
 
+                    <%--
                     <td>${org.libraryType?.getI10n('value')}</td>
+                    --%>
 
+                    <td>
+                        <%
+                            def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
+                            if (customerType != OrgSettings.SETTING_NOT_FOUND) {
+                                println customerType.getValue()?.getI10n('authority')
+                            }
+                        %>
+                    </td>
+
+                    <td>
+                        <%
+                            def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+                            if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+                                println apiLevel.getValue()
+                            }
+                        %>
+                    </td>
+
+                    <td class="x">
+                        <button type="button" class="ui icon button"
+                                data-ctTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
+                                data-semui="modal" data-href="#customerTypeModal"
+                                data-tooltip="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
+
+                        <button type="button" class="ui icon button"
+                                data-alTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
+                                data-semui="modal" data-href="#apiLevelModal"
+                                data-tooltip="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
+                    </td>
                 </tr>
 
             </g:each>
 
         </tbody>
     </table>
+
+    <%-- changing customer type --%>
+
+    <semui:modal id="customerTypeModal" message="org.customerType.label" editmodal="editmodal">
+
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="changeCustomerType"/>
+            <input type="hidden" name="target" value="" />
+
+            <div class="field">
+                <label for="orgName_ct">${message(code:'org.label')}</label>
+                <input type="text" id="orgName_ct" name="orgName" value="" readonly />
+            </div>
+
+            <div class="field">
+                <label for="customerType">${message(code:'org.customerType.label')}</label>
+                <laser:select id="customerType" name="customerType"
+                          from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
+                          optionKey="id"
+                          optionValue="authority"
+                          class="ui dropdown"
+                />
+            </div>
+        </g:form>
+
+        <r:script>
+            $('button[data-ctTarget]').on('click', function(){
+
+                $('#customerTypeModal #orgName_ct').attr('value', $(this).attr('data-orgName'))
+                $('#customerTypeModal input[name=target]').attr('value', $(this).attr('data-ctTarget'))
+            })
+        </r:script>
+
+    </semui:modal>
+
+    <%-- changing api access --%>
+
+    <semui:modal id="apiLevelModal" message="org.apiLevel.label" editmodal="editmodal">
+
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="changeApiLevel"/>
+            <input type="hidden" name="target" value=""/>
+
+            <div class="field">
+                <label for="orgName_al">${message(code:'org.label')}</label>
+                <input type="text" id="orgName_al" name="orgName" value="" readonly />
+            </div>
+
+            <div class="field">
+                <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
+                <g:select id="apiLevel" name="apiLevel"
+                          from="${['Kein Zugriff'] + ApiManager.getAllApiLevels()}"
+                          class="ui dropdown"
+                />
+            </div>
+        </g:form>
+
+        <r:script>
+            $('button[data-alTarget]').on('click', function(){
+
+                $('#apiLevelModal #orgName_al').attr('value', $(this).attr('data-orgName'))
+                $('#apiLevelModal input[name=target]').attr('value', $(this).attr('data-alTarget'))
+            })
+        </r:script>
+
+    </semui:modal>
 
     </body>
 </html>

@@ -123,20 +123,6 @@
             </td>
         </tr>
 
-        <tr>
-            <td>ROLE_API_READER</td>
-            <td>global</td>
-            <td>
-            </td>
-        </tr>
-
-        <tr>
-            <td>ROLE_API_WRITER</td>
-            <td>global</td>
-            <td>
-            </td>
-        </tr>
-
     </tbody>
 </table>
 

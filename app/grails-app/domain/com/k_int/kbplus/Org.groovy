@@ -14,6 +14,8 @@ import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
+import org.hibernate.event.spi.PostInsertEvent
+
 import javax.persistence.Transient
 import grails.util.Holders
 
@@ -187,6 +189,18 @@ class Org
         }
         
         super.beforeInsert()
+    }
+
+    boolean setDefaultCustomerType() {
+        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+
+        if (oss == OrgSettings.SETTING_NOT_FOUND) {
+            log.debug ('Setting default customer type for org: ' + this.id)
+            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_MEMBER', 'org'))
+            return true
+        }
+
+        false
     }
 
     @Override

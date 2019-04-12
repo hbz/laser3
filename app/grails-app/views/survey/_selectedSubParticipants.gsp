@@ -1,5 +1,5 @@
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedParticipants')}<semui:totalNumber
-        total="${selectedParticipants?.size()}"/></h2>
+<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedSubParticipants')}<semui:totalNumber
+        total="${selectedSubParticipants?.size()}"/></h2>
 <br>
 
 
@@ -7,14 +7,14 @@
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
     <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : selectedParticipants,
+              model="[orgList         : selectedSubParticipants,
                       tmplShowCheckbox: true,
-                      tmplConfigShow  : ['sortname', 'name', 'libraryType']
+                      tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>
 
-    <g:if test="${selectedParticipants}">
+    <g:if test="${selectedSubParticipants}">
         <input type="submit" class="ui button"
                value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
     </g:if>

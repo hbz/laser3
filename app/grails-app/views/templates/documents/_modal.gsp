@@ -10,6 +10,12 @@
         formUrl = createLink(controller:'docWidget',action:'editDocument')
         modalId = "modalEditDocument_${docctx.id}"
     }
+    else if(owntp == 'surveyConfig') {
+        modalText = message(code:'showSurveyConfigDocs.createSurveyDoc')
+        submitButtonLabel = message(code:'default.button.create_new.label')
+        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+        modalId = "modalCreateDocument"
+    }
     else {
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')

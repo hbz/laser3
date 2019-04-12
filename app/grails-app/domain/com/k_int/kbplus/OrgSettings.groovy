@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
-
 import javax.persistence.Transient
 
 class OrgSettings {
@@ -16,7 +16,7 @@ class OrgSettings {
         API_LEVEL       (String),
         API_KEY         (String),
         API_PASSWORD    (String),
-        CUSTOMER_TYPE   (RefdataValue, 'system.customer.type')
+        CUSTOMER_TYPE   (Role)
 
         KEYS(type, rdc) {
             this.type = type
@@ -32,18 +32,20 @@ class OrgSettings {
 
     Org          org
     KEYS         key
-    String       strValue
 
     @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
     RefdataValue rdValue
+    String       strValue
+    Role         roleValue
 
     static mapping = {
         id         column:'os_id'
         version    column:'os_version'
         org        column:'os_org_fk', index: 'os_org_idx'
         key        column:'os_key_enum'
-        strValue   column:'os_string_value'
         rdValue    column:'os_rv_fk'
+        strValue   column:'os_string_value'
+        roleValue  column:'os_role_fk'
     }
 
     static constraints = {
@@ -51,6 +53,7 @@ class OrgSettings {
         key        (nullable: false, unique: 'org')
         strValue   (nullable: true)
         rdValue    (nullable: true)
+        roleValue  (nullable: true)
     }
 
     /*
@@ -81,7 +84,7 @@ class OrgSettings {
     static delete(Org org, KEYS key) {
 
         def oss = findWhere(org: org, key: key)
-        oss.delete(flush: true)
+        oss?.delete(flush: true)
     }
 
     /*
@@ -101,6 +104,9 @@ class OrgSettings {
             case RefdataValue:
                 result = rdValue
                 break
+            case Role:
+                result = roleValue
+                break
             default:
                 result = strValue
                 break
@@ -116,6 +122,9 @@ class OrgSettings {
         switch (key.type) {
             case RefdataValue:
                 rdValue = value
+                break
+            case Role:
+                roleValue = value
                 break
             default:
                 strValue = (value ? value.toString() : null)

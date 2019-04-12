@@ -79,84 +79,115 @@
     </g:if>
 
 </semui:form>
-
 <br>
+
 
 <h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
 <br>
 
+<p><b>${message(code: 'showSurveyConfigDocs.info')}</b></p>
+<br>
+
+
 <g:if test="${surveyConfigs}">
+
     <div class="ui grid">
         <div class="four wide column">
             <div class="ui vertical fluid tabular menu">
                 <g:each in="${surveyConfigs}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            controller="survey" action="showSurveyParticipants"
+                            controller="survey" action="showSurveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                         ${config?.getConfigName()}
 
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
-
-                        <div class="ui floating circular label">${config?.orgIDs?.size() ?: 0}</div>
+                        <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
                     </g:link>
                 </g:each>
             </div>
         </div>
 
         <div class="twelve wide stretched column">
-            <div class="ui top attached tabular menu">
-                <a class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                   data-tab="selectedSubParticipants">${message(code: 'showSurveyParticipants.selectedSubParticipants')}
-                    <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
-                </a>
 
-                <a class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                   data-tab="selectedParticipants">${message(code: 'showSurveyParticipants.selectedParticipants')}
-                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></a>
+            <semui:form>
 
-                <a class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                   data-tab="consortiaMembers">${message(code: 'showSurveyParticipants.consortiaMembers')}
-                    <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div></a>
-            </div>
-
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                 data-tab="selectedSubParticipants">
-
-                <div>
-                    <g:render template="selectedSubParticipants"/>
+                <div class="four wide column">
+                    <button type="button" class="ui icon button right floated" data-semui="modal"
+                            data-href="#modalCreateDocument"><i class="plus icon"></i></button>
+                    <g:render template="/templates/documents/modal"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </div>
 
-            </div>
 
+                <table class="ui celled la-table table license-documents">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                        <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                        <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                        <th>${message(code: 'default.actions', default: 'Actions')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx" status="i">
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>
+                                ${docctx.owner.title}
+                            </td>
+                            <td>
+                                ${docctx.owner.filename}
+                            </td>
+                            <td>
+                                ${docctx.owner?.type?.getI10n('value')}
+                            </td>
 
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                 data-tab="selectedParticipants">
+                            <td class="x">
+                                <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
-                <div>
-                    <g:render template="selectedParticipants"/>
-                </div>
+                                    <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
+                                            class="download icon"></i></g:link>
+                                    <g:if test="${editable && !docctx.sharedFrom}">
+                                        <button type="button" class="ui icon button" data-semui="modal"
+                                                href="#modalEditDocument_${docctx.id}"
+                                                data-tooltip="${message(code: "template.documents.edit")}"><i
+                                                class="pencil icon"></i></button>
+                                        <g:link controller="${controllerName}" action="deleteDocuments"
+                                                class="ui icon negative button js-open-confirm-modal"
+                                                data-confirm-term-what="document"
+                                                data-confirm-term-what-detail="${docctx.owner.title}"
+                                                data-confirm-term-how="delete"
+                                                params='[instanceId: "${surveyConfig.id}", deleteId: "${docctx.id}", redirectAction: "${redirect}"]'>
+                                            <i class="trash alternate icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                </g:if>
+                            </td>
+                        </tr>
 
-            </div>
+                    </g:each>
+                    </tbody>
+                </table>
 
-
-            <div class="ui bottom attached tab segment ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                 data-tab="consortiaMembers">
-                <div>
-                    <g:render template="consortiaMembers"
-                              model="${[showAddSubMembers: (SurveyConfig.get(params.surveyConfigID)?.type == 'Subscription') ? true : false]}"/>
-
-                </div>
-            </div>
+                <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx">
+                    <g:render template="/templates/documents/modal"
+                              model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
+                </g:each>
+            </semui:form>
         </div>
+
     </div>
+
 </g:if>
 <g:else>
     <p><b>${message(code: 'showSurveyConfig.noConfigList')}</b></p>
 </g:else>
+
 
 <r:script>
     $(document).ready(function () {

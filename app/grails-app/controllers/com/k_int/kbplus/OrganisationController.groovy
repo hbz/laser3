@@ -159,6 +159,8 @@ class OrganisationController extends AbstractDebugController {
 
                 if (params.name) {
                     if (orgInstance.save(flush: true)) {
+                        orgInstance.setDefaultCustomerType()
+
                         flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
                         redirect action: 'show', id: orgInstance.id
                         return
@@ -177,10 +179,13 @@ class OrganisationController extends AbstractDebugController {
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
         def orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
         def orgInstance = new Org(name: params.provider, sector: orgSector.id)
-        orgInstance.addToOrgType(orgType)
-        orgInstance.addToOrgType(orgType2)
 
         if ( orgInstance.save(flush:true) ) {
+
+            orgInstance.addToOrgType(orgType)
+            orgInstance.addToOrgType(orgType2)
+            orgInstance.save(flush:true)
+
             flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
             redirect action: 'show', id: orgInstance.id
         }
@@ -217,6 +222,8 @@ class OrganisationController extends AbstractDebugController {
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
                 newMember.save(flush:true)
             }
+            orgInstance.setDefaultCustomerType()
+
             flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
             redirect action: 'show', id: orgInstance.id, params: [institutionalView: true]
         }

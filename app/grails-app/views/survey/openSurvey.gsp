@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="survey" class="active"/>
+    <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>

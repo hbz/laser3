@@ -336,7 +336,16 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <div class="ui dropdown item">
+                                ${message(code:'org.plural.label')}
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</g:link>
+                                    <g:link class="item" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                                </div>
+                            </div>
+
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
@@ -458,8 +467,11 @@
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp (Konsorte) für alle Einrichtungen setzen</g:link>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>
+                                    <g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                 </div>
                             </div>
 
