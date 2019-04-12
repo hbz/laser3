@@ -190,18 +190,18 @@
             <div class="ui instructive bottom attached segment">
                 <pre>
 &lt;div class=&quot;field&quot;&gt;com.k_int.properties.PropertyDefinition:269
-    &lt;label for=&quot;filterPropDef&quot;&gt;
+    &lt;label <b>for=&quot;filterPropDef&quot;</b>&gt;
         Merkmal
         &lt;i class=&quot;question circle icon la-popup&quot;&gt;&lt;/i&gt;
         &lt;div class=&quot;ui  popup &quot;&gt;
             &lt;i class=&quot;shield alternate icon&quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;
     &lt;/label&gt;
-    &lt;div class=&quot;ui fluid search selection dropdown la-filterPropDef category active visible&quot;&gt;
+    &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
-        &lt;input class=&quot;search&quot; id=&quot;filterPropDef&quot; tabindex=&quot;0&quot;&gt;
+        &lt;input class=&quot;search&quot; <b>id=&quot;filterPropDef&quot;</b> &gt;
         &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;
-        &lt;div class=&quot;menu transition visible&quot; tabindex=&quot;-1&quot; style=&quot;display: block !important;&quot;&gt;
+        &lt;div class=&quot;menu&quot;&gt;
             &lt;div class=&quot;item selected&quot; data-value=&quot;linkurl&quot;&gt;Abbestellgrund&lt;/div&gt;
             &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;Abbestellquote&lt;/div&gt;
             &lt;div class=&quot;item&quot; data-value=&quot;linkurl&quot;&gt;AGB &lt;i class=&quot;shield alternate icon&quot;&gt;&lt;/i&gt;&lt;/div&gt;
