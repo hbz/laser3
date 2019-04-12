@@ -699,12 +699,12 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     if(onlineIdentifierCol >= 0 && cols[onlineIdentifierCol]) {
                         identifiers.onlineIds.add(cols[onlineIdentifierCol])
                         idCandidates.add([namespace:'eissn',value:cols[onlineIdentifierCol]])
-                        idCandidates.add([namespace:'eisbn',value:cols[onlineIdentifierCol]])
+                        idCandidates.add([namespace:'isbn',value:cols[onlineIdentifierCol]])
                     }
                     if(printIdentifierCol >= 0 && cols[printIdentifierCol]) {
                         identifiers.printIds.add(cols[printIdentifierCol])
                         idCandidates.add([namespace:'issn',value:cols[printIdentifierCol]])
-                        idCandidates.add([namespace:'isbn',value:cols[printIdentifierCol]])
+                        idCandidates.add([namespace:'pisbn',value:cols[printIdentifierCol]])
                     }
                     if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
                        ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
@@ -744,8 +744,8 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 String electronicSerial
                 String checked = ""
                 if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                    serial = tipp.title.getIdentifierValue('ISBN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
+                    serial = tipp.title.getIdentifierValue('pISBN')
+                    electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
                 }
                 else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
                     serial = tipp?.title?.getIdentifierValue('ISSN')
