@@ -3,16 +3,20 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
+import de.laser.OrgTypeService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+import java.text.SimpleDateFormat
+
 class BootStrap {
 
     def grailsApplication
     def dataloadService
+    def apiService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -240,11 +244,20 @@ class BootStrap {
         //log.debug("createPrivateProperties ..")
         //createPrivateProperties()
 
-        log.debug("initializeDefaultSettings ..")
-        initializeDefaultSettings()
-
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
+
+        log.debug("check if database needs to be set up ...")
+        if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
+            apiService.setupBasicData()
+        }
+        else {
+            log.debug("Data available, skipping ...")
+            //System.exit(42)
+        }
+
+        log.debug("initializeDefaultSettings ..")
+        initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()

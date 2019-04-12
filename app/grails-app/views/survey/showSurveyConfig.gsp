@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="createSurvey.label" class="active"/>
+    <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
@@ -120,14 +120,14 @@
                         <td>
                             <g:if test="${config?.type == 'Subscription'}">
                                 <g:link controller="subscription" action="show"
-                                        id="${config?.subscription?.id}">${config?.subscription?.name}</g:link>
-                                <br>${config?.subscription?.startDate ? '(' : ''}
+                                        id="${config?.subscription?.id}">${config?.subscription?.dropdownNamingConvention(institution)}</g:link>
+                                %{--<br>${config?.subscription?.startDate ? '(' : ''}
                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                               date="${config?.subscription?.startDate}"/>
                                 ${config?.subscription?.endDate ? '-' : ''}
                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                               date="${config?.subscription?.endDate}"/>
-                                ${config?.subscription?.startDate ? ')' : ''}
+                                ${config?.subscription?.startDate ? ')' : ''}--}%
                             </g:if>
 
                             <g:if test="${config?.type == 'SurveyProperty'}">
@@ -149,7 +149,7 @@
                             <g:else>
                                 <g:link class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="Umfrage"
-                                        data-confirm-term-what-detail="${config?.getConfigName()}"
+                                        data-confirm-term-what-detail="${config?.getConfigNameShort()}"
                                         data-confirm-term-how="delete"
                                         controller="survey" action="deleteSurveyConfig"
                                         id="${config?.id}">
