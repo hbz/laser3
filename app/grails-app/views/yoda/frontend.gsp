@@ -95,7 +95,7 @@
         <div class="html ui top attached segment">
             <ui>
                 <li>versehen mit Label, das mit Extra-Inputdfeld verbunden ist </li>
-                <li><g:link controller="public" action="gascoDetailsIssueEntitlements">zum Beipsiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
+                <li><g:link controller="myInstitution" action="currentSubscriptions">zum Beipsiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
             </ui>
             <br>
             <div class="field">
