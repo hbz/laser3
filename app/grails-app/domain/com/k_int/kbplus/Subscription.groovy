@@ -748,4 +748,18 @@ class Subscription
        }
    }
 
+    def getDerivedSubscriptionBySubscribers(Org org) {
+        def result
+
+        Subscription.findAllByInstanceOf(this).each { s ->
+            def ors = OrgRole.findAllWhere( sub: s )
+            ors.each { or ->
+                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org == org) {
+                    result = or.sub
+                }
+            }
+        }
+        result
+    }
+
 }

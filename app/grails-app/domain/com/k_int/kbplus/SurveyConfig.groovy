@@ -2,9 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
+import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class SurveyConfig {
 
@@ -87,10 +89,28 @@ class SurveyConfig {
         return documents.findAll {it.status?.value != 'Deleted'}
     }
 
-    def getConfigName(){
+    def getConfigNameShort(){
 
         if(type == 'Subscription'){
             return subscription?.name
+        }
+        else
+        {
+            return surveyProperty?.getI10n('name')
+        }
+    }
+
+    def getConfigName(){
+
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+
+        if(type == 'Subscription'){
+            return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +
+                     (subscription?.startDate ? '(' : '') + sdf.format(subscription?.startDate) +
+                         (subscription?.endDate ? ' - ' : '') +  sdf.format(subscription?.endDate) +
+                          (subscription?.startDate ? ')' : '')
+
         }
         else
         {

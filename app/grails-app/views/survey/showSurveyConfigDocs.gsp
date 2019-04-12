@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="createSurvey.label" class="active"/>
+    <semui:crumb message="survey" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
@@ -102,20 +102,7 @@
                             controller="survey" action="showSurveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <g:if test="${config?.type == 'Subscription'}">
-                            ${config?.subscription?.name}
-                            <br>${config?.subscription?.startDate ? '(' : ''}
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${config?.subscription?.startDate}"/>
-                            ${config?.subscription?.endDate ? '-' : ''}
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${config?.subscription?.endDate}"/>
-                            ${config?.subscription?.startDate ? ')' : ''}
-                        </g:if>
-
-                        <g:if test="${config?.type == 'SurveyProperty'}">
-                            ${config?.surveyProperty?.getI10n('name')}
-                        </g:if>
+                        ${config?.getConfigName()}
 
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
                         <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
