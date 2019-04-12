@@ -76,6 +76,11 @@
                 ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label')}
             </th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+            <th>
+                ${message(code: 'subscription')}
+            </th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -296,6 +301,18 @@
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                 </g:else>
+            </g:if>
+
+            <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+                <td>
+                    <g:if test="${surveyConfigSubOrgs.id.contains(org.id)}">
+                        <g:link controller="subscription" action="show"
+                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org).id}">
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConvention(institution)}
+                        </g:link>
+
+                    </g:if>
+                </td>
             </g:if>
             </tr>
         </g:each>
