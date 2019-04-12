@@ -151,18 +151,6 @@
                                         <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
                                             <div class="item"><i class="icon circle outline"></i> API</div>
                                         </g:if>
-
-                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_READER'))}">
-                                            <div class="item"><i class="icon check circle outline"></i> Lesend</div>
-                                        </g:if>
-
-                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_WRITER'))}">
-                                            <div class="item"><i class="icon check circle"></i> Schreibend</div>
-                                        </g:if>
-
-                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
-                                            <div class="item"><i class="icon circle"></i> Datamanager</div>
-                                        </g:if>
                                     </div>
                                 </td>
                             </sec:ifAnyGranted>

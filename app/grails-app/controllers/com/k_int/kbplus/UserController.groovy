@@ -94,18 +94,6 @@ class UserController extends AbstractDebugController {
             return
         }
         else {
-            // check if api key and secret are existing
-            def readRole  = UserRole.findAllWhere(user: result.user, role: Role.findByAuthority('ROLE_API_READER'))
-            def writeRole = UserRole.findAllWhere(user: result.user, role: Role.findByAuthority('ROLE_API_WRITER'))
-            if((readRole || writeRole)){
-                if(! result.user.apikey){
-                    result.user.apikey = User.generateRandomPassword()
-                }
-                if(! result.user.apisecret){
-                    result.user.apisecret = User.generateRandomPassword()
-                }
-            }
-
             if (! result.editor.hasRole('ROLE_ADMIN')) {
                 result.availableOrgs = contextService.getOrg()
                 result.availableComboOrgs = Combo.executeQuery(
