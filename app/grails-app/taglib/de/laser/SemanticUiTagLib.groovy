@@ -713,8 +713,9 @@ class SemanticUiTagLib {
 
         out << "<div class='ui fluid search selection dropdown ${cssClass}'>"
 
-        out << "<input type='hidden' name='${name}' id='${id}'>"
+        out << "<input type='hidden' name='${name}'>"
         out << ' <i class="dropdown icon"></i>'
+        out << "<input class='search' id='${id}'>"
         out << ' <div class="default text">'
         out << "${noSelection}"
 
