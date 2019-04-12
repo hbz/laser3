@@ -62,7 +62,7 @@
                 </dd>
                 <br /><br />
                 <dt>
-                    <label>
+                    <label for="">
                         <g:message code="accessPoint.validityRange" default="Gültigkeit" />
                     </label>
                 </dt>
