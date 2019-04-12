@@ -15,6 +15,7 @@ class SubscriptionImportController extends AbstractDebugController {
   def springSecurityService
   def ESSearchService
   def genericOIDService
+  def contextService
 
   def renewals_reversemap = ['subject':'subject', 'provider':'provid', 'pkgname':'tokname' ]
  
