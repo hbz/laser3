@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserRole
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -621,6 +622,44 @@ class YodaController {
         flash.message = "Überarbeite Sichtbarkeitseinstellungen und Eigentümerverhältnisse ..."
         documentUpdateService.updateShareConfigurations()
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dbmFixPrivateProperties() {
+        Map<String, Object> result = [:]
+
+        result.candidates = []
+
+        def conSubs = Subscription.executeQuery(
+                'SELECT sub FROM Subscription sub JOIN sub.orgRelations ogr WHERE sub.instanceOf IS null AND ogr.roleType = :cons',
+            [cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]
+        )
+
+        def spp = SubscriptionPrivateProperty.executeQuery(
+                "SELECT spp FROM SubscriptionPrivateProperty spp JOIN spp.owner sub JOIN spp.type pd WHERE pd.mandatory = true and sub.id in (:ids) ",
+                [ids: conSubs.collect{ it -> it.id }]
+        )
+
+        spp.each { pp ->
+            Org pdTenant = pp.type.tenant
+            Subscription sub = pp.owner
+
+            OrgRole cons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIPTION_CONSORTIA)
+            OrgRole subscrCons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER_CONS)
+            OrgRole subscr = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER)
+
+            println "sub: ${pp.owner.id}, spp: ${pp.id}"
+            println "${cons} ${cons?.org}"
+            println "${subscrCons} ${subscrCons?.org}"
+            println "${subscr} ${subscr?.org}"
+            println "--"
+
+            if (subscrCons) {
+                result.candidates << pp
+            }
+        }
+
+        render view: 'databaseMigration', model: result
     }
 
     @Secured(['ROLE_YODA'])
