@@ -856,20 +856,21 @@ class AdminController extends AbstractDebugController {
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
-            RefdataValue customerType = RefdataValue.findWhere(id: params.long('customerType'), owner: RefdataCategory.findByDesc('system.customer.type'))
+            Role customerType = Role.get(params.customerType)
 
-            if (customerType) {
+            if (customerType.authority == 'FAKE') {
+                OrgSettings.delete(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            }
+            else {
                 def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+
                 if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                    oss.rdValue = customerType
+                    oss.roleValue = customerType
                     oss.save(flush:true)
                 }
                 else {
                     OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
                 }
-            }
-            else if (RefdataValue.get(params.customerType)?.value == 'generic.null.value') {
-                OrgSettings.delete(target, OrgSettings.KEYS.CUSTOMER_TYPE)
             }
         }
 

@@ -19,12 +19,12 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">
           <div class="field">
-              <label>${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
-              <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
+              <label for="q">${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
+              <input id="q" name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
           </div>
           <div class="field">
-              <label>${message(code:'default.status.label', default:'Status')}</label>
-              <g:select name="status"  class="ui dropdown"
+              <label for="status">${message(code:'default.status.label', default:'Status')}</label>
+              <g:select id="status" name="status"  class="ui dropdown"
                     from="${availableStatuses}"
                     optionKey="${{it.value}}"
                     optionValue="${{it.getI10n('value')}}"

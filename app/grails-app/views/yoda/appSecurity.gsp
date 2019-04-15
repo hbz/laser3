@@ -42,9 +42,7 @@
     </div>
     <div class="ui list">
         <div class="item">
-            <span class="ROLE_API">ROLE_API</span> |
-            <span class="ROLE_API_READER">ROLE_API_READER</span> |
-            <span class="ROLE_API_WRITER">ROLE_API_WRITER</span>
+            <span class="ROLE_API">ROLE_API</span>
         </div>
     </div>
 </div>
