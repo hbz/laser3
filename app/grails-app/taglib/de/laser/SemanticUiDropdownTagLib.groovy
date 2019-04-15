@@ -140,19 +140,21 @@ class SemanticUiDropdownTagLib {
         }
 
 
-        out << "<div class='ui fluid selection dropdown ${attrs.class}'>"
-        out << "<input type='hidden' name='${attrs.name}' id='${attrs.id}'>"
+        out << "<div class='ui dropdown selection ${attrs.class}' id='${attrs.id}'>"
+        out << "<input type='hidden' name='${attrs.name}' "
+        if(attrs.value)
+            out << "value='${attrs.value}'"
+        out << ">"
         out << '<i class="dropdown icon"></i>'
         out << "<div class='default text'>${attrs.noSelection}</div>"
         out << '<div class="menu">'
         attrs.from?.each { el ->
             out << '<div class="item" data-value="'
             if(attrs.optionKey)
-                out << attrs.optionKey(el)
-            out << '" data-tooltip="'
-            out <<
+                out << el[attrs.optionKey]
             out << '">'
-            out << attrs.optionValue(el).toString().encodeAsHTML()
+            out << '<span class="description">'+el[attrs.optionExpl]+'</span>'
+            out << '<span class="text">'+el[attrs.optionValue].toString().encodeAsHTML()+'</span>'
             out << '</div>'
         }
         out << '</div>'

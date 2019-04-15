@@ -17,6 +17,7 @@ class BootStrap {
     def grailsApplication
     def dataloadService
     def apiService
+    def refdataReorderService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -56,6 +57,9 @@ class BootStrap {
 
         log.debug("setupRefdata ..")
         setupRefdata()
+
+        log.debug("reorderRefdata ..")
+        refdataReorderService.reorderRefdata()
 
         log.debug("setupRolesAndPermissions ..")
         setupRolesAndPermissions()
@@ -2380,6 +2384,7 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
+        RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w17/18', en: 'winter semester 2017/18', de: 'Wintersemester 2017/18'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 's18', en: 'summer semester 2018', de: 'Sommersemester 2018'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w18/19', en: 'winter semester 2018/19', de: 'Wintersemester 2018/19'], BOOTSTRAP)

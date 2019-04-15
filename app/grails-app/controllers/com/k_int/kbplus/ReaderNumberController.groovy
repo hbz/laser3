@@ -6,8 +6,10 @@ import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 
+import java.text.SimpleDateFormat
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class NumbersController extends AbstractDebugController {
+class ReaderNumberController extends AbstractDebugController {
 
 	def springSecurityService
 	def contextService
@@ -23,23 +25,24 @@ class NumbersController extends AbstractDebugController {
 			break
 		case 'POST':
 
-			def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+			SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
-			if (params.endDate)
-				params.endDate = sdf.parse(params.endDate)
+			if (params.dueDate)
+				params.dueDate = sdf.parse(params.dueDate)
 
 			if (params.startDate)
 				params.startDate = sdf.parse(params.startDate)
 
 			params.org = Org.get(params.orgid)
-	        def numbersInstance = new ReaderNumber(params)
+			params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
+	        ReaderNumber numbersInstance = new ReaderNumber(params)
 	        if (! numbersInstance.save(flush: true)) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
                 render view: 'create', model: [numbersInstance: numbersInstance]
 	            return
 	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'readerNumber.number.label'), numbersInstance.id])
+			flash.message = message(code: 'default.created.message', args: [message(code: 'readerNumber.number.label'), numbersInstance.value])
 			redirect(url: request.getHeader('referer'))
 			break
 		}
@@ -48,11 +51,11 @@ class NumbersController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
+		ReaderNumber numbersInstance = ReaderNumber.get(params.id)
 		switch (request.method) {
 		case 'GET':
-	        def numbersInstance = ReaderNumber.get(params.id)
 	        if (! numbersInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
+	            flash.error = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 				redirect(url: request.getHeader('referer'))
 	            return
 	        }
@@ -60,13 +63,12 @@ class NumbersController extends AbstractDebugController {
 	        [numbersInstance: numbersInstance]
 			break
 		case 'POST':
-	        def numbersInstance = ReaderNumber.get(params.id)
 	        if (! numbersInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 				redirect(url: request.getHeader('referer'))
-	            return
-	        }
-
+				return
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 	        if (params.version) {
 	            def version = params.version.toLong()
 	            if (numbersInstance.version > version) {
@@ -77,11 +79,14 @@ class NumbersController extends AbstractDebugController {
 	                return
 	            }
 	        }
-
+			params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
+			params.dueDate = sdf.parse(params.dueDate)
 	        numbersInstance.properties = params
 
 	        if (! numbersInstance.save(flush: true)) {
-	            render view: 'edit', model: [numbersInstance: numbersInstance]
+				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
+				log.error(numbersInstance.getErrors())
+	            redirect(url: request.getHeader('referer'))
 	            return
 	        }
 
@@ -93,7 +98,7 @@ class NumbersController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
-        def numbersInstance = ReaderNumber.get(params.id)
+        ReaderNumber numbersInstance = ReaderNumber.get(params.id)
         if (! numbersInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			redirect(url: request.getHeader('referer'))

@@ -1,7 +1,8 @@
 <%@ page
-        import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory"
+        import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;java.text.SimpleDateFormat"
 %>
 <g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<g:set var="sdf" value="${new SimpleDateFormat(message(code:'default.date.format.notime'))}"/>
 <!doctype html>
 <html>
 <head>
@@ -28,7 +29,7 @@ ${orgInstance.name}
     <input class="ui button"
            value="${message(code: 'readerNumber.create.label')}"
            data-semui="modal"
-           data-href="#numbersFormModal"/>
+           href="#create_number"/>
 </g:if>
 
 <g:render template="/readerNumber/formModal"/>
@@ -42,6 +43,7 @@ ${orgInstance.name}
     <th>${message(code: 'readerNumber.referenceGroup.label')}</th>
     <th>${message(code: 'readerNumber.number.label')}</th>
     <th>${message(code: 'readerNumber.dueDate.label')}</th>
+    <th>${message(code: 'readerNumber.semester.label')}</th>
     <th></th>
 </tr>
 </thead>
@@ -49,19 +51,20 @@ ${orgInstance.name}
 <g:each in="${numbersInstanceList}" var="numbersInstance">
 
     <tr>
-        <td>${numbersInstance.type}</td>
-        <td>${numbersInstance.number}</td>
-        <td>${numbersInstance.dueDate}</td>
-        <td>${numbersInstance.semester}</td>
+        <td>${numbersInstance.referenceGroup}</td>
+        <td>${numbersInstance.value}</td>
+        <td>${sdf.format(numbersInstance.dueDate)}</td>
+        <td>${RefdataValue.findByValue(numbersInstance.semester).getI10n('value')}</td>
         <td class="x">
             <g:if test="${editable}">
-                <button type="button" class="ui icon button" data-semui="modal" href="#numbersFormModal_${docctx.id}" data-tooltip="${message(code:"readerNumber.edit.label")}"><i class="pencil icon"></i></button>
-                <g:form controller="numbers" action="delete">
+                <button type="button" class="ui icon button" data-semui="modal" href="#numbersFormModal_${numbersInstance.id}" data-tooltip="${message(code:"readerNumber.edit.label")}"><i class="pencil icon"></i></button>
+                <g:form controller="readerNumber" action="delete">
                     <g:hiddenField name="id" value="${numbersInstance?.id}"/>
                     <button class="ui icon negative button" type="submit" name="_action_delete">
                         <i class="trash alternate icon"></i>
                     </button>
                 </g:form>
+                <g:render template="/readerNumber/formModal" model="[formId:'numbersFormModal_'+numbersInstance.id,numbersInstance:numbersInstance]" />
             </g:if>
         </td>
     </tr>
