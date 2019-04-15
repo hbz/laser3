@@ -24,24 +24,9 @@
                     %>
 
                     <g:set var="subscriptionsCount" value="${subscriptions?.size()}"/>
-                    %{--<thead>--}%
-                        %{--<th class="center aligned">${message(code: 'default.copy.label')}</th>--}%
-                        %{--<th class="center aligned">${message(code: 'default.replace.label')}</th>--}%
-                        %{--<th class="center aligned">${message(code: 'default.doNothing.label')}</th>--}%
-                        %{--<th colspan="${subscriptionsCount}">${message(code:'property.table.property')}</th>--}%
-                    %{--</thead>--}%
                     <tbody>
-                        <g:each in="${groupedProperties}" var="groupedProps">
-                            <%-- leave it for debugging
-                            <tr>
-                                <td colspan="999">${groupedProps}</td>
-                            </tr>--%>
-                            <g:if test="${groupedProps.getValue()}">
-                                <g:render template="propertyComparisonTableRow" model="[group:groupedProps.getValue().groupTree,key:groupedProps.getKey().name,propBinding:groupedProps.getValue().binding,subscriptions:subscriptions]" />
-                            </g:if>
-                        </g:each>
-                        <g:if test="${orphanedProperties.size() > 0}">
-                            <g:render template="propertyComparisonTableRow" model="[group:orphanedProperties,key:message(code:'license.properties'),subscriptions:subscriptions]" />
+                        <g:if test="${customProperties.size() > 0}">
+                            <g:render template="propertyComparisonTableRow" model="[group:customProperties,key:message(code:'license.properties'),subscriptions:subscriptions]" />
                         </g:if>
                         <g:if test="${privateProperties.size() > 0}">
                             <g:render template="propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
