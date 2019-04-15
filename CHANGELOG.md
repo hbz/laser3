@@ -1,3 +1,7 @@
+0.15.4
+
+- bugfix: false creation of mandatory properties
+
 0.15.3
 
 - bugfix: missing service for subscription worksheet generation

@@ -644,6 +644,16 @@ class YodaController {
             Org pdTenant = pp.type.tenant
             Subscription sub = pp.owner
 
+            List<OrgRole> matches = OrgRole.executeQuery(
+                    "select ogr from OrgRole ogr where ogr.org = :org and ogr.sub = :sub and ogr.roleType in (:roles) ",
+                    [org: pdTenant, sub: sub, roles: [
+                            RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                            RDStore.OR_SUBSCRIBER_CONS,
+                            RDStore.OR_SUBSCRIBER
+                    ]]
+            )
+
+            /*
             OrgRole cons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIPTION_CONSORTIA)
             OrgRole subscrCons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER_CONS)
             OrgRole subscr = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER)
@@ -653,8 +663,9 @@ class YodaController {
             println "${subscrCons} ${subscrCons?.org}"
             println "${subscr} ${subscr?.org}"
             println "--"
+            */
 
-            if (subscrCons) {
+            if (! matches) {
                 result.candidates << pp
             }
         }

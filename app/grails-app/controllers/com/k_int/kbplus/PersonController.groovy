@@ -187,13 +187,10 @@ class PersonController extends AbstractDebugController {
 
         // create mandatory PersonPrivateProperties if not existing
 
-        def mandatories = []
         def org = contextService.getOrg()
-        def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
-        if(ppd){
-            mandatories << ppd
-        }
-        mandatories.flatten().each{ pd ->
+        def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
+
+        mandatories.each{ pd ->
             if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {
                 def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, personInstance, pd)
 
