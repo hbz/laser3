@@ -1,6 +1,7 @@
 0.15.4
 
 - bugfix: false creation of mandatory properties
+- reworked heredity of subscription name
 
 0.15.3
 
