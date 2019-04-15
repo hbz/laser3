@@ -28,15 +28,15 @@
           <p>Add the appropriate ID's below. All IssueEntitlements of source will be removed and transfered to target. Detailed information and confirmation will be presented before proceeding</p>
             <div class="control-group">
                 <div class="field">
-                    <label>Database ID of TIPP</label>
-                    <input type="text" name="sourceTIPP" value="${params.sourceTIPP}" />
+                    <label for="databaseIDofTipp">Database ID of TIPP</label>
+                    <input type="text" id="databaseIDofTipp" name="sourceTIPP" value="${params.sourceTIPP}" />
               </div>
             </div>
 
             <div class="control-group">
                 <div class="field">
-                    <label>Database ID of target TitleInstance</label>
-                    <input type="text" name="targetTI" value="${params.targetTI}"/>
+                    <label for="databaseIDofTarget">Database ID of target TitleInstance</label>
+                    <input type="text" id="databaseIDofTarget" name="targetTI" value="${params.targetTI}"/>
                 </div>
             </div>
             <div class="field">

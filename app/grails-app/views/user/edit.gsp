@@ -21,8 +21,8 @@
             <div class="ui segment form">
 
                 <div class="ui field">
-                    <label>${message(code:'user.username.label')}</label>
-                    <input type="text" readonly="readonly" value="${user.username}">
+                    <label for="username">${message(code:'user.username.label')}</label>
+                    <input id="username" type="text" readonly="readonly" value="${user.username}">
                 </div>
 
                 <div class="ui field">
