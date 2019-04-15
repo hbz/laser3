@@ -3,6 +3,7 @@
 -- execute before startup
 alter table numbers rename to reader_number;
 alter table reader_number drop column num_end_date;
+alter table reader_number rename num_number to num_value;
 alter table reader_number rename column num_start_date to num_due_date;
 alter table reader_number rename column num_typ_rdv_fk to num_reference_group;
 alter table reader_number drop constraint fk88c28e4a3026029e;
