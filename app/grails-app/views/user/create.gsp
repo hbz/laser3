@@ -18,27 +18,27 @@
             <g:form class="ui form" action="create" method="post">
                 <fieldset>
                     <div class="field required">
-                        <label>${message(code:'user.username.label')}</label>
-                        <input type="text" name="username" value="${params.username}"/>
+                        <label for="username">${message(code:'user.username.label')}</label>
+                        <input type="text" id="username" name="username" value="${params.username}"/>
                     </div>
                     <div class="field required">
-                        <label>${message(code:'user.displayName.label')}</label>
-                        <input type="text" name="display" value="${params.display}"/>
+                        <label for="displayName">${message(code:'user.displayName.label')}</label>
+                        <input type="text" id="displayName" name="display" value="${params.display}"/>
                     </div>
                     <div class="field required">
-                        <label>${message(code:'user.password.label')}</label>
-                        <input type="text" name="password" value="${params.password}"/>
+                        <label for="password">${message(code:'user.password.label')}</label>
+                        <input type="text" id="password" name="password" value="${params.password}"/>
                     </div>
                     <div class="field required">
-                        <label>${message(code:'user.email')}</label>
-                        <input type="text" name="email" value="${params.email}"/>
+                        <label for="email">${message(code:'user.email')}</label>
+                        <input type="text" id="email" name="email" value="${params.email}"/>
                     </div>
 
                     <g:if test="${availableComboOrgs}">
                         <div class="two fields">
                             <div class="field">
-                                <label>Für Konsorten, bzw. Einrichtung</label>
-                                <g:select name="comboOrg"
+                                <label for="consortium">Für Konsorten, bzw. Einrichtung</label>
+                                <g:select id="consortium" name="comboOrg"
                                           from="${availableComboOrgs}"
                                           optionKey="id"
                                           optionValue="${{(it.sortname ?: '')  + ' (' + it.name + ')'}}"
@@ -46,8 +46,8 @@
                                           class="ui fluid search dropdown"/>
                             </div>
                             <div class="field">
-                                <label>${message(code:'user.role')}</label>
-                                <g:select name="comboFormalRole"
+                                <label for="userRole">${message(code:'user.role')}</label>
+                                <g:select id="userRole" name="comboFormalRole"
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
@@ -59,8 +59,8 @@
                     <g:else>
                         <div class="two fields">
                             <div class="field">
-                                <label>${message(code:'user.org')}</label>
-                                <g:select name="org"
+                                <label for="userOrg">${message(code:'user.org')}</label>
+                                <g:select id="userOrg" name="org"
                                           from="${availableOrgs}"
                                           optionKey="id"
                                           optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
@@ -68,8 +68,8 @@
                                           class="ui fluid search dropdown"/>
                             </div>
                             <div class="field">
-                                <label>${message(code:'user.role')}</label>
-                                <g:select name="formalRole"
+                                <label for="userRole">${message(code:'user.role')}</label>
+                                <g:select id="userRole" name="formalRole"
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"

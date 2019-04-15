@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <table class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -74,6 +74,11 @@
             </th>
             <th>
                 ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label')}
+            </th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+            <th>
+                ${message(code: 'subscription')}
             </th>
         </g:if>
     </tr>
@@ -198,7 +203,7 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
                 <td>
-                    <g:each in="${Numbers.findAllByOrgAndType(org, RefdataValue.getByValueAndCategory('Students', 'Number Type'))?.sort {it.type?.getI10n("value")}}" var="fte">
+                    <g:each in="${com.k_int.kbplus.ReaderNumber.findAllByOrgAndType(org, RefdataValue.getByValueAndCategory('Students', 'Number Type'))?.sort {it.type?.getI10n("value")}}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
                             ${fte.type?.getI10n("value")} : ${fte.number} <br>
                         </g:if>
@@ -296,6 +301,18 @@
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                 </g:else>
+            </g:if>
+
+            <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
+                <td>
+                    <g:if test="${surveyConfigSubOrgs.id.contains(org.id)}">
+                        <g:link controller="subscription" action="show"
+                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org).id}">
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConvention(institution)}
+                        </g:link>
+
+                    </g:if>
+                </td>
             </g:if>
             </tr>
         </g:each>

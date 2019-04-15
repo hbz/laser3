@@ -155,6 +155,25 @@ class RefdataCategory extends AbstractI10nTranslatable {
       result
   }
 
+    static getAllRefdataValuesWithI10nExplanation(String category_name) {
+        List refdatas = getAllRefdataValues(category_name)
+        List result = []
+        refdatas.each { rd ->
+            String explanation
+            I10nTranslation translation = I10nTranslation.findByReferenceClassAndReferenceFieldAndReferenceId(rd.class.name,'expl',rd.id)
+            switch(I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())) {
+                case "de": explanation = translation.valueDe
+                    break
+                case "en": explanation = translation.valueEn
+                    break
+                case "fr": explanation = translation.valueFr
+                    break
+            }
+            result.add(id:rd.id,value:rd.getI10n('value'),expl:explanation)
+        }
+        result
+    }
+
     def afterInsert() {
         I10nTranslation.createOrUpdateI10n(this, 'desc', [de: this.desc, en: this.desc])
     }

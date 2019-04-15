@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiManager; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -137,7 +137,7 @@
                         <%
                             def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSettings.SETTING_NOT_FOUND) {
-                                println customerType.getValue()?.getI10n('value')
+                                println customerType.getValue()?.getI10n('authority')
                             }
                         %>
                     </td>
@@ -185,9 +185,9 @@
             <div class="field">
                 <label for="customerType">${message(code:'org.customerType.label')}</label>
                 <laser:select id="customerType" name="customerType"
-                          from="${[RefdataValue.findByValue('generic.null.value')] + RefdataCategory.getAllRefdataValues('system.customer.type')}"
+                          from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
-                          optionValue="value"
+                          optionValue="authority"
                           class="ui dropdown"
                 />
             </div>

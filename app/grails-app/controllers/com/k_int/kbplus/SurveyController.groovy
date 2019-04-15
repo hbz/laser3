@@ -442,7 +442,36 @@ class SurveyController {
 
     }
 
-    def deleteSurveyParticipants()
+    def openSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
+
+        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+
+        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)
+
+        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)-result.surveyConfigSubOrgs
+        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)-result.selectedParticipants
+
+        result
+    }
+
+        def deleteSurveyParticipants()
     {
         def result = [:]
         result.institution = contextService.getOrg()

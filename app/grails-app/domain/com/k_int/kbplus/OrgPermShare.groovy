@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.helper.RefdataAnnotation
 
+@Deprecated
 class OrgPermShare {
 
   Perm perm
