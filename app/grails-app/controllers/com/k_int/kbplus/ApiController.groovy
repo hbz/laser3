@@ -281,9 +281,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render result as JSON
     }
 
-    @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def importInstitutions() {
-        log.info("import institutions via xml .. ROLE_API_WRITER required")
+        log.info("import institutions via xml .. ROLE_API required")
 
         def xml = "(Code: 0) - Errare humanum est"
         def rawText = request.getReader().getText()
@@ -302,9 +302,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render xml
     }
 
-    @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def setupLaserData() {
-        log.info("import institutions via xml .. ROLE_API_WRITER required")
+        log.info("import institutions via xml .. ROLE_API required")
 
         def xml = "(Code: 0) - Errare humanum est"
         def rawText = request.getReader().getText()
@@ -323,9 +323,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render xml
     }
 
-    @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def importSubscriptions() {
-        log.info("import subscriptions via xml .. ROLE_API_WRITER required")
+        log.info("import subscriptions via xml .. ROLE_API required")
         // TODO: in progress - erms-746
         def xml = "(Code: 0) - Errare humanum est"
         def rawText = request.getReader().getText()
@@ -488,14 +488,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (user) {
             // checking role permission
-            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
+            // TODO: refactoring: removing user bases api roles
+            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
 
             if ("GET" == request.method) {
-                def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
+                def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
                 hasAccess = ! (dmRole.isEmpty() && readRole.isEmpty())
             }
             else if ("POST" == request.method) {
-                def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
+                def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
                 hasAccess = ! (dmRole.isEmpty() && writeRole.isEmpty())
             }
 
