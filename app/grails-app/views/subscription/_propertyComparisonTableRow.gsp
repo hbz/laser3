@@ -1,5 +1,5 @@
 <%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
-%{--<% String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon  \"></i></span>") %>--}%
+<% String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon  \"></i></span>") %>
 <laser:serviceInjection/>
 <th>
     <th>${key}</th>
@@ -46,7 +46,7 @@
                     <g:if test="${propValue.type.multipleOccurrence && propValues.get(sourceSubscription).size() > 1}">
                         <g:checkBox name="subscription.takePropertyIds" value="${propValue.id}" checked="${true}" />
                     </g:if>
-                    %{--<g:if test="${propValue.value}">--}%
+                    <g:if test="${propValue.value}">
                         <g:if test="${propValue.type.type == Integer.toString()}">
                             <semui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
                         </g:if>
@@ -71,10 +71,10 @@
                         <g:else>
                             propValue.value
                         </g:else>
-                    %{--</g:if>--}%
-                    %{--<g:else>--}%
-                        %{--${unknownString}--}%
-                    %{--</g:else>--}%
+                    </g:if>
+                    <g:else>
+                        ${unknownString}
+                    </g:else>
                     <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                     <g:if test="${propValue?.note}">
                         <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div><br>
