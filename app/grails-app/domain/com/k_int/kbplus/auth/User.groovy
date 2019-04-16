@@ -132,15 +132,6 @@ class User {
     def o = Org.executeQuery(qry, [this]);
     o
   }
-  
-  transient def getUserPreferences() {
-    def userPrefs = [
-      "showInfoIcon" : (getSettingsValue(UserSettings.KEYS.SHOW_INFO_ICON)?.value?.equalsIgnoreCase("Yes") ? true : false)
-    ]
-    
-    // Return the prefs.
-    userPrefs
-  }
 
     def hasRole(String roleName) {
         //println SpringSecurityUtils.ifAnyGranted(roleName)
