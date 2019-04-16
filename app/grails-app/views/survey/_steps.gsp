@@ -108,7 +108,7 @@
     </g:else>
 
 
-    <div class="step">
+    <div class="step ${actionName == 'openSurvey' ? 'active' : ''}">
         <i class="chart pie icon"></i>
 
         <div class="content">

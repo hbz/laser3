@@ -9,7 +9,7 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : selectedSubParticipants,
                       tmplShowCheckbox: true,
-                      tmplConfigShow  : ['sortname', 'name', 'libraryType']
+                      tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>

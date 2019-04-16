@@ -451,6 +451,9 @@ environments {
     }
 }
 
+basicDataPath = documentStorageLocation+'/basic_data_dumps/'
+basicDataFileName = 'basicDataDump.xml'
+
 subscriptionTransforms = [
     'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
     'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],

@@ -1,6 +1,6 @@
 <%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
 <%
-    String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon huge\"></i></span>")
+    String unknownString = g.message(code:"default.compare.propertyNotSet")
 %>
 <laser:serviceInjection/>
 <tr>
@@ -86,7 +86,7 @@
             </g:if>
             <g:else>
                 <td>
-                    <g:message code="default.compare.propertyNotSet"/>
+                    ${unknownString}
                 </td>
             </g:else>
         </g:each>

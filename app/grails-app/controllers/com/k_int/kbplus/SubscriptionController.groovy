@@ -2085,11 +2085,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             // create mandatory OrgPrivateProperties if not existing
 
             def mandatories = []
-            result.user?.authorizedOrgs?.each { org ->
-                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
-                if (ppd) {
-                    mandatories << ppd
-                }
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, result.contextOrg)
+            if (ppd) {
+                mandatories << ppd
             }
             mandatories.flatten().each { pd ->
                 if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {

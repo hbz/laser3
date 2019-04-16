@@ -15,8 +15,8 @@
             <g:if test="${sub}">
 
                 <g:if test="${costItem?.sub?.id == sub.id}">
-                    <label>Für folgende Lizenz kopieren</label>
-                    <input type="text" readonly="readonly" value="${sub.name}" />
+                    <label for="newLicenseeTargets">Für folgende Lizenz kopieren</label>
+                    <input type="text" id="newLicenseeTargets" readonly="readonly" value="${sub.name}" />
                     <input type="hidden" name="newLicenseeTargets" value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
                 </g:if>
 
@@ -28,7 +28,7 @@
                         )
                     %>
                     <g:if test="${validSubChilds}">
-                        <label>Für folgende Teilnehmer kopieren</label>
+                        <label for="newLicenseeTargets">Für folgende Teilnehmer kopieren</label>
                         <%--from="${[[id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"--%>
                         <g:select name="newLicenseeTargets" id="newLicenseeTargets" class="ui search dropdown" multiple="multiple"
                                   from="${validSubChilds}"

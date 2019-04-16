@@ -3,9 +3,9 @@
     <semui:subNavItem controller="organisation" action="show" params="${[id: params.id]}" message="org.nav.details"/>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
-    <semui:securedSubNavItem controller="organisation" action="numbers" params="${[id: params.id]}"
+    <semui:securedSubNavItem controller="organisation" action="readerNumber" params="${[id: params.id]}"
                              affiliation="INST_EDITOR" affiliationOrg="${orgInstance}"
-                      message="menu.institutions.numbers" specRoleCheck="ROLE_ORG_EDITOR"/>
+                      message="menu.institutions.readerNumbers" specRoleCheck="ROLE_ORG_EDITOR"/>
     </g:if>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">

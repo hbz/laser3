@@ -195,7 +195,8 @@ class Org
         def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
 
         if (oss == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, RefdataValue.getByValueAndCategory('scp.member', 'system.customer.type'))
+            log.debug ('Setting default customer type for org: ' + this.id)
+            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_MEMBER', 'org'))
             return true
         }
 

@@ -216,8 +216,8 @@ class ApiReader {
         result.country      = org.country?.value
         result.libraryType  = org.libraryType?.value
 
-        //result.fteStudents  = org.fteStudents // TODO dc/table numbers
-        //result.fteStaff     = org.fteStaff // TODO dc/table numbers
+        //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
+        //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
 
         // RefdataValues
 

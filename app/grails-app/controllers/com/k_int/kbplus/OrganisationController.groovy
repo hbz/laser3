@@ -655,13 +655,13 @@ class OrganisationController extends AbstractDebugController {
     }
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def numbers() {
+    def readerNumber() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         result.orgInstance = Org.get(params.id)
-        result.numbersInstanceList = Numbers.findAllByOrg(Org.get(params.id), [sort: 'type'])
+        result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, [sort: 'referenceGroup', order: 'asc'])
 
         result
     }
