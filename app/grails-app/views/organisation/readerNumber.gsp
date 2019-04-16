@@ -54,7 +54,7 @@ ${orgInstance.name}
         <td>${numbersInstance.referenceGroup}</td>
         <td>${numbersInstance.value}</td>
         <td>${sdf.format(numbersInstance.dueDate)}</td>
-        <td>${RefdataValue.findByValue(numbersInstance.semester).getI10n('value')}</td>
+        <td>${RefdataValue.findByValue(numbersInstance.semester)?.getI10n('value')}</td>
         <td class="x">
             <g:if test="${editable}">
                 <button type="button" class="ui icon button" data-semui="modal" href="#numbersFormModal_${numbersInstance.id}" data-tooltip="${message(code:"readerNumber.edit.label")}"><i class="pencil icon"></i></button>
