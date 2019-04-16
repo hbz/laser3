@@ -671,8 +671,9 @@ class Subscription
       types
   }
 
-   def dropdownNamingConvention(Org contextOrg){
+   def dropdownNamingConvention(){
 
+       def contextOrg = contextService.getOrg()
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
 
@@ -709,7 +710,7 @@ class Subscription
         Subscription.findAllByInstanceOf(this).each { s ->
             def ors = OrgRole.findAllWhere( sub: s )
             ors.each { or ->
-                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org == org) {
+                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] && or.org.id == org.id) {
                     result = or.sub
                 }
             }

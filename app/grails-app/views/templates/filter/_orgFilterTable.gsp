@@ -305,10 +305,10 @@
 
             <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
                 <td>
-                    <g:if test="${surveyConfigSubOrgs.id.contains(org.id)}">
+                    <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
                         <g:link controller="subscription" action="show"
-                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org).id}">
-                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConvention(institution)}
+                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConvention()}
                         </g:link>
 
                     </g:if>

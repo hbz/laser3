@@ -702,12 +702,12 @@ class SubscriptionController extends AbstractDebugController {
                     if(onlineIdentifierCol >= 0 && cols[onlineIdentifierCol]) {
                         identifiers.onlineIds.add(cols[onlineIdentifierCol])
                         idCandidates.add([namespace:'eissn',value:cols[onlineIdentifierCol]])
-                        idCandidates.add([namespace:'eisbn',value:cols[onlineIdentifierCol]])
+                        idCandidates.add([namespace:'isbn',value:cols[onlineIdentifierCol]])
                     }
                     if(printIdentifierCol >= 0 && cols[printIdentifierCol]) {
                         identifiers.printIds.add(cols[printIdentifierCol])
                         idCandidates.add([namespace:'issn',value:cols[printIdentifierCol]])
-                        idCandidates.add([namespace:'isbn',value:cols[printIdentifierCol]])
+                        idCandidates.add([namespace:'pisbn',value:cols[printIdentifierCol]])
                     }
                     if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
                        ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
@@ -747,8 +747,8 @@ class SubscriptionController extends AbstractDebugController {
                 String electronicSerial
                 String checked = ""
                 if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                    serial = tipp.title.getIdentifierValue('ISBN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
+                    serial = tipp.title.getIdentifierValue('pISBN')
+                    electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
                 }
                 else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
                     serial = tipp?.title?.getIdentifierValue('ISSN')
@@ -2072,12 +2072,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = []
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, result.contextOrg)
-            if (ppd) {
-                mandatories << ppd
-            }
-            mandatories.flatten().each { pd ->
+            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, result.contextOrg)
+
+            mandatories.each { pd ->
                 if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
