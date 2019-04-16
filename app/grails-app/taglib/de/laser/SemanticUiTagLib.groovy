@@ -229,7 +229,7 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button">'
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button la-audit-button">'
                             out   << '<i class="icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
@@ -254,7 +254,7 @@ class SemanticUiTagLib {
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button la-js-dont-hide-button'
+                                    class: 'ui icon mini button la-js-dont-hide-button la-audit-button'
                             )
                             out <<  '</span>'
                         }

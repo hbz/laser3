@@ -12,10 +12,11 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscription}" field="name" />
-        <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
+    <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
 
     <g:render template="nav" contextPath="." />
 

@@ -26,14 +26,15 @@
         </semui:controlButtons>
 
         <g:if test="${params.asAt}">
-            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
+            <h1 class="ui icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <h1 class="ui icon header"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
-            <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
+        <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
+        <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
 
     <g:render template="nav" />
 
