@@ -1,3 +1,9 @@
+<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.consortiaMembers')}<semui:totalNumber
+        total="${consortiaMembers?.size()}"/></h2>
+<br>
+
+
+
 <semui:filter>
     <g:form action="showSurveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'consortiaMembers']">
         <g:render template="/templates/filter/orgFilter"

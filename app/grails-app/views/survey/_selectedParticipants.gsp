@@ -2,6 +2,16 @@
         total="${selectedParticipants?.size()}"/></h2>
 <br>
 
+<semui:filter>
+    <g:form action="showSurveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+        <g:render template="/templates/filter/orgFilter"
+                  model="[
+                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                          tmplConfigFormFilter: true,
+                          useNewLayouter: true
+                  ]"/>
+    </g:form>
+</semui:filter>
 
 <g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
