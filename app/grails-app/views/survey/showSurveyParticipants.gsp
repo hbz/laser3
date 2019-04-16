@@ -77,14 +77,14 @@
                 </div>
             </div>
 
-        <div class="two wide column">
-            <g:if test="${surveyConfigs.size() > 0}">
+            <div class="two wide column">
+                <g:if test="${surveyConfigs.size() > 0}">
 
-                <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
-                        class="ui huge button"><i class="angle right icon"></i></g:link>
+                    <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
+                            class="ui huge button"><i class="angle right icon"></i></g:link>
 
-            </g:if>
-        </div>
+                </g:if>
+            </div>
         </div>
 
     </div>
@@ -102,7 +102,7 @@
     <div class="ui grid">
         <div class="four wide column">
             <div class="ui vertical fluid menu">
-                <g:each in="${surveyConfigs.sort{it.configOrder}}" var="config" status="i">
+                <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
                             controller="survey" action="showSurveyParticipants"
@@ -129,9 +129,11 @@
                    data-tab="selectedParticipants">${message(code: 'showSurveyParticipants.selectedParticipants')}
                     <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></a>
 
-                <a class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                   data-tab="consortiaMembers">${message(code: 'showSurveyParticipants.consortiaMembers')}
-                    <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div></a>
+                <g:if test="${editable}">
+                    <a class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
+                       data-tab="consortiaMembers">${message(code: 'showSurveyParticipants.consortiaMembers')}
+                        <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div></a>
+                </g:if>
             </div>
 
             <div class="ui bottom attached tab segment ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"

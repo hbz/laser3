@@ -94,11 +94,11 @@
 
 
 
+<g:if test="${editable}">
+    <semui:form>
 
-<semui:form>
+        <p><b>${message(code: 'showSurveyConfig.add.info')}</b></p>
 
-    <p><b>${message(code: 'showSurveyConfig.add.info')}</b></p>
-    <g:if test="${true}">
         <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
             <g:hiddenField name="id" value="${surveyInfo?.id}"/>
 
@@ -117,37 +117,37 @@
                    value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
 
         </g:form>
-    </g:if>
 
-    <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
-        <g:hiddenField name="id" value="${surveyInfo?.id}"/>
+        <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
+            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
 
 
-        <div class="field required">
-            <label>${message(code: 'showSurveyConfig.property')}</label>
-            <laser:select class="ui dropdown search" name="property"
-                          from="${properties}"
-                          optionKey="id"
-                          optionValue="name"
-                          value=""
-                          noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                          required=""/>
-        </div>
-        <input type="submit" class="ui button"
-               value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
+            <div class="field required">
+                <label>${message(code: 'showSurveyConfig.property')}</label>
+                <laser:select class="ui dropdown search" name="property"
+                              from="${properties}"
+                              optionKey="id"
+                              optionValue="name"
+                              value=""
+                              noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
+                              required=""/>
+            </div>
+            <input type="submit" class="ui button"
+                   value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
 
-        <input type="submit" name="addtoallSubs" class="ui button"
-               value="${message(code: 'showSurveyConfig.add.toAllSub.button', default: 'Add')}"/>
+            <input type="submit" name="addtoallSubs" class="ui button"
+                   value="${message(code: 'showSurveyConfig.add.toAllSub.button', default: 'Add')}"/>
 
-    </g:form>
+        </g:form>
 
-    <br>
+        <br>
 
-    <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
-           data-semui="modal" data-href="#addSurveyPropertyModal" type="submit">
-    <br>
+        <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
+               data-semui="modal" data-href="#addSurveyPropertyModal" type="submit">
+        <br>
 
-</semui:form>
+    </semui:form>
+</g:if>
 
 
 <br>
@@ -180,13 +180,6 @@
                     <g:if test="${config?.type == 'Subscription'}">
                         <g:link controller="subscription" action="show"
                                 id="${config?.subscription?.id}">${config?.subscription?.dropdownNamingConvention()}</g:link>
-                    %{--<br>${config?.subscription?.startDate ? '(' : ''}
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${config?.subscription?.startDate}"/>
-                    ${config?.subscription?.endDate ? '-' : ''}
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${config?.subscription?.endDate}"/>
-                    ${config?.subscription?.startDate ? ')' : ''}--}%
                     </g:if>
 
                     <g:if test="${config?.type == 'SurveyProperty'}">
@@ -206,7 +199,7 @@
                             </button>
                         </span>
                     </g:if>
-                    <g:else>
+                    <g:elseif test="${editable}">
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-term-what="Umfrage"
                                 data-confirm-term-what-detail="${config?.getConfigNameShort()}"
@@ -215,13 +208,14 @@
                                 id="${config?.id}">
                             <i class="trash alternate icon"></i>
                         </g:link>
-                    </g:else>
+                    </g:elseif>
                 </td>
             </tr>
 
             <g:if test="${config?.type == 'Subscription'}">
                 <g:if test="${config?.surveyProperties?.surveyProperty}">
-                    <g:each in="${config?.surveyProperties.sort{it?.surveyProperty?.getI10n('name')}}" var="prop" status="x">
+                    <g:each in="${config?.surveyProperties.sort { it?.surveyProperty?.getI10n('name') }}" var="prop"
+                            status="x">
                         <tr>
                             <td style="background-color: #f4f8f9"></td>
 
@@ -245,12 +239,13 @@
                                 </g:if>
                             </td>
                             <td>
-
-                                <g:link class="ui icon negative button"
-                                        controller="survey" action="deleteSurveyPropfromSub"
-                                        id="${prop?.id}">
-                                    <i class="trash alternate icon"></i>
-                                </g:link>
+                                <g:if test="${editable}">
+                                    <g:link class="ui icon negative button"
+                                            controller="survey" action="deleteSurveyPropfromSub"
+                                            id="${prop?.id}">
+                                        <i class="trash alternate icon"></i>
+                                    </g:link>
+                                </g:if>
 
                             </td>
                         </tr>
@@ -259,21 +254,23 @@
                 <tr>
                     <td style="background-color: #f4f8f9"></td>
                     <td colspan="3">
-                        <g:form action="addSurveyConfig" controller="survey" method="post"
-                                params="[id: surveyInfo?.id, surveyConfig: config?.id]" class="ui form">
+                        <g:if test="${editable}">
+                            <g:form action="addSurveyConfig" controller="survey" method="post"
+                                    params="[id: surveyInfo?.id, surveyConfig: config?.id]" class="ui form">
 
-                            <laser:select class="ui dropdown search" name="propertytoSub"
-                                          from="${properties}"
-                                          optionKey="id"
-                                          optionValue="name"
-                                          value=""
-                                          noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                                          required=""/>
+                                <laser:select class="ui dropdown search" name="propertytoSub"
+                                              from="${properties}"
+                                              optionKey="id"
+                                              optionValue="name"
+                                              value=""
+                                              noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
+                                              required=""/>
 
-                            <input type="submit" class="ui button"
-                                   value="${message(code: 'showSurveyConfig.add.surveyPropToSub.button', default: 'Add Survey Property to this Subscription')}"/>
+                                <input type="submit" class="ui button"
+                                       value="${message(code: 'showSurveyConfig.add.surveyPropToSub.button', default: 'Add Survey Property to this Subscription')}"/>
 
-                        </g:form>
+                            </g:form>
+                        </g:if>
                     </td>
                 </tr>
             </g:if>

@@ -40,6 +40,7 @@ class SurveyConfig {
         header(nullable:true, blank:false)
         comment  (nullable:true, blank:false)
         pickAndChoose (nullable:true, blank:false)
+        documents (nullable:true, blank:false)
     }
 
     static mapping = {

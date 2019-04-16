@@ -55,6 +55,8 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
         result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
         result
 
@@ -125,7 +127,6 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-
         result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
 
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
@@ -137,6 +138,8 @@ class SurveyController {
         result.properties = getSurveyProperties(result.institution)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.configOrder }
 
@@ -395,6 +398,9 @@ class SurveyController {
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
         params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
@@ -482,6 +488,8 @@ class SurveyController {
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
         result
@@ -514,7 +522,7 @@ class SurveyController {
 
                         def surveyResult = new SurveyResult(
                                 owner: result.institution,
-                                org: Org.get(orgID) ?: null,
+                                participant: Org.get(orgID) ?: null,
                                 startDate: result.surveyInfo.startDate,
                                 endDate: result.surveyInfo.endDate,
                                 type: property.surveyProperty,
@@ -522,7 +530,9 @@ class SurveyController {
                         )
 
                         if (surveyResult.save(flush: true)) {
-
+                            log.debug(surveyResult)
+                        }else {
+                            log.debug(surveyResult)
                         }
                     }
 
@@ -535,7 +545,7 @@ class SurveyController {
 
                     def surveyResult = new SurveyResult(
                             owner: result.institution,
-                            org: Org.get(orgID)?: null,
+                            participant: Org.get(orgID)?: null,
                             startDate: result.surveyInfo.startDate,
                             endDate: result.surveyInfo.endDate,
                             type: config.surveyProperty,
@@ -553,8 +563,9 @@ class SurveyController {
 
         }
 
-
-
+        result.surveyInfo.status = RefdataValue.loc('Survey Status', [en: 'Ready', de: 'Bereit'])
+        result.surveyInfo.save(flush: true)
+        flash.message = g.message(code: "openSurvey.successfully")
 
         redirect action: 'openSurvey', id: params.id
 

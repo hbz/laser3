@@ -33,12 +33,12 @@
 
                     <g:hiddenField name="id" value="${surveyInfo?.id}"/>
 
-                    <div class="field required">
+                    <div class="field required ${editable ? '': 'disabled'}">
                         <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
                         <input type="text" name="name" placeholder="" value="${surveyInfo?.name}" required/>
                     </div>
 
-                    <div class="two fields">
+                    <div class="two fields ${editable ? '': 'disabled'}">
                         <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                                           value="${surveyInfo?.startDate}"/>
 
@@ -47,7 +47,7 @@
                     </div>
 
 
-                    <div class="field required">
+                    <div class="field required ${editable ? '': 'disabled'}">
                         <label>${message(code: 'surveyInfo.type.label')}</label>
                         <g:if test="${surveyInfo?.type}">
                             <b>${surveyInfo?.type?.getI10n('value')}</b>
@@ -62,16 +62,11 @@
                     </div>
                     <br/>
 
-                    <g:if test="${surveyInfo}">
+                    <g:if test="${editable}">
                         <input type="submit" class="ui button"
                                value="${message(code: 'showSurveyInfo.save', default: 'Save')}"/>
 
                     </g:if>
-                    <g:else>
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'showSurveyInfo.save', default: 'Save')}"/>
-                    </g:else>
-
                 </g:form>
             </div>
 

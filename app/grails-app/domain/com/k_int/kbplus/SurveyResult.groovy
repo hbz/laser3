@@ -29,6 +29,9 @@ class SurveyResult extends AbstractProperty {
         user (nullable:true, blank:false)
         comment (nullable:true, blank:false)
         resultValues (nullable:true, blank:false)
+        startDate  (nullable:true, blank:false)
+        endDate (nullable:true, blank:false)
+
 
     }
     static mapping = {
@@ -52,7 +55,7 @@ class SurveyResult extends AbstractProperty {
         user column: 'surre_user_fk'
 
         type column: 'surre_type_fk'
-        surveyConfig column: 'surre_survey_config:_fk'
+        surveyConfig column: 'surre_survey_config_fk'
 
 
         comment column: 'surre_comment'

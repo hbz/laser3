@@ -234,8 +234,10 @@
 
 
 <br>
+<g:if test="${editable}">
 <g:link controller="survey" action="processOpenSurvey" id="${surveyInfo.id}"
         class="ui button">${message(code: 'openSurvey.button')}</g:link>
+</g:if>
 
 <r:script>
     $(document).ready(function () {
