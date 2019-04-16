@@ -384,14 +384,9 @@ class OrganisationsController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = []
-            result.user?.authorizedOrgs?.each { authOrg ->
-                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
-                if (ppd) {
-                    mandatories << ppd
-                }
-            }
-            mandatories.flatten().each { pd ->
+            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.contextOrg)
+      
+            mandatories.each { pd ->
                 if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 

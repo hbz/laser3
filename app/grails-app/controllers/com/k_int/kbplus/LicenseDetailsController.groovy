@@ -136,18 +136,13 @@ class LicenseDetailsController extends AbstractDebugController {
             // -- private properties
 
             result.authorizedOrgs = result.user?.authorizedOrgs
-            //result.contextOrg = contextService.getOrg()
+            result.contextOrg = contextService.getOrg()
 
             // create mandatory LicensePrivateProperties if not existing
 
-            def mandatories = []
-            result.user?.authorizedOrgs?.each { org ->
-                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
-                if (ppd) {
-                    mandatories << ppd
-                }
-            }
-            mandatories.flatten().each { pd ->
+            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, result.contextOrg)
+
+            mandatories.each { pd ->
                 if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
