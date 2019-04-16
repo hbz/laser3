@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserRole
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -1030,6 +1031,74 @@ class YodaController {
             flash.error = e.printStackTrace()
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dbmFixPrivateProperties() {
+        Map<String, Object> result = [:]
+
+        def opp = OrgPrivateProperty.executeQuery(
+                "SELECT pp FROM OrgPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') "
+        )
+
+        def spp = SubscriptionPrivateProperty.executeQuery(
+                "SELECT pp FROM SubscriptionPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                "AND (pp.note IS null OR pp.note = '') "
+        )
+
+        def lpp = LicensePrivateProperty.executeQuery(
+                "SELECT pp FROM LicensePrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') " +
+                        "AND (pp.paragraph IS null OR pp.paragraph = '') "
+        )
+
+        def ppp = PersonPrivateProperty.executeQuery(
+                "SELECT pp FROM PersonPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') "
+        )
+
+        if (params.cmd == 'doIt') {
+            println opp.collect{ it -> it.id }
+            if (opp.size() > 0) {
+                OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
+                        [idList: opp.collect { it -> it.id }]
+                )
+            }
+
+            println spp.collect{ it -> it.id }
+            if (spp.size() > 0) {
+                SubscriptionPrivateProperty.executeUpdate('DELETE FROM SubscriptionPrivateProperty spp WHERE spp.id in :idList',
+                        [idList: spp.collect { it -> it.id }]
+                )
+            }
+
+            println lpp.collect{ it -> it.id }
+            if (lpp.size() > 0) {
+                LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
+                        [idList: lpp.collect { it -> it.id }]
+                )
+            }
+
+            println ppp.collect{ it -> it.id }
+            if (ppp.size() > 0) {
+                PersonPrivateProperty.executeUpdate('DELETE FROM PersonPrivateProperty ppp WHERE ppp.id in :idList',
+                        [idList: ppp.collect { it -> it.id }]
+                )
+            }
+        }
+
+        result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
+
+        render view: 'databaseMigration', model: result
     }
 
     @Secured(['ROLE_YODA'])
