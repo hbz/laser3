@@ -5,6 +5,8 @@
 <%
     User currentUser = contextService.getUser()
     String currentLang = 'de'
+    String currentTheme = 'semanticUI'
+
     if (currentUser) {
         RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))?.getValue()
 
@@ -12,6 +14,12 @@
             currentLang = rdvLocale.value
             org.springframework.web.servlet.LocaleResolver localeResolver = org.springframework.web.servlet.support.RequestContextUtils.getLocaleResolver(request)
             localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
+        }
+
+        RefdataValue rdvTheme = currentUser?.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('semanticUI', 'User.Settings.Theme'))?.getValue()
+
+        if (rdvTheme) {
+            currentTheme = rdvTheme.value
         }
     }
 %>
@@ -27,7 +35,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
-    <r:require modules="semanticUI" />
+    <r:require modules="${currentTheme}" />
 
     <script>
         var gspLocale = "${message(code:'default.locale.label')}";
