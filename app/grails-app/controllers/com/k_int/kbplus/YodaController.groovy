@@ -628,47 +628,66 @@ class YodaController {
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
 
-        result.candidates = []
-
-        def conSubs = Subscription.executeQuery(
-                'SELECT sub FROM Subscription sub JOIN sub.orgRelations ogr WHERE sub.instanceOf IS null AND ogr.roleType = :cons',
-            [cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]
+        def opp = OrgPrivateProperty.executeQuery(
+                "SELECT pp FROM OrgPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') "
         )
 
         def spp = SubscriptionPrivateProperty.executeQuery(
-                "SELECT spp FROM SubscriptionPrivateProperty spp JOIN spp.owner sub JOIN spp.type pd WHERE pd.mandatory = true and sub.id in (:ids) ",
-                [ids: conSubs.collect{ it -> it.id }]
+                "SELECT pp FROM SubscriptionPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                "AND (pp.note IS null OR pp.note = '') "
         )
 
-        spp.each { pp ->
-            Org pdTenant = pp.type.tenant
-            Subscription sub = pp.owner
+        def lpp = LicensePrivateProperty.executeQuery(
+                "SELECT pp FROM LicensePrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') " +
+                        "AND (pp.paragraph IS null OR pp.paragraph = '') "
+        )
 
-            List<OrgRole> matches = OrgRole.executeQuery(
-                    "select ogr from OrgRole ogr where ogr.org = :org and ogr.sub = :sub and ogr.roleType in (:roles) ",
-                    [org: pdTenant, sub: sub, roles: [
-                            RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                            RDStore.OR_SUBSCRIBER_CONS,
-                            RDStore.OR_SUBSCRIBER
-                    ]]
-            )
+        def ppp = PersonPrivateProperty.executeQuery(
+                "SELECT pp FROM PersonPrivateProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
+                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
+                        "AND (pp.note IS null OR pp.note = '') "
+        )
 
-            /*
-            OrgRole cons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIPTION_CONSORTIA)
-            OrgRole subscrCons = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER_CONS)
-            OrgRole subscr = OrgRole.findByOrgAndSubAndRoleType(pdTenant, sub, RDStore.OR_SUBSCRIBER)
+        if (params.cmd == 'doIt') {
+            println opp.collect{ it -> it.id }
+            if (opp.size() > 0) {
+                OrgPrivateProperty.executeUpdate('DELETE FROM OrgPrivateProperty opp WHERE opp.id in :idList',
+                        [idList: opp.collect { it -> it.id }]
+                )
+            }
 
-            println "sub: ${pp.owner.id}, spp: ${pp.id}"
-            println "${cons} ${cons?.org}"
-            println "${subscrCons} ${subscrCons?.org}"
-            println "${subscr} ${subscr?.org}"
-            println "--"
-            */
+            println spp.collect{ it -> it.id }
+            if (spp.size() > 0) {
+                SubscriptionPrivateProperty.executeUpdate('DELETE FROM SubscriptionPrivateProperty spp WHERE spp.id in :idList',
+                        [idList: spp.collect { it -> it.id }]
+                )
+            }
 
-            if (! matches) {
-                result.candidates << pp
+            println lpp.collect{ it -> it.id }
+            if (lpp.size() > 0) {
+                LicensePrivateProperty.executeUpdate('DELETE FROM LicensePrivateProperty lpp WHERE lpp.id in :idList',
+                        [idList: lpp.collect { it -> it.id }]
+                )
+            }
+
+            println ppp.collect{ it -> it.id }
+            if (ppp.size() > 0) {
+                PersonPrivateProperty.executeUpdate('DELETE FROM PersonPrivateProperty ppp WHERE ppp.id in :idList',
+                        [idList: ppp.collect { it -> it.id }]
+                )
             }
         }
+
+        result.candidates = [OrgPrivateProperty: opp, SubscriptionPrivateProperty: spp, LicensePrivateProperty: lpp, PersonPrivateProperty: ppp]
 
         render view: 'databaseMigration', model: result
     }
