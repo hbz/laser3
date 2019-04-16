@@ -114,14 +114,14 @@ class FilterService {
         }
 
          queryParams << [org : org]
-         queryParams << [consortium : 'Consortium']
+         queryParams << [comboType : params.comboType]
 
         String defaultOrder = " order by " + (params.sort && (!params.consSort && !params.ownSort && !params.subscrSort) ?: " LOWER(o.sortname)") + " " + (params.order && (!params.consSort && !params.ownSort && !params.subscrSort) ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = :org and c.type.value = :comboType " + defaultOrder
         } else {
-            result.query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type.value = :comboType " + defaultOrder
         }
         result.queryParams = queryParams
         result

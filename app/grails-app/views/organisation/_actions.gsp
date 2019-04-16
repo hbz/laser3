@@ -7,7 +7,7 @@
             <semui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
         </g:if>
         <g:if test="${actionName == 'listInstitution'}">
-            <semui:actionsDropdownItem controller="organisation" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
+            <semui:actionsDropdownItem controller="organisation" action="findInstitutionMatches" message="org.create_new_institution.label"/>
         </g:if>
         <g:if test="${actionName == 'listProvider'}">
             <semui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_Provider.label"/>

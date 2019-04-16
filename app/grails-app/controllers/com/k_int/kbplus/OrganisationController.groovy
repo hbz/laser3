@@ -209,52 +209,84 @@ class OrganisationController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def createInstitution() {
+    def createMember() {
         Org contextOrg = contextService.org
-        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-        //RefdataValue orgType = RDStore.OT_INSTITUTION
-        Org orgInstance = new Org(name: params.institution, sector: orgSector)
-        orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
+        //new institution = consortia member, implies combo type consortoium
+        if(params.institution) {
+            RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+            Org orgInstance = new Org(name: params.institution, sector: orgSector)
+            orgInstance.addToOrgType(RDStore.OT_INSTITUTION)
+            try {
+                orgInstance.save(flush:true)
+                if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
+                    Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
+                    newMember.save(flush:true)
+                }
+                orgInstance.setDefaultCustomerType()
 
-        try {
-            orgInstance.save(flush:true)
-            if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
-                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
-                newMember.save(flush:true)
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
+                redirect action: 'show', id: orgInstance.id, params: [institutionalView: true]
             }
-            orgInstance.setDefaultCustomerType()
-
-            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-            redirect action: 'show', id: orgInstance.id, params: [institutionalView: true]
+            catch (Exception e) {
+                log.error("Problem creating institution: ${orgInstance.errors}")
+                log.error(e.printStackTrace())
+                flash.message = message(code: "org.error.createInstitutionError",args:[orgInstance.errors])
+                redirect ( action:'findOrganisationMatches', params: params )
+            }
         }
-        catch (Exception e) {
-            log.error("Problem creating title: ${orgInstance.errors}")
-            log.error(e.printStackTrace())
-            flash.message = message(code: "org.error.createInstitutionError",args:[orgInstance.errors])
-            redirect ( action:'findInstitutionMatches' )
+        //new department = institution member, implies combo type department
+        else if(params.department) {
+            Org deptInstance = new Org(name: params.department)
+            deptInstance.addToOrgType(RDStore.OT_DEPARTMENT)
+            try {
+                deptInstance.save(flush:true)
+                if(RDStore.OT_INSTITUTION.id in (contextOrg.getallOrgTypeIds())) {
+                    Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:RefdataValue.getByValueAndCategory('Department','Combo Type'))
+                    newMember.save()
+                }
+
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), orgInstance.id])
+                redirect action: 'show', id: deptInstance.id, params: [departmentalView: true]
+            }
+            catch (Exception e) {
+                log.error("Problem creating department: ${deptInstance.errors}")
+                log.error(e.printStackTrace())
+                flash.message = message(code: "org.error.createInstitutionError",args:[deptInstance.errors])
+                redirect ( action:'findOrganisationMatches', params: params )
+            }
         }
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    Map findInstitutionMatches() {
-        Map consortiaMap = [:]
-        Combo.findAllByType(RefdataValue.getByValueAndCategory('Consortium','Combo Type')).each { lObj ->
+    Map findOrganisationMatches() {
+        Map memberMap = [:]
+        Combo.findAllByType(RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')).each { lObj ->
             Combo link = (Combo) lObj
-            List consortia = consortiaMap.get(link.fromOrg.id)
-            if(!consortia)
-                consortia = [link.toOrg.id]
-            else consortia << link.toOrg.id
-            consortiaMap.put(link.fromOrg.id,consortia)
+            List members = memberMap.get(link.fromOrg.id)
+            if(!members)
+                members = [link.toOrg.id]
+            else members << link.toOrg.id
+            memberMap.put(link.fromOrg.id,members)
         }
-        Map result=[institutionMatches:[],consortia:consortiaMap]
-        if ( params.proposedInstitution ) {
-            result.institutionMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedInstitution.toLowerCase()}%"]))
+        Map result=[organisationMatches:[],members:memberMap,comboType:params.comboType]
+        //searching members for consortium, i.e. the context org is a consortium
+        if(params.comboType == 'Consortium') {
+            if ( params.proposedOrganisation ) {
+                result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
+                        [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
+            }
+            if (params.proposedOrganisationID) {
+                result.organisationMatches.addAll(Org.executeQuery("select id.org from IdentifierOccurrence id where lower(id.identifier.value) like :identifier and lower(id.identifier.ns.ns) in (:namespaces) ",
+                        [identifier: "%${params.proposedOrganisationID.toLowerCase()}%",namespaces:["isil","wibid"]]))
+            }
         }
-        if (params.proposedInstitutionID) {
-            result.institutionMatches.addAll(Org.executeQuery("select id.org from IdentifierOccurrence id where lower(id.identifier.value) like :identifier and lower(id.identifier.ns.ns) in (:namespaces) ",
-                    [identifier: "%${params.proposedInstitutionID.toLowerCase()}%",namespaces:["isil","wibid"]]))
+        //searching departments of the institution, i.e. the context org is an institution
+        else if(params.comboType == 'Department') {
+            if(params.proposedOrganisation) {
+                result.organisationMatches.addAll(Org.executeQuery("select c.fromOrg from Combo c join c.fromOrg o where c.toOrg = :contextOrg and c.type = :department and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName)",
+                        [department: RefdataValue.getByValueAndCategory('Department','Combo Type'), contextOrg: contextService.org, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
+            }
         }
         result
     }
@@ -267,6 +299,8 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
         if(params.institutionalView)
             result.institutionalView = params.institutionalView
+        else if(params.departmentalView)
+            result.departmentalView = params.departmentalView
 
         DebugUtil du = new DebugUtil()
         du.setBenchMark('this-n-that')
@@ -366,11 +400,9 @@ class OrganisationController extends AbstractDebugController {
             // create mandatory OrgPrivateProperties if not existing
 
             def mandatories = []
-            result.user?.authorizedOrgs?.each { authOrg ->
-                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
-                if (ppd) {
-                    mandatories << ppd
-                }
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.contextOrg)
+            if (ppd) {
+                mandatories << ppd
             }
             mandatories.flatten().each { pd ->
                 if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {

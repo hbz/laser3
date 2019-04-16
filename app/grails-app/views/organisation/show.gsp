@@ -6,11 +6,17 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${RefdataValue.getByValueAndCategory('Provider','OrgRoleType' in orgInstance.orgType)}">
-            <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
+        <g:if test="${RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
+            <g:set var="entityName" value="${message(code: 'default.provider.label')}" />
         </g:if>
+        <g:elseif test="${institutionalView}">
+            <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
+        </g:elseif>
+        <g:elseif test="${departmentalView}">
+            <g:set var="entityName" value="${message(code: 'org.department.label')}"/>
+        </g:elseif>
         <g:else>
-            <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+            <g:set var="entityName" value="${message(code: 'org.label')}" />
         </g:else>
         <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
 
@@ -70,7 +76,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${!institutionalView}">
+                <g:if test="${!institutionalView && !departmentalView}">
                     <div class="ui card">
                         <div class="content">
                             <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.orgType)}">
@@ -105,7 +111,7 @@
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${!institutionalView}">
+                <g:if test="${!institutionalView && !departmentalView}">
                     <div class="ui card">
                         <div class="content">
                             <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -145,7 +151,7 @@
                                 <semui:xEditableRefData owner="${orgInstance}" field="libraryType" config='Library Type'/>
                             </dd>
                         </dl>
-                        <g:if test="${!institutionalView}">
+                        <g:if test="${!institutionalView && !departmentalView}">
                             <dl>
                                 <dt><g:message code="org.libraryNetwork.label" default="Library Network" /></dt>
                                 <dd>
@@ -197,7 +203,7 @@
                     </div>
                 </div>
 
-                <g:if test="${!institutionalView}">
+                <g:if test="${!institutionalView && !departmentalView}">
                     <div class="ui card">
                         <div class="content">
                             <dl>

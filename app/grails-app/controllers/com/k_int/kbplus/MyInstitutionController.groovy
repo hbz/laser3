@@ -16,8 +16,6 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.web.servlet.LocaleResolver
-import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.sql.Timestamp
 import java.text.DateFormat
@@ -1171,7 +1169,7 @@ from License as l where (
             flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
             redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
-            flash.message = message(code: 'subscription.unknown.message',default: "Subscription not found")
+            flash.message = message(code: 'subscription.unknown.message')
             redirect action: 'addSubscription', params: params
         }
     }
@@ -1444,7 +1442,7 @@ ORDER BY p.platform.name""", sub_params);
      * will build the base of the query to gather all the information needed for the view page
      * according to the requested filtering.
      *
-     * @param institution - the {@link #com.k_int.kbplus.Org Org} object representing the institution we're looking at
+     * @param institution - the {@link Org} object representing the institution we're looking at
      * @param date_restriction - 'Subscription valid on' date restriction as a String
      * @return a Map containing the base query as a String and a Map containing the parameters to run the query
      */
@@ -3233,21 +3231,24 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def addConsortiaMembers() {
+    def addMembers() {
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+        if(params.comboType == 'Consortium')
+            params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
+        else if(params.comboType == 'Department')
+            params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
 
         if (params.selectedOrgs) {
-            log.debug('adding orgs to consortia')
+            log.debug('adding orgs to consortia/institution')
 
             params.list('selectedOrgs').each { soId ->
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                        type: RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
@@ -3255,26 +3256,30 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             }
 
-            redirect action: 'manageConsortia'
+            redirect action: 'manageMembers'
         }
 
         else {
             def fsq = filterService.getOrgQuery(params)
             result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-            result.consortiaMemberIds = []
+            result.memberIds = []
             Combo.findAllWhere(
                     toOrg: result.institution,
-                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                    type:    RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
             ).each { cmb ->
-                result.consortiaMemberIds << cmb.fromOrg.id
+                result.memberIds << cmb.fromOrg.id
             }
 
             if ( params.exportXLS=='yes' ) {
 
                 def orgs = result.availableOrgs
 
-                def message = g.message(code: 'menu.public.all_orgs')
+                def message
+                if(params.comboType == 'Consortium')
+                    message = message(code: 'menu.public.all_orgs')
+                else if(params.comboType == 'Department')
+                    message = message(code: 'menu.my.departments')
 
                 exportOrg(orgs, message, true)
                 return
@@ -3287,12 +3292,15 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortia() {
+    def manageMembers() {
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
-        params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+        if(params.comboType == 'Consortium')
+            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
+        else if(params.comboType == 'Department')
+            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
+        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -3312,7 +3320,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if(params.exportXLS) {
             params.remove("max")
@@ -3321,17 +3329,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             params << [max: result.max, offset: result.offset]
         }
 
-        if (params.filterPropDef && consortiaMemberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+        if (params.filterPropDef && memberIds) {
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
-        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+        result.members      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.membersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
 
-            def orgs = result.consortiaMembers
+            def orgs = result.members
 
-            def message = g.message(code: 'menu.my.consortia')
+            def message
+            if(params.comboType == 'Consortium')
+                message = g.message(code: 'menu.my.consortia')
+            else if(params.comboType == 'Department')
+                message = g.message(code: 'menu.my.departments')
 
             exportOrg(orgs, message, true)
             return
@@ -3340,6 +3352,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def removeDepartment() {
+        Org contextOrg = contextService.org
+        Org department = Org.get(params.dept)
+        Combo combo = Combo.findByFromOrgAndToOrgAndType(department,contextOrg,RefdataValue.getByValueAndCategory('Department','Combo Type'))
+        if(combo.delete()) {
+            department.status = RDStore.O_STATUS_DELETED
+            if(!department.save()) {
+                flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
+                redirect(url: request.getHeader('referer'))
+            }
+        }
+        redirect action: 'manageMembers', params: [comboType: 'Department']
+    }
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageConsortiaSubscriptions() {

@@ -317,7 +317,7 @@ class BootStrap {
 
         def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
+        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
         OrgPermShare.assertPermShare(view_permission, cl_owner_role)
         OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
@@ -2147,6 +2147,7 @@ class BootStrap {
 
         RefdataValue.loc('OrgRoleType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
+        RefdataValue.loc('OrgRoleType',      [en: 'Department', de: 'Institut'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Agency', de: 'Lieferant'], BOOTSTRAP)

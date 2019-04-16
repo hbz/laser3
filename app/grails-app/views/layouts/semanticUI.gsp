@@ -145,10 +145,15 @@
                             <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Consortium']" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
+                            <g:elseif test="${RDStore.OT_INSTITUTION.id in  contextService.org.getallOrgTypeIds()}">
+                                <div class="divider"></div>
+
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Department']" message="menu.my.departments" />
+                            </g:elseif>
 
                             <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
 

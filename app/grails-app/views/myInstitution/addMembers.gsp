@@ -18,7 +18,7 @@
     <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="addConsortiaMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
         <g:render template="actions" />
@@ -29,7 +29,7 @@
     <semui:messages data="${flash}" />
 
     <semui:filter>
-        <g:form action="addConsortiaMembers" method="get" class="ui form">
+        <g:form action="addMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
@@ -39,11 +39,11 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="addConsortiaMembers" controller="myInstitution" method="post" class="ui form">
+    <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
-                          tmplDisableOrgIds: consortiaMemberIds,
+                          tmplDisableOrgIds: memberIds,
                           tmplShowCheckbox: true,
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>
