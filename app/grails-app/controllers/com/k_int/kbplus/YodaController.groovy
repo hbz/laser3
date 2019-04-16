@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import de.laser.AccessService
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -54,8 +55,10 @@ class YodaController {
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test='checkPermTypeAffiliation(AccessService.ORG_CONSORTIUM, "Consortium", "INST_ADM")')
+    @Secured(closure = {
+        ctx.accessService.checkPermTypeAffiliation(AccessService.ORG_CONSORTIUM, "Consortium", "INST_ADM")
+    })
     def demo() {
         Map result = [:]
 

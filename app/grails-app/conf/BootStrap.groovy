@@ -368,8 +368,8 @@ class BootStrap {
 
         createOrgPerms(orgBasicRole, ['ORG_BASIC'])
         createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM', 'ORG_MEMBER'])
         createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
 
     }
