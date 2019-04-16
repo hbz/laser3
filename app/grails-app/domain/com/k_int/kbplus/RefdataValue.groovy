@@ -28,25 +28,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         owner:RefdataCategory
     ]
 
-  
-    // We wish some refdata items to model a sharing of permission from the owner of an object to a particular
-    // organisation. For example, an organisation taking out a license (Via an OrgRole link) needs to be editable by that org.
-    // Therefore, we would like all OrgRole links of type "Licensee" to convey
-    // permissions of "EDIT" and "VIEW" indicating that anyone who has the corresponding rights via their
-    // connection to that org can perform the indicated action.
-    // Object Side = Share Permission, User side == grant permission
-    @Transient
-    Set<OrgPermShare> sharedPermissions = []
-
-    /*
-    static hasMany = [
-            sharedPermissions: com.k_int.kbplus.OrgPermShare
-    ]
-    static mappedBy = [
-            sharedPermissions: 'rdv'
-    ]
-    */
-
     static mapping = {
                     id column: 'rdv_id'
                version column: 'rdv_version'
@@ -194,9 +175,5 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         def rc = this.getClass().getName()
         def id = this.getId()
         I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
-    }
-
-    def getSharedPermissions() {
-        OrgPermShare.findAllByRdv(this)
     }
 }

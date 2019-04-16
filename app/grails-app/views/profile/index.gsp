@@ -241,6 +241,11 @@
                 </div>
                 --%>
                 <div class="field">
+                    <label>${message(code: 'profile.theme', default:'Theme')}</label>
+                    <g:set var="US_THEME" value="${user.getSetting(UserSettings.KEYS.THEME, RefdataValue.getByValueAndCategory('default', 'User.Settings.Theme'))}" />
+                    <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
+                </div>
+                <div class="field">
                     <label>${message(code: 'profile.dashboardTab', default:'Dashboard Tab')}</label>
                     <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />

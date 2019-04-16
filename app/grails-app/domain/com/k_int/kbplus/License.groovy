@@ -372,80 +372,28 @@ class License
             return true
         }
 
-        return checkPermissionsNew(perm, user)
-    }
+        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg()?.id)) {
 
-    def checkPermissionsNew(perm, user) {
+            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
+            )
+            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
+            )
+            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_LICENSEE
+            )
 
-        def principles = user.listPrincipalsGrantingPermission(perm) // UserOrgs with perm
-
-        log.debug("The target list if principles : ${principles}")
-
-        Set object_orgs = new HashSet()
-
-        OrgRole.findAllByLicAndOrg(this, contextService.getOrg()).each { or ->
-            def perm_exists = false
-            if (! or.roleType) {
-                log.warn("Org link with no role type! Org Link ID is ${ol.id}")
+            if (perm == 'view') {
+                return cons || licseeCons || licsee
             }
-
-            or.roleType?.sharedPermissions.each { sp ->
-                if (sp.perm.code == perm)
-                    perm_exists = true
-            }
-            if (perm_exists) {
-                log.debug("Looks like org ${or.org} has perm ${perm} shared with it.. so add to list")
-                object_orgs.add("${or.org.id}:${perm}")
+            if (perm == 'edit') {
+                return cons || licsee
             }
         }
 
-        log.debug("After analysis, the following relevant org_permissions were located ${object_orgs}, user has the following orgs for that perm ${principles}")
-
-        def intersection = principles.retainAll(object_orgs)
-        log.debug("intersection is ${principles}")
-
-        return (principles.size() > 0)
+        return false
     }
-
-  def checkPermissions(perm, user) {
-    def result = false
-    def principles = user.listPrincipalsGrantingPermission(perm);   // This will list all the orgs and people granted the given perm
-    log.debug("The target list if principles : ${principles}");
-
-    // Now we need to see if we can find a path from this object to any of those resources... Any of these orgs can edit
-    
-    // If this is a concrete license, the owner is the 
-    // If it's a template, the owner is the consortia that negoited
-    // def owning org list
-    // We're looking for all org links that grant a role with the corresponding edit property.
-    Set object_orgs = new HashSet();
-    orgLinks.each { ol ->
-      def perm_exists=false
-      if ( !ol.roleType )
-        log.warn("Org link with no role type! Org Link ID is ${ol.id}");
-
-      ol.roleType?.sharedPermissions.each { sp ->
-        if ( sp.perm.code==perm )
-          perm_exists=true;
-      }
-      if ( perm_exists ) {
-        log.debug("Looks like org ${ol.org} has perm ${perm} shared with it.. so add to list")
-        object_orgs.add("${ol.org.id}:${perm}")
-      }
-    }
-    
-    log.debug("After analysis, the following relevant org_permissions were located ${object_orgs}, user has the following orgs for that perm ${principles}")
-
-    // Now find the intersection
-    def intersection = principles.retainAll(object_orgs)
-
-    log.debug("intersection is ${principles}")
-
-    if ( principles.size() > 0 )
-      result = true
-
-    result
-  }
 
   @Override
   public boolean equals (Object o) {

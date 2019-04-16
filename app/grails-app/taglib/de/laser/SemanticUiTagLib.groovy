@@ -229,24 +229,36 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button">'
-                            out   << '<i class="icon thumbtack"></i>'
 
-                            out   << '<div class="menu">'
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
-                                    controller: 'ajax',
-                                    action: 'toggleAudit',
-                                    params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'item'
-                            )
-                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
-                                    controller: 'ajax',
-                                    action: 'toggleAudit',
-                                    params: ['owner': oid, 'property': [objAttr], keep: true],
-                                    class: 'item'
-                            )
-                            out   << '</div>'
-                            out << '</div>'
+                            if (obj instanceof Subscription && objAttr == 'name') {
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Vererbung deaktivieren">'
+                                out << g.link('<i class="icon thumbtack"></i>',
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr], keep: true],
+                                        class: 'ui simple icon mini green button la-js-dont-hide-button'
+                                )
+                                out << '</span>'
+                            }
+                            else {
+                                out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button">'
+                                out   << '<i class="icon thumbtack"></i>'
+                                out   << '<div class="menu">'
+                                out   << g.link('Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr]],
+                                        class: 'item'
+                                )
+                                out   << g.link('Vererbung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
+                                        controller: 'ajax',
+                                        action: 'toggleAudit',
+                                        params: ['owner': oid, 'property': [objAttr], keep: true],
+                                        class: 'item'
+                                )
+                                out   << '</div>'
+                                out << '</div>'
+                            }
                         }
                         else {
                             out << ' &nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt">'
