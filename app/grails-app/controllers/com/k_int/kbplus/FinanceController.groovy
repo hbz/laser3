@@ -220,7 +220,6 @@ class FinanceController extends AbstractDebugController {
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
                         ArrayList rowData = []
-                        HashSet<String> currencies = new HashSet<String>()
                         if(financialData[viewMode].count > 0) {
                             ArrayList row
                             financialData[viewMode].costItems.each { ci ->
@@ -400,7 +399,7 @@ class FinanceController extends AbstractDebugController {
                                 sumRow.add(entry.billingSumAfterTax)
                                 rowData.add(sumRow)
                             }
-                            writer.write(exportService.generateCSVString(titles,rowData))
+                            writer.write(exportService.generateSeparatorTableString(titles,rowData,','))
                         }
                         else {
                             writer.write(message(code:'finance.export.empty'))

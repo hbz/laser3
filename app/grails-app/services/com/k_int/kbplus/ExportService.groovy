@@ -39,7 +39,7 @@ class ExportService {
 	def formatter = new SimpleDateFormat("yyyy-MM-dd")
 
 	/**
-		new CSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
+		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
 		expect data in structure:
 		@param titleRow - {@link List} of column headers [header1,header2,...,headerN]
 		@param columnData - {@link List} of the rows, each row is itself a {@link List}:
@@ -50,12 +50,12 @@ class ExportService {
 		 	[column1, column2, ..., columnN]  //for row N
 		]
 	 */
-	String generateCSVString(List titleRow, List columnData) {
+	String generateSeparatorTableString(List titleRow, List columnData,String separator) {
 		List output = []
-		output.add(titleRow.join(","))
+		output.add(titleRow.join(separator))
 		columnData.each { row ->
 			if(row.size() > 0)
-				output.add(row.join(","))
+				output.add(row.join(separator))
 			else output.add(" ")
 		}
 		output.join("\n")
@@ -431,11 +431,12 @@ class ExportService {
 	 */
 	
 	/**
-	 * Create the document and with the root Element of the XML file
-	 * 
+	 * Create the document and with the root Element of the XML file (deploy that for what in an external method???) Legacy!
+	 *
 	 * @param root - the name of the root {@link Element}
 	 * @return the {@link Document} created
 	 */
+	/*
 	def buildDocXML(root) {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -447,8 +448,10 @@ class ExportService {
 		
 		return doc
 	}
+	*/
+	/*
 	def getIECoreDates(ie){
-//		def coreDates = TitleInstitutionProvider.executeQuery(hqlCoreDates,[ie:ie,cp_role:role_cprov,sub_role:role_subscriber])
+	def coreDates = TitleInstitutionProvider.executeQuery(hqlCoreDates,[ie:ie,cp_role:role_cprov,sub_role:role_subscriber])
     def inst = ie.subscription?.getSubscriber()
     def title = ie.tipp?.title
     def provider = ie.tipp?.pkg?.getContentProvider()
@@ -463,14 +466,16 @@ class ExportService {
 	def formatCoreDates(dates){
 	    return "${dates[0]?formatter.format(dates[0]):''} : ${dates[1]?formatter.format(dates[1]):''}"
 	}
+	 */
 	/**
-	 * Add a list of titles from a given entitlement list into a given Element
+	 * Add a list of titles from a given entitlement list into a given Element - legacy!
 	 * 
 	 * @param doc - the {@link Document}
 	 * @param into_elem - the {@link Element} into which we want to insert the list of titles
 	 * @param entries - the list of {@link IssueEntitlement} or {@link TitleInstancePackagePlatform}
 	 * @param type -  either "TIPP" or default "Issue Entitlement"
 	 */
+	/*
     def addTitleListXML(Document doc, Element into_elem, List entries, String type = "Issue Entitlement") {
 		def current_title_id = -1
 		def starttime = printStart("Add TitleListXML")
@@ -551,6 +556,7 @@ class ExportService {
 
 		printDuration(starttime, "Add TitleListXML")
     }
+	*/
 	
 	/**
 	 * Add the licenses of a given list into a given XML element.

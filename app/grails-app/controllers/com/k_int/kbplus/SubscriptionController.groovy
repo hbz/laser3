@@ -64,7 +64,7 @@ class SubscriptionController extends AbstractDebugController {
     def subscriptionsQueryService
     def subscriptionService
     def comparisonService
-    def orgDocumentService
+    def titleStreamService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -204,7 +204,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
-        if (params.format == 'html' || params.format == null) {
+        if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
         } else {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params);
@@ -231,53 +231,67 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        withFormat {
-            html result
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
-                out.close()
-                exportService.printDuration(verystarttime, "Overall Time")
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
-            json {
-                def starttime = exportService.printStart("Building Map")
-                def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building Map")
-
-                starttime = exportService.printStart("Create JSON")
-                def json = map as JSON
-                exportService.printDuration(starttime, "Create JSON")
-
-                if (params.transforms) {
-                    transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                    response.contentType = "application/json"
-                    render json
+            out.flush()
+            out.close()
+        }
+        else {
+            withFormat {
+                html result
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                    out.close()
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
-            }
-            xml {
-                def starttime = exportService.printStart("Building XML Doc")
-                def doc = exportService.buildDocXML("Subscriptions")
-                exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building XML Doc")
+                json {
+                    def starttime = exportService.printStart("Building Map")
+                    def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building Map")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    starttime = exportService.printStart("Sending XML")
-                    exportService.streamOutXML(doc, response.outputStream)
-                    exportService.printDuration(starttime, "Sending XML")
+                    starttime = exportService.printStart("Create JSON")
+                    def json = map as JSON
+                    exportService.printDuration(starttime, "Create JSON")
+
+                    if (params.transforms) {
+                        transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                        response.contentType = "application/json"
+                        render json
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
+                xml {
+                    def starttime = exportService.printStart("Building XML Doc")
+                    def doc = exportService.buildDocXML("Subscriptions")
+                    exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building XML Doc")
+
+                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
+                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
+                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                        response.contentType = "text/xml"
+                        starttime = exportService.printStart("Sending XML")
+                        exportService.streamOutXML(doc, response.outputStream)
+                        exportService.printDuration(starttime, "Sending XML")
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
+                }
             }
         }
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

@@ -25,7 +25,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
                         params="${params+[exportXLS:true]}">
                     ${message(code:'default.button.exports.xls')}
@@ -35,6 +35,20 @@
                 <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
             </g:else>
         </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet || defaultSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
+                        params="${params+[format:'csv']}">
+                    ${message(code:'default.button.exports.csv')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+            </g:else>
+        </semui:exportDropdownItem>
+
     </semui:exportDropdown>
 </semui:controlButtons>
 

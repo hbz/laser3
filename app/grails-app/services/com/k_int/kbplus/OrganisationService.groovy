@@ -2,11 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import grails.transaction.Transactional
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -164,11 +159,11 @@ class OrganisationService {
                                 }
                             }
                         }
-                        row.add(value)
+                        row.add(value.replaceAll(',',';'))
                     }
                     orgData.add(row)
                 }
-                return exportService.generateCSVString(titles,orgData)
+                return exportService.generateSeparatorTableString(titles,orgData,',')
         }
 
     }

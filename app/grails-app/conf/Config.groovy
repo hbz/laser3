@@ -459,7 +459,7 @@ subscriptionTransforms = [
     'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
     'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
     //'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
-    'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
+    //'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 
 // KBPlus import not available in titlelist because we need sub id and it's possible for multiple IEs to appear
@@ -472,7 +472,7 @@ titlelistTransforms = [
 
 packageTransforms = [
     //'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
-    'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
+    //'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 licenseTransforms = [
     'sub_ie':[name:'Licensed Issue Entitlements (CSV)', xsl:'licensed_titles.xsl', returnFileExtention:'csv', returnMime:'text/csv'],

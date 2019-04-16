@@ -21,7 +21,6 @@ import org.apache.poi.ss.usermodel.Drawing
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.RichTextString
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -31,11 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.servlet.ServletOutputStream
-import javax.validation.constraints.Null
 import java.awt.Color
-import org.springframework.web.servlet.LocaleResolver
-import org.springframework.web.servlet.support.RequestContextUtils
-
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -67,6 +62,7 @@ class MyInstitutionController extends AbstractDebugController {
     def orgTypeService
     def orgDocumentService
     def organisationService
+    def titleStreamService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -411,7 +407,7 @@ from License as l where (
                     rows.add(row)
                 }
                 out.withWriter { writer ->
-                    writer.write(exportService.generateCSVString(titles,rows))
+                    writer.write(exportService.generateSeparatorTableString(titles,rows),',')
                 }
                 out.close()
             }
@@ -811,7 +807,7 @@ from License as l where (
                     row.add(sub.type?.getI10n("value"))
                     subscriptionData.add(row)
                 }
-                return exportService.generateCSVString(titles,subscriptionData)
+                return exportService.generateSeparatorTableString(titles,subscriptionData,',')
         }
     }
 
@@ -1339,12 +1335,14 @@ from License as l where (
         def date_restriction = null;
 
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        boolean defaultSet = false
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
+            defaultSet = true
             log.debug("Getting titles as of ${date_restriction} (current)")
         } else if (params.validOn.trim() == '') {
-            result.validOn = "" 
+            result.validOn = ""
         } else {
             result.validOn = params.validOn
             date_restriction = sdf.parse(params.validOn)
@@ -1368,7 +1366,7 @@ from License as l where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        RefdataValue del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
         RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
         RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
@@ -1382,8 +1380,6 @@ from License as l where (
         log.debug("Using params: ${params}")
         
         def qry_params = [
-                max:result.max,
-                offset:result.offset,
                 institution: result.institution.id,
                 del_sub: del_sub.id,
                 del_ie: del_ie.id,
@@ -1454,55 +1450,105 @@ from License as l where (
 
         log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
-        //If html return Titles and count
-        if (isHtmlOutput) {
+        if(params.format || params.exportKBart) {
+            //double run until ERMS-1188
+            String filterString = ""
+            Map queryParams = [subDeleted:RDStore.SUBSCRIPTION_DELETED,ieDeleted:RDStore.IE_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+            if (date_restriction) {
+                filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
+                queryParams.dateRestriction = date_restriction
+            }
 
-            result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(),qry_params).collect{ TitleInstance.get(it.tipp_ti_fk)  }
+            if ((params.filter) && (params.filter.length() > 0)) {
+                filterString += " and LOWER(ie.tipp.title.title) like LOWER(:title)"
+                queryParams.title = "%${params.filter}%"
+            }
 
-            def queryCnt = "SELECT count(*) as count from (SELECT ${queryStr}) as ras".toString()
-            result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count']
-            result = setFiltersLists(result, date_restriction)
-        }else{
-            //Else return IEs
-            def exportQuery = "SELECT ie.ie_id, ${queryStr}, ie.ie_id order by ti.sort_title asc ".toString()
-            result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
-        } 
+            if (filterSub) {
+                List subs = []
+                filterSub.each {fs ->
+                    subs.add(Subscription.get(Long.parseLong((String) fs)))
+                }
+                filterString += " AND sub in (:subs)"
+                queryParams.subs = subs
+            }
 
-        result.filterSet = params.filterSet ? true : false
+            if (filterHostPlat) {
+                List hostPlatforms = []
+                filterHostPlat.each { plat ->
+                    hostPlatforms.add(Platform.get(Long.parseLong((String) plat)))
+                }
+                filterString += " AND ie.tipp.platform in (:hostPlatforms)"
+                queryParams.hostPlatforms = hostPlatforms
+            }
+
+            if (filterPvd) {
+                filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
+                queryParams.contentProvider = filterPvd
+            }
+            log.debug("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.subscription.status != :subDeleted and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
+            log.debug(queryParams)
+            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.subscription.status != :subDeleted and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
+        }
+        else {
+            qry_params.max = result.max
+            qry_params.offset = result.offset
+            result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(), qry_params).collect {
+                TitleInstance.get(it.tipp_ti_fk)
+            }
+        }
+        def queryCnt = "SELECT count(*) as count from (SELECT ${queryStr}) as ras".toString()
+        result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count']
+        result = setFiltersLists(result, date_restriction)
+
+        result.filterSet = params.filterSet || defaultSet
         String filename = "titles_listing_${result.institution.shortcode}"
-        withFormat {
-            html {
-                result
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.titles)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
+            out.flush()
+            out.close()
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                    response.contentType = "text/csv"
 
-                def out = response.outputStream
-                exportService.StreamOutTitlesCSV(out, result.entitlements)
-                out.close()
-            }
-            json {
-                def map = [:]
-                exportService.addTitlesToMap(map, result.entitlements)
-                def content = map as JSON
+                    def out = response.outputStream
+                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    out.close()
+                }
+                /*json {
+                    def map = [:]
+                    exportService.addTitlesToMap(map, result.titles)
+                    def content = map as JSON
 
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                response.contentType = "application/json"
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                    response.contentType = "application/json"
 
-                render content
-            }
-            xml {
-                def doc = exportService.buildDocXML("TitleList")
-                exportService.addTitleListXML(doc, doc.getDocumentElement(), result.entitlements)
+                    render content
+                }*/
+                xml {
+                    def doc = exportService.buildDocXML("TitleList")
+                    exportService.addTitleListXML(doc, doc.getDocumentElement(), result.titles)
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                } else { // send the XML to the user
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    exportService.streamOutXML(doc, response.outputStream)
+                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
+                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
+                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
+                    } else { // send the XML to the user
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                        response.contentType = "text/xml"
+                        exportService.streamOutXML(doc, response.outputStream)
+                    }
                 }
             }
         }
@@ -3631,7 +3677,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
-        if(params.exportXLS || params.exportCSV)
+        if(params.exportXLS || params.format)
             result.costItems = costs
         else result.costItems = costs.drop((int) result.offset).take((int) result.max)
 
@@ -3658,21 +3704,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         List bm = du.stopBenchMark()
         result.benchMark = bm
 
-        if(params.exportXLS || params.exportCSV) {
-            SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+        BidiMap subLinks = new DualHashBidiMap()
+        Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+            subLinks.put(link.source,link.destination)
+        }
+        LinkedHashMap<Subscription,List<Org>> providers = [:]
+        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+            List<Org> orgs = providers.get(it.sub)
+            if(orgs == null)
+                orgs = [it.org]
+            else orgs.add(it.org)
+            providers.put(it.sub,orgs)
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+        if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
-            BidiMap subLinks = new DualHashBidiMap()
-            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
-                subLinks.put(link.source,link.destination)
-            }
-            LinkedHashMap<Subscription,List<Org>> providers = [:]
-            OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
-                List<Org> orgs = providers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                providers.put(it.sub,orgs)
-            }
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()
@@ -3826,7 +3872,128 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             workbook.dispose()
         }
         else
-            result
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'myinst.consortiaSubscriptions.license'),
+                                   message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                                   message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
+                    List columnData = []
+                    List row
+                    result.costItems.eachWithIndex { entry, int sidewideNumber ->
+                        row = []
+                        log.debug("processing entry ${sidewideNumber} ...")
+                        CostItem ci = (CostItem) entry[0] ?: new CostItem()
+                        Subscription subCons = (Subscription) entry[1]
+                        Org subscr = (Org) entry[2]
+                        int cellnum = 0
+                        //sidewide number
+                        log.debug("insert sidewide number")
+                        cellnum++
+                        row.add(sidewideNumber)
+                        //sortname
+                        log.debug("insert sortname")
+                        cellnum++
+                        String subscrName = ""
+                        if(subscr.sortname) subscrName += subscr.sortname
+                        subscrName += "(${subscr.name})"
+                        row.add(subscrName.replaceAll(',',' '))
+                        //subscription name
+                        log.debug("insert subscription name")
+                        cellnum++
+                        String subscriptionString = subCons.name
+                        //if(subCons.getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
+                        if(subLinks.getKey(subCons.id))
+                            subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
+                        row.add(subscriptionString.replaceAll(',',' '))
+                        //license name
+                        log.debug("insert license name")
+                        cellnum++
+                        if(subCons.owner)
+                            row.add(subCons.owner.reference.replaceAll(',',' '))
+                        else row.add(' ')
+                        //packages
+                        log.debug("insert package name")
+                        cellnum++
+                        String packagesString = " "
+                        subCons.packages.each { subPkg ->
+                            packagesString += "${subPkg.pkg.name} "
+                        }
+                        row.add(packagesString.replaceAll(',',' '))
+                        //provider
+                        log.debug("insert provider name")
+                        cellnum++
+                        String providersString = " "
+                        providers.get(subCons).each { p ->
+                            log.debug("Getting provider ${p}")
+                            providersString += "${p.name} "
+                        }
+                        row.add(providersString.replaceAll(',',' '))
+                        //running time from / to
+                        log.debug("insert running times")
+                        cellnum++
+                        String dateString = " "
+                        if(ci.id) {
+                            if(ci.getDerivedStartDate()) dateString += sdf.format(ci.getDerivedStartDate())
+                            if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
+                        }
+                        row.add(dateString)
+                        //final sum
+                        log.debug("insert final sum")
+                        cellnum++
+                        if(ci.id && ci.costItemElementConfiguration) {
+                            row.add("${ci.costInBillingCurrencyAfterTax ?: 0.0} ${ci.billingCurrency ?: 'EUR'}")
+                        }
+                        else row.add(" ")
+                        //cost item sign and visibility
+                        log.debug("insert cost sign and visiblity")
+                        cellnum++
+                        String costSignAndVisibility = " "
+                        if(ci.id) {
+                            if(ci.isVisibleForSubscriber) {
+                                costSignAndVisibility += message(code:'financials.isVisibleForSubscriber')+" / "
+                            }
+                            if(ci.costItemElementConfiguration) {
+                                costSignAndVisibility += ci.costItemElementConfiguration.getI10n("value")
+                            }
+                            else
+                                costSignAndVisibility += message(code:'financials.costItemConfiguration.notSet')
+                        }
+                        row.add(costSignAndVisibility)
+                        columnData.add(row)
+                    }
+                    columnData.add([])
+                    columnData.add([])
+                    row = []
+                    //sumcell = 7
+                    //sumTitleCell = 6
+                    for(int h = 0;h < 6;h++) {
+                        row.add(" ")
+                    }
+                    row.add(message(code:'financials.export.sums'))
+                    columnData.add(row)
+                    columnData.add([])
+                    result.finances.each { entry ->
+                        row = []
+                        for(int h = 0;h < 6;h++) {
+                            row.add(" ")
+                        }
+                        row.add("${message(code:'financials.sum.billing')} ${entry.key}")
+                        row.add("${entry.value} ${entry.key}")
+                        columnData.add(row)
+                    }
+                    String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.csv"
+                    response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
+                    response.contentType = "text/csv"
+                    response.outputStream.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(titles,columnData,','))
+                    }
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                }
+            }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

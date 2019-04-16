@@ -21,6 +21,7 @@ class RDStore {
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
+    static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', 'Organisational Role')
 
     static final OT_CONSORTIUM              = getRefdataValue('Consortium', 'OrgRoleType')
     static final OT_INSTITUTION             = getRefdataValue('Institution', 'OrgRoleType')
@@ -73,6 +74,14 @@ class RDStore {
     static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook','Title Type')
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
     static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
+
+    static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_OA                = getRefdataValue('OA','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_OPT_OUT_PROMOTION = getRefdataValue('Opt Out Promotion','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged','TitleInstancePackagePlatform.PaymentType')
+    static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown','TitleInstancePackagePlatform.PaymentType')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
