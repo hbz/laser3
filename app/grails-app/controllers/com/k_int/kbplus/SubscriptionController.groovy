@@ -368,7 +368,10 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def compare() {
-        def result = [:]
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+
+        result
+        /*
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
@@ -403,7 +406,7 @@ class SubscriptionController extends AbstractDebugController {
             def mapA = listA.collectEntries { [it.tipp.title.title, it] }
             def mapB = listB.collectEntries { [it.tipp.title.title, it] }
 
-            //FIXME: It should be possible to optimize the following lines
+            //FIXME: It should be possible to optimize the following lines - it is. The whole code can be optimised as it is legacy
             def unionList = mapA.keySet().plus(mapB.keySet()).toList()
             unionList = unionList.unique()
             result.unionListSize = unionList.size()
@@ -466,7 +469,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
         }
-        result
+        */
     }
 
     def formatDateOrNull(formatter, date) {
@@ -2945,7 +2948,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map workFlowPart4_neu(){
-        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
         Org org = contextService.getOrg()
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         List<Subscription> subsToCompare = [baseSub]
@@ -2953,65 +2955,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             Subscription newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
-            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
-                //group group level
-                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
-                String wrapperKey = propDefGroupWrapper.getKey()
-                if(wrapperKey.equals("orphanedProperties")) {
-                    TreeMap orphanedProperties = result.orphanedProperties
-                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,sub,propDefGroupWrapper.getValue())
-                    result.orphanedProperties = orphanedProperties
-                }
-                else {
-                    LinkedHashMap groupedProperties = result.groupedProperties
-                    //group level
-                    //Each group may have different property groups
-                    propDefGroupWrapper.getValue().each { propDefGroup ->
-                        PropertyDefinitionGroup groupKey
-                        PropertyDefinitionGroupBinding groupBinding
-                        switch(wrapperKey) {
-                            case "global":
-                                groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.visible == RDStore.YN_YES)
-                                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
-                                break
-                            case "local":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                            case "member":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                        }
-                    }
-                    result.groupedProperties = groupedProperties
-                }
-            }
-            TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
-            result.privateProperties = privateProperties
-        }
+        LinkedHashMap result = subscriptionService.regroupSubscriptionProperties(subsToCompare)
 //        result.licenses = licenses
 //        result.institution = org
 //        String filename = "license_compare_${result.institution.name}"

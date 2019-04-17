@@ -92,7 +92,7 @@ class ControlledListService {
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            String tenant
+            /*String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
                 try {
                     tenant = s.getAllSubscribers().get(0).name
@@ -110,8 +110,9 @@ class ControlledListService {
                     dateString += sdf.format(s.startDate) + "-"
                 if (s.endDate)
                     dateString += sdf.format(s.endDate)
-                result.results.add([name:"${s.name} (${tenant}${dateString})",value:s.class.name + ":" + s.id])
-            }
+
+            }*/
+            result.results.add([name:"${s.dropdownNamingConvention()})",value:s.class.name + ":" + s.id])
         }
         result
     }
@@ -217,7 +218,7 @@ class ControlledListService {
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            String tenant
+            /*String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
                 try {
                     tenant = s.getAllSubscribers().get(0).name
@@ -236,9 +237,10 @@ class ControlledListService {
                         dateString += sdf.format(s.startDate) + "-"
                     if (s.endDate)
                         dateString += sdf.format(s.endDate)
-                    result.results.add([name:"${sp.pkg.name}/${s.name} (${tenant}${dateString})",value:sp.class.name + ":" + sp.id])
+
                 }
-            }
+            }*/
+            result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()})",value:sp.class.name + ":" + sp.id])
         }
         result
     }
@@ -331,6 +333,7 @@ class ControlledListService {
             List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
             allSubscriptions.each { it ->
                 Subscription subscription = (Subscription) it[0]
+                /*
                 String tenant
                 if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
                     try {
@@ -351,7 +354,8 @@ class ControlledListService {
                     dateString += sdf.format(subscription.endDate)
                 else dateString += ""
                 dateString += ")"
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it[1]} - ${subscription.status.getI10n("value")} ${dateString} ${tenant}",value:"${it[0].class.name}:${it[0].id}"])
+                */
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${subscription.dropdownNamingConvention()}",value:"${it[0].class.name}:${it[0].id}"])
             }
         }
         if(params.package == "true") {
