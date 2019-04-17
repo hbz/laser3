@@ -638,10 +638,11 @@ class SemanticUiTagLib {
         } else {
             out << '<i class="arrow left icon disabled"></i>'
         }
-
+        out << "<span class='la-annual-rings-text'>"
         out << startDate
         out << dash
         out << endDate
+        out << "</span>"
 
         out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
         out << '       &nbsp;'
