@@ -136,11 +136,12 @@
     }
 
     // TODO: Wenn die Checkbox gecheckt ist soll der Text in Zelle rechts daneben rot und durchgestrichen sein
-$('td input[name="subscription.takeProperty"]').change( function(event) {
-    if (this.checked){
-        $(this).next().addClass('willBeReplaced');
+$('input[name="subscription.takeProperty"]').change( function(event) {
+    if ($(this).prop('checked')){
+        alert(this)
+        $(this).parent().next().addClass('willBeReplaced');
     } else {
-        $(this).next().removeClass('willBeReplaced');
+        $(this).parent().next().removeClass('willBeReplaced');
     }
 })
 </r:script>
