@@ -2951,9 +2951,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     Map workFlowPart4_neu(){
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            Subscription newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
         subsToCompare.each{ sub ->
@@ -2964,6 +2965,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
             result.privateProperties = privateProperties
         }
+
+        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+        }
+
         result
     }
 

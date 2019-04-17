@@ -1,5 +1,4 @@
 <%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
-<% String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon  \"></i></span>") %>
 <laser:serviceInjection/>
 <th>
     <th>${key}</th>
@@ -11,7 +10,7 @@
             <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
         </g:else>
     </th>
-    <th></th>
+    <th><input type="checkbox" onClick="toggleAllCheckboxes(this)" checked="${true}" />
     <th>
         <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
             <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
@@ -75,12 +74,11 @@
         </td>
 
         %{--AKTIONEN:--}%
-        %{--<%String propKeyId = genericOIDService.getOID(propKey)%>--}%
         <td>
         <g:if test="${propValues.containsKey(sourceSubscription)}">
             <% Set propValuesForSourceSub_ = propValues.get(sourceSubscription) %>
             <g:each var="propValue" in="${propValuesForSourceSub_}">
-                <g:checkBox name="subscription.takePropertyIds" value="${propValue.id}" checked="${true}" />
+                <g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                 <br>
             </g:each>
         </g:if>
@@ -128,3 +126,21 @@
         </td>
     </tr>
 </g:each>
+<r:script>
+    function toggleAllCheckboxes(source) {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = source.checked;
+        }
+    }
+
+    // TODO: Wenn die Checkbox gecheckt ist soll der Text in Zelle rechts daneben rot und durchgestrichen sein
+$('td input[name="subscription.takeProperty"]').change( function(event) {
+    if (this.checked){
+        $(this).next().addClass('willBeReplaced');
+    } else {
+        $(this).next().removeClass('willBeReplaced');
+    }
+})
+</r:script>
