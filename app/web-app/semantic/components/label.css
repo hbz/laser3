@@ -1313,6 +1313,7 @@ a.ui.basic.label:hover {
   padding-right: 0.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
+  vertical-align: super;
 }
 .ui.label.la-annual-rings .icon {
   font-size: 1em;

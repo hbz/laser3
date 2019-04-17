@@ -125,12 +125,17 @@
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.costItemElement')}</label>
-                        <laser:select name="newCostItemElement" class="ui dropdown"
-                                      from="${costItemElement}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      noSelection="${['':'']}"
-                                      value="${costItem?.costItemElement?.id}" />
+                        <g:if test="${costItemElement}">
+                            <laser:select name="newCostItemElement" class="ui dropdown"
+                                          from="${costItemElement}"
+                                          optionKey="id"
+                                          optionValue="value"
+                                          noSelection="${['':'']}"
+                                          value="${costItem?.costItemElement?.id}" />
+                        </g:if>
+                        <g:else>
+                            ${message(code:'financials.costItemElement.noneDefined')}
+                        </g:else>
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.costItemConfiguration')}</label>

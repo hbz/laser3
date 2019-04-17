@@ -368,8 +368,8 @@ class BootStrap {
 
         createOrgPerms(orgBasicRole, ['ORG_BASIC'])
         createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM', 'ORG_MEMBER'])
         createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
 
     }
@@ -1701,8 +1701,9 @@ class BootStrap {
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('Semester',                                  [en: 'Semester', de: 'Semester'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Status',                  [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+        RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
 
         // refdata values
 
@@ -2367,6 +2368,9 @@ class BootStrap {
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Announcements', de: 'Ankündigungen'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Tasks', de: 'Aufgaben'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Due Dates', de: 'Fällige Termine'], BOOTSTRAP)
+
+        RefdataValue.loc('User.Settings.Theme',     [key:'semanticUI',    en: 'Default', de: 'Standard'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Theme',     [key:'accessibility', en: 'Accessibility', de: 'Barrierefrei'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)

@@ -365,6 +365,11 @@ aside.ui.accordion .title:not(.ui) {
     margin-top: -20px;
     margin-left: -3px;
 }
+.ui.header .editable-container.editable-inline {
+    position: relative;
+    margin-left: 0px;
+    margin-top: 0px;
+}
 // cursor in case of disabled x-editable
 .editable-disabled {
     cursor: text !important;

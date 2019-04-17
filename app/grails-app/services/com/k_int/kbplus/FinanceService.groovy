@@ -495,7 +495,7 @@ class FinanceService {
         }
         else if(billingSumsNegative.size() > 0) {
             billingSumsNegative.each { negEntry ->
-                billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum, billingSumAfterTax: negEntry.billingSumAfterTax])
+                billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
             }
         }
         if(localSumsPositive.localSum && localSumsPositive.localSumAfterTax) {
@@ -509,8 +509,8 @@ class FinanceService {
             }
         }
         else if(localSumsNegative.localSum && localSumsNegative.localSumAfterTax) {
-            localSums.localSum = localSumsNegative.localSum
-            localSums.localSumAfterTax = localSumsNegative.localSumAfterTax
+            localSums.localSum = localSumsNegative.localSum * (-1)
+            localSums.localSumAfterTax = localSumsNegative.localSumAfterTax * (-1)
         }
         else {
             localSums.localSum = 0.0

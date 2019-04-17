@@ -30,7 +30,68 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-Filter: TODO
+    <g:form action="currentSurveys" controller="survey" method="get" class="form-inline ui small form">
+        <div class="three fields">
+            <div class="field">
+                <label for="name">${message(code: 'surveyInfo.name.label')}
+                </label>
+
+                <div class="ui input">
+                    <input type="text" id="name" name="name"
+                           placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                           value="${params.name}"/>
+                </div>
+            </div>
+
+
+            <div class="field fieldcontain">
+                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+                                  placeholder="filter.placeholder" value="${params.startDate}"/>
+            </div>
+
+
+            <div class="field fieldcontain">
+                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+                                  placeholder="filter.placeholder" value="${params.endDate}"/>
+            </div>
+
+        </div>
+
+        <div class="four fields">
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'surveyInfo.status.label')}</label>
+                <laser:select class="ui dropdown" name="status"
+                              from="${RefdataCategory.getAllRefdataValues('Survey Status')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.type.label')}</label>
+                <laser:select class="ui dropdown" name="type"
+                              from="${RefdataCategory.getAllRefdataValues('Survey Type')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.type}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+        </div>
+
+        <div class="field la-field-right-aligned">
+
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label', default: 'Filter')}">
+            </div>
+
+        </div>
+    </g:form>
 </semui:filter>
 
 <div>
@@ -46,7 +107,8 @@ Filter: TODO
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
             <g:sortableColumn params="${params}" property="si.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="si.status" title="${message(code: 'surveyInfo.status.label')}"/>
+            <g:sortableColumn params="${params}" property="si.status"
+                              title="${message(code: 'surveyInfo.status.label')}"/>
             <th>${message(code: 'surveyInfo.property')}</th>
             <th>${message(code: 'surveyInfo.members')}</th>
             <th>${message(code: 'surveyInfo.evaluation')}</th>
@@ -81,11 +143,13 @@ Filter: TODO
 
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                    <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i
+                            class="write icon"></i></g:link>
                 </td>
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i
+                            class="write icon"></i></g:link>
                 </td>
 
                 <td>
@@ -93,8 +157,9 @@ Filter: TODO
                 </td>
                 <td class="x">
 
-                <g:if test="${editable}">
-                <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                    <g:if test="${editable}">
+                        <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i
+                                class="write icon"></i></g:link>
 
                     %{--<g:link controller="${controllerName}" action="deleteSurveyInfo"
                             class="ui icon negative button js-open-confirm-modal"
@@ -105,7 +170,7 @@ Filter: TODO
                         <i class="trash alternate icon"></i>
                     </g:link>--}%
 
-                </g:if>
+                    </g:if>
                 </td>
             </tr>
 

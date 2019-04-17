@@ -7,7 +7,7 @@
 --------------------*/
 
 @verticalMargin: 0em;
-@display: inline;
+@display: inline-block;
 @verticalAlign: middle;
 
 @dividerSpacing: @3px;

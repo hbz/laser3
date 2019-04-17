@@ -1177,6 +1177,12 @@ aside.ui.accordion .title:not(.ui) {
   margin-left: -3px;
 }
 
+.ui.header .editable-container.editable-inline {
+  position: relative;
+  margin-left: 0px;
+  margin-top: 0px;
+}
+
 .editable-disabled {
   cursor: text !important;
 }
@@ -5652,6 +5658,96 @@ aside.ui.accordion .title:not(.ui) {
 
 #js-confirmation-button.positive.button {
   background-color: #BB1600 !important;
+}
+
+.ui.green.button {
+  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
+  box-shadow: 0 0 0 0 #d3dae3 inset;
+}
+
+.ui.green.button,
+.ui.green.buttons .button {
+  background-color: #98b500;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
+}
+
+.ui.icon.button,
+.ui.icon.buttons .button {
+  padding: .78571429em .78571429em .78571429em;
+}
+
+.ui.mini.button,
+.ui.mini.buttons .button,
+.ui.mini.buttons .or {
+  font-size: .78571429rem;
+}
+
+.ui.dropdown {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  outline: 0;
+  text-align: left;
+  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ui.button,
+.ui.buttons .button,
+.ui.buttons .or {
+  font-size: 1rem;
+}
+
+.ui.green.button {
+  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
+  box-shadow: 0 0 0 0 #d3dae3 inset;
+}
+
+.ui.green.button,
+.ui.green.buttons .button {
+  background-color: #98b500;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
+}
+
+.ui.icon.button,
+.ui.icon.buttons .button {
+  padding: .78571429em .78571429em .78571429em;
+}
+
+.ui.mini.button,
+.ui.mini.buttons .button,
+.ui.mini.buttons .or {
+  font-size: .78571429rem;
+}
+
+.ui.dropdown {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  outline: 0;
+  text-align: left;
+  -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease;
+  transition: box-shadow 0.1s ease, width 0.1s ease, -webkit-box-shadow 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ui.button,
+.ui.buttons .button,
+.ui.buttons .or {
+  font-size: 1rem;
+}
+
+.ui.button.la-audit-button {
+  vertical-align: super;
 }
 /*!
  * # Semantic UI 2.3.1 - Container
@@ -16919,6 +17015,7 @@ a.ui.basic.label:hover {
   padding-right: 0.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
+  vertical-align: super;
 }
 
 .ui.label.la-annual-rings .icon {
@@ -20721,7 +20818,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.breadcrumb {
   line-height: 1;
-  display: inline;
+  display: inline-block;
   margin: 0em 0em;
   vertical-align: middle;
 }

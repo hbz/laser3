@@ -20,10 +20,11 @@
 
 <g:if test="${params.asAt}"><h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.snapshot', args:[params.asAt])}</h1></g:if>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />
-<semui:xEditable owner="${subscriptionInstance}" field="name" />
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<h1 class="ui icon header"><semui:headerIcon />
+    <semui:xEditable owner="${subscriptionInstance}" field="name" />
 </h1>
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
 <g:render template="nav" />
 
 <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>

@@ -73,6 +73,10 @@ modules = {
         resource url:'js/application.js.gsp'
     }
 
+    accessibility {
+        dependsOn 'semanticUI'
+    }
+
     swaggerApi {
         dependsOn 'jquery'
 

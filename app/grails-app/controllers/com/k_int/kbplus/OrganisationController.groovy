@@ -425,14 +425,9 @@ class OrganisationController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = []
-            result.user?.authorizedOrgs?.each { authOrg ->
-                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
-                if (ppd) {
-                    mandatories << ppd
-                }
-            }
-            mandatories.flatten().each { pd ->
+            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.contextOrg)
+      
+            mandatories.each { pd ->
                 if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
@@ -533,8 +528,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
