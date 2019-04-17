@@ -65,6 +65,7 @@ class SubscriptionController extends AbstractDebugController {
     def subscriptionService
     def comparisonService
     def titleStreamService
+    def escapeService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -220,7 +221,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${result.subscriptionInstance.identifier}"
+        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.institution))}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {

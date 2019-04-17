@@ -27,6 +27,7 @@ class LicenseController extends AbstractDebugController {
     def genericOIDService
     def transformerService
     def exportService
+    def escapeService
     def institutionsService
     def pendingChangeService
     def executorWrapperService
@@ -59,7 +60,7 @@ class LicenseController extends AbstractDebugController {
 
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        def filename = "license_${license_reference_str.replace(" ", "_")}"
+        def filename = "license_${escapeService.escapeString(license_reference_str)}"
         result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start

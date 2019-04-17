@@ -25,7 +25,7 @@ class PackageController extends AbstractDebugController {
     def addressbookService
     def docstoreService
     def GOKbService
-    def orgDocumentService
+    def escapeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -571,7 +571,7 @@ select s from Subscription as s where
             result.processingpc = true
         }
 
-        def filename = "${result.packageInstance.name}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
+        def filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
         withFormat {
             html result
             json {

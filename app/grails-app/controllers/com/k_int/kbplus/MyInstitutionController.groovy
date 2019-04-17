@@ -47,6 +47,7 @@ class MyInstitutionController extends AbstractDebugController {
     def genericOIDService
     def factService
     def exportService
+    def escapeService
     def transformerService
     def institutionsService
     def docstoreService
@@ -2545,7 +2546,7 @@ AND EXISTS (
                 firstSheet.autoSizeColumn(22 + i); //adjust width of the second column
             }
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${g.message(code: "renewalexport.renewals", default: "Renewals")}.xlsx\""
+            response.setHeader "Content-disposition", "attachment; filename=\"${message(code: "renewalexport.renewals")}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -3189,7 +3190,7 @@ AND EXISTS (
             csv {
                 def dateFormat = new DateUtil().getSimpleDateFormat_NoTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
-                response.setHeader("Content-disposition", "attachment; filename=\"${result.institution.name}_changes.csv\"")
+                response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
                 response.contentType = "text/csv"
 
                 def out = response.outputStream
