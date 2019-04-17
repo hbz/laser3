@@ -350,25 +350,26 @@
 
                         </div>
                     </div>
-
+                <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id && costItemSums.consCosts && costItemSums.subscrCosts}">
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
-                <div class="ui card la-dl-no-table">
-                    <div class="content">
-                        <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
-                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
-                            <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
-                        </g:if>
-                        <g:if test="${costItemSums.consCosts}">
-                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
-                            <g:render template="financials" model="[data:costItemSums.consCosts]"/>
-                        </g:if>
-                        <g:elseif test="${costItemSums.subscrCosts}">
-                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
-                            <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
-                        </g:elseif>
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                                <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
+                            </g:if>
+                            <g:if test="${costItemSums.consCosts}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
+                                <g:render template="financials" model="[data:costItemSums.consCosts]"/>
+                            </g:if>
+                            <g:elseif test="${costItemSums.subscrCosts}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
+                                <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
+                            </g:elseif>
+                        </div>
                     </div>
-                </div>
+                </g:if>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table hidden">
                         <div class="content">
