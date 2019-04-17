@@ -300,6 +300,9 @@ class SubscriptionController extends AbstractDebugController {
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
                     if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
+
+                    flash.message = message(code: 'subscription.details.unlink.successfully')
+
                 }
             } else {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
@@ -890,7 +893,9 @@ class SubscriptionController extends AbstractDebugController {
         result.parentLicense = result.parentSub.owner
 
         result.validLicenses = []
-        result.validLicenses << result.parentLicense
+        if(result.parentLicense) {
+            result.validLicenses << result.parentLicense
+        }
 
         def childLicenses = License.where {
             (instanceOf == result.parentLicense) && (status.value != 'Deleted')
@@ -953,33 +958,190 @@ class SubscriptionController extends AbstractDebugController {
 
         def changeAccepted = []
         if (params.license_All) {
-            def countChangeAccepted = 0
-            validSubChilds.each {
-                it.owner = License.get(params.license_All)
-                if (it.save(flush: true)) {
-                    countChangeAccepted++
+            def lic = License.get(params.license_All)
+            validSubChilds.each { subChild ->
+                def sub = Subscription.get(subChild.id)
+                sub.owner = lic
+                if (sub.save(flush: true)) {
+                    changeAccepted << subChild?.dropdownNamingConvention()
                 }
             }
-            flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [countChangeAccepted])
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join(', ')])
+            }
+
 
         } else {
             validSubChilds.each {
                 if (params."license_${it.id}") {
                     def newLicense = License.get(params."license_${it.id}")
                     if (it.owner != newLicense) {
-                        it.owner = newLicense
-                        if(it.save(flush: true)){
-                            changeAccepted << it.id
+                        def sub = Subscription.get(it.id)
+                        sub.owner = newLicense
+                        if(sub.save(flush: true)){
+                            changeAccepted << it?.dropdownNamingConvention()
                         }
                     }
                 }
             }
-            flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.size()])
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join('')])
+            }
+
         }
 
 
         redirect(action: 'linkLicenseConsortia', id: params.id)
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def linkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+
+        result.validPackages
+        result.validPackages = result.parentPackages
+
+        /*def childPackages = License.where {
+            (instanceOf == result.parentLicense) && (status.value != 'Deleted')
+        }
+
+        childPackages?.each {
+            result.validLicenses << it
+        }*/
+
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+        //Sortieren
+        result.validSubChilds = validSubChilds.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }
+
+        def oldID =  params.id
+        params.id = result.parentSub.id
+
+      ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
+                }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID
+
+        result
+    }
+
+    def processLinkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+
+        def changeAccepted = []
+        def changeAcceptedwithIE = []
+        def changeFailed = []
+
+
+        if (params.package_All) {
+            def pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
+
+            validSubChilds.each { subChild ->
+
+                if(!(pkg_to_link in subChild.packages.pkg)) {
+
+                    if (params.withIssueEntitlements) {
+
+                        pkg_to_link.addToSubscription(subChild, true)
+                        changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+
+                    } else {
+                        pkg_to_link.addToSubscription(subChild, false)
+                        changeAccepted << subChild?.dropdownNamingConvention()
+
+                    }
+                }else {
+                    changeFailed << subChild?.dropdownNamingConvention()
+                }
+
+            }
+
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+            }
+            if (changeAcceptedwithIE) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+            }
+
+
+        } else {
+            validSubChilds.each { subChild ->
+
+                if (params."package_${subChild.id}") {
+                    def pkg_to_link = SubscriptionPackage.get(params."package_${subChild.id}").pkg
+
+                    if (!(pkg_to_link in subChild.packages.pkg)) {
+
+                        if (params.withIssueEntitlements) {
+
+                            pkg_to_link.addToSubscription(subChild, true)
+                            changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+
+                        } else {
+                            pkg_to_link.addToSubscription(subChild, false)
+                            changeAccepted << subChild?.dropdownNamingConvention()
+
+                        }
+                    } else {
+                        changeFailed << subChild?.dropdownNamingConvention()
+                    }
+                }
+            }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [changeAccepted.join(" ")])
+            }
+            if (changeAcceptedwithIE) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [changeAcceptedwithIE.join(" ")])
+            }
+            if (changeFailed) {
+                flash.error = message(code: 'subscription.linkPackagesConsortium.changeFailedAll', args: [changeFailed.join(" ")])
+            }
+        }
+
+
+        redirect(action: 'linkPackagesConsortia', id: params.id)
+    }
+
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1088,7 +1250,8 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
 
-                    if (params.generateSlavedSubs == "Y") {
+                    //ERMS-1155
+                    if (true) {
                         log.debug("Generating seperate slaved instances for consortia members")
 
                         def cons_sub = new Subscription(
