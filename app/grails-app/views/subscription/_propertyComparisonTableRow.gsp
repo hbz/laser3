@@ -11,9 +11,7 @@
             <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
         </g:else>
     </th>
-    <th class="center aligned">${message(code: 'default.copy.label')}</th>
-    <th class="center aligned">${message(code: 'default.replace.label')}</th>
-    <th class="center aligned">${message(code: 'default.doNothing.label')}</th>
+    <th></th>
     <th>
         <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
             <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
@@ -41,9 +39,6 @@
             <g:if test="${propValues.containsKey(sourceSubscription)}">
                 <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
-                    <g:if test="${propValue.type.multipleOccurrence && propValues.get(sourceSubscription).size() > 1}">
-                        <g:checkBox name="subscription.takePropertyIds" value="${propValue.id}" checked="${true}" />
-                    </g:if>
                     <g:if test="${propValue.type.type == Integer.toString()}">
                         <semui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
                     </g:if>
@@ -66,12 +61,12 @@
                         <semui:xEditableRefData owner="${propValue}" type="text" field="refValue" config="${propValue.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                     </g:elseif>
                     <g:else>
-                        propValue.value
+                        ${propValue.value}
                     </g:else>
-                    <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                     <g:if test="${propValue?.note}">
-                        <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div><br>
+                        <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div>
                     </g:if>
+                    <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                 </g:each>
             </g:if>
             <g:else>
@@ -80,21 +75,22 @@
         </td>
 
         %{--AKTIONEN:--}%
-        <%String propKeyId = genericOIDService.getOID(propKey)%>
+        %{--<%String propKeyId = genericOIDService.getOID(propKey)%>--}%
         <td>
-            <g:if test="${propKey.multipleOccurrence}">
-                <div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeProperty,${propKeyId}" value="${COPY}" checked ></div>
-            </g:if>
-        </td>
-        <td><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeProperty,${propKeyId}" value="${REPLACE}" ${propKey.multipleOccurrence? 'checked' : ''}checked /></div></td>
-        <td><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeProperty,${propKeyId}" value="${DO_NOTHING}" /></div></td>
+        <g:if test="${propValues.containsKey(sourceSubscription)}">
+            <% Set propValuesForSourceSub_ = propValues.get(sourceSubscription) %>
+            <g:each var="propValue" in="${propValuesForSourceSub_}">
+                <g:checkBox name="subscription.takePropertyIds" value="${propValue.id}" checked="${true}" />
+                <br>
+            </g:each>
+        </g:if>
 
         %{--TARGET-SUBSCRIPTION--}%
         <td>
             <g:if test="${ ! targetSubscription}">
             </g:if>
             <g:elseif test="${propValues.containsKey(targetSubscription)}">
-                <% Set propValuesForTargetSub = propValues.get(sourceSubscription) %>
+                <% Set propValuesForTargetSub = propValues.get(targetSubscription) %>
                 <g:each var="propValue" in="${propValuesForTargetSub}">
                     <g:if test="${propValue.type.type == Integer.toString()}">
                         <semui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
@@ -118,12 +114,12 @@
                         <semui:xEditableRefData owner="${propValue}" type="text" field="refValue" config="${propValue.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                     </g:elseif>
                      <g:else>
-                         propValue.value
+                         ${propValue.value}
                      </g:else>
-                    <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                     <g:if test="${propValue?.note}">
-                        <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div><br>
+                        <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div>
                     </g:if>
+                    <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                 </g:each>
             </g:elseif>
             <g:else>
