@@ -114,12 +114,12 @@ r2d2 = {
         // stickies
         $('.ui.sticky').sticky({offset: 120});
 
-        // sticky table header
+/*        // sticky table header
         $('.table').floatThead({
             position: 'fixed',
             top: 90,
             zIndex: 1
-        });
+        });*/
 
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
