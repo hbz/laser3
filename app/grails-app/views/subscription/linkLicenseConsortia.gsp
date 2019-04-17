@@ -80,7 +80,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <th>${message(code: 'subscription.linktoLicense')}</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

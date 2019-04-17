@@ -119,8 +119,7 @@
                       <th>${message(code:'license.details.incoming.childs')}</th>
                   </g:if>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                <th></th>
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" /><th>${message(code:'default.actions')}</th>
               </tr>
             </thead>
             <tbody>

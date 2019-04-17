@@ -10,7 +10,7 @@
             <th>${message(code: 'profile.membership.role', default:'Role')}</th>
             <th>${message(code: 'profile.membership.status', default:'Status')}</th>
             <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-            <th></th>
+            <th>${message(code:'default.actions')}</th>
         </tr>
         </thead>
         <tbody>

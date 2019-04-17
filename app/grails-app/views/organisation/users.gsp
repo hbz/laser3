@@ -38,7 +38,7 @@
                 <th>${message(code:'profile.membership.role')}</th>
                 <th>${message(code: "profile.membership.date2")}</th>
                 <th>${message(code:'user.status')}</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
 
@@ -96,7 +96,7 @@
             <th>${message(code:'profile.membership.role')}</th>
             <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
             <g:if test="${editable}">
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </g:if>
         </tr>
         </thead>

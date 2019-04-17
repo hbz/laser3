@@ -26,7 +26,7 @@
             </th>
 			<th>${message(code:'person.contacts.label')}</th>
 			<th>${message(code:'person.addresses.label')}</th>
-            <th></th>
+            <th>${message(code:'default.actions')}</th>
 		</tr>
 	</thead>
 	<tbody>

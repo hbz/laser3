@@ -29,7 +29,7 @@
         <th>Org</th>
         <th>Erstellt am</th>
         <th>Letzte Änderung am</th>
-        <th></th>
+        <th>${message(code:'default.actions')}</th>
     </tr>
     </thead>
     <tbody>
