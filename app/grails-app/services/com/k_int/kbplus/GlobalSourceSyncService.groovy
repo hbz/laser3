@@ -1488,6 +1488,11 @@ class GlobalSourceSyncService {
     }
 
     def setOrUpdateProviderPlattform(grt, providerUuid) {
+
+        if (providerUuid == null) {
+            return
+        }
+
         def oai = new OaiClientLaser()
         def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
 
