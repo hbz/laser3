@@ -14,7 +14,7 @@
                     <g:if test="${showConsortiaFunctions}">
                         <th>Auch für Teilnehmer<br />anzeigen</th>
                     </g:if>
-                    <th></th>
+                    <th>${message(code:'default.actions')}</th>
                 </tr>
             </thead>
             <tbody>

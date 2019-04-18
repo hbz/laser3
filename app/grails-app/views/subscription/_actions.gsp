@@ -82,6 +82,10 @@
             <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
                                        params="${[id: params.id]}"
                                        message="subscription.details.linkLicenseConsortium.label"/>
+
+              <semui:actionsDropdownItem controller="subscription" action="linkPackagesConsortia"
+                                         params="${[id: params.id]}"
+                                         message="subscription.details.linkPackagesConsortium.label"/>
         </g:if>
 
         <g:if test="${actionName == 'members'}">

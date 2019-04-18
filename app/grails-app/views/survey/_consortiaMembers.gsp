@@ -37,7 +37,7 @@
         <br/>
         <g:link class="ui button" controller="survey" action="addSubMembers"
                 id="${surveyConfig?.surveyInfo?.id}"
-                params="[surveyConfigID: surveyConfig?.id]">${message(code: 'showAddSubMembers.button.addSubMembers')}</g:link>
+                params="[surveyConfigID: surveyConfig?.id]">${message(code: 'showAddSubMembers.button.addMembersofSub')}</g:link>
     </g:if>
 
 </g:form>

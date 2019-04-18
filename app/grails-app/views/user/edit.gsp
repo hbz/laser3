@@ -119,7 +119,7 @@
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</th>
-                <th></th>
+                  <th>${message(code:'default.actions')}</th>
               </tr>
             </thead>
             <tbody>

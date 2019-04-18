@@ -34,8 +34,8 @@
 							<g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}" />
 						
 							<g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}" />
-						
-							<th></th>
+
+							<th>${message(code:'default.actions')}</th>
 						</tr>
 					</thead>
 					<tbody>

@@ -40,4 +40,38 @@ class SubscriptionPackage {
 
     result
   }
+
+  def getIssueEntitlementsofPackage(){
+
+    def result = []
+
+    this.subscription.issueEntitlements.findAll{it.status?.value != 'Deleted'}.each { iE ->
+
+      if(TitleInstancePackagePlatform.findByIdAndPkg(iE.tipp?.id, pkg))
+      {
+        result << iE
+      }
+
+    }
+
+    result
+  }
+
+  def getIEandPackageSize(){
+
+    return '(' + this.getIssueEntitlementsofPackage().size() + '/' + this.getCurrentTippsofPkg()?.size() + ')'
+  }
+  def getCurrentTippsofPkg()
+  {
+    def result = this.pkg.tipps?.findAll{it?.status?.value != 'Deleted'}
+
+    result
+
+  }
+
+  def getPackageName(){
+
+    return this.pkg.name
+  }
+
 }

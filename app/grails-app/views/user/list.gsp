@@ -98,7 +98,7 @@
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <th>API</th>
                         </sec:ifAnyGranted>
-                        <th></th>
+                        <th>${message(code:'default.actions')}</th>
                     </tr>
                 </thead>
                 <tbody>

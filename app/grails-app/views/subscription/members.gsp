@@ -32,6 +32,7 @@
 
     <h1 class="ui icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
     </h1>
     <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -79,7 +80,7 @@
                 <th>${message(code:'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.linktoLicense')}</th>
                 <th>${message(code:'subscription.details.status')}</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

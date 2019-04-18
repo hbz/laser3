@@ -44,7 +44,7 @@ ${orgInstance.name}
     <th>${message(code: 'readerNumber.number.label')}</th>
     <th>${message(code: 'readerNumber.dueDate.label')}</th>
     <th>${message(code: 'readerNumber.semester.label')}</th>
-    <th></th>
+    <th>${message(code:'default.actions')}</th>
 </tr>
 </thead>
 <tbody>

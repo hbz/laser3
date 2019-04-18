@@ -54,7 +54,7 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </g:else>
         </tr>
         <tr>

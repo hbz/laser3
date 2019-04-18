@@ -22,7 +22,7 @@
           <thead>
             <tr>
               <th>${message(code:'default.info.label', default:'Info')}</th>
-              <th></th>
+              <th>${message(code:'default.actions')}</th>
             </tr>
           </thead>
           <tbody>

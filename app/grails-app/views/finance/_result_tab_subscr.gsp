@@ -24,7 +24,7 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </g:else>
         </tr>
     </thead>
