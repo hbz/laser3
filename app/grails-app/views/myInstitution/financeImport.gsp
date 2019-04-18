@@ -13,7 +13,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.financeImport', default: 'Finance Import')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.financeImport')}</h1>
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
@@ -26,9 +26,9 @@
                 <%-- <th>tsv column name</th>
                 <th>Description</th>
                 <th>maps to</th> --%>
-                <th>${message(code:'myinst.financeImport.tsvColumnName', default:'tsv column name')}</th>
-                <th>${message(code:'myinst.financeImport.description', default:'Description')}</th>
-                <th>${message(code:'myinst.financeImport.mapsTo', default:'maps to')}</th>
+                <th>${message(code:'myinst.financeImport.tsvColumnName')}</th>
+                <th>${message(code:'myinst.financeImport.description')}</th>
+                <th>${message(code:'myinst.financeImport.mapsTo')}</th>
               </tr>
             </thead>
             <tbody>
@@ -36,8 +36,8 @@
                 <tr>
                   <%-- <td>${mpg.colname}</td>
                   <td>${mpg.desc} --%>
-                  <td>${message(code:"myinst.financeImport.${mpg.colname}", default:"${mpg.colname}")}</td>
-                  <td>${message(code:"myinst.financeImport.description.${mpg.colname}", default:"${mpg.desc}")}
+                  <td>${message(code:"myinst.financeImport.${mpg.colname}")}</td>
+                  <td>${message(code:"myinst.financeImport.description.${mpg.colname}")}
                     <g:if test="${mpg.type=='vocab'}">
                         <br/>Must be one of : <ul>
                           <g:each in="${mpg.mapping}" var="m,k">
@@ -64,7 +64,7 @@
                 <%-- <dt>Dry Run</dt> --%>
                 <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
                 <dd>
-                  <input class="ui button" type="checkbox" name="dryRun" checked value="Y" />
+                  <input class="ui button" type="checkbox" name="dryRun" checked value="true" />
                 </dd>
               </div>
               <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>

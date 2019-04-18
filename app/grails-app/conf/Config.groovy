@@ -689,6 +689,7 @@ financialImportTSVLoaderMappings = [
 
     // Identify the different combinations that can be used to identify domain objects for the current row
     // Names columns in the import sheet - importer will map according to config and do the right thing
+    // to understand: static means value in the database, column means column in the uploaded sheet!
     targetObjectIdentificationHeuristics:[
       [
         ref:'subscription',
@@ -696,20 +697,12 @@ financialImportTSVLoaderMappings = [
         heuristics:[
           [
             type : 'hql',
-            hql: 'select o from Subscription as o join o.ids as io where io.identifier.ns.ns = :jcns and io.identifier.value = :orgId',
-            values : [ jcns : [type:'static', value:'hbz'], orgId: [type:'column', colname:'SubscriptionId'] ]
+            hql: 'select s from Subscription as s join s.orgRelations oo where (cast(s.id as string) = :subId or s.globalUID = :subId) and oo.org = :owner and oo.roleType.owner.desc = :roleTypeDesc and oo.roleType.value in (:roleTypes)',
+            values : [ subId: [type:'column', colname:['SubscriptionId','Lizenz']], owner: [type:'defaultLookupObject',key:'owner'], roleTypeDesc: [type:'static',value:'Organisational Role'], roleTypes: [type:'static', value: ['Subscription Consortia','Subscriber','Subscriber_Consortial']] ]
           ]
         ],
         creation:[
-          onMissing:true,
-          whenPresent:[ [ type:'ref', refname:'owner'] ],
-          properties : [
-            // [ type:'ref', property:'owner', refname:'owner' ],
-            [ type:'closure', closure : { o, nl, colmap, colname, locatedObjects -> o.setInstitution(locatedObjects['owner']) } ],
-            [ type:'val', property:'identifier', colname: 'SubscriptionId'],
-            [ type:'val', property:'name', colname: 'InvoiceNotes'],
-            [ type:'closure', closure: { o, nl, colmap, colname, locatedObjects -> o.addNamespacedIdentifier('jc',nl[(int)(colmap.get('SubscriptionId'))]); } ]
-          ]
+          onMissing:false
         ]
       ],
        /* [
@@ -724,7 +717,7 @@ financialImportTSVLoaderMappings = [
         creation:[
           onMissing:false,
         ]
-      ], */
+      ],
       [
        ref:'CICategory',
        cls:'com.k_int.kbplus.RefdataValue',
@@ -737,7 +730,7 @@ financialImportTSVLoaderMappings = [
        creation:[
          onMissing:false,
        ]
-     ],
+     ],*/
       [
         ref:'CIElement',
         cls:'com.k_int.kbplus.RefdataValue',

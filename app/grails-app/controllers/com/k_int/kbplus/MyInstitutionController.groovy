@@ -3038,7 +3038,7 @@ AND EXISTS (
         def input_stream = request.getFile("tsvfile")?.inputStream
         result.loaderResult = tsvSuperlifterService.load(input_stream,
                                                          grailsApplication.config.financialImportTSVLoaderMappings,
-                                                         params.dryRun=='Y'?true:false,
+                                                         params.dryRun ? true : false,
                                                          defaults)
       }
       result

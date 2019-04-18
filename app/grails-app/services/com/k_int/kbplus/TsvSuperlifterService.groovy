@@ -1,9 +1,11 @@
 package com.k_int.kbplus
 
 import org.apache.poi.ss.formula.functions.T
+import org.grails.datastore.mapping.model.types.Simple
 import org.hibernate.Hibernate
 import org.hibernate.proxy.HibernateProxy
 
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import org.springframework.transaction.annotation.*
 import au.com.bytecode.opencsv.CSVReader
@@ -13,6 +15,7 @@ class TsvSuperlifterService {
 
   def genericOIDService
   def executorService
+  def messageSource
 
   def load(input_stream, config, testRun, defaultLocatedObjects = [:]) {
     def result = [:]
@@ -155,17 +158,22 @@ class TsvSuperlifterService {
       switch( rule.type ) {
         case 'val':
           def theval = getColumnValue(config,colmap,nl,rule.colname)
-          if ( ( theval == null ) || ( theval.trim().length() == 0 ) ) {
-            passed = false;
-            missingProps.add("Column[${colmap[rule.colname]}] ${rule.colname} :: ${nl[colmap[rule.colname]]}")
+          try {
+            if ( ( theval == null ) || ( theval.trim().length() == 0 ) ) {
+              passed = false
+              missingProps.add("Column[${colmap[rule.colname]}] ${rule.colname} :: ${nl[colmap[rule.colname]]}")
+            }
           }
-          break;
+          catch (NullPointerException e) {
+            missingProps.add("Column ${rule.colname} entirely missing!")
+          }
+          break
         case 'ref':
           if ( locatedObjects[rule.refname] == null ) {
             passed = false;
             missingProps.add("Reference "+rule.refname+"::"+locatedObjects[rule.refname])
           }
-          break;
+          break
       }
       if ( ( passed == false ) && ( rule.errorOnMissing ) ) {
         row_information.error = true;
@@ -252,8 +260,7 @@ class TsvSuperlifterService {
           result = Long.parseLong(value)
           break;
         case 'date':
-          def sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-          result = sdf.parse(value)
+          result = parseDate(value)
           break;
         default:
           break;
@@ -261,6 +268,25 @@ class TsvSuperlifterService {
     }
 
     return result;
+  }
+
+  private static Date parseDate(String input) {
+      List<SimpleDateFormat> possibleFormats = [new SimpleDateFormat('dd.MM.yyyy'),
+                                                new SimpleDateFormat('dd.MM.yyyy HH:mm'),
+                                                new SimpleDateFormat('dd/MM/yyyy'),
+                                                new SimpleDateFormat('dd/MM/yyyy HH:mm'),
+                                                new SimpleDateFormat('dd-MM-yyyy'),
+                                                new SimpleDateFormat('dd-MM-yyyy HH:mm')]
+      Date result
+      possibleFormats.each { sdf ->
+          try {
+              result = sdf.parse(input)
+          }
+          catch (ParseException e) {
+              log.info("Format ${sdf.toPattern()} not work, trying next one ...")
+          }
+      }
+      result
   }
 
   private def locateDomainObject(config,toih, toih_heuristic, nl, locatedObjects, colmap) {
@@ -309,17 +335,32 @@ class TsvSuperlifterService {
         toih_heuristic.values.each { k, v ->
           switch ( v.type ) {
             case 'static':
-              qry_params[k] = v.value;
-              break;
+              qry_params[k] = v.value
+              break
             case 'column':
-              if ( nl[colmap[v.colname]] != null ) {
+              if (v.colname instanceof List) {
+                  v.colname.each { colname ->
+                      try {
+                          if ( nl[colmap[colname]] != null ) {
+                            qry_params[k] = getColumnValue(config,colmap,nl,colname)
+                          }
+                      }
+                      catch (Exception e) {
+                          log.info("Alternative column name ${colname} not present in map, skipping ...")
+                      }
+                  }
+              }
+              else if ( v.colname instanceof String && nl[colmap[v.colname]] != null ) {
                 qry_params[k] = getColumnValue(config,colmap,nl,v.colname) // nl[colmap[v.colname]]
               }
               else {
                 log.error("Missing parameter ${v.colname}");
                 error = true
               }
-              break;
+              break
+            case 'defaultLookupObject':
+              qry_params[k] = locatedObjects[v.key]
+              break
           }
         }
 
