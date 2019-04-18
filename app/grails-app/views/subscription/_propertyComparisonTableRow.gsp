@@ -3,7 +3,7 @@
 <thead>
     <tr>
         <th>${key}</th>
-        <th>
+        <th class="five wide center aligned">
             <g:if test="${propBinding && propBinding.get(sourceSubscription)?.visibleForConsortiaMembers}">
                 <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
             </g:if>
@@ -12,7 +12,7 @@
             </g:else>
         </th>
         <th><input type="checkbox" onClick="toggleAllCheckboxes(this)" checked="${true}" />
-        <th>
+        <th class="six wide center aligned">
             <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
                 <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
             </g:if>
@@ -37,7 +37,7 @@
         <g:set var="propValues" value="${prop.getValue()}" />
 
         %{--SOURCE-SUBSCRIPTION--}%
-        <td>
+        <td class="center aligned">
             <g:if test="${propValues.containsKey(sourceSubscription)}">
                 <% Set propValuesForSourceSub = propValues.get(sourceSubscription) %>
                 <g:each var="propValue" in="${propValuesForSourceSub}">
@@ -89,7 +89,7 @@
         </g:if>
 
         %{--TARGET-SUBSCRIPTION--}%
-        <td>
+        <td class="center aligned">
             <g:if test="${ ! targetSubscription}">
             </g:if>
             <g:elseif test="${propValues.containsKey(targetSubscription)}">
@@ -126,7 +126,7 @@
                 </g:each>
             </g:elseif>
             <g:else>
-                <a class="ui red circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>X</strong></a>
+                <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
             </g:else>
         </td>
     </tr>
