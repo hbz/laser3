@@ -1,28 +1,31 @@
 <%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
 <laser:serviceInjection/>
-<th>
-    <th>${key}</th>
-    <th>
-        <g:if test="${propBinding && propBinding.get(sourceSubscription)?.visibleForConsortiaMembers}">
-            <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
-        </g:if>
-        <g:else>
-            <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
-        </g:else>
-    </th>
-    <th><input type="checkbox" onClick="toggleAllCheckboxes(this)" checked="${true}" />
-    <th>
-        <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
-            <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
-        </g:if>
-        <g:else>
-            <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
-        </g:else>
-    </th>
-</tr>
+<thead>
+    <tr>
+        <th>${key}</th>
+        <th>
+            <g:if test="${propBinding && propBinding.get(sourceSubscription)?.visibleForConsortiaMembers}">
+                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
+            </g:if>
+            <g:else>
+                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+            </g:else>
+        </th>
+        <th><input type="checkbox" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+        <th>
+            <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
+                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
+            </g:if>
+            <g:else>
+                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+            </g:else>
+        </th>
+    </tr>
+</thead>
+<tbody>
 <g:each in="${group}" var="prop">
     <% PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey()) %>
-    <td>
+    <tr>
         <td>
             ${propKey.getI10n("name")}
             <g:if test="${propKey.multipleOccurrence}">
@@ -128,6 +131,7 @@
         </td>
     </tr>
 </g:each>
+</tbody>
 <r:script>
     function toggleAllCheckboxes(source) {
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');

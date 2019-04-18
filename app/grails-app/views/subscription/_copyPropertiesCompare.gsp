@@ -24,14 +24,14 @@
                     %>
 
                     <g:set var="subscriptionsCount" value="${subscriptions?.size()}"/>
-                    <tbody>
+
                         <g:if test="${customProperties.size() > 0}">
                             <g:render template="propertyComparisonTableRow" model="[group:customProperties,key:message(code:'license.properties'),subscriptions:subscriptions]" />
                         </g:if>
                         <g:if test="${privateProperties.size() > 0}">
                             <g:render template="propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
                         </g:if>
-                    </tbody>
+
                 </table>
             </div>
             <div class="sixteen wide field" style="text-align: right;">
