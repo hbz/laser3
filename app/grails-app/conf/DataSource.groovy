@@ -22,8 +22,8 @@ environments {
             dbCreate        = "update"
             driverClassName = "org.postgresql.Driver"
             dialect         = "org.hibernate.dialect.PostgreSQLDialect"
-            username        = "laseruser"
-            password        = "laseruser"
+            username        = "laser"
+            password        = "laser"
             url             = "jdbc:postgresql://localhost:5432/laser"
             //configClass     = HibernateFilterDomainConfiguration.class
             pooled          = true
