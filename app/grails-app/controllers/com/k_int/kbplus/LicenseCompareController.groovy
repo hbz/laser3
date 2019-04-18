@@ -142,11 +142,13 @@ class LicenseCompareController extends AbstractDebugController {
   	withFormat{
       html result
       csv{
+        /*
+        done when processing ERMS-998
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         def out = response.outputStream
         exportService.StreamOutLicenseCSV(out, result,result.licenses)
-        out.close()
+        out.close()*/
       }
     }
   }

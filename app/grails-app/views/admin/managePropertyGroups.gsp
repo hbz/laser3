@@ -37,7 +37,7 @@
                 <th>Merkmale</th>
                 <th>Typ</th>
                 <th>Anzeigen (Voreinstellung)</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
         </thead>
         <tbody>

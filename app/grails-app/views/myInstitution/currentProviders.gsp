@@ -13,6 +13,38 @@
             <semui:crumb message="menu.my.providers" class="active" />
         </semui:breadcrumbs>
 
+        <semui:controlButtons>
+            <semui:exportDropdown>
+                <g:if test="${filterSet}">
+                    <semui:exportDropdownItem>
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
+                                params="${params+[exportXLS:true]}">
+                            ${message(code:'default.button.exports.xls')}
+                        </g:link>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="myInstitution" action="currentProviders"
+                                params="${params+[format:'csv']}">
+                            ${message(code:'default.button.exports.csv')}
+                        </g:link>
+                    </semui:exportDropdownItem>
+                </g:if>
+                <g:else>
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="currentProviders" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="currentProviders" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+                    </semui:exportDropdownItem>
+                </g:else>
+            </semui:exportDropdown>
+        </semui:controlButtons>
+
+
     <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.my.providers" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>

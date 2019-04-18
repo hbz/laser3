@@ -1326,3 +1326,10 @@
 .ui.la-table.table tr td.la-exposed-bg {
   background-color: #fffaf5;
 }
+.ui.table thead tr:first-child > th {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 90px;
+  z-index: 2;
+  background-color: #F4F8F9;
+}

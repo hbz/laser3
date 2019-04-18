@@ -13,11 +13,12 @@ class SubscriptionsQueryService {
 
         def date_restriction
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-
+        boolean filterSet = false
         if (params.validOn == null || params.validOn.trim() == '') {
             date_restriction = null
         } else {
             date_restriction = sdf.parse(params.validOn)
+            filterSet = true
         }
 
         /*
@@ -93,6 +94,7 @@ from Subscription as s where (
         if (params.org) {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org = :org) ")
             qry_params.put('org', params.org)
+            filterSet = true
         }
 
         if (params.q?.length() > 0) {
@@ -105,7 +107,8 @@ from Subscription as s where (
                             +  " ) "
             )
 
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
+            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%")
+            filterSet = true
         }
 
         // eval property filter
@@ -114,11 +117,13 @@ from Subscription as s where (
             def query = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
             base_qry = query.query
             qry_params = query.queryParams
+            filterSet = true
         }
 
         if (date_restriction) {
             base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null)"
             qry_params.put('date_restr', date_restriction)
+            filterSet = true
         }
 
         if (params.endDateFrom && params.endDateTo && params.manualCancellationDateFrom && params.manualCancellationDateTo) {
@@ -127,6 +132,7 @@ from Subscription as s where (
             qry_params.put("endTo", params.endDateTo)
             qry_params.put("cancellFrom", params.manualCancellationDateFrom)
             qry_params.put("cancellTo", params.manualCancellationDateTo)
+            filterSet = true
         } else {
             if (params.endDateFrom && params.endDateTo) {
                 base_qry += " and (s.endDate >= :endFrom and s.endDate <= :endTo)"
@@ -167,6 +173,7 @@ from Subscription as s where (
                 base_qry += " and s.type.id in (:subTypes) "
                 qry_params.put('subTypes', subTypes)
             }
+            filterSet = true
         }
 
         if (params.status) {
@@ -176,10 +183,12 @@ from Subscription as s where (
             }
             else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
                 base_qry += " AND s.status is null "
+                filterSet = true
             }
             else {
                 base_qry += " and s.status.id = :status "
                 qry_params.put('status', (params.status as Long))
+                filterSet = true
             }
         }
         else {
@@ -189,11 +198,13 @@ from Subscription as s where (
         if (params.form) {
             base_qry += "and s.form.id = :form "
             qry_params.put('form', (params.form as Long))
+            filterSet = true
         }
 
         if (params.resource) {
           base_qry += "and s.resource.id = :resource "
           qry_params.put('resource', (params.resource as Long))
+            filterSet = true
         }
 
         //ERMS-584: the symbol "§" means that the given sort parameter should not be considered in base query
@@ -205,6 +216,6 @@ from Subscription as s where (
 
         //log.debug("query: ${base_qry} && params: ${qry_params}")
 
-        return [base_qry, qry_params]
+        return [base_qry, qry_params, filterSet]
     }
 }

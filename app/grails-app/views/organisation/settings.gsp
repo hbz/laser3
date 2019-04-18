@@ -69,7 +69,17 @@
                                 <g:each in="${settings}" var="os">
                                     <tr>
                                         <td>${os.key}</td>
-                                        <td>${os.rdValue ? os.getValue()?.getI10n('value') : os.getValue()}</td>
+                                        <td>
+                                            <g:if test="${os.rdValue}">
+                                                ${os.getValue()?.getI10n('value')}
+                                            </g:if>
+                                            <g:elseif test="${os.roleValue}">
+                                                ${os.getValue()?.getI10n('authority')}
+                                            </g:elseif>
+                                            <g:else>
+                                                ${os.getValue()}
+                                            </g:else>
+                                        </td>
                                     </tr>
                                 </g:each>
                                 </tbody>

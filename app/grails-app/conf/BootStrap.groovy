@@ -17,6 +17,7 @@ class BootStrap {
     def grailsApplication
     def dataloadService
     def apiService
+    def refdataReorderService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -56,6 +57,9 @@ class BootStrap {
 
         log.debug("setupRefdata ..")
         setupRefdata()
+
+        log.debug("reorderRefdata ..")
+        refdataReorderService.reorderRefdata()
 
         log.debug("setupRolesAndPermissions ..")
         setupRolesAndPermissions()
@@ -286,25 +290,9 @@ class BootStrap {
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'], BOOTSTRAP)
 
-        OrgPermShare.assertPermShare(view_permission, or_lc_role)
-        OrgPermShare.assertPermShare(edit_permission, or_lc_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_licensee_role)
-        OrgPermShare.assertPermShare(edit_permission, or_licensee_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_licensee_cons_role)
-
         def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'], BOOTSTRAP)
         def or_subscr_role      = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
-
-        OrgPermShare.assertPermShare(view_permission, or_sc_role)
-        OrgPermShare.assertPermShare(edit_permission, or_sc_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_subscr_role)
-        OrgPermShare.assertPermShare(edit_permission, or_subscr_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_subscr_cons_role)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
@@ -315,25 +303,7 @@ class BootStrap {
         def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
         def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
 
-        OrgPermShare.assertPermShare(view_permission, cl_owner_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
-
-        OrgPermShare.assertPermShare(view_permission, cl_member_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_member_role)
-
-        OrgPermShare.assertPermShare(view_permission, combo1)
-
-        Closure locRole = { authority, roleType, translations ->
-
-            def role = Role.findByAuthority(authority) ?: new Role(authority: authority, roleType: roleType).save(failOnError: true)
-            I10nTranslation.createOrUpdateI10n(role, 'authority', translations)
-
-            role
-        }
-
         // Global System Roles
-
-        def fakeRole = locRole('FAKE', 'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
 
         def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
         def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
@@ -341,38 +311,12 @@ class BootStrap {
         def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
         def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-        // TODO remove
-        //def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
-        //def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
-        //def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
-
         def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
         def orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
         def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
-
-        // Customer Type Toles
-
-        def orgBasicRole            = locRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
-        def orgMemberRole           = locRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgConsortiumRole       = locRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
-        def orgConsortiumSurveyRole = locRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
-
-        //def orgBasicRole            = Role.findByAuthority('ORG_BASIC')             ?: new Role(authority: 'ORG_BASIC', roleType: 'org').save(failOnError: true)
-        //def orgCollectiveRole       = Role.findByAuthority('ORG_COLLECTIVE')        ?: new Role(authority: 'ORG_COLLECTIVE', roleType: 'org').save(failOnError: true)
-        //def orgMemberRole           = Role.findByAuthority('ORG_MEMBER')            ?: new Role(authority: 'ORG_MEMBER', roleType: 'org').save(failOnError: true)
-        //def orgConsortiumRole       = Role.findByAuthority('ORG_CONSORTIUM')        ?: new Role(authority: 'ORG_CONSORTIUM', roleType: 'org').save(failOnError: true)
-        //def orgConsortiumSurveyRole = Role.findByAuthority('ORG_CONSORTIUM_SURVEY') ?: new Role(authority: 'ORG_CONSORTIUM_SURVEY', roleType: 'org').save(failOnError: true)
-
-        //RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.member',          en: 'Institution consortium member', de: 'Konsorte'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium',      en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium.survey', en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'], BOOTSTRAP)
-
 
         // Institutional Roles
 
@@ -395,6 +339,39 @@ class BootStrap {
             instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(instUser, view_permission)
+
+        // Customer Type Toles
+
+        Closure locOrgRole = { String authority, String roleType, Map<String, String> translations ->
+
+            Role role = Role.findByAuthority(authority) ?: new Role(authority: authority, roleType: roleType).save(failOnError: true)
+            I10nTranslation.createOrUpdateI10n(role, 'authority', translations)
+
+            role
+        }
+        Closure createOrgPerms = { Role role, List<String> permList ->
+            // TODO PermGrant.executeQuery('DELETE ALL')
+
+            permList.each{ code ->
+                code = code.toLowerCase()
+                Perm perm = Perm.findByCode(code) ?: new Perm(code: code).save(failOnError: true)
+                ensurePermGrant(role, perm)
+            }
+        }
+
+        def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
+        def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
+        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+
+        createOrgPerms(orgBasicRole, ['ORG_BASIC'])
+        createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
+        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
+
     }
 
     def initializeDefaultSettings(){
@@ -1722,9 +1699,11 @@ class BootStrap {
         RefdataCategory.loc('License.Statistics.UserCreds',                  [en: 'Statistics User Credentials', de: 'Statistik Nutzeridentifikation'], BOOTSTRAP)
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Semester',                                  [en: 'Semester', de: 'Semester'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Status',                  [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+        RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
 
         // refdata values
 
@@ -2385,15 +2364,13 @@ class BootStrap {
         RefdataValue.loc('License.Statistics.UserCreds',      [en: 'Same as Admin', de: 'Das gleiche wie Admin'], BOOTSTRAP)
         RefdataValue.loc('License.Statistics.UserCreds',      [en: 'Other', de: 'Anderes'], BOOTSTRAP)
 
-        RefdataValue.loc('Number Type',      [en: 'Students', de: 'Studenten'], BOOTSTRAP)
-        RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP)
-        RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'], BOOTSTRAP)
-        RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'], BOOTSTRAP)
-
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Changes', de: 'Änderungen'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Announcements', de: 'Ankündigungen'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Tasks', de: 'Aufgaben'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Due Dates', de: 'Fällige Termine'], BOOTSTRAP)
+
+        RefdataValue.loc('User.Settings.Theme',     [key:'semanticUI',    en: 'Default', de: 'Standard'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Theme',     [key:'accessibility', en: 'Accessibility', de: 'Barrierefrei'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)
@@ -2416,6 +2393,36 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
+        RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w17/18', en: 'winter semester 2017/18', de: 'Wintersemester 2017/18'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's18', en: 'summer semester 2018', de: 'Sommersemester 2018'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w18/19', en: 'winter semester 2018/19', de: 'Wintersemester 2018/19'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's19', en: 'summer semester 2019', de: 'Sommersemester 2019'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w19/20', en: 'winter semester 2019/20', de: 'Wintersemester 2019/20'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's20', en: 'summer semester 2020', de: 'Sommersemester 2020'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w20/21', en: 'winter semester 2020/21', de: 'Wintersemester 2020/21'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's21', en: 'summer semester 2021', de: 'Sommersemester 2021'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w21/22', en: 'winter semester 2021/22', de: 'Wintersemester 2021/22'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's22', en: 'summer semester 2022', de: 'Sommersemester 2022'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w22/23', en: 'winter semester 2022/23', de: 'Wintersemester 2022/23'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's23', en: 'summer semester 2023', de: 'Sommersemester 2023'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w23/24', en: 'winter semester 2023/24', de: 'Wintersemester 2023/24'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's24', en: 'summer semester 2024', de: 'Sommersemester 2024'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w24/25', en: 'winter semester 2024/25', de: 'Wintersemester 2024/25'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's25', en: 'summer semester 2025', de: 'Sommersemester 2025'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w25/26', en: 'winter semester 2025/26', de: 'Wintersemester 2025/26'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's26', en: 'summer semester 2026', de: 'Sommersemester 2026'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w26/27', en: 'winter semester 2026/27', de: 'Wintersemester 2026/27'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's27', en: 'summer semester 2027', de: 'Sommersemester 2027'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w27/28', en: 'winter semester 2027/28', de: 'Wintersemester 2027/28'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's28', en: 'summer semester 2028', de: 'Sommersemester 2028'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w28/29', en: 'winter semester 2028/29', de: 'Wintersemester 2028/29'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's29', en: 'summer semester 2029', de: 'Sommersemester 2029'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w29/30', en: 'winter semester 2029/30', de: 'Wintersemester 2029/30'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's30', en: 'summer semester 2030', de: 'Sommersemester 2030'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 'w30/31', en: 'winter semester 2030/31', de: 'Wintersemester 2030/31'], BOOTSTRAP)
+        RefdataValue.loc('Semester',      [key: 's31', en: 'summer semester 2031', de: 'Sommersemester 2031'], BOOTSTRAP)
+
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
 
@@ -2425,6 +2432,16 @@ class BootStrap {
         RefdataValue.loc('Survey Status',      [en: 'Abgeschlossen', de: 'Completed'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage beendet'], BOOTSTRAP)
+
+        createRefdataWithI10nExplanation()
+    }
+
+    void createRefdataWithI10nExplanation() {
+
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studenten'], BOOTSTRAP),'expl',[en:'',de:'Eingeschriebene Studierende an der angeschlossenen Hochschule'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'Personal, das an Instituten der angeschlossenen Hochschule in Projekten o.Ä. beschäftigt ist'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Studierende, Lehrkräfte sowie weiteres Personal der Hochschule zusammengerechnet'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Population der Ortschaft, in der die Bibliothek beheimatet ist'])
 
     }
 
