@@ -1313,11 +1313,13 @@ a.ui.basic.label:hover {
   padding-right: 0.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
+  vertical-align: super;
 }
 .ui.label.la-annual-rings .icon {
   font-size: 1em;
   width: auto;
   margin: 0em 0.75em 0em 0.75em;
+  vertical-align: sub;
 }
 .ui.label.la-annual-rings > a {
   opacity: 0.7;
@@ -1342,6 +1344,10 @@ a.ui.basic.label:hover {
   opacity: 1;
   font-weight: bolder;
   color: white;
+}
+.ui.label.la-annual-rings .la-annual-rings-text {
+  vertical-align: sub;
+  padding-right: 0.5em;
 }
 .ui.left-tag.labels .label,
 .ui.left-tag.label {

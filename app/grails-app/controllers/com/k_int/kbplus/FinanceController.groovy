@@ -15,10 +15,10 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
+import javax.servlet.ServletOutputStream
+import java.awt.Color
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -34,6 +34,8 @@ class FinanceController extends AbstractDebugController {
     def filterService
     def financeService
     def messageSource
+    def escapeService
+    def exportService
 
     private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
 
@@ -154,17 +156,258 @@ class FinanceController extends AbstractDebugController {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
         SXSSFWorkbook workbook = processFinancialXLSX(result)
-        String filename = result.institution.name
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xlsx\"")
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        try {
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
+        String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
+        if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            try {
+                workbook.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                workbook.dispose()
+            }
+            catch (IOException e) {
+                log.error("A request was started before the started one was terminated")
+            }
         }
-        catch (IOException e) {
-            log.error("A request was started before the started one was terminated")
+        else {
+            ArrayList titles = []
+            String viewMode = params.showView
+            int sumcell = -1
+            int sumcellAfterTax = -1
+            int sumTitleCell = -1
+            int sumCurrencyCell = -1
+            int sumCurrencyAfterTaxCell = -1
+            if(viewMode == "cons")
+                titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
+            titles.add(message(code: 'financials.newCosts.costTitle'))
+            if(viewMode == "cons")
+                titles.add(message(code:'default.provider.label'))
+            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
+                           message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
+                           message(code: 'financials.costInLocalCurrency')])
+            if(["own","cons"].indexOf(viewMode) > -1)
+                titles.addAll(message(code: 'financials.taxRate'), [message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
+            titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
+                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
+            SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
+            LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+            LinkedHashMap<Subscription,List<Org>> providers = [:]
+            LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
+            OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
+                List<Org> orgs = subscribers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                subscribers.put(it.sub,orgs)
+            }
+            OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+                List<Org> orgs = providers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                providers.put(it.sub,orgs)
+            }
+            CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
+            withFormat {
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}_${viewMode}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        ArrayList rowData = []
+                        if(financialData[viewMode].count > 0) {
+                            ArrayList row
+                            financialData[viewMode].costItems.each { ci ->
+                                BudgetCode codes = costItemGroups.get(ci)
+                                String start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
+                                String end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
+                                String paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
+                                row = []
+                                int cellnum = 0
+                                if(viewMode == "cons") {
+                                    if(ci.sub) {
+                                        List<Org> orgRoles = subscribers.get(ci.sub)
+                                        //participants (visible?)
+                                        String cellValueA = ""
+                                        String cellValueB = ""
+                                        orgRoles.each { or ->
+                                            cellValueA += or.sortname.replace(',',':')
+                                            cellValueB += or.name.replace(',','')
+                                        }
+                                        cellnum++
+                                        row.add(cellValueA)
+                                        cellnum++
+                                        row.add(cellValueB)
+                                        cellnum++
+                                        row.add(ci.isVisibleForSubscriber ? message(code:'financials.isVisibleForSubscriber') : " ")
+                                    }
+                                }
+                                //cost title
+                                cellnum++
+                                row.add(ci.costTitle ? ci.costTitle.replaceAll(',','') : '')
+                                if(viewMode == "cons") {
+                                    //provider
+                                    cellnum++
+                                    if(ci.sub) {
+                                        List<Org> orgRoles = providers.get(ci.sub)
+                                        String cellValue = ""
+                                        orgRoles.each { or ->
+                                            cellValue += or.name.replace(',','')
+                                        }
+                                        row.add(cellValue)
+                                    }
+                                    else row.add(" ")
+                                }
+                                //subscription
+                                cellnum++
+                                row.add(ci.sub ? ci.sub.name.replaceAll(',','') : "")
+                                //dates from-to
+                                if(ci.sub) {
+                                    cellnum++
+                                    if(ci.sub.startDate)
+                                        row.add(dateFormat.format(ci.sub.startDate))
+                                    else
+                                        row.add("")
+                                    cellnum++
+                                    if(ci.sub.endDate)
+                                        row.add(dateFormat.format(ci.sub.endDate))
+                                    else
+                                        row.add("")
+                                }
+                                //cost sign
+                                cellnum++
+                                if(ci.costItemElementConfiguration) {
+                                    row.add(ci.costItemElementConfiguration.getI10n("value"))
+                                }
+                                else
+                                    row.add(message(code:'financials.costItemConfiguration.notSet'))
+                                //subscription package
+                                cellnum++
+                                row.add(ci?.subPkg ? ci.subPkg.pkg.name:'')
+                                //issue entitlement
+                                cellnum++
+                                row.add(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+                                //date paid
+                                cellnum++
+                                row.add(paid_date ?: '')
+                                //date from
+                                cellnum++
+                                row.add(start_date ?: '')
+                                //date to
+                                cellnum++
+                                row.add(end_date ?: '')
+                                //for the sum title
+                                sumTitleCell = cellnum
+                                //cost item status
+                                cellnum++
+                                row.add(ci?.costItemStatus ? ci.costItemStatus.getI10n("value"):'')
+                                if(["own","cons"].indexOf(viewMode) > -1) {
+                                    sumCurrencyCell = cellnum
+                                    cellnum++
+                                    //billing currency and value
+                                    row.add(ci?.billingCurrency ? ci.billingCurrency.value : '')
+                                    cellnum++
+                                    row.add(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
+                                    sumcell = cellnum
+                                    //local currency and value
+                                    cellnum++
+                                    row.add("EUR")
+                                    cellnum++
+                                    row.add(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
+                                    sumCurrencyAfterTaxCell = cellnum
+                                    //tax rate
+                                    cellnum++
+                                    row.add("${ci.taxRate ?: 0} %")
+                                }
+                                if(["own","cons"].indexOf(viewMode) < 0)
+                                    sumCurrencyAfterTaxCell = cellnum
+                                //billing currency and value
+                                cellnum++
+                                row.add(ci?.billingCurrency ? ci.billingCurrency.value : '')
+                                if(["own","cons"].indexOf(viewMode) > -1)
+                                    sumcellAfterTax = cellnum
+                                cellnum++
+                                row.add(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
+                                if(["own","cons"].indexOf(viewMode) < 0)
+                                    sumcellAfterTax = cellnum
+                                //local currency and value
+                                cellnum++
+                                row.add("EUR")
+                                cellnum++
+                                row.add(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
+                                //cost item element
+                                cellnum++
+                                row.add(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
+                                //cost item description
+                                cellnum++
+                                row.add(ci?.costDescription?: '')
+                                //reference
+                                cellnum++
+                                row.add(ci?.reference?:'')
+                                //budget codes
+                                cellnum++
+                                row.add(codes ? codes.value : '')
+                                //invoice number
+                                cellnum++
+                                row.add(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                                //order number
+                                cellnum++
+                                row.add(ci?.order ? ci.order.orderNumber : "")
+                                //rownum++
+                                rowData.add(row)
+                            }
+                            rowData.add([])
+                            List sumRow = []
+                            int h = 0
+                            for(h;h < sumTitleCell;h++) {
+                                sumRow.add(" ")
+                            }
+                            sumRow.add(message(code:'financials.export.sums'))
+                            if(sumcell > 0) {
+                                for(h;h < sumcell;h++) {
+                                    sumRow.add(" ")
+                                }
+                                sumRow.add(financialData[viewMode].sums.localSums.localSum)
+                            }
+                            for(h;h < sumcellAfterTax;h++) {
+                                sumRow.add(" ")
+                            }
+                            sumRow.add(financialData[viewMode].sums.localSums.localSumAfterTax)
+                            rowData.add(sumRow)
+                            rowData.add([])
+                            financialData[viewMode].sums.billingSums.each { entry ->
+                                int i = 0
+                                sumRow = []
+                                for(i;i < sumTitleCell;i++) {
+                                    sumRow.add(" ")
+                                }
+                                sumRow.add(entry.currency)
+                                if(sumCurrencyCell > 0) {
+                                    for(i;i < sumCurrencyCell;i++) {
+                                        sumRow.add(" ")
+                                    }
+                                    sumRow.add(entry.billingSum)
+                                }
+                                for(i;i < sumCurrencyAfterTaxCell;i++) {
+                                    sumRow.add(" ")
+                                }
+                                sumRow.add(entry.billingSumAfterTax)
+                                rowData.add(sumRow)
+                            }
+                            writer.write(exportService.generateSeparatorTableString(titles,rowData,','))
+                        }
+                        else {
+                            writer.write(message(code:'finance.export.empty'))
+                        }
+                    }
+                    out.close()
+                }
+            }
         }
     }
 
@@ -194,13 +437,13 @@ class FinanceController extends AbstractDebugController {
             providers.put(it.sub,orgs)
         }
         XSSFCellStyle csPositive = workbook.createCellStyle()
-        csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
+        csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
         csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         XSSFCellStyle csNegative = workbook.createCellStyle()
-        csNegative.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,199,206)))
+        csNegative.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
         csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         XSSFCellStyle csNeutral = workbook.createCellStyle()
-        csNeutral.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,235,156)))
+        csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
         csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
         wb.setCompressTempFiles(true)
@@ -230,10 +473,10 @@ class FinanceController extends AbstractDebugController {
             titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
                            message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
-                           message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'),
-                           message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'), message(code: 'financials.taxRate')])
+                           message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'), message(code: 'financials.costInBillingCurrency'),"EUR",
+                           message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
-                titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
+                titles.addAll([message(code: 'financials.taxRate'), message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
@@ -335,9 +578,10 @@ class FinanceController extends AbstractDebugController {
                     //date to
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(end_date ?: '')
-                    //cost item category
+                    /*cost item category
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
+                    */
                     //for the sum title
                     sumTitleCell = cellnum
                     //cost item status
@@ -376,10 +620,10 @@ class FinanceController extends AbstractDebugController {
                                 break
                             }
                         }
+                        //tax rate
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue("${ci.taxRate ?: 0} %")
                     }
-                    //tax rate
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue("${ci.taxRate ?: 0} %")
                     //billing currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')

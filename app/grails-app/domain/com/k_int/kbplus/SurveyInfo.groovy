@@ -46,7 +46,7 @@ class SurveyInfo {
         lastUpdated column: 'surin_last_updated'
 
         owner column: 'surin_owner_org_fk'
-        type column: 'surin_type_rv_fk '
+        type column: 'surin_type_rv_fk'
 
 
 

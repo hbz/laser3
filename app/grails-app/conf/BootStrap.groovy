@@ -290,25 +290,9 @@ class BootStrap {
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'], BOOTSTRAP)
 
-        OrgPermShare.assertPermShare(view_permission, or_lc_role)
-        OrgPermShare.assertPermShare(edit_permission, or_lc_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_licensee_role)
-        OrgPermShare.assertPermShare(edit_permission, or_licensee_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_licensee_cons_role)
-
         def or_sc_role          = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'], BOOTSTRAP)
         def or_subscr_role      = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
-
-        OrgPermShare.assertPermShare(view_permission, or_sc_role)
-        OrgPermShare.assertPermShare(edit_permission, or_sc_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_subscr_role)
-        OrgPermShare.assertPermShare(edit_permission, or_subscr_role)
-
-        OrgPermShare.assertPermShare(view_permission, or_subscr_cons_role)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
@@ -319,25 +303,7 @@ class BootStrap {
         def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
         def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
-        OrgPermShare.assertPermShare(view_permission, cl_owner_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
-
-        OrgPermShare.assertPermShare(view_permission, cl_member_role)
-        OrgPermShare.assertPermShare(edit_permission, cl_member_role)
-
-        OrgPermShare.assertPermShare(view_permission, combo1)
-
-        Closure locRole = { authority, roleType, translations ->
-
-            def role = Role.findByAuthority(authority) ?: new Role(authority: authority, roleType: roleType).save(failOnError: true)
-            I10nTranslation.createOrUpdateI10n(role, 'authority', translations)
-
-            role
-        }
-
         // Global System Roles
-
-        def fakeRole = locRole('FAKE', 'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
 
         def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
         def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
@@ -345,38 +311,12 @@ class BootStrap {
         def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
         def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
-        // TODO remove
-        //def apiReaderRole      = Role.findByAuthority('ROLE_API_READER')      ?: new Role(authority: 'ROLE_API_READER', roleType: 'global').save(failOnError: true)
-        //def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
-        //def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
-
         def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
         def orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
         def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
-
-        // Customer Type Toles
-
-        def orgBasicRole            = locRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
-        def orgMemberRole           = locRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgConsortiumRole       = locRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
-        def orgConsortiumSurveyRole = locRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
-
-        //def orgBasicRole            = Role.findByAuthority('ORG_BASIC')             ?: new Role(authority: 'ORG_BASIC', roleType: 'org').save(failOnError: true)
-        //def orgCollectiveRole       = Role.findByAuthority('ORG_COLLECTIVE')        ?: new Role(authority: 'ORG_COLLECTIVE', roleType: 'org').save(failOnError: true)
-        //def orgMemberRole           = Role.findByAuthority('ORG_MEMBER')            ?: new Role(authority: 'ORG_MEMBER', roleType: 'org').save(failOnError: true)
-        //def orgConsortiumRole       = Role.findByAuthority('ORG_CONSORTIUM')        ?: new Role(authority: 'ORG_CONSORTIUM', roleType: 'org').save(failOnError: true)
-        //def orgConsortiumSurveyRole = Role.findByAuthority('ORG_CONSORTIUM_SURVEY') ?: new Role(authority: 'ORG_CONSORTIUM_SURVEY', roleType: 'org').save(failOnError: true)
-
-        //RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.member',          en: 'Institution consortium member', de: 'Konsorte'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium',      en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium.survey', en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'], BOOTSTRAP)
-
 
         // Institutional Roles
 
@@ -399,6 +339,39 @@ class BootStrap {
             instUser = new Role(authority: 'INST_USER', roleType: 'user').save(failOnError: true)
         }
         ensurePermGrant(instUser, view_permission)
+
+        // Customer Type Toles
+
+        Closure locOrgRole = { String authority, String roleType, Map<String, String> translations ->
+
+            Role role = Role.findByAuthority(authority) ?: new Role(authority: authority, roleType: roleType).save(failOnError: true)
+            I10nTranslation.createOrUpdateI10n(role, 'authority', translations)
+
+            role
+        }
+        Closure createOrgPerms = { Role role, List<String> permList ->
+            // TODO PermGrant.executeQuery('DELETE ALL')
+
+            permList.each{ code ->
+                code = code.toLowerCase()
+                Perm perm = Perm.findByCode(code) ?: new Perm(code: code).save(failOnError: true)
+                ensurePermGrant(role, perm)
+            }
+        }
+
+        def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
+        def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
+        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+
+        createOrgPerms(orgBasicRole, ['ORG_BASIC'])
+        createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
+        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM', 'ORG_MEMBER'])
+        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
+
     }
 
     def initializeDefaultSettings(){
@@ -1728,8 +1701,9 @@ class BootStrap {
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('Semester',                                  [en: 'Semester', de: 'Semester'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
-        RefdataCategory.loc('Survey Status',                  [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+        RefdataCategory.loc('User.Settings.Theme',                  [en: 'Theme', de: 'Theme'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                          [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Status',                        [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
 
         // refdata values
 
@@ -2395,6 +2369,9 @@ class BootStrap {
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Announcements', de: 'Ankündigungen'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Tasks', de: 'Aufgaben'], BOOTSTRAP)
         RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Due Dates', de: 'Fällige Termine'], BOOTSTRAP)
+
+        RefdataValue.loc('User.Settings.Theme',     [key:'semanticUI',    en: 'Default', de: 'Standard'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Theme',     [key:'accessibility', en: 'Accessibility', de: 'Barrierefrei'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)

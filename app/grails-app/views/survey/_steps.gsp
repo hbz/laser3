@@ -107,14 +107,30 @@
         </div>
     </g:else>
 
+    <g:if test="${surveyInfo.status != com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
+        <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
+                class="step ${actionName == 'openSurvey' ? 'active' : ''}">
 
-    <div class="step ${actionName == 'openSurvey' ? 'active' : ''}">
-        <i class="chart pie icon"></i>
+            <i class="tasks icon"></i>
 
-        <div class="content">
-            <div class="title">${message(code: 'showSurveyInfo.step.fifth.title')}</div>
+            <div class="content">
+                <div class="title">${message(code: 'showSurveyInfo.step.fifth.title')}</div>
 
-            <div class="description">${message(code: 'showSurveyInfo.step.fifth.description')}</div>
+                <div class="description">${message(code: 'showSurveyInfo.step.fifth.description')}</div>
+            </div>
+        </g:link>
+
+    </g:if>
+    <g:else>
+
+        <div class="step ${actionName == 'openSurvey' ? 'active' : ''}">
+            <i class="chart pie icon"></i>
+
+            <div class="content">
+                <div class="title">${message(code: 'showSurveyInfo.step.fifth.title')}</div>
+
+                <div class="description">${message(code: 'showSurveyInfo.step.fifth.description')}</div>
+            </div>
         </div>
-    </div>
+    </g:else>
 </div>

@@ -11,10 +11,11 @@
     <semui:controlButtons>
         <g:render template="actions" />
     </semui:controlButtons>
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
-        <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="permissionInfo" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
+    <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="permissionInfo" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
     <g:render template="nav" contextPath="." />
 
       <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">

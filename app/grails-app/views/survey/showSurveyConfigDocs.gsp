@@ -27,56 +27,67 @@
 <br>
 <semui:form>
     <div class="ui grid">
-        <div class="sixteen wide column">
+        <div class="middle aligned row">
+            <div class="two wide column">
 
-            <div class="la-inline-lists">
-                <div class="ui card">
-                    <div class="content">
+                <g:link controller="survey" action="showSurveyConfig" id="${surveyInfo.id}"
+                        class="ui huge button"><i class="angle left aligned icon"></i></g:link>
 
-                        <div class="header">
-                            <div class="ui grid">
-                                <div class="twelve wide column">
-                                    ${message(code: 'showSurveyInfo.step.first.title')}
+            </div>
+
+            <div class="twelve wide column">
+
+                <div class="la-inline-lists">
+                    <div class="ui card">
+                        <div class="content">
+
+                            <div class="header">
+                                <div class="ui grid">
+                                    <div class="twelve wide column">
+                                        ${message(code: 'showSurveyInfo.step.first.title')}
+                                    </div>
                                 </div>
                             </div>
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
+                                <dd>${surveyInfo.status?.getI10n('value')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
+                                <dd>${surveyInfo.name}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
+                                <dd><g:formatDate formatName="default.date.format.notime"
+                                                  date="${surveyInfo.startDate ?: null}"/></dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
+                                <dd><g:formatDate formatName="default.date.format.notime"
+                                                  date="${surveyInfo.endDate ?: null}"/></dd>
+                            </dl>
+
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.type.label')}</dt>
+                                <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
+                            </dl>
+
                         </div>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
-                            <dd>${surveyInfo.status?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
-                            <dd>${surveyInfo.name}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.startDate ?: null}"/></dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.endDate ?: null}"/></dd>
-                        </dl>
-
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.type.label')}</dt>
-                            <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
-                        </dl>
-
                     </div>
                 </div>
             </div>
+
+            <div class="two wide column">
+                <g:if test="${surveyConfigs.size() > 0}">
+
+                    <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
+                            class="ui huge button"><i class="angle right icon"></i></g:link>
+
+                </g:if>
+            </div>
         </div>
+
     </div>
-
-    <g:if test="${surveyConfigs.size() > 0}">
-        <br>
-
-        <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
-                class="ui icon button">${message(code: 'showSurveyInfo.nextStep', default: 'Next Step')}</i></g:link>
-
-    </g:if>
 
 </semui:form>
 <br>
@@ -95,16 +106,17 @@
 
     <div class="ui grid">
         <div class="four wide column">
-            <div class="ui vertical fluid tabular menu">
-                <g:each in="${surveyConfigs}" var="config" status="i">
+            <div class="ui vertical fluid menu">
+                <g:each in="${surveyConfigs.sort{it.configOrder}}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
                             controller="survey" action="showSurveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        ${config?.getConfigName()}
-
+                        <h5 class="ui header">${config?.getConfigName()}</h5>
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+
+
                         <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
                     </g:link>
                 </g:each>

@@ -4,16 +4,15 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
+
+import javax.servlet.ServletOutputStream
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController extends AbstractDebugController {
@@ -25,9 +24,9 @@ class OrganisationController extends AbstractDebugController {
     def filterService
     def genericOIDService
     def propertyService
-    def orgDocumentService
     def docstoreService
     def instAdmService
+    def organisationService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -67,30 +66,58 @@ class OrganisationController extends AbstractDebugController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
+        result.max  = params.max ? Long.parseLong(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Long.parseLong(params.offset) : 0
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         def fsq = filterService.getOrgQuery(params)
+        result.filterSet = params.filterSet ? true : false
 
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        List orgListTotal  = Org.findAll(fsq.query, fsq.queryParams)
+        result.orgListTotal = orgListTotal.size()
+        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        def message = message(code: 'export.all.orgs')
+        // Write the output to a file
+        String file = message+"_${datetoday}"
+        if ( params.exportXLS ) {
 
-            params.remove('max')
+            try {
+                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true,'xls')
 
-            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
 
-            def message = g.message(code: 'menu.public.all_orgs')
-
-            exportOrg(orgs, message, true)
-            return
+            }
+            catch (Exception e) {
+                log.error("Problem",e);
+                response.sendError(500)
+            }
         }
-
-
-        result
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    }
+                    out.close()
+                }
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -130,25 +157,58 @@ class OrganisationController extends AbstractDebugController {
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
+        result.filterSet = params.filterSet ? true : false
 
         if (params.filterPropDef) {
             def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
             fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        params.max          = params.max ?: result.user?.getDefaultPageSizeTMP()
-        result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
+        List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
+        result.orgListTotal = orgListTotal.size()
+        result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
+        def message = g.message(code: 'export.all.providers')
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = message+"_${datetoday}"
+
+        if ( params.exportXLS) {
             params.remove('max')
-            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.public.all_provider')
-            exportOrg(orgs, message, false)
-            return
-        }
+            try {
+                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, false, "xls")
+                // Write the output to a file
 
-        result
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+
+                return
+            }
+            catch (Exception e) {
+                log.error("Problem",e);
+                response.sendError(500)
+            }
+        }
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                }
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -399,12 +459,9 @@ class OrganisationController extends AbstractDebugController {
 
             // create mandatory OrgPrivateProperties if not existing
 
-            def mandatories = []
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.contextOrg)
-            if (ppd) {
-                mandatories << ppd
-            }
-            mandatories.flatten().each { pd ->
+            def mandatories = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, result.contextOrg)
+
+            mandatories.each { pd ->
                 if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
@@ -505,8 +562,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def users() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -751,169 +808,5 @@ class OrganisationController extends AbstractDebugController {
                 break
         }
         redirect action: 'listInstitution'
-    }
-
-    private def exportOrg(orgs, message, addHigherEducationTitles) {
-        try {
-            def titles = [
-                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
-
-            def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-
-
-            if(addHigherEducationTitles)
-            {
-                titles.add(g.message(code: 'org.libraryType.label'))
-                titles.add(g.message(code: 'org.libraryNetwork.label'))
-                titles.add(g.message(code: 'org.funderType.label'))
-                titles.add(g.message(code: 'org.federalState.label'))
-                titles.add(g.message(code: 'org.country.label'))
-            }
-
-            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-            propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
-
-            propList.each {
-                titles.add(it.name)
-            }
-
-            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-
-            HSSFWorkbook wb = new HSSFWorkbook();
-
-            HSSFSheet sheet = wb.createSheet(message);
-
-            //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
-
-            //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
-            titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
-            }
-
-            //freeze the first row
-            sheet.createFreezePane(0, 1);
-
-            Row row;
-            Cell cell;
-            int rownum = 1;
-
-            orgs.sort{it.name}
-            orgs.each{  org ->
-                int cellnum = 0;
-                row = sheet.createRow(rownum);
-
-                //Name
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.name));
-
-                //Shortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.shortname));
-
-                //Sortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.sortname));
-
-
-                if(addHigherEducationTitles) {
-
-                    //libraryType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
-
-                    //libraryNetwork
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
-
-                    //funderType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
-
-                    //federalState
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
-
-                    //country
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
-                }
-
-                propList.each { pd ->
-                    def value = ''
-                    org.customProperties.each{ prop ->
-                        if(prop.type.descr == pd.descr && prop.type == pd)
-                        {
-                            if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString()
-                            }
-                            else if (prop.type.type == String.toString()){
-                                value = prop.stringValue
-                            }
-                            else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString()
-                            }
-                            else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString()
-                            }
-                            else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
-
-                    org.privateProperties.each{ prop ->
-                           if(prop.type.descr == pd.descr && prop.type == pd)
-                           {
-                               if(prop.type.type == Integer.toString()){
-                                   value = prop.intValue.toString()
-                               }
-                               else if (prop.type.type == String.toString()){
-                                   value = prop.stringValue
-                               }
-                               else if (prop.type.type == BigDecimal.toString()){
-                                   value = prop.decValue.toString()
-                               }
-                               else if (prop.type.type == Date.toString()){
-                                       value = prop.dateValue.toString()
-                                   }
-                               else if (prop.type.type == RefdataValue.toString()) {
-                                   value = prop.refValue?.getI10n('value') ?: ''
-                               }
-
-                           }
-                   }
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(value));
-                }
-
-                rownum++
-            }
-
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
-            }
-            // Write the output to a file
-            String file = message+"_${datetoday}.xls";
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-
-        }
-        catch ( Exception e ) {
-            log.error("Problem",e);
-            response.sendError(500)
-        }
     }
 }

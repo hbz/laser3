@@ -26,7 +26,7 @@
             <th>${message(code: "profile.membership.role")}</th>
             <th>${message(code: "profile.membership.status")}</th>
             <th>${message(code: "profile.membership.date2")}</th>
-            <th></th>
+            <th>${message(code:'default.actions')}</th>
         </tr>
         </thead>
         <tbody>

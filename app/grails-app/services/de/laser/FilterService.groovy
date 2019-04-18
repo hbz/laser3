@@ -233,4 +233,43 @@ class FilterService {
         result.queryParams = queryParams
         result
     }
+
+    Map<String,Object> getSurveyQuery(Map params, DateFormat sdFormat, Org contextOrg) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.name) {
+            query << "lower(si.name) like lower(:name)"
+            queryParams << [name:"%${params.name}%"]
+        }
+        if(params.status) {
+            query << "si.status = :status"
+            queryParams << [status: RefdataValue.get(params.status)]
+        }
+        if(params.type) {
+            query << "si.type = :type"
+            queryParams << [type: RefdataValue.get(params.type)]
+        }
+        if (params.startDate && sdFormat) {
+            query << "si.startDate >= :startDate"
+            queryParams << [startDate : sdFormat.parse(params.startDate)]
+        }
+        if (params.endDate && sdFormat) {
+            query << "si.endDate <= :endDate"
+            queryParams << [endDate : sdFormat.parse(params.endDate)]
+        }
+
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
+
+        if (query.size() > 0) {
+            result.query = "from SurveyInfo si where si.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyInfo si where si.owner = :contextOrg" + defaultOrder
+        }
+        queryParams << [contextOrg : contextOrg]
+
+
+        result.queryParams = queryParams
+        result
+    }
 }

@@ -36,7 +36,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
     <g:if test="${parentLicense}">
         ${message(code: 'subscription.linkLicenseConsortium.consortialLicense')}: <g:link controller="license"
                                                                                           action="show"
-                                                                                          id="${parentLicense.id}">${parentLicense?.reference}</g:link>
+                                                                                          id="${parentLicense?.id}">${parentLicense?.reference}</g:link>
     </g:if>
 </h3>
 
@@ -59,7 +59,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                               required=""
                               noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
                 </g:if><g:else>
-                    ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}"]
+                    ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}
                 </g:else>
             </div>
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
@@ -80,7 +80,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <th>${message(code: 'subscription.linktoLicense')}</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>
@@ -118,7 +118,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                                       from="${validLicenses}" name="license_${sub.id}" value="${sub?.owner?.id}"
                                       noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
                         </g:if><g:else>
-                            ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}"]
+                            ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}
                         </g:else>
                     </td>
 

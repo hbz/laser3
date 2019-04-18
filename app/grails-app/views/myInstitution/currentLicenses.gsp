@@ -12,14 +12,35 @@
   </semui:breadcrumbs>
   <semui:controlButtons>
       <semui:exportDropdown>
-          <semui:exportDropdownItem>
-              <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-          </semui:exportDropdownItem>
-          <g:each in="${transforms}" var="transkey,transval">
+          <g:if test="${filterSet}">
               <semui:exportDropdownItem>
-                  <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </semui:exportDropdownItem>
-          </g:each>
+              <semui:exportDropdownItem>
+                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+              </semui:exportDropdownItem>
+              <g:each in="${transforms}" var="transkey,transval">
+                  <semui:exportDropdownItem>
+                      <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                              data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  </semui:exportDropdownItem>
+              </g:each>
+          </g:if>
+          <g:else>
+              <semui:exportDropdownItem>
+                  <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+              </semui:exportDropdownItem>
+              <semui:exportDropdownItem>
+                  <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+              </semui:exportDropdownItem>
+              <g:each in="${transforms}" var="transkey,transval">
+                  <semui:exportDropdownItem>
+                      <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  </semui:exportDropdownItem>
+              </g:each>
+          </g:else>
       </semui:exportDropdown>
 
       <g:render template="actions" />
@@ -95,7 +116,7 @@
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
-
+                        <input type="hidden" name="filterSet" value="true" />
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
@@ -119,8 +140,7 @@
                       <th>${message(code:'license.details.incoming.childs')}</th>
                   </g:if>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                <th></th>
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" /><th>${message(code:'default.actions')}</th>
               </tr>
             </thead>
             <tbody>

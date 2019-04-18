@@ -127,14 +127,17 @@
         <r:script>
             $(document).ready(function() {
                 var tab = "${view}";
+                var rawHref = $(".exportCSV").attr("href");
                 $("[data-tab='"+tab+"']").addClass("active");
+                $(".exportCSV").attr("href",rawHref+"&showView="+tab);
                 if(tab === "consAtSubscr")
                     $("[data-tab='cons']").addClass("active");
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
-                        console.log(tabPath);
+                        //console.log(tabPath);
+                        $(".exportCSV").attr("href",rawHref+"&showView="+tabPath);
                     }
                 });
 

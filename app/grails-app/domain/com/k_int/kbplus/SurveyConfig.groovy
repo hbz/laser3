@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat
 
 class SurveyConfig {
 
-
     Integer configOrder
 
     Subscription subscription
@@ -25,6 +24,8 @@ class SurveyConfig {
     Date dateCreated
     Date lastUpdated
 
+    boolean pickAndChoose
+
     ArrayList orgIDs
 
     static hasMany = [
@@ -38,6 +39,8 @@ class SurveyConfig {
         orgIDs (nullable:true, blank:false)
         header(nullable:true, blank:false)
         comment  (nullable:true, blank:false)
+        pickAndChoose (nullable:true, blank:false)
+        documents (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -47,6 +50,7 @@ class SurveyConfig {
         type column: 'surconf_type'
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
+        pickAndChoose column: 'surconf_pickAndChoose'
 
         orgIDs column: 'surconf_org_ids'
 
@@ -57,7 +61,7 @@ class SurveyConfig {
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
 
-        configOrder column: 'surconf_config_order_fk'
+        configOrder column: 'surconf_config_order'
     }
 
     @Transient
@@ -75,13 +79,6 @@ class SurveyConfig {
         } else {
             return null
         }
-    }
-
-    def getOrgs(){
-
-
-        Org.findAllByIdInList()
-
     }
 
     def getCurrentDocs(){

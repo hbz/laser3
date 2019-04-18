@@ -14,10 +14,12 @@
   padding-right: 0.2em;
   background-color: @laSecondaryBackground;
   border: 1px solid #d3dae3;
+  vertical-align: super;
   .icon {
     font-size: 1em;
     width: auto;
     margin: 0em @iconDistance 0em @iconDistance;
+    vertical-align: sub;
   }
   >a {
     opacity: 0.7;
@@ -42,6 +44,10 @@
     opacity: 1;
     font-weight: bolder;
     color: white;
+  }
+  .la-annual-rings-text {
+    vertical-align: sub;
+    padding-right: 0.5em;
   }
 }
 

@@ -15,7 +15,7 @@
         </g:if>
         <g:else>
             <semui:securedSubNavItem controller="organisation" action="users" params="${[id: params.id]}"
-                                     message="org.nav.users" affiliation="INST_USER" affiliationOrg="${orgInstance}"/>
+                                     message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:else>
     </g:if>
 

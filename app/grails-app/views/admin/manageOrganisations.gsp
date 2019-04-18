@@ -46,7 +46,7 @@
 
                 <th>${message(code:'org.apiLevel.label')}</th>
 
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
         </thead>
         <tbody>
