@@ -3524,28 +3524,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 cmb.delete()
             }
         }
-        def fsq = filterService.getOrgComboQuery(params, result.institution))
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
         List totalConsortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.membersCount    = totalConsortiaMembers.size()
         result.members         = totalConsortiaMembers.drop((int) result.offset).take((int) result.max)
-        def message
-        if(params.comboType == 'Consortium')
-            message = g.message(code: 'menu.my.consortia')
-        else if(params.comboType == 'Department')
-            message = g.message(code: 'menu.my.departments')
+        String header
+        String exportHeader
+        if(params.comboType == 'Consortium') {
+            header = message(code: 'menu.my.consortia')
+            exportHeader = message(code: 'export.my.consortia')
+        }
+        else if(params.comboType == 'Department') {
+            header = g.message(code: 'menu.my.departments')
+            exportHeader = message(code: 'export.my.departments')
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
         // Write the output to a file
-        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+message
+        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
         if ( params.exportXLS ) {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortiaMembers, message(code:'menu.my.consortia'), true, 'xls')
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortiaMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
