@@ -78,7 +78,9 @@
         <g:if test="${propValues.containsKey(sourceSubscription)}">
             <% Set propValuesForSourceSub_ = propValues.get(sourceSubscription) %>
             <g:each var="propValue" in="${propValuesForSourceSub_}">
-                <g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                <g:if test="${propValues.containsKey(sourceSubscription)}">
+                    <g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                </g:if>
                 <br>
             </g:each>
         </g:if>
@@ -138,7 +140,6 @@
     // TODO: Wenn die Checkbox gecheckt ist soll der Text in Zelle rechts daneben rot und durchgestrichen sein
 $('input[name="subscription.takeProperty"]').change( function(event) {
     if ($(this).prop('checked')){
-        alert(this)
         $(this).parent().next().addClass('willBeReplaced');
     } else {
         $(this).parent().next().removeClass('willBeReplaced');
