@@ -221,7 +221,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.institution))}"
+        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {

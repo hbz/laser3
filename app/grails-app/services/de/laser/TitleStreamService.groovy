@@ -62,7 +62,7 @@ class TitleStreamService {
             List row = []
             log.debug("processing ${entitlement.tipp.title}")
             //publication_title
-            row.add("${entitlement.tipp.title.title} (${entitlement.subscription.dropdownNamingConvention(contextService.org)})")
+            row.add("${entitlement.tipp.title.title} (${entitlement.subscription.dropdownNamingConvention()})")
             log.debug("add main identifiers")
             //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
             if(entitlement.tipp.title.getIdentifierValue('pISBN'))
