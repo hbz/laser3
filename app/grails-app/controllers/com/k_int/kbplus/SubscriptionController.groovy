@@ -17,15 +17,16 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
-import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
@@ -63,7 +64,8 @@ class SubscriptionController extends AbstractDebugController {
     def subscriptionsQueryService
     def subscriptionService
     def comparisonService
-    def orgDocumentService
+    def titleStreamService
+    def escapeService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -203,7 +205,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
-        if (params.format == 'html' || params.format == null) {
+        if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
         } else {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params);
@@ -219,7 +221,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${result.subscriptionInstance.identifier}"
+        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention(result.institution))}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -230,54 +232,67 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        withFormat {
-            html result
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
-                response.contentType = "text/csv"
-                def out = response.outputStream
-                def header = (params.omitHeader == null) || (params.omitHeader != 'Y')
-                exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
-                out.close()
-                exportService.printDuration(verystarttime, "Overall Time")
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
-            json {
-                def starttime = exportService.printStart("Building Map")
-                def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building Map")
-
-                starttime = exportService.printStart("Create JSON")
-                def json = map as JSON
-                exportService.printDuration(starttime, "Create JSON")
-
-                if (params.transforms) {
-                    transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                    response.contentType = "application/json"
-                    render json
+            out.flush()
+            out.close()
+        }
+        else {
+            withFormat {
+                html result
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                    out.close()
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
-            }
-            xml {
-                def starttime = exportService.printStart("Building XML Doc")
-                def doc = exportService.buildDocXML("Subscriptions")
-                exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building XML Doc")
+                json {
+                    def starttime = exportService.printStart("Building Map")
+                    def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building Map")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    starttime = exportService.printStart("Sending XML")
-                    exportService.streamOutXML(doc, response.outputStream)
-                    exportService.printDuration(starttime, "Sending XML")
+                    starttime = exportService.printStart("Create JSON")
+                    def json = map as JSON
+                    exportService.printDuration(starttime, "Create JSON")
+
+                    if (params.transforms) {
+                        transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                        response.contentType = "application/json"
+                        render json
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
+                xml {
+                    def starttime = exportService.printStart("Building XML Doc")
+                    def doc = exportService.buildDocXML("Subscriptions")
+                    exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building XML Doc")
+
+                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
+                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
+                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                        response.contentType = "text/xml"
+                        starttime = exportService.printStart("Sending XML")
+                        exportService.streamOutXML(doc, response.outputStream)
+                        exportService.printDuration(starttime, "Sending XML")
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
+                }
             }
         }
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -850,10 +865,16 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
+        result.filterSet = params.filterSet ? true : false
+
         if (params.exportXLS == 'yes') {
             def orgs = []
-            validSubChilds.each { subChild ->
-                subChild.getAllSubscribers().each { subscr ->
+            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
+            Map publicContacts = allContacts.publicContacts
+            Map privateContacts = allContacts.privateContacts
+            result.filteredSubChilds.each { row ->
+                Subscription subChild = (Subscription) row.sub
+                row.orgs.each { subscr ->
                     def org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
@@ -868,6 +889,12 @@ class SubscriptionController extends AbstractDebugController {
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
+                    String generalContacts = ""
+                    if(publicContacts.get(subscr))
+                        generalContacts += publicContacts.get(subscr).join(", ")+"; "
+                    if(privateContacts.get(subscr))
+                        generalContacts += privateContacts.get(subscr).join(", ")
+                    org.generalContacts = generalContacts
                     orgs << org
                 }
             }
@@ -3536,6 +3563,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             titles.add(g.message(code: 'subscription.details.startDate'))
             titles.add(g.message(code: 'subscription.details.endDate'))
             titles.add(g.message(code: 'subscription.details.status'))
+            titles.add(RefdataValue.getByValueAndCategory('General contact person','Person Function').getI10n('value'))
+            //titles.add(RefdataValue.getByValueAndCategory('Functional contact','Person Contact Type').getI10n('value'))
 
             def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -3545,81 +3574,87 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-            HSSFWorkbook wb = new HSSFWorkbook();
+            XSSFWorkbook workbook = new XSSFWorkbook()
+            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
-            HSSFSheet sheet = wb.createSheet(message);
+            Sheet sheet = wb.createSheet(message)
 
             //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
+            sheet.setAutobreaks(true)
 
             //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
             titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
+                Cell cell = headerRow.createCell(index)
+                cell.setCellValue(titlesName)
             }
 
             //freeze the first row
-            sheet.createFreezePane(0, 1);
+            sheet.createFreezePane(0, 1)
 
-            Row row;
-            Cell cell;
-            int rownum = 1;
+            Row row
+            Cell cell
+            int rownum = 1
 
             orgs.sort { it.name }
             orgs.each { org ->
-                int cellnum = 0;
-                row = sheet.createRow(rownum);
+                int cellnum = 0
+                row = sheet.createRow(rownum)
 
                 //Name
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.name));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.name ?: '')
 
                 //Shortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.shortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.shortname ?: '')
 
                 //Sortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.sortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.sortname ?: '')
 
 
                 if (addHigherEducationTitles) {
 
                     //libraryType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
 
                     //libraryNetwork
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
 
                     //funderType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
 
                     //federalState
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
 
                     //country
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.country?.getI10n('value') ?: ' ')
                 }
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString("${org.startDate ?: ''}"));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue("${org.startDate ?: ''}")
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString("${org.endDate ?: ''}"));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue("${org.endDate ?: ''}")
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.status?.getI10n('value') ?: ' '));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.status?.getI10n('value') ?: ' ')
 
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.generalContacts ?: '')
+
+                cell = row.createCell(cellnum++)
+                cell.setCellValue('')
 
                 propList.each { pd ->
                     def value = ''
@@ -3628,7 +3663,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             if (prop.type.type == Integer.toString()) {
                                 value = prop.intValue.toString()
                             } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             } else if (prop.type.type == BigDecimal.toString()) {
                                 value = prop.decValue.toString()
                             } else if (prop.type.type == Date.toString()) {
@@ -3645,7 +3680,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             if (prop.type.type == Integer.toString()) {
                                 value = prop.intValue.toString()
                             } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             } else if (prop.type.type == BigDecimal.toString()) {
                                 value = prop.decValue.toString()
                             } else if (prop.type.type == Date.toString()) {
@@ -3656,26 +3691,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                         }
                     }
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(value));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(value)
                 }
 
                 rownum++
             }
 
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
+            for (int i = 0; i < titles.size(); i++) {
+                sheet.autoSizeColumn(i)
             }
             // Write the output to a file
-            String file = message + "_${datetoday}.xls";
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
+            String file = message + "_${datetoday}.xlsx"
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
-
+            response.outputStream.close()
+            wb.dispose()
         }
         catch (Exception e) {
             log.error("Problem", e);

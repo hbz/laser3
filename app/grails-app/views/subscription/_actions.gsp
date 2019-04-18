@@ -6,11 +6,25 @@
 
 <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
-        <semui:exportDropdownItem>
+        <%--<semui:exportDropdownItem>
             <g:link class="item" controller="subscription" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" controller="subscription" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
+        </semui:exportDropdownItem>--%>
+        <semui:exportDropdownItem>
+            <g:if test="${params.filter || params.asAt}">
+                <g:link  class="item js-open-confirm-modal"
+                         data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                         data-confirm-term-how="ok"
+                         action="index"
+                         id="${params.id}"
+                         params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBart Export
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBart Export</g:link>
+            </g:else>
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
@@ -22,7 +36,6 @@
                             id="${params.id}"
                             params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}
                     </g:link>
-
                 </g:if>
                 <g:else>
                     <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>

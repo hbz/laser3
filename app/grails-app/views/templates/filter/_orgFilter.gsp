@@ -151,6 +151,7 @@
 
         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
 
+        <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="formFilter(event)" />
             <r:script>

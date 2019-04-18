@@ -12,6 +12,11 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import javax.servlet.ServletOutputStream
+
+import static grails.async.Promises.task
+import static grails.async.Promises.waitAll
+
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController extends AbstractDebugController {
@@ -22,6 +27,7 @@ class LicenseController extends AbstractDebugController {
     def genericOIDService
     def transformerService
     def exportService
+    def escapeService
     def institutionsService
     def pendingChangeService
     def executorWrapperService
@@ -31,7 +37,6 @@ class LicenseController extends AbstractDebugController {
     def filterService
     def selectListQueryService
     def orgTypeService
-    def orgDocumentService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -55,7 +60,7 @@ class LicenseController extends AbstractDebugController {
 
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        def filename = "license_${license_reference_str.replace(" ", "_")}"
+        def filename = "license_${escapeService.escapeString(license_reference_str)}"
         result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
@@ -234,13 +239,16 @@ class LicenseController extends AbstractDebugController {
         }
         
       }
+      /*
       csv {
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        def out = response.outputStream
-        exportService.StreamOutLicenseCSV(out,null,[result.license])
-        out.close()
+          response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+          response.contentType = "text/csv"
+          ServletOutputStream out = response.outputStream
+          //exportService.StreamOutLicenseCSV(out,null,[result.license])
+          out.close()
+
       }
+      */
     }
   }
 
