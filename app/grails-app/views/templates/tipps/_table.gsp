@@ -53,7 +53,7 @@
                 </g:if>
 
                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
-                    <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()} ${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                    <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
                 </g:if>
 
                 <br>
@@ -69,6 +69,11 @@
                     </g:if>
                 </g:each>
                 <br>
+
+                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                    <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
+                    </div>
+                </g:if>
 
                 <g:each in="${tipp.title.ids.sort { it.identifier.ns.ns }}" var="id">
                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
@@ -96,8 +101,6 @@
                          title="${tipp.availabilityStatusExplanation}"><b>${message(code: 'default.access.label', default: 'Access')}:</b> ${tipp.availabilityStatus?.getI10n('value')}
                     </div>
 
-                    <div class="item"><b>${message(code: 'title.type.label')}:</b> ${tipp.title.type.getI10n('value')}
-                    </div>
 
                     <div class="item"><b>${message(code: 'default.status.label', default: 'Status')}:</b>  <semui:xEditableRefData
                             owner="${tipp}" field="status" config="TIPP Status"/></div>
@@ -107,7 +110,8 @@
 
                             <div class="la-flexbox">
                                 <i class="icon gift scale la-list-icon"></i>
-                                <g:link controller="package" action="show" id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>
+                                <g:link controller="package" action="show"
+                                        id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>
                             </div>
                         </div>
                     </g:if>
@@ -131,15 +135,23 @@
                             </g:if>
                         </div>
                     </g:if>
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
-                        </div>
-                    </g:if>
 
                 </div>
             </td>
 
             <td>
+
+                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                    ${tipp?.title?.dateFirstInPrint}
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                    ${tipp?.title?.dateFirstOnline}
+
+                </g:if>
+                <g:else>
                 <!-- von -->
                 <semui:xEditable owner="${tipp}" type="date" field="startDate"/><br/>
                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
@@ -157,6 +169,7 @@
                 <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.issue')}"></i>
                 <semui:xEditable owner="${tipp}" field="endIssue"/>
+                </g:else>
             </td>
             <td>
                 <!-- von -->

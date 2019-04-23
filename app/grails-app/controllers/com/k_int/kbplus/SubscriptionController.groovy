@@ -17,15 +17,16 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
-import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
@@ -63,7 +64,8 @@ class SubscriptionController extends AbstractDebugController {
     def subscriptionsQueryService
     def subscriptionService
     def comparisonService
-    def orgDocumentService
+    def titleStreamService
+    def escapeService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -203,7 +205,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
-        if (params.format == 'html' || params.format == null) {
+        if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
         } else {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params);
@@ -219,7 +221,7 @@ class SubscriptionController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscription_${result.subscriptionInstance.identifier}"
+        def filename = "subscription_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -230,54 +232,67 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        withFormat {
-            html result
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
-                response.contentType = "text/csv"
-                def out = response.outputStream
-                def header = (params.omitHeader == null) || (params.omitHeader != 'Y')
-                exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
-                out.close()
-                exportService.printDuration(verystarttime, "Overall Time")
+        if(params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
-            json {
-                def starttime = exportService.printStart("Building Map")
-                def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building Map")
-
-                starttime = exportService.printStart("Create JSON")
-                def json = map as JSON
-                exportService.printDuration(starttime, "Create JSON")
-
-                if (params.transforms) {
-                    transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                    response.contentType = "application/json"
-                    render json
+            out.flush()
+            out.close()
+        }
+        else {
+            withFormat {
+                html result
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                    out.close()
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
-            }
-            xml {
-                def starttime = exportService.printStart("Building XML Doc")
-                def doc = exportService.buildDocXML("Subscriptions")
-                exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
-                exportService.printDuration(starttime, "Building XML Doc")
+                json {
+                    def starttime = exportService.printStart("Building Map")
+                    def map = exportService.getSubscriptionMap(result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building Map")
 
-                if ((params.transformId) && (result.transforms[params.transformId] != null)) {
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
-                    transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
-                } else {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                    response.contentType = "text/xml"
-                    starttime = exportService.printStart("Sending XML")
-                    exportService.streamOutXML(doc, response.outputStream)
-                    exportService.printDuration(starttime, "Sending XML")
+                    starttime = exportService.printStart("Create JSON")
+                    def json = map as JSON
+                    exportService.printDuration(starttime, "Create JSON")
+
+                    if (params.transforms) {
+                        transformerService.triggerTransform(result.user, filename, params.transforms, json, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
+                        response.contentType = "application/json"
+                        render json
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
                 }
-                exportService.printDuration(verystarttime, "Overall Time")
+                xml {
+                    def starttime = exportService.printStart("Building XML Doc")
+                    def doc = exportService.buildDocXML("Subscriptions")
+                    exportService.addSubIntoXML(doc, doc.getDocumentElement(), result.subscriptionInstance, result.entitlements)
+                    exportService.printDuration(starttime, "Building XML Doc")
+
+                    if ((params.transformId) && (result.transforms[params.transformId] != null)) {
+                        String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
+                        transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
+                    } else {
+                        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
+                        response.contentType = "text/xml"
+                        starttime = exportService.printStart("Sending XML")
+                        exportService.streamOutXML(doc, response.outputStream)
+                        exportService.printDuration(starttime, "Sending XML")
+                    }
+                    exportService.printDuration(verystarttime, "Overall Time")
+                }
             }
         }
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -300,6 +315,9 @@ class SubscriptionController extends AbstractDebugController {
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
                     if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
+
+                    flash.message = message(code: 'subscription.details.unlink.successfully')
+
                 }
             } else {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
@@ -847,10 +865,16 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
+        result.filterSet = params.filterSet ? true : false
+
         if (params.exportXLS == 'yes') {
             def orgs = []
-            validSubChilds.each { subChild ->
-                subChild.getAllSubscribers().each { subscr ->
+            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
+            Map publicContacts = allContacts.publicContacts
+            Map privateContacts = allContacts.privateContacts
+            result.filteredSubChilds.each { row ->
+                Subscription subChild = (Subscription) row.sub
+                row.orgs.each { subscr ->
                     def org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname
@@ -865,6 +889,12 @@ class SubscriptionController extends AbstractDebugController {
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
+                    String generalContacts = ""
+                    if(publicContacts.get(subscr))
+                        generalContacts += publicContacts.get(subscr).join(", ")+"; "
+                    if(privateContacts.get(subscr))
+                        generalContacts += privateContacts.get(subscr).join(", ")
+                    org.generalContacts = generalContacts
                     orgs << org
                 }
             }
@@ -890,7 +920,9 @@ class SubscriptionController extends AbstractDebugController {
         result.parentLicense = result.parentSub.owner
 
         result.validLicenses = []
-        result.validLicenses << result.parentLicense
+        if(result.parentLicense) {
+            result.validLicenses << result.parentLicense
+        }
 
         def childLicenses = License.where {
             (instanceOf == result.parentLicense) && (status.value != 'Deleted')
@@ -953,33 +985,190 @@ class SubscriptionController extends AbstractDebugController {
 
         def changeAccepted = []
         if (params.license_All) {
-            def countChangeAccepted = 0
-            validSubChilds.each {
-                it.owner = License.get(params.license_All)
-                if (it.save(flush: true)) {
-                    countChangeAccepted++
+            def lic = License.get(params.license_All)
+            validSubChilds.each { subChild ->
+                def sub = Subscription.get(subChild.id)
+                sub.owner = lic
+                if (sub.save(flush: true)) {
+                    changeAccepted << subChild?.dropdownNamingConvention()
                 }
             }
-            flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [countChangeAccepted])
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join(', ')])
+            }
+
 
         } else {
             validSubChilds.each {
                 if (params."license_${it.id}") {
                     def newLicense = License.get(params."license_${it.id}")
                     if (it.owner != newLicense) {
-                        it.owner = newLicense
-                        if(it.save(flush: true)){
-                            changeAccepted << it.id
+                        def sub = Subscription.get(it.id)
+                        sub.owner = newLicense
+                        if(sub.save(flush: true)){
+                            changeAccepted << it?.dropdownNamingConvention()
                         }
                     }
                 }
             }
-            flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.size()])
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join('')])
+            }
+
         }
 
 
         redirect(action: 'linkLicenseConsortia', id: params.id)
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def linkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+
+        result.validPackages
+        result.validPackages = result.parentPackages
+
+        /*def childPackages = License.where {
+            (instanceOf == result.parentLicense) && (status.value != 'Deleted')
+        }
+
+        childPackages?.each {
+            result.validLicenses << it
+        }*/
+
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+        //Sortieren
+        result.validSubChilds = validSubChilds.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }
+
+        def oldID =  params.id
+        params.id = result.parentSub.id
+
+      ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
+                }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID
+
+        result
+    }
+
+    def processLinkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+
+        def changeAccepted = []
+        def changeAcceptedwithIE = []
+        def changeFailed = []
+
+
+        if (params.package_All) {
+            def pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
+
+            validSubChilds.each { subChild ->
+
+                if(!(pkg_to_link in subChild.packages.pkg)) {
+
+                    if (params.withIssueEntitlements) {
+
+                        pkg_to_link.addToSubscription(subChild, true)
+                        changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+
+                    } else {
+                        pkg_to_link.addToSubscription(subChild, false)
+                        changeAccepted << subChild?.dropdownNamingConvention()
+
+                    }
+                }else {
+                    changeFailed << subChild?.dropdownNamingConvention()
+                }
+
+            }
+
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+            }
+            if (changeAcceptedwithIE) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+            }
+
+
+        } else {
+            validSubChilds.each { subChild ->
+
+                if (params."package_${subChild.id}") {
+                    def pkg_to_link = SubscriptionPackage.get(params."package_${subChild.id}").pkg
+
+                    if (!(pkg_to_link in subChild.packages.pkg)) {
+
+                        if (params.withIssueEntitlements) {
+
+                            pkg_to_link.addToSubscription(subChild, true)
+                            changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+
+                        } else {
+                            pkg_to_link.addToSubscription(subChild, false)
+                            changeAccepted << subChild?.dropdownNamingConvention()
+
+                        }
+                    } else {
+                        changeFailed << subChild?.dropdownNamingConvention()
+                    }
+                }
+            }
+            if (changeAccepted) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [changeAccepted.join(" ")])
+            }
+            if (changeAcceptedwithIE) {
+                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [changeAcceptedwithIE.join(" ")])
+            }
+            if (changeFailed) {
+                flash.error = message(code: 'subscription.linkPackagesConsortium.changeFailedAll', args: [changeFailed.join(" ")])
+            }
+        }
+
+
+        redirect(action: 'linkPackagesConsortia', id: params.id)
+    }
+
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1088,7 +1277,8 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
 
-                    if (params.generateSlavedSubs == "Y") {
+                    //ERMS-1155
+                    if (true) {
                         log.debug("Generating seperate slaved instances for consortia members")
 
                         def cons_sub = new Subscription(
@@ -3373,6 +3563,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             titles.add(g.message(code: 'subscription.details.startDate'))
             titles.add(g.message(code: 'subscription.details.endDate'))
             titles.add(g.message(code: 'subscription.details.status'))
+            titles.add(RefdataValue.getByValueAndCategory('General contact person','Person Function').getI10n('value'))
+            //titles.add(RefdataValue.getByValueAndCategory('Functional contact','Person Contact Type').getI10n('value'))
 
             def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -3382,81 +3574,87 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-            HSSFWorkbook wb = new HSSFWorkbook();
+            XSSFWorkbook workbook = new XSSFWorkbook()
+            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
-            HSSFSheet sheet = wb.createSheet(message);
+            Sheet sheet = wb.createSheet(message)
 
             //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
+            sheet.setAutobreaks(true)
 
             //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
             titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
+                Cell cell = headerRow.createCell(index)
+                cell.setCellValue(titlesName)
             }
 
             //freeze the first row
-            sheet.createFreezePane(0, 1);
+            sheet.createFreezePane(0, 1)
 
-            Row row;
-            Cell cell;
-            int rownum = 1;
+            Row row
+            Cell cell
+            int rownum = 1
 
             orgs.sort { it.name }
             orgs.each { org ->
-                int cellnum = 0;
-                row = sheet.createRow(rownum);
+                int cellnum = 0
+                row = sheet.createRow(rownum)
 
                 //Name
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.name));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.name ?: '')
 
                 //Shortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.shortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.shortname ?: '')
 
                 //Sortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.sortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.sortname ?: '')
 
 
                 if (addHigherEducationTitles) {
 
                     //libraryType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
 
                     //libraryNetwork
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
 
                     //funderType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
 
                     //federalState
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
 
                     //country
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.country?.getI10n('value') ?: ' ')
                 }
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString("${org.startDate ?: ''}"));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue("${org.startDate ?: ''}")
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString("${org.endDate ?: ''}"));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue("${org.endDate ?: ''}")
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.status?.getI10n('value') ?: ' '));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.status?.getI10n('value') ?: ' ')
 
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.generalContacts ?: '')
+
+                cell = row.createCell(cellnum++)
+                cell.setCellValue('')
 
                 propList.each { pd ->
                     def value = ''
@@ -3465,7 +3663,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             if (prop.type.type == Integer.toString()) {
                                 value = prop.intValue.toString()
                             } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             } else if (prop.type.type == BigDecimal.toString()) {
                                 value = prop.decValue.toString()
                             } else if (prop.type.type == Date.toString()) {
@@ -3482,7 +3680,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             if (prop.type.type == Integer.toString()) {
                                 value = prop.intValue.toString()
                             } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             } else if (prop.type.type == BigDecimal.toString()) {
                                 value = prop.decValue.toString()
                             } else if (prop.type.type == Date.toString()) {
@@ -3493,26 +3691,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                         }
                     }
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(value));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(value)
                 }
 
                 rownum++
             }
 
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
+            for (int i = 0; i < titles.size(); i++) {
+                sheet.autoSizeColumn(i)
             }
             // Write the output to a file
-            String file = message + "_${datetoday}.xls";
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
+            String file = message + "_${datetoday}.xlsx"
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
-
+            response.outputStream.close()
+            wb.dispose()
         }
         catch (Exception e) {
             log.error("Problem", e);
