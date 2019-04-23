@@ -24,7 +24,9 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
-                <th>${message(code:'default.actions')}</th>
+                <g:if test="${accessService.checkPermAffiliation("ORG_BASIC","INST_EDITOR")}">
+                    <th>${message(code:'default.actions')}</th>
+                </g:if>
             </g:else>
         </tr>
     </thead>
@@ -91,32 +93,34 @@
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
-                    <td class="x">
-                        <g:if test="${editable}">
-                            <g:if test="${fixedSubscription}">
-                                <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                    <g:if test="${accessService.checkPermAffiliation("ORG_BASIC","INST_USER")}">
+                        <td class="x">
+                            <g:if test="${editable}">
+                                <g:if test="${fixedSubscription}">
+                                    <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
 
-                                        <i class="la-copySend icon"></i>
+                                            <i class="la-copySend icon"></i>
 
-                                        <i class="icon copy-send"></i>
+                                            <i class="icon copy-send"></i>
 
-                                    </g:link>
-                                </span>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+
+                                            <i class="la-copySend icon"></i>
+
+                                            <i class="icon copy-send"></i>
+
+                                        </g:link>
+                                    </span>
+                                </g:else>
                             </g:if>
-                            <g:else>
-                                <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
-                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-
-                                        <i class="la-copySend icon"></i>
-
-                                        <i class="icon copy-send"></i>
-
-                                    </g:link>
-                                </span>
-                            </g:else>
-                        </g:if>
-                    </td>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
         </g:else>
