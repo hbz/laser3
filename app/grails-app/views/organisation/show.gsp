@@ -214,7 +214,7 @@
                                                         controller: 'org',
                                                         action: 'show',
                                                         id: orgInstance.id,
-                                                        editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                        editable: ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                                 ]}"/>
                                             </g:if>
                                         </g:each>
@@ -240,7 +240,7 @@
                                                         controller: 'organisation',
                                                         action: 'show',
                                                         id: orgInstance.id,
-                                                        editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                        editable: ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                                 ]}"/>
                                             </g:if>
                                         </g:each>
@@ -267,7 +267,7 @@
                                                     controller: 'organisation',
                                                     action: 'show',
                                                     id: orgInstance.id,
-                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                    editable: ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
