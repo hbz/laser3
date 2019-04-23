@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -3266,10 +3267,11 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def addressbook() {
-
 
         def result = setResultGenerics()
 
@@ -3363,8 +3365,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def tasks() {
         def result = setResultGenerics()
 
@@ -3997,8 +4001,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def managePropertyGroups() {
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
@@ -4078,8 +4084,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def managePrivateProperties() {
         def result = setResultGenerics()
 

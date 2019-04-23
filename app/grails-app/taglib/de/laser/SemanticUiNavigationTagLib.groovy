@@ -5,6 +5,8 @@ import org.springframework.web.servlet.support.RequestContextUtils
 class SemanticUiNavigationTagLib {
 
     def springSecurityService
+    def contextService
+    def accessService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -201,12 +203,25 @@ class SemanticUiNavigationTagLib {
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        if(attrs.newAffiliationRequests)
-        {
+        boolean check = false
+
+        if(attrs.newAffiliationRequests) {
             linkBody = linkBody + "<div class='ui floating red circular label'>${attrs.newAffiliationRequests}</div>";
         }
 
-        if (attrs.affiliation && springSecurityService.getCurrentUser()?.hasAffiliation(attrs.affiliation)) {
+        if (attrs.affiliation && attrs.perm) {
+            if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.perm)) {
+                check = true
+            }
+        }
+        else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
+            check = true
+        }
+        else if (attrs.perm && accessService.checkPerm(attrs.perm)) {
+            check = true
+        }
+
+        if (check) {
             out << g.link(linkBody,
                     controller: attrs.controller,
                     action: attrs.action,

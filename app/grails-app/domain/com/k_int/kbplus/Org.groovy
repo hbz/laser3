@@ -550,18 +550,6 @@ class Org
         List result = []
         orgType.collect{ it -> result.add(it.id) }
         result
-
-        /*
-        // TODO: ugliest HOTFIX ever
-        def hibernateSession = sessionFactory.currentSession
-
-        String query = 'select refdata_value_id from org_roletype where org_id = ' + this.id
-        def sqlQuery = hibernateSession.createSQLQuery(query)
-        sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
-        def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
-        //log.debug('getallOrgRoleTypeIds(): ' + result)
-        result
-        */
     }
 
     def checkAndAddMissingIdentifier(ns,value) {
