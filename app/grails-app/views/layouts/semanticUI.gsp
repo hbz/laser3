@@ -75,25 +75,6 @@
 
             <sec:ifAnyGranted roles="ROLE_USER">
 
-                <g:if test="${false}">
-                    <div class="ui simple dropdown item">
-                        Data Explorer
-                        <i class="dropdown icon"></i>
-
-                        <div class="menu">
-                            <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
-                            <g:link class="item" controller="package">Package</g:link>
-                            <g:link class="item" controller="organisation">Organisations</g:link>
-                            <g:link class="item" controller="platform">Platform</g:link>
-                            <g:link class="item" controller="title">Title Instance</g:link>
-                            <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
-                            <g:link class="item" controller="subscription">Subscriptions</g:link>
-                            <g:link class="item" controller="license">Licenses</g:link>
-                            <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
-                        </div>
-                    </div>
-                </g:if>
-
                 <g:if test="${contextOrg}">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.public')}

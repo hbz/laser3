@@ -481,8 +481,10 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def emptyLicense() {
         def result = setResultGenerics()
 
@@ -882,8 +884,10 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def emptySubscription() {
         def result = setResultGenerics()
         result.orgType = result.institution?.getallOrgTypeIds()

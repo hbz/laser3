@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DebugAnnotation
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -304,7 +305,10 @@ class PackageController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def compare() {
         def result = [:]
         result.unionList = []
