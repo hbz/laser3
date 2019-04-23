@@ -1504,7 +1504,7 @@ class GlobalSourceSyncService {
         }
 
         if (record?.metadata) {
-            record?.metadata.gokb?.org?.providedPlatforms?.each { plat ->
+            record?.metadata.gokb?.org?.providedPlatforms?.platform.each { plat ->
 
                 def provider = Org.findByGokbId(providerUuid)
 
