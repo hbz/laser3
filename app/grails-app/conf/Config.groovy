@@ -702,7 +702,8 @@ financialImportTSVLoaderMappings = [
           ]
         ],
         creation:[
-          onMissing:false
+          onMissing: true,
+          whenPresent: [ type: 'checkForOrgRoles', hql: 'select s from Subscription as s join s.orgRelations oo where (cast(s.id as string) = :subId or s.globalUID = :subId)', values: [ subId: [type:'column', colname:['SubscriptionId','Lizenz']] ] ]
         ]
       ],
        /* [

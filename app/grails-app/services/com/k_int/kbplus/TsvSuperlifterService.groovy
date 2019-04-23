@@ -174,8 +174,32 @@ class TsvSuperlifterService {
             missingProps.add("Reference "+rule.refname+"::"+locatedObjects[rule.refname])
           }
           break
+        case 'checkForOrgRoles':
+          rule.values.each { v ->
+            if (v.colname instanceof List) {
+              v.colname.each { colname ->
+                try {
+                  if ( nl[colmap[colname]] != null ) {
+                    qry_params[k] = getColumnValue(config,colmap,nl,colname)
+                  }
+                }
+                catch (Exception e) {
+                  log.info("Alternative column name ${colname} not present in map, skipping ...")
+                }
+              }
+            }
+            else if ( v.colname instanceof String && nl[colmap[v.colname]] != null ) {
+              qry_params[k] = getColumnValue(config,colmap,nl,v.colname) // nl[colmap[v.colname]]
+            }
+            else {
+              log.error("Missing parameter ${v.colname}");
+              passed = false
+            }
+          }
+
+          break
       }
-      if ( ( passed == false ) && ( rule.errorOnMissing ) ) {
+      if ( ( !passed ) && ( rule.errorOnMissing ) ) {
         row_information.error = true;
       }
     }
