@@ -104,13 +104,21 @@
 
                                 <g:link class="item" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</g:link>
-                                </sec:ifAnyGranted>
-
-                                <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
+                                <g:if test="${grailsApplication.config.feature.eBooks}">
+                                    <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
+                                    <div class="divider"></div>
                                 </g:if>
+
+                            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                <g:link class="item" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</g:link>
+                            </g:if>
+                            <g:else>
+                                <div class="item disabled">${message(code:'menu.public.all_orgs')}</div><%-- TODO change custom tag:disabled --%>
+                            </g:else>
+
+                            <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
+                                <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link><%-- TODO change custom tag: disabled --%>
+                            </g:if>
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
@@ -118,19 +126,9 @@
 
                                 <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
-                            <%--<div class="divider"></div>
-
-                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.my.titles')}</g:link>
-                            <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
-                            --%>
-                            <div class="divider"></div>
-
-                            <g:if test="${grailsApplication.config.feature.eBooks}">
-                                <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
                                 <div class="divider"></div>
-                            </g:if>
 
-                            <g:link class="item" controller="package" action="compare">${message(code:'menu.public.comp_pkg')}</g:link>
+                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
                         </div>
                     </div>
 
@@ -150,33 +148,25 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
-                            <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                <div class="divider"></div>
+                                <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
+                                    <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" />
+                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" /><%-- TODO change custom tag: disabled --%>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
-                            </g:if>
-
-                            <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
+                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" /><%-- TODO change custom tag: disabled --%>
+                                </g:if>
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
-
-                            <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
-                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
-                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
-
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
                             <%--
                             <div class="divider"></div>
@@ -202,34 +192,34 @@
 
                             <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
+
+                            <g:if test="${grailsApplication.config.feature_finance}">
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                                <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                                    <%-- TODO change custom tag: disabled --%>
+                                </sec:ifAnyGranted>
+                            </g:if>
+
+                            <div class="divider"></div>
 
                             <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="organisation" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
 
-                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
-                            <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
-
-                            <g:if test="${grailsApplication.config.feature_finance}">
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                                <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
-                                </sec:ifAnyGranted>
-                            </g:if>
-
                             <sec:ifAnyGranted roles="ROLE_YODA">
-                                <div class="divider"></div>
-
-                                <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
+                                   <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
                                 <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                             </sec:ifAnyGranted>
 
@@ -247,7 +237,6 @@
                                 <g:link class="item" controller="usage"
                                         action="index">${message(code: 'menu.datamanager.manage_usage_stats', default: 'Manage Usage Stats')}</g:link>
                             </sec:ifAnyGranted>
-
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                                 <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
