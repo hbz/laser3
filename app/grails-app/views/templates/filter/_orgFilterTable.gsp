@@ -98,7 +98,14 @@
             </g:if>
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                    <g:if test="${comboType == 'Department'}">
+                        <g:if test="${org.isEmpty()}">
+                            <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                        </g:if>
+                    </g:if>
+                    <g:else>
+                        <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                    </g:else>
                 </td>
             </g:if>
 
@@ -132,7 +139,16 @@
                             </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}">
+                        <%
+                            Map viewSettings = [:]
+                            switch(comboType) {
+                                case "Consortium": viewSettings.institutionalView = true
+                                    break
+                                case "Department": viewSettings.departmentalView = true
+                                    break
+                            }
+                        %>
+                        <g:link controller="organisation" action="show" id="${org.id}" params="${viewSettings}">
                             ${fieldValue(bean: org, field: "name")} <br>
                             <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
                                 (${fieldValue(bean: org, field: "shortname")})
@@ -203,7 +219,7 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
                 <td>
-                    <g:each in="${com.k_int.kbplus.ReaderNumber.findAllByOrgAndType(org, RefdataValue.getByValueAndCategory('Students', 'Number Type'))?.sort {it.type?.getI10n("value")}}" var="fte">
+                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', 'Number Type').getI10n('value'))?.sort {it.type?.getI10n("value")}}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
                             ${fte.type?.getI10n("value")} : ${fte.number} <br>
                         </g:if>
@@ -216,7 +232,7 @@
                         <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName,status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
                             def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
-                        <g:if test="${actionName == 'manageConsortia'}">
+                        <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}

@@ -18,7 +18,7 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <semui:subNavItem controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <semui:securedSubNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
     <%-- <semui:subNavItem controller="subscription" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" /> --%>
     <%--

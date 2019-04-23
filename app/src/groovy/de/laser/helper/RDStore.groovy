@@ -28,6 +28,7 @@ class RDStore {
     static final OT_AGENCY                  = getRefdataValue('Agency', 'OrgRoleType')
     static final OT_LICENSOR                = getRefdataValue('Licensor', 'OrgRoleType')
     static final OT_PROVIDER                = getRefdataValue('Provider', 'OrgRoleType')
+    static final OT_DEPARTMENT              = getRefdataValue('Department','OrgRoleType')
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
     static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')

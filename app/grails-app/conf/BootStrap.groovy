@@ -301,7 +301,7 @@ class BootStrap {
 
         def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
+        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
         // Global System Roles
 
@@ -360,18 +360,17 @@ class BootStrap {
         }
 
         def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
-        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
         def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
-        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
 
-        createOrgPerms(orgBasicRole, ['ORG_BASIC'])
         createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM', 'ORG_MEMBER'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM', 'ORG_MEMBER'])
-        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
-
+        createOrgPerms(orgBasicRole, ['ORG_BASIC','ORG_MEMBER'])
+        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE','ORG_MEMBER','ORG_BASIC'])
+        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY','ORG_CONSORTIUM'])
     }
 
     def initializeDefaultSettings(){
@@ -2121,6 +2120,7 @@ class BootStrap {
 
         RefdataValue.loc('OrgRoleType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
+        RefdataValue.loc('OrgRoleType',      [en: 'Department', de: 'Institut'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Agency', de: 'Lieferant'], BOOTSTRAP)

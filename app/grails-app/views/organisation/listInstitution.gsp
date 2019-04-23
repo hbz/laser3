@@ -16,7 +16,7 @@
     <semui:controlButtons>
         <%--<semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="addConsortiaMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>--%>
         <g:render template="actions" />

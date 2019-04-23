@@ -383,8 +383,10 @@ class SubscriptionController extends AbstractDebugController {
         result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def compare() {
         def result = [:]
         result.unionList = []
@@ -1620,8 +1622,8 @@ class SubscriptionController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC", "INST_USER") })
     def tasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {

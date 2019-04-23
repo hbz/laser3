@@ -55,9 +55,9 @@ class YodaController {
         result
     }
 
-    @DebugAnnotation(test='checkPermTypeAffiliation(AccessService.ORG_CONSORTIUM, "Consortium", "INST_ADM")')
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliation(AccessService.ORG_CONSORTIUM, "Consortium", "INST_ADM")
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR")
     })
     def demo() {
         Map result = [:]
@@ -247,7 +247,11 @@ class YodaController {
 
                         def da = method.getAnnotation(DebugAnnotation)
                         if (da) {
-                            mList << ["${mKey}": [da.test()]]
+                            mList << ["${mKey}": [perm: da.perm(),
+                                                  type: da.type(),
+                                                  affil: da.affil(),
+                                                  specRoles: da.specRole(),
+                                                  test: da.test()]]
                         }
                         else {
                             mList << ["${mKey}": method.getAnnotation(Secured)?.value()]

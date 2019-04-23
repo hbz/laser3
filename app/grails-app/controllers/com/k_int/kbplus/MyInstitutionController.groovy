@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -480,8 +481,10 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def emptyLicense() {
         def result = setResultGenerics()
 
@@ -881,8 +884,10 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def emptySubscription() {
         def result = setResultGenerics()
         result.orgType = result.institution?.getallOrgTypeIds()
@@ -3266,10 +3271,11 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def addressbook() {
-
 
         def result = setResultGenerics()
 
@@ -3363,8 +3369,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -3417,23 +3423,26 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def addConsortiaMembers() {
+    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    def addMembers() {
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+        if(params.comboType == 'Consortium')
+            params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
+        else if(params.comboType == 'Department')
+            params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
 
         if (params.selectedOrgs) {
-            log.debug('adding orgs to consortia')
+            log.debug('adding orgs to consortia/institution')
 
             params.list('selectedOrgs').each { soId ->
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                        type: RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
@@ -3441,25 +3450,30 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             }
 
-            redirect action: 'manageConsortia'
+            redirect action: 'manageMembers'
         }
         result.filterSet = params.filterSet ? true : false
         def fsq = filterService.getOrgQuery(params)
         result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
-        }
+            result.memberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
+            ).each { cmb ->
+                result.memberIds << cmb.fromOrg.id
+            }
 
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
-        String filename = message(code:'export.my.consortia')+"_"+sdf.format(new Date(System.currentTimeMillis()))
+
+        def message
+        if(params.comboType == 'Consortium')
+            message = message(code: 'menu.public.all_orgs')
+        else if(params.comboType == 'Department')
+            message = message(code: 'menu.my.departments')
+        String filename = message+"_"+sdf.format(new Date(System.currentTimeMillis()))
         if ( params.exportXLS ) {
             List orgs = (List) result.availableOrgs
-            def message = g.message(code: 'export.all.orgs')
             SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
@@ -3487,14 +3501,17 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortia() {
+    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    def manageMembers() {
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
-        params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+        if(params.comboType == 'Consortium')
+            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
+        else if(params.comboType == 'Department')
+            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
+        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -3515,21 +3532,31 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-        if (params.filterPropDef && consortiaMemberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+        if (params.filterPropDef && memberIds) {
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
-        List totalConsortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount    = totalConsortiaMembers.size()
-        result.consortiaMembers         = totalConsortiaMembers.drop((int) result.offset).take((int) result.max)
 
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.membersCount    = totalMembers.size()
+        result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
+        String header
+        String exportHeader
+        if(params.comboType == 'Consortium') {
+            header = message(code: 'menu.my.consortia')
+            exportHeader = message(code: 'export.my.consortia')
+        }
+        else if(params.comboType == 'Department') {
+            header = g.message(code: 'menu.my.departments')
+            exportHeader = message(code: 'export.my.departments')
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
         // Write the output to a file
-        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+message(code: 'export.my.consortia')
+        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
         if ( params.exportXLS ) {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortiaMembers, message(code:'menu.my.consortia'), true, 'xls')
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -3547,7 +3574,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalConsortiaMembers,message(code:'menu.my.consortia'),true,"csv"))
+                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
                     }
                     out.close()
                 }
@@ -3555,8 +3582,24 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
+    def removeDepartment() {
+        Org contextOrg = contextService.org
+        Org department = Org.get(params.dept)
+        Combo combo = Combo.findByFromOrgAndToOrgAndType(department,contextOrg,RefdataValue.getByValueAndCategory('Department','Combo Type'))
+        if(combo.delete()) {
+            department.status = RDStore.O_STATUS_DELETED
+            if(!department.save()) {
+                flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
+                redirect(url: request.getHeader('referer'))
+            }
+        }
+        redirect action: 'manageMembers', params: [comboType: 'Department']
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
@@ -3997,8 +4040,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def managePropertyGroups() {
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
@@ -4078,8 +4123,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    })
     def managePrivateProperties() {
         def result = setResultGenerics()
 
