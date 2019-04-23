@@ -137,7 +137,7 @@ class User {
         SpringSecurityUtils.ifAnyGranted(roleName)
     }
     def hasRole(List<String> roleNames) {
-        SpringSecurityUtils.ifAnyGranted(roleNames)
+        SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
     }
 
     def isAdmin() {

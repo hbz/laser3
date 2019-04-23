@@ -14,5 +14,5 @@ import java.lang.annotation.Target
     String perm() default ''
     String type() default ''
     String affil() default ''
-    String[] specRoles() default []
+    String specRole() default ''
 }

@@ -34,80 +34,91 @@ class AccessService {
 
     // --- for action closures: shortcuts ---
 
-    boolean checkPerm(String code) {
-        checkOrgPerm(code)
+    boolean checkPerm(String codes) {
+        checkOrgPerm(codes.split(','))
     }
-    boolean checkPermType(String code, String orgType) {
-        checkOrgPermAndOrgType(code, orgType)
+    boolean checkPermType(String codes, String orgTypes) {
+        checkOrgPermAndOrgType(codes.split(','), orgTypes.split(','))
     }
-    boolean checkPermAffiliation(String code, String userRole) {
-        checkOrgPermAndUserAffiliation(code, userRole)
+    boolean checkPermAffiliation(String codes, String userRole) {
+        checkOrgPermAndUserAffiliation(codes.split(','), userRole)
     }
-    boolean checkPermTypeAffiliation(String code, String orgType, String userRole) {
-        checkOrgPermAndOrgTypeAndUserAffiliation(code, orgType, userRole)
+    boolean checkPermTypeAffiliation(String codes, String orgTypes, String userRole) {
+        checkOrgPermAndOrgTypeAndUserAffiliation(codes.split(','), orgTypes.split(','), userRole)
     }
 
     // --- for action closures: shortcuts / with special global role check ---
 
-    boolean checkPerm(String code, List<String> specRoles) {
+    boolean checkPerm(String codes, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPerm(code)
+        checkOrgPerm(codes.split(','))
     }
-    boolean checkPermType(String code, String orgType, List<String> specRoles) {
+    boolean checkPermType(String codes, String orgTypes, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgType(code, orgType)
+        checkOrgPermAndOrgType(codes.split(','), orgTypes.split(','))
     }
-    boolean checkPermAffiliation(String code, String userRole, List<String> specRoles) {
+    boolean checkPermAffiliation(String codes, String userRole, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndUserAffiliation(code, userRole)
+        checkOrgPermAndUserAffiliation(codes.split(','), userRole)
     }
-    boolean checkPermTypeAffiliation(String code, String orgType, String userRole, List<String> specRoles) {
+    boolean checkPermTypeAffiliation(String codes, String orgTypes, String userRole, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgTypeAndUserAffiliation(code, orgType, userRole)
+        checkOrgPermAndOrgTypeAndUserAffiliation(codes.split(','), orgTypes.split(','), userRole)
     }
 
     // --- for action closures: implementations ---
 
-    boolean checkOrgPerm(String code) {
+    private boolean checkOrgPerm(String[] codes) {
         boolean check = false
 
-        Org ctx = contextService.getOrg()
-        def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
+        if (codes) {
+            Org ctx = contextService.getOrg()
+            def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
 
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
-            check = PermGrant.findByPermAndRole(Perm.findByCode(code?.toLowerCase()), (Role) oss.getValue())
+            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                codes.each{ cd ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) oss.getValue())
+                }
+            }
+        } else {
+            check = true
         }
-
         check
     }
 
-    boolean checkOrgPermAndOrgType(String code, String orgType) {
-        boolean check1 = checkOrgPerm(code)
+    private boolean checkOrgPermAndOrgType(String[] codes, String[] orgTypes) {
+        boolean check1 = checkOrgPerm(codes)
+        boolean check2 = false
 
-        RefdataValue type = RefdataValue.getByValueAndCategory(orgType, 'OrgRoleType')
-        boolean check2 = contextService.getOrg()?.getallOrgTypeIds()?.contains(type?.id)
+        if (orgTypes) {
+            orgTypes.each { ot ->
+                RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), 'OrgRoleType')
+                check2 = check2 || contextService.getOrg()?.getallOrgTypeIds()?.contains(type?.id)
+            }
+        } else {
+            check2 = true
+        }
+        check1 && check2
+    }
+
+    private boolean checkOrgPermAndUserAffiliation(String[] codes, String userRole) {
+        boolean check1 = checkOrgPerm(codes)
+        boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
     }
 
-    boolean checkOrgPermAndUserAffiliation(String code, String userRole) {
-        boolean check1 = checkOrgPerm(code)
-        boolean check2 = contextService.getUser()?.hasAffiliation(userRole?.toUpperCase())
-
-        check1 && check2
-    }
-
-    boolean checkOrgPermAndOrgTypeAndUserAffiliation(String code, String orgType, String userRole) {
-        boolean check1 = checkOrgPermAndOrgType(code, orgType)
-        boolean check2 = contextService.getUser()?.hasAffiliation(userRole?.toUpperCase())
+    private boolean checkOrgPermAndOrgTypeAndUserAffiliation(String[] codes, String[] orgTypes, String userRole) {
+        boolean check1 = checkOrgPermAndOrgType(codes, orgTypes)
+        boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
     }
