@@ -120,8 +120,8 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") }) //preliminarily, until the new roleTypes are there
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR") })
     Map listInstitution() {
         Map result = setResultGenerics()
         if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
@@ -268,7 +268,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
         Org contextOrg = contextService.org
         //new institution = consortia member, implies combo type consortoium
@@ -318,7 +318,7 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     Map findOrganisationMatches() {
         Map memberMap = [:]
         Combo.findAllByType(RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')).each { lObj ->
@@ -824,8 +824,8 @@ class OrganisationController extends AbstractDebugController {
         return [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')]
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
         Map result = setResultGenerics()
         if(!params.direction) {

@@ -3366,9 +3366,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -3422,7 +3420,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         def result = setResultGenerics()
 
@@ -3500,7 +3498,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def manageMembers() {
         def result = setResultGenerics()
 
@@ -3581,7 +3579,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
     def removeDepartment() {
         Org contextOrg = contextService.org
         Org department = Org.get(params.dept)
@@ -3597,7 +3595,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
