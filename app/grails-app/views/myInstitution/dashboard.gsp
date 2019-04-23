@@ -94,7 +94,7 @@
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <g:if test="${accessService.checkPerm(accessService.ORG_BASIC,accessService.ORG_CONSORTIUM)}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked calendar icon large"></i>
                 ${tasksCount}
@@ -227,7 +227,7 @@
             </div>
         </div>
 
-        <g:if test="${accessService.checkPerm(accessService.ORG_BASIC,accessService.ORG_CONSORTIUM)}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
 
