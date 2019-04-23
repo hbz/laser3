@@ -165,8 +165,13 @@
 
                 <fieldset id="subscritionType">
                     <div class="inline fields la-filter-inline">
-
-                        <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
+                        <%
+                            List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                            if(!accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE
+                            }
+                        %>
+                        <g:each in="${subTypes}" var="subType">
                             <div class="inline field">
                                 <div class="ui checkbox">
                                     <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
@@ -395,11 +400,11 @@
                           </laser:statsLink>
                         </g:if>
 
-                        <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
-                            (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
+                    <%--<g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
+                        (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
-                    <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-
+                        <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
+                        <g:if test="${editable && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">

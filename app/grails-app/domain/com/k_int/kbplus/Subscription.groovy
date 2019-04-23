@@ -40,6 +40,8 @@ class Subscription
     def changeNotificationService
     @Transient
     def springSecurityService
+    @Transient
+    def accessService
 
     @RefdataAnnotation(cat = 'Subscription Status')
     RefdataValue status
@@ -395,6 +397,7 @@ class Subscription
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
+
                 return cons || subscr
             }
         }

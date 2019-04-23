@@ -12,7 +12,7 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <semui:subNavItem controller="license" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <semui:securedSubNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" message="task.plural" />
     <semui:subNavItem controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="license" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
 

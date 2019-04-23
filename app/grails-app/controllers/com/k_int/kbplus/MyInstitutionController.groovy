@@ -3421,8 +3421,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         def result = setResultGenerics()
 
@@ -3499,8 +3499,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliation("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def manageMembers() {
         def result = setResultGenerics()
 
@@ -3536,9 +3536,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
-        List totalConsortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.membersCount    = totalConsortiaMembers.size()
-        result.members         = totalConsortiaMembers.drop((int) result.offset).take((int) result.max)
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.membersCount    = totalMembers.size()
+        result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
         String exportHeader
         if(params.comboType == 'Consortium') {
@@ -3554,7 +3554,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
         if ( params.exportXLS ) {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortiaMembers, header, true, 'xls')
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -3572,7 +3572,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalConsortiaMembers,message(code:'menu.my.consortia'),true,"csv"))
+                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
                     }
                     out.close()
                 }
@@ -3580,8 +3580,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
     def removeDepartment() {
         Org contextOrg = contextService.org
         Org department = Org.get(params.dept)
@@ -3595,8 +3595,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         redirect action: 'manageMembers', params: [comboType: 'Department']
     }
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
