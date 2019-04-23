@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License" %>
+<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore" %>
 <!-- template: meta/identifier : editable: ${editable} -->
 <aside class="ui segment metaboxContent accordion">
     <div class="title">
@@ -44,6 +44,7 @@
                         </g:each>
                     </dd>
                 </g:if>
+
 
                 <dt>
                     <g:message code="org.ids.label"/>
