@@ -102,12 +102,15 @@ grails.project.dependency.resolution = {
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
 
         test 'org.hamcrest:hamcrest-all:1.3'
-        
-        // -- test setup --
 
-        test "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1", {
+
+        runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1", {
             excludes "commons-logging", "httpclient", "xml-apis", "groovy", "groovy-all", "xercesImpl", "nekohtml"
         }
+
+        // -- test setup --
+
+
 
         test "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion", {
             excludes 'xml-apis', 'htmlunit'

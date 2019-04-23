@@ -32,7 +32,7 @@ class AccessService {
         value
     }
 
-    // --- shortcuts ---
+    // --- for action closures: shortcuts ---
 
     boolean checkPerm(String code) {
         checkOrgPerm(code)
@@ -47,7 +47,34 @@ class AccessService {
         checkOrgPermAndOrgTypeAndUserAffiliation(code, orgType, userRole)
     }
 
-    // --- implementations ---
+    // --- for action closures: shortcuts / with special global role check ---
+
+    boolean checkPerm(String code, List<String> specRoles) {
+        if (contextService.getUser()?.hasRole(specRoles)) {
+            return true
+        }
+        checkOrgPerm(code)
+    }
+    boolean checkPermType(String code, String orgType, List<String> specRoles) {
+        if (contextService.getUser()?.hasRole(specRoles)) {
+            return true
+        }
+        checkOrgPermAndOrgType(code, orgType)
+    }
+    boolean checkPermAffiliation(String code, String userRole, List<String> specRoles) {
+        if (contextService.getUser()?.hasRole(specRoles)) {
+            return true
+        }
+        checkOrgPermAndUserAffiliation(code, userRole)
+    }
+    boolean checkPermTypeAffiliation(String code, String orgType, String userRole, List<String> specRoles) {
+        if (contextService.getUser()?.hasRole(specRoles)) {
+            return true
+        }
+        checkOrgPermAndOrgTypeAndUserAffiliation(code, orgType, userRole)
+    }
+
+    // --- for action closures: implementations ---
 
     boolean checkOrgPerm(String code) {
         boolean check = false

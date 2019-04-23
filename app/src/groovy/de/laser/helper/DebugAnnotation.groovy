@@ -10,5 +10,9 @@ import java.lang.annotation.Target
 
 @interface DebugAnnotation {
 
-    String test() default 'n/a'
+    String test() default ''
+    String perm() default ''
+    String type() default ''
+    String affil() default ''
+    String[] specRoles() default []
 }

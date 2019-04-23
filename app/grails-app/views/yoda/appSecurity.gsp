@@ -47,6 +47,20 @@
     </div>
 </div>
 
+<h3 class="ui header">Hierarchical? Org Roles</h3>
+
+<div class="secInfoWrapper">
+    <div class="ui list">
+        <div class="item">
+            <span class="ROLE_YODA">ORG_COLLECTIVE</span> &rArr;
+            <span class="IS_AUTHENTICATED_FULLY">ORG_BASIC</span> &rArr;
+            <span class="ROLE_USER">ORG_MEMBER</span> |
+            <span class="ROLE_ADMIN">ORG_CONSORTIUM_SURVEY</span> &rArr;
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span>
+        </div>
+    </div>
+</div>
+
 <h3 class="ui header">Hierarchical User Roles</h3>
 
 <div class="secInfoWrapper">
@@ -65,7 +79,7 @@
 <h3 class="ui header">Controller Annotations</h3>
 
 <div class="ui grid">
-    <div class="twelve wide column">
+    <div class="sixteen wide column">
 
         <div class="secInfoWrapper secInfoWrapper2">
             <g:each in="${controller}" var="c">
@@ -85,8 +99,16 @@
                                 controllerName = controllerName.split('Controller') %>
                                 <g:link controller="${controllerName[0]}"
                                         action="${method.key}">${method.key}</g:link>
+
                                 <g:each in="${method.value}" var="v">
-                                    <span class="${v}">${v}</span>
+                                    <g:if test="${v instanceof String}">
+                                        <span class="${v}">${v}</span>
+                                    </g:if>
+                                    <g:else>
+                                        <g:if test="${v.value}">
+                                            <span class="${v.key}">${v.key}: ${v.value}</span>
+                                        </g:if>
+                                    </g:else>
                                 </g:each>
                             </div>
                         </g:each>
@@ -96,6 +118,7 @@
         </div>
 
     </div>
+    <%--
     <div class="four wide column">
         <div class="ui sticky">
             <aside>
@@ -105,6 +128,7 @@
             </aside>
         </div>
     </div>
+    --%>
 </div>
 
 </body>

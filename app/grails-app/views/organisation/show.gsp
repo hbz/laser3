@@ -181,6 +181,7 @@
                     </div>
                 </div><!-- .card -->
 
+                <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -202,6 +203,7 @@
                         </dl>
                     </div>
                 </div>
+                </g:if>
 
                 <g:if test="${!institutionalView && !departmentalView}">
                     <div class="ui card">
