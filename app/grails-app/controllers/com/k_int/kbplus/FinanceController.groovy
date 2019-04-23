@@ -64,14 +64,12 @@ class FinanceController extends AbstractDebugController {
         }
         result.financialData = financeService.getCostItems(params,result.max)
         //replaces the mode check MODE_CONS vs. MODE_SUBSCR
-        if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIPTION_CONSORTIA,result.institution)) {
+        if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
             result.showView = "cons"
             def fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
-        else if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIBER_CONS,result.institution))
-            result.showView = "subscr"
-        else result.showView = "own"
+        else result.showView = "subscr"
         if(params.ownSort)
             result.view = "own"
         else if(params.consSort)
@@ -115,7 +113,8 @@ class FinanceController extends AbstractDebugController {
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
             result.showView = "subscr"
-        else result.showView = "own"
+        else if(accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER"))
+            result.showView = "own"
         if(params.ownSort)
             result.view = "own"
         else if(params.consSort) {

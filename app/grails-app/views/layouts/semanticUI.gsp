@@ -129,13 +129,18 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
-                                <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
-                                    <div class="divider"></div>
+                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                <div class="divider"></div>
 
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" /><%-- TODO change custom tag: disabled --%>
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Consortium']" message="menu.my.consortia" />
 
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" /><%-- TODO change custom tag: disabled --%>
-                                </g:if>
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" /><%-- TODO change custom tag: disabled --%>
+                            </g:if>
+                            <g:elseif test="${accessService.checkPerm('ORG_COLLECTIVE')}">
+                                <div class="divider"></div>
+
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Department']" message="menu.my.departments" />
+                            </g:elseif>
 
                             <div class="divider"></div>
 

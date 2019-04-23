@@ -75,7 +75,7 @@ from Subscription as s where (
         }
 
         if (params.orgRole == 'Subscription Consortia') {
-            if (params.actionName == 'manageConsortia') {
+            if (params.actionName == 'manageMembers') {
                 base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND s.instanceOf is not null "
                 qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]

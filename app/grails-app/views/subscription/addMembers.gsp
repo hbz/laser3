@@ -156,7 +156,7 @@
 
             <p>
                 Sie können bei Bedarf über
-                <g:link controller="myInstitution" action="addConsortiaMembers">diesen Link</g:link>
+                <g:link controller="myInstitution" action="addMembers">diesen Link</g:link>
                 Ihre Konsorten verwalten ..
             </p>
         </div>
