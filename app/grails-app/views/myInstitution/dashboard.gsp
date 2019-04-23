@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.AccessService; de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings; de.laser.DashboardDueDate" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -49,14 +49,10 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <div class="item">
-                            <g:link controller="myInstitution" action="tasks">${message(code:'task.plural', default:'Tasks')}</g:link>
-                        </div>
-                        <div class="item">
-                            <g:link controller="myInstitution" action="addressbook">${message(code:'menu.institutions.myAddressbook')}</g:link>
-                        </div>
+                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
-                        <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -98,11 +94,13 @@
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
-            <i class="checked calendar icon large"></i>
-            ${tasksCount}
-            ${message(code:'myinst.dash.task.label')}
-        </a>
+        <g:if test="${accessService.checkPerm(accessService.ORG_BASIC,accessService.ORG_CONSORTIUM)}">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
+                <i class="checked calendar icon large"></i>
+                ${tasksCount}
+                ${message(code:'myinst.dash.task.label')}
+            </a>
+        </g:if>
     </div><!-- secondary -->
 
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
@@ -229,6 +227,8 @@
             </div>
         </div>
 
+        <g:if test="${accessService.checkPerm(accessService.ORG_BASIC,accessService.ORG_CONSORTIUM)}">
+
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
 
             <g:if test="${editable}">
@@ -295,7 +295,10 @@
                 </g:each>
             </div>
         </div>
-    <g:render template="/templates/tasks/modal_create" />
+
+        </g:if>
+
+        <g:render template="/templates/tasks/modal_create" />
 
     <g:javascript>
         function taskedit(id) {

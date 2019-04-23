@@ -8,7 +8,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.security'" class="active"/>
+    <semui:crumb message="menu.yoda.security" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.security')}</h1>

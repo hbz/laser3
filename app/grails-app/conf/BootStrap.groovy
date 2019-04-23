@@ -367,10 +367,10 @@ class BootStrap {
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
         createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgBasicRole, ['ORG_BASIC'])
-        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE'])
+        createOrgPerms(orgBasicRole, ['ORG_BASIC','ORG_MEMBER'])
+        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE','ORG_MEMBER','ORG_BASIC'])
         createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY'])
+        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY','ORG_CONSORTIUM'])
     }
 
     def initializeDefaultSettings(){
