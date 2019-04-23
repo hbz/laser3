@@ -14,17 +14,20 @@
       List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
     %>
     <semui:breadcrumbs>
-      <semui:crumb controller="organisation" action="show" id="${org.id}" text="${org.getDesignation()}" />
+      <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}" />
       <semui:crumb message="menu.my.documents" class="active"/>
     </semui:breadcrumbs>
 
     <semui:controlButtons>
       <g:render template="actions" model="[org:org]" />
     </semui:controlButtons>
+
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+
+    <g:render template="nav" />
+
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${org.name}</h1>
-
-    <g:render template="/templates/documents/table" model="${[instance:org, context:'documents', redirect:'documents', owntp: 'org']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
   </body>
 </html>

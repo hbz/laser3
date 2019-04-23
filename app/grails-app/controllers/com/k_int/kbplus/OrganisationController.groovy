@@ -395,7 +395,7 @@ class OrganisationController extends AbstractDebugController {
         if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
             du.setBenchMark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
             du.setBenchMark('editable2')
             List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
@@ -404,7 +404,7 @@ class OrganisationController extends AbstractDebugController {
             if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
                 result.editable = true
             else
-                result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
       if (! orgInstance) {
@@ -451,13 +451,51 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
+        if(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()){
+
+            def foundIsil = false
+            def foundWibid = false
+
+            orgInstance.ids.each {io ->
+                if(io?.identifier?.ns?.ns == 'ISIL')
+                {
+                    if(!(io.identifier.value =~ /^DE-/ ) && io.identifier.value != 'Unknown')
+                    {
+                        io.identifier.value = 'DE-'+io.identifier.value.trim()
+                        io.save(flush: true)
+                    }
+                    foundIsil = true
+                }
+                if(io?.identifier?.ns?.ns == 'wibid')
+                {
+                    if(!(io.identifier.value =~ /^WIBID/) && io.identifier.value != 'Unknown')
+                    {
+                        io.identifier.value = 'WIBID'+io.identifier.value.trim()
+                        io.save(flush: true)
+                    }
+                    foundWibid = true
+                }
+            }
+
+            if(!foundIsil) {
+                orgInstance.checkAndAddMissingIdentifier('ISIL', 'Unknown')
+            }
+            if(!foundWibid) {
+                orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+            }
+
+            result.orgInstance = Org.get(orgInstance.id).refresh()
+
+        }
+
+
         result
     }
 
     @Secured(['ROLE_USER'])
     def documents() {
         Map result = setResultGenerics()
-        result.org = Org.get(params.id)
+        result.orgInstance = Org.get(params.id)
         result
     }
 
@@ -655,8 +693,11 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
+        params.sort = params.sort ?: 'referenceGroup'
+        params.order = params.order ?: 'asc'
+
         result.orgInstance = Org.get(params.id)
-        result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, [sort: 'referenceGroup', order: 'asc'])
+        result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
 
         result
     }
