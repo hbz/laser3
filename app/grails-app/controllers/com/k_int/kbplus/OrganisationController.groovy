@@ -495,6 +495,7 @@ class OrganisationController extends AbstractDebugController {
 
             def foundIsil = false
             def foundWibid = false
+            def foundEZB = false
 
             orgInstance.ids.each {io ->
                 if(io?.identifier?.ns?.ns == 'ISIL')
@@ -515,6 +516,10 @@ class OrganisationController extends AbstractDebugController {
                     }
                     foundWibid = true
                 }
+                if(io?.identifier?.ns?.ns == 'ezb')
+                {
+                    foundEZB = true
+                }
             }
 
             if(!foundIsil) {
@@ -522,6 +527,9 @@ class OrganisationController extends AbstractDebugController {
             }
             if(!foundWibid) {
                 orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+            }
+            if(!foundEZB) {
+                orgInstance.checkAndAddMissingIdentifier('ezb', 'Unknown')
             }
 
             result.orgInstance = Org.get(orgInstance.id).refresh()
