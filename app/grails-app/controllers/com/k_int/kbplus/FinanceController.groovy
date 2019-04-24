@@ -66,6 +66,7 @@ class FinanceController extends AbstractDebugController {
         //replaces the mode check MODE_CONS vs. MODE_SUBSCR
         if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
             result.showView = "cons"
+            params.comboType = 'Consortium'
             def fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
@@ -108,6 +109,7 @@ class FinanceController extends AbstractDebugController {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
+            params.comboType = "Consortium"
             Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
