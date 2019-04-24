@@ -3045,6 +3045,15 @@ AND EXISTS (
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
+
+
+        result.surveys = SurveyResult.findAll("from SurveyResult where " +
+                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
+                " (startDate >= :startDate and endDate <= :endDate)",
+                [contextOrg: contextService.org,
+                 status:  RefdataValue.getByValueAndCategory('Survey started', 'Survey Status'),
+                 startDate: new Date(System.currentTimeMillis()),
+                 endDate: new Date(System.currentTimeMillis())])
         result
     }
 

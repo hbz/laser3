@@ -126,6 +126,11 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+
+                                <div class="divider"></div>
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveys" message="menu.my.surveys" />
+
+
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
