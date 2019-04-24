@@ -93,9 +93,9 @@
                                 <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                           controller="organisation" action="index" message="menu.public.all_orgs" />
 
-                            <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
-                                <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link><%-- TODO change custom tag: disabled --%>
-                            </g:if>
+                                <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
+                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link><%-- TODO change custom tag: disabled --%>
+                                </g:if>
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 

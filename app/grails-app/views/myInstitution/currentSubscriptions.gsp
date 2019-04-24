@@ -45,7 +45,11 @@
                     </semui:exportDropdownItem>
                 </g:else>
             </semui:exportDropdown>
-            <g:render template="actions" />
+
+            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+                <g:render template="actions" />
+            </g:if>
+
         </semui:controlButtons>
 
         <semui:messages data="${flash}"/>

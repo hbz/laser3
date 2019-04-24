@@ -19,7 +19,10 @@
                 <g:link class="item" action="addMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>--%>
-        <g:render template="actions" />
+
+        <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')}">
+            <g:render template="actions" />
+        </g:if>
     </semui:controlButtons>
     
     <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.public.all_insts')}</h1>

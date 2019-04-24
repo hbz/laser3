@@ -66,7 +66,7 @@ class OrganisationController extends AbstractDebugController {
 
     @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermX("ORG_BASIC,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def list() {
 
