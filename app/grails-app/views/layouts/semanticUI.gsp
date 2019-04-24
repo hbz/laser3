@@ -95,7 +95,7 @@
 
                                 <%-- TODO: check orgType --%>
                                 <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="listInstitution" message="menu.public.all_orgs" />
+                                                          controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
@@ -134,7 +134,7 @@
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
-                                                          action="manageMembers" params="[comboType:'Consortium']" message="menu.my.consortia" />
+                                                          action="manageMembers" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"
                                                           action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
@@ -143,7 +143,7 @@
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
-                                                          action="manageMembers" params="[comboType:'Department']" message="menu.my.departments" />
+                                                          action="manageMembers" message="menu.my.departments" />
                             </g:elseif>
 
                             <div class="divider"></div>
