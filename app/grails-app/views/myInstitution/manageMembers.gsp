@@ -84,11 +84,10 @@
 
 
     <g:form action="'manageMembers'" controller="myInstitution" method="post" class="ui form">
-
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
                           tmplShowCheckbox: true,
-                          comboType: params.comboType,
+                          comboType: comboType,
                           tmplConfigShow: ['name', 'mainContact', 'numberOfSubscriptions']
                   ]"/>
 

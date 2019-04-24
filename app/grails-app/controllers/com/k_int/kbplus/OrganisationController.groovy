@@ -291,7 +291,7 @@ class OrganisationController extends AbstractDebugController {
                 orgInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
-                redirect action: 'show', id: orgInstance.id, params: [institutionalView: true]
+                redirect action: 'show', id: orgInstance.id
             }
             catch (Exception e) {
                 log.error("Problem creating institution: ${orgInstance.errors}")
@@ -312,7 +312,7 @@ class OrganisationController extends AbstractDebugController {
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), orgInstance.id])
-                redirect action: 'show', id: deptInstance.id, params: [departmentalView: true]
+                redirect action: 'show', id: deptInstance.id
             }
             catch (Exception e) {
                 log.error("Problem creating department: ${deptInstance.errors}")
@@ -362,18 +362,19 @@ class OrganisationController extends AbstractDebugController {
 
         def result = [:]
 
-        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
-        if(params.institutionalView)
-            result.institutionalView = params.institutionalView
-        else if(params.departmentalView)
-            result.departmentalView = params.departmentalView
-
         DebugUtil du = new DebugUtil()
         du.setBenchMark('this-n-that')
 
         def orgInstance = Org.get(params.id)
         def user = contextService.getUser()
         def org = contextService.getOrg()
+
+        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
+        Combo checkCombo = Combo.findByFromOrgAndToOrg(orgInstance,org)
+        if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
+            result.institutionalView = true
+        else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
+            result.departmentalView = true
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]

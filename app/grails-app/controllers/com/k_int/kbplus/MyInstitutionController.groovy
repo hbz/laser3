@@ -3520,10 +3520,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        if(params.comboType == 'Consortium')
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
             params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
-        else if(params.comboType == 'Department')
+            result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
+        }
+        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
             params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
+            result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
+        }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -3538,7 +3542,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 def cmb = Combo.findWhere(
                         toOrg: result.institution,
                         fromOrg: Org.get(Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                        type: RDStore.COMBO_TYPE_CONSORTIUM
                 )
                 cmb.delete()
             }

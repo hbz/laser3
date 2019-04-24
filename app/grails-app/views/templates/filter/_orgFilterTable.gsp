@@ -142,9 +142,9 @@
                         <%
                             Map viewSettings = [:]
                             switch(comboType) {
-                                case "Consortium": viewSettings.institutionalView = true
+                                case RDStore.COMBO_TYPE_CONSORTIUM: viewSettings.institutionalView = true
                                     break
-                                case "Department": viewSettings.departmentalView = true
+                                case RDStore.COMBO_TYPE_DEPARTMENT: viewSettings.departmentalView = true
                                     break
                             }
                         %>

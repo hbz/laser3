@@ -76,8 +76,8 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && members.get(organisationInstance.id)?.contains(contextService.org.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
-											<g:link controller="organisation" action="show" id="${organisationInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
+										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM') && members.get(organisationInstance.id)?.contains(contextService.org.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
+											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
 										</g:if>
 									</td>
 									<g:if test="${comboType == 'Consortium'}">
