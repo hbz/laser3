@@ -78,7 +78,7 @@ class SemanticUiSubNavTagLib {
         if (!check) {
 
             if (attrs.affiliation && attrs.affiliationOrg) {
-                if (contextService.getUser()?.hasAffiliationForOrg(attrs.affiliation, attrs.affiliationOrg)) {
+                if (contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)) {
                     check = true
                 }
             }

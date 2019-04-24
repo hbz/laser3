@@ -7,6 +7,8 @@
   </head>
 
   <body>
+  <laser:serviceInjection />
+
     <%
       List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License','Document Type'),
                            RefdataValue.getByValueAndCategory('Note','Document Type'),
@@ -18,9 +20,11 @@
       <semui:crumb message="menu.my.documents" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:controlButtons>
-      <g:render template="actions" model="[org:org]" />
-    </semui:controlButtons>
+    <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <semui:controlButtons>
+          <g:render template="actions" model="[org:org]" />
+        </semui:controlButtons>
+    </g:if>
 
   <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 

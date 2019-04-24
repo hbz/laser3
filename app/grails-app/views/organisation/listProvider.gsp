@@ -8,6 +8,8 @@
     </head>
     <body>
 
+    <laser:serviceInjection />
+
         <semui:breadcrumbs>
             <semui:crumb message="menu.public.all_provider" class="active" />
         </semui:breadcrumbs>
