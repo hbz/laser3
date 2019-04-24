@@ -76,6 +76,9 @@ class RDStore {
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
     static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
 
+    static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
+    static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
+
     static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid','TitleInstancePackagePlatform.PaymentType')

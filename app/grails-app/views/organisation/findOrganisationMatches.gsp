@@ -4,21 +4,21 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:if test="${comboType == 'Consortium'}">
+		<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 			<g:set var="entityName" value="${message(code: 'default.institution')}" />
 		</g:if>
-		<g:elseif test="${comboType == 'Department'}">
+		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 			<g:set var="entityName" value="${message(code: 'default.department')}" />
 		</g:elseif>
 		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.create.label" args="[entityName]" /></title>
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${comboType == 'Consortium'}">
+		<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 			<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
 			<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 		</g:if>
-		<g:elseif test="${comboType == 'Department'}">
+		<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 			<semui:crumb message="menu.my.departments" controller="myInstitution" action="manageMembers"  />
 			<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 		</g:elseif>
@@ -45,7 +45,6 @@
 			</g:if>
 			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="hidden" value="${params.comboType}" name="comboType">
 				<input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
 			</div>
 		</semui:searchSegment>
@@ -58,13 +57,13 @@
 							<thead>
 								<tr>
 									<th>${message(code:'org.name.label', default:'Name')}</th>
-									<g:if test="${comboType == 'Consortium'}">
+									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural', default:'Identifiers')}</th>
 										<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
 										<th>${message(code:'org.country.label', default:'Country')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
-									<g:elseif test="${comboType == 'Department'}">
+									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 										<th>
 											${message(code: 'org.departmentRemoval.label')}
 										</th>
@@ -76,11 +75,11 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && members.get(organisationInstance.id)?.contains(contextService.org.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
-											<g:link controller="organisation" action="show" id="${organisationInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
+										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM') && members.get(organisationInstance.id)?.contains(contextService.org.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
+											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
 										</g:if>
 									</td>
-									<g:if test="${comboType == 'Consortium'}">
+									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<td>
 											<ul>
 												<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${organisationInstance}" field="globalUID"/></li>
@@ -145,11 +144,11 @@
 						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
-						<g:if test="${params.comboType == 'Consortium'}">
+						<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 							<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_match', args:[params.proposedOrganisation])}</bootstrap:alert>
 							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
-						<g:elseif test="${params.comboType == 'Department'}">
+						<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 							<bootstrap:alert class="alert-info">${message(code:'org.findDepartmentMatches.no_match', args:[params.proposedOrganisation])}</bootstrap:alert>
 							<g:link controller="organisation" action="createMember" class="ui positive button" params="${[department:params.proposedOrganisation]}">${message(code:'org.findDepartmentMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:elseif>
