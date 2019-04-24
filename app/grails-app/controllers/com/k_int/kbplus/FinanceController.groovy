@@ -49,7 +49,7 @@ class FinanceController extends AbstractDebugController {
     def index() {
         log.debug("FinanceController::index() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution,'INST_USER')
+        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         switch(params.view) {
@@ -87,7 +87,7 @@ class FinanceController extends AbstractDebugController {
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
+        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         if(result.subscription.instanceOf && result.institution.id == result.subscription.getConsortia().id)
@@ -144,15 +144,18 @@ class FinanceController extends AbstractDebugController {
             return
         }
         // I need the consortial data as well ...
-        def orgRoleCons = OrgRole.findByOrgAndRoleType(result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)
+        def orgRoleCons = accessService.checkPerm('ORG_CONSORTIUM')
         def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
-        result.cost_item_tabs = [own:financialData.own]
+        result.cost_item_tabs = []
         if(orgRoleCons) {
             result.cost_item_tabs["cons"] = financialData.cons
         }
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
+        }
+        else if(accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) {
+            result.cost_item_tabs["own"] = financialData.own
         }
         SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))

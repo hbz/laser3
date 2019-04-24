@@ -14,7 +14,7 @@
     }
 %>
 
-    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable}">
+    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || contextService.getUser().hasAffiliation("INST_EDITOR")}">
 
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
