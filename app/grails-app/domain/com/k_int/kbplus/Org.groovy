@@ -14,7 +14,8 @@ import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
-import org.hibernate.event.spi.PostInsertEvent
+import org.hibernate.event.PostUpdateEvent // Hibernate 3
+//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
 
 import javax.persistence.Transient
 import grails.util.Holders

@@ -88,20 +88,20 @@ class BootStrap {
             def transformer = Transformer.findByName("${tr.transformer_name}")
             if (transformer) {
                 if (transformer.url != tr.url) {
-                    log.debug("Change transformer [${tr.transformer_name}] url to ${tr.url}")
+                    log.debug("change transformer [${tr.transformer_name}] url to ${tr.url}")
                     transformer.url = tr.url;
                     transformer.save(failOnError: true, flush: true)
                 } else {
                     log.debug("${tr.transformer_name} present and correct")
                 }
             } else {
-                log.debug("Create transformer ${tr.transformer_name} ..")
+                log.debug("create transformer ${tr.transformer_name} ..")
                 transformer = new Transformer(
                         name: tr.transformer_name,
                         url: tr.url).save(failOnError: true, flush: true)
             }
 
-            log.debug("Create transform ${transformName} ..")
+            log.debug("create transform ${transformName} ..")
             def types = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Type'))
             def formats = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Transform Format'))
 
@@ -112,27 +112,27 @@ class BootStrap {
                     def type_list = tr.type.split(",")
                     type_list.each { new_type ->
                         if (! transforms.accepts_types.any { f -> f.value == new_type }) {
-                            log.debug("Add transformer [${transformName}] type: ${new_type}")
+                            log.debug("add transformer [${transformName}] type: ${new_type}")
                             def type = types.find { t -> t.value == new_type }
                             transforms.addToAccepts_types(type)
                         }
                     }
                 }
                 if (transforms.accepts_format.value != tr.format) {
-                    log.debug("Change transformer [${transformName}] format to ${tr.format}")
+                    log.debug("change transformer [${transformName}] format to ${tr.format}")
                     def format = formats.findAll { t -> t.value == tr.format }
                     transforms.accepts_format = format[0]
                 }
                 if (transforms.return_mime != tr.return_mime) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'mime'}")
+                    log.debug("change transformer [${transformName}] return format to ${tr.'mime'}")
                     transforms.return_mime = tr.return_mime;
                 }
                 if (transforms.return_file_extention != tr.return_file_extension) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'return'}")
+                    log.debug("change transformer [${transformName}] return format to ${tr.'return'}")
                     transforms.return_file_extention = tr.return_file_extension;
                 }
                 if (transforms.path_to_stylesheet != tr.path_to_stylesheet) {
-                    log.debug("Change transformer [${transformName}] return format to ${tr.'path'}")
+                    log.debug("change transformer [${transformName}] return format to ${tr.'path'}")
                     transforms.path_to_stylesheet = tr.path_to_stylesheet;
                 }
                 transforms.save(failOnError: true, flush: true)
@@ -165,14 +165,14 @@ class BootStrap {
                 def user = User.findByUsername(su.name)
                 if (user) {
                     if (user.password != su.pass) {
-                        log.debug("Hard change of user password from config ${user.password} -> ${su.pass}")
+                        log.debug("hard change of user password from config ${user.password} -> ${su.pass}")
                         user.password = su.pass;
                         user.save(failOnError: true)
                     } else {
                         log.debug("${su.name} present and correct")
                     }
                 } else {
-                    log.debug("Create user ..")
+                    log.debug("create user ..")
                     user = new User(
                             username: su.name,
                             password: su.pass,
@@ -181,7 +181,7 @@ class BootStrap {
                             enabled: true).save(failOnError: true)
                 }
 
-                log.debug("Add roles for ${su.name}")
+                log.debug("add roles for ${su.name}")
                 su.roles.each { r ->
                     def role = Role.findByAuthority(r)
                     if (! (user.authorities.contains(role))) {
@@ -209,7 +209,7 @@ class BootStrap {
         SpringSecurityUtils.clientRegisterFilter('apiFilter', SecurityFilterPosition.BASIC_AUTH_FILTER)
 
         if (UserOrg.findAllByFormalRoleIsNull()?.size() > 0) {
-            log.warn("There are user org rows with no role set. Please update the table to add role FKs")
+            log.warn("there are user org rows with no role set. Please update the table to add role FKs")
         }
 
         log.debug("setOrgRoleGroups ..")
@@ -251,13 +251,9 @@ class BootStrap {
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
-        log.debug("check if database needs to be set up ...")
+        log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             apiService.setupBasicData()
-        }
-        else {
-            log.debug("Data available, skipping ...")
-            //System.exit(42)
         }
 
         log.debug("initializeDefaultSettings ..")
@@ -271,7 +267,7 @@ class BootStrap {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
-        log.debug("Here we go ..")
+        log.debug("here we go ..")
     }
 
     def destroy = {
@@ -381,7 +377,7 @@ class BootStrap {
 
         def admObj = SystemAdmin.list()
         if (! admObj) {
-            log.debug("No SystemAdmin object found, creating new")
+            log.debug("no SystemAdmin object found, creating new")
             admObj = new SystemAdmin(name:"demo").save()
         } else {
             admObj = admObj.first()
@@ -389,7 +385,7 @@ class BootStrap {
         //Will not overwrite any existing database properties.
         createDefaultSysProps(admObj)
         admObj.refresh()
-        log.debug("Finished updating config from SystemAdmin")
+        log.debug("finished updating config from SystemAdmin")
     }
 
     def createDefaultSysProps(admObj){
@@ -418,7 +414,7 @@ class BootStrap {
             def pd   = PropertyDefinition.findWhere(name: name, tenant: null)
 
             if (! pd) {
-                log.debug("Unable to locate property definition for ${name} .. creating")
+                log.debug("unable to locate property definition for ${name} .. creating")
                 pd = new PropertyDefinition(name: name)
             }
 
@@ -1447,7 +1443,7 @@ class BootStrap {
                 if (tenant) {
                     prop = PropertyDefinition.findByNameAndTenant(default_prop.name['en'], tenant)
                 } else {
-                    log.debug("Unable to locate tenant: ${default_prop.tenant} .. ignored")
+                    log.debug("unable to locate tenant: ${default_prop.tenant} .. ignored")
                     return
                 }
             } else {
@@ -1456,10 +1452,10 @@ class BootStrap {
 
             if (! prop) {
                 if (tenant) {
-                    log.debug("Unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
+                    log.debug("unable to locate private property definition for ${default_prop.name['en']} for tenant: ${tenant} .. creating")
                     prop = new PropertyDefinition(name: default_prop.name['en'], tenant: tenant)
                 } else {
-                    log.debug("Unable to locate property definition for ${default_prop.name['en']} .. creating")
+                    log.debug("unable to locate property definition for ${default_prop.name['en']} .. creating")
                     prop = new PropertyDefinition(name: default_prop.name['en'])
                 }
             }
@@ -1503,7 +1499,7 @@ class BootStrap {
                 if (owner) {
                     surveyProperty = SurveyProperty.findByNameAndOwner(default_prop.name['en'], owner)
                 } else {
-                    log.debug("Unable to locate owner: ${default_prop.owner} .. ignored")
+                    log.debug("unable to locate owner: ${default_prop.owner} .. ignored")
                     return
                 }
             } else {
@@ -1512,10 +1508,10 @@ class BootStrap {
 
             if (! surveyProperty) {
                 if (owner) {
-                    log.debug("Unable to locate private survey property definition for ${default_prop.name['en']} for owner: ${owner} .. creating")
+                    log.debug("unable to locate private survey property definition for ${default_prop.name['en']} for owner: ${owner} .. creating")
                     surveyProperty = new SurveyProperty(name: default_prop.name['en'], owner: owner)
                 } else {
-                    log.debug("Unable to locate survey property definition for ${default_prop.name['en']} .. creating")
+                    log.debug("unable to locate survey property definition for ${default_prop.name['en']} .. creating")
                     surveyProperty = new SurveyProperty(name: default_prop.name['en'])
                 }
             }
@@ -1571,7 +1567,7 @@ class BootStrap {
                 newReport = new JasperReportFile(name: reportName, reportFile: inputStreamBytes).save()
             }
             if (newReport.hasErrors()) {
-                log.error("Jasper Report creation for " + reportName + ".jrxml failed with errors: \n")
+                log.error("jasper Report creation for " + reportName + ".jrxml failed with errors: \n")
                 newReport.errors.each {
                     log.error(it + "\n")
                 }
@@ -1582,7 +1578,7 @@ class BootStrap {
     def ensurePermGrant(role, perm) {
         def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
         if (! existingPermGrant) {
-            log.debug("Create new perm grant for ${role}, ${perm}")
+            log.debug("create new perm grant for ${role}, ${perm}")
             def new_grant = new PermGrant(role:role, perm:perm).save()
         }
         else {
@@ -2784,7 +2780,7 @@ class BootStrap {
     //                                                                                       credentials:null,
     //                                                                                       rectype:0)
     // gokb_record_source.save(flush:true, stopOnError:true)
-    // log.debug("New gokb record source: ${gokb_record_source}")
+    // log.debug("new gokb record source: ${gokb_record_source}")
 
         //Reminders for Cron
         RefdataCategory.loc("Language", [en: "Language", de: "Sprache"], BOOTSTRAP)
