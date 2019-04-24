@@ -38,8 +38,10 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermX("ORG_BASIC,ORG_CONSORTIUM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def settings() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -127,7 +129,9 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR") })
+    @Secured(closure = {
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR")
+    })
     Map listInstitution() {
         Map result = setResultGenerics()
         if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
@@ -471,6 +475,7 @@ class OrganisationController extends AbstractDebugController {
                 if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
                     def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
+
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors)
                     } else {
@@ -532,7 +537,10 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def documents() {
         Map result = setResultGenerics()
         result.orgInstance = Org.get(params.id)

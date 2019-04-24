@@ -19,11 +19,15 @@
         </g:else>
     </g:if>
 
+    <%-- TODO: check ctx != foreign org --%>
     <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: params.id]}"
-                             message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}" specRole="ROLE_ORG_EDITOR"/>
+                             orgPerm="ORG_BASIC,ORG_CONSORTIUM" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                             affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+                             message="org.nav.options" />
 
-    <semui:subNavItem controller="organisation" action="documents" params="${[id: params.id]}" message="menu.my.documents" />
-
+    <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: params.id]}"
+                             affiliation="INST_USER" orgPerm="ORG_BASIC,ORG_CONSORTIUM"
+                             message="menu.my.documents" />
 
     <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
                              affiliation="INST_USER" orgPerm="ORG_BASIC,ORG_CONSORTIUM"

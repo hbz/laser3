@@ -32,9 +32,11 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <semui:controlButtons>
-        <g:render template="actions" model="${[org:orgInstance,user:user]}"/>
-    </semui:controlButtons>
+    <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <semui:controlButtons>
+            <g:render template="actions" model="${[org:orgInstance,user:user]}"/>
+        </semui:controlButtons>
+    </g:if>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name}
@@ -412,7 +414,9 @@
                 </div>
             </div>
                 <aside class="four wide column la-sidekick">
-                    <g:render template="/templates/documents/card" model="${[ownobj: orgInstance,owntp:'organisation']}" />
+                    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC,ORG_CONSORTIUM', 'INST_USER')}">
+                        <g:render template="/templates/documents/card" model="${[ownobj: orgInstance,owntp:'organisation']}" />
+                    </g:if>
                 </aside>
         </div>
     </div>

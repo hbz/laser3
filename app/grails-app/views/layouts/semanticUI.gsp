@@ -95,7 +95,7 @@
 
                                 <%-- TODO: check orgType --%>
                                 <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="listInstitution" message="menu.public.all_orgs" />
+                                                          controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
@@ -123,7 +123,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
+                                                      action="documents" message="menu.my.documents" />
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 

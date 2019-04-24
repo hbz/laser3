@@ -158,7 +158,7 @@ class User {
         affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    def hasAffiliationForOrg(userRoleName, orgToCheck) {
+    def hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 
