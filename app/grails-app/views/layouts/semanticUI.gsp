@@ -90,12 +90,8 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                <g:link class="item" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</g:link>
-                            </g:if>
-                            <g:else>
-                                <div class="item disabled">${message(code:'menu.public.all_orgs')}</div><%-- TODO change custom tag:disabled --%>
-                            </g:else>
+                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
 
                             <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM') && RDStore.OT_CONSORTIUM.id in contextService.org.getallOrgTypeIds()}">
                                 <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link><%-- TODO change custom tag: disabled --%>
@@ -109,7 +105,7 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
+                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
                         </div>
                     </div>
 
@@ -132,27 +128,30 @@
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Consortium']" message="menu.my.consortia" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                                          action="manageMembers" params="[comboType:'Consortium']" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" /><%-- TODO change custom tag: disabled --%>
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"
+                                                          action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_COLLECTIVE')}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageMembers" params="[comboType:'Department']" message="menu.my.departments" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                                          action="manageMembers" params="[comboType:'Department']" message="menu.my.departments" />
                             </g:elseif>
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
                             <%--
                             <div class="divider"></div>
@@ -178,23 +177,27 @@
 
                             <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                                <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+
+                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
+                                                          controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+
+                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ADMIN"
+                                                          controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+
                                 <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
-                                    <%-- TODO change custom tag: disabled --%>
-                                </sec:ifAnyGranted>
+                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
+                                                          controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+
                             </g:if>
 
                             <div class="divider"></div>
@@ -471,7 +474,7 @@
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="${message(code:'spotlight.search.placeholder')}">
-                            <i id="btn-search"  class="search icon"></i>
+                            <i id="btn-search"  class="search icattrs.permon"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>

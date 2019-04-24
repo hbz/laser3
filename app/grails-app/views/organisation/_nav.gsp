@@ -26,7 +26,7 @@
 
 
     <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
-                             affiliation="INST_USER" perm="ORG_BASIC,ORG_CONSORTIUM"
+                             affiliation="INST_USER" orgPerm="ORG_BASIC,ORG_CONSORTIUM"
                              message="menu.institutions.myAddressbook"/>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">

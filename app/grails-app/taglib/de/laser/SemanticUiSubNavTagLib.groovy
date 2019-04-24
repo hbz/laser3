@@ -73,7 +73,7 @@ class SemanticUiSubNavTagLib {
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
 
-        def check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
+        boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
         if (!check) {
 
@@ -83,15 +83,15 @@ class SemanticUiSubNavTagLib {
                 }
             }
             else {
-                if (attrs.affiliation && attrs.perm) {
-                    if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.perm)) {
+                if (attrs.affiliation && attrs.orgPerm) {
+                    if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
                         check = true
                     }
                 }
                 else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
                     check = true
                 }
-                else if (attrs.perm && accessService.checkPerm(attrs.perm)) {
+                else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
                     check = true
                 }
             }
