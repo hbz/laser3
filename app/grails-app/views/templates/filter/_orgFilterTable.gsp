@@ -98,7 +98,7 @@
             </g:if>
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:if test="${comboType == 'Department'}">
+                    <g:if test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
                         <g:if test="${org.isEmpty()}">
                             <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
                         </g:if>
@@ -139,16 +139,7 @@
                             </g:if>
                     </g:if>
                     <g:else>
-                        <%
-                            Map viewSettings = [:]
-                            switch(comboType) {
-                                case "Consortium": viewSettings.institutionalView = true
-                                    break
-                                case "Department": viewSettings.departmentalView = true
-                                    break
-                            }
-                        %>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${viewSettings}">
+                        <g:link controller="organisation" action="show" id="${org.id}">
                             ${fieldValue(bean: org, field: "name")} <br>
                             <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
                                 (${fieldValue(bean: org, field: "shortname")})

@@ -1,4 +1,5 @@
  <%@ page import="com.k_int.kbplus.*" %>
+ <laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>

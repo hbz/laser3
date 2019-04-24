@@ -306,6 +306,11 @@ from License as l where (
         List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
         result.licenseCount = totalLicenses.size()
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
+        List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
+        result.orgRoles = [:]
+        orgRoles.each { oo ->
+            result.orgRoles.put(oo.lic.id,oo.roleType)
+        }
 
         def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
         if(params.exportXLS) {
@@ -3442,10 +3447,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        if(params.comboType == 'Consortium')
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            result.comboType == 'Consortium'
             params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
-        else if(params.comboType == 'Department')
+        }
+        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
+            result.comboType == 'Department'
             params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
+        }
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
 
         if (params.selectedOrgs) {
@@ -3455,7 +3464,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
+                        type: RefdataValue.getByValueAndCategory(result.comboType,'Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
@@ -3472,7 +3481,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.memberIds = []
             Combo.findAllWhere(
                     toOrg: result.institution,
-                    type:    RefdataValue.getByValueAndCategory(params.comboType,'Combo Type')
+                    type:    RefdataValue.getByValueAndCategory(result.comboType,'Combo Type')
             ).each { cmb ->
                 result.memberIds << cmb.fromOrg.id
             }
@@ -3480,9 +3489,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
 
         def message
-        if(params.comboType == 'Consortium')
+        if(result.comboType == 'Consortium')
             message = message(code: 'menu.public.all_orgs')
-        else if(params.comboType == 'Department')
+        else if(result.comboType == 'Department')
             message = message(code: 'menu.my.departments')
         String filename = message+"_"+sdf.format(new Date(System.currentTimeMillis()))
         if ( params.exportXLS ) {
@@ -3520,10 +3529,36 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        if(params.comboType == 'Consortium')
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
             params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
-        else if(params.comboType == 'Department')
+            result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
+            if (params.selectedOrgs) {
+                log.debug('remove orgs from consortia')
+
+                params.list('selectedOrgs').each { soId ->
+                    def cmb = Combo.findWhere(
+                            toOrg: result.institution,
+                            fromOrg: Org.get(Long.parseLong(soId)),
+                            type: RDStore.COMBO_TYPE_CONSORTIUM
+                    )
+                    cmb.delete()
+                }
+            }
+        }
+        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
             params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
+            result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
+            if (params.selectedOrgs) {
+                log.debug('remove orgs from department')
+                params.list('selectedOrgs').each { soId ->
+                    Org department = Org.get(soId)
+                    if(!organisationService.removeDepartment(department)) {
+                        flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
+                        redirect(url: request.getHeader('referer'))
+                    }
+                }
+            }
+        }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -3531,18 +3566,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
 
-        if (params.selectedOrgs) {
-            log.debug('remove orgs from consortia')
-
-            params.list('selectedOrgs').each { soId ->
-                def cmb = Combo.findWhere(
-                        toOrg: result.institution,
-                        fromOrg: Org.get(Long.parseLong(soId)),
-                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
-                )
-                cmb.delete()
-            }
-        }
+        params.comboType = result.comboType.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
@@ -3556,11 +3580,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
         String exportHeader
-        if(params.comboType == 'Consortium') {
+        if(result.comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             header = message(code: 'menu.my.consortia')
             exportHeader = message(code: 'export.my.consortia')
         }
-        else if(params.comboType == 'Department') {
+        else if(result.comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
             header = g.message(code: 'menu.my.departments')
             exportHeader = message(code: 'export.my.departments')
         }
@@ -3598,17 +3622,13 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
     def removeDepartment() {
-        Org contextOrg = contextService.org
         Org department = Org.get(params.dept)
-        Combo combo = Combo.findByFromOrgAndToOrgAndType(department,contextOrg,RefdataValue.getByValueAndCategory('Department','Combo Type'))
-        if(combo.delete()) {
-            department.status = RDStore.O_STATUS_DELETED
-            if(!department.save()) {
-                flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
-                redirect(url: request.getHeader('referer'))
-            }
+        if(organisationService.removeDepartment(department))
+            redirect action: 'manageMembers'
+        else {
+            flash.error(message(code:'default.not.deleted.message',args:[message(code:'org.department.label'),department.name]))
+            redirect(url: request.getHeader('referer'))
         }
-        redirect action: 'manageMembers', params: [comboType: 'Department']
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")

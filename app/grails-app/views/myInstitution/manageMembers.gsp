@@ -3,10 +3,10 @@
 
 <%
     String title
-    if(params.comboType == 'Consortium') {
+    if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
         title = message(code: 'menu.institutions.manage_consortia')
     }
-    else if(params.comboType == 'Department') {
+    else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
         title = message(code: 'menu.institutions.manage_departments')
     }
 %>
@@ -64,15 +64,15 @@
 <semui:messages data="${flash}"/>
     <%
         List configShow = []
-        if(params.comboType == 'Consortium') {
+        if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             configShow = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
         }
-        else if(params.comboType == 'Department') {
+        else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
             configShow = [['name'], ['property']]
         }
     %>
     <semui:filter>
-        <g:form action="'manageMembers'" method="get" class="ui form">
+        <g:form action="manageMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: configShow,
@@ -83,17 +83,16 @@
     </semui:filter>
 
 
-    <g:form action="'manageMembers'" controller="myInstitution" method="post" class="ui form">
-
+    <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
                           tmplShowCheckbox: true,
-                          comboType: params.comboType,
+                          comboType: comboType,
                           tmplConfigShow: ['name', 'mainContact', 'numberOfSubscriptions']
                   ]"/>
 
 
-        <g:if test="${members && params.comboType == 'Consortium'}">
+        <g:if test="${members && accessService.checkPerm('ORG_CONSORTIUM,ORG_COLLECTIVE')}">
             <input type="submit" class="ui button" data-confirm-term-what="function" data-confirm-term-what-detail="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>

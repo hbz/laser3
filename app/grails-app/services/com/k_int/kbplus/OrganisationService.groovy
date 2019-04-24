@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDStore
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -166,6 +167,16 @@ class OrganisationService {
                 return exportService.generateSeparatorTableString(titles,orgData,',')
         }
 
+    }
+
+    boolean removeDepartment(Org department) {
+        Org contextOrg = contextService.org
+        Combo combo = Combo.findByFromOrgAndToOrgAndType(department,contextOrg, RDStore.COMBO_TYPE_DEPARTMENT)
+        if(combo.delete()) {
+            department.status = RDStore.O_STATUS_DELETED
+            return department.save()
+        }
+        else return false
     }
 
 }

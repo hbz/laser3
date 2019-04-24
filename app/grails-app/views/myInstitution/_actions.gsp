@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.RefdataValue" %>
+<%@page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
@@ -30,12 +30,12 @@
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
         <semui:actionsDropdown>
-            <g:if test="${params.comboType != null && params.comboType == 'Consortium'}">
-                <semui:actionsDropdownItem controller="myInstitution" action="addMembers" params="[comboType:'Consortium']" message="menu.institutions.add_consortia_members" />
-                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" params="[comboType:'Consortium']" message="org.create_new_institution.label"/>
+            <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
+                <semui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
+                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
             </g:if>
-            <g:elseif test="${params.comboType != null && params.comboType == 'Department'}">
-                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" params="[comboType:'Department']" message="org.create_new_department.label"/>
+            <g:elseif test="${comboType != null && comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
+                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_department.label"/>
             </g:elseif>
             <g:if test="${actionName in ['manageMembers']}">
                 <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
