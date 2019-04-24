@@ -404,7 +404,7 @@ class ApiService {
         We should not think in Latin - this code reads off data from an existing dump and writes them into the database
     */
     void setupBasicData() {
-        log.debug("Database is probably empty; setting up essential data ...")
+        log.debug("database is probably empty; setting up essential data ..")
         try {
             def orgBase = new XmlSlurper().parse(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
             //insert all organisations

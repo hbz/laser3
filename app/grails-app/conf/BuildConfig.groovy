@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
     inherits("global") {
         excludes "grails-docs"
         // uncomment to disable ehcache
-        // excludes 'ehcache' // LEGACY
+        //excludes 'ehcache' // hibernate 3
         excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
@@ -38,19 +38,17 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
         mavenCentral()
+        mavenLocal()
 
         // uncomment these to enable remote dependency resolution from public Maven repositories
-        //mavenCentral()
-        mavenLocal()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
-        mavenRepo "https://oss.sonatype.org/content/repositories/releases"
 
+        mavenRepo "https://oss.sonatype.org/content/repositories/releases"
         mavenRepo "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"
         mavenRepo "http://jasperreports.sourceforge.net/maven2/com/lowagie/itext/2.1.7.js2/"
-
         // Added because I'm strugging to get cglib - CGLib is causing problems - not sure what
         mavenRepo "http://central.maven.org/maven2/"
 
@@ -64,9 +62,9 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        //compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
-        compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
-        compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
+        compile "net.sf.ehcache:ehcache:2.7.0" // hibernate 3
+        //compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
+        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
 
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
@@ -101,30 +99,9 @@ grails.project.dependency.resolution = {
         compile 'org.apache.httpcomponents:httpmime:4.5.1' // upgrade for MultipartEntityBuilder
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
 
-        test 'org.hamcrest:hamcrest-all:1.3'
-
-
         runtime "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1", {
             excludes "commons-logging", "httpclient", "xml-apis", "groovy", "groovy-all", "xercesImpl", "nekohtml"
         }
-
-        // -- test setup --
-
-
-
-        test "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion", {
-            excludes 'xml-apis', 'htmlunit'
-        }
-        test 'net.sourceforge.htmlunit:htmlunit:2.13', {
-            excludes "xml-apis", "commons-logging", "xercesImpl"
-        }
-        test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-        test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-        
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
-        test "org.gebish:geb-spock:$gebVersion"
-
-        // -- test setup --
 
         //There should be a fix for jdt core on jasperreports version 6.
         // Without exclude jasper report compiling crashes on Java8
@@ -139,40 +116,49 @@ grails.project.dependency.resolution = {
         compile 'org.codehaus.groovy:groovy-ant:2.5.0'
 
         compile 'org.apache.commons:commons-lang3:3.7'
+
+        // -- test setup --
+
+        test 'org.hamcrest:hamcrest-all:1.3'
+
+        test "org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion", {
+            excludes 'xml-apis', 'htmlunit'
+        }
+        test 'net.sourceforge.htmlunit:htmlunit:2.13', {
+            excludes "xml-apis", "commons-logging", "xercesImpl"
+        }
+        test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+        test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        test "org.gebish:geb-spock:$gebVersion"
     }
 
     plugins {
 
-        //runtime ':hibernate:3.6.10.19' // LEGACY
-        runtime ':hibernate4:4.3.10' // hibernate 4
+        build (':tomcat:8.0.50')
+
+        runtime ':hibernate:3.6.10.19' // hibernate 3
+        //runtime ':hibernate4:4.3.10' // to hibernate 4
 
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
 
-        //security issue
-        //compile ":file-viewer:0.3"
-        build (':tomcat:8.0.50')
+        //compile ":file-viewer:0.3" //security issue
 
         runtime ":database-migration:1.4.0"
 
         compile ':cache:1.1.8'
 
-        //compile "org.grails.plugins:hibernate-filter:0.4.0" // hibernate 4
+        //compile "org.grails.plugins:hibernate-filter:0.4.0" // to hibernate 4
 
         compile ':mail:1.0.7', {
            excludes 'spring-test'
         }
 
         // compile ":profiler:0.5"
-        // Now part of framework, including this plugin will cause tests to execute twice
-        // test ":spock:0.7", {
-        //   exclude "spock-grails-support"
-        // }
-        test ":geb:$gebVersion"
-
-        test ":remote-control:2.0"
 
         compile ':spring-security-core:2.0.0'
         //compile ':spring-security-core:1.2.7.4'
@@ -188,6 +174,12 @@ grails.project.dependency.resolution = {
         // compile ":grails-melody:1.59.0"
 
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
-        // compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
+
+        // Now part of framework, including this plugin will cause tests to execute twice
+        // test ":spock:0.7", {
+        //   exclude "spock-grails-support"
+        // }
+        test ":geb:$gebVersion"
+        test ":remote-control:2.0"
     }
 }

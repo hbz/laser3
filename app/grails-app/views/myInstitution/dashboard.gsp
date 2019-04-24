@@ -101,6 +101,15 @@
                 ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
+
+        <g:if test="${accessService.checkPerm('ORG_MEMBER,ORG_BASIC,ORG_CONSORTIUM')}">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
+                <i class="checked tasks icon large"></i>
+                ${2}
+                ${message(code:'myinst.dash.survey.label')}
+            </a>
+        </g:if>
+
     </div><!-- secondary -->
 
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
@@ -296,6 +305,16 @@
             </div>
         </div>
 
+        </g:if>
+
+        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+
+            <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
+                <div>
+                    <g:render template="/user/dueDatesView"
+                              model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
+                </div>
+            </div>
         </g:if>
 
         <g:render template="/templates/tasks/modal_create" />
