@@ -78,10 +78,48 @@
                     </div>
                 </div><!-- .card -->
 
+                <g:if test="${!institutionalView && !departmentalView && (RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="header"><g:message code="default.identifiers.label"/></div>
+                        </div>
+                        <div class="content">
+                                <dl>
+                                    <dt>ISIL</dt>
+                                    <dd>
+
+                                        <g:set var="isil" value="${orgInstance.ids.find { it.identifier.ns.ns == 'ISIL' }}"/>
+
+                                        <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                    </dd>
+                                </dl>
+
+                                <dl>
+                                    <dt>WIB-ID</dt>
+                                    <dd>
+
+                                        <g:set var="wibid" value="${orgInstance.ids.find { it.identifier.ns.ns == 'wibid' }}"/>
+
+                                        <semui:xEditable owner="${wibid.identifier}" field="value"/>
+                                    </dd>
+                                </dl>
+                            <dl>
+                                <dt>EZB-ID</dt>
+                                <dd>
+
+                                    <g:set var="ezb" value="${orgInstance.ids.find { it.identifier.ns.ns == 'ezb' }}"/>
+
+                                    <semui:xEditable owner="${ezb.identifier}" field="value"/>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div><!-- .card -->
+                </g:if>
+
                 <g:if test="${!institutionalView && !departmentalView}">
                     <div class="ui card">
                         <div class="content">
-                            <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.orgType)}">
+                            <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.getallOrgTypeIds())}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
