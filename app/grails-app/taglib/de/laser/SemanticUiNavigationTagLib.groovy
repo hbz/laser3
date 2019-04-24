@@ -1,5 +1,6 @@
 package de.laser
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.web.servlet.support.RequestContextUtils
 
 class SemanticUiNavigationTagLib {
@@ -203,22 +204,24 @@ class SemanticUiNavigationTagLib {
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        boolean check = false
+        boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
         if(attrs.newAffiliationRequests) {
             linkBody = linkBody + "<div class='ui floating red circular label'>${attrs.newAffiliationRequests}</div>";
         }
 
-        if (attrs.affiliation && attrs.perm) {
-            if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.perm)) {
+        if (!check) {
+            if (attrs.affiliation && attrs.orgPerm) {
+                if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
+                    check = true
+                }
+            }
+            else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
                 check = true
             }
-        }
-        else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
-            check = true
-        }
-        else if (attrs.perm && accessService.checkPerm(attrs.perm)) {
-            check = true
+            else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
+                check = true
+            }
         }
 
         if (check) {

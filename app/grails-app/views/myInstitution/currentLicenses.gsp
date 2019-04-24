@@ -6,6 +6,8 @@
   </head>
   <body>
 
+  <laser:serviceInjection />
+
   <semui:breadcrumbs>
       <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
@@ -43,7 +45,10 @@
           </g:else>
       </semui:exportDropdown>
 
-      <g:render template="actions" />
+      <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+         <g:render template="actions" />
+      </g:if>
+
   </semui:controlButtons>
 
   <semui:messages data="${flash}" />

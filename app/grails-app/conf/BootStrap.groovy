@@ -279,6 +279,10 @@ class BootStrap {
 
     def setupRolesAndPermissions = {
 
+        // seting perm grants to current state
+
+        PermGrant.findAll().each { it.delete(flush:true) }
+
         // Permissions
 
         def edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)

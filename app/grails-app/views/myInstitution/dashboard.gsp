@@ -49,10 +49,10 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
-                        <semui:securedMainNavItem perm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
