@@ -78,7 +78,7 @@
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${!institutionalView && !departmentalView && (RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
                             <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -116,7 +116,7 @@
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${!institutionalView && !departmentalView}">
+                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
                             <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.getallOrgTypeIds())}">
@@ -151,7 +151,7 @@
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${!institutionalView && !departmentalView}">
+                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
                             <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -191,7 +191,7 @@
                                 <semui:xEditableRefData owner="${orgInstance}" field="libraryType" config='Library Type'/>
                             </dd>
                         </dl>
-                        <g:if test="${!institutionalView && !departmentalView}">
+                        <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                             <dl>
                                 <dt><g:message code="org.libraryNetwork.label" default="Library Network" /></dt>
                                 <dd>
@@ -245,7 +245,7 @@
                 </div>
                 </g:if>
 
-                <g:if test="${!institutionalView && !departmentalView}">
+                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
                             <dl>
