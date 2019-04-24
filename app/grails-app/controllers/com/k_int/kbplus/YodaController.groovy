@@ -621,21 +621,28 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateCustomerType(){
+        RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
         RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')
 
-        List<Org> orgs = Org.executeQuery(
-                "SELECT o from Org o join o.orgType ot where ot = :inst",
-                [inst: inst]
-        )
+        List<Org> consOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :cons", [cons: cons])
+        List<Org> instOrgs = Org.executeQuery("SELECT o from Org o join o.orgType ot where ot = :inst", [inst: inst])
 
-        int count = 0
-        orgs.each{ o ->
-            if (o.setDefaultCustomerType()) {
-                count++
+        int consCount = 0
+        consOrgs.each{ o ->
+            def oss = OrgSettings.get(o, OrgSettings.KEYS.CUSTOMER_TYPE)
+            if (oss == OrgSettings.SETTING_NOT_FOUND) {
+                log.debug ('Setting customer type for org: ' + o.id)
+                OrgSettings.add(o, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_CONSORTIUM_SURVEY', 'org'))
+                consCount++
             }
         }
 
-        flash.message = "Kundentyp wurde für ${count} Einrichtungen gesetzt. ${orgs.size() - count} Einrichtungen wurden ignoriert .."
+        int instCount = 0
+        instOrgs.each{ o ->
+            if (o.setDefaultCustomerType()) { instCount++ }
+        }
+
+        flash.message = "Kundentyp wurde für ${consCount} Konsortien und ${instCount} Konsorten gesetzt."
         redirect(url: request.getHeader('referer'))
     }
 
