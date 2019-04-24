@@ -698,12 +698,61 @@ financialImportTSVLoaderMappings = [
           [
             type : 'hql',
             hql: 'select s from Subscription as s join s.orgRelations oo where (cast(s.id as string) = :subId or s.globalUID = :subId) and oo.org = :owner and oo.roleType.owner.desc = :roleTypeDesc and oo.roleType.value in (:roleTypes)',
-            values : [ subId: [type:'column', colname:['SubscriptionId','Lizenz']], owner: [type:'defaultLookupObject',key:'owner'], roleTypeDesc: [type:'static',value:'Organisational Role'], roleTypes: [type:'static', value: ['Subscription Consortia','Subscriber','Subscriber_Consortial']] ]
+            values : [
+                subId: [
+                    type:'column',
+                    colname:[
+                        'SubscriptionId',
+                        'Lizenz'
+                    ]
+                ],
+                owner: [
+                    type:'defaultLookupObject',
+                    key:'owner'
+                ],
+                roleTypeDesc: [
+                    type:'static',
+                    value:'Organisational Role'
+                ],
+                roleTypes: [
+                    type:'static',
+                    value: [
+                        'Subscription Consortia',
+                        'Subscriber',
+                        'Subscriber_Consortial'
+                    ]
+                ]
+            ]
           ]
         ],
         creation:[
           onMissing: true,
-          whenPresent: [ type: 'checkForOrgRoles', hql: 'select s from Subscription as s join s.orgRelations oo where (cast(s.id as string) = :subId or s.globalUID = :subId)', values: [ subId: [type:'column', colname:['SubscriptionId','Lizenz']] ] ]
+          whenPresent: [
+              [
+                  type: 'checkForOrgRoles',
+                  hql: 'select oo.org.name as tenant from Subscription as s join s.orgRelations oo where (cast(s.id as string) = :subId or s.globalUID = :subId) and oo.roleType.owner.desc = :roleTypeDesc and oo.roleType.value in (:roleTypes)',
+                  values: [
+                      subId: [
+                          type:'column',
+                          colname:[
+                              'SubscriptionId','Lizenz'
+                          ]
+                      ],
+                      roleTypeDesc: [
+                          type:'static',
+                          value:'Organisational Role'
+                      ],
+                      roleTypes: [
+                          type:'static',
+                          value: [
+                              'Subscription Consortia',
+                              'Subscriber',
+                              'Subscriber_Consortial'
+                          ]
+                      ]
+                  ]
+              ]
+          ]
         ]
       ],
        /* [

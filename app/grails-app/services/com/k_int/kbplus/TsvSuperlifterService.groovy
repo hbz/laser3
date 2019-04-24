@@ -151,7 +151,7 @@ class TsvSuperlifterService {
 
   private def meetsCriteria(config, creation_rule, locatedObjects,  nl, colmap, testRun,row_information ) {
     def passed = true;
-    def missingProps = []
+    def missingProps = [], tenantMismatches = []
 
     creation_rule.whenPresent?.each { rule ->
       log.debug("Checking rule ${rule}")
@@ -175,28 +175,42 @@ class TsvSuperlifterService {
           }
           break
         case 'checkForOrgRoles':
-          rule.values.each { v ->
-            if (v.colname instanceof List) {
-              v.colname.each { colname ->
-                try {
-                  if ( nl[colmap[colname]] != null ) {
-                    qry_params[k] = getColumnValue(config,colmap,nl,colname)
+          def altObj = false
+          Map checkParams = [:]
+          rule.values.each { k,v ->
+            switch(v.type) {
+              case "column":
+                if (v.colname instanceof List) {
+                  v.colname.each { colname ->
+                    try {
+                      if ( nl[colmap[colname]] != null ) {
+                        checkParams[k] = getColumnValue(config,colmap,nl,colname)
+                      }
+                    }
+                    catch (Exception e) {
+                      log.info("Alternative column name ${colname} not present in map, skipping ...")
+                    }
                   }
                 }
-                catch (Exception e) {
-                  log.info("Alternative column name ${colname} not present in map, skipping ...")
+                else if ( v.colname instanceof String && nl[colmap[v.colname]] != null ) {
+                  checkParams[k] = getColumnValue(config,colmap,nl,v.colname) // nl[colmap[v.colname]]
                 }
-              }
-            }
-            else if ( v.colname instanceof String && nl[colmap[v.colname]] != null ) {
-              qry_params[k] = getColumnValue(config,colmap,nl,v.colname) // nl[colmap[v.colname]]
-            }
-            else {
-              log.error("Missing parameter ${v.colname}");
-              passed = false
+                else {
+                  log.error("Missing parameter ${v.colname}")
+                }
+                break
+              case "static":
+                checkParams[k] = v.value
+                break
             }
           }
-
+          altObj = Subscription.executeQuery(rule.hql,checkParams)
+          if(!altObj)
+            passed = true
+          else {
+            passed = false
+            tenantMismatches.add("Domain object exists, but tenant is not matching! Tenant is: ${altObj}")
+          }
           break
       }
       if ( ( !passed ) && ( rule.errorOnMissing ) ) {
@@ -206,6 +220,9 @@ class TsvSuperlifterService {
 
     if ( passed )
       row_information.messages.add("Row passed whenPresent Check for ${creation_rule.ref} ")
+    else if ( tenantMismatches ) {
+      row_information.messages.add("Row failed whenPresent check for ${creation_rule.ref} - ${tenantMismatches}")
+    }
     else {
       row_information.messages.add("Row failed whenPresent check for ${creation_rule.ref} - ${missingProps} not present")
     }
