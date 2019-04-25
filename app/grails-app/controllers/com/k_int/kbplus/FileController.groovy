@@ -7,6 +7,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class FileController extends AbstractDebugController {
 
     def fileLocations
+    def contextService
     
     @Secured(['ROLE_ADMIN'])
     def index() {
