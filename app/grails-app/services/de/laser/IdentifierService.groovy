@@ -21,25 +21,25 @@ class IdentifierService {
         orgs.each { org ->
             log.debug("Da identificator pro societati ${org.id}")
             org.setGlobalUID()
-            org.save()
+            org.save(flush:true)
         }
         List subs = Subscription.findAllByGlobalUIDIsNull()
         subs.each { sub ->
-            log.debug("Da identificator pro subscription ${sub.id}")
+            log.debug("Da identificator pro subscriptioni ${sub.id}")
             sub.setGlobalUID()
-            sub.save()
+            sub.save(flush:true)
         }
         List licenses = License.findAllByGlobalUIDIsNull()
         licenses.each { lic ->
             log.debug("Da identificator pro contracto ${lic.id}")
             lic.setGlobalUID()
-            lic.save()
+            lic.save(flush:true)
         }
         List packages = Package.findAllByGlobalUIDIsNull()
         packages.each { pkg ->
             log.debug("Da identificator pro ballo ${pkg.id}")
             pkg.setGlobalUID()
-            pkg.save()
+            pkg.save(flush:true)
         }
     }
 
