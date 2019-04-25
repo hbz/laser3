@@ -816,6 +816,37 @@ class YodaController {
                                             }
                                         }
                                     }
+                                    settings {
+                                        List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                        os.each { st ->
+                                            switch(st.key.type) {
+                                                case RefdataValue:
+                                                    if(st.rdValue) {
+                                                        setting {
+                                                            name(st.key)
+                                                            rdValue {
+                                                                rdc(st.rdValue.owner.desc)
+                                                                rdv(st.rdValue.value)
+                                                            }
+                                                        }
+                                                    }
+                                                    break
+                                                case Role:
+                                                    if(st.roleValue) {
+                                                        setting {
+                                                            name(st.key)
+                                                            roleValue(st.roleValue.authority)
+                                                        }
+                                                    }
+                                                    break
+                                                default: setting{
+                                                    name(st.key)
+                                                    value(st.getValue())
+                                                    }
+                                                    break
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             catch (ClassCastException e) {
