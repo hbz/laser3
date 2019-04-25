@@ -199,7 +199,7 @@ class StatsSyncService {
         def availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
             if (it.value.startsWith('STATS') || (it.value.startsWith('JUSP'))){
-                log.warn('STATS/JUSP prefix deprecated please remove Refdatavalues')
+                //log.warn('STATS/JUSP prefix deprecated please remove Refdatavalues')
             }
             def reportInAvailableReport = it.value in availableReports
             (it.value.startsWith('STATS') || it.value.startsWith('JUSP') || !reportInAvailableReport)
