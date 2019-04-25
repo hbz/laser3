@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.*
 
@@ -127,6 +128,40 @@ class Person extends AbstractBaseDomain {
                 [org, func]
         )
         result
+    }
+
+    static Map getPublicAndPrivateEmailByFunc(String func) {
+        List allPersons = executeQuery('select p,pr from Person as p join p.roleLinks pr join p.contacts c where pr.functionType.value = :functionType',[functionType: func])
+        Map publicContactMap = [:], privateContactMap = [:]
+        allPersons.each { row ->
+            Person p = (Person) row[0]
+            PersonRole pr = (PersonRole) row[1]
+            if(p.isPublic == RDStore.YN_YES) {
+                p.contacts.each { c ->
+                    if(c.contentType == RDStore.CCT_EMAIL) {
+                        if(publicContactMap[pr.org])
+                            publicContactMap[pr.org].add(c.content)
+                        else {
+                            publicContactMap[pr.org] = new HashSet()
+                            publicContactMap[pr.org].add(c.content)
+                        }
+                    }
+                }
+            }
+            else if(p.isPublic == RDStore.YN_NO) {
+                p.contacts.each { c ->
+                    if(c.contentType == RDStore.CCT_EMAIL) {
+                        if(privateContactMap[pr.org])
+                            privateContactMap[pr.org].add(c.content)
+                        else {
+                            privateContactMap[pr.org] = new HashSet()
+                            privateContactMap[pr.org].add(c.content)
+                        }
+                    }
+                }
+            }
+        }
+        [publicContacts: publicContactMap, privateContacts: privateContactMap]
     }
 
     static def getPublicByOrgAndObjectResp(Org org, def obj, String resp) {

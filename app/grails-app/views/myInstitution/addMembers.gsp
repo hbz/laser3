@@ -17,9 +17,32 @@
 
     <semui:controlButtons>
         <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link class="item" action="addConsortiaMembers" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
-            </semui:exportDropdownItem>
+            <g:if test="${filterSet}">
+                <semui:exportDropdownItem>
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="myInstitution" action="addMembers"
+                            params="${params+[exportXLS:true]}">
+                        ${message(code:'default.button.exports.xls')}
+                    </g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="myInstitution" action="addMembers"
+                            params="${params+[format:'csv']}">
+                        ${message(code:'default.button.exports.csv')}
+                    </g:link>
+                </semui:exportDropdownItem>
+            </g:if>
+            <g:else>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="addMembers" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                </semui:exportDropdownItem>
+                <semui:exportDropdownItem>
+                    <g:link class="item" action="addMembers" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+                </semui:exportDropdownItem>
+            </g:else>
         </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
@@ -29,7 +52,7 @@
     <semui:messages data="${flash}" />
 
     <semui:filter>
-        <g:form action="addConsortiaMembers" method="get" class="ui form">
+        <g:form action="addMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
@@ -39,11 +62,11 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="addConsortiaMembers" controller="myInstitution" method="post" class="ui form">
+    <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
-                          tmplDisableOrgIds: consortiaMemberIds,
+                          tmplDisableOrgIds: memberIds,
                           tmplShowCheckbox: true,
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>

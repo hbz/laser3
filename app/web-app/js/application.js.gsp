@@ -114,12 +114,12 @@ r2d2 = {
         // stickies
         $('.ui.sticky').sticky({offset: 120});
 
-        // sticky table header
+/*        // sticky table header
         $('.table').floatThead({
             position: 'fixed',
             top: 90,
             zIndex: 1
-        });
+        });*/
 
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
@@ -504,6 +504,9 @@ r2d2 = {
                         case "document":
                             var messageWhat = "das Dokument";
                             break;
+                        case "department":
+                            var messageWhat = "das Institut";
+                            break;
                         case "organisationtype":
                             var messageWhat = "den Organisationstyp";
                             break;
@@ -543,6 +546,9 @@ r2d2 = {
                     switch (where) {
                         case "organisation":
                             var messageWhere = "aus der Organisation";
+                            break;
+                        case "institution":
+                            var messageWhere = "von Ihrer Einrichtung";
                             break;
                         case "addressbook":
                             var messageWhere = "aus dem Adressbuch";

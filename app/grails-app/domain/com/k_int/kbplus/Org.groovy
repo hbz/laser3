@@ -14,7 +14,8 @@ import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
-import org.hibernate.event.spi.PostInsertEvent
+import org.hibernate.event.PostUpdateEvent // Hibernate 3
+//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
 
 import javax.persistence.Transient
 import grails.util.Holders
@@ -504,6 +505,22 @@ class Org
         return (shortname?:(sortname?:(name?:(globalUID?:id))))
     }
 
+    boolean isEmpty() {
+        Map deptParams = [department:this,current:RDStore.SUBSCRIPTION_CURRENT]
+        //verification a: check if department has cost items
+        List costItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where orgRoles.org = :department and sub.status = :current',deptParams)
+        if(costItems)
+            return false
+        //verification b: check if department has current subscriptions
+        List currentSubscriptions = Subscription.executeQuery('select s from Subscription s join s.orgRelations orgRoles where orgRoles.org = :department and s.status = :current',deptParams)
+        if(currentSubscriptions)
+            return false
+        //verification c: check if department has active users
+        UserOrg activeUsers = UserOrg.findByOrg(this)
+        if(activeUsers)
+            return false
+        return true
+    }
 
     @Override
     String toString() {
@@ -550,17 +567,24 @@ class Org
         List result = []
         orgType.collect{ it -> result.add(it.id) }
         result
+    }
 
-        /*
-        // TODO: ugliest HOTFIX ever
-        def hibernateSession = sessionFactory.currentSession
+    def checkAndAddMissingIdentifier(ns,value) {
+        boolean found = false
+        this.ids.each {
+            if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+                found = true
+            }
+        }
 
-        String query = 'select refdata_value_id from org_roletype where org_id = ' + this.id
-        def sqlQuery = hibernateSession.createSQLQuery(query)
-        sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
-        def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
-        //log.debug('getallOrgRoleTypeIds(): ' + result)
-        result
-        */
+        if ( ! found ) {
+            def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+            def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.org = ?", [id ,this])
+
+            if ( !id_occ || id_occ.size() == 0 ){
+                log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
+                new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
+            }
+        }
     }
 }

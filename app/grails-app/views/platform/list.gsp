@@ -39,7 +39,7 @@
 					<tr>
 						<th>${message(code:'sidewide.number')}</th>
 						<g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
-						<th></th>
+						<th>${message(code:'default.actions')}</th>
 					</tr>
 				</thead>
 				<tbody>

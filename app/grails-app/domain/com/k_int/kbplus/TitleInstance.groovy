@@ -95,6 +95,19 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     result
   }
 
+  String joinIdentfiers(String namespace,String separator) {
+    String joined = ' '
+    List identifiers = []
+    ids?.each { id ->
+      if(id.identifier?.ns?.ns?.equalsIgnoreCase(namespace)) {
+        identifiers.add(id.identifier.value)
+      }
+    }
+    if(identifiers)
+      joined = identifiers.join(separator)
+    joined
+  }
+
   Org getPublisher() {
     def result = null;
     orgs.each { o ->
@@ -893,7 +906,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     def qry_params = ['title':this, institution:institution]
 
     if ( date_restriction ) {
-      qry += " AND ie.subscription.startDate <= :date_restriction AND ie.subscription.endDate >= :date_restriction "
+      qry += " AND (ie.subscription.startDate <= :date_restriction OR ie.subscription.startDate = null) AND (ie.subscription.endDate >= :date_restriction OR ie.subscription.endDate = null) "
       qry_params.date_restriction = date_restriction
     }
 

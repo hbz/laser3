@@ -14,7 +14,17 @@
     <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
-                <g:link class="item" action="members" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
+                            params="${params+[exportXLS:'yes']}">
+                        ${message(code:'default.button.exports.xls')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                </g:else>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
         <g:render template="actions" />
@@ -22,6 +32,7 @@
 
     <h1 class="ui icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
     </h1>
     <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -69,7 +80,7 @@
                 <th>${message(code:'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.linktoLicense')}</th>
                 <th>${message(code:'subscription.details.status')}</th>
-                <th></th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

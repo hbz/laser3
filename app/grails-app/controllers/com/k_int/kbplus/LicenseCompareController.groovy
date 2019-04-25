@@ -31,8 +31,10 @@ class LicenseCompareController extends AbstractDebugController {
         result
   }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+  @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+  @Secured(closure = {
+    ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+  })
   Map compare(){
     LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
     Org org = contextService.getOrg()
@@ -142,11 +144,13 @@ class LicenseCompareController extends AbstractDebugController {
   	withFormat{
       html result
       csv{
+        /*
+        done when processing ERMS-998
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         def out = response.outputStream
         exportService.StreamOutLicenseCSV(out, result,result.licenses)
-        out.close()
+        out.close()*/
       }
     }
   }

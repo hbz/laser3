@@ -6,6 +6,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class SemanticUiSubNavTagLib {
 
     def springSecurityService
+    def contextService
+    def accessService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -70,26 +72,32 @@ class SemanticUiSubNavTagLib {
         def text      = attrs.text ? attrs.text : ''
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
-        def specrole      = []
-        specrole          = attrs.specRoleCheck
 
-        def secureCheck = false
+        boolean check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
-        secureCheck = specrole ? SpringSecurityUtils.ifAnyGranted(specrole) : false
+        if (!check) {
 
-        if (!secureCheck || attrs.affiliation) {
-            if (attrs.affiliationOrg) {
-                if (springSecurityService.getCurrentUser()?.hasAffiliationForOrg(attrs.affiliation, attrs.affiliationOrg)) {
-                    secureCheck = true
+            if (attrs.affiliation && attrs.affiliationOrg) {
+                if (contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)) {
+                    check = true
                 }
-            } else {
-                if (springSecurityService.getCurrentUser()?.hasAffiliation(attrs.affiliation)) {
-                    secureCheck = true
+            }
+            else {
+                if (attrs.affiliation && attrs.orgPerm) {
+                    if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
+                        check = true
+                    }
+                }
+                else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
+                    check = true
+                }
+                else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
+                    check = true
                 }
             }
         }
 
-        if (secureCheck) {
+        if (check) {
             def aClass = (this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item'
 
             if (attrs.controller) {

@@ -12,8 +12,10 @@ class CostConfigurationController {
     def genericOIDService
     private final def user_role        = Role.findByAuthority('INST_ADM')
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN")
+    })
     def index() {
         if(params) {
             CostItemElementConfiguration ciec = new CostItemElementConfiguration()

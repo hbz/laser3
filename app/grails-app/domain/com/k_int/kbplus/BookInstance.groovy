@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
+import grails.util.Holders
 import org.grails.datastore.mapping.query.Query
+import org.springframework.context.i18n.LocaleContextHolder
 
 class BookInstance extends TitleInstance {
 
@@ -50,9 +52,12 @@ class BookInstance extends TitleInstance {
 
     def getEbookFirstAutorOrFirstEditor(){
 
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        def label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+
         if(firstEditor && firstAuthor)
         {
-            return firstAuthor + ' ; ' + firstEditor
+            return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }
         else if(firstAuthor)
         {
@@ -61,7 +66,7 @@ class BookInstance extends TitleInstance {
 
         else if(firstEditor)
         {
-            return firstEditor
+            return firstEditor + ' ' + label
         }
     }
 }

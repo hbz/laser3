@@ -100,8 +100,10 @@
             </div>
             <div class="field fieldcontain">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" id="institution" name="institution"
+                <g:select class="ui dropdown" name="institution"
                           from="${natstatInstitutions}"
+                          optionKey="${{it.last().value}}"
+                          optionValue="${{it.first().name + ' (' + it.last().value + ')'}}"
                           value="${params.institution}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>

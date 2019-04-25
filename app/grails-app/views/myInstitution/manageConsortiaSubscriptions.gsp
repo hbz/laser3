@@ -20,6 +20,38 @@
     <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet || defaultSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
+                        params="${params+[exportXLS:true]}">
+                    ${message(code:'default.button.exports.xls')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+            </g:else>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:if test="${filterSet || defaultSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
+                        params="${params+[format:'csv']}">
+                    ${message(code:'default.button.exports.csv')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+            </g:else>
+        </semui:exportDropdownItem>
+
+    </semui:exportDropdown>
+</semui:controlButtons>
+
 <h1 class="ui left aligned icon header">
     <semui:headerIcon />${message(code: 'menu.my.consortiaSubscriptions')}
     <semui:totalNumber total="${countCostItems}"/>
@@ -45,7 +77,7 @@
                </div>
                --%>
 
-                <label>Konsorten</label>
+                <label>${message(code:'myinst.consortiaSubscriptions.consortia')}</label>
                 <g:select class="ui search selection dropdown" name="member"
                               from="${filterConsortiaMembers}"
                               optionKey="id"
@@ -59,8 +91,14 @@
 
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                    fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                %>
                 <laser:select class="ui dropdown" name="status"
-                              from="${ RefdataCategory.getAllRefdataValues('Subscription Status') }"
+                              from="${ fakeList }"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -121,6 +159,7 @@
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                        <input name="filterSet" value="true" type="hidden">
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                     </div>
                 </div>
@@ -157,16 +196,23 @@
     <thead>
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
-            <g:sortableColumn property="roleT.org.sortname" params="${params}" title="Teilnehmer" rowspan="2" />
-            <g:sortableColumn property="subT.name" params="${params}" title="Lizenz" class="la-smaller-table-head" />
-            <th rowspan="2">Verknüpfte Pakete</th>
-            <th rowspan="2">Anbieter</th>
-            <th rowspan="2">Laufzeit von / bis</th>
+            <g:sortableColumn property="roleT.org.sortname" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.member')}" rowspan="2" />
+            <g:sortableColumn property="subT.name" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.subscription')}" class="la-smaller-table-head" />
+            <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
+            <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
+            <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <th rowspan="2">${message(code:'financials.amountFinal')}</th>
-            <th rowspan="2"></th>
+            <th rowspan="2">
+                <span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center">
+                    <i class="money bill alternate icon"></i>
+                </span>&nbsp;/&nbsp;
+                <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                    <i class="ui icon eye orange"></i>
+                </span>
+            </th>
         </tr>
         <tr>
-            <g:sortableColumn property="subK.owner.reference" params="${params}" title="Vertrag" class="la-smaller-table-head" />
+            <g:sortableColumn property="subK.owner.reference" params="${params}" title="${message(code:'myinst.consortiaSubscriptions.license')}" class="la-smaller-table-head" />
         </tr>
     </thead>
     <tbody>

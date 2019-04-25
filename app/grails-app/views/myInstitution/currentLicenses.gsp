@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
   <head>
@@ -6,23 +7,49 @@
   </head>
   <body>
 
+  <laser:serviceInjection />
+
   <semui:breadcrumbs>
       <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
       <semui:crumb message="license.current" class="active" />
   </semui:breadcrumbs>
   <semui:controlButtons>
       <semui:exportDropdown>
-          <semui:exportDropdownItem>
-              <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv', default:'CSV Export')}</g:link>
-          </semui:exportDropdownItem>
-          <g:each in="${transforms}" var="transkey,transval">
+          <g:if test="${filterSet}">
               <semui:exportDropdownItem>
-                  <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </semui:exportDropdownItem>
-          </g:each>
+              <semui:exportDropdownItem>
+                  <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+              </semui:exportDropdownItem>
+              <g:each in="${transforms}" var="transkey,transval">
+                  <semui:exportDropdownItem>
+                      <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                              data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  </semui:exportDropdownItem>
+              </g:each>
+          </g:if>
+          <g:else>
+              <semui:exportDropdownItem>
+                  <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+              </semui:exportDropdownItem>
+              <semui:exportDropdownItem>
+                  <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+              </semui:exportDropdownItem>
+              <g:each in="${transforms}" var="transkey,transval">
+                  <semui:exportDropdownItem>
+                      <g:link class="item" action="currentLicenses" params="${params+[format:'xml',transformId:transkey,format_content:'subie']}">${transval.name}</g:link>
+                  </semui:exportDropdownItem>
+              </g:each>
+          </g:else>
       </semui:exportDropdown>
 
-      <g:render template="actions" />
+      <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+         <g:render template="actions" />
+      </g:if>
+
   </semui:controlButtons>
 
   <semui:messages data="${flash}" />
@@ -95,7 +122,7 @@
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
-
+                        <input type="hidden" name="filterSet" value="true" />
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
@@ -119,8 +146,7 @@
                       <th>${message(code:'license.details.incoming.childs')}</th>
                   </g:if>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
-                <th></th>
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" /><th>${message(code:'default.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -169,7 +195,7 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:if test="${editable}">
+                    <g:if test="${editable && accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
                         %{-- bug: erms-459
                         <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
                             <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
@@ -182,7 +208,7 @@
                             <i class="copy icon"></i>
                         </g:link>
                         </span>
-                        <g:if test="${! l.subscriptions}">
+                        <g:if test="${! l.subscriptions && orgRoles.get(l) in [RDStore.OR_LICENSOR,RDStore.OR_LICENSING_CONSORTIUM]}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-term-what="license"
                                     data-confirm-term-what-detail="${l.reference}"

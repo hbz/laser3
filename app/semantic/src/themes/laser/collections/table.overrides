@@ -212,3 +212,11 @@
 .ui.la-table.table tr td.la-exposed-bg  {
   background-color: @laSecondaryBackground;
 }
+
+// Fixed Table Header
+.ui.table thead tr:first-child > th {
+  position: sticky !important;
+  top: 90px;
+  z-index: 2;
+  background-color: #F4F8F9;
+}

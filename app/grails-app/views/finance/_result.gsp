@@ -90,7 +90,7 @@
                         <%--${financialData}--%>
                         <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
                         <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
-                            <g:if test="${!showView.equals("consAtSubscr")}">
+                            <g:if test="${!showView.equals("consAtSubscr") && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
                                 <div class="item" data-tab="own">${message(code:'financials.tab.ownCosts')}</div>
                             </g:if>
                             <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
@@ -100,7 +100,7 @@
                                 <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
                             </g:if>
                         </div>
-                        <g:if test="${!showView.equals("consAtSubscr")}">
+                        <g:if test="${!showView.equals("consAtSubscr") && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
@@ -127,14 +127,17 @@
         <r:script>
             $(document).ready(function() {
                 var tab = "${view}";
+                var rawHref = $(".exportCSV").attr("href");
                 $("[data-tab='"+tab+"']").addClass("active");
+                $(".exportCSV").attr("href",rawHref+"&showView="+tab);
                 if(tab === "consAtSubscr")
                     $("[data-tab='cons']").addClass("active");
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
-                        console.log(tabPath);
+                        //console.log(tabPath);
+                        $(".exportCSV").attr("href",rawHref+"&showView="+tabPath);
                     }
                 });
 

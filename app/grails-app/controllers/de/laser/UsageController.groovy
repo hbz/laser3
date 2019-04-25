@@ -111,8 +111,8 @@ class UsageController extends AbstractDebugController {
             def joinedInstitutions = result.institutionList.id.join(',')
             providersWithStatssid.each {
                 def hql = "select s.id from Subscription s join s.orgRelations as institution " +
-                    "where institution.org.id in (${joinedInstitutions}) and s.status.value!=:status and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
-                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id, status: 'Deleted'])
+                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
+                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id])
                 def listItem = [:]
                 listItem.id = it.id
                 listItem.name = it.name
@@ -128,11 +128,13 @@ class UsageController extends AbstractDebugController {
                 distinct("supplierId")
             }
         }
-        result.natstatInstitutions = StatsTripleCursor.withCriteria {
+        def institutionsForQuery = StatsTripleCursor.withCriteria {
             projections {
                 distinct("customerId")
             }
-        }
+        }.collect {"'$it'"}.join(',')
+        def hql = "select io.org, i from IdentifierOccurrence as io join io.identifier as i where i.value in (${institutionsForQuery})"
+        result.natstatInstitutions = Org.executeQuery(hql)
         result.cursorCount = factService.getSupplierCursorCount()
         result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
         result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)

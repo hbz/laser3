@@ -78,8 +78,24 @@
 
                     <tr>
                         <td>
-                            <div class="${hasErrors(bean: accessPoint, field: 'name', 'error')} required ui form">
-                                <g:textField name="name" required="" value="${accessPoint?.name}" />
+                            <div class="${hasErrors(bean: accessPoint, field: 'name', 'error')} required ui form search">
+                                <g:set var="cwra" value="${message(code:'accessPoint.option.remoteAccess')}" />
+                                <g:set var="cwora" value="${message(code:'accessPoint.option.woRemoteAccess')}" />
+                                <select name="name" required="" class="ui fluid search dropdown">
+                                    <option value="">${message(code:'accessPoint.option.placeHolder')}</option>
+                                    <option value="${cwra}">${cwra}</option>
+                                    <option value="${cwora}">${cwora}</option>
+                                </select>
+                                <r:script>
+                                    $(document).ready(function() {
+                                        $('.ui.search.dropdown').dropdown({
+                                            allowAdditions: true,
+                                            forceSelection: false,
+                                            hideAdditions: false,
+                                            message: {addResult: '${message(code:'accessPoint.addCustomName.label')}'}
+                                        });
+                                    });
+                                </r:script>
                             </div>
                         </td>
                         <td colspan="2">
@@ -98,5 +114,5 @@
                 </tbody>
             </table>
         </g:form>
-  </body>
+    </body>
 </html>

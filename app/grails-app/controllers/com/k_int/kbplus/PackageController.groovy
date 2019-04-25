@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DebugAnnotation
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -25,7 +26,7 @@ class PackageController extends AbstractDebugController {
     def addressbookService
     def docstoreService
     def GOKbService
-    def orgDocumentService
+    def escapeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -304,7 +305,10 @@ class PackageController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    })
     def compare() {
         def result = [:]
         result.unionList = []
@@ -571,7 +575,7 @@ select s from Subscription as s where
             result.processingpc = true
         }
 
-        def filename = "${result.packageInstance.name}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
+        def filename = "${escapeService.escapeString(result.packageInstance.name)}_asAt_${date_filter ? sdf.format(date_filter) : sdf.format(today)}"
         withFormat {
             html result
             json {

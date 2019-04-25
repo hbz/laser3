@@ -112,7 +112,7 @@
             <th>${message(code: 'surveyInfo.property')}</th>
             <th>${message(code: 'surveyInfo.members')}</th>
             <th>${message(code: 'surveyInfo.evaluation')}</th>
-            <th></th>
+            <th>${message(code:'default.actions')}</th>
 
         </tr>
 
