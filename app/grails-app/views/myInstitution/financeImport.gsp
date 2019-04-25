@@ -36,16 +36,15 @@
                 <tr>
                   <%-- <td>${mpg.colname}</td>
                   <td>${mpg.desc} --%>
+                  <%
+                      String description
+                      switch(mpg.colname) {
+                          default: description = message(code:"myinst.financeImport.description.${mpg.colname}")
+                            break
+                      }
+                  %>
                   <td>${message(code:"myinst.financeImport.${mpg.colname}")}</td>
-                  <td>${message(code:"myinst.financeImport.description.${mpg.colname}")}
-                    <g:if test="${mpg.type=='vocab'}">
-                        <br/>Must be one of : <ul>
-                          <g:each in="${mpg.mapping}" var="m,k">
-                            <li>${m}</li>
-                          </g:each>
-                        </ul>
-                      </g:if>
-                  </td>
+                  <td>${description}</td>
                   <td></td>
                 </tr>
               </g:each>
