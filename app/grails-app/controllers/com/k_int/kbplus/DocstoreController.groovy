@@ -17,6 +17,7 @@ class DocstoreController extends AbstractDebugController {
 
     def docstoreService
     def messageSource
+    def contextService
 
     @Secured(['ROLE_USER'])
     def index() {

@@ -16,6 +16,7 @@ class OnixplLicenseCompareController extends AbstractDebugController {
 
   OnixPLService onixPLService
   OnixPLHelperService onixPLHelperService
+  def contextService
 
   @Secured(['ROLE_USER'])
   def index() {

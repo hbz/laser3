@@ -510,6 +510,19 @@ class ApiService {
                             //log.debug("org: ${orgData.globalUID.text()}")
                             new IdentifierOccurrence(org: org, identifier: id).save(flush: true)
                         }
+                        orgData.settings.setting.each { st ->
+                            log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
+                            //log.debug("value: ${st.value.text()}")
+                            if (st.rdValue.size()) {
+                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
+                            }
+                            else if (st.roleValue.size()) {
+                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
+                            }
+                            else {
+                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())
+                            }
+                        }
                     } else if (org.hasErrors()) {
                         log.error("Error on saving org: ${org.getErrors()}")
                         System.exit(46)

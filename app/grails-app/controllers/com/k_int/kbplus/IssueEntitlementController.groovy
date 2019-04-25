@@ -10,7 +10,8 @@ import com.k_int.kbplus.auth.*
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController extends AbstractDebugController {
 
-  def factService
+    def factService
+    def contextService
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
    def springSecurityService

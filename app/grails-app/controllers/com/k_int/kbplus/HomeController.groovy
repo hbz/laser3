@@ -18,37 +18,21 @@ class HomeController {
         log.debug("HomeController::index - ${springSecurityService.principal.id}");
 
         result.user = User.get(springSecurityService.principal.id)
-
         if (result.user) {
-            def uao = result.user.getAuthorizedOrgsIds()
 
-            if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)) {
-                if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id in uao) {
-                    redirect(controller: 'myInstitution', action: 'dashboard')
-                    return
+            if (UserSettings.get(result.user, UserSettings.KEYS.DASHBOARD) == UserSettings.SETTING_NOT_FOUND) {
+
+                def uao = result.user.getAuthorizedOrgsIds()
+                if (uao.size() > 0) {
+                    result.user.getSetting(UserSettings.KEYS.DASHBOARD, Org.findById(uao.first()))
                 }
                 else {
-                    //result.user.setDefaultDashTMP(null)
-                    //result.user.save()
-                    def setting = result.user.getSetting(UserSettings.KEYS.DASHBOARD, null)
-                    setting.setValue(null)
+                    flash.message = message(code: 'profile.dash.not_set', default: 'Please select an institution to use as your default home dashboard')
+                    redirect(controller: 'profile', action: 'index')
+                    return
                 }
             }
-
-            if (uao.size() == 1) {
-                //result.user.setDefaultDashTMP(Org.findById(uao.first()))
-                //result.user.save()
-                def setting = result.user.getSetting(UserSettings.KEYS.DASHBOARD, null)
-                setting.setValue(Org.findById(uao.first()))
-
-                redirect(controller:'myInstitution', action:'dashboard')
-                return
-            }
-            else {
-                flash.message = message(code:'profile.dash.not_set', default:'Please select an institution to use as your default home dashboard')
-                redirect(controller:'profile', action:'index')
-                return
-            }
+            redirect(controller: 'myInstitution', action: 'dashboard')
         }
         else {
             log.error("Unable to lookup user for principal id :: ${springSecurityService.principal.id}");
