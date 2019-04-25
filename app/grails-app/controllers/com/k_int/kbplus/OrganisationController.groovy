@@ -38,9 +38,9 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermX("ORG_BASIC,ORG_CONSORTIUM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
         def result = [:]

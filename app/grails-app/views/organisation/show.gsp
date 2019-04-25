@@ -119,7 +119,7 @@
                 <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
-                            <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.getallOrgTypeIds())}">
+                            <g:if test="${(RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
@@ -353,9 +353,11 @@
                                 <dd>
                                     <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                         <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                        (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
-                                        ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
-                                    </g:each>)
+                                        <g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
+                                        <span class="ui small teal image label">
+                                            ${id_out.identifier.ns.ns}: <div class="detail">${id_out.identifier.value}</div>
+                                        </span>
+                                    </g:each>
                                         <br />
                                     </g:each>
                                 </dd>
@@ -374,9 +376,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                <span class="ui small teal image label">
+                                                    ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>
@@ -392,9 +396,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                <span class="ui small teal image label">
+                                                    ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>
@@ -410,9 +416,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                    <span class="ui small teal image label">
+                                                        ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                    </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>
