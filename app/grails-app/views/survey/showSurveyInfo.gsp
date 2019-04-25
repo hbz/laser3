@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="survey" class="active"/>
 </semui:breadcrumbs>
 
@@ -60,6 +60,16 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
                     </g:else>
                     </div>
+
+                    <div class="field ${editable ? '': 'disabled'}">
+                        <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
+
+                        <textarea name="comment" rows="4" cols="50">
+                            ${surveyInfo?.comment}
+                        </textarea>
+
+                    </div>
+
                     <br/>
 
                     <g:if test="${editable}">

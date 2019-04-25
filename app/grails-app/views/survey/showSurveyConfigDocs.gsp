@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="survey" class="active"/>
 </semui:breadcrumbs>
 
@@ -70,6 +70,10 @@
                             <dl>
                                 <dt>${message(code: 'surveyInfo.type.label')}</dt>
                                 <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'surveyInfo.comment.label')}</dt>
+                                <dd>${surveyInfo?.comment}</dd>
                             </dl>
 
                         </div>

@@ -66,7 +66,7 @@ class SemanticUiTagLib {
             out << attrs.text
         }
         if (attrs.message) {
-            out << "${message(code: attrs.message)}"
+            out << "${message(code: attrs.message, args: attrs.args)}"
         }
         out << '</p>'
 

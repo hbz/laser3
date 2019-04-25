@@ -3054,12 +3054,27 @@ AND EXISTS (
 
 
         result.surveys = SurveyResult.findAll("from SurveyResult where " +
-                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " (startDate >= :startDate and endDate <= :endDate)",
+                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
                 [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('Survey started', 'Survey Status'),
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])
+
+        result.surveysConsortia = []
+
+                /*SurveyResult.findAll("from SurveyResult where " +
+                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
+                [contextOrg: contextService.org,
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
+                 startDate: new Date(System.currentTimeMillis()),
+                 endDate: new Date(System.currentTimeMillis())])*/
+
         result
     }
 
@@ -3251,6 +3266,54 @@ AND EXISTS (
       }
       result
     }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def currentSurveys() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyResult() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        result
+    }
+
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
