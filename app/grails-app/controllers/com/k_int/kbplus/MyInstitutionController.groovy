@@ -715,7 +715,7 @@ from License as l where (
         if ( params.exportXLS ) {
 
             //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls")
             wb.write(response.outputStream)
@@ -3499,7 +3499,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             List orgs = (List) result.availableOrgs
             SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -3595,7 +3595,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if ( params.exportXLS ) {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
