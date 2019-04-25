@@ -20,7 +20,7 @@ class SurveyController {
     def docstoreService
 
     @Secured(['ROLE_YODA'])
-    def currentSurveys() {
+    def currentSurveysConsortia() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -32,7 +32,7 @@ class SurveyController {
 
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
-        def fsq = filterService.getSurveyQuery(params, sdFormat, result.institution)
+        def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
 
         result.surveys  = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
         result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
@@ -55,7 +55,7 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
         result
@@ -84,6 +84,7 @@ class SurveyController {
 
         if (surveyInfo) {
             surveyInfo.name = params.name
+            surveyInfo.comment = params.comment ?: null
             surveyInfo.startDate = params.startDate ? sdf.parse(params.startDate) : null
             surveyInfo.endDate = params.endDate ? sdf.parse(params.endDate) : null
             //surveyInfo.type = RefdataValue.get(params.type)
@@ -104,7 +105,8 @@ class SurveyController {
                     endDate: params.endDate ? sdf.parse(params.endDate) : null,
                     type: params.type,
                     owner: contextService.getOrg(),
-                    status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])
+                    status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                    comment: params.comment ?: null
             ).save(flush: true)
 
         }
@@ -254,7 +256,7 @@ class SurveyController {
             redirect action: 'showSurveyConfig', id: surveyInfo.id
 
         } else {
-            redirect action: 'currentSurveys'
+            redirect action: 'currentSurveysConsortia'
         }
     }
 
@@ -673,7 +675,7 @@ class SurveyController {
             it.delete()
         }
 
-        redirect action: 'currentSurveys'
+        redirect action: 'currentSurveysConsortia'
     }
 
 

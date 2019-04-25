@@ -107,7 +107,7 @@
         </div>
     </g:else>
 
-    <g:if test="${surveyInfo.status != com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
+    <g:if test="${surveyInfo && surveyInfo?.status != com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
         <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
                 class="step ${actionName == 'openSurvey' ? 'active' : ''}">
 
