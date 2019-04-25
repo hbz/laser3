@@ -134,8 +134,10 @@ class User {
   }
 
     def hasRole(String roleName) {
-        //println SpringSecurityUtils.ifAnyGranted(roleName)
         SpringSecurityUtils.ifAnyGranted(roleName)
+    }
+    def hasRole(List<String> roleNames) {
+        SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
     }
 
     def isAdmin() {
@@ -156,7 +158,7 @@ class User {
         affiliationCheck(userRoleName, globalRoleName, 'OR', contextService.getOrg())
     }
 
-    def hasAffiliationForOrg(userRoleName, orgToCheck) {
+    def hasAffiliationForForeignOrg(userRoleName, orgToCheck) {
         affiliationCheck(userRoleName, 'ROLE_USER', 'AND', orgToCheck)
     }
 

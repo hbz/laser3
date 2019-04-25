@@ -22,7 +22,7 @@
             break
     }
 %>
-<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable}">
+<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || contextService.user.hasAffiliation("INST_EDITOR")}">
     <g:each in="${baseItems}" var="docctx">
         <%
             boolean visible = false

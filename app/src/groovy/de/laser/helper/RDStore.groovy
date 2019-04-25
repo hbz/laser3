@@ -28,6 +28,7 @@ class RDStore {
     static final OT_AGENCY                  = getRefdataValue('Agency', 'OrgRoleType')
     static final OT_LICENSOR                = getRefdataValue('Licensor', 'OrgRoleType')
     static final OT_PROVIDER                = getRefdataValue('Provider', 'OrgRoleType')
+    static final OT_DEPARTMENT              = getRefdataValue('Department','OrgRoleType')
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
     static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')
@@ -74,6 +75,9 @@ class RDStore {
     static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook','Title Type')
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
     static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
+
+    static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
+    static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
     static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')

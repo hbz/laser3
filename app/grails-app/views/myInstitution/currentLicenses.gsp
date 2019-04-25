@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
   <head>
@@ -5,6 +6,8 @@
     <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.current', default:'Current Licenses')}</title>
   </head>
   <body>
+
+  <laser:serviceInjection />
 
   <semui:breadcrumbs>
       <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
@@ -43,7 +46,10 @@
           </g:else>
       </semui:exportDropdown>
 
-      <g:render template="actions" />
+      <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+         <g:render template="actions" />
+      </g:if>
+
   </semui:controlButtons>
 
   <semui:messages data="${flash}" />
@@ -189,7 +195,7 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:if test="${editable}">
+                    <g:if test="${editable && accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
                         %{-- bug: erms-459
                         <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
                             <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
@@ -202,7 +208,7 @@
                             <i class="copy icon"></i>
                         </g:link>
                         </span>
-                        <g:if test="${! l.subscriptions}">
+                        <g:if test="${! l.subscriptions && orgRoles.get(l) in [RDStore.OR_LICENSOR,RDStore.OR_LICENSING_CONSORTIUM]}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-term-what="license"
                                     data-confirm-term-what-detail="${l.reference}"

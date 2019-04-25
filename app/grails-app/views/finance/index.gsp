@@ -81,11 +81,14 @@
         <g:elseif test="${showView.equals("consAtSubscr")}">
             <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
         </g:elseif>
-        <g:elseif test="${showView.equals("subscr")}">
+        <g:elseif test="${showView.equals("subscr") && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
         </g:elseif>
-        <g:else>
+        <g:elseif test="${accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')}"/>
+        </g:elseif>
+        <g:else>
+            <g:set var="totalString" value="${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
         </g:else>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${institution.name} <semui:totalNumber total="${totalString}"/></h1>

@@ -1,4 +1,5 @@
  <%@ page import="com.k_int.kbplus.*" %>
+ <laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>
@@ -42,7 +43,11 @@
                         </semui:exportDropdownItem>
                     </g:else>
                 </semui:exportDropdown>
+
+                <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <g:render template="actions" />
+                </g:if>
+
             </semui:controlButtons>
 
 

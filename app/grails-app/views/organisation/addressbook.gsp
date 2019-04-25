@@ -11,6 +11,12 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
+    <g:if test="${editable}">
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+    </g:if>
+
         <h1 class="ui left aligned icon header"><semui:headerIcon />
             ${orgInstance.name}
 	    </h1>

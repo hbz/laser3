@@ -8,6 +8,8 @@
     </head>
     <body>
 
+    <laser:serviceInjection />
+
         <semui:breadcrumbs>
             <semui:crumb message="menu.public.all_provider" class="active" />
         </semui:breadcrumbs>
@@ -41,10 +43,11 @@
                 </semui:exportDropdownItem>
             </g:else>
         </semui:exportDropdown>
-        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR">
-            <g:render template="actions" />
-        </sec:ifAnyGranted>
- </semui:controlButtons>
+
+            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')}">
+                <g:render template="actions" />
+            </g:if>
+        </semui:controlButtons>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.public.all_provider" />
             <semui:totalNumber total="${orgListTotal}"/>

@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.RefdataValue" %>
+<%@page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
@@ -27,12 +27,17 @@
     </semui:actionsDropdown>
 </g:if>
 
-<g:if test="${actionName in ['manageConsortia', 'addConsortiaMembers']}">
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg.getallOrgTypeIds())}">
+<g:if test="${actionName in ['manageMembers', 'addMembers']}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
         <semui:actionsDropdown>
-            <semui:actionsDropdownItem controller="myInstitution" action="addConsortiaMembers" message="menu.institutions.add_consortia_members" />
-            <semui:actionsDropdownItem controller="organisation" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
-            <g:if test="${actionName in ['manageConsortia']}">
+            <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
+                <semui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
+                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
+            </g:if>
+            <g:elseif test="${comboType != null && comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
+                <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_department.label"/>
+            </g:elseif>
+            <g:if test="${actionName in ['manageMembers']}">
                 <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
             </g:if>
         </semui:actionsDropdown>

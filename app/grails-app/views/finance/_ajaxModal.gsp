@@ -542,14 +542,20 @@
                 );
             };
 
-            var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
+            var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency");
 
             costElems.on('change', function(){
-                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
-                    costElems.parent('.field').addClass('error')
+                checkValues();
+            });
+
+            $("#editCost").submit(function(e){
+                e.preventDefault();
+                var valuesCorrect = checkValues();
+                if(valuesCorrect) {
+                    $(this).unbind('submit').submit();
                 }
                 else {
-                    costElems.parent('.field').removeClass('error')
+                    alert("${message(code:'financials.newCosts.calculationError')}");
                 }
             });
 
@@ -573,6 +579,17 @@
                 $("[name='newFinancialYear']").parents(".datepicker").calendar({
                     type: 'year'
                 });
+            }
+
+            function checkValues() {
+                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
+                    costElems.parent('.field').addClass('error')
+                    return false;
+                }
+                else {
+                    costElems.parent('.field').removeClass('error')
+                    return true;
+                }
             }
 
             function convertDouble(input) {

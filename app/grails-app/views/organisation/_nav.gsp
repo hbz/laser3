@@ -5,7 +5,7 @@
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
     <semui:securedSubNavItem controller="organisation" action="readerNumber" params="${[id: params.id]}"
                              affiliation="INST_EDITOR" affiliationOrg="${orgInstance}"
-                      message="menu.institutions.readerNumbers" specRoleCheck="ROLE_ORG_EDITOR"/>
+                      message="menu.institutions.readerNumbers" specRole="ROLE_ORG_EDITOR"/>
     </g:if>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
@@ -19,16 +19,22 @@
         </g:else>
     </g:if>
 
+    <%-- TODO: check ctx != foreign org --%>
     <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: params.id]}"
-                             message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}" specRoleCheck="ROLE_ORG_EDITOR"/>
+                             orgPerm="ORG_BASIC,ORG_CONSORTIUM" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                             affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+                             message="org.nav.options" />
 
-    <semui:subNavItem controller="organisation" action="documents" params="${[id: params.id]}" message="menu.my.documents" />
+    <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: params.id]}"
+                             affiliation="INST_USER" orgPerm="ORG_BASIC,ORG_CONSORTIUM"
+                             message="menu.my.documents" />
 
+    <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
+                             affiliation="INST_USER" orgPerm="ORG_BASIC,ORG_CONSORTIUM"
+                             message="menu.institutions.myAddressbook"/>
 
-    <semui:subNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
-                      message="menu.institutions.myAddressbook"/>
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
-    <semui:securedSubNavItem controller="organisation" action="accessPoints" params="${[id:params.id]}"
+        <semui:securedSubNavItem controller="organisation" action="accessPoints" params="${[id:params.id]}"
                       message="org.nav.accessPoints" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
     </g:if>
 </semui:subNav>

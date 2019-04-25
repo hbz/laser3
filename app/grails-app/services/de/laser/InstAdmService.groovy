@@ -11,7 +11,6 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
-//@CompileStatic
 class InstAdmService {
 
     GrailsApplication grailsApplication
