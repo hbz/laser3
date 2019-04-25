@@ -913,6 +913,7 @@ from License as l where (
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
             if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
+                params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3642,7 +3643,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
+        Map fsq = filterService.getOrgComboQuery([comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
         du.setBenchMark('filterSubTypes & filterPropList')
@@ -4297,6 +4298,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if (result.editable) {
 
             if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
+                params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }

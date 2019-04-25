@@ -380,10 +380,12 @@ class OrganisationController extends AbstractDebugController {
 
         //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
         Combo checkCombo = Combo.findByFromOrgAndToOrg(orgInstance,org)
-        if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
-            result.institutionalView = true
-        else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
-            result.departmentalView = true
+        if(checkCombo) {
+            if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
+                result.institutionalView = true
+            else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
+                result.departmentalView = true
+        }
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]

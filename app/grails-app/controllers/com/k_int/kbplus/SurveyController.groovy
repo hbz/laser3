@@ -387,6 +387,7 @@ class SurveyController {
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
