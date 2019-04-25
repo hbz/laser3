@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class ClusterController extends AbstractDebugController {
 
     def springSecurityService
+    def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

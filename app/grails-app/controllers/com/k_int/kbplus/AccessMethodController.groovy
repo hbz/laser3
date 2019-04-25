@@ -9,6 +9,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class AccessMethodController extends AbstractDebugController {
 
     def springSecurityService
+    def contextService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])

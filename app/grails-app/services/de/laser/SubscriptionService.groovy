@@ -138,9 +138,10 @@ class SubscriptionService {
         switch (aktion) {
             case REPLACE:
                 targetSub.owner = sourceSub.owner ?: null
-                targetSub.save(flush: true)
+                return save(targetSub, flash)
                 break;
-            case COPY:
+
+            default:
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
@@ -157,18 +158,19 @@ class SubscriptionService {
                         flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
                     } else {
                         def newProperties = or.properties
-
                         //Vererbung ausschalten
                         newProperties.sharedFrom = null
                         newProperties.isShared = false
                         OrgRole newOrgRole = new OrgRole()
                         InvokerHelper.setProperties(newOrgRole, newProperties)
                         newOrgRole.sub = targetSub
-                        newOrgRole.save(flush: true)
+                        save(newOrgRole, flash)
                     }
-//                    }
                 }
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
 
@@ -179,7 +181,7 @@ class SubscriptionService {
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
                 if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
                     ie.status = RDStore.IE_DELETED
-                    ie.save(flush: true)
+                    save(ie, flash)
                 }
             }
 
@@ -199,15 +201,13 @@ class SubscriptionService {
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                         newSubscriptionPackage.subscription = targetSub
                         newSubscriptionPackage.pkg = pkg
-                        newSubscriptionPackage.save(flush: true)
+                        save(newSubscriptionPackage, flash)
                     }
                 }
-                // fixed hibernate error: java.util.ConcurrentModificationException
-                // change owner before first save
-                //License
-                //newSub.owner = baseSub.owner ?: null
-                //newSub.save(flush: true)
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
 
@@ -216,7 +216,7 @@ class SubscriptionService {
 //            targetSub.issueEntitlements.each {
             getIssueEntitlements(targetSub).each {
                 it.status = RDStore.IE_DELETED
-                it.save(flush: true)
+                save(it, flash)
             }
         }
 
@@ -226,7 +226,6 @@ class SubscriptionService {
                 entitlementsToTake.each { ieToTake ->
                     if (ieToTake.status != RDStore.IE_DELETED) {
                         def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
-//                        def list = targetSub.issueEntitlements.findAll {it.tipp.id == ieToTake.tipp.id} && it.status != RDStore.IE_DELETED}
                         if (list?.size() > 0) {
                             // mich gibts schon! Fehlermeldung ausgeben!
                             flash.error = ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
@@ -236,11 +235,14 @@ class SubscriptionService {
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
                             newIssueEntitlement.subscription = targetSub
-                            newIssueEntitlement.save(flush: true)
+                            save(newIssueEntitlement, flash)
                         }
                     }
                 }
                 break;
+
+            default:
+                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
 
@@ -254,12 +256,13 @@ class SubscriptionService {
                             Task newTask = new Task()
                             InvokerHelper.setProperties(newTask, task.properties)
                             newTask.subscription = targetSub
-                            newTask.save(flush: true)
+                            save(newTask, flash)
                         }
                     }
                 }
                 break;
-            case REPLACE:
+
+            default:
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
@@ -269,7 +272,7 @@ class SubscriptionService {
             targetSub.documents.each {
                 if ((it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain))){
                     it.status = RDStore.IE_DELETED
-                    it.save(flush: true)
+                    save(it, flash)
                 }
             }
         }
@@ -282,16 +285,19 @@ class SubscriptionService {
                         if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                             Doc newDoc = new Doc()
                             InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                            newDoc.save(flush: true)
+                            save(newDoc, flash)
                             DocContext newDocContext = new DocContext()
                             InvokerHelper.setProperties(newDocContext, dctx.properties)
                             newDocContext.subscription = targetSub
                             newDocContext.owner = newDoc
-                            newDocContext.save(flush: true)
+                            save(newDocContext, flash)
                         }
                     }
                 }
                 break
+
+            default:
+                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
 
@@ -300,17 +306,10 @@ class SubscriptionService {
             case REPLACE:
                 targetSub.setStartDate(sourceSub.getStartDate())
                 targetSub.setEndDate(sourceSub.getEndDate())
-                if (targetSub.save(flush: true)) {
-                    log.debug("Save ok")
-                    return true
-                } else {
-                    log.error("Problem saving subscription ${targetSub.errors}")
-                    flash.error("Es ist ein Fehler aufgetreten.")
-                    return false
-                }
+                return save(targetSub, flash)
                 break;
 
-            case COPY:
+            default:
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
@@ -320,7 +319,7 @@ class SubscriptionService {
             targetSub.documents.each {
                 if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
                     it.status = RDStore.IE_DELETED
-                    it.save(flush: true)
+                    save(it, flash)
                 }
             }
         }
@@ -328,59 +327,65 @@ class SubscriptionService {
         switch (aktion) {
             case REPLACE:
             case COPY:
-            sourceSub.documents?.each { dctx ->
-                //Copy Docs
-                if (dctx.id in toCopyDocs) {
-                    if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
-                        Doc newDoc = new Doc()
-                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                        newDoc.save(flush: true)
-                        DocContext newDocContext = new DocContext()
-                        InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = targetSub
-                        newDocContext.owner = newDoc
-                        newDocContext.save(flush: true)
+                sourceSub.documents?.each { dctx ->
+                    if (dctx.id in toCopyDocs) {
+                        if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
+                            Doc newDoc = new Doc()
+                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                            save(newDoc, flash)
+                            DocContext newDocContext = new DocContext()
+                            InvokerHelper.setProperties(newDocContext, dctx.properties)
+                            newDocContext.subscription = targetSub
+                            newDocContext.owner = newDoc
+                            save(newDocContext, flash)
+                        }
                     }
                 }
-            }
+                break
+
+            default:
+                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
 
     boolean takeProperties(String aktion, List<AbstractProperty> properties, Subscription targetSub, def flash){
         switch (aktion) {
             case COPY:
-            def contextOrg = contextService.getOrg()
-            def targetProp
+                def contextOrg = contextService.getOrg()
+                def targetProp
 
-            properties?.each { sourceProp ->
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-                }
-                if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                    targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-                }
-                boolean isAddNewProp = sourceProp.type?.multipleOccurrence
-                if ( (! targetProp) || isAddNewProp) {
+                properties?.each { sourceProp ->
                     if (sourceProp instanceof CustomProperty) {
-                        targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                    } else {
-                        targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                        targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
                     }
+                    if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
+                        targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
+                    }
+                    boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+                    if ( (! targetProp) || isAddNewProp) {
+                        if (sourceProp instanceof CustomProperty) {
+                            targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                        } else {
+                            targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                        }
+                    }
+                    targetProp = sourceProp.copyInto(targetProp)
+                    save(targetProp, flash)
                 }
-                targetProp = sourceProp.copyInto(targetProp)
-                if (targetProp.save(flush: true)){
-                    log.debug("Save ok")
-                    return true
-                } else {
-                    log.error("Problem saving property ${targetProp.errors}")
-                    flash.error += "Es ist ein Fehler beim Speichern von ${sourceProp.value} aufgetreten."
-                    return false
-                }
-                //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-            }
                 break;
-            case REPLACE:
+
+            default:
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+        }
+    }
+    private boolean save(obj, flash){
+        if (obj.save(flush: true)){
+            log.debug("Save ok")
+            return true
+        } else {
+            log.error("Problem saving property ${obj.errors}")
+            flash.error += "Es ist ein Fehler beim Speichern von ${obj.value} aufgetreten."
+            return false
         }
     }
 

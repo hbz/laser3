@@ -2863,8 +2863,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("ROLE_YODA, ROLE_ADMIN")')
-    @Secured(['ROLE_ADMIN', 'ROLE_YODA'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -2901,8 +2901,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart3();
                 break;
             case '4':
-                result << workFlowPart4();
-//                result << workFlowPart4_neu();
+//                result << workFlowPart4();
+                result << workFlowPart4_neu();
                 break;
             case '5':
                 result << workFlowPart5();
@@ -2965,8 +2965,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
-        result.newSub = newSub
         result.subscription = baseSub
+        //Bugfix Aktualieriunsgproblem
+        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.newSub = newSub
+        result.targetSubscription = newSub
         result
     }
 
@@ -3142,30 +3145,32 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.workFlowPartNext = '4'
         result
     }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map workFlowPart4_neu(){
-        Org org = contextService.getOrg()
+        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            Subscription newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
-        LinkedHashMap result = subscriptionService.regroupSubscriptionProperties(subsToCompare)
-//        result.licenses = licenses
-//        result.institution = org
-//        String filename = "license_compare_${result.institution.name}"
-//        withFormat{
-//            html result
-//            csv{
-//                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-//                response.contentType = "text/csv"
-//                def out = response.outputStream
-//                exportService.StreamOutLicenseCSV(out, result,result.licenses)
-//                out.close()
-//            }
-//        }
+        subsToCompare.each{ sub ->
+            TreeMap customProperties = result.customProperties
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
+            result.customProperties = customProperties
+            TreeMap privateProperties = result.privateProperties
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            result.privateProperties = privateProperties
+        }
+
+        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+        }
+
         result
     }
 
