@@ -55,7 +55,7 @@
             %{--<i class="university icon"></i>--}%
             %{--<div class="content">--}%
                 %{--<div class="title">--}%
-                    %{--Teilnehmer--}%
+                    %{--${message(code: 'consortium.subscriber')}--}%
                 %{--</div>--}%
             %{--</div>--}%
         %{--</semui:complexSubNavItem>--}%
@@ -65,7 +65,7 @@
                 <i class="tags icon"></i>
                 <div class="content">
                     <div class="title">
-                       Merkmale
+                        ${message(code: 'properties')}
                     </div>
                 </div>
             </semui:complexSubNavItem>
@@ -81,15 +81,14 @@
         <g:render template="copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == '4'}">
-        <g:render template="copyProperties" />
+        %{--<g:render template="copyProperties" />--}%
+        <g:render template="copyPropertiesCompare" />
     </g:elseif>
     <g:elseif test="${workFlowPart == '5'}">
-        %{--<g:render template="copyPackagesAndIEs" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>--}%
         <g:render template="copyPackagesAndIEs" />
     </g:elseif>
     %{--workFlowPart == '1'--}%
     <g:else>
-        %{--<g:render template="copyElements" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>--}%
         <g:render template="copyElements" />
     </g:else>
     <r:script>
