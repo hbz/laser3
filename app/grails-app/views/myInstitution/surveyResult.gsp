@@ -111,8 +111,11 @@
                 </td>
                 <td>
                     <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+
+                        <g:set var="childSub" value="${surveyResult.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
+
                         <g:link controller="subscription" action="show"
-                                id="${surveyResult.surveyConfig?.subscription?.id}">${surveyResult.surveyConfig?.subscription?.dropdownNamingConvention()}</g:link>
+                                id="${childSub.id}">${childSub.dropdownNamingConvention()}</g:link>
                     </g:if>
 
                     <g:if test="${surveyResult.surveyConfig?.type == 'SurveyProperty'}">
