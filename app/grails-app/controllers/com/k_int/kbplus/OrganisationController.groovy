@@ -97,7 +97,7 @@ class OrganisationController extends AbstractDebugController {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true,'xls')
 
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
                 response.outputStream.flush()
