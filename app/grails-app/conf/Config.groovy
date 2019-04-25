@@ -702,7 +702,7 @@ financialImportTSVLoaderMappings = [
                 subId: [
                     type:'column',
                     colname:[
-                        'SubscriptionId',
+                        'Subscription',
                         'Lizenz'
                     ]
                 ],
@@ -755,13 +755,25 @@ financialImportTSVLoaderMappings = [
           ]
         ]
       ],
-       /* [
-        ref:'CICategory',
+      [
+        ref:'CIElementConfiguration',
         cls:'com.k_int.kbplus.RefdataValue',
         heuristics:[
           [ type : 'hql',
-            hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-            values : [ citype : [type:'static', value:'CostItemCategory'], civalue: [type:'column', colname:'InvoiceType']]
+            hql: 'select o from RefdataValue as o where o.value = :ciec and o.owner.desc = :ciecName',
+            values : [
+              ciecName : [
+                type:'static',
+                value:'Cost configuration'
+              ],
+              ciec: [
+                type:'column',
+                colname:[
+                  'Vorzeichen',
+                  'Element sign'
+                ]
+              ]
+            ]
           ]
         ],
         creation:[
@@ -769,18 +781,30 @@ financialImportTSVLoaderMappings = [
         ]
       ],
       [
-       ref:'CICategory',
+       ref:'taxType',
        cls:'com.k_int.kbplus.RefdataValue',
        heuristics:[
          [ type : 'hql',
-           hql: 'select o from RefdataValue as o where o.value = :civalue and o.owner.desc = :citype',
-           values : [ citype : [type:'static', value:'CostItemCategory'], civalue: [type:'static', value: 'Price']]
+           hql: 'select o from RefdataValue as o where o.value = :taxName and o.owner.desc = :taxType',
+           values : [
+             taxName : [
+               type:'static',
+               value:'TaxType'
+             ],
+             taxType: [
+               type:'column',
+               value: [
+                 'Steuer',
+                 'Tax'
+               ]
+             ]
+           ]
          ]
        ],
        creation:[
          onMissing:false,
        ]
-     ],*/
+     ],
       [
         ref:'CIElement',
         cls:'com.k_int.kbplus.RefdataValue',
@@ -883,6 +907,7 @@ financialImportTSVLoaderMappings = [
         ref:'MainCostItem',
         cls:'com.k_int.kbplus.CostItem',
         whenPresent:[ [ type:'val', colname:'CostInLocalCurrency'],
+                      [ type:'val', colname:'CostInBillingCurrency' ],
                       [ type:'ref', refname:'owner', errorOnMissing:true] ],
         creation : [
           properties:[
@@ -902,97 +927,32 @@ financialImportTSVLoaderMappings = [
             [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Main Cost Item] ${values[colmap['InvoiceNotes']]} "} ]
           ]
         ]
-      ],
-      [
-        ref:'TaxCostItem',
-        cls:'com.k_int.kbplus.CostItem',
-        whenPresent:[ [ type:'val', colname:'CostInLocalCurrency'],[ type:'ref', refname:'owner'] ],
-        creation:[
-          properties:[
-            [ type:'ref', property:'owner', refname:'owner' ],
-            [ type:'ref', property:'invoice', refname:'invoice' ],
-            [ type:'ref', property:'order', refname:'order' ],
-            [ type:'ref', property:'sub', refname:'subscription' ],
-            [ type:'val', property:'costInBillingCurrency', colname:'CostInBillingCurrency', datatype:'Double'],
-            [ type:'val', property:'costInLocalCurrency', colname:'CostInLocalCurrency', datatype:'Double'],
-            [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-            [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-            [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
-            [ type:'ref', property:'costItemCategory', refname:'CICategory'],
-            [ type:'ref', property:'costItemElement', refname:'CIElement'],
-            [ type:'ref', property:'billingCurrency', refname:'currency'],
-            [ type:'ref', property:'costItemStatus', refname:'status'],
-            [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Tax] ${values[colmap['InvoiceNotes']]} "} ]
-          ]
-        ]
-      ],
-      [
-        ref:'InvoiceTransactionCharge',
-        cls:'com.k_int.kbplus.CostItem',
-        whenPresent:[ [ type:'val', colname:'CostInBillingCurrency'],[ type:'ref', refname:'owner'] ],
-        creation:[
-          properties:[
-            [ type:'ref', property:'owner', refname:'owner' ],
-            [ type:'ref', property:'invoice', refname:'invoice' ],
-            [ type:'ref', property:'order', refname:'order' ],
-            [ type:'ref', property:'sub', refname:'subscription' ],
-            [ type:'val', property:'costInBillingCurrency', colname:'CostInBillingCurrency', datatype:'Double'],
-            [ type:'val', property:'costInLocalCurrency', colname:'CostInLocalCurrency', datatype:'Double'],
-            [ type:'val', property:'startDate', colname:'InvoicePeriodStart', datatype:'date'],
-            [ type:'val', property:'endDate', colname:'InvoicePeriodEnd', datatype:'date'],
-            [ type:'val', property:'datePaid', colname:'DatePaid', datatype:'date'],
-            [ type:'ref', property:'costItemCategory', refname:'CICategory'],
-            [ type:'ref', property:'costItemElement', refname:'CIElement'],
-            [ type:'ref', property:'billingCurrency', refname:'currency'],
-            [ type:'ref', property:'costItemStatus', refname:'status'],
-            [ type:'valueClosure', property:'costDescription', closure: { colmap, values, locatedObjects -> "[Transaction Charge] ${values[colmap['InvoiceNotes']]} "} ]
-          ]
-        ]
-      ],
+      ]
     ]
   ],
   cols: [
- /* [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''], */
-    [colname:'SubscriptionId', desc:'Used to match to an existing LAS:eR subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
- /* [colname:'JC_OrderNumber', desc:''], */
-    [colname:'InvoiceNumber', desc:'Used to match this line item to an existing LAS:eR Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
-    [colname:'PoNumber', desc:''],
-    [colname:'IssuedDate', desc:''],
-    [colname:'DueDate', desc:''],
- /* [colname:'InstitutionName', desc:''], */
-    [colname:'InstitutionId', desc:'Used to look up an institution based on the JC Institution ID.'],
- /* [colname:'ISNIId', desc:''],
-    [colname:'AccountId', desc:''],
-    [colname:'ResourceName', desc:''],
-    [colname:'ResourceId', desc:''],
-    [colname:'AgreementName', desc:''],
-    [colname:'AgreementId', desc:''],
-    [colname:'PublisherName', desc:''], */
-    [colname:'InvoicePeriodStart', desc:''],
-    [colname:'InvoicePeriodEnd', desc:''],
-    [colname:'Price', desc:''],
+    [colname:'Title', desc:''],
+    [colname:'Description', desc:''],
+    [colname:'Subscription', desc:'Used to match to an existing LAS:eR subscription - must contain a global UID or an LAS:eR database number to match, then, the subscription tenant must match as well. If no subscription is found with that ID, it will be created.'],
+    [colname:'Package',desc:'Used to match to an existing LAS:eR subscription package - must contain a global UID, ISIL or an LAS:eR database number to match, then, the subscription tenant must match as well.'],
+    [colname:'IssueEntitlement', desc:'Used to match to an existing issue entitlement - must contain a valid ISBN, DOI, ZDB-ID, ISSN, or eISSN to match, then, the subscription tenant must match as well.'],
+    [colname:'Institution', desc:'Used to look up an institution based on a global UID, LAS:eR database number or WIB-ID.'],
+    [colname:'OrderNumber', desc:'Used to match this line item to an existing LAS:eR order. Line must first match an organisation via institution, then this is matched on order reference. If none found, a new order will be created.'],
+    [colname:'InvoiceNumber', desc:'Used to match this line item to an existing LAS:eR invoice. Line must first match an organisation via institution, then this is matched on invoice reference. If none found, a new invoice will be created.'],
+    [colname:'Status', desc:'Must be one of: [RefdataCategory.getAllRefdataValues("CostItemStatus")]'],
+    [colname:'Currency', desc:'Must be an ISO 4217 code (three-letter format)'],
+    [colname:'Element', desc:'Must be one of: [RefdataCategory.getAllRefdataValues("CostItemElement")]. If you did not define a sign for the cost element, the sign of the cost item is going to be taken.'],
+    [colname:'ElementSign', desc:'Must be one of: [RefdataCategory.getAllRefdataValues("Cost configuration")]'],
     [colname:'CostInBillingCurrency', desc:''],
     [colname:'CostInLocalCurrency', desc:''],
-    [colname:'CurrencyRate', desc:''],
- /* [colname:'AnnualAccessFee', desc:''],
-    [colname:'AdditionalFees', desc:''],
- /*   [colname:'SubscriptionTransactionCharge', desc:''],
-    [colname:'SubscriptionVAT', desc:''], */
+    [colname:'InvoiceDate',desc:''],
+    [colname:'FinancialYear', desc:'Four-digit year'],
+    [colname:'ReferenceCodes', desc:''],
     [colname:'DatePaid', desc:''],
-    [colname:'InvoiceNotes', desc:''],
-    [colname:'InvoiceStatus', desc:'Must be one of: Estimate, Commitment, Actual, Other'],
-    [colname:'Currency', desc:'']
- /* [colname:'InvoiceTotalExcVat', desc:''],
-    [colname:'InvoiceTransactionCharge', gormMappingPath: 'costItem.costInLocalCurrency', desc:''],
-    [colname:'InvoiceVat', desc:''],
-    [colname:'InvoiceTotal', desc:''],
-    [colname:'ItemCount', desc:''],
-    [colname:'TotalSubscriptionValue', desc:''],
-    [colname:'InvoiceType', desc:'', type:'vocab', mapping:[
-      'SubscriptionInvoice':'Price'
-    ]] */
+    [colname:'DateFrom', desc: ''],
+    [colname:'DateTo', desc:'']
   ]
-];
+]
 
 //grails.mail.default.from = "server@yourhost.com" //override system wide
 grails.mail.disabled = false //System wide
