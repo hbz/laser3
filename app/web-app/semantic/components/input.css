@@ -79,7 +79,7 @@
 
 .ui.disabled.input,
 .ui.input:not(.disabled) input[disabled] {
-  opacity: 0.1;
+  opacity: 0.3;
 }
 .ui.disabled.input > input,
 .ui.input:not(.disabled) input[disabled] {
