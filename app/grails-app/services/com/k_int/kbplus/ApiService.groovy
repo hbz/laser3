@@ -635,14 +635,22 @@ class ApiService {
                         //log.debug("last_name: ${personData.lastName.text()}")
                         person.last_name = personData.lastName.text()
                     }
-                    //log.debug("tenant: ${Org.findByGlobalUID(personData.tenant.text())}")
-                    person.tenant = Org.findByGlobalUID(personData.tenant.text())
-                    //log.debug("gender: ${RefdataValue.getByValueAndCategory(personData.gender.rdv.text(),personData.gender.rdc.text())}")
-                    person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
-                    //log.debug("isPublic: ${RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(),personData.isPublic.rdc.text())}")
-                    person.isPublic = RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(), personData.isPublic.rdc.text())
-                    //log.debug("contactType: ${RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(),personData.contactType.rdc.text())}")
-                    person.contactType = RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(), personData.contactType.rdc.text())
+                    if(personData.tenant.text()) {
+                        //log.debug("tenant: ${Org.findByGlobalUID(personData.tenant.text())}")
+                        person.tenant = Org.findByGlobalUID(personData.tenant.text())
+                    }
+                    if(personData.gender.rdv.size() && personData.gender.rdc.size()) {
+                        //log.debug("gender: ${RefdataValue.getByValueAndCategory(personData.gender.rdv.text(),personData.gender.rdc.text())}")
+                        person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
+                    }
+                    if(personData.isPublic.rdv.size() && personData.isPublic.rdc.size()) {
+                        //log.debug("isPublic: ${RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(),personData.isPublic.rdc.text())}")
+                        person.isPublic = RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(), personData.isPublic.rdc.text())
+                    }
+                    if(personData.contactType.rdv.size() && personData.contactType.rdc.size()) {
+                        //log.debug("contactType: ${RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(),personData.contactType.rdc.text())}")
+                        person.contactType = RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(), personData.contactType.rdc.text())
+                    }
                     if (!person.save(flash: true) && person.hasErrors()) {
                         log.error("error on saving person: ${person.getErrors()}")
                         System.exit(47)
