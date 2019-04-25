@@ -22,6 +22,7 @@ class UploadController extends AbstractDebugController {
   def springSecurityService
   def sessionFactory
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+  def contextService
 
   def csv_column_config = [
     'id':[coltype:'map'],

@@ -11,7 +11,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TippController extends AbstractDebugController {
 
- def springSecurityService
+  def springSecurityService
+  def contextService
 
   @Secured(['ROLE_USER'])
   def show() { 
