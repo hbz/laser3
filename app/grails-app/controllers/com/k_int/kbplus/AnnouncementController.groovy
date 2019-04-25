@@ -14,6 +14,7 @@ class AnnouncementController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService
+    def contextService
 
     @Secured(['ROLE_DATAMANAGER'])
     def index() {

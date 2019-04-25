@@ -13,6 +13,7 @@ import com.k_int.kbplus.auth.*;
 class DocController extends AbstractDebugController {
 
 	def springSecurityService
+	def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

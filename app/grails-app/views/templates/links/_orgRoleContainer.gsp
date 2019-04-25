@@ -21,7 +21,7 @@
                         </g:if>
                         <g:if test="${i.sub}">
                             <g:link controller="subscription" action="show" id="${i.sub.id}">
-                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
+                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.dropdownNamingConvention()}
                             </g:link>
                         </g:if>
                         <g:if test="${i.lic}">
@@ -35,7 +35,7 @@
                             </g:link>
                         </g:if>
 
-                        <g:if test="${i.getOwnerStatus()}">
+                        <g:if test="${i.getOwnerStatus() && !i.sub}">
                             (${i.getOwnerStatus().getI10n('value')})
                         </g:if>
                     </div>

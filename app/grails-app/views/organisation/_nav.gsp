@@ -21,7 +21,7 @@
 
     <%-- TODO: check ctx != foreign org --%>
     <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: params.id]}"
-                             orgPerm="ORG_BASIC,ORG_CONSORTIUM" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                             orgPerm="ORG_MEMBER,ORG_CONSORTIUM" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                              affiliation="INST_ADM" affiliationOrg="${orgInstance}"
                              message="org.nav.options" />
 
