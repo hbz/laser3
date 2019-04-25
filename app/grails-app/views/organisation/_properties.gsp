@@ -99,6 +99,7 @@
 </g:else>
 
 <%-- private properties --%>
+<g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">
@@ -124,6 +125,8 @@
         </div><!--.card-->
     </g:if>
 </g:each>
+
+</g:if>
 
 <%--<r:script>
     $(function(){
