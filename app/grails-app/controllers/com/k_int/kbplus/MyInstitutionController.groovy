@@ -1157,13 +1157,15 @@ from License as l where (
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgType)) {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
+
+            OrgRole orgRole
+            if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
             } else {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (org.save(flush: true)) {
+            if (orgRole.save(flush: true)) {
             } else {
                 log.error("Problem saving org links to license ${org.errors}");
             }

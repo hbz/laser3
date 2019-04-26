@@ -92,26 +92,7 @@ class ControlledListService {
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            String tenant
-            if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                try {
-                    tenant = s.getAllSubscribers().get(0).name
-                }
-                catch (IndexOutOfBoundsException e) {
-                    log.debug("Please check subscription #${s.id}")
-                }
-            }
-            else {
-                tenant = org.name
-            }
-            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
-                String dateString = ", "
-                if (s.startDate)
-                    dateString += sdf.format(s.startDate) + "-"
-                if (s.endDate)
-                    dateString += sdf.format(s.endDate)
-                result.results.add([name:"${s.name} (${tenant}${dateString})",value:s.class.name + ":" + s.id])
-            }
+            result.results.add([name:s.dropdownNamingConvention(),value:s.class.name + ":" + s.id])
         }
         result
     }
@@ -138,26 +119,7 @@ class ControlledListService {
             log.debug("issue entitlements found")
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                String tenant
-                if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                    try {
-                        tenant = s.getAllSubscribers().get(0).name
-                    }
-                    catch (IndexOutOfBoundsException e) {
-                        log.debug("Please check subscription #${s.id}")
-                    }
-                }
-                else {
-                    tenant = org.name
-                }
-                if(tenant) {
-                    String dateString = ", "
-                    if (s.startDate)
-                        dateString += sdf.format(s.startDate) + "-"
-                    if (s.endDate)
-                        dateString += sdf.format(s.endDate)
-                    issueEntitlements.results.add([name:"${res.tipp.title.title} (${tenant}${dateString})",value:res.class.name+":"+res.id])
-                }
+                issueEntitlements.results.add([name:s.dropdownNamingConvention(),value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements
@@ -217,27 +179,8 @@ class ControlledListService {
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            String tenant
-            if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                try {
-                    tenant = s.getAllSubscribers().get(0).name
-                }
-                catch (IndexOutOfBoundsException e) {
-                    log.debug("Please check subscription #${s.id}")
-                }
-            }
-            else {
-                tenant = org.name
-            }
-            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
-                s.packages.each { sp ->
-                    String dateString = ", "
-                    if (s.startDate)
-                        dateString += sdf.format(s.startDate) + "-"
-                    if (s.endDate)
-                        dateString += sdf.format(s.endDate)
-                    result.results.add([name:"${sp.pkg.name}/${s.name} (${tenant}${dateString})",value:sp.class.name + ":" + sp.id])
-                }
+            s.packages.each { sp ->
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()}",value:sp.class.name + ":" + sp.id])
             }
         }
         result
