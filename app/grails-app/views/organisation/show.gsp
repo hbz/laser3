@@ -84,6 +84,26 @@ ${orgInstance.name}
                 </div><!-- .card -->
             </g:if>
 
+            <div class="ui card">
+                <div class="content">
+                    <dl>
+                        <dt><g:message code="org.url.label"/></dt>
+                        <dd>
+                            <semui:xEditable owner="${orgInstance}" field="url"/>
+                        </dd>
+                    </dl>
+                    <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                        <dl>
+                            <dt><g:message code="org.urlGov.label"/></dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="urlGov"/>
+                            </dd>
+                        </dl>
+                    </g:if>
+                </div>
+            </div><!-- .card -->
+
+
             <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) && ((!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
                 <div class="ui card">
                     <div class="content">
@@ -373,12 +393,12 @@ ${orgInstance.name}
                                                        data-href="#personFormModalGeneralContactPerson"/>
 
                                                 <g:render template="/person/formModal"
-                                                          model="['tenant'            : contextOrg,
-                                                                  'org'               : orgInstance,
-                                                                  'isPublic'          : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                                  'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                                  'modalId'           : 'personFormModalGeneralContactPerson',
-                                                                  'hideFunctionTypeAndPositionAndOrg'  : true]"/>
+                                                          model="['tenant'                           : contextOrg,
+                                                                  'org'                              : orgInstance,
+                                                                  'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalGeneralContactPerson',
+                                                                  'hideFunctionTypeAndPositionAndOrg': true]"/>
 
                                                 <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalBillingContact')}"
@@ -386,12 +406,12 @@ ${orgInstance.name}
                                                        data-href="#personFormModalBillingContact"/>
 
                                                 <g:render template="/person/formModal"
-                                                          model="['tenant'            : contextOrg,
-                                                                  'org'               : orgInstance,
-                                                                  'isPublic'          : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                                  'presetFunctionType': RefdataValue.getByValueAndCategory('Billing contact', 'Person Function'),
-                                                                  'modalId'           : 'personFormModalBillingContact',
-                                                                  'hideFunctionTypeAndPositionAndOrg'  : true]"/>
+                                                          model="['tenant'                           : contextOrg,
+                                                                  'org'                              : orgInstance,
+                                                                  'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('Billing contact', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalBillingContact',
+                                                                  'hideFunctionTypeAndPositionAndOrg': true]"/>
 
                                             </div>
 
