@@ -513,20 +513,10 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.ids.each {io ->
                 if(io?.identifier?.ns?.ns == 'ISIL')
                 {
-                    if(!(io.identifier.value =~ /^DE-/ ) && io.identifier.value != 'Unknown')
-                    {
-                        io.identifier.value = 'DE-'+io.identifier.value.trim()
-                        io.save(flush: true)
-                    }
                     foundIsil = true
                 }
                 if(io?.identifier?.ns?.ns == 'wibid')
                 {
-                    if(!(io.identifier.value =~ /^WIBID/) && io.identifier.value != 'Unknown')
-                    {
-                        io.identifier.value = 'WIBID'+io.identifier.value.trim()
-                        io.save(flush: true)
-                    }
                     foundWibid = true
                 }
                 if(io?.identifier?.ns?.ns == 'ezb')
@@ -537,12 +527,18 @@ class OrganisationController extends AbstractDebugController {
 
             if(!foundIsil) {
                 orgInstance.checkAndAddMissingIdentifier('ISIL', 'Unknown')
+
+
             }
             if(!foundWibid) {
                 orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+
+
             }
             if(!foundEZB) {
                 orgInstance.checkAndAddMissingIdentifier('ezb', 'Unknown')
+
+
             }
 
             result.orgInstance = Org.get(orgInstance.id).refresh()
