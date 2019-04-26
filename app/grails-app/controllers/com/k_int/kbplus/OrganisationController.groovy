@@ -759,8 +759,8 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        params.sort = params.sort ?: 'referenceGroup'
-        params.order = params.order ?: 'asc'
+        params.sort = params.sort ?: 'dueDate'
+        params.order = params.order ?: 'desc'
 
         result.orgInstance = Org.get(params.id)
         result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
