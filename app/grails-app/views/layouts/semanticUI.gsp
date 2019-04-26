@@ -129,7 +129,7 @@
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveys" message="menu.my.surveys" />
+                                <semui:securedMainNavItem affiliation="INST_ADMs" controller="survey" action="currentSurveys" message="menu.my.surveys" />
 
 
                                 <div class="divider"></div>

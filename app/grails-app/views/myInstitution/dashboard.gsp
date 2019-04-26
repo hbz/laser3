@@ -102,7 +102,7 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER,ORG_BASIC,ORG_CONSORTIUM')}">
+        <g:if test="${false}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
                 ${2}
