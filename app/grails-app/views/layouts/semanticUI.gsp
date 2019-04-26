@@ -299,7 +299,12 @@
 
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
                                 ${message(code: "menu.institutions.affiliation_requests")}
-                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />
+                                <%--<g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />--%>
+                                <%
+                                    Object organisationService = grailsApplication.mainContext.getBean("organisationService")
+                                    Map affilRequestMap = organisationService.getPendingRequests(contextService.getUser(), contextService.getOrg())
+                                    int newAffiliationRequests = affilRequestMap?.pendingRequests?.size()
+                                %>
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                 </g:if>

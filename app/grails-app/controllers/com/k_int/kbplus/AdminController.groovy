@@ -32,6 +32,7 @@ class AdminController extends AbstractDebugController {
     def refdataService
     def propertyService
     def dataConsistencyService
+    def organisationService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -48,24 +49,10 @@ class AdminController extends AbstractDebugController {
             ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
+
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-
-        if (! result.user.hasRole('ROLE_ADMIN')) {
-            Org ctx = contextService.getOrg()
-
-            List <Org> orgList = Org.executeQuery('SELECT c.fromOrg from Combo c WHERE c.toOrg = :ctx', [ctx: ctx])
-            orgList.add(ctx)
-
-            result.pendingRequests = UserOrg.executeQuery(
-                    'SELECT uo FROM UserOrg uo WHERE uo.status = :status AND uo.org in (:orgList)',
-                    [status: UserOrg.STATUS_PENDING, orgList: orgList],
-                    [sort: 'dateRequested']
-            )
-        }
-        else {
-            result.pendingRequests = UserOrg.findAllByStatus(UserOrg.STATUS_PENDING, [sort: 'dateRequested'])
-        }
+        result << organisationService.getPendingRequests(result.user, contextService.getOrg())
 
         result
     }

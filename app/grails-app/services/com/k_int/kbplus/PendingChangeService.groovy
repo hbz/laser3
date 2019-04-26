@@ -259,13 +259,16 @@ class PendingChangeService {
                         log.debug("Update custom property ${targetProperty.type.name}")
 
                         if (changeDoc.type == RefdataValue.toString()){
-                            def propDef = targetProperty.type
-                            //def propertyDefinition = PropertyDefinition.findByName(changeDoc.name)
+                            def newProp = genericOIDService.resolveOID(changeDoc.new.class + ':' + changeDoc.new.id)
 
-                            def newProp =  genericOIDService.resolveOID(changeDoc.new)
-                            if (! newProp) {
-                                // Backward compatible
-                                newProp =  RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.new)
+                            // Backward compatible
+                            if (!newProp) {
+                                def propDef = targetProperty.type
+                                newProp = RefdataValue.getByValueAndCategory(changeDoc.newLabel, propDef.refdataCategory)
+                                // Fallback
+                                if (! newProp) {
+                                    newProp = RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.newLabel)
+                                }
                             }
                             targetProperty."${changeDoc.prop}" = newProp
                         }
