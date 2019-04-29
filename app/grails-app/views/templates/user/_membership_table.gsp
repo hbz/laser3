@@ -17,9 +17,13 @@
 
         <%
             int affiCount = 0
-            List comboOrgIds = Org.executeQuery(
-                    'select c.fromOrg.id from Combo c where c.toOrg = :org', [org: contextService.getOrg()]
-            )
+            List comboOrgIds = []
+
+            if (contextService.getOrg()) {
+                comboOrgIds = Org.executeQuery(
+                        'select c.fromOrg.id from Combo c where c.toOrg = :org', [org: contextService.getOrg()]
+                )
+            }
         %>
         <g:each in="${userInstance.affiliations}" var="aff">
             <g:if test="${tmplProfile || (editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
