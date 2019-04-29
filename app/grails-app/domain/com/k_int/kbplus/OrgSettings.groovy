@@ -16,7 +16,8 @@ class OrgSettings {
         API_LEVEL       (String),
         API_KEY         (String),
         API_PASSWORD    (String),
-        CUSTOMER_TYPE   (Role)
+        CUSTOMER_TYPE   (Role),
+        STATISTICS_SERVER_ACCESS (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type

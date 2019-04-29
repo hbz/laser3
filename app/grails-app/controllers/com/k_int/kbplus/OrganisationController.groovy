@@ -61,6 +61,15 @@ class OrganisationController extends AbstractDebugController {
 
         }
 
+        // adding default settings
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance,
+                    OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
+
         result.settings = OrgSettings.findAllByOrg(result.orgInstance)
 
         result
