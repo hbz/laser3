@@ -137,6 +137,11 @@
                     </g:else>
                 </div>
             </div>
+            <div class="two fields">
+                <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
+
+                <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+            </div>
         </g:if>
 
         <br/>
