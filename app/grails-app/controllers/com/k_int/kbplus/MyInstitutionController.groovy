@@ -1157,13 +1157,15 @@ from License as l where (
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgType)) {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
+
+            OrgRole orgRole
+            if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
             } else {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (org.save(flush: true)) {
+            if (orgRole.save(flush: true)) {
             } else {
                 log.error("Problem saving org links to license ${org.errors}");
             }
@@ -3311,7 +3313,43 @@ AND EXISTS (
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
 
+        result.editable = result.surveyResults.finishDate ? false : true
+
         result
+    }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyResultFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        result.surveyResults.each{
+
+           if(it.participant == result.institution) {
+               it.finishDate = new Date(System.currentTimeMillis())
+               it.save(flush: true)
+
+               flash.message = g.message(code: "default.notAutorized.message")
+           }
+        }
+
+
+        redirect action: 'surveyResult', id: result.surveyInfo.id
     }
 
 

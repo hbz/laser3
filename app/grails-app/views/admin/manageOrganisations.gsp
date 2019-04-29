@@ -148,6 +148,11 @@
                             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                                 println apiLevel.getValue()
                             }
+
+                            def statistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                            if (statistics != OrgSettings.SETTING_NOT_FOUND) {
+                                println '* Statistikserver'
+                            }
                         %>
                     </td>
 

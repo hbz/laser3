@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -19,7 +20,10 @@ class SurveyController {
     def filterService
     def docstoreService
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def currentSurveysConsortia() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -34,13 +38,16 @@ class SurveyController {
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
 
-        result.surveys  = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
         result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
 
         result
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def showSurveyInfo() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -63,7 +70,10 @@ class SurveyController {
 
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def locSurveyInfo() {
 
         def result = [:]
@@ -116,7 +126,10 @@ class SurveyController {
 
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def showSurveyConfig() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -149,7 +162,10 @@ class SurveyController {
 
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def addSurveyConfig() {
 
         def result = [:]
@@ -208,7 +224,7 @@ class SurveyController {
                     flash.error = g.message(code: "showSurveyConfig.exists")
                 }
             }
-            if (params.propertytoSub ) {
+            if (params.propertytoSub) {
                 def property = SurveyProperty.get(Long.parseLong(params.propertytoSub))
                 def surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfig))
 
@@ -260,6 +276,10 @@ class SurveyController {
         }
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteSurveyConfig() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -293,6 +313,10 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteSurveyPropfromSub() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -319,6 +343,10 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def addSurveyProperty() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -367,7 +395,10 @@ class SurveyController {
 
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def showSurveyParticipants() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -421,7 +452,10 @@ class SurveyController {
 
     }
 
-    @Secured(['ROLE_YODA'])
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def showSurveyConfigDocs() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -446,6 +480,10 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def addSurveyParticipants() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -478,6 +516,10 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def openSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -498,7 +540,10 @@ class SurveyController {
         result
     }
 
-
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def processOpenSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -514,12 +559,11 @@ class SurveyController {
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
-        result.surveyConfigs.each{ config ->
+        result.surveyConfigs.each { config ->
 
-            if(config?.type == 'Subscription')
-            {
+            if (config?.type == 'Subscription') {
 
-                config.orgIDs?.each{ orgID ->
+                config.orgIDs?.each { orgID ->
 
                     config?.surveyProperties?.each { property ->
 
@@ -534,28 +578,26 @@ class SurveyController {
 
                         if (surveyResult.save(flush: true)) {
                             log.debug(surveyResult)
-                        }else {
+                        } else {
                             log.debug(surveyResult)
                         }
                     }
 
                 }
 
-            }
-            else
-            {
-                config.orgIDs?.each{orgID ->
+            } else {
+                config.orgIDs?.each { orgID ->
 
                     def surveyResult = new SurveyResult(
                             owner: result.institution,
-                            participant: Org.get(orgID)?: null,
+                            participant: Org.get(orgID) ?: null,
                             startDate: result.surveyInfo.startDate,
                             endDate: result.surveyInfo.endDate,
                             type: config.surveyProperty,
                             surveyConfig: config
                     )
 
-                    if(surveyResult.save(flush: true)){
+                    if (surveyResult.save(flush: true)) {
 
                     }
 
@@ -574,7 +616,10 @@ class SurveyController {
 
     }
 
-
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteSurveyParticipants() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -607,7 +652,10 @@ class SurveyController {
 
     }
 
-
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def addSubMembers() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -641,6 +689,10 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteDocuments() {
 
         log.debug("deleteDocuments ${params}");
@@ -650,6 +702,10 @@ class SurveyController {
         redirect action: 'showSurveyConfigDocs', id: SurveyConfig.get(params.instanceId).surveyInfo.id, params: [surveyConfigID: params.instanceId]
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteSurveyInfo() {
 
         def result = [:]

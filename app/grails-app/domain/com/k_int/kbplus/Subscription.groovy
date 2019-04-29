@@ -397,7 +397,7 @@ class Subscription
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_BASIC','INST_EDITOR','ROLE_ADMIN'))
+                if(accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }
@@ -687,9 +687,9 @@ class Subscription
        period = period ? '('+period+')' : ''
 
 
+       String statusString = status ? status.getI10n('value') : RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').getI10n('value')
 
-       if(instanceOf)
-       {
+       if(instanceOf) {
            def additionalInfo
 
            if(contextOrg.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id))
@@ -699,11 +699,12 @@ class Subscription
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 
-           return name + ' - ' + status.getI10n('value') + ' ' +period + ' - ' + additionalInfo
 
-       }else {
+           return name + ' - ' + statusString + ' ' +period + ' - ' + additionalInfo
 
-           return name + ' - ' + status.getI10n('value') + ' ' +period
+       } else {
+
+           return name + ' - ' + statusString + ' ' +period
        }
    }
 

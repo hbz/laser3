@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -76,77 +76,191 @@
 <br>
 
 <h3>
-<p>
-    <g:message code="surveyResult.info" args="[surveyInfo?.owner]"/>
-</p>
+    <p>
+        <g:message code="surveyResult.info" args="[surveyInfo?.owner]"/>
+    </p>
 </h3>
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'surveyResult.list')} <semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfig.label')} <semui:totalNumber
         total="${surveyResults.size()}"/></h2>
 
+<br>
+
 <div class="ui grid">
-    <table class="ui celled sortable table la-table">
-        <thead>
-        <tr>
-            <th class="center aligned">
-                ${message(code: 'surveyConfig.configOrder.label')}
-            </th>
-            <th>${message(code: 'surveyProperty.name.label')}</th>
-            <th>${message(code: 'surveyProperty.type.label')}</th>
-            <th></th>
-            <th></th>
 
-        </tr>
+    <semui:form>
+        <div class="ui container">
+            <div class="ui divided items">
+                <g:each in="${surveyResults}" var="surveyResult" status="i">
+                    <div class="item ">
 
-        </thead>
-
-        <g:each in="${surveyResults}" var="surveyResult" status="i">
-
-
-            <tr>
-                <td class="center aligned">
-                    ${i+1}
-                </td>
-                <td>
-                    <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
-                        <g:link controller="subscription" action="show"
-                                id="${surveyResult.surveyConfig?.subscription?.id}">${surveyResult.surveyConfig?.subscription?.dropdownNamingConvention()}</g:link>
-                    </g:if>
-
-                    <g:if test="${surveyResult.surveyConfig?.type == 'SurveyProperty'}">
-                        ${surveyResult.surveyConfig?.surveyProperty?.getI10n('name')}
-                    </g:if>
-
-                </td>
-                <td>
-                    ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyResult.surveyConfig?.type)}
-
-                    <g:if test="${surveyResult.surveyConfig?.surveyProperty}">
-                        <br>
-                        <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyResult.surveyConfig?.surveyProperty?.type)}</b>
-
-                        <g:if test="${surveyResult.surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult.surveyConfig?.surveyProperty?.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br>
-                            (${refdataValues.join('/')})
+                        <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+                            <div class="ui icon">
+                                <i class="circular orange inverted icon folder open"></i>
+                            </div>
                         </g:if>
-                    </g:if>
 
-                </td>
-                <td>
-                </td>
-            </tr>
+                        <g:if test="${surveyResult.surveyConfig?.type == 'SurveyProperty'}">
+                            <div class="ui icon">
+
+                            </div>
+                        </g:if>
+
+                        <div class="content">
+
+                            <g:set var="childSub"
+                                   value="${surveyResult.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
+
+                            <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+
+                                <g:if test="${childSub}">
+                                    <g:link controller="subscription" class="header" action="show"
+                                            id="${childSub?.id}">${childSub?.dropdownNamingConvention()}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <a class="header">
+                                        ${surveyResult.surveyConfig?.subscription?.dropdownNamingConvention()}
+                                    </a>
+                                </g:else>
+                            </g:if>
+
+                            <g:if test="${surveyResult.surveyConfig?.type == 'SurveyProperty'}">
+                                <a class="header">${surveyResult.surveyConfig?.surveyProperty?.getI10n('name')}</a>
+                            </g:if>
+
+                            <div class="meta">
+                                <div class="ui label blue">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyResult.surveyConfig?.type)}</div>
+
+                            </div>
+
+                            <div class="description">
+
+                                <div class="ui ">
+
+                                    <g:if test="${surveyResult.type?.introduction || surveyResult.type?.explain || surveyResult.type?.comment}">
+                                        <i class="circular info inverted icon la-popup-tooltip la-delay"
+                                           data-html="<div class='ui three column divided center aligned grid'>
+                                                    <div class='column'>
+                                                        <h4 class='ui header'>${g.message(code: 'surveyProperty.introduction.label')}</h4>
+                                                        <p>${surveyResult.type?.introduction}</p>
+
+                                                    </div>
+                                                    <div class='column'>
+                                                        <h4 class='ui header'>${g.message(code: 'surveyProperty.explain.label')}</h4>
+                                                        <p>${surveyResult.type?.explain}</p>
+
+                                                    </div>
+                                                    <div class='column'>
+                                                        <h4 class='ui header'>${g.message(code: 'surveyProperty.comment.label')}</h4>
+                                                        <p>${surveyResult.type?.comment}</p>
+
+                                                    </div>
+                                        </div>"
+                                           data-variation="wide"></i>
+                                    </g:if>
+
+                                    ${surveyResult.type?.getI10n('name')}
+
+                                    <g:if test="${surveyResult.type?.type == Integer.toString()}">
+                                        <semui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
+                                    </g:if>
+                                    <g:elseif test="${surveyResult.type?.type == String.toString()}">
+                                        <semui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${surveyResult.type?.type == BigDecimal.toString()}">
+                                        <semui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${surveyResult.type?.type == Date.toString()}">
+                                        <semui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${surveyResult.type?.type == URL.toString()}">
+                                        <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
+                                                         overwriteEditable="${overwriteEditable}"
+                                                         class="la-overflow la-ellipsis"/>
+                                        <g:if test="${surveyResult.value}">
+                                            <semui:linkIcon/>
+                                        </g:if>
+                                    </g:elseif>
+                                    <g:elseif test="${surveyResult.type?.type == RefdataValue.toString()}">
+                                        <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
+                                                                config="${surveyResult.type?.refdataCategory}"/>
+                                    </g:elseif>
+                                </div>
+                            </div>
+
+                            <div class="extra">
+
+                                <br>
+                                <g:message code="surveyResult.comment"/>: <semui:xEditable owner="${surveyResult}"
+                                                                                           type="textarea"
+                                                                                           field="comment"/>
 
 
-        </g:each>
-    </table>
+                                <br>
+
+                                <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+                                    <g:if test="${childSub}">
+
+                                        <g:each in="${childSub?.packages?.sort { it?.pkg?.name }}" var="sp"
+                                                status="ind">
+                                            <div class="la-flexbox">
+                                                <i class="icon gift la-list-icon"></i>
+                                                <g:link controller="subscription" action="index" id="${childSub.id}"
+                                                        params="[pkgfilter: sp.pkg?.id]"
+                                                        title="${sp.pkg?.contentProvider?.name}">
+                                                    ${sp.pkg.name}
+                                                </g:link>
+                                            </div>
+                                        </g:each>
+                                    </g:if>
+                                    <g:else>
+                                        <g:each in="${surveyResult.surveyConfig?.subscription?.packages?.sort {
+                                            it?.pkg?.name
+                                        }}" var="sp" status="ind">
+                                            <div class="la-flexbox">
+                                                <i class="icon gift la-list-icon"></i>
+                                                <g:link controller="public" action="gascoDetailsIssueEntitlements"
+                                                        id="${sp?.id}"
+                                                        title="${sp?.pkg?.contentProvider?.name}">
+                                                    ${sp?.pkg?.name}
+                                                </g:link>
+                                            </div>
+                                        </g:each>
+                                    </g:else>
+                                </g:if>
+
+                                <br>
+                                <g:each in="${surveyResult.surveyConfig?.getCurrentDocs().sort { it?.owner?.title }}"
+                                        var="docctx" status="s">
+
+                                    <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
+
+                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                class="ui icon mini button ">
+                                            <i class="download icon"></i>
+                                            ${docctx.owner.title ?: docctx.owner.filename}
+                                            (${docctx.owner?.type?.getI10n('value')})
+
+                                        </g:link>
+                                    </g:if>
+                                </g:each>
+
+                            </div>
+                        </div>
+                    </div>
+                </g:each>
+            </div>
+        </div>
+
+    </semui:form>
+
+    <g:if test="${editable}">
+        <g:link controller="myInstitution" action="surveyResultFinish" id="${surveyInfo.id}"
+                class="ui button">${message(code: 'surveyResult.finish')}</g:link>
+    </g:if>
+
 </div>
 
 <br>

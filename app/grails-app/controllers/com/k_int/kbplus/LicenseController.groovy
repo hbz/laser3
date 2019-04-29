@@ -35,7 +35,7 @@ class LicenseController extends AbstractDebugController {
     def contextService
     def addressbookService
     def filterService
-    def selectListQueryService
+    def controlledListService
     def orgTypeService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -182,21 +182,16 @@ class LicenseController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //def task_licensorFilter = task {
 
-            def licensee = result.license.getLicensee();
-            def consortia = result.license.getLicensingConsortium();
-            //a new query builder service for selection lists has been introduced
-            String subscrQuery = selectListQueryService.buildSubscriptionList(consortia, result.license.subscriptions)
+        //a new query builder service for selection lists has been introduced
+        result.availableSubs = controlledListService.getSubscriptions(params+[status:RDStore.SUBSCRIPTION_CURRENT]).results
 
-            //inject here: all picked entries
-            result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: result.contextOrg])
-
-            result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
-                    OrgRole.executeQuery(
-                            "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
-                            [lic: result.license.id]
-                    ))
-            result.existingLicensorIdList = []
-            // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
+        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
+                OrgRole.executeQuery(
+                        "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
+                        [lic: result.license.id]
+                ))
+        result.existingLicensorIdList = []
+        // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
        // }
 
         List bm = du.stopBenchMark()

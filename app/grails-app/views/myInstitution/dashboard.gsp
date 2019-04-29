@@ -102,10 +102,10 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER,ORG_BASIC')}">
+        <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
-                ${surveys?.size()}
+                ${surveys.groupBy { it.surveyConfig.surveyInfo.id }?.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
         </g:if>
@@ -316,7 +316,7 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER,ORG_BASIC')}">
+        <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
 
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
                 <div>
