@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -86,6 +86,8 @@
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfig.label')} <semui:totalNumber
         total="${surveyResults.size()}"/></h2>
 
+<br>
+
 <div class="ui grid">
 
     <semui:form>
@@ -108,10 +110,10 @@
 
                         <div class="content">
 
-                            <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+                            <g:set var="childSub"
+                                   value="${surveyResult.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
 
-                                <g:set var="childSub"
-                                       value="${surveyResult.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
+                            <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
 
                                 <g:if test="${childSub}">
                                     <g:link controller="subscription" class="header" action="show"
@@ -138,8 +140,8 @@
                                 <div class="ui ">
 
                                     <g:if test="${surveyResult.type?.introduction || surveyResult.type?.explain || surveyResult.type?.comment}">
-                                    <i class="circular info inverted icon la-popup-tooltip la-delay"
-                                       data-html="<div class='ui three column divided center aligned grid'>
+                                        <i class="circular info inverted icon la-popup-tooltip la-delay"
+                                           data-html="<div class='ui three column divided center aligned grid'>
                                                     <div class='column'>
                                                         <h4 class='ui header'>${g.message(code: 'surveyProperty.introduction.label')}</h4>
                                                         <p>${surveyResult.type?.introduction}</p>
@@ -156,7 +158,7 @@
 
                                                     </div>
                                         </div>"
-                                       data-variation="wide"></i>
+                                           data-variation="wide"></i>
                                     </g:if>
 
                                     ${surveyResult.type?.getI10n('name')}
@@ -198,9 +200,38 @@
 
                                 <br>
 
+                                <g:if test="${surveyResult.surveyConfig?.type == 'Subscription'}">
+                                    <g:if test="${childSub}">
 
+                                        <g:each in="${childSub?.packages?.sort { it?.pkg?.name }}" var="sp"
+                                                status="ind">
+                                            <div class="la-flexbox">
+                                                <i class="icon gift la-list-icon"></i>
+                                                <g:link controller="subscription" action="index" id="${childSub.id}"
+                                                        params="[pkgfilter: sp.pkg?.id]"
+                                                        title="${sp.pkg?.contentProvider?.name}">
+                                                    ${sp.pkg.name}
+                                                </g:link>
+                                            </div>
+                                        </g:each>
+                                    </g:if>
+                                    <g:else>
+                                        <g:each in="${surveyResult.surveyConfig?.subscription?.packages?.sort {
+                                            it?.pkg?.name
+                                        }}" var="sp" status="ind">
+                                            <div class="la-flexbox">
+                                                <i class="icon gift la-list-icon"></i>
+                                                <g:link controller="public" action="gascoDetailsIssueEntitlements"
+                                                        id="${sp?.id}"
+                                                        title="${sp?.pkg?.contentProvider?.name}">
+                                                    ${sp?.pkg?.name}
+                                                </g:link>
+                                            </div>
+                                        </g:each>
+                                    </g:else>
+                                </g:if>
 
-
+                                <br>
                                 <g:each in="${surveyResult.surveyConfig?.getCurrentDocs().sort { it?.owner?.title }}"
                                         var="docctx" status="s">
 
@@ -222,7 +253,13 @@
                 </g:each>
             </div>
         </div>
+
     </semui:form>
+
+    <g:if test="${editable}">
+        <g:link controller="myInstitution" action="surveyResultFinish" id="${surveyInfo.id}"
+                class="ui button">${message(code: 'surveyResult.finish')}</g:link>
+    </g:if>
 
 </div>
 
