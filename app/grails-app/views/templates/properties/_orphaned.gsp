@@ -158,6 +158,12 @@
                                               update="${custom_props_div}">
                                 </g:remoteLink>
                             </g:if>
+                            <g:else>
+                                <div class="ui icon button la-hidden">
+                                    <i class="coffee icon"></i>
+                                </div>
+
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>
