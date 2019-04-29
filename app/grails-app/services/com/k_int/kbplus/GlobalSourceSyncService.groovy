@@ -5,6 +5,7 @@ import de.laser.oai.OaiClient
 import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 import org.springframework.transaction.annotation.*
+import de.laser.helper.RDStore
 
 import java.text.SimpleDateFormat
 
@@ -66,7 +67,7 @@ class GlobalSourceSyncService {
                 def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
                 def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
                 def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
-                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def start_date
                 def end_date
 
@@ -103,7 +104,7 @@ class GlobalSourceSyncService {
             // Title History Events are IMMUTABLE - so we delete them rather than updating them.
             def base_query = "select the from TitleHistoryEvent as the where"
             // Need to parse date...
-            def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             def query_params = []
 
             if (historyEvent.date && historyEvent.date.trim().length() > 0) {
@@ -249,7 +250,7 @@ class GlobalSourceSyncService {
     //tracker, old_rec_info, new_record_info)
     def packageReconcile = { grt, oldpkg, newpkg ->
         def pkg = null;
-        boolean auto_accept_flag = false
+        boolean auto_accept_flag = true
 
         log.debug("Reconciling new Package!")
 
@@ -262,6 +263,15 @@ class GlobalSourceSyncService {
         def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
         def isPublic = RefdataValue.loc('YN', [en: 'Yes', de: 'Ja'])
         def ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
+
+        //we should now first setup the provider and then proceed to package
+        Org provider
+        def orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
+        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+        def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
+        if(newpkg.packageProvider) {
+            provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
+        }
 
         // Firstly, make sure that there is a package for this record
         if (grt.localOid != null) {
@@ -302,11 +312,6 @@ class GlobalSourceSyncService {
                 }
 
                 if (newpkg.packageProvider && grailsApplication.config.globalDataSync.replaceLocalImpIds.Org) {
-
-                    def orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-                    def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-                    def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
-                    def provider = Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
 
                     setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
                 }
@@ -356,11 +361,6 @@ class GlobalSourceSyncService {
 
                 if (newpkg.packageProvider) {
 
-                    def orgSector = RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')
-                    def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-                    def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
-                    def provider = Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
-
                     OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
 
                     setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
@@ -375,7 +375,7 @@ class GlobalSourceSyncService {
         }
 
         def onNewTipp = { ctx, tipp, auto_accept ->
-            def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            def sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
             log.debug("new tipp: ${tipp}");
             log.debug("identifiers: ${tipp.title.identifiers}");
 
@@ -404,7 +404,7 @@ class GlobalSourceSyncService {
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
             def tipp_status_str = tipp.status ? tipp.status.capitalize() : 'Current'
-            def tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, tipp_status_str);
+            RefdataValue tipp_status = RefdataValue.getByValueAndCategory(tipp_status_str,RefdataCategory.TIPP_STATUS)
 
             if (auto_accept) {
                 TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
@@ -490,7 +490,7 @@ class GlobalSourceSyncService {
 
         def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept ->
             log.debug("updated tipp, ctx = ${ctx.toString()}");
-
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
             // Find title with ID tipp... in package ctx
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
@@ -541,78 +541,125 @@ class GlobalSourceSyncService {
                 } else if (tipp.status == 'Retired') {
                     tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
                 }
+                if(!auto_accept) {
+                    def changetext
+                    def change_doc = [:]
 
-                def changetext
-                def change_doc = [:]
+                    def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
+                    def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                    def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
+                    def changeTitle = false
 
-                def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
-                def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
-                def changeTitle = false
+                    changes.each { chg ->
 
-                changes.each { chg ->
+                        if ("${chg.field}" == "accessStart") {
+                            changetext = changetext ? changetext + ", accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})" : "accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})"
+                            change_doc.put("accessStartDate", tipp.accessStart)
+                        }
+                        if ("${chg.field}" == "accessEnd") {
+                            changetext = changetext ? changetext + ", accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})" : "accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})"
+                            change_doc.put("accessEndDate", tipp.accessEnd)
 
-                    if ("${chg.field}" == "accessStart") {
-                        changetext = changetext ? changetext + ", accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})" : "accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})"
-                        change_doc.put("accessStartDate", tipp.accessStart)
+                        }
+                        if ("${chg.field}" == "coverage") {
+                            changetext = changetext ?
+                                    changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} " +
+                                            ", End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" :
+                                    "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
+                            change_doc.put("startDate", tipp.coverage[0].startDate)
+                            change_doc.put("startVolume", tipp.coverage[0].startVolume)
+                            change_doc.put("startIssue", tipp.coverage[0].startIssue)
+                            change_doc.put("endDate", tipp.coverage[0].endDate)
+                            change_doc.put("endVolume", tipp.coverage[0].endVolume)
+                            change_doc.put("endIssue", tipp.coverage[0].endIssue)
+                            change_doc.put("embargo", tipp.coverage[0].embargo)
+                            change_doc.put("coverageDepth", tipp.coverage[0].coverageDepth)
+                            change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
+                        }
+                        if ("${chg.field}" == "hostPlatformURL") {
+                            changetext = changetext ? changetext + ", URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})" : "URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})"
+                            change_doc.put("hostPlatformURL", tipp.url)
+
+                        }
+                        if ("${chg.field}" == "titleName") {
+                            changeTitle = true
+                            announcement_content_changeTitle += "<li>${messageSource.getMessage("announcement.title.TitleChange", [chg.oldValue, chg.newValue] as Object[], "Title was change from {0} to {1}.", locale)}</li>"
+                            title_of_tipp_to_update.title = tipp?.title?.name
+                            title_of_tipp_to_update.save(flush: true)
+                        }
+
                     }
-                    if ("${chg.field}" == "accessEnd") {
-                        changetext = changetext ? changetext + ", accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})" : "accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})"
-                        change_doc.put("accessEndDate", tipp.accessEnd)
 
-                    }
-                    if ("${chg.field}" == "coverage") {
-                        changetext = changetext ?
-                                changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} " +
-                                        ", End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" :
-                                "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
-                        change_doc.put("startDate", tipp.coverage[0].startDate)
-                        change_doc.put("startVolume", tipp.coverage[0].startVolume)
-                        change_doc.put("startIssue", tipp.coverage[0].startIssue)
-                        change_doc.put("endDate", tipp.coverage[0].endDate)
-                        change_doc.put("endVolume", tipp.coverage[0].endVolume)
-                        change_doc.put("endIssue", tipp.coverage[0].endIssue)
-                        change_doc.put("embargo", tipp.coverage[0].embargo)
-                        change_doc.put("coverageDepth", tipp.coverage[0].coverageDepth)
-                        change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
-                    }
-                    if ("${chg.field}" == "hostPlatformURL") {
-                        changetext = changetext ? changetext + ", URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})" : "URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})"
-                        change_doc.put("hostPlatformURL", tipp.url)
-
-                    }
-                    if ("${chg.field}" == "titleName") {
-                        changeTitle = true
-                        announcement_content_changeTitle += "<li>${messageSource.getMessage("announcement.title.TitleChange", [chg.oldValue, chg.newValue] as Object[], "Title was change from {0} to {1}.", locale)}</li>"
-                        title_of_tipp_to_update.title = tipp?.title?.name
-                        title_of_tipp_to_update.save(flush: true)
+                    if (changeTitle) {
+                        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+                        def newAnnouncement = new Doc(title: 'Automated Announcement',
+                                type: announcement_type,
+                                content: announcement_content_changeTitle + "</ul></p>",
+                                dateCreated: new Date(),
+                                user: User.findByUsername('admin')).save(flush: true);
                     }
 
+                    if (change_doc) {
+                        changeNotificationService.registerPendingChange(
+                                PendingChange.PROP_PKG,
+                                ctx,
+                                // pendingChange.message_GS02
+                                "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update?.title}\", ${changetext}, Status: ${tippStatus}",
+                                null,
+                                [
+                                        changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
+                                        changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
+                                        changeDoc   : change_doc
+                                ])
+                    } else if (!change_doc && !changeTitle) {
+                        throw new RuntimeException("changes could not be recorded but there are some??? ctx:${ctx}, tipp:${tipp}");
+                    }
                 }
+                else {
+                    //currently, we should generate Pending Changes only on Issue Entitlement level ... so go one level deeper!
+                    TitleInstancePackagePlatform currTIPP = (TitleInstancePackagePlatform) db_tipp
+                    currTIPP.pkg = ctx
+                    TitleInstance titleInstance = TitleInstance.findByGokbId(tipp.title?.gokbId)
 
-                if (changeTitle) {
-                    def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-                    def newAnnouncement = new Doc(title: 'Automated Announcement',
-                            type: announcement_type,
-                            content: announcement_content_changeTitle + "</ul></p>",
-                            dateCreated: new Date(),
-                            user: User.findByUsername('admin')).save(flush: true);
-                }
+                    if (!titleInstance) {
+                        titleInstance = new TitleInstance(identifiers: tipp.title.identifiers,name: tipp.title.name,titleType: tipp.title.titleType,gokbId: tipp.title.gokbId)
+                        titleInstance.save(flush:true,failOnError: true)
+                    }
+                    println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${titleInstance}");
+                    currTIPP.title = titleInstance
+                    currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(),'TIPP Status') : RDStore.TIPP_STATUS_CURRENT
+                    currTIPP.impId = tipp.tippUuid ?: tipp.tippId
+                    currTIPP.gokbId = tipp.tippUuid ?: null
+                    currTIPP.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
+                    currTIPP.accessEndDate = ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
 
-                if (change_doc) {
-                    changeNotificationService.registerPendingChange(
-                            PendingChange.PROP_PKG,
-                            ctx,
-                            // pendingChange.message_GS02
-                            "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update?.title}\", ${changetext}, Status: ${tippStatus}",
-                            null,
-                            [
-                                    changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                                    changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
-                                    changeDoc   : change_doc
-                            ])
-                } else if (!change_doc && !changeTitle) {
-                    throw new RuntimeException("changes could not be recorded but there are some??? ctx:${ctx}, tipp:${tipp}");
+                    // We rely upon there only being 1 coverage statement for now, it seems likely this will need
+                    // to change in the future. Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014
+                    // tipp.coverage.each { cov ->
+                    def cov = tipp.coverage[0]
+                    currTIPP.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null
+                    currTIPP.startVolume = cov.startVolume
+                    currTIPP.startIssue = cov.startIssue
+                    currTIPP.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null
+                    currTIPP.endVolume = cov.endVolume
+                    currTIPP.endIssue = cov.endIssue
+                    currTIPP.embargo = cov.embargo
+                    currTIPP.coverageDepth = cov.coverageDepth
+                    currTIPP.coverageNote = cov.coverageNote
+                    // }
+                    currTIPP.hostPlatformURL = tipp.url
+
+                    currTIPP.save(flush: true, failOnError: true)
+
+                    if (tipp.tippId) {
+                        def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
+
+                        if (tipp_id) {
+                            def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save(flush: true)
+                        } else {
+                            log.error("Error creating identifier instance for new TIPP!")
+                        }
+                    }
                 }
             } else {
                 throw new RuntimeException("Unable to locate TIPP for update. ctx:${ctx}, tipp:${tipp}");
@@ -637,10 +684,10 @@ class GlobalSourceSyncService {
               title_of_tipp_to_update.save(flush: true)
             }*/
 
-            def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+            def tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
 
             if (tipp.status == 'Retired') {
-                TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+                tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
             }
 
             def db_tipp = null
@@ -656,22 +703,29 @@ class GlobalSourceSyncService {
                 db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
             }
 
-            if (db_tipp != null && !(db_tipp.status.equals(TippStatus))) {
+            if (db_tipp != null && !(db_tipp.status.equals(tippStatus))) {
+                if(!auto_accept) {
 
-                def change_doc = [status: TippStatus]
+                    def change_doc = [status: tippStatus]
 
-                changeNotificationService.registerPendingChange(
-                        PendingChange.PROP_PKG,
-                        ctx,
-                        // pendingChange.message_GS03
-                        "Eine Statusänderung für den TIPP mit dem Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
-                        null,
-                        [
-                                changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                                changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
-                                changeDoc   : change_doc
-                        ])
-                log.debug("deleted tipp");
+                    changeNotificationService.registerPendingChange(
+                            PendingChange.PROP_PKG,
+                            ctx,
+                            // pendingChange.message_GS03
+                            "Eine Statusänderung für den TIPP mit dem Titel \"${title_of_tipp_to_update.title}\", Status: ${tippStatus}",
+                            null,
+                            [
+                                    changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
+                                    changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
+                                    changeDoc   : change_doc
+                            ])
+                    log.debug("deleted tipp with pending change");
+                }
+                else {
+                    db_tipp.status = tippStatus
+                    db_tipp.save(flush: true)
+                    log.debug("deleted tipp w/o pending change")
+                }
             }
 
         }
@@ -1114,7 +1168,7 @@ class GlobalSourceSyncService {
                             rectype: sync_obj.rectype,
                             record: baos.toByteArray(),
                             kbplusCompliant: kbplus_compliant,
-                            globalRecordInfoStatus: status);
+                            globalRecordInfoStatus: status)
 
                     if (existing_record_info.save(flush: true)) {
                         log.debug("existing_record_info created ok");

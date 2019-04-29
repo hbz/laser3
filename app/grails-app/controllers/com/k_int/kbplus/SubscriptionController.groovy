@@ -10,6 +10,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import de.laser.oai.OaiClientLaser
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -1837,6 +1838,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
+        //to be deployed in prallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
@@ -1846,13 +1848,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
                 if (!gri) {
-                    redirect(url: request.getHeader('referer'))
-                    flash.error = message(code: 'subscription.details.link.no_works', default: "Package can not be linked right now. Try again later.")
-                    return
+                    OaiClientLaser oaiClient = new OaiClientLaser()
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
+                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
+                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
+                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
+                    ObjectOutputStream out = new ObjectOutputStream(baos)
+                    out.writeObject(parsedRec.parsedRec)
+                    out.close()
+                    gri = new GlobalRecordInfo(
+                            ts: sdf.parse(rec.header.datestamp.text()),
+                            name: parsedRec.title,
+                            identifier: rec.header.identifier.text(),
+                            uuid: rec.header.uuid?.text() ?: null,
+                            desc: "${parsedRec.title}",
+                            source: grs,
+                            rectype: grs.rectype,
+                            record: baos.toByteArray(),
+                            kbplusCompliant: kbplusCompliant,
+                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status,"Package Status")
+                    )
+                    flash.message = message(code:'subscription.details.link.no_package_yet')
+                    gri.save(flush: true)
                 }
                 def grt = GlobalRecordTracker.findByOwner(gri)
                 if (!grt) {
-                    def new_tracker_id = java.util.UUID.randomUUID().toString()
+                    def new_tracker_id = UUID.randomUUID().toString()
 
                     grt = new GlobalRecordTracker(
                             owner: gri,
@@ -1862,19 +1885,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
                             autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
                             autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (grt.save()) {
-                        globalSourceSyncService.initialiseTracker(grt);
-                        //Update INDEX ES
-                        dataloadService.updateFTIndexes();
-                    } else {
+                    if (!grt.save()) {
                         log.error(grt.errors)
                     }
                 }
 
-                if (!Package.findByGokbId(grt.owner.uuid)) {
-                    globalSourceSyncService.initialiseTracker(grt);
+                if(Package.findByGokbId(grt.owner.uuid)) {
+                    executorWrapperService.processClosure({
+                        globalSourceSyncService.initialiseTracker(grt)
+                        //Update INDEX ES
+                        dataloadService.updateFTIndexes()
+                    },Package.findByGokbId(grt.owner.uuid))
+                }
+                else {
+                    //setup new
+                    globalSourceSyncService.initialiseTracker(grt)
                     //Update INDEX ES
-                    dataloadService.updateFTIndexes();
+                    dataloadService.updateFTIndexes()
                 }
 
                 def pkg_to_link = Package.findByGokbId(grt.owner.uuid)

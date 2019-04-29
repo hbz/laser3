@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ExecutorWrapperService {
 
 	def executorService
+	def genericOIDService
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 
 	def processClosure(clos,owner){
@@ -20,7 +21,7 @@ class ExecutorWrapperService {
 			//if a previous process for this owner is done, remove it and start new one
 			if(existingFuture.isDone()){
 				activeFuture.remove(newOwner)
-				processClosure(clos,newOwner)
+				processClosure(clos,genericOIDService.resolveOID(newOwner))
 			}
 			//if not done, do something else
 		}
