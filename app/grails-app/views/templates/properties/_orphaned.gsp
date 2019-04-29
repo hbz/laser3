@@ -107,9 +107,9 @@
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
-                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                    <span data-position="top right">
                                         <button class="ui icon button js-open-confirm-modal-copycat">
-                                            <i class="thumbtack icon"></i>
+                                            <i class="icon la-thumbtack slash"></i>
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"
@@ -124,7 +124,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay"  data-content="${message(code:'property.audit.on.tooltip')}">
                                         <button class="ui icon button green js-open-confirm-modal-copycat">
                                             <i class="thumbtack icon"></i>
                                         </button>
