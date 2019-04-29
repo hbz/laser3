@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import org.apache.commons.logging.LogFactory
 
+import javax.persistence.Transient
+
 class Identifier {
 
   IdentifierNamespace ns
@@ -30,6 +32,23 @@ class Identifier {
 
   def beforeUpdate() {
     value = value?.trim()
+
+      if(this.ns?.ns == 'wibid')
+      {
+          if(!(this.value =~ /^WIB/) && this.value != '')
+          {
+              this.value = 'WIB'+this.value.trim()
+          }
+      }
+
+      if(this.ns?.ns == 'ISIL')
+      {
+          if(!(this.value =~ /^DE-/ ) && this.value != '')
+          {
+              this.value = 'DE-'+this.value.trim()
+          }
+      }
+
   }
 
   static def lookupOrCreateCanonicalIdentifier(ns, value) {
@@ -111,4 +130,29 @@ class Identifier {
 
         result
     }
+
+    @Transient
+    def afterInsert = {
+
+        if(this.ns?.ns == 'wibid')
+        {
+            if(this.value == 'Unknown')
+            {
+                this.value = ''
+                this.save()
+            }
+        }
+
+        if(this.ns?.ns == 'ISIL')
+        {
+            if(this.value == 'Unknown')
+            {
+                this.value = ''
+                this.save()
+            }
+        }
+    }
+
+
+
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore" %>
+<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
   <head>
@@ -208,7 +208,16 @@
                             <i class="copy icon"></i>
                         </g:link>
                         </span>
-                        <g:if test="${! l.subscriptions && orgRoles.get(l) in [RDStore.OR_LICENSOR,RDStore.OR_LICENSING_CONSORTIUM]}">
+                        <%
+                            boolean isLicTenant = false
+                            if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL && l.getLicensingConsortium().id == institution.id) {
+                                isLicTenant = true
+                            }
+                            else if(l.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && orgRoles.get(l) in [RDStore.OR_LICENSEE]) {
+                                isLicTenant = true
+                            }
+                        %>
+                        <g:if test="${! l.subscriptions && isLicTenant}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-term-what="license"
                                     data-confirm-term-what-detail="${l.reference}"

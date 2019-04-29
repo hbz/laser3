@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Contact" %>
 
-<semui:modal id="contactFormModal"
+<semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
 
     <g:form class="ui form" url="[controller: 'contact', action: 'create']" method="POST">

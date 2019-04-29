@@ -715,7 +715,7 @@ from License as l where (
         if ( params.exportXLS ) {
 
             //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls")
             wb.write(response.outputStream)
@@ -1157,13 +1157,15 @@ from License as l where (
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgType)) {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
+
+            OrgRole orgRole
+            if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: lic_cons_role)
             } else {
-                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
+                orgRole = new OrgRole(lic: licenseInstance,org:org,roleType: licensee_role)
             }
 
-            if (org.save(flush: true)) {
+            if (orgRole.save(flush: true)) {
             } else {
                 log.error("Problem saving org links to license ${org.errors}");
             }
@@ -3562,7 +3564,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             List orgs = (List) result.availableOrgs
             SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -3658,7 +3660,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if ( params.exportXLS ) {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
