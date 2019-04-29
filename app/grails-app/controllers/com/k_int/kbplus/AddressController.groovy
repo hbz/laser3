@@ -12,6 +12,7 @@ class AddressController extends AbstractDebugController {
 
 	def springSecurityService
 	def addressbookService
+    def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 

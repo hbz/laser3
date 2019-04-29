@@ -77,23 +77,20 @@ class SemanticUiSubNavTagLib {
 
         if (!check) {
 
-            if (attrs.affiliation && attrs.affiliationOrg) {
-                if (contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)) {
+            if (attrs.affiliation && attrs.orgPerm) {
+                if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
                     check = true
                 }
             }
-            else {
-                if (attrs.affiliation && attrs.orgPerm) {
-                    if (contextService.getUser()?.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
-                        check = true
-                    }
-                }
-                else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
-                    check = true
-                }
-                else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
-                    check = true
-                }
+            else if (attrs.affiliation && contextService.getUser()?.hasAffiliation(attrs.affiliation)) {
+                check = true
+            }
+            else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
+                check = true
+            }
+
+            if (attrs.affiliation && attrs.affiliationOrg && check) {
+                check = contextService.getUser()?.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
             }
         }
 

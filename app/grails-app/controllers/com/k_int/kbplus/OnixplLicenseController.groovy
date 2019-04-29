@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 class OnixplLicenseController extends AbstractDebugController {
 
     def springSecurityService
+    def contextService
 
     @Secured(['ROLE_ADMIN'])
     def index() {

@@ -54,31 +54,34 @@
         <div class="twelve wide column">
 
             <div class="la-inline-lists">
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt><g:message code="org.name.label" default="Name" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="name"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.sortname.label" default="Sortname" /><br>
-                                <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="sortname"/>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!-- .card -->
 
-                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <g:if test="${orgInstance.id != contextService.getOrg()?.id || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                    <div class="ui card">
+                        <div class="content">
+                            <dl>
+                                <dt><g:message code="org.name.label" default="Name" /></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="name"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><g:message code="org.shortname.label" default="Shortname" /></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><g:message code="org.sortname.label" default="Sortname" /><br>
+                                    <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)" /></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="sortname"/>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div><!-- .card -->
+                </g:if>
+
+                <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) && ( (!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
                     <div class="ui card">
                         <div class="content">
                             <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -87,39 +90,39 @@
                                 <dl>
                                     <dt>ISIL</dt>
                                     <dd>
-
                                         <g:set var="isil" value="${orgInstance.ids.find { it.identifier.ns.ns == 'ISIL' }}"/>
-
-                                        <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                        <g:if test="${isil}">
+                                         <semui:xEditable owner="${isil.identifier}" field="value"/>
+                                        </g:if>
                                     </dd>
                                 </dl>
 
                                 <dl>
                                     <dt>WIB-ID</dt>
                                     <dd>
-
                                         <g:set var="wibid" value="${orgInstance.ids.find { it.identifier.ns.ns == 'wibid' }}"/>
-
-                                        <semui:xEditable owner="${wibid.identifier}" field="value"/>
+                                        <g:if test="${wibid}">
+                                            <semui:xEditable owner="${wibid.identifier}" field="value"/>
+                                        </g:if>
                                     </dd>
                                 </dl>
                             <dl>
                                 <dt>EZB-ID</dt>
                                 <dd>
-
                                     <g:set var="ezb" value="${orgInstance.ids.find { it.identifier.ns.ns == 'ezb' }}"/>
-
-                                    <semui:xEditable owner="${ezb.identifier}" field="value"/>
+                                    <g:if test="${ezb}">
+                                        <semui:xEditable owner="${ezb.identifier}" field="value"/>
+                                    </g:if>
                                 </dd>
                             </dl>
                         </div>
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <g:if test="${(!institutionalView && !departmentalView) && (orgInstance.id != contextService.getOrg()?.id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
-                            <g:if test="${(RDStore.OT_INSTITUTION in orgInstance.getallOrgTypeIds())}">
+                            <g:if test="${(RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
@@ -151,7 +154,7 @@
                     </div><!-- .card -->
                 </g:if>
 
-                <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <g:if test="${(!institutionalView && !departmentalView) && (orgInstance.id != contextService.getOrg()?.id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <div class="ui card">
                         <div class="content">
                             <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -353,9 +356,11 @@
                                 <dd>
                                     <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                         <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                        (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
-                                        ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
-                                    </g:each>)
+                                        <g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
+                                        <span class="ui small teal image label">
+                                            ${id_out.identifier.ns.ns}: <div class="detail">${id_out.identifier.value}</div>
+                                        </span>
+                                    </g:each>
                                         <br />
                                     </g:each>
                                 </dd>
@@ -374,9 +379,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                <span class="ui small teal image label">
+                                                    ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>
@@ -392,9 +399,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                <span class="ui small teal image label">
+                                                    ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>
@@ -410,9 +419,11 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisation" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
-                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
-                                            </g:each>)
+                                                <g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                    <span class="ui small teal image label">
+                                                        ${id_in.identifier.ns.ns}: <div class="detail">${id_in.identifier.value}</div>
+                                                    </span>
+                                            </g:each>
                                                 <br />
                                             </g:each>
                                         </dd>

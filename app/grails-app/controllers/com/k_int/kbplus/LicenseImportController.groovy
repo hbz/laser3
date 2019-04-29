@@ -23,6 +23,7 @@ class LicenseImportController extends AbstractDebugController {
   def CMD_CREATE_OPL   = "create"
 
   def springSecurityService
+  def contextService
   def onixplPrefix = 'onixPL:'
 
   /**

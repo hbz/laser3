@@ -6,7 +6,8 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class StatsController extends AbstractDebugController {
 
-  def springSecurityService
+    def springSecurityService
+    def contextService
 
   @Secured(['ROLE_ADMIN'])
   def statsHome() { 
