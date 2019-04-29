@@ -97,11 +97,19 @@ class SemanticUiNavigationTagLib {
         }
 
         def linkParams = [:]
-        if (attrs.params) linkParams.putAll(attrs.params)
+        if (attrs.params) {
+            linkParams.putAll(attrs.params)
+        }
+
         linkParams.offset = offset - max
         linkParams.max = max
-        if (params.sort) linkParams.sort = params.sort
-        if (params.order) linkParams.order = params.order
+
+        if (params.sort) {
+            linkParams.sort = params.sort
+        }
+        if (params.order) {
+            linkParams.order = params.order
+        }
 
         def linkTagAttrs = [action: action]
         if (attrs.controller) {
@@ -115,6 +123,9 @@ class SemanticUiNavigationTagLib {
         }
         linkTagAttrs.params = linkParams
 
+        Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('paginate.prev', null, messageSource.getMessage('default.paginate.prev', null, 'Previous', locale), locale))]
+        Map nextMap = [title: (attrs.next ?: messageSource.getMessage('paginate.next', null, messageSource.getMessage('default.paginate.next', null, 'Next', locale), locale))]
+
         // determine paging variables
         def steps = maxsteps > 0
         int currentstep = (offset / max) + 1
@@ -124,71 +135,65 @@ class SemanticUiNavigationTagLib {
         out << '<div class="ui center aligned basic segment">'
         out << '<div class="ui pagination menu">'
 
-        // display previous link when not on firststep
+        // prev-buttons
         if (currentstep > firststep) {
+            // <<
+            int tmp = (offset - (max * (maxsteps +1)))
+            linkParams.offset = tmp > 0 ? tmp : 0
+            linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
+
+            def prevLinkAttrs1 = linkTagAttrs.clone()
+            out << link((prevLinkAttrs1 += prevMap), '<i class="double angle left icon"></i>')
+
+            // <
             linkParams.offset = offset - max
-            if (currentstep == firststep) {
-                linkTagAttrs.class = "item disabled prevLink"
-            } else {
-                linkTagAttrs.class = "item prevLink"
-            }
-            def prevLinkAttrs = linkTagAttrs.clone()
-            prevLinkAttrs += [title: (attrs.prev ?: messageSource.getMessage('paginate.prev', null, messageSource.getMessage('default.paginate.prev', null, 'Previous', locale), locale))]
-            out << link(prevLinkAttrs, '<i class="angle left icon"></i>')
+            linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
+
+            def prevLinkAttrs2 = linkTagAttrs.clone()
+            out << link((prevLinkAttrs2 += prevMap), '<i class="angle left icon"></i>')
         }
 
-        // display steps when steps are enabled and laststep is not firststep
+        // steps
         if (steps && laststep > firststep) {
-
-            // determine begin and endstep paging variables
-            int beginstep = currentstep - Math.round(maxsteps / 2) + (maxsteps % 2)
-            int endstep = currentstep + Math.round(maxsteps / 2) - 1
-
-            if (beginstep < firststep) {
-                beginstep = firststep
-                endstep = maxsteps
-            }
-            if (endstep > laststep) {
-                beginstep = laststep - maxsteps + 1
-                if (beginstep < firststep) {
-                    beginstep = firststep
+            for (int i in currentstep..(currentstep + maxsteps)) {
+                if (((i-1) * max) < total) {
+                    linkParams.offset = (i - 1) * max
+                    if (currentstep == i) {
+                        linkTagAttrs.class = "item active"
+                    } else {
+                        linkTagAttrs.class = "item"
+                    }
+                    out << link(linkTagAttrs.clone()) { i.toString() }
                 }
-                endstep = laststep
-            }
-
-            // display paginate steps
-            for (int i in beginstep..endstep) {
-                linkParams.offset = (i - 1) * max
-                if (currentstep == i) {
-                    linkTagAttrs.class = "item active"
-                } else {
-                    linkTagAttrs.class = "item"
-                }
-                out << link(linkTagAttrs.clone()) {i.toString()}
             }
         }
 
-        // display next link when not on laststep
+        // next-buttons
         if (currentstep < laststep) {
+             // <
             linkParams.offset = offset + max
-            if (currentstep == laststep) {
-                linkTagAttrs.class = "item disabled nextLink"
-            } else {
-                linkTagAttrs.class = "item nextLink"
-            }
-            def nextLinkAttrs = linkTagAttrs.clone()
-            nextLinkAttrs += [title: (attrs.next ? attrs.next : messageSource.getMessage('paginate.next', null, messageSource.getMessage('default.paginate.next', null, 'Next', locale), locale))]
+            linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
 
-            out << link(nextLinkAttrs, '<i class="angle right icon"></i>')
+            def nextLinkAttrs1 = linkTagAttrs.clone()
+            out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
 
-            def allLinkAttrs = linkTagAttrs.clone()
+            // <<
+            int tmp = linkParams.offset + (max * maxsteps)
+            linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
+            linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
 
-            allLinkAttrs.params.remove('offset')
-            allLinkAttrs.params.max = 100000; // TODO replace by constant and refactoring calls
-            allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, 'Show all', locale)]
-
-            out << link(allLinkAttrs, '<i class="list icon"></i>')
+            def nextLinkAttrs2 = linkTagAttrs.clone()
+            out << link((nextLinkAttrs2 += nextMap), '<i class="double angle right icon"></i>')
         }
+
+        def allLinkAttrs = linkTagAttrs.clone()
+        allLinkAttrs.class = "item"
+
+        allLinkAttrs.params.remove('offset')
+        allLinkAttrs.params.max = 100000
+        allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, 'Show all', locale)]
+
+        out << link(allLinkAttrs, '<i class="list icon"></i>')
 
         out << '</div>'
         out << '</div><!--.pagination-->'
