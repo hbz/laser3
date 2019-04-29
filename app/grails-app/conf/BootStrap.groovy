@@ -1276,7 +1276,12 @@ class BootStrap {
                 ],
                 [
                         name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],
-                        expl: [en: "", de: "Mehrjahreslaufzeit."],
+                        expl: [en: "", de: "Ist für die Lizenze eine Mehrjahreslaufzeit möglich?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Mehrjahreslaufzeit ausgewählt", de: "Mehrjahreslaufzeit ausgewählt"],
+                        expl: [en: "", de: "Hat der Teilnehmer sich für eine Mehrjahreslaufzeit entschieden?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
                 [
@@ -2129,7 +2134,7 @@ class BootStrap {
         RefdataValue.loc('OrgRoleType',      [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Broker', de: 'Vermittler'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Vendor', de: 'Verkäufer'], BOOTSTRAP)
-        RefdataValue.loc('OrgRoleType',      [en: 'Content Provider', de:'Inhalt Anbieter'], BOOTSTRAP)
+        RefdataValue.loc('OrgRoleType',      [en: 'Content Provider', de:'Inhaltsanbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Platform Provider', de: 'Plattformanbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Issuing Body'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Imprint'], BOOTSTRAP)
@@ -2142,6 +2147,7 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Function',     [en: 'Responsible Contact', de: 'Verantwortlicher Kontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu
         RefdataValue.loc('Person Function',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP) // Funktion
@@ -2515,6 +2521,7 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('CostItemElement', [key: 'price: short term loan', en: 'price: short term loan', de: 'Preis: Short-Term-Loan'], BOOTSTRAP)
 
         RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'], BOOTSTRAP)
