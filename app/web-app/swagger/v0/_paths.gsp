@@ -302,3 +302,107 @@
           description: Valid request, but owner not found
         406:
           $ref: "#/components/responses/notAcceptable"
+
+
+  /oa2020:
+
+    get:
+      tags:
+        - Special Endpoints
+      summary:
+      description:
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OA2020_Virtual"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+
+
+  /oa2020List:
+
+    get:
+      tags:
+        - Special Endpoints
+      summary:
+      description:
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OA2020List"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+
+
+  /statistic:
+
+    get:
+      tags:
+        - Special Endpoints
+      summary:
+      description:
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Statistic_Virtual"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+
+
+  /statisticList:
+
+    get:
+      tags:
+        - Special Endpoints
+      summary:
+      description:
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatisticList"
+        401:
+          $ref: "#/components/responses/notAuthorized"

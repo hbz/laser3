@@ -57,6 +57,11 @@ class OrgSettings {
         roleValue  (nullable: true)
     }
 
+    static List<OrgSettings.KEYS> getEditableSettings() {
+
+        [OrgSettings.KEYS.STATISTICS_SERVER_ACCESS]
+    }
+
     /*
         returns user depending setting for given key
         or SETTING_NOT_FOUND if not
