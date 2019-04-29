@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.OrgSettings; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -70,14 +70,27 @@
                                     <tr>
                                         <td>${os.key}</td>
                                         <td>
-                                            <g:if test="${os.rdValue}">
-                                                ${os.getValue()?.getI10n('value')}
+                                            <g:if test="${os.key in OrgSettings.getEditableSettings()}">
+                                                <g:if test="${os.rdValue}">
+                                                    <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                </g:if>
+                                                <g:elseif test="${os.roleValue}">
+                                                    ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
+                                                </g:elseif>
+                                                <g:else>
+                                                    <semui:xEditable owner="${os}" field="strValue" />
+                                                </g:else>
                                             </g:if>
-                                            <g:elseif test="${os.roleValue}">
-                                                ${os.getValue()?.getI10n('authority')}
-                                            </g:elseif>
                                             <g:else>
-                                                ${os.getValue()}
+                                                <g:if test="${os.rdValue}">
+                                                    ${os.getValue()?.getI10n('value')}
+                                                </g:if>
+                                                <g:elseif test="${os.roleValue}">
+                                                    ${os.getValue()?.getI10n('authority')}
+                                                </g:elseif>
+                                                <g:else>
+                                                    ${os.getValue()}
+                                                </g:else>
                                             </g:else>
                                         </td>
                                     </tr>
