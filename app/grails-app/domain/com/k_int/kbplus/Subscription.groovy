@@ -419,7 +419,6 @@ class Subscription
 
         def slavedPendingChanges = []
         def derived_subscriptions = getNonDeletedDerivedSubscriptions()
-        log.debug(derived_subscriptions)
 
         derived_subscriptions.each { ds ->
 
