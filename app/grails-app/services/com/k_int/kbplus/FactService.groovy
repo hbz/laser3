@@ -244,21 +244,28 @@ class FactService {
     if (org_id != null &&
         supplier_id != null) {
 
+      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
+      if (factList.size == 0){
+        return result
+      }
       Calendar cal = Calendar.getInstance()
-      def (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
 
-      cal.setTimeInMillis(subscription.startDate.getTime())
-      def (firstSubscriptionMonth, firstSubscriptionYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+      def (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
+      def firstSubscriptionMonth, firstSubscriptionYear
+      if (subscription.startDate) {
+        cal.setTimeInMillis(subscription.startDate.getTime())
+        (firstSubscriptionMonth, firstSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
+      } else {
+        // use first year of factlist if there is no subscription begin
+        def firstFactYear = factList.reportingYear.unique(false).sort()*.intValue().first()
+        (firstSubscriptionMonth, firstSubscriptionYear) = [1, firstFactYear]
+      }
 
       if (subscription.endDate) {
         cal.setTimeInMillis(subscription.endDate.getTime())
         (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
       }
 
-      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
-      if (factList.size == 0){
-        return result
-      }
       def y_axis_labels = []
 
       factList.each { li ->
@@ -304,8 +311,10 @@ class FactService {
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
-          hql += ' and f.factFrom >= :start'
-          params['start'] = sub.startDate
+          if (sub.startDate) {
+            hql += ' and f.factFrom >= :start'
+            params['start'] = sub.startDate
+          }
           if (sub.endDate) {
             hql += ' and f.factTo <= :end'
             params['end'] = sub.endDate
