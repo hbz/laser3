@@ -185,7 +185,7 @@
                                             <div class="fields">
                                                 <div class="field">
                                                     <g:select class="ui search selectable dropdown"
-                                                              optionKey="id" optionValue="${{it.getNameConcatenated()}}"
+                                                              optionKey="value" optionValue="name"
                                                               from="${availableSubs}" name="subscription"
                                                               noSelection="['':'Wählen Sie hier eine Lizenz zur Verknüpfung ..']"/>
                                                 </div>

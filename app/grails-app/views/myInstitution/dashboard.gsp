@@ -316,7 +316,7 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER,ORG_BASIC')}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC')}">
 
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
                 <div>

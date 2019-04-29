@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
@@ -179,4 +182,51 @@ class OrganisationService {
         else return false
     }
 
+    Map<String, Object> getPendingRequests(User user, Org ctxOrg) {
+
+        def result = [
+                pendingRequests: [],
+                pendingRequestsForGivenInstAdmins: []
+                ]
+
+        if (!user || !ctxOrg) {
+            return result
+        }
+
+        if (!user.hasRole('ROLE_ADMIN')) {
+            // INST_ADM: contextOrg and combo referenced orgs
+
+            List<Org> orgList = Org.executeQuery('SELECT c.fromOrg from Combo c WHERE c.toOrg = :ctx', [ctx: ctxOrg])
+            orgList.add(ctxOrg)
+
+            result.pendingRequests = UserOrg.executeQuery(
+                    'SELECT uo FROM UserOrg uo WHERE uo.status = :status AND uo.org in (:orgList)',
+                    [status: UserOrg.STATUS_PENDING, orgList: orgList],
+                    [sort: 'dateRequested']
+            )
+        }
+        else {
+            // ROLE_ADMIN, ROLE_YODA
+
+            List<UserOrg> pendingRequests = UserOrg.findAllByStatus(UserOrg.STATUS_PENDING, [sort: 'dateRequested'])
+
+            pendingRequests.each { pr ->
+                def instAdmGiven = User.executeQuery(
+                        "SELECT admin FROM UserOrg uo JOIN uo.user admin " +
+                                "WHERE uo.org = :prOrg AND uo.formalRole = :instAdmRole AND uo.status = :frStatus", [
+                        prOrg      : pr.org,
+                        instAdmRole: Role.findByAuthorityAndRoleType('INST_ADM', 'user'),
+                        frStatus   : UserOrg.STATUS_APPROVED
+                ]
+                )
+                if (!instAdmGiven) {
+                    result.pendingRequests << pr
+                } else {
+                    result.pendingRequestsForGivenInstAdmins << pr
+                }
+            }
+        }
+
+        result
+    }
 }

@@ -61,6 +61,15 @@ class OrganisationController extends AbstractDebugController {
 
         }
 
+        // adding default settings
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance,
+                    OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
+
         result.settings = OrgSettings.findAllByOrg(result.orgInstance)
 
         result
@@ -97,7 +106,7 @@ class OrganisationController extends AbstractDebugController {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true,'xls')
 
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\".xlsx"
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
                 response.outputStream.flush()
@@ -513,20 +522,10 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.ids.each {io ->
                 if(io?.identifier?.ns?.ns == 'ISIL')
                 {
-                    if(!(io.identifier.value =~ /^DE-/ ) && io.identifier.value != 'Unknown')
-                    {
-                        io.identifier.value = 'DE-'+io.identifier.value.trim()
-                        io.save(flush: true)
-                    }
                     foundIsil = true
                 }
                 if(io?.identifier?.ns?.ns == 'wibid')
                 {
-                    if(!(io.identifier.value =~ /^WIBID/) && io.identifier.value != 'Unknown')
-                    {
-                        io.identifier.value = 'WIBID'+io.identifier.value.trim()
-                        io.save(flush: true)
-                    }
                     foundWibid = true
                 }
                 if(io?.identifier?.ns?.ns == 'ezb')
@@ -537,12 +536,18 @@ class OrganisationController extends AbstractDebugController {
 
             if(!foundIsil) {
                 orgInstance.checkAndAddMissingIdentifier('ISIL', 'Unknown')
+
+
             }
             if(!foundWibid) {
                 orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+
+
             }
             if(!foundEZB) {
                 orgInstance.checkAndAddMissingIdentifier('ezb', 'Unknown')
+
+
             }
 
             result.orgInstance = Org.get(orgInstance.id).refresh()
@@ -759,8 +764,8 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        params.sort = params.sort ?: 'referenceGroup'
-        params.order = params.order ?: 'asc'
+        params.sort = params.sort ?: 'dueDate'
+        params.order = params.order ?: 'desc'
 
         result.orgInstance = Org.get(params.id)
         result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
