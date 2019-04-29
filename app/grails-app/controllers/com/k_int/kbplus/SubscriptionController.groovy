@@ -2332,7 +2332,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {
                             log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                        } else if (!fsLicenseResult.isEmpty()) {
+                        } else if (!fsLicenseResult.isEmpty() && result.subscriptionInstance.startDate) {
                             def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
                             def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
                             if (costPerUseMetricValuePair) {

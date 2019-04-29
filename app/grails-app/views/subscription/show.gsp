@@ -373,7 +373,7 @@
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table hidden">
                         <div class="content">
-                            <g:if test="${subscriptionInstance.costItems}">
+                            <g:if test="${totalCostPerUse}">
                                 <dl>
                                     <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
@@ -384,6 +384,7 @@
                                 </dl>
                                 <div class="ui divider"></div>
                             </g:if>
+                            <g:if test="${lusage}">
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
                                 <dd>
@@ -411,6 +412,7 @@
                                 </dd>
                             </dl>
                             <div class="ui divider"></div>
+                            </g:if>
                             <dl>
                                 <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
