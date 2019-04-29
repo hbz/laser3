@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
@@ -1288,13 +1289,17 @@ class SubscriptionController extends AbstractDebugController {
                     if (true) {
                         log.debug("Generating seperate slaved instances for consortia members")
 
+                        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type ?: "",
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
-                                startDate: result.subscriptionInstance.startDate,
-                                endDate: result.subscriptionInstance.endDate,
+                                startDate: startDate,
+                                endDate: endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1314,27 +1319,6 @@ class SubscriptionController extends AbstractDebugController {
                             flash.error = cons_sub.errors
                         }
 
-
-                        result.subscriptionInstance.packages.each { sub_pkg ->
-                            def takePackage = params."selectedPackage_${cm.get(0).id + sub_pkg.pkg.id}"
-                            def takeIE = params."selectedIssueEntitlement_${cm.get(0).id + sub_pkg.pkg.id}"
-
-                            log.debug("Package:${takePackage} IE:${takeIE}")
-
-                            def pkg_to_link = sub_pkg.pkg
-                            //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                            if (takeIE) {
-                                pkg_to_link.addToSubscription(cons_sub, true)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, true)
-                                }*/
-                            } else if (takePackage) {
-                                pkg_to_link.addToSubscription(cons_sub, false)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, false)
-                                }*/
-                            }
-                        }
 
                         if (cons_sub) {
 
@@ -2332,7 +2316,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {
                             log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                        } else if (!fsLicenseResult.isEmpty()) {
+                        } else if (!fsLicenseResult.isEmpty() && result.subscriptionInstance.startDate) {
                             def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
                             def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
                             if (costPerUseMetricValuePair) {
