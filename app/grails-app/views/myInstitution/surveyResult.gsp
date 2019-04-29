@@ -137,7 +137,8 @@
 
                                 <div class="ui ">
 
-                                    <i class="circular info icon la-popup-tooltip la-delay"
+                                    <g:if test="${surveyResult.type?.introduction || surveyResult.type?.explain || surveyResult.type?.comment}">
+                                    <i class="circular info inverted icon la-popup-tooltip la-delay"
                                        data-html="<div class='ui three column divided center aligned grid'>
                                                     <div class='column'>
                                                         <h4 class='ui header'>${g.message(code: 'surveyProperty.introduction.label')}</h4>
@@ -156,6 +157,7 @@
                                                     </div>
                                         </div>"
                                        data-variation="wide"></i>
+                                    </g:if>
 
                                     ${surveyResult.type?.getI10n('name')}
 
@@ -195,6 +197,10 @@
 
 
                                 <br>
+
+
+
+
                                 <g:each in="${surveyResult.surveyConfig?.getCurrentDocs().sort { it?.owner?.title }}"
                                         var="docctx" status="s">
 
