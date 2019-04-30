@@ -59,22 +59,18 @@ class InstitutionsService {
 
             if (params.asOrgType) {
                 if (rdvConsortiumOrgRole in params.asOrgType) {
-                    org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
+                    new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save(flush: true)
                 } else {
-                    org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
+                    new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save(flush: true)
                 }
             }
             else if (base.licensor) {
                 // legacy
                 def licensor_role = RefdataValue.getByValueAndCategory('Licensor','Organisational Role')
-                org.links.add(new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role));
+                new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
             }
 
-            if (org.save(flush: true)) {
-            }
-            else {
-                log.error("Problem saving org links to license ${org.errors}");
-            }
+
 
             // Clone documents
             base.documents?.each { dctx ->
