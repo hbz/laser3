@@ -68,7 +68,7 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="intValue"/>
+                            <semui:xEditable owner="${prop}" type="number" field="intValue"/>
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
                             <semui:xEditable owner="${prop}" type="text" field="stringValue"/>
