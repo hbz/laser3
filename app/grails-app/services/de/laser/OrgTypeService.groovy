@@ -14,27 +14,30 @@ class OrgTypeService {
      * @return List<Org> with orgType 'Agency'; generic
      */
     List<Org> getOrgsForTypeAgency() {
-        Org.executeQuery(
+        List<Org> result = Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         )
+        result.unique()
     }
 
     /**
      * @return List<Org> with orgType 'Provider'; generic
      */
     List<Org> getOrgsForTypeProvider() {
-        Org.executeQuery(
+        List<Org> result = Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
         )
+        result.unique()
     }
 
     /**
      * @return List<Org> with orgType in ('Agency, Broker, Content Provider, Provider, Vendor'); generic
      */
     List<Org> getOrgsForTypeLicensor() {
-        Org.executeQuery(
+        List<Org> result = Org.executeQuery(
                 "select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by lower(o.sortname), o.name"
         )
+        result.unique()
     }
 
     /**
