@@ -54,7 +54,7 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'license.plural', default:'Licenses')}
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
