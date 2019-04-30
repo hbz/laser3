@@ -7,7 +7,7 @@
     </head>
     <body>
         <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.myInst" controller="myInstitution" action="dashboard"/>
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
         <h1 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
