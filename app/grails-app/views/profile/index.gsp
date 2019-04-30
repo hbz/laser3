@@ -337,6 +337,8 @@
 <br />
 <br />
 
+
+<sec:ifAnyGranted roles="ROLE_ADMIN">
 <div class="ui one column grid">
     <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
@@ -361,6 +363,7 @@
     </div><!--.column-->
 
 </div><!-- .grid -->
+</sec:ifAnyGranted>
 
 <g:if test="${grailsApplication.config.feature.notifications}">
 
