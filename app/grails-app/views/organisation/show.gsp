@@ -57,7 +57,7 @@ ${orgInstance.name}
 
         <div class="la-inline-lists">
 
-            <g:if test="${orgInstance.id != contextService.getOrg()?.id || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -66,23 +66,25 @@ ${orgInstance.name}
                                 <semui:xEditable owner="${orgInstance}" field="name"/>
                             </dd>
                         </dl>
-                        <dl>
-                            <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.sortname.label" default="Sortname"/><br>
-                                <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)"/>
-                            </dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="sortname"/>
-                            </dd>
-                        </dl>
+                        <g:if test="${orgInstance.id != contextService.getOrg()?.id || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                            <dl>
+                                <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt><g:message code="org.sortname.label" default="Sortname"/><br>
+                                    <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)"/>
+                                </dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="sortname"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </div>
                 </div><!-- .card -->
-            </g:if>
+
 
             <div class="ui card">
                 <div class="content">
@@ -388,16 +390,16 @@ ${orgInstance.name}
                                             <div class="item">
 
                                                 <input class="ui button" size="35"
-                                                       value="${message(code: 'personFormModalGeneralContactPerson')}"
+                                                       value="${message(code: 'personFormModalResponsibleContact')}"
                                                        data-semui="modal"
-                                                       data-href="#personFormModalGeneralContactPerson"/>
+                                                       data-href="#personFormModalResponsibleContact"/>
 
                                                 <g:render template="/person/formModal"
                                                           model="['tenant'                           : contextOrg,
                                                                   'org'                              : orgInstance,
                                                                   'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                                  'modalId'                          : 'personFormModalGeneralContactPerson',
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Contact', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalResponsibleContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
 
                                                 <input class="ui button" size="35"
