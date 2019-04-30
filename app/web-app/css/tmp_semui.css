@@ -63,11 +63,6 @@
     z-index: 9999;
 }
 
-/* new buttons */
-.ui table td.x {
-    text-align: right;
-    white-space: nowrap;
-}
 
 .ui.button > i.icon {
     margin-right: 0 !important;
