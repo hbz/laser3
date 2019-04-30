@@ -234,7 +234,7 @@
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
-                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" datacontroller="subscription" dataAction="possibleLicensesForSubscription" />
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />
                                         </g:if>
                                         <g:else>
                                             <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
