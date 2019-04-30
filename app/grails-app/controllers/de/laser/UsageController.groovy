@@ -133,8 +133,10 @@ class UsageController extends AbstractDebugController {
                 distinct("customerId")
             }
         }.collect {"'$it'"}.join(',')
+
         def hql = "select io.org, i from IdentifierOccurrence as io join io.identifier as i where i.value in (${institutionsForQuery})"
-        result.natstatInstitutions = Org.executeQuery(hql)
+        result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
+
         result.cursorCount = factService.getSupplierCursorCount()
         result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
         result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
