@@ -21,7 +21,7 @@
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
                     <%
-                        List refdatasWithI10n = RefdataCategory.getAllRefdataValuesWithI10nExplanation('Number Type')
+                        List refdatasWithI10n = RefdataCategory.getAllRefdataValuesWithI10nExplanation('Number Type',[sort:'order',order:'asc'])
                     %>
                     <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
                                                         from="${refdatasWithI10n}"
