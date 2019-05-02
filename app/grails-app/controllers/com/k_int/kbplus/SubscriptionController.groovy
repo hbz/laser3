@@ -1874,40 +1874,44 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
 
-                if(Package.findByGokbId(grt.owner.uuid)) {
+                //if(Package.findByGokbId(grt.owner.uuid)) {
                     executorWrapperService.processClosure({
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
                         dataloadService.updateFTIndexes()
-                    },Package.findByGokbId(grt.owner.uuid))
-                }
+
+                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
+                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                        log.debug("Add package ${params.addType} to subscription ${params}");
+
+                        if (params.addType == 'With') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, true)
+                            }
+                        } else if (params.addType == 'Without') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, false)
+                            }
+                        }
+                    },grt)
+                /*}
                 else {
                     //setup new
                     globalSourceSyncService.initialiseTracker(grt)
                     //Update INDEX ES
                     dataloadService.updateFTIndexes()
-                }
-
-                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
+                }*/
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', id: params.id
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', id: params.id
+                        break
                 }
 
             } else {

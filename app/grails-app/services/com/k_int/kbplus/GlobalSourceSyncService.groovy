@@ -271,6 +271,7 @@ class GlobalSourceSyncService {
         def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
         if(newpkg.packageProvider) {
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
+            setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
         }
 
         // Firstly, make sure that there is a package for this record
@@ -309,11 +310,6 @@ class GlobalSourceSyncService {
                 newpkg.identifiers.each {
                     log.debug("Checking package has ${it.namespace}:${it.value}");
                     pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
-                }
-
-                if (newpkg.packageProvider && grailsApplication.config.globalDataSync.replaceLocalImpIds.Org) {
-
-                    setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
                 }
 
             }
@@ -362,8 +358,6 @@ class GlobalSourceSyncService {
                 if (newpkg.packageProvider) {
 
                     OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
-
-                    setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
 
                 }
 
@@ -619,12 +613,7 @@ class GlobalSourceSyncService {
                     //currently, we should generate Pending Changes only on Issue Entitlement level ... so go one level deeper!
                     TitleInstancePackagePlatform currTIPP = (TitleInstancePackagePlatform) db_tipp
                     currTIPP.pkg = ctx
-                    TitleInstance titleInstance = TitleInstance.findByGokbId(tipp.title?.gokbId)
-
-                    if (!titleInstance) {
-                        titleInstance = new TitleInstance(identifiers: tipp.title.identifiers,name: tipp.title.name,titleType: tipp.title.titleType,gokbId: tipp.title.gokbId)
-                        titleInstance.save(flush:true,failOnError: true)
-                    }
+                    TitleInstance titleInstance = (TitleInstance) title_of_tipp_to_update
                     println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${titleInstance}");
                     currTIPP.title = titleInstance
                     currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(),'TIPP Status') : RDStore.TIPP_STATUS_CURRENT
