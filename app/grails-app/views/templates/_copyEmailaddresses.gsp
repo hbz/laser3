@@ -68,7 +68,7 @@
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
         <button class="ui icon button right floated" onclick="copyToClipboard()">
-            Zwischenablage
+            ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
         </button>
         <button class="ui icon button right floated" onclick="copyToEmailProgram()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
