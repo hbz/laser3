@@ -15,6 +15,7 @@ import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.ClientAnchor
 import org.apache.poi.ss.usermodel.CreationHelper
@@ -29,6 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -2279,7 +2281,9 @@ AND EXISTS (
             def date = new Date()
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
-            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
             CreationHelper factory = workbook.getCreationHelper()
@@ -3799,6 +3803,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()
