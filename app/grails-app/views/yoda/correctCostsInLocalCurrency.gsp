@@ -5,7 +5,7 @@
   Time: 08:45
 --%>
 
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.k_int.kbplus.RefdataValue" contentType="text/html;charset=UTF-8" %>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
@@ -14,12 +14,18 @@
 
     <body>
         <div>
-            <table class="ui celled la-table la-table-small table" id="calcResults">
-                <g:each in="${costItems.entrySet()}" var="ci">
-                    <tr>
-                        <td>${ci.getKey().sub?.dropdownNamingConvention()} / ${ci.getKey().owner.name}</td>
-                        <td>${ci.getKey().costInBillingCurrency} * ${ci.getKey().currencyRate} = </td>
-                        <td>${ci.getValue()}</td>
+            <table class="ui celled table" id="calcResults">
+                <g:each in="${costItems.entrySet()}" var="entry">
+                    <g:set var="ci" value="${entry.getKey()}"/>
+                    <%
+                        String matching = "positive"
+                        if(ci.billingCurrency != RefdataValue.getByValueAndCategory('EUR','Currency'))
+                            matching = "negative"
+                    %>
+                    <tr class="${matching}">
+                        <td>${ci.sub?.dropdownNamingConvention()} / ${ci.owner.name}</td>
+                        <td>${ci.costInBillingCurrency} ${ci.billingCurrency} * ${ci.currencyRate} = </td>
+                        <td>${entry.getValue()} EUR</td>
                     </tr>
                 </g:each>
             </table>
