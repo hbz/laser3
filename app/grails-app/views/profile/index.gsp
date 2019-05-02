@@ -337,6 +337,8 @@
 <br />
 <br />
 
+
+
 <div class="ui one column grid">
     <!--<div class="column wide sixteen">
                     <h4 class="ui dividing header">
@@ -346,21 +348,24 @@
 
     <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplProfile: true]" />
 
-    <div class="column wide sixteen">
-        <div class="ui segment">
-            <h4 class="ui dividing header">
-                ${message(code: 'profile.membership.request')}
-            </h4>
+    <sec:ifAnyGranted roles="ROLE_ADMIN">
+        <div class="column wide sixteen">
+            <div class="ui segment">
+                <h4 class="ui dividing header">
+                    ${message(code: 'profile.membership.request')}
+                </h4>
 
-            <p style="word-break:normal">
-                <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
-            </p>
+                <p style="word-break:normal">
+                    <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
+                </p>
 
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplProfile: true]" />
-        </div><!-- .segment -->
-    </div><!--.column-->
+                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplProfile: true]" />
+            </div><!-- .segment -->
+        </div><!--.column-->
+    </sec:ifAnyGranted>
 
 </div><!-- .grid -->
+
 
 <g:if test="${grailsApplication.config.feature.notifications}">
 

@@ -56,7 +56,7 @@
                     <g:elseif test="${propValue.type.type == URL.toString()}">
                         <semui:xEditable owner="${propValue}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                         <g:if test="${propValue.value}">
-                            <semui:linkIcon />
+                            <semui:linkIcon href="${propValue.value}" />
                         </g:if>
                     </g:elseif>
                     <g:elseif test="${propValue.type.type == RefdataValue.toString()}">
@@ -110,7 +110,7 @@
                     <g:elseif test="${propValue.type.type == URL.toString()}">
                         <semui:xEditable owner="${propValue}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                         <g:if test="${propValue.value}">
-                            <semui:linkIcon />
+                            <semui:linkIcon href="${propValue.value}" />
                         </g:if>
                     </g:elseif>
                     <g:elseif test="${propValue.type.type == RefdataValue.toString()}">

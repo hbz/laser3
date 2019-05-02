@@ -470,7 +470,7 @@ class Subscription
     }
 
     def getNonDeletedDerivedSubscriptions() {
-        Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+        return executeQuery('select s from Subscription s where s.instanceOf = :instance and (s.status != :deleted or s.status = null)',[instance:this,deleted:RDStore.SUBSCRIPTION_DELETED])
     }
 
     def getCalculatedPropDefGroups(Org contextOrg) {

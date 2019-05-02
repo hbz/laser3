@@ -86,7 +86,7 @@
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
                             <g:if test="${prop.value}">
-                                <semui:linkIcon />
+                                <semui:linkIcon href="${prop.value}" />
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
@@ -107,9 +107,9 @@
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
-                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                    <span data-position="top right">
                                         <button class="ui icon button js-open-confirm-modal-copycat">
-                                            <i class="thumbtack icon"></i>
+                                            <i class="icon la-thumbtack slash"></i>
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"
@@ -124,7 +124,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay"  data-content="${message(code:'property.audit.on.tooltip')}">
                                         <button class="ui icon button green js-open-confirm-modal-copycat">
                                             <i class="thumbtack icon"></i>
                                         </button>
@@ -158,6 +158,12 @@
                                               update="${custom_props_div}">
                                 </g:remoteLink>
                             </g:if>
+                            <g:else>
+                                <div class="ui icon button la-hidden">
+                                    <i class="coffee icon"></i>
+                                </div>
+
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>

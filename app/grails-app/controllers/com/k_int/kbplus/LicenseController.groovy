@@ -402,7 +402,7 @@ from Subscription as s where
   def linkToSubscription(){
     log.debug("linkToSubscription :: ${params}")
     if(params.subscription && params.license){
-      def sub = Subscription.get(params.subscription)
+      def sub = genericOIDService.resolveOID(params.subscription)
       def owner = License.get(params.license)
         // owner.addToSubscriptions(sub) // GORM problem
         // owner.save()
