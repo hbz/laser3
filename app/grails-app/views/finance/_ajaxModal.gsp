@@ -12,7 +12,7 @@
     if (costItem) {
         if(mode && mode.equals("edit")) {
             modalText = g.message(code: 'financials.editCost')
-            submitButtonLabel = g.message(code:'default.button.edit.label')
+            submitButtonLabel = g.message(code:'default.button.save.label')
         }
         else if(mode && mode.equals("copy")) {
             modalText = g.message(code: 'financials.costItem.copy.tooltip')
