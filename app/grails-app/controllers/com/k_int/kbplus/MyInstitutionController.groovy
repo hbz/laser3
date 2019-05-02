@@ -390,7 +390,7 @@ from License as l where (
                     License license = (License) licObj
                     List row = [license.reference.replaceAll(',',' ')]
                     List linkedSubs = license.subscriptions.collect { sub ->
-                        sub.name
+                        sub.name.replaceAll(',',' ')
                     }
                     row.add(linkedSubs.join("; "))
                     row.add(license.licensingConsortium)
@@ -414,7 +414,7 @@ from License as l where (
                     rows.add(row)
                 }
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(titles,rows),',')
+                    writer.write(exportService.generateSeparatorTableString(titles,rows,','))
                 }
                 out.close()
             }
