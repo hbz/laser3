@@ -1085,6 +1085,12 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def correctCostsInLocalCurrency() {
+        Map result = ["costItems":costItemUpdateService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
 

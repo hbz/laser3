@@ -465,11 +465,12 @@
             }
             costItemElementConfigurations += sj.toString()+"}"
         %>
-            var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+            var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
             var selLinks = {
                 "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
                 "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}"
             };
+            var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
             if($("#pickedSubscription,#newSubscription input[type='hidden']").val().length > 0) {
                 selLinks.newIE += "&sub="+$("#pickedSubscription,#newSubscription input[type='hidden']").val();
             }
@@ -490,7 +491,7 @@
                     input.transition('glow');
                     var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
                     var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                    input.val((parsedLocalCurrency / parsedBillingCurrency).toFixed(9));
+                    input.val((parsedLocalCurrency / parsedBillingCurrency));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -559,6 +560,14 @@
                 }
             });--%>
 
+            $("#newCostCurrency").change(function(){
+                //console.log("event listener succeeded, picked value is: "+$(this).val());
+                if($(this).val() === eurVal)
+                    $("#newCostCurrencyRate").val(1.0);
+                else $("#newCostCurrencyRate").val(0.0);
+                $("#costButton1").click();
+            });
+
             $("[name='newSubscription']").change(function(){
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();
                 ajaxPostFunc();
@@ -582,12 +591,12 @@
             }
 
             function checkValues() {
-                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
-                    costElems.parent('.field').addClass('error')
+                if ( convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val()) ) {
+                    costElems.parent('.field').addClass('error');
                     return false;
                 }
                 else {
-                    costElems.parent('.field').removeClass('error')
+                    costElems.parent('.field').removeClass('error');
                     return true;
                 }
             }
