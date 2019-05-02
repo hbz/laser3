@@ -126,10 +126,19 @@
                             <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
                                                       action="documents" message="menu.my.documents" />
 
+
+                    <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
+
+                        <div class="divider"></div>
+                        <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+
+                        <div class="divider"></div>
+                    </g:if>
+
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveys" message="menu.my.surveys" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
 
                                 <div class="divider"></div>
@@ -299,7 +308,12 @@
 
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
                                 ${message(code: "menu.institutions.affiliation_requests")}
-                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />
+                                <%--<g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />--%>
+                                <%
+                                    Object organisationService = grailsApplication.mainContext.getBean("organisationService")
+                                    Map affilRequestMap = organisationService.getPendingRequests(contextService.getUser(), contextService.getOrg())
+                                    int newAffiliationRequests = affilRequestMap?.pendingRequests?.size()
+                                %>
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                 </g:if>
@@ -459,7 +473,7 @@
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
                                     <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>

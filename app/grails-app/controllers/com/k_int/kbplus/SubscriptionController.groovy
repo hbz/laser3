@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
@@ -1288,13 +1289,17 @@ class SubscriptionController extends AbstractDebugController {
                     if (true) {
                         log.debug("Generating seperate slaved instances for consortia members")
 
+                        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type ?: "",
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
-                                startDate: result.subscriptionInstance.startDate,
-                                endDate: result.subscriptionInstance.endDate,
+                                startDate: startDate,
+                                endDate: endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1314,27 +1319,6 @@ class SubscriptionController extends AbstractDebugController {
                             flash.error = cons_sub.errors
                         }
 
-
-                        result.subscriptionInstance.packages.each { sub_pkg ->
-                            def takePackage = params."selectedPackage_${cm.get(0).id + sub_pkg.pkg.id}"
-                            def takeIE = params."selectedIssueEntitlement_${cm.get(0).id + sub_pkg.pkg.id}"
-
-                            log.debug("Package:${takePackage} IE:${takeIE}")
-
-                            def pkg_to_link = sub_pkg.pkg
-                            //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                            if (takeIE) {
-                                pkg_to_link.addToSubscription(cons_sub, true)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, true)
-                                }*/
-                            } else if (takePackage) {
-                                pkg_to_link.addToSubscription(cons_sub, false)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, false)
-                                }*/
-                            }
-                        }
 
                         if (cons_sub) {
 
@@ -2332,7 +2316,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {
                             log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                        } else if (!fsLicenseResult.isEmpty()) {
+                        } else if (!fsLicenseResult.isEmpty() && result.subscriptionInstance.startDate) {
                             def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
                             def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
                             if (costPerUseMetricValuePair) {
@@ -2860,8 +2844,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
 
-    @DebugAnnotation(test = 'hasAffiliation("ROLE_YODA, ROLE_ADMIN")')
-    @Secured(['ROLE_ADMIN', 'ROLE_YODA'])
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoSubscription() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -2898,8 +2882,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart3();
                 break;
             case '4':
-                result << workFlowPart4();
-//                result << workFlowPart4_neu();
+//                result << workFlowPart4();
+                result << workFlowPart4_neu();
                 break;
             case '5':
                 result << workFlowPart5();
@@ -2962,8 +2946,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
-        result.newSub = newSub
         result.subscription = baseSub
+        //Bugfix Aktualieriunsgproblem
+        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.newSub = newSub
+        result.targetSubscription = newSub
         result
     }
 
@@ -3139,89 +3126,32 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.workFlowPartNext = '4'
         result
     }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map workFlowPart4_neu(){
-        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
-        Org org = contextService.getOrg()
+        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
-            Subscription newSub = Subscription.get(params.targetSubscriptionId)
+            newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
         }
         subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
-            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
-                //group group level
-                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
-                String wrapperKey = propDefGroupWrapper.getKey()
-                if(wrapperKey.equals("orphanedProperties")) {
-                    TreeMap orphanedProperties = result.orphanedProperties
-                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,sub,propDefGroupWrapper.getValue())
-                    result.orphanedProperties = orphanedProperties
-                }
-                else {
-                    LinkedHashMap groupedProperties = result.groupedProperties
-                    //group level
-                    //Each group may have different property groups
-                    propDefGroupWrapper.getValue().each { propDefGroup ->
-                        PropertyDefinitionGroup groupKey
-                        PropertyDefinitionGroupBinding groupBinding
-                        switch(wrapperKey) {
-                            case "global":
-                                groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.visible == RDStore.YN_YES)
-                                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
-                                break
-                            case "local":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                            case "member":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                        }
-                    }
-                    result.groupedProperties = groupedProperties
-                }
-            }
+            TreeMap customProperties = result.customProperties
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
+            result.customProperties = customProperties
             TreeMap privateProperties = result.privateProperties
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
             result.privateProperties = privateProperties
         }
-//        result.licenses = licenses
-//        result.institution = org
-//        String filename = "license_compare_${result.institution.name}"
-//        withFormat{
-//            html result
-//            csv{
-//                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-//                response.contentType = "text/csv"
-//                def out = response.outputStream
-//                exportService.StreamOutLicenseCSV(out, result,result.licenses)
-//                out.close()
-//            }
-//        }
+
+        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+        }
+
         result
     }
 

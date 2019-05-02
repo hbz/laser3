@@ -63,11 +63,6 @@
     z-index: 9999;
 }
 
-/* new buttons */
-.ui table td.x {
-    text-align: right;
-    white-space: nowrap;
-}
 
 .ui.button > i.icon {
     margin-right: 0 !important;
@@ -324,3 +319,11 @@ h1 .icon.h1-icon-overwrite {
 .ui.la-table.table tr td.table-td-info    { }
 .ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
+
+.ui.label.survey-renewal {
+    background-color: greenyellow;
+}
+
+.ui.label.survey-interest {
+    background-color: deepskyblue;
+}

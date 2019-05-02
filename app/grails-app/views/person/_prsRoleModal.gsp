@@ -9,9 +9,9 @@
             <label for="newPrsRoleOrg">Einrichtung</label>
             <g:select class="ui dropdown search"
                       id="newPrsRoleOrg" name="newPrsRoleOrg"
-                          from="${Org.findAll().sort{ it.name.toLowerCase() }}"
+                          from="${Org.findAll().sort{ it.name ? it.name?.toLowerCase() : it.sortname?.toLowerCase() }}"
                           optionKey="id"
-                          optionValue="name"
+                          optionValue="${{ it.name ?: it.sortname }}"
                 value="${contextService.getOrg()?.id}"
             />
         </div>

@@ -816,6 +816,37 @@ class YodaController {
                                             }
                                         }
                                     }
+                                    settings {
+                                        List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                                        os.each { st ->
+                                            switch(st.key.type) {
+                                                case RefdataValue:
+                                                    if(st.rdValue) {
+                                                        setting {
+                                                            name(st.key)
+                                                            rdValue {
+                                                                rdc(st.rdValue.owner.desc)
+                                                                rdv(st.rdValue.value)
+                                                            }
+                                                        }
+                                                    }
+                                                    break
+                                                case Role:
+                                                    if(st.roleValue) {
+                                                        setting {
+                                                            name(st.key)
+                                                            roleValue(st.roleValue.authority)
+                                                        }
+                                                    }
+                                                    break
+                                                default: setting{
+                                                    name(st.key)
+                                                    value(st.getValue())
+                                                    }
+                                                    break
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             catch (ClassCastException e) {
@@ -874,25 +905,31 @@ class YodaController {
                         orgPersons.each { prsObj ->
                             person {
                                 Person p = prsObj.prs
+                                log.debug("now processing ${p.id}")
                                 globalUID(p.globalUID)
                                 title(p.title)
                                 firstName(p.first_name)
                                 middleName(p.middle_name)
                                 lastName(p.last_name)
-                                tenant(p.tenant.globalUID)
+                                if(p.tenant)
+                                    tenant(p.tenant.globalUID)
                                 if(p.gender) {
                                     gender {
                                         rdc(p.gender.owner.desc)
                                         rdv(p.gender.value)
                                     }
                                 }
-                                isPublic {
-                                    rdc(p.isPublic.owner.desc)
-                                    rdv(p.isPublic.value)
+                                if(p.isPublic) {
+                                    isPublic {
+                                        rdc(p.isPublic.owner.desc)
+                                        rdv(p.isPublic.value)
+                                    }
                                 }
-                                contactType {
-                                    rdc(p.contactType.owner.desc)
-                                    rdv(p.contactType.value)
+                                if(p.contactType) {
+                                    contactType {
+                                        rdc(p.contactType.owner.desc)
+                                        rdv(p.contactType.value)
+                                    }
                                 }
                                 if(p.roleType) {
                                     roleType {

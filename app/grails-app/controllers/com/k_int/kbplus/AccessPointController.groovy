@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class AccessPointController extends AbstractDebugController {
 
     def springSecurityService
+    def contextService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET','POST']]
     
 

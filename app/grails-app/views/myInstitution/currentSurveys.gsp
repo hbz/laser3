@@ -17,11 +17,6 @@
     <semui:crumb message="currentSurveys.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
-
-
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
 <semui:totalNumber total="${countSurvey}"/>
@@ -101,17 +96,16 @@
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="si.name" title="${message(code: 'surveyInfo.name.label')}"/>
-            <g:sortableColumn params="${params}" property="si.type" title="${message(code: 'surveyInfo.type.label')}"/>
-            <g:sortableColumn params="${params}" property="si.startDate"
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.name" title="${message(code: 'surveyInfo.name.label')}"/>
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.type" title="${message(code: 'surveyInfo.type.label')}"/>
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.startDate"
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
-            <g:sortableColumn params="${params}" property="si.endDate"
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="si.status"
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.status"
                               title="${message(code: 'surveyInfo.status.label')}"/>
-            <th>${message(code: 'surveyInfo.property')}</th>
-            <th>${message(code: 'surveyInfo.members')}</th>
-            <th>${message(code: 'surveyInfo.evaluation')}</th>
+            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
+                              title="${message(code: 'surveyInfo.owner.label')}"/>
             <th>${message(code:'default.actions')}</th>
 
         </tr>
@@ -140,35 +134,15 @@
                 <td>
                     ${s.status?.getI10n('value')}
                 </td>
-
-
-                <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
-                </td>
-
-                <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
-                </td>
-
                 <td>
-
+                    ${s.owner}
                 </td>
+
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i
+                        <g:link controller="myInstitution" action="surveyResult" id="${s.id}" class="ui icon button"><i
                                 class="write icon"></i></g:link>
-
-                    %{--<g:link controller="${controllerName}" action="deleteSurveyInfo"
-                            class="ui icon negative button js-open-confirm-modal"
-                            data-confirm-term-what="Umfrage"
-                            data-confirm-term-what-detail="${s.name}"
-                            data-confirm-term-how="delete"
-                            params='[id: "${s.id}"]'>
-                        <i class="trash alternate icon"></i>
-                    </g:link>--}%
 
                     </g:if>
                 </td>

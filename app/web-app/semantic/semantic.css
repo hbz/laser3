@@ -1223,6 +1223,19 @@ aside.ui.accordion .title:not(.ui) {
 .la-show-context-orgMenu {
   padding-top: 105px;
 }
+
+.ui.icon.button.la-hidden {
+  visibility: hidden;
+  margin-right: 0.5rem;
+}
+
+/* new buttons */
+
+.ui table td.x {
+  text-align: right;
+  margin-right: 0;
+  white-space: nowrap;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -1440,7 +1453,7 @@ aside.ui.accordion .title:not(.ui) {
 .ui.disabled.button:hover,
 .ui.disabled.active.button {
   cursor: default;
-  opacity: 0.1 !important;
+  opacity: 0.3 !important;
   background-image: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -7764,7 +7777,7 @@ h5.ui.header .sub.header {
 *******************************/
 
 .ui.disabled.header {
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 /*******************************
@@ -8520,7 +8533,7 @@ i.emphasized.icon {
 }
 
 i.disabled.icon {
-  opacity: 0.1 !important;
+  opacity: 0.3 !important;
 }
 
 /*******************************
@@ -15091,7 +15104,7 @@ img.ui.bordered.image {
 
 .ui.disabled.input,
 .ui.input:not(.disabled) input[disabled] {
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 .ui.disabled.input > input,
@@ -19653,7 +19666,7 @@ ol.ui.horizontal.list li:before,
 ---------------*/
 
 .ui.disabled.segment {
-  opacity: 0.1;
+  opacity: 0.3;
   color: rgba(40, 40, 40, 0.3);
 }
 
@@ -34367,7 +34380,7 @@ select.ui.dropdown {
 
 .ui.active.search.dropdown input.search:focus + .text .icon,
 .ui.active.search.dropdown input.search:focus + .text .flag {
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
@@ -34768,7 +34781,7 @@ select.ui.dropdown {
 .ui.dropdown .menu > .disabled.item {
   cursor: default;
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 /*******************************

@@ -40,6 +40,17 @@ class ComparisonService {
    * Builds for the given list of properties a comparison tree for the given object.
    * As the method is being called in a loop where a structure remapping is being done, the result map is being handed as parameter as well.
    *
+   * Archivkopie {
+   *   Archivkopie: Kosten{51: null, 57: Free},
+   *   Archivkopie: Form{51: null, 57: Data},
+   *   Archivkopie: Recht{51: null, 57: Yes}
+   *   }, binding: ?
+   * Geristand {
+   *   Signed{51: Yes, 57: Yes},
+   *   Anzuwendes Recht{51: Dt. Recht, 57: null},
+   *   Gerichtsstand{51: Berlin: null}
+   *  }, binding: ?
+   *
    * @param result - the map being filled or updated
    * @return the updated map
    */

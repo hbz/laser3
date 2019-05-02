@@ -15,6 +15,7 @@ class PropertyDefinitionController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
+    def contextService
 
     @Secured(['ROLE_USER'])
     def list() {

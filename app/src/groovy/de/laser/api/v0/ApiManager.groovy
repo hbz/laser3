@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
+import de.laser.api.v0.special.ApiSpecial
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.41'
+    static final VERSION = '0.43'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -161,6 +162,33 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
+        else if ('oa2020'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
+                result = ApiOrg.findOrganisationBy(query, value)
+
+                if (result && !(result in failureCodes)) {
+                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+
+                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                        result = ApiSpecial.getDummy()
+                    }
+                    else {
+                        result = Constants.HTTP_FORBIDDEN
+                    }
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('oa2020List'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
+                result = ApiSpecial.getAllOA2020Orgs()
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
                 def lic = ApiLicense.findLicenseBy(query, value)
@@ -200,6 +228,33 @@ class ApiManager {
         else if ('refdatas'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
                 result = ApiCatalogue.getAllRefdatas()
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('statistic'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+
+                if (result && !(result in failureCodes)) {
+                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+
+                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                        result = ApiSpecial.getDummy()
+                    }
+                    else {
+                        result = Constants.HTTP_FORBIDDEN
+                    }
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('statisticList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
+                result = ApiSpecial.getAllStatisticOrgs()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE

@@ -155,8 +155,17 @@ class RefdataCategory extends AbstractI10nTranslatable {
       result
   }
 
+    static getAllRefdataValuesWithI10nExplanation(String category_name, Map sort) {
+        List refdatas = RefdataValue.findAllByOwner(RefdataCategory.findByDesc(category_name),sort)
+        return fetchData(refdatas)
+    }
+
     static getAllRefdataValuesWithI10nExplanation(String category_name) {
         List refdatas = getAllRefdataValues(category_name)
+        return fetchData(refdatas)
+    }
+
+    private static List fetchData(refdatas) {
         List result = []
         refdatas.each { rd ->
             String explanation

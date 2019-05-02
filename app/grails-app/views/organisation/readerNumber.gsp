@@ -70,11 +70,13 @@ ${orgInstance.name}
             <td>${RefdataValue.findByValue(numbersInstance.semester)?.getI10n('value')}</td>
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" class="ui icon button" data-semui="modal"
-                            href="#numbersFormModal_${numbersInstance.id}"
-                            data-tooltip="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
-                    </button>
+
                     <g:form controller="readerNumber" action="delete">
+
+                        <button type="button" class="ui icon button" data-semui="modal"
+                                href="#numbersFormModal_${numbersInstance.id}"
+                                data-tooltip="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
+                        </button>
                         <g:hiddenField name="id" value="${numbersInstance?.id}"/>
                         <button class="ui icon negative button" type="submit" name="_action_delete">
                             <i class="trash alternate icon"></i>
@@ -86,6 +88,8 @@ ${orgInstance.name}
                 </g:if>
             </td>
         </tr>
+
+
     </g:each>
     </tbody>
 </table>
