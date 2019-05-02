@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
@@ -9,6 +10,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.Color
 import javax.xml.parsers.DocumentBuilder
@@ -37,6 +39,7 @@ import java.text.SimpleDateFormat
  */
 class ExportService {
 	def formatter = new SimpleDateFormat("yyyy-MM-dd")
+	def messageSource
 
 	/**
 		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
@@ -76,6 +79,9 @@ class ExportService {
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
 		XSSFWorkbook wb = new XSSFWorkbook()
+		POIXMLProperties xmlProps = wb.getProperties()
+		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+		coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
 		XSSFCellStyle csPositive = wb.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
 		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
