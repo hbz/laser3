@@ -10,7 +10,7 @@
             <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
         </g:if>
         <g:if test="${actionName == 'listProvider'}">
-            <semui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_Provider.label"/>
+            <semui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
             <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
