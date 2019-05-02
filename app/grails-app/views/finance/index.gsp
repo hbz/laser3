@@ -17,7 +17,7 @@
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
-            <semui:crumb class="active" text="${message(code:'menu.institutions.finance')}" />
+            <semui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
         </semui:breadcrumbs>
 
         <semui:controlButtons>
@@ -91,7 +91,7 @@
             <g:set var="totalString" value="${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>
         </g:else>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${institution.name} <semui:totalNumber total="${totalString}"/></h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${totalString}"/></h1>
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,view:view,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>

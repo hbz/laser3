@@ -14,7 +14,7 @@
         <semui:crumb message="menu.institutions.manage_private_props" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}<semui:headerIcon /></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_private_props')}<semui:headerIcon /></h1>
 
     <semui:messages data="${flash}" />
 
