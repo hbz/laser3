@@ -67,6 +67,13 @@
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
+        <button class="ui icon button right floated" onclick="copyToClipboard()">
+            ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
+        </button>
+        <button class="ui icon button right floated" onclick="copyToEmailProgram()">
+            ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
+        </button>
+        <br>
     </div>
 
     <g:javascript>
@@ -98,6 +105,16 @@
 
         $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
         $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
+
+        function copyToEmailProgram() {
+            var emailAdresses = $('#emailAddressesTextArea').val();
+            window.location.href = "mailto:"+emailAdresses;
+        }
+
+        function copyToClipboard() {
+            $('#emailAddressesTextArea').select();
+            document.execCommand("copy");
+        }
 
         function updateTextArea() {
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
