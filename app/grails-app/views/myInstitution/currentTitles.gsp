@@ -67,7 +67,7 @@
 
 <semui:messages data="${flash}"/>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'myinst.currentTitles.label', default: 'Current Titles')}
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'myinst.currentTitles.label', default: 'Current Titles')}
 <semui:totalNumber total="${num_ti_rows}"/>
 </h1>
 

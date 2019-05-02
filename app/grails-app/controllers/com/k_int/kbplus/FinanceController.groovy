@@ -7,6 +7,7 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
@@ -33,7 +34,6 @@ class FinanceController extends AbstractDebugController {
     def navigationGenerationService
     def filterService
     def financeService
-    def messageSource
     def escapeService
     def exportService
 
@@ -423,6 +423,8 @@ class FinanceController extends AbstractDebugController {
     SXSSFWorkbook processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         XSSFWorkbook workbook = new XSSFWorkbook()
+        POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+        coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]

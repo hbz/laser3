@@ -12,7 +12,7 @@
     if (costItem) {
         if(mode && mode.equals("edit")) {
             modalText = g.message(code: 'financials.editCost')
-            submitButtonLabel = g.message(code:'default.button.edit.label')
+            submitButtonLabel = g.message(code:'default.button.save.label')
         }
         else if(mode && mode.equals("copy")) {
             modalText = g.message(code: 'financials.costItem.copy.tooltip')
@@ -548,7 +548,7 @@
                 checkValues();
             });
 
-            $("#editCost").submit(function(e){
+            <%--$("#editCost").submit(function(e){
                 e.preventDefault();
                 var valuesCorrect = checkValues();
                 if(valuesCorrect) {
@@ -557,7 +557,7 @@
                 else {
                     alert("${message(code:'financials.newCosts.calculationError')}");
                 }
-            });
+            });--%>
 
             $("[name='newSubscription']").change(function(){
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();

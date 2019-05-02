@@ -13,7 +13,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.financeImport', default: 'Finance Import')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.financeImport', default: 'Finance Import')}</h1>
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}

@@ -17,7 +17,7 @@
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'survey.label')}</h1>
 
 
 <g:render template="steps"/>

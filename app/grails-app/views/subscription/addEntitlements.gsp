@@ -272,7 +272,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                     ${tipp?.title?.dateFirstInPrint}
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                    ${tipp?.title?.title?.dateFirstOnline}
+                    ${tipp?.title?.dateFirstOnline}
 
                 </g:if>
                 <g:else>
