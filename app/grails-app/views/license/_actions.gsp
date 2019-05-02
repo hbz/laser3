@@ -21,7 +21,7 @@
         <g:if test="${actionName == 'show'}">
             <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
                 <div class="divider"></div>
-                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
 
             <%--
