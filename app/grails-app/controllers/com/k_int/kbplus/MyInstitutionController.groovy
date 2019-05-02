@@ -8,6 +8,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
+import de.laser.helper.SortUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -15,6 +16,7 @@ import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.ClientAnchor
 import org.apache.poi.ss.usermodel.CreationHelper
@@ -29,11 +31,13 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
+import java.text.RuleBasedCollator
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -390,7 +394,7 @@ from License as l where (
                     License license = (License) licObj
                     List row = [license.reference.replaceAll(',',' ')]
                     List linkedSubs = license.subscriptions.collect { sub ->
-                        sub.name
+                        sub.name.replaceAll(',',' ')
                     }
                     row.add(linkedSubs.join("; "))
                     row.add(license.licensingConsortium)
@@ -414,7 +418,7 @@ from License as l where (
                     rows.add(row)
                 }
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(titles,rows),',')
+                    writer.write(exportService.generateSeparatorTableString(titles,rows,','))
                 }
                 out.close()
             }
@@ -2279,7 +2283,9 @@ AND EXISTS (
             def date = new Date()
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
-            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
             CreationHelper factory = workbook.getCreationHelper()
@@ -3898,6 +3904,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()
@@ -4276,6 +4284,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             flash.message = deletePrivatePropertyDefinition(params)
             result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
+
+        RuleBasedCollator clt = SortUtil.getCollator()
+        result.privatePropertyDefinitions.sort{a, b -> clt.compare(
+                message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
+                message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
+        )}
         result
     }
 

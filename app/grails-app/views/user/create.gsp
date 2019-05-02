@@ -37,7 +37,7 @@
                     <g:if test="${availableComboOrgs}">
                         <div class="two fields">
                             <div class="field">
-                                <label for="consortium">Für Konsorten, bzw. Einrichtung</label>
+                                <label for="userOrg">${message(code:'user.org')}</label>
                                 <g:select id="consortium" name="comboOrg"
                                           from="${availableComboOrgs}"
                                           optionKey="id"

@@ -19,6 +19,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
@@ -26,6 +27,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -3549,6 +3551,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             XSSFWorkbook workbook = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
             Sheet sheet = wb.createSheet(message)
