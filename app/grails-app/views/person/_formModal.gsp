@@ -1,7 +1,9 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <laser:serviceInjection/>
 
-<semui:modal id="${modalId ?: 'personFormModal'}" text="${message(code: (modalId ?: 'personFormModal'))}">
+
+<g:set var="modalId" value="${modalId ?: 'personFormModal'}"/>
+<semui:modal id="${modalId}" text="${message(code: (modalId))}">
 
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]"
             method="POST">
@@ -230,15 +232,20 @@
         });
         var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')?.getI10n('value')}";
 
-        $("#contactType").on('change', function() {
-            changeForm( $("#contactType option:selected").text() == fc )
+        $(document).ready( function(){
+            changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
+        });
+
+        $("#${modalId} #contactType").on('change', function() {
+            changeForm( ($("#${modalId} #contactType option:selected").text() == fc), "${modalId}")
         })
 
-        function changeForm(hide) {
-            var group1 = $("#person_middle_name, #person_first_name, #person_title, #person_gender, .js-positionTypeWrapper")
-            var group2 = $("#person_gender .dropdown, #person_gender select")
-            var group3 = $("#positionType, #positionOrg")
-            var group4 = $("#person_middle_name input, #person_first_name input, #person_title input")
+        function changeForm(hide, mId) {
+            console.log(mId+"Test1");
+            var group1 = $("#"+mId+" #person_middle_name, #"+mId+" #person_first_name, #"+mId+" #person_title, #"+mId+" #person_gender, #"+mId+" .js-positionTypeWrapper")
+            var group2 = $("#"+mId+" #person_gender .dropdown,#"+mId+" #person_gender select")
+            var group3 = $("#"+mId+" #positionType,#"+mId+" #positionOrg")
+            var group4 = $("#"+mId+" #person_middle_name input, #"+mId+" #person_first_name input,#"+mId+" #person_title input")
 
             if (hide) {
                 group1.hide()
@@ -247,7 +254,7 @@
                 group4.attr('disabled', 'disabled')
 
                 $("label[for='last_name']").text("Benenner")
-                ! $("#last_name").val() ? $("#last_name").val("Allgemeiner Funktionskontakt") : false
+                ! $("#"+mId+"#last_name").val() ? $("#"+mId+"#last_name").val("Allgemeiner Funktionskontakt") : false
 
             }
             else {
@@ -257,7 +264,7 @@
                 group4.removeAttr('disabled')
 
                 $("label[for='last_name']").text("Nachname")
-                $("#last_name").val() == "Allgemeiner Funktionskontakt" ? $("#last_name").val("") : false
+                $("#"+mId+"#last_name").val() == "Allgemeiner Funktionskontakt" ? $("#"+mId+"#last_name").val("") : false
             }
         }
 
