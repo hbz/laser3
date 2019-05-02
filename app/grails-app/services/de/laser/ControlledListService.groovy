@@ -119,7 +119,7 @@ class ControlledListService {
             log.debug("issue entitlements found")
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                issueEntitlements.results.add([name:s.dropdownNamingConvention(),value:res.class.name+":"+res.id])
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention()})",value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements
