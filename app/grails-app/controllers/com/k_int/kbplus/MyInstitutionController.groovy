@@ -8,6 +8,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
+import de.laser.helper.SortUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -34,6 +35,7 @@ import javax.servlet.ServletOutputStream
 import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
+import java.text.RuleBasedCollator
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -4177,6 +4179,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             flash.message = deletePrivatePropertyDefinition(params)
             result.privatePropertyDefinitions = PropertyDefinition.findAllWhere([tenant: result.institution])
         }
+
+        RuleBasedCollator clt = SortUtil.getCollator()
+        result.privatePropertyDefinitions.sort{a, b -> clt.compare(
+                message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
+                message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
+        )}
         result
     }
 

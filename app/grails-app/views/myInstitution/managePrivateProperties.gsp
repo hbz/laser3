@@ -21,8 +21,11 @@
             <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
                    data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
 
-
             <g:if test="${privatePropertyDefinitions}">
+
+                <div class="ui info message">
+                    ${message(code:'propertyDefinition.private.info')}
+                </div>
 
                 <g:form class="ui form" action="managePrivateProperties" method="post">
                     <table class="ui celled la-table table">
@@ -69,8 +72,6 @@
                             </g:each>
                         </tbody>
                     </table>
-
-                    <p>${message(code:'propertyDefinition.private.info')}</p>
                 </g:form>
             </g:if>
 
