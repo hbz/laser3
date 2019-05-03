@@ -69,6 +69,7 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
+    def messageSource
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -3904,8 +3905,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()

@@ -350,7 +350,6 @@
 
                         </div>
                     </div>
-                <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id && costItemSums.consCosts && costItemSums.subscrCosts}">
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
                     <div class="ui card la-dl-no-table">
@@ -369,7 +368,6 @@
                             </g:elseif>
                         </div>
                     </div>
-                </g:if>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table hidden">
                         <div class="content">

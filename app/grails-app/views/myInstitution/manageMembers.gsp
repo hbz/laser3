@@ -3,10 +3,10 @@
 
 <%
     String title
-    if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
+    if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
         title = message(code: 'menu.institutions.manage_consortia')
     }
-    else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
+    else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
         title = message(code: 'menu.institutions.manage_departments')
     }
 %>
@@ -63,19 +63,22 @@
 
 <semui:messages data="${flash}"/>
     <%
-        List configShow = []
-        if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
-            configShow = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+        List configShowFilter = []
+        List configShowTable = []
+        if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
+            configShowFilter = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'libraryType']
         }
-        else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
-            configShow = [['name'], ['property']]
+        else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
+            configShowFilter = [['name'], ['property']]
+            configShowTable = ['name', 'mainContact', 'numberOfSubscriptions']
         }
     %>
     <semui:filter>
         <g:form action="manageMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: configShow,
+                              tmplConfigShow: configShowFilter,
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -88,7 +91,7 @@
                   model="[orgList: members,
                           tmplShowCheckbox: true,
                           comboType: comboType,
-                          tmplConfigShow: ['name', 'mainContact', 'numberOfSubscriptions']
+                          tmplConfigShow: configShowTable
                   ]"/>
 
 
