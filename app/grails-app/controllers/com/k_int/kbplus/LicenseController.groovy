@@ -183,7 +183,8 @@ class LicenseController extends AbstractDebugController {
         //def task_licensorFilter = task {
 
         //a new query builder service for selection lists has been introduced
-        result.availableSubs = controlledListService.getSubscriptions(params+[status:RDStore.SUBSCRIPTION_CURRENT]).results
+        //result.availableSubs = controlledListService.getSubscriptions(params+[status:RDStore.SUBSCRIPTION_CURRENT]).results
+        //result.availableSubs = []
 
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
                 OrgRole.executeQuery(
