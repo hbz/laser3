@@ -25,23 +25,24 @@ class PropertyService {
         def order_by
         (base_qry, order_by) = splitQueryFromOrderBy(base_qry)
 
+
+
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
+            String propGroup
+            if (pd.tenant) {
+                propGroup = "privateProperties"
+            } else {
+                propGroup = "customProperties"
+            }
+            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+            base_qry_params.put('propDef', pd)
             if(params.filterProp) {
-                String propGroup
-                if (pd.tenant) {
-                    propGroup = "privateProperties"
-                } else {
-                    propGroup = "customProperties"
-                }
-                base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
-                base_qry_params.put('propDef', pd)
-
                 switch (pd.type) {
                     case RefdataValue.toString():
                         def pdValue = genericOIDService.resolveOID(params.filterProp)
                         if (pdValue == RDStore.GENERIC_NULL_VALUE) {
-                            base_qry += " and gProp.refValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                            base_qry += " and gProp.refValue = null ) "
                         }
                         else {
                             base_qry += " and gProp.refValue = :prop ) "
@@ -50,7 +51,7 @@ class PropertyService {
                         break
                     case Integer.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {
-                            base_qry += " and gProp.intValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                            base_qry += " and gProp.intValue = null ) "
                         } else {
                             base_qry += " and gProp.intValue = :prop ) "
                             base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
@@ -58,7 +59,7 @@ class PropertyService {
                         break
                     case String.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {
-                            base_qry += " and gProp.stringValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                            base_qry += " and gProp.stringValue = null ) "
                         } else {
                             base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
                             base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
@@ -66,7 +67,7 @@ class PropertyService {
                         break
                     case BigDecimal.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {
-                            base_qry += " and gProp.decValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                            base_qry += " and gProp.decValue = null ) "
                         } else {
                             base_qry += " and gProp.decValue = :prop ) "
                             base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
@@ -74,7 +75,7 @@ class PropertyService {
                         break
                     case Date.toString():
                         if (!params.filterProp || params.filterProp.length() < 1) {
-                            base_qry += " and gProp.dateValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                            base_qry += " and gProp.dateValue = null ) "
                         } else {
                             base_qry += " and gProp.dateValue = :prop ) "
                             base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
@@ -82,6 +83,9 @@ class PropertyService {
                         break
                 }
                 base_qry += " ) "
+            }
+            else {
+                base_qry += " ) ) "
             }
         }
         if (order_by) {

@@ -234,7 +234,7 @@
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
-                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" datacontroller="subscription" dataAction="possibleLicensesForSubscription" />
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />
                                         </g:if>
                                         <g:else>
                                             <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
@@ -350,7 +350,6 @@
 
                         </div>
                     </div>
-                <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id && costItemSums.consCosts && costItemSums.subscrCosts}">
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
                     <div class="ui card la-dl-no-table">
@@ -369,7 +368,6 @@
                             </g:elseif>
                         </div>
                     </div>
-                </g:if>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table hidden">
                         <div class="content">

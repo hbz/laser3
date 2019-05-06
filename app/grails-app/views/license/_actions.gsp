@@ -16,12 +16,12 @@
 
         <div class="divider"></div>
 
-        <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+        <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
 
         <g:if test="${actionName == 'show'}">
-            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+            <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
                 <div class="divider"></div>
-                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
 
             <%--

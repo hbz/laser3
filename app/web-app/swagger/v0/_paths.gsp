@@ -354,6 +354,8 @@
                 $ref: "#/components/schemas/OA2020List"
         401:
           $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
 
 
   /statistic:
@@ -406,3 +408,5 @@
                 $ref: "#/components/schemas/StatisticList"
         401:
           $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"

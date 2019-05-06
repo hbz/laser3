@@ -48,13 +48,14 @@
                 <div class="field">
                     <label>Merkmale</label>
 
-
                     <div class="scrollWrapper">
 
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
+
                             <table class="ui table la-table-small hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
-                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> a.getI10n('name') <=> b.getI10n('name')}}" var="pd">
+                                <% def clt = de.laser.helper.SortUtil.getCollator() %>
+                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a.getI10n('name'), b.getI10n('name'))}}" var="pd">
                                     <tr>
                                         <td>
                                             ${pd.getI10n('name')}

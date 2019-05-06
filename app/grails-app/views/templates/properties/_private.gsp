@@ -66,7 +66,7 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.type == Integer.toString()}">
-                            <semui:xEditable owner="${prop}" type="text" field="intValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" />
                         </g:if>
                         <g:elseif test="${prop.type.type == String.toString()}">
                             <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" />
@@ -80,7 +80,7 @@
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                             <g:if test="${prop.value}">
-                                <semui:linkIcon />
+                                <semui:linkIcon href="${prop.value}" />
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">

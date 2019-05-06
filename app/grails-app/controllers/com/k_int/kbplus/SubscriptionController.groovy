@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
@@ -17,6 +18,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
@@ -24,6 +26,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -992,7 +995,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = lic
                 if (sub.save(flush: true)) {
-                    changeAccepted << subChild?.dropdownNamingConvention()
+                    changeAccepted << subChild?.dropdownNamingConvention(result.institution)
                 }
             }
             if (changeAccepted) {
@@ -1008,7 +1011,7 @@ class SubscriptionController extends AbstractDebugController {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
                         if(sub.save(flush: true)){
-                            changeAccepted << it?.dropdownNamingConvention()
+                            changeAccepted << it?.dropdownNamingConvention(result.institution)
                         }
                     }
                 }
@@ -1112,15 +1115,15 @@ class SubscriptionController extends AbstractDebugController {
                     if (params.withIssueEntitlements) {
 
                         pkg_to_link.addToSubscription(subChild, true)
-                        changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                        changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                     } else {
                         pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << subChild?.dropdownNamingConvention()
+                        changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                     }
                 }else {
-                    changeFailed << subChild?.dropdownNamingConvention()
+                    changeFailed << subChild?.dropdownNamingConvention(result.institution)
                 }
 
             }
@@ -1144,15 +1147,15 @@ class SubscriptionController extends AbstractDebugController {
                         if (params.withIssueEntitlements) {
 
                             pkg_to_link.addToSubscription(subChild, true)
-                            changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                            changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << subChild?.dropdownNamingConvention()
+                            changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                         }
                     } else {
-                        changeFailed << subChild?.dropdownNamingConvention()
+                        changeFailed << subChild?.dropdownNamingConvention(result.institution)
                     }
                 }
             }
@@ -1288,13 +1291,17 @@ class SubscriptionController extends AbstractDebugController {
                     if (true) {
                         log.debug("Generating seperate slaved instances for consortia members")
 
+                        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type ?: "",
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
-                                startDate: result.subscriptionInstance.startDate,
-                                endDate: result.subscriptionInstance.endDate,
+                                startDate: startDate,
+                                endDate: endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1314,27 +1321,6 @@ class SubscriptionController extends AbstractDebugController {
                             flash.error = cons_sub.errors
                         }
 
-
-                        result.subscriptionInstance.packages.each { sub_pkg ->
-                            def takePackage = params."selectedPackage_${cm.get(0).id + sub_pkg.pkg.id}"
-                            def takeIE = params."selectedIssueEntitlement_${cm.get(0).id + sub_pkg.pkg.id}"
-
-                            log.debug("Package:${takePackage} IE:${takeIE}")
-
-                            def pkg_to_link = sub_pkg.pkg
-                            //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                            if (takeIE) {
-                                pkg_to_link.addToSubscription(cons_sub, true)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, true)
-                                }*/
-                            } else if (takePackage) {
-                                pkg_to_link.addToSubscription(cons_sub, false)
-                                /*sub_instances.each {
-                                    pkg_to_link.addToSubscription(it, false)
-                                }*/
-                            }
-                        }
 
                         if (cons_sub) {
 
@@ -3531,6 +3517,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             XSSFWorkbook workbook = new XSSFWorkbook()
+            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
             SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
             Sheet sheet = wb.createSheet(message)

@@ -470,7 +470,7 @@ class Subscription
     }
 
     def getNonDeletedDerivedSubscriptions() {
-        Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+        return executeQuery('select s from Subscription s where s.instanceOf = :instance and (s.status != :deleted or s.status = null)',[instance:this,deleted:RDStore.SUBSCRIPTION_DELETED])
     }
 
     def getCalculatedPropDefGroups(Org contextOrg) {
@@ -674,28 +674,33 @@ class Subscription
       types
   }
 
-   def dropdownNamingConvention(){
-
-       def contextOrg = contextService.getOrg()
+   def dropdownNamingConvention(contextOrg){
+       log.debug("processing dropdown naming convention")
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
-
+       log.debug("Getting period ...")
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
 
        period = period ? '('+period+')' : ''
 
-
-       String statusString = status ? status.getI10n('value') : RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').getI10n('value')
+       log.debug("Getting status ...")
+       String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
        if(instanceOf) {
            def additionalInfo
-
-           if(contextOrg.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id))
-           {
-               additionalInfo = (getSubscriber() ? getSubscriber()?.sortname : '')
+           log.debug("Getting additional info ...")
+           Map<RefdataValue,Org> orgRelationsMap = [:]
+           orgRelations.each { or ->
+               orgRelationsMap.put(or.roleType,or.org)
+           }
+           log.debug("Map built, moving to assemble ...")
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA) == contextOrg) {
+               log.debug("view as consortium, getting member ...")
+               additionalInfo = (orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS) ? orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS)?.sortname : '')
            }else{
+               log.debug("view as member")
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 

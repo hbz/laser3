@@ -1,6 +1,31 @@
+0.16.1
+
+- fixed: unable to view licenses
+- fixed: finance tab
+- fixed: excel export
+- reworked property filter
+- restored previous consortia member table
+
 0.16
 
-- TODO ..
+- added new customer types
+- added new permissions based on customer types
+- added departments management
+- reworked organisation information display
+- improved org settings
+- extended bibliographic information for e-books
+- reworked participant packages in consortium licenses
+- linked platforms with provider
+- added new view for FTEs
+- reworked exports (XLS -> XLSX, CSV parallel export)
+- reworked affiliation request handling
+- added profile setting for accessibility
+- implemented data setup/reset
+- fixed some heredity/sharing bugs
+- reworked pagination
+- refactoring code: naming conventions
+- added various minor features
+- fixed bugs
 
 0.15.4
 

@@ -13,7 +13,7 @@
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
-            <h2 class="ui header">${message(code:'subscription.compare.heading',default:'Compare Subscriptions of')} ${institutionName}</h2>
+            <h1 class="ui header">${message(code:'menu.my.comp_sub')}</h1>
         </g:if>
         <g:else>
             <h2 class="ui header">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>

@@ -70,7 +70,6 @@ class ControlledListService {
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
     Map getSubscriptions(Map params) {
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
@@ -92,7 +91,8 @@ class ControlledListService {
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            result.results.add([name:s.dropdownNamingConvention(),value:s.class.name + ":" + s.id])
+            log.debug("Now processing: ${s.name}")
+            result.results.add([name:s.dropdownNamingConvention(org),value:s.class.name + ":" + s.id])
         }
         result
     }
@@ -119,7 +119,7 @@ class ControlledListService {
             log.debug("issue entitlements found")
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                issueEntitlements.results.add([name:s.dropdownNamingConvention(),value:res.class.name+":"+res.id])
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements
@@ -180,7 +180,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()}",value:sp.class.name + ":" + sp.id])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:sp.class.name + ":" + sp.id])
             }
         }
         result
