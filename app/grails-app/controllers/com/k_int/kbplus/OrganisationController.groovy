@@ -520,17 +520,17 @@ class OrganisationController extends AbstractDebugController {
             }
 
             if(!foundIsil) {
-                orgInstance.checkAndAddMissingIdentifier('ISIL', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
 
 
             }
             if(!foundWibid) {
-                orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
 
 
             }
             if(!foundEZB) {
-                orgInstance.checkAndAddMissingIdentifier('ezb', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
 
 
             }
