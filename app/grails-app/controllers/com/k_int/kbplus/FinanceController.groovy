@@ -423,8 +423,9 @@ class FinanceController extends AbstractDebugController {
     SXSSFWorkbook processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         XSSFWorkbook workbook = new XSSFWorkbook()
+        POIXMLProperties xmlProps = workbook.getProperties()
         POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-        coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+        coreProps.setCreator(message(code:'laser'))
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
