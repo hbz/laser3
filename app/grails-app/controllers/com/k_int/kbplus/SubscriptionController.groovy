@@ -13,6 +13,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
+import de.laser.AuditConfig
 
 // 2.0
 import grails.converters.*
@@ -872,8 +873,11 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterSet = params.filterSet ? true : false
 
-        if (params.exportXLS == 'yes') {
-            def orgs = []
+        def sdf = new SimpleDateFormat('yyyy-MM-dd')
+        def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        def message = escapeService.escapeString(result.subscription.name)+"_"+g.message(code: 'subscriptionDetails.members.members')+"_"+datetoday
+        def orgs = []
+        if (params.exportXLS || params.format) {
             Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
             Map publicContacts = allContacts.publicContacts
             Map privateContacts = allContacts.privateContacts
@@ -896,20 +900,34 @@ class SubscriptionController extends AbstractDebugController {
                     org.privateProperties = subscr.privateProperties
                     String generalContacts = ""
                     if(publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join(", ")+"; "
+                        generalContacts += publicContacts.get(subscr).join("; ")+"; "
                     if(privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join(", ")
+                        generalContacts += privateContacts.get(subscr).join("; ")
                     org.generalContacts = generalContacts
                     orgs << org
                 }
             }
-            def message = g.message(code: 'subscriptionDetails.members.members')
+        }
 
-            exportOrg(orgs, message, true)
+        if(params.exportXLS) {
+            exportOrg(orgs, message, true, 'xls')
             return
         }
 
-        result
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportOrg(orgs,message,true,"csv"))
+                }
+                out.close()
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1339,6 +1357,30 @@ class SubscriptionController extends AbstractDebugController {
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)
+                        }
+
+                        if (cons_sub) {
+
+                            SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
+                                AuditConfig ac = AuditConfig.getConfig(scp)
+
+                                if (ac) {
+                                    // multi occurrence props; add one additional with backref
+                                    if (scp.type.multipleOccurrence) {
+                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        additionalProp = scp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = scp
+                                        additionalProp.save(flush: true)
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        newProp = scp.copyInto(newProp)
+                                        newProp.instanceOf = scp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -3482,174 +3524,251 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
     }
 
-    private def exportOrg(orgs, message, addHigherEducationTitles) {
+    private def exportOrg(orgs, message, addHigherEducationTitles, format) {
+        def titles = [
+            'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
+
+        def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
+        def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+
+
+        if (addHigherEducationTitles) {
+            titles.add(g.message(code: 'org.libraryType.label'))
+            titles.add(g.message(code: 'org.libraryNetwork.label'))
+            titles.add(g.message(code: 'org.funderType.label'))
+            titles.add(g.message(code: 'org.federalState.label'))
+            titles.add(g.message(code: 'org.country.label'))
+        }
+
+        titles.add(g.message(code: 'subscription.details.startDate'))
+        titles.add(g.message(code: 'subscription.details.endDate'))
+        titles.add(g.message(code: 'subscription.details.status'))
+        titles.add(RefdataValue.getByValueAndCategory('General contact person','Person Function').getI10n('value'))
+        //titles.add(RefdataValue.getByValueAndCategory('Functional contact','Person Contact Type').getI10n('value'))
+
+        def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
+        propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
+
+        propList.each {
+            titles.add(it.name)
+        }
+
+        orgs.sort { it.sortname } //see ERMS-1196. If someone finds out how to put order clauses into GORM domain class mappings which include a join, then OK. Otherwise, we must do sorting here.
         try {
-            def titles = [
-                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
+            if(format == "xlsx") {
 
-            def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-            def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+                XSSFWorkbook workbook = new XSSFWorkbook()
+                POIXMLProperties xmlProps = workbook.getProperties()
+                POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+                coreProps.setCreator(g.message(code:'laser'))
+                SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
+                Sheet sheet = wb.createSheet(message)
 
-            if (addHigherEducationTitles) {
-                titles.add(g.message(code: 'org.libraryType.label'))
-                titles.add(g.message(code: 'org.libraryNetwork.label'))
-                titles.add(g.message(code: 'org.funderType.label'))
-                titles.add(g.message(code: 'org.federalState.label'))
-                titles.add(g.message(code: 'org.country.label'))
-            }
+                //the following three statements are required only for HSSF
+                sheet.setAutobreaks(true)
 
-            titles.add(g.message(code: 'subscription.details.startDate'))
-            titles.add(g.message(code: 'subscription.details.endDate'))
-            titles.add(g.message(code: 'subscription.details.status'))
-            titles.add(RefdataValue.getByValueAndCategory('General contact person','Person Function').getI10n('value'))
-            //titles.add(RefdataValue.getByValueAndCategory('Functional contact','Person Contact Type').getI10n('value'))
-
-            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-            propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
-
-            propList.each {
-                titles.add(it.name)
-            }
-
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
-            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-
-            XSSFWorkbook workbook = new XSSFWorkbook()
-            POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
-            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
-
-            Sheet sheet = wb.createSheet(message)
-
-            //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true)
-
-            //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0)
-            headerRow.setHeightInPoints(16.75f)
-            titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index)
-                cell.setCellValue(titlesName)
-            }
-
-            //freeze the first row
-            sheet.createFreezePane(0, 1)
-
-            Row row
-            Cell cell
-            int rownum = 1
-
-            orgs.sort { it.name }
-            orgs.each { org ->
-                int cellnum = 0
-                row = sheet.createRow(rownum)
-
-                //Name
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.name ?: '')
-
-                //Shortname
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.shortname ?: '')
-
-                //Sortname
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.sortname ?: '')
-
-
-                if (addHigherEducationTitles) {
-
-                    //libraryType
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
-
-                    //libraryNetwork
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
-
-                    //funderType
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
-
-                    //federalState
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
-
-                    //country
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(org.country?.getI10n('value') ?: ' ')
+                //the header row: centered text in 48pt font
+                Row headerRow = sheet.createRow(0)
+                headerRow.setHeightInPoints(16.75f)
+                titles.eachWithIndex { titlesName, index ->
+                    Cell cell = headerRow.createCell(index)
+                    cell.setCellValue(titlesName)
                 }
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue("${org.startDate ?: ''}")
+                //freeze the first row
+                sheet.createFreezePane(0, 1)
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue("${org.endDate ?: ''}")
+                Row row
+                Cell cell
+                int rownum = 1
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.status?.getI10n('value') ?: ' ')
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(org.generalContacts ?: '')
+                orgs.each { org ->
+                    int cellnum = 0
+                    row = sheet.createRow(rownum)
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue('')
-
-                propList.each { pd ->
-                    def value = ''
-                    org.customProperties.each { prop ->
-                        if (prop.type.descr == pd.descr && prop.type == pd) {
-                            if (prop.type.type == Integer.toString()) {
-                                value = prop.intValue.toString()
-                            } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue ?: ''
-                            } else if (prop.type.type == BigDecimal.toString()) {
-                                value = prop.decValue.toString()
-                            } else if (prop.type.type == Date.toString()) {
-                                value = prop.dateValue.toString()
-                            } else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
-
-                    org.privateProperties.each { prop ->
-                        if (prop.type.descr == pd.descr && prop.type == pd) {
-                            if (prop.type.type == Integer.toString()) {
-                                value = prop.intValue.toString()
-                            } else if (prop.type.type == String.toString()) {
-                                value = prop.stringValue ?: ''
-                            } else if (prop.type.type == BigDecimal.toString()) {
-                                value = prop.decValue.toString()
-                            } else if (prop.type.type == Date.toString()) {
-                                value = prop.dateValue.toString()
-                            } else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
+                    //Name
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(value)
+                    cell.setCellValue(org.name ?: '')
+
+                    //Shortname
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.shortname ?: '')
+
+                    //Sortname
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.sortname ?: '')
+
+
+                    if (addHigherEducationTitles) {
+
+                        //libraryType
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
+
+                        //libraryNetwork
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
+
+                        //funderType
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
+
+                        //federalState
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
+
+                        //country
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(org.country?.getI10n('value') ?: ' ')
+                    }
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue("${org.startDate ?: ''}")
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue("${org.endDate ?: ''}")
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.status?.getI10n('value') ?: ' ')
+
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.generalContacts ?: '')
+
+                    /*cell = row.createCell(cellnum++)
+                    cell.setCellValue('')*/
+
+                    propList.each { pd ->
+                        def value = ''
+                        org.customProperties.each { prop ->
+                            if (prop.type.descr == pd.descr && prop.type == pd) {
+                                if (prop.type.type == Integer.toString()) {
+                                    value = prop.intValue.toString()
+                                } else if (prop.type.type == String.toString()) {
+                                    value = prop.stringValue ?: ''
+                                } else if (prop.type.type == BigDecimal.toString()) {
+                                    value = prop.decValue.toString()
+                                } else if (prop.type.type == Date.toString()) {
+                                    value = prop.dateValue.toString()
+                                } else if (prop.type.type == RefdataValue.toString()) {
+                                    value = prop.refValue?.getI10n('value') ?: ''
+                                }
+                            }
+                        }
+
+                        org.privateProperties.each { prop ->
+                            if (prop.type.descr == pd.descr && prop.type == pd) {
+                                if (prop.type.type == Integer.toString()) {
+                                    value = prop.intValue.toString()
+                                } else if (prop.type.type == String.toString()) {
+                                    value = prop.stringValue ?: ''
+                                } else if (prop.type.type == BigDecimal.toString()) {
+                                    value = prop.decValue.toString()
+                                } else if (prop.type.type == Date.toString()) {
+                                    value = prop.dateValue.toString()
+                                } else if (prop.type.type == RefdataValue.toString()) {
+                                    value = prop.refValue?.getI10n('value') ?: ''
+                                }
+
+                            }
+                        }
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(value)
+                    }
+
+                    rownum++
                 }
 
-                rownum++
+                for (int i = 0; i < titles.size(); i++) {
+                    sheet.autoSizeColumn(i)
+                }
+                // Write the output to a file
+                String file = message + ".xlsx"
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
-
-            for (int i = 0; i < titles.size(); i++) {
-                sheet.autoSizeColumn(i)
+            else if(format == 'csv') {
+                List orgData = []
+                orgs.each{  org ->
+                    List row = []
+                    //Name
+                    row.add(org.name ? org.name.replaceAll(',','') : '')
+                    //Shortname
+                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
+                    //Sortname
+                    row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
+                    if(addHigherEducationTitles) {
+                        //libraryType
+                        row.add(org.libraryType?.getI10n('value') ?: ' ')
+                        //libraryNetwork
+                        row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
+                        //funderType
+                        row.add(org.funderType?.getI10n('value') ?: ' ')
+                        //federalState
+                        row.add(org.federalState?.getI10n('value') ?: ' ')
+                        //country
+                        row.add(org.country?.getI10n('value') ?: ' ')
+                    }
+                    //startDate
+                    row.add(org.startDate ?: '')
+                    //endDate
+                    row.add(org.endDate ?: '')
+                    //status
+                    row.add(org.status?.getI10n('value') ?: ' ')
+                    //generalContacts
+                    row.add(org.generalContacts ?: '')
+                    propList.each { pd ->
+                        def value = ''
+                        org.customProperties.each{ prop ->
+                            if(prop.type.descr == pd.descr && prop.type == pd) {
+                                if(prop.type.type == Integer.toString()){
+                                    value = prop.intValue.toString()
+                                }
+                                else if (prop.type.type == String.toString()){
+                                    value = prop.stringValue ?: ''
+                                }
+                                else if (prop.type.type == BigDecimal.toString()){
+                                    value = prop.decValue.toString()
+                                }
+                                else if (prop.type.type == Date.toString()){
+                                    value = prop.dateValue.toString()
+                                }
+                                else if (prop.type.type == RefdataValue.toString()) {
+                                    value = prop.refValue?.getI10n('value') ?: ''
+                                }
+                            }
+                        }
+                        org.privateProperties.each{ prop ->
+                            if(prop.type.descr == pd.descr && prop.type == pd) {
+                                if(prop.type.type == Integer.toString()){
+                                    value = prop.intValue.toString()
+                                }
+                                else if (prop.type.type == String.toString()){
+                                    value = prop.stringValue ?: ''
+                                }
+                                else if (prop.type.type == BigDecimal.toString()){
+                                    value = prop.decValue.toString()
+                                }
+                                else if (prop.type.type == Date.toString()){
+                                    value = prop.dateValue.toString()
+                                }
+                                else if (prop.type.type == RefdataValue.toString()) {
+                                    value = prop.refValue?.getI10n('value') ?: ''
+                                }
+                            }
+                        }
+                        row.add(value.replaceAll(',',';'))
+                    }
+                    orgData.add(row)
+                }
+                return exportService.generateSeparatorTableString(titles,orgData,',')
             }
-            // Write the output to a file
-            String file = message + "_${datetoday}.xlsx"
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
         }
         catch (Exception e) {
             log.error("Problem", e);

@@ -369,7 +369,7 @@
                         </div>
                     </div>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table hidden">
+                    <div class="ui card la-dl-no-table">
                         <div class="content">
                             <g:if test="${totalCostPerUse}">
                                 <dl>
