@@ -410,11 +410,13 @@ aside.ui.accordion .title:not(.ui) {
 }
 .ui.icon.button.la-hidden {
     visibility: hidden;
-    margin-right: 0.5rem;
 }
 /* new buttons */
 .ui table td.x {
     text-align: right;
     margin-right: 0;
     white-space: nowrap;
+}
+.js-gost {
+    display: none;
 }

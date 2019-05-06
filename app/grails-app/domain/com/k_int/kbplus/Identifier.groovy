@@ -143,6 +143,15 @@ class Identifier {
             }
         }
 
+        if(this.ns?.ns == 'ezb')
+        {
+            if(this.value == 'Unknown')
+            {
+                this.value = ''
+                this.save()
+            }
+        }
+
         if(this.ns?.ns == 'ISIL')
         {
             if(this.value == 'Unknown')
