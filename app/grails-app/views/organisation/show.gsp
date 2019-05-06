@@ -471,30 +471,7 @@ ${orgInstance.name}
 
                 <g:if test="${orgInstance?.incomingCombos}">
 
-                    <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
-                        <div class="ui card">
-                            <div class="content">
-                                <dl>
-                                    <dt><g:message code="org.incomingCombos.label" default="Incoming Combos"/></dt>
-                                    <dd>
-                                        <g:each in="${orgInstance.incomingCombos.sort { it.fromOrg.name }}" var="i">
-                                            <g:link controller="organisation" action="show"
-                                                    id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                            <g:each in="${i?.fromOrg?.ids?.sort { it?.identifier?.ns?.ns }}"
-                                                    var="id_in">
-                                                <span class="ui small teal image label">
-                                                    ${id_in.identifier.ns.ns}: <div
-                                                        class="detail">${id_in.identifier.value}</div>
-                                                </span>
-                                            </g:each>
-                                            <br/>
-                                        </g:each>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div><!--.card-->
-                    </g:if>
-                    <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                         <div class="ui card la-role-admin">
                             <div class="content">
                                 <dl>
@@ -516,7 +493,7 @@ ${orgInstance.name}
                                 </dl>
                             </div>
                         </div><!--.card-->
-                    </g:elseif>
+                    </g:if>
                     <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <div class="ui card la-role-yoda">
                             <div class="content">
