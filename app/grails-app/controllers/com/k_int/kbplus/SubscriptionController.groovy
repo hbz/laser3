@@ -896,14 +896,14 @@ class SubscriptionController extends AbstractDebugController {
                     org.privateProperties = subscr.privateProperties
                     String generalContacts = ""
                     if(publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join(", ")+"; "
+                        generalContacts += publicContacts.get(subscr).join("; ")+"; "
                     if(privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join(", ")
+                        generalContacts += privateContacts.get(subscr).join("; ")
                     org.generalContacts = generalContacts
                     orgs << org
                 }
             }
-            def message = g.message(code: 'subscriptionDetails.members.members')
+            def message = escapeService.escapeString(result.subscription.name)+"_"+g.message(code: 'subscriptionDetails.members.members')
 
             exportOrg(orgs, message, true)
             return
@@ -3513,12 +3513,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+            def sdf = new SimpleDateFormat('yyyy-MM-dd')
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             XSSFWorkbook workbook = new XSSFWorkbook()
+            POIXMLProperties xmlProps = workbook.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(g.message(code:'laser'))
             SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
             Sheet sheet = wb.createSheet(message)
@@ -3541,7 +3542,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             Cell cell
             int rownum = 1
 
-            orgs.sort { it.name }
+            orgs.sort { it.sortname } //see ERMS-1196. If someone finds out how to put order clauses into GORM domain class mappings which include a join, then OK. Otherwise, we must do sorting here.
             orgs.each { org ->
                 int cellnum = 0
                 row = sheet.createRow(rownum)
