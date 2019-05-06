@@ -47,6 +47,7 @@ class SurveyInfo {
 
         owner column: 'surin_owner_org_fk'
         type column: 'surin_type_rv_fk'
+        status column: 'surin_status_rv_fk'
 
 
 
