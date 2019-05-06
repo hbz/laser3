@@ -1281,7 +1281,7 @@ class BootStrap {
                 [
                         name: [en: "Mehrjahreslaufzeit ausgewählt", de: "Mehrjahreslaufzeit ausgewählt"],
                         expl: [en: "", de: "Hat der Teilnehmer sich für eine Mehrjahreslaufzeit entschieden?"],
-                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
                 ],
                 [
                         name: [en: "Rabatt", de: "Rabatt"],
@@ -2151,6 +2151,7 @@ class BootStrap {
         RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu
         RefdataValue.loc('Person Function',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP) // Funktion
+        RefdataValue.loc('Person Function',     [en: 'Contact Person', de: 'Kontakt'], BOOTSTRAP) // Funktion
         // RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP) //Position
         // RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP) //Position
@@ -2230,11 +2231,13 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'No longer usable', de: 'Nicht mehr nutzbar'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Publication discontinued', de: 'Erscheinen eingestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Test Access', de: 'Testzugriff'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
-		    RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
-		    RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
-		    RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
+		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
 
         //RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
         //RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)

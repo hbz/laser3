@@ -13,6 +13,7 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
+import de.laser.AuditConfig
 
 // 2.0
 import grails.converters.*
@@ -995,7 +996,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = lic
                 if (sub.save(flush: true)) {
-                    changeAccepted << subChild?.dropdownNamingConvention()
+                    changeAccepted << subChild?.dropdownNamingConvention(result.institution)
                 }
             }
             if (changeAccepted) {
@@ -1011,7 +1012,7 @@ class SubscriptionController extends AbstractDebugController {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
                         if(sub.save(flush: true)){
-                            changeAccepted << it?.dropdownNamingConvention()
+                            changeAccepted << it?.dropdownNamingConvention(result.institution)
                         }
                     }
                 }
@@ -1115,15 +1116,15 @@ class SubscriptionController extends AbstractDebugController {
                     if (params.withIssueEntitlements) {
 
                         pkg_to_link.addToSubscription(subChild, true)
-                        changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                        changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                     } else {
                         pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << subChild?.dropdownNamingConvention()
+                        changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                     }
                 }else {
-                    changeFailed << subChild?.dropdownNamingConvention()
+                    changeFailed << subChild?.dropdownNamingConvention(result.institution)
                 }
 
             }
@@ -1147,15 +1148,15 @@ class SubscriptionController extends AbstractDebugController {
                         if (params.withIssueEntitlements) {
 
                             pkg_to_link.addToSubscription(subChild, true)
-                            changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                            changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << subChild?.dropdownNamingConvention()
+                            changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                         }
                     } else {
-                        changeFailed << subChild?.dropdownNamingConvention()
+                        changeFailed << subChild?.dropdownNamingConvention(result.institution)
                     }
                 }
             }
@@ -1339,6 +1340,30 @@ class SubscriptionController extends AbstractDebugController {
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)
+                        }
+
+                        if (cons_sub) {
+
+                            SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
+                                AuditConfig ac = AuditConfig.getConfig(scp)
+
+                                if (ac) {
+                                    // multi occurrence props; add one additional with backref
+                                    if (scp.type.multipleOccurrence) {
+                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        additionalProp = scp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = scp
+                                        additionalProp.save(flush: true)
+                                    }
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        newProp = scp.copyInto(newProp)
+                                        newProp.instanceOf = scp
+                                        newProp.save(flush: true)
+                                    }
+                                }
+                            }
                         }
                     }
                 }

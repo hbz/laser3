@@ -30,10 +30,7 @@ class OrganisationController extends AbstractDebugController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
-    })
+    @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
@@ -66,10 +63,7 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
-    })
+    @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def list() {
 
         def result = [:]
