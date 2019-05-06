@@ -390,6 +390,19 @@ ${orgInstance.name}
                                             <div class="item">
 
                                                 <input class="ui button" size="35"
+                                                       value="${message(code: 'personFormModalGeneralContactPerson')}"
+                                                       data-semui="modal"
+                                                       data-href="#personFormModalGeneralContactPerson"/>
+
+                                                <g:render template="/person/formModal"
+                                                          model="['tenant'                           : contextOrg,
+                                                                  'org'                              : orgInstance,
+                                                                  'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalGeneralContactPerson',
+                                                                  'hideFunctionTypeAndPositionAndOrg': true]"/>
+
+                                                <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalResponsibleContact')}"
                                                        data-semui="modal"
                                                        data-href="#personFormModalResponsibleContact"/>
@@ -401,6 +414,11 @@ ${orgInstance.name}
                                                                   'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Contact', 'Person Function'),
                                                                   'modalId'                          : 'personFormModalResponsibleContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
+
+                                            </div>
+
+                                            <div class="item">
+
 
                                                 <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalBillingContact')}"
@@ -415,9 +433,6 @@ ${orgInstance.name}
                                                                   'modalId'                          : 'personFormModalBillingContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
 
-                                            </div>
-
-                                            <div class="item">
                                                 <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalOtherContact')}"
                                                        data-semui="modal"
