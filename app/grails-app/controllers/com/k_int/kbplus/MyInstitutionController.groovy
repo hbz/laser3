@@ -631,7 +631,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
                 }
                 out.close()
             }

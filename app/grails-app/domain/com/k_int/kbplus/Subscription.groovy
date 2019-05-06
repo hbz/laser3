@@ -674,7 +674,11 @@ class Subscription
       types
   }
 
-   def dropdownNamingConvention(contextOrg){
+  def dropdownNamingConvention() {
+      return dropdownNamingConvention(contextService.org)
+  }
+
+  def dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
        String period = startDate ? sdf.format(startDate)  : ''
@@ -687,12 +691,13 @@ class Subscription
 
        if(instanceOf) {
            def additionalInfo
-           Map<RefdataValue,Org> orgRelationsMap = [:]
+           Map<Long,Org> orgRelationsMap = [:]
            orgRelations.each { or ->
-               orgRelationsMap.put(or.roleType,or.org)
+               orgRelationsMap.put(or.roleType.id,or.org)
            }
-           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA) == contextOrg) {
-               additionalInfo = (orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS) ? orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS)?.sortname : '')
+           //log.debug(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id))
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+               additionalInfo = orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id) ? orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname : ''
            }else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
@@ -704,7 +709,7 @@ class Subscription
 
            return name + ' - ' + statusString + ' ' +period
        }
-   }
+  }
 
     def getDerivedSubscriptionBySubscribers(Org org) {
         def result
