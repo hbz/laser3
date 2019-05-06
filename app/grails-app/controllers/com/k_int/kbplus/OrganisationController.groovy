@@ -729,7 +729,7 @@ class OrganisationController extends AbstractDebugController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-      
+
         def orgInstance = Org.get(params.id)
         if (! orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -742,47 +742,59 @@ class OrganisationController extends AbstractDebugController {
 
         result
     }
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
+    @Secured(closure = {
+        ctx.accessService.checkForeignOrgComboPermAffiliationX([
+                org: Org.get(request.getRequestURI().split('/').last()),
+                affiliation: "INST_USER",
+                comboPerm: "ORG_CONSORTIUM",
+                comboAffiliation: "INST_EDITOR",
+                specRoles: "ROLE_ADMIN,ROLE_ORG_EDITOR"
+                ])
+    })
     def readerNumber() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        result.orgInstance = Org.get(params.id)
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         params.sort = params.sort ?: 'dueDate'
         params.order = params.order ?: 'desc'
 
-        result.orgInstance = Org.get(params.id)
         result.numbersInstanceList = ReaderNumber.findAllByOrg(result.orgInstance, params)
 
         result
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    @DebugAnnotation(test = 'checkForeignOrgComboPermAffiliation()')
+    @Secured(closure = {
+        ctx.accessService.checkForeignOrgComboPermAffiliationX([
+                org: Org.get(request.getRequestURI().split('/').last()),
+                affiliation: "INST_USER",
+                comboPerm: "ORG_CONSORTIUM",
+                comboAffiliation: "INST_EDITOR",
+                specRoles: "ROLE_ADMIN"
+        ])
+    })
     def accessPoints() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        def orgInstance = Org.get(params.id)
+        result.orgInstance = Org.get(params.id)
 
-        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
-          result.editable = true
-        }
-        else {
-          result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
-        }
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
-        if (!orgInstance) {
+        if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'list'
             return
         }
 
-        def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance,  [sort: ["name": 'asc', "accessMethod" : 'asc']])
+        def orgAccessPointList = OrgAccessPoint.findAllByOrg(result.orgInstance,  [sort: ["name": 'asc', "accessMethod" : 'asc']])
         result.orgAccessPointList = orgAccessPointList
-        result.orgInstance = orgInstance
 
         result
     }
+
     def addOrgType()
     {
         def result = [:]

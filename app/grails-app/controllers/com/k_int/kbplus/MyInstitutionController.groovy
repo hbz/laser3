@@ -69,7 +69,6 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
-    def messageSource
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -2285,8 +2284,9 @@ AND EXISTS (
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
             CreationHelper factory = workbook.getCreationHelper()
@@ -3808,7 +3808,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()
