@@ -999,7 +999,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = lic
                 if (sub.save(flush: true)) {
-                    changeAccepted << subChild?.dropdownNamingConvention()
+                    changeAccepted << subChild?.dropdownNamingConvention(result.institution)
                 }
             }
             if (changeAccepted) {
@@ -1015,7 +1015,7 @@ class SubscriptionController extends AbstractDebugController {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
                         if(sub.save(flush: true)){
-                            changeAccepted << it?.dropdownNamingConvention()
+                            changeAccepted << it?.dropdownNamingConvention(result.institution)
                         }
                     }
                 }
@@ -1119,15 +1119,15 @@ class SubscriptionController extends AbstractDebugController {
                     if (params.withIssueEntitlements) {
 
                         pkg_to_link.addToSubscription(subChild, true)
-                        changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                        changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                     } else {
                         pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << subChild?.dropdownNamingConvention()
+                        changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                     }
                 }else {
-                    changeFailed << subChild?.dropdownNamingConvention()
+                    changeFailed << subChild?.dropdownNamingConvention(result.institution)
                 }
 
             }
@@ -1151,15 +1151,15 @@ class SubscriptionController extends AbstractDebugController {
                         if (params.withIssueEntitlements) {
 
                             pkg_to_link.addToSubscription(subChild, true)
-                            changeAcceptedwithIE << subChild?.dropdownNamingConvention()
+                            changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << subChild?.dropdownNamingConvention()
+                            changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                         }
                     } else {
-                        changeFailed << subChild?.dropdownNamingConvention()
+                        changeFailed << subChild?.dropdownNamingConvention(result.institution)
                     }
                 }
             }

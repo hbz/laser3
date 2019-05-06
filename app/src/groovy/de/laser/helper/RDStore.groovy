@@ -47,6 +47,7 @@ class RDStore {
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', 'Subscription Status')
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
+    static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('subscription.status.no.status.set.but.null','filter.fake.values')
 
     static final SUBSCRIPTION_TYPE_LOCAL_LICENSE      = getRefdataValue('Local Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE      = getRefdataValue('Consortial Licence', 'Subscription Type')

@@ -180,14 +180,15 @@
                                 <dd>
                                     <g:if test="${editable}">
                                         <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
-                                            <br />
                                             <input type="hidden" name="license" value="${license.id}"/>
                                             <div class="fields">
                                                 <div class="field">
-                                                    <g:select class="ui search selectable dropdown"
-                                                              optionKey="value" optionValue="name"
-                                                              from="${availableSubs}" name="subscription"
-                                                              noSelection="['':'Wählen Sie hier eine Lizenz zur Verknüpfung ..']"/>
+                                                    <div class="ui search selection dropdown" id="subscription">
+                                                        <input type="hidden" name="subscription">
+                                                        <i class="dropdown icon"></i>
+                                                        <input type="text" class="search">
+                                                        <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
+                                                    </div>
                                                 </div>
                                                 <div class="field">
                                                     <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
@@ -288,16 +289,17 @@
 
         </div><!-- .grid -->
 
-    <r:script language="JavaScript">
-        function changeLink(elem, msg) {
-            var selectedOrg = $('#orgShortcode').val();
-            var edited_link =  $("a[name=" + elem.name + "]").attr("href", function(i, val){
-                return val.replace("replaceme", selectedOrg)
+        <r:script>
+            $(document).ready(function() {
+              $("#subscription").dropdown({
+                apiSettings: {
+                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}",
+                    cache: false
+                },
+                clearable: true,
+                minCharacters: 0
+              });
             });
-
-            return confirm(msg);
-        }
-    </r:script>
-
+        </r:script>
   </body>
 </html>
