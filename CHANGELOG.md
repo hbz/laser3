@@ -1,3 +1,11 @@
+0.16.1
+
+- fixed: unable to view licenses
+- fixed: finance tab
+- fixed: excel export
+- reworked property filter
+- restored previous consortia member table
+
 0.16
 
 - added new customer types
