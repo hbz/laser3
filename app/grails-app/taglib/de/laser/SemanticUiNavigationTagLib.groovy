@@ -202,6 +202,21 @@ class SemanticUiNavigationTagLib {
 
     // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
 
+    def mainNavItem = { attrs, body ->
+
+        def lbText    = attrs.text ? attrs.text : ''
+        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+
+        out << g.link(linkBody,
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params,
+                class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
+                id: attrs.id
+        )
+    }
+
 
     def securedMainNavItem = { attrs, body ->
 

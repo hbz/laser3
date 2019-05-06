@@ -90,8 +90,9 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
+                                </sec:ifAnyGranted>
 
                                 <%-- TODO: check orgType --%>
                                 <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
