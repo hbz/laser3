@@ -279,7 +279,7 @@ class OrganisationController extends AbstractDebugController {
         if(params.institution) {
             RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             Org orgInstance = new Org(name: params.institution, sector: orgSector)
-            orgInstance.addToOrgType(RDStore.OT_INSTITUTION)
+            orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
             try {
                 orgInstance.save(flush:true)
                 if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
@@ -301,7 +301,7 @@ class OrganisationController extends AbstractDebugController {
         //new department = institution member, implies combo type department
         else if(params.department) {
             Org deptInstance = new Org(name: params.department)
-            deptInstance.addToOrgType(RDStore.OT_DEPARTMENT)
+            deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
             try {
                 deptInstance.save(flush:true)
                 if(RDStore.OT_INSTITUTION.id in (contextOrg.getallOrgTypeIds())) {
