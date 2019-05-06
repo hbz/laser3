@@ -27,6 +27,7 @@ class SurveyInfo {
     ]
 
     static constraints = {
+        startDate (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
