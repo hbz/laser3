@@ -41,7 +41,7 @@
 	<label for="urlGov">
 		<g:message code="org.urlGov.label" default="UrlGov" />
 	</label>
-	<g:textField name="url" maxlength="512" value="${orgInstance?.urlGov}"/>
+	<g:textField name="urlGov" maxlength="512" value="${orgInstance?.urlGov}"/>
 </div>
 
 %{--<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')}">

@@ -390,6 +390,19 @@ ${orgInstance.name}
                                             <div class="item">
 
                                                 <input class="ui button" size="35"
+                                                       value="${message(code: 'personFormModalGeneralContactPerson')}"
+                                                       data-semui="modal"
+                                                       data-href="#personFormModalGeneralContactPerson"/>
+
+                                                <g:render template="/person/formModal"
+                                                          model="['tenant'                           : contextOrg,
+                                                                  'org'                              : orgInstance,
+                                                                  'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalGeneralContactPerson',
+                                                                  'hideFunctionTypeAndPositionAndOrg': true]"/>
+
+                                                <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalResponsibleContact')}"
                                                        data-semui="modal"
                                                        data-href="#personFormModalResponsibleContact"/>
@@ -401,6 +414,11 @@ ${orgInstance.name}
                                                                   'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Contact', 'Person Function'),
                                                                   'modalId'                          : 'personFormModalResponsibleContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
+
+                                            </div>
+
+                                            <div class="item">
+
 
                                                 <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalBillingContact')}"
@@ -415,9 +433,6 @@ ${orgInstance.name}
                                                                   'modalId'                          : 'personFormModalBillingContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
 
-                                            </div>
-
-                                            <div class="item">
                                                 <input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalOtherContact')}"
                                                        data-semui="modal"
@@ -471,30 +486,7 @@ ${orgInstance.name}
 
                 <g:if test="${orgInstance?.incomingCombos}">
 
-                    <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
-                        <div class="ui card">
-                            <div class="content">
-                                <dl>
-                                    <dt><g:message code="org.incomingCombos.label" default="Incoming Combos"/></dt>
-                                    <dd>
-                                        <g:each in="${orgInstance.incomingCombos.sort { it.fromOrg.name }}" var="i">
-                                            <g:link controller="organisation" action="show"
-                                                    id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                            <g:each in="${i?.fromOrg?.ids?.sort { it?.identifier?.ns?.ns }}"
-                                                    var="id_in">
-                                                <span class="ui small teal image label">
-                                                    ${id_in.identifier.ns.ns}: <div
-                                                        class="detail">${id_in.identifier.value}</div>
-                                                </span>
-                                            </g:each>
-                                            <br/>
-                                        </g:each>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div><!--.card-->
-                    </g:if>
-                    <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                         <div class="ui card la-role-admin">
                             <div class="content">
                                 <dl>
@@ -516,7 +508,7 @@ ${orgInstance.name}
                                 </dl>
                             </div>
                         </div><!--.card-->
-                    </g:elseif>
+                    </g:if>
                     <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <div class="ui card la-role-yoda">
                             <div class="content">
