@@ -69,7 +69,6 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
-    def messageSource
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -632,7 +631,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
                 }
                 out.close()
             }
@@ -2285,8 +2284,9 @@ AND EXISTS (
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
             CreationHelper factory = workbook.getCreationHelper()
@@ -3063,12 +3063,27 @@ AND EXISTS (
 
 
         result.surveys = SurveyResult.findAll("from SurveyResult where " +
-                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " (startDate >= :startDate and endDate <= :endDate)",
+                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
                 [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('Survey started', 'Survey Status'),
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])
+
+        result.surveysConsortia = []
+
+                /*SurveyResult.findAll("from SurveyResult where " +
+                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
+                [contextOrg: contextService.org,
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
+                 startDate: new Date(System.currentTimeMillis()),
+                 endDate: new Date(System.currentTimeMillis())])*/
+
         result
     }
 
@@ -3260,6 +3275,90 @@ AND EXISTS (
       }
       result
     }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def currentSurveys() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyResult() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        result.editable = result.surveyResults.finishDate ? false : true
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyResultFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        result.surveyResults.each{
+
+           if(it.participant == result.institution) {
+               it.finishDate = new Date(System.currentTimeMillis())
+               it.save(flush: true)
+
+               flash.message = g.message(code: "default.notAutorized.message")
+           }
+        }
+
+
+        redirect action: 'surveyResult', id: result.surveyInfo.id
+    }
+
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -3808,7 +3907,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()

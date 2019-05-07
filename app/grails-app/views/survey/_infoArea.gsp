@@ -24,6 +24,10 @@
                 <dt>${message(code: 'surveyInfo.type.label')}</dt>
                 <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
             </dl>
+            <dl>
+                <dt>${message(code: 'surveyInfo.comment.label')}</dt>
+                <dd>${surveyInfo?.comment}</dd>
+            </dl>
 
         </div>
 

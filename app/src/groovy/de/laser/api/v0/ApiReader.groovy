@@ -21,9 +21,11 @@ class ApiReader {
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
+            'oa2020':               [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
             'refdatas':             [Constants.MIME_APPLICATION_JSON],
+            'statistic':            [Constants.MIME_APPLICATION_JSON],
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 

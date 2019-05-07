@@ -14,4 +14,12 @@ class ApiCatalogue {
         result
     }
 
+    /**
+     * @return []
+     */
+    static getDummy() {
+        def result = ['dummy']
+        result
+    }
+
 }

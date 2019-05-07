@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.members.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.linkPackagesConsortium.label')}</title>
 </head>
 
 <body>
@@ -79,6 +79,21 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
         </g:form>
+    </div>
+
+    <div class="ui segment">
+        <h4>${message(code: 'subscription.linkPackagesConsortium.unlinkInfo')}</h4>
+
+    <div class="ui buttons">
+        <g:link class="ui button js-open-confirm-modal"
+                data-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: false]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage')}</g:link>
+        <div class="or"></div>
+        <g:link class="ui button js-open-confirm-modal"
+                ata-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: true]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE')}</g:link>
+    </div>
+
     </div>
 
     <div class="divider"></div>

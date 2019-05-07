@@ -16,14 +16,27 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
-                            params="${params+[exportXLS:'yes']}">
+                            params="${params+[exportXLS:true]}">
                         ${message(code:'default.button.exports.xls')}
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="item" action="members" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                    <g:link class="item" action="members" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                </g:else>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
+                <g:if test="${filterSet}">
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="subscriptionDetails" action="members"
+                            params="${params+[format:'csv']}">
+                        ${message(code:'default.button.exports.csv')}
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="members" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </g:else>
             </semui:exportDropdownItem>
         </semui:exportDropdown>

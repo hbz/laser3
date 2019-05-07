@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveysConsortia.label"/>
     <semui:crumb message="survey" class="active"/>
 </semui:breadcrumbs>
 
@@ -25,71 +25,75 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<semui:form>
-    <div class="ui grid">
-        <div class="middle aligned row">
-            <div class="two wide column">
 
-                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
-                        class="ui huge button"><i class="angle left aligned icon"></i></g:link>
+<div class="ui grid">
+    <div class="middle aligned row">
+        <div class="two wide column">
 
-            </div>
+            <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
+                    class="ui huge button"><i class="angle left aligned icon"></i></g:link>
 
-            <div class="twelve wide column">
+        </div>
 
-                <div class="la-inline-lists">
-                    <div class="ui card">
-                        <div class="content">
+        <div class="twelve wide column">
 
-                            <div class="header">
-                                <div class="ui grid">
-                                    <div class="twelve wide column">
-                                        ${message(code: 'showSurveyInfo.step.first.title')}
-                                    </div>
+            <div class="la-inline-lists">
+                <div class="ui card">
+                    <div class="content">
+
+                        <div class="header">
+                            <div class="ui grid">
+                                <div class="twelve wide column">
+                                    ${message(code: 'showSurveyInfo.step.first.title')}
                                 </div>
                             </div>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
-                                <dd>${surveyInfo.status?.getI10n('value')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
-                                <dd>${surveyInfo.name}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
-                                <dd><g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyInfo.startDate ?: null}"/></dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
-                                <dd><g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyInfo.endDate ?: null}"/></dd>
-                            </dl>
-
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.type.label')}</dt>
-                                <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
-                            </dl>
-
                         </div>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
+                            <dd>${surveyInfo.status?.getI10n('value')}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
+                            <dd>${surveyInfo.name}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
+                            <dd><g:formatDate formatName="default.date.format.notime"
+                                              date="${surveyInfo.startDate ?: null}"/></dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
+                            <dd><g:formatDate formatName="default.date.format.notime"
+                                              date="${surveyInfo.endDate ?: null}"/></dd>
+                        </dl>
+
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.type.label')}</dt>
+                            <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.comment.label')}</dt>
+                            <dd>${surveyInfo?.comment}</dd>
+                        </dl>
+
                     </div>
                 </div>
             </div>
-
-            <div class="two wide column">
-                <g:if test="${surveyConfigs.size() > 0}">
-
-                    <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
-                            class="ui huge button"><i class="angle right icon"></i></g:link>
-
-                </g:if>
-            </div>
         </div>
 
+        <div class="two wide column">
+            <g:if test="${surveyConfigs.size() > 0}">
+
+                <g:link controller="survey" action="openSurvey" id="${surveyInfo.id}"
+                        class="ui huge button"><i class="angle right icon"></i></g:link>
+
+            </g:if>
+        </div>
     </div>
 
-</semui:form>
+</div>
+
+
 
 <br>
 

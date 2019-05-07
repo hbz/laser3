@@ -50,7 +50,7 @@ class SurveyConfig {
         type column: 'surconf_type'
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
-        pickAndChoose column: 'surconf_pickAndChoose'
+        pickAndChoose column: 'surconf_pickandchoose'
 
         orgIDs column: 'surconf_org_ids'
 

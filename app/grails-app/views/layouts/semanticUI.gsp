@@ -90,8 +90,9 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
+                                </sec:ifAnyGranted>
 
                                 <%-- TODO: check orgType --%>
                                 <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
@@ -126,10 +127,19 @@
                             <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
                                                       action="documents" message="menu.my.documents" />
 
+
+                    <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
+
+                        <div class="divider"></div>
+                        <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+
+                        <div class="divider"></div>
+                    </g:if>
+
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem affiliation="INST_ADMs" controller="survey" action="currentSurveys" message="menu.my.surveys" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
 
                                 <div class="divider"></div>
@@ -466,10 +476,15 @@
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>
-                                    <g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
+                                    <g:link class="item js-open-confirm-modal"
+                                            data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
+                                            data-confirm-term-how="ok"
+                                            controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>
                                 </div>
                             </div>
 

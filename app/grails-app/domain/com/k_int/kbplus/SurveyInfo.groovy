@@ -27,6 +27,7 @@ class SurveyInfo {
     ]
 
     static constraints = {
+        startDate (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
@@ -47,6 +48,7 @@ class SurveyInfo {
 
         owner column: 'surin_owner_org_fk'
         type column: 'surin_type_rv_fk'
+        status column: 'surin_status_rv_fk'
 
 
 

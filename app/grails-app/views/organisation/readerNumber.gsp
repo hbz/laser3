@@ -1,8 +1,9 @@
 <%@ page
         import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;java.text.SimpleDateFormat"
 %>
+<laser:serviceInjection />
 <g:set var="overwriteEditable"
-       value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
+       value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}"/>
 <g:set var="sdf" value="${new SimpleDateFormat(message(code: 'default.date.format.notime'))}"/>
 <!doctype html>
 <html>
