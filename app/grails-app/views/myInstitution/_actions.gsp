@@ -28,7 +28,7 @@
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") || springSecurityService.getCurrentUser().hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
         <semui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <semui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
