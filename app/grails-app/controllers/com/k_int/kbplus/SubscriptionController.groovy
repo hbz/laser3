@@ -2557,6 +2557,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
+                                copiedProp.instanceOf = null
                                 copiedProp.save(flush: true)
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
@@ -2805,6 +2806,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.instanceOf = null
                                     copiedProp.save(flush: true)
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
@@ -3515,6 +3517,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.instanceOf = null
                         copiedProp.save(flush: true)
                         //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }

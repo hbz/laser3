@@ -46,6 +46,7 @@ class InstitutionsService {
             for (prop in base.customProperties) {
                 def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                 copiedProp = prop.copyInto(copiedProp)
+                copiedProp.instanceOf = null
                 copiedProp.save(flush: true)
                 //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
             }
@@ -129,6 +130,7 @@ class InstitutionsService {
         for (prop in baseLicense?.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
+            copiedProp.instanceOf = null
             copiedProp.save(flush: true)
             //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
         }
