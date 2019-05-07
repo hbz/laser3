@@ -1192,7 +1192,54 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkPackagesConsortia', id: params.id)
     }
 
+    def processUnLinkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
 
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        validSubChilds.each { subChild ->
+
+            subChild.packages.pkg.each { pkg ->
+
+                def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                def queryParams = [sub: subChild, pkg_id: pkg.id]
+
+
+
+                if (subChild.isEditableBy(result.user)) {
+                    result.editable = true
+                    if (params.withIE) {
+                        //delete matches
+                        IssueEntitlement.withTransaction { status ->
+                            removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
+                            def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                            if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                            SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
+
+                            flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.successful')
+                        }
+                    }else {
+                        SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
+
+                        flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage.successful')
+                    }
+                }
+            }
+        }
+
+
+        redirect(action: 'linkPackagesConsortia', id: params.id)
+    }
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         ArrayList<Long> resultOrgIds
