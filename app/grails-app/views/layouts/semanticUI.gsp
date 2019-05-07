@@ -102,11 +102,17 @@
 
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
-                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
-
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
+
+                                <a href="${message(code:'url.gokb.' + grailsApplication.config.getCurrentServer())}" class="item">GOKB</a>
+
+                                <a href="${message(code:'url.ygor.' + grailsApplication.config.getCurrentServer())}" class="item">YGOR</a>
                         </div>
                     </div>
 
