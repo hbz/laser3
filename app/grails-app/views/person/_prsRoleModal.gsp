@@ -12,7 +12,7 @@
                           from="${Org.findAll().sort{ it.name ? it.name?.toLowerCase() : it.sortname?.toLowerCase() }}"
                           optionKey="id"
                           optionValue="${{ it.name ?: it.sortname }}"
-                value="${contextService.getOrg()?.id}"
+                value="${personOrg?.id}"
             />
         </div>
 
