@@ -90,7 +90,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                 data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: false]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage')}</g:link>
         <div class="or"></div>
         <g:link class="ui button js-open-confirm-modal"
-                ata-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.confirm')}"
+                data-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.confirm')}"
                 data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: true]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE')}</g:link>
     </div>
 
