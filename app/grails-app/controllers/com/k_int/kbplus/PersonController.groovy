@@ -65,7 +65,7 @@ class PersonController extends AbstractDebugController {
             return
         }
         else if(personInstance && personInstance.isPublic.equals(RDStore.YN_NO)) {
-            if(contextService.org != personInstance.tenant && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            if(contextService.org?.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 flash.error = message(code: 'default.notAutorized.message')
                 redirect(url: request.getHeader('referer'))
                 return
@@ -74,6 +74,7 @@ class PersonController extends AbstractDebugController {
 
         def result = [
                 personInstance: personInstance,
+                personOrg: Org.get(params.personOrgID) ?: null,
                 editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
         ]
 

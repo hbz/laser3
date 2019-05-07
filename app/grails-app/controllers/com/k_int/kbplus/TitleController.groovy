@@ -66,7 +66,7 @@ class TitleController extends AbstractDebugController {
         if (springSecurityService.isLoggedIn()) {
             params.rectype = "Title" // Tells ESSearchService what to look for
             result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.getDefaultPageSizeTMP()
+            params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
             if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
