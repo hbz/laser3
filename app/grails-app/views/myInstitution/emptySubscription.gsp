@@ -17,7 +17,7 @@
 
         <g:render template="actions" />
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'license.new')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.new')}</h1>
 
         <semui:messages data="${flash}"/>
 
@@ -28,7 +28,7 @@
                 <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
 
                 <div class="field required">
-                    <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
+                    <label>${message(code:'myinst.emptySubscription.name')}</label>
                     <input type="text" name="newEmptySubName" placeholder=""/>
                  </div>
 

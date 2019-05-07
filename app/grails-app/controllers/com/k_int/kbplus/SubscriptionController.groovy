@@ -1877,6 +1877,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
                 //if(Package.findByGokbId(grt.owner.uuid)) {
+                String addType = params.addType
                     executorWrapperService.processClosure({
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
@@ -1884,22 +1885,22 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                         def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
                         def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                        log.debug("Add package ${params.addType} to subscription ${params}");
+                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
 
-                        if (params.addType == 'With') {
+                        if (addType == 'With') {
                             pkg_to_link.addToSubscription(result.subscriptionInstance, true)
 
                             sub_instances.each {
                                 pkg_to_link.addToSubscription(it, true)
                             }
-                        } else if (params.addType == 'Without') {
+                        } else if (addType == 'Without') {
                             pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
                             sub_instances.each {
                                 pkg_to_link.addToSubscription(it, false)
                             }
                         }
-                    },grt)
+                    },gri)
                 /*}
                 else {
                     //setup new

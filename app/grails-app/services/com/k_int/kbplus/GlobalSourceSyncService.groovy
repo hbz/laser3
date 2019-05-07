@@ -480,6 +480,7 @@ class GlobalSourceSyncService {
                         ])
 
             }
+            cleanUpGorm()
         }
 
         def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept ->
@@ -1246,9 +1247,11 @@ class GlobalSourceSyncService {
         def oldrec = [:]
         oldrec.tipps = []
         def bais = new ByteArrayInputStream((byte[]) (grt.owner.record))
+        log.info("reading out byte array stream")
         def ins = new ObjectInputStream(bais);
         def newrec = ins.readObject()
         ins.close()
+        log.info("Successfully read out byte array stream. Moving to package reconciler ...")
 
         def record = newrecord.parsed_rec ?: newrec
 
@@ -1429,28 +1432,22 @@ class GlobalSourceSyncService {
                 def base_query = "select the from TitleHistoryEvent as the where"
                 // Need to parse date...
                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                def query_params = []
+                def query_params = [:]
 
                 if (historyEvent.date && historyEvent.date.trim().length() > 0) {
-                    query_params.add(sdf.parse(historyEvent.date))
-                    base_query += " the.eventDate = ? "
+                    query_params.eventDate = sdf.parse(historyEvent.date)
+                    base_query += " the.eventDate = :eventDate "
                 }
 
-                fromset.each {
-                    if (query_params.size() > 0) {
-                        base_query += "and"
-                    }
-
-                    base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
-                    query_params.add(it)
+                if(fromset) {
+                    base_query += " and exists ( select p from the.participants as p where p.participant in :from and p.participantRole = 'from' ) "
+                    query_params.from = fromset
                 }
-                toset.each {
-                    if (query_params.size() > 0) {
-                        base_query += "and"
-                    }
 
-                    base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
-                    query_params.add(it)
+
+                if(toset) {
+                    base_query += " and exists ( select p from the.participants as p where p.participant in :to and p.participantRole = 'to' ) "
+                    query_params.to = toset
                 }
 
                 def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);

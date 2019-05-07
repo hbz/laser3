@@ -1,9 +1,12 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import java.text.Normalizer
 import javax.persistence.Transient
@@ -15,6 +18,8 @@ class Package
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
     // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
+
+  static Log static_logger = LogFactory.getLog(Package)
 
   @Transient
   def grailsApplication
@@ -420,15 +425,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.gokbId = this.gokbId
 
     result.tipps = []
-    this.tipps.each { tip ->
-
+    this.tipps.eachWithIndex { tip ->
+        static_logger.debug("Now processing TIPP ${tip}")
       //NO DELETED TIPPS because from only come no deleted tipps
-      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
+      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
-      def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
-      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}";
+          static_logger.debug("getting identifier value of title ...")
+      def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}"
+          static_logger.debug("getting identifier value of TIPP ...")
+      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}"
 
+          static_logger.debug("preparing TIPP ...")
       def newtip = [
                      title: [
                        name:tip.title.title,
@@ -451,6 +459,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      accessEnd: tip.accessEndDate ?: null
                    ];
 
+          static_logger.debug("adding coverage ...")
       // Need to format these dates using correct mask
       newtip.coverage.add([
                         startDate:tip.startDate ?: null,
@@ -464,7 +473,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         embargo: tip.embargo ?: ''
                       ]);
 
+          static_logger.debug("processing IDs ...")
       tip.title.ids.each { id ->
+          static_logger.debug("adding identifier ${id}")
         newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
       }
 
@@ -499,6 +510,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   def checkAndAddMissingIdentifier(ns,value) {
     boolean found = false
+    static_logger.debug("processing identifier ${value}")
     this.ids.each {
       if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
         found = true
@@ -510,7 +522,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
 
       if ( !id_occ || id_occ.size() == 0 ){
-        log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
+        static_logger.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
         new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
       }
     }
