@@ -910,24 +910,26 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if(params.exportXLS) {
-            exportOrg(orgs, message, true, 'xls')
+            exportOrg(orgs, message, true, 'xlsx')
             return
         }
-
-        withFormat {
-            html {
-                result
-            }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportOrg(orgs,message,true,"csv"))
+        else {
+            withFormat {
+                html {
+                    result
                 }
-                out.close()
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportOrg(orgs,message,true,"csv"))
+                    }
+                    out.close()
+                }
             }
         }
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
