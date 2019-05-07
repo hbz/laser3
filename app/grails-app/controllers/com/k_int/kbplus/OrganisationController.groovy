@@ -637,7 +637,6 @@ class OrganisationController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
 
         // forbidden access
@@ -653,7 +652,30 @@ class OrganisationController extends AbstractDebugController {
       }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+        //result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+
+        List baseQuery  = ['select distinct uo from UserOrg uo, User u']
+        List whereQuery = ['uo.user = u and uo.org = :org']
+        Map queryParams = [org: orgInstance]
+
+        whereQuery.add('uo.status = :status')
+        queryParams.put('status', UserOrg.STATUS_APPROVED)
+
+        if (params.authority) {
+            whereQuery.add('uo.formalRole = :role')
+            queryParams.put('role', Role.get(params.authority.toLong()))
+        }
+
+        if (params.name && params.name != '' ) {
+            whereQuery.add('(lower(u.username) like :name or lower(u.display) like :name)')
+            queryParams.put('name', "%${params.name.toLowerCase()}%")
+        }
+
+        result.users = User.executeQuery(
+                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
+                queryParams,
+                [sort:'user.username', order: 'asc']
+        )
 
         result.orgInstance = orgInstance
         result

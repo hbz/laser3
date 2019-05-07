@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg;com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -24,6 +24,30 @@
     </h1>
 
     <g:render template="nav" />
+
+    <semui:filter>
+        <g:form controller="organisation" action="users" params="${[id: orgInstance.id]}" method="get" class="ui form">
+
+            <div class="three fields">
+                <div class="field">
+                    <label for="name">${message(code:'default.search.text')}</label>
+                    <input type="text" id="name" name="name" value="${params.name}"/>
+                </div>
+
+                <div class="field">
+                    <label for="authority">${message(code:'user.role')}</label>
+                    <g:select from="${Role.findAllByRoleType('user')}" noSelection="${['':'Any']}" class="ui dropdown"
+                              value="${params.authority}" optionKey="id" optionValue="${{message(code:'cv.roles.' + it.authority)}}"
+                              id="authority" name="authority" />
+                </div>
+
+                <div class="field la-field-right-aligned">
+                    <g:link controller="organisation" action="users" params="${[id: orgInstance.id]}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</g:link>
+                    <input type="submit" value="Search" class="ui secondary button"/>
+                </div>
+            </div>
+        </g:form>
+    </semui:filter>
 
     <semui:messages data="${flash}" />
 
