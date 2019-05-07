@@ -2104,3 +2104,12 @@ Floated Menu / Item
     position: relative;
   }
 }
+
+/*--------------
+   Pagination
+---------------*/
+
+.ui.pagination.menu {
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
