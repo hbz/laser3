@@ -289,7 +289,7 @@ class OrganisationController extends AbstractDebugController {
                 orgInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
-                redirect action: 'show', id: orgInstance.id
+                redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating institution: ${orgInstance.errors}")
@@ -310,7 +310,7 @@ class OrganisationController extends AbstractDebugController {
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.id])
-                redirect action: 'show', id: deptInstance.id
+                redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating department: ${deptInstance.errors}")
@@ -372,7 +372,7 @@ class OrganisationController extends AbstractDebugController {
         def user = contextService.getUser()
         def org = contextService.getOrg()
 
-        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
+        //this is a flag to check whether the page has been called for a consortia or inner-organisation member
         Combo checkCombo = Combo.findByFromOrgAndToOrg(orgInstance,org)
         if(checkCombo) {
             if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
@@ -380,6 +380,8 @@ class OrganisationController extends AbstractDebugController {
             else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
                 result.departmentalView = true
         }
+        //this is a flag to check whether the page has been called directly after creation
+        result.fromCreate = params.fromCreate ? true : false
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
@@ -433,6 +435,7 @@ class OrganisationController extends AbstractDebugController {
 
         result.user = user
         result.orgInstance = orgInstance
+        result.contextOrg = org
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
