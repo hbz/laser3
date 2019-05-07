@@ -35,7 +35,7 @@ class PackageController extends AbstractDebugController {
 
         def result = [:]
         result.user = springSecurityService.getCurrentUser()
-        params.max = result.user.getDefaultPageSizeTMP()
+        params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
         if (springSecurityService.isLoggedIn()) {
             if (params.q == "") params.remove('q');

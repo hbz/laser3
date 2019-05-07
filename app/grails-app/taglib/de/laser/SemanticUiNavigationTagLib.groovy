@@ -134,7 +134,7 @@ class SemanticUiNavigationTagLib {
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
-/**
+
         out << '//////////////////////////////////////'
         out << '<br>'
         out << 'total (Items gesamt): '
@@ -159,7 +159,7 @@ class SemanticUiNavigationTagLib {
         out << currentstep
         out << '<br>'
         out << '//////////////////////////////////////'
- */
+
 
         // steps im Falle alle notwendigen Steps können angezeigt werden
         if (maxsteps > laststep) {
