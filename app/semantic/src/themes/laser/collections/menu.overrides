@@ -77,3 +77,10 @@
       position: relative;
   }
 }
+/*--------------
+   Pagination
+---------------*/
+
+.ui.pagination.menu {
+  flex-wrap: wrap;
+}

@@ -26943,6 +26943,15 @@ Floated Menu / Item
     position: relative;
   }
 }
+
+/*--------------
+   Pagination
+---------------*/
+
+.ui.pagination.menu {
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
 /*!
  * # Semantic UI 2.3.1 - Message
  * http://github.com/semantic-org/semantic-ui/
