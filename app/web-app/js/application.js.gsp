@@ -222,7 +222,6 @@ r2d2 = {
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-            $(".table").trigger('reflow');
             $('.ui.dropdown')
                 .dropdown({
                     clearable: true
@@ -287,7 +286,6 @@ r2d2 = {
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
-            $(".table").trigger('reflow');
         });
 
         // modals
