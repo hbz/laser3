@@ -63,7 +63,7 @@ class InstitutionsService {
                         }
                         else {
                             // no match found, creating new prop with backref
-                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, slp.type)
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
                             newProp = lcp.copyInto(newProp)
                             newProp.instanceOf = lcp
                             newProp.save(flush: true)
