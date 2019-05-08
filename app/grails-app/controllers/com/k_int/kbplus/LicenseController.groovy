@@ -349,11 +349,13 @@ class LicenseController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
                         else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)

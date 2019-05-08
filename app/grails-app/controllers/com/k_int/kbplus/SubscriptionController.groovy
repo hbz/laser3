@@ -1340,10 +1340,14 @@ class SubscriptionController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
                         }
 
