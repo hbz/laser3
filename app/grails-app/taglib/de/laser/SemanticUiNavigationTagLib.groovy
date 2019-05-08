@@ -135,32 +135,6 @@ class SemanticUiNavigationTagLib {
         int laststep = Math.round(Math.ceil(total / max))
 
 
-        out << '//////////////////////////////////////'
-        out << '<br>'
-        out << 'total (Items gesamt): '
-        out << total
-        out << '<br>'
-        out << 'max (Items pro Seite): '
-        out << max
-        out << '<br>'
-        out << 'maxsteps (Steps eingestellt pro Seite ): '
-        out << maxsteps
-        out << '<br>'
-        out << 'offset (Items, die vor dem aktuellen Step angezeigt werden ): '
-        out << offset
-        out << '<br>'
-        out << 'laststep (Step, der als letztes erscheint): '
-        out << laststep
-        out << '<br>'
-        out << 'steps (wahr wenn Steps eingestellt pro Seite größer als 0 ): '
-        out << steps
-        out << '<br>'
-        out << 'currentstep (): '
-        out << currentstep
-        out << '<br>'
-        out << '//////////////////////////////////////'
-
-
         // steps im Falle alle notwendigen Steps können angezeigt werden
         if (maxsteps > laststep) {
             out << '<br>'
