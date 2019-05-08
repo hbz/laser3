@@ -13,6 +13,7 @@
 - set filtering to active subscriptions
 - changed access to view 'all organisations'
 - changed acces to organisations 'numbers' and 'access' views
+- more minor view adaptions
 - changed some refdatas
 
 0.16.1
