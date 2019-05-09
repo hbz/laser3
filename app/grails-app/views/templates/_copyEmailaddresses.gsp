@@ -30,7 +30,6 @@
                       optionValue="value"
                       />
     </div>
-    OrgList Anzahl: ${orgList.size()}
     <br><br>
     %{--Create Collections of EmailAdresses, that will be shown by javascript acconding to the dropdown selection--}%
     %{--Create a map with EmailAdresses for each Element in the dropdownmenu--}%
@@ -124,8 +123,6 @@
         }
 
         function copyToClipboard() {
-            var liste = $('#emailAddressesTextArea').val().split(';')
-            alert("Anzahl: "+liste.length)
             $('#emailAddressesTextArea').select();
             document.execCommand("copy");
         }
