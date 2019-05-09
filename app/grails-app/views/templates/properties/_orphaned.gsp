@@ -109,7 +109,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <span data-position="top right">
                                         <button class="ui icon button js-open-confirm-modal-copycat">
-                                            <i class="icon la-thumbtack slash"></i>
+                                            <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"
@@ -126,7 +126,7 @@
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay"  data-content="${message(code:'property.audit.on.tooltip')}">
                                         <button class="ui icon button green js-open-confirm-modal-copycat">
-                                            <i class="thumbtack icon"></i>
+                                            <i class="thumbtack icon la-js-editmode-icon"></i>
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"

@@ -578,7 +578,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${controllerName=='subscription' && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -622,6 +622,7 @@
 
                                         if (  editMode) {
                                             // show Contoll Elements
+                                            $('.la-clone').remove();
                                             $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.la-js-hide-this-card').removeClass('hidden');
                                             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
@@ -641,6 +642,11 @@
                                         }
                                         else {
                                             // hide Contoll Elements
+                                            $('.la-js-editmode-icon').each(function(){
+                                                var container = $(this).closest('.la-js-editmode-container')
+                                                var clone = $(this).clone().appendTo(container);
+                                                $(clone).addClass('la-clone blue')
+                                            });
                                             $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
