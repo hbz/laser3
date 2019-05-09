@@ -32,7 +32,7 @@
     <g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>
 </semui:debugInfo>
 
-<g:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
+<g:render template="breadcrumb" model="${[orgInstance: orgInstance, contextOrg: contextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
 <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
     <semui:controlButtons>
@@ -106,7 +106,7 @@ ${orgInstance.name}
             </div><!-- .card -->
 
 
-            <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) && ((!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
+            <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
                 <div class="ui card">
                     <div class="content">
                         <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -145,7 +145,7 @@ ${orgInstance.name}
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${(!institutionalView && !departmentalView) && (orgInstance.id != contextService.getOrg()?.id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${((fromCreate) && (orgInstance.id != contextOrg.id)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
                         <g:if test="${(RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
@@ -180,7 +180,7 @@ ${orgInstance.name}
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${(!institutionalView && !departmentalView) && (orgInstance.id != contextService.getOrg()?.id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${((fromCreate) && (orgInstance.id != contextOrg.id)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
                         <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -213,7 +213,7 @@ ${orgInstance.name}
 
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${(RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                    <g:if test="${(fromCreated && RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) || !fromCreated}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type"/></dt>
                             <dd>
@@ -221,7 +221,7 @@ ${orgInstance.name}
                                                         config='Library Type'/>
                             </dd>
                         </dl>
-                        <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                             <dl>
                                 <dt><g:message code="org.libraryNetwork.label" default="Library Network"/></dt>
                                 <dd>
@@ -277,7 +277,7 @@ ${orgInstance.name}
                 </div>
             </g:if>
 
-            <g:if test="${(!institutionalView && !departmentalView) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${(!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
                         <dl>

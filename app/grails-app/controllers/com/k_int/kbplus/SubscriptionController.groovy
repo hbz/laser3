@@ -910,24 +910,26 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if(params.exportXLS) {
-            exportOrg(orgs, message, true, 'xls')
+            exportOrg(orgs, message, true, 'xlsx')
             return
         }
-
-        withFormat {
-            html {
-                result
-            }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportOrg(orgs,message,true,"csv"))
+        else {
+            withFormat {
+                html {
+                    result
                 }
-                out.close()
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${message}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportOrg(orgs,message,true,"csv"))
+                    }
+                    out.close()
+                }
             }
         }
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1340,10 +1342,14 @@ class SubscriptionController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
                         }
 
@@ -2557,6 +2563,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
+                                copiedProp.instanceOf = null
                                 copiedProp.save(flush: true)
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
@@ -2805,6 +2812,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.instanceOf = null
                                     copiedProp.save(flush: true)
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
@@ -3515,6 +3523,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.instanceOf = null
                         copiedProp.save(flush: true)
                         //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }

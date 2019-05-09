@@ -4,7 +4,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
-import de.laser.api.v0.special.ApiSpecial
+import de.laser.api.v0.special.ApiOA2020
+import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.43'
+    static final VERSION = '0.44'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -170,7 +171,7 @@ class ApiManager {
                     def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
 
                     if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiSpecial.getDummy()
+                        result = ApiOA2020.getDummy()
                     }
                     else {
                         result = Constants.HTTP_FORBIDDEN
@@ -183,7 +184,7 @@ class ApiManager {
         }
         else if ('oa2020List'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
-                result = ApiSpecial.getAllOA2020Orgs()
+                result = ApiOA2020.getAllOrgs()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
@@ -241,7 +242,7 @@ class ApiManager {
                     def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
 
                     if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiSpecial.getDummy()
+                        result = ApiStatistic.getDummy()
                     }
                     else {
                         result = Constants.HTTP_FORBIDDEN
@@ -254,7 +255,7 @@ class ApiManager {
         }
         else if ('statisticList'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
-                result = ApiSpecial.getAllStatisticOrgs()
+                result = ApiStatistic.getAllOrgs()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE

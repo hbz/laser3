@@ -349,11 +349,13 @@ class LicenseController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
                         else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
@@ -434,7 +436,7 @@ from Subscription as s where
     def consortia() {
         redirect controller: 'license', action: 'show', params: params
         return
-
+        /*
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -480,6 +482,7 @@ from Subscription as s where
     }
 
     result
+        */
   }
 
     @Deprecated
@@ -1020,6 +1023,7 @@ from Subscription as s where
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
+                            copiedProp.instanceOf = null
                             copiedProp.save(flush: true)
                             //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
