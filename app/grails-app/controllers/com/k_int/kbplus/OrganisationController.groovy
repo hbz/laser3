@@ -122,9 +122,9 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
     })
     Map listInstitution() {
         Map result = setResultGenerics()
@@ -279,7 +279,7 @@ class OrganisationController extends AbstractDebugController {
         if(params.institution) {
             RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             Org orgInstance = new Org(name: params.institution, sector: orgSector)
-            orgInstance.addToOrgType(RDStore.OT_INSTITUTION)
+            orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
             try {
                 orgInstance.save(flush:true)
                 if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
@@ -289,7 +289,7 @@ class OrganisationController extends AbstractDebugController {
                 orgInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
-                redirect action: 'show', id: orgInstance.id
+                redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating institution: ${orgInstance.errors}")
@@ -301,7 +301,7 @@ class OrganisationController extends AbstractDebugController {
         //new department = institution member, implies combo type department
         else if(params.department) {
             Org deptInstance = new Org(name: params.department)
-            deptInstance.addToOrgType(RDStore.OT_DEPARTMENT)
+            deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
             try {
                 deptInstance.save(flush:true)
                 if(RDStore.OT_INSTITUTION.id in (contextOrg.getallOrgTypeIds())) {
@@ -310,7 +310,7 @@ class OrganisationController extends AbstractDebugController {
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.id])
-                redirect action: 'show', id: deptInstance.id
+                redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating department: ${deptInstance.errors}")
@@ -372,7 +372,7 @@ class OrganisationController extends AbstractDebugController {
         def user = contextService.getUser()
         def org = contextService.getOrg()
 
-        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
+        //this is a flag to check whether the page has been called for a consortia or inner-organisation member
         Combo checkCombo = Combo.findByFromOrgAndToOrg(orgInstance,org)
         if(checkCombo) {
             if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
@@ -380,6 +380,8 @@ class OrganisationController extends AbstractDebugController {
             else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
                 result.departmentalView = true
         }
+        //this is a flag to check whether the page has been called directly after creation
+        result.fromCreate = params.fromCreate ? true : false
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
@@ -433,6 +435,7 @@ class OrganisationController extends AbstractDebugController {
 
         result.user = user
         result.orgInstance = orgInstance
+        result.contextOrg = org
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -520,17 +523,17 @@ class OrganisationController extends AbstractDebugController {
             }
 
             if(!foundIsil) {
-                orgInstance.checkAndAddMissingIdentifier('ISIL', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
 
 
             }
             if(!foundWibid) {
-                orgInstance.checkAndAddMissingIdentifier('wibid', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
 
 
             }
             if(!foundEZB) {
-                orgInstance.checkAndAddMissingIdentifier('ezb', 'Unknown')
+                orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
 
 
             }

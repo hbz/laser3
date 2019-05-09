@@ -90,11 +90,12 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
+                                </sec:ifAnyGranted>
 
                                 <%-- TODO: check orgType --%>
-                                <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR"
                                                           controller="organisation" action="listInstitution" message="menu.public.all_insts" />
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
@@ -131,10 +132,9 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem affiliation="INST_ADMs" controller="survey" action="currentSurveys" message="menu.my.surveys" />
 
-
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                           action="manageMembers" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"

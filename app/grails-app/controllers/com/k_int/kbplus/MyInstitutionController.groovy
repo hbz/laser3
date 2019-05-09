@@ -631,7 +631,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
                 }
                 out.close()
             }
@@ -3533,8 +3533,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def manageMembers() {
         def result = setResultGenerics()
 

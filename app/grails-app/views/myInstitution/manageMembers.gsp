@@ -54,7 +54,12 @@
             </semui:exportDropdownItem>
         </g:else>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <%
+        editable = (editable && accessService.checkPerm('ORG_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
+    %>
+    <g:if test="${editable}">
+        <g:render template="actions"/>
+    </g:if>
 </semui:controlButtons>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${title}
@@ -89,13 +94,13 @@
     <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
-                          tmplShowCheckbox: true,
+                          tmplShowCheckbox: editable,
                           comboType: comboType,
                           tmplConfigShow: configShowTable
                   ]"/>
 
 
-        <g:if test="${members && accessService.checkPerm('ORG_CONSORTIUM,ORG_COLLECTIVE')}">
+        <g:if test="${members && editable}">
             <input type="submit" class="ui button" data-confirm-term-what="function" data-confirm-term-what-detail="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
