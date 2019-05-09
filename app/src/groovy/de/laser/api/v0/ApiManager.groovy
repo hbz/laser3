@@ -5,7 +5,6 @@ import com.k_int.kbplus.auth.User
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOA2020
-import de.laser.api.v0.special.ApiSpecial
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
