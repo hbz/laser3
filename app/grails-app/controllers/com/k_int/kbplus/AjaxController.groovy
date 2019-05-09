@@ -1162,7 +1162,7 @@ class AjaxController {
         }
         else {
           def existingProps = owner.privateProperties.findAll {
-            it.owner.id == owner.id
+            it.owner.id == owner.id &&
             it.type.name == type.name // this sucks due lazy proxy problem
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix

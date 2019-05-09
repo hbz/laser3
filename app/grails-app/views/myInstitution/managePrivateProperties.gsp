@@ -35,6 +35,7 @@
                                 <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                                 <th>Name (DE)</th>
                                 <th>Name (EN)</th>
+                                <th>${message(code:'propertyDefinition.type.label')}</th>
                                 <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
                                 <th>${message(code:'default.actions')}</th>
                             </tr>
@@ -60,6 +61,19 @@
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td>
+                                        ${PropertyDefinition.getLocalizedValue(ppd?.type)}
+                                        <g:if test="${ppd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                            <g:set var="refdataValues" value="${[]}"/>
+                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(ppd.refdataCategory)}"
+                                                    var="refdataValue">
+                                                <g:set var="refdataValues"
+                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                            </g:each>
+                                            <br>
+                                            (${refdataValues.join('/')})
+                                        </g:if>
+                                    </td>
                                     <td>${ppd.countUsages()}</td>
                                     <td class="x">
                                         <g:if test="${ppd.countUsages()==0}">

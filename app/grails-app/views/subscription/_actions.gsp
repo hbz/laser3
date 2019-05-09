@@ -79,13 +79,10 @@
         </g:if>
         
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
-            <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
-                                       params="${[id: params.id]}"
-                                       message="subscription.details.linkLicenseConsortium.label"/>
 
-              <semui:actionsDropdownItem controller="subscription" action="linkPackagesConsortia"
+              <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
                                          params="${[id: params.id]}"
-                                         message="subscription.details.linkPackagesConsortium.label"/>
+                                         message="subscription.details.subscriberManagement.label"/>
         </g:if>
 
         <g:if test="${actionName == 'members'}">
