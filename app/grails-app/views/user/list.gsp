@@ -19,7 +19,6 @@
             <semui:totalNumber total="${total}"/>
         </h1>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">
                     <g:set value="${Role.findAll()}" var="auth_values"/>
@@ -29,16 +28,26 @@
                             <label for="name">${message(code:'default.search.text')}</label>
                             <input type="text" id="name" name="name" value="${params.name}"/>
                         </div>
+
                         <div class="field">
                             <label for="authority">${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
                                       value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
                         </div>
+
                         <div class="field">
                             <label for="org">${message(code:'user.org')}</label>
-                            <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
+
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
                                       value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                            </sec:ifAnyGranted>
+                            <sec:ifNotGranted roles="ROLE_ADMIN">
+                                <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                            </sec:ifNotGranted>
                         </div>
+
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                             <input type="submit" value="Search" class="ui secondary button"/>
@@ -46,41 +55,10 @@
                     </div>
               </g:form>
             </semui:filter>
-        </sec:ifAnyGranted>
 
-        <sec:ifNotGranted roles="ROLE_ADMIN">
-            <semui:filter>
-                <g:form action="list" method="get" class="ui form">
-                    <g:set value="${Role.findAllByRoleType('user')}" var="auth_values"/>
-
-                    <div class="four fields">
-                        <div class="field">
-                            <label for="name2">${message(code:'default.search.text')}</label>
-                            <input type="text" id="name2" name="name" value="${params.name}"/>
-                        </div>
-                        <div class="field">
-                            <label for="authority">${message(code:'user.role')}</label>
-                            <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui search dropdown"
-                                      value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
-                        </div>
-                        <div class="field">
-                            <label for="org">${message(code:'user.org')}</label>
-                            <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
-                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
-                        </div>
-                        <div class="field la-field-right-aligned">
-                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                            <input type="submit" value="Search" class="ui secondary button"/>
-                        </div>
-                    </div>
-                </g:form>
-            </semui:filter>
-        </sec:ifNotGranted>
-
-        <sec:ifNotGranted roles="ROLE_ADMIN">
-            <div class="ui info message">${message(code:'user.edit.info')}</div>
-        </sec:ifNotGranted>
-
+            <sec:ifNotGranted roles="ROLE_ADMIN">
+                <div class="ui info message">${message(code:'user.edit.info')}</div>
+            </sec:ifNotGranted>
 
             <semui:messages data="${flash}" />
 

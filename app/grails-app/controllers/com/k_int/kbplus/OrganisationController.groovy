@@ -131,9 +131,9 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
     })
     Map listInstitution() {
         Map result = setResultGenerics()
@@ -288,7 +288,7 @@ class OrganisationController extends AbstractDebugController {
         if(params.institution) {
             RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             Org orgInstance = new Org(name: params.institution, sector: orgSector)
-            orgInstance.addToOrgType(RDStore.OT_INSTITUTION)
+            orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
             try {
                 orgInstance.save(flush:true)
                 if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
@@ -298,7 +298,7 @@ class OrganisationController extends AbstractDebugController {
                 orgInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
-                redirect action: 'show', id: orgInstance.id
+                redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating institution: ${orgInstance.errors}")
@@ -310,7 +310,7 @@ class OrganisationController extends AbstractDebugController {
         //new department = institution member, implies combo type department
         else if(params.department) {
             Org deptInstance = new Org(name: params.department)
-            deptInstance.addToOrgType(RDStore.OT_DEPARTMENT)
+            deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
             try {
                 deptInstance.save(flush:true)
                 if(RDStore.OT_INSTITUTION.id in (contextOrg.getallOrgTypeIds())) {
@@ -319,7 +319,7 @@ class OrganisationController extends AbstractDebugController {
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.id])
-                redirect action: 'show', id: deptInstance.id
+                redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
                 log.error("Problem creating department: ${deptInstance.errors}")
@@ -381,7 +381,7 @@ class OrganisationController extends AbstractDebugController {
         def user = contextService.getUser()
         def org = contextService.getOrg()
 
-        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
+        //this is a flag to check whether the page has been called for a consortia or inner-organisation member
         Combo checkCombo = Combo.findByFromOrgAndToOrg(orgInstance,org)
         if(checkCombo) {
             if(checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM)
@@ -389,6 +389,8 @@ class OrganisationController extends AbstractDebugController {
             else if(checkCombo.type == RDStore.COMBO_TYPE_DEPARTMENT)
                 result.departmentalView = true
         }
+        //this is a flag to check whether the page has been called directly after creation
+        result.fromCreate = params.fromCreate ? true : false
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
@@ -442,6 +444,7 @@ class OrganisationController extends AbstractDebugController {
 
         result.user = user
         result.orgInstance = orgInstance
+        result.contextOrg = org
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -637,7 +640,6 @@ class OrganisationController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
 
         // forbidden access
@@ -653,7 +655,30 @@ class OrganisationController extends AbstractDebugController {
       }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+        //result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+
+        List baseQuery  = ['select distinct uo from UserOrg uo, User u']
+        List whereQuery = ['uo.user = u and uo.org = :org']
+        Map queryParams = [org: orgInstance]
+
+        whereQuery.add('uo.status = :status')
+        queryParams.put('status', UserOrg.STATUS_APPROVED)
+
+        if (params.authority) {
+            whereQuery.add('uo.formalRole = :role')
+            queryParams.put('role', Role.get(params.authority.toLong()))
+        }
+
+        if (params.name && params.name != '' ) {
+            whereQuery.add('(lower(u.username) like :name or lower(u.display) like :name)')
+            queryParams.put('name', "%${params.name.toLowerCase()}%")
+        }
+
+        result.users = User.executeQuery(
+                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
+                queryParams,
+                [sort:'user.username', order: 'asc']
+        )
 
         result.orgInstance = orgInstance
         result

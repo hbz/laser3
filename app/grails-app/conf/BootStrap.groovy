@@ -2233,6 +2233,8 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Test Access', de: 'Testzugriff'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
+        RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
