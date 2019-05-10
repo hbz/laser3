@@ -3588,6 +3588,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.toalMembers     = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
