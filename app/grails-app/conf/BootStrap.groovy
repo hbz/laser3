@@ -1316,7 +1316,7 @@ class BootStrap {
                 [
                         name: [en: "Preis abhängig von", de: "Preis abhängig von"],
                         expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
                         name: [en: "Abbestellquote", de: "Abbestellquote"],
