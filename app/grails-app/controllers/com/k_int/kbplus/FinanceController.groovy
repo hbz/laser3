@@ -149,15 +149,15 @@ class FinanceController extends AbstractDebugController {
         def orgRoleCons = accessService.checkPerm('ORG_CONSORTIUM')
         def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
-        result.cost_item_tabs = []
+        result.cost_item_tabs = [:]
+        if(accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) {
+            result.cost_item_tabs["own"] = financialData.own
+        }
         if(orgRoleCons) {
             result.cost_item_tabs["cons"] = financialData.cons
         }
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
-        }
-        else if(accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) {
-            result.cost_item_tabs["own"] = financialData.own
         }
         SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
