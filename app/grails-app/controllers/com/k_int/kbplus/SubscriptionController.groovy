@@ -2960,7 +2960,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-        result.targetSubscription?.refresh()
+        result.targetSubscription = Subscription.get(result.targetSubscription?.id)
+//        result.targetSubscription = result.targetSubscription?.refresh()
         result.workFlowPart = params?.workFlowPart ?: '1'
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
@@ -2983,6 +2984,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
         }
 
+        newSub = newSub?.refresh()
+
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
@@ -2994,7 +2997,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params?.workFlowPartNext = '2'
         result.subscription = baseSub
         //Bugfix Aktualieriunsgproblem
-        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+//        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.newSub = newSub
         result.targetSubscription = newSub
         result

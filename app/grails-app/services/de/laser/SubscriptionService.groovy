@@ -120,6 +120,17 @@ class SubscriptionService {
         ies
     }
 
+    List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
+        // restrict visible for templates/links/orgLinksAsList
+        List visibleOrgRelations = []
+        subscription?.orgRelations?.each { or ->
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
+                visibleOrgRelations << or
+            }
+        }
+        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
+    }
+
     List getVisibleOrgRelations(Subscription subscription) {
         // restrict visible for templates/links/orgLinksAsList
         List visibleOrgRelations = []
@@ -146,12 +157,12 @@ class SubscriptionService {
 
     boolean takeOrgRelations(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion) && targetSub?.orgRelations?.size() > 0) {
-            OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations)",[orgRelations: targetSub.orgRelations])
+            OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",[orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]])
         }
         switch (aktion) {
             case REPLACE:
             case COPY:
-                getVisibleOrgRelations(sourceSub)?.each { or ->
+                getVisibleOrgRelationsWithoutConsortia(sourceSub)?.each { or ->
                     if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                         flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
                     } else {
