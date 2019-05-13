@@ -140,11 +140,10 @@
                             </g:each>
                         <tr>
                             <td>
-                                <g:select class="ui dropdown" name="platforms"
+                                <g:select id="platforms" class="ui dropdown" name="platforms"
                                           from="${platformList}"
                                           optionKey="id"
                                           optionValue="name"
-                                          value="1"
                                           noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
                             </td>
                         <td class="center aligned">
@@ -176,11 +175,10 @@
                   </g:each>
                   <tr>
                     <td>
-                      <g:select class="ui dropdown" name="subscriptions"
+                      <g:select id="subscriptions" class="ui dropdown" name="subscriptions"
                                 from="${subscriptionList}"
                                 optionKey="id"
                                 optionValue="name"
-                                value="1"
                                 noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
                     </td>
                     <td class="center aligned">
