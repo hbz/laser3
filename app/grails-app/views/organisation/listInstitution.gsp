@@ -21,7 +21,7 @@
         </semui:exportDropdown>--%>
 
         <%
-            editable = (editable && accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
+            editable = (editable && accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <g:render template="actions" />

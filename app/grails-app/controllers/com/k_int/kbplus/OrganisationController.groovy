@@ -131,9 +131,9 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     Map listInstitution() {
         Map result = setResultGenerics()
@@ -163,7 +163,7 @@ class OrganisationController extends AbstractDebugController {
         def result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = User.get(springSecurityService.principal.id)
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
 
         params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType = RDStore.OT_PROVIDER?.id?.toString()
@@ -245,7 +245,10 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def createProvider() {
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
@@ -268,7 +271,11 @@ class OrganisationController extends AbstractDebugController {
             redirect ( action:'findProviderMatches' )
         }
     }
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def findProviderMatches() {
 
         def result=[:]
@@ -453,8 +460,10 @@ class OrganisationController extends AbstractDebugController {
         if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
             du.setBenchMark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
-        }else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') ||
+                    accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        }
+        else {
             du.setBenchMark('editable2')
             List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
                 it.toOrg.id
@@ -684,7 +693,7 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def edit() {
         redirect controller: 'organisation', action: 'show', params: params
         return

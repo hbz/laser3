@@ -376,9 +376,21 @@ class SubscriptionService {
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
+
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+        int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
+        int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
+        if (properties.size() == anzCP + anzPP) {
+            log.debug("Delete ok: " + properties)
+        } else {
+            log.error("Problem deleting properties: ${properties}. Number of Properties to delete: ${properties.size()}. Number of CustomProperties deleted: ${anzCP}. Number of PrivateProperties deleted: ${anzPP} ")
+            flash.error += "Es ist ein Fehler beim Löschen aufgetreten."
+        }
+    }
+
     private boolean save(obj, flash){
         if (obj.save(flush: true)){
-            log.debug("Save ok")
+            log.debug("Save ${obj} ok")
             return true
         } else {
             log.error("Problem saving property ${obj.errors}")

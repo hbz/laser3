@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.linkPackagesConsortium.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
 </head>
 
 <body>
@@ -17,18 +17,23 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.linkPackagesConsortium.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
 
 </semui:breadcrumbs>
 
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesConsortium.header')}
+<h1 class="ui left aligned icon header">
+    ${message(code: 'subscription.details.subscriberManagement.label')}
 </h1>
+
+<g:render template="navSubscriberManagement" />
+
+<h3 class="ui left aligned icon header"><semui:headerIcon/>
+${message(code: 'subscription.linkPackagesConsortium.header')}
+</h3>
 
 <semui:messages data="${flash}"/>
 
-<h3>
+<h4>
     ${message(code: 'subscription.linkPackagesConsortium.consortialSubscription')}: <g:link
         controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
@@ -46,7 +51,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
         </div>
 
     </g:if>
-</h3>
+</h4>
 
 
 <g:if test="${filteredSubChilds}">

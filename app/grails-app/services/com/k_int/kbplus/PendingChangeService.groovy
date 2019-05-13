@@ -259,7 +259,7 @@ class PendingChangeService {
                         log.debug("Update custom property ${targetProperty.type.name}")
 
                         if (changeDoc.type == RefdataValue.toString()){
-                            def newProp = genericOIDService.resolveOID(changeDoc.new.class + ':' + changeDoc.new.id)
+                            def newProp = genericOIDService.resolveOID(changeDoc.new instanceof String ?: (changeDoc.new.class + ':' + changeDoc.new.id))
 
                             // Backward compatible
                             if (!newProp) {

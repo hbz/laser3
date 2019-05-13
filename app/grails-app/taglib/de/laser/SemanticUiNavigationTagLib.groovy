@@ -134,13 +134,6 @@ class SemanticUiNavigationTagLib {
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
-
-        // steps im Falle alle notwendigen Steps können angezeigt werden
-        if (maxsteps > laststep) {
-            out << '<br>'
-            out << 'es passen alle steps in die Paginieung'
-
-        }
         out << '<div class="ui center aligned basic segment">'
         out << '<div class="ui pagination menu">'
 
