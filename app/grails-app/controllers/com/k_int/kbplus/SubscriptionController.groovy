@@ -3196,6 +3196,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
         }
 
+        newSub = newSub?.refresh()
+
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
@@ -3206,8 +3208,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
         result.subscription = baseSub
-        //Bugfix Aktualieriunsgproblem
-        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.newSub = newSub
         result.targetSubscription = newSub
         result
@@ -3407,6 +3407,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.deleteProperties(propertiesToDelete, newSub, flash)
         }
 
+        newSub.refresh()
         subsToCompare.each{ sub ->
             TreeMap customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
