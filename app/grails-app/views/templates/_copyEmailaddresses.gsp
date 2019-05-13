@@ -5,6 +5,7 @@
 <semui:modal id="copyEmailaddresses_ajaxModal" text="${message(code:'menu.institutions.copy_emailaddresses')}" hideSubmitButton="true">
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
+    <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
 
@@ -16,7 +17,7 @@
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
-                      />
+                      value="${rdvGeneralContactPrs.id}"/>
     </div>
     <br>
     <div class="field">
@@ -41,8 +42,13 @@
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <%  emailsForFunction.add( email?.content?.trim() )
-                            functionAllEmailsSet.add( email?.content?.trim() ) %>
+                        <%
+                            def emailPF = email?.content?.trim()
+                            if (emailPF != null) {
+                                emailsForFunction.add( emailPF )
+                                functionAllEmailsSet.add( emailPF )
+                            }
+                        %>
                     </g:each>
                 </g:if>
             </g:each>
@@ -55,8 +61,13 @@
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <%  emailsForPosition.add( email?.content?.trim() )
-                        functionAllEmailsSet.add( email?.content?.trim() ) %>
+                        <%
+                            def emailPP = email?.content?.trim()
+                            if (emailPP != null) {
+                                emailsForPosition.add(emailPP)
+                                functionAllEmailsSet.add(emailPP)
+                            }
+                        %>
                     </g:each>
                 </g:if>
             </g:each>
