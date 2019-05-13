@@ -175,7 +175,7 @@
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" onclick="return jsConfirmation() "/>
+            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" onclick="return jsConfirmation() "/>
         </div>
     </g:form>
 </semui:form>
