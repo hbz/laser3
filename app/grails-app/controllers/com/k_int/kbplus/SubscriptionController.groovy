@@ -3169,7 +3169,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-        result.targetSubscription?.refresh()
+//        result.targetSubscription?.refresh()
+        if (params?.targetSubscriptionId) {
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
         result.workFlowPart = params?.workFlowPart ?: '1'
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
@@ -3405,6 +3409,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
             subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+        }
+
+        List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteProperties(propertiesToDelete, newSub, flash)
         }
 
         result
