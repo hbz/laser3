@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore" %>
+<laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <aside class="ui segment metaboxContent accordion">
     <div class="title">
@@ -17,7 +18,10 @@
                     <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>
                     <dd>
                         <g:set var="editableGOKBID" value=""/>
-                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_YODA,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR'>
+                        <g:if test="${accessService.checkConstraint_ORG_COM_EDITOR()}">
+                            <g:set var="editableGOKBID" value="${true}"/>
+                        </g:if>
+                        <sec:ifAnyGranted roles='ROLE_ADMIN,ROLE_YODA,ROLE_ORG_EDITOR'>
                             <g:set var="editableGOKBID" value="${true}"/>
                         </sec:ifAnyGranted>
                         <g:if test="${object instanceof com.k_int.kbplus.Org && object?.gokbId == null && editableGOKBID}">

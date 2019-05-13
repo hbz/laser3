@@ -50,7 +50,7 @@ class AccessService {
     }
 
     // --- for action closures: shortcuts ---
-    // --- checking current user and context org and global roles
+    // --- checking current user and context org OR global roles
 
     boolean checkPermX(String orgPerms, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
@@ -157,6 +157,17 @@ class AccessService {
 
     // ---- new stuff here
     // ---- new stuff here
+
+    // ----- REFACTORING -----
+
+    // ---- combined checks ----
+    // ---- combined checks ----
+
+    boolean checkConstraint_ORG_COM_EDITOR() {
+        checkPermAffiliation('ORG_BASIC,ORG_CONSORTIUM', 'INST_EDITOR')
+    }
+
+    // ----- REFACTORING -----
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
     boolean checkUserIsMember(User user, Org org) {
