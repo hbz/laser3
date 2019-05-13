@@ -21,7 +21,7 @@
 
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">
-                    <g:set value="${Role.findAll()}" var="auth_values"/>
+                    <g:set value="${Role.executeQuery("select r from Role r where r.roleType in ('global','user')")}" var="auth_values"/>
 
                     <div class="four fields">
                         <div class="field">
