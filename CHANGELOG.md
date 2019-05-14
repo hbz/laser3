@@ -1,3 +1,13 @@
+0.16.3
+
+- fixed: title search via elasticsearch
+- fixed: missing informations when copying licenses 
+- fixed: uncomplete list of email addresses when copying
+- fixed: financial export
+- fixed: inheritence problem under certain circumstances
+- fixed: pagination
+- removed debug informations
+
 0.16.2
 
 - fixed: initial property inheritance for adding new consortia members

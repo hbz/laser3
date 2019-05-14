@@ -100,9 +100,14 @@
                 <input type="text" name="pd_name"/>
             </div>
 
+            <div class="field">
+                <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
+            </div>
+
             <div class="fields">
 
-                <div class="field five wide">
+                <div class="field six wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <select name="pd_descr" id="pd_descr" class="ui dropdown">
@@ -121,25 +126,20 @@
                         id="cust_prop_modal_select" />
                 </div>
 
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
-                    <textarea name="pd_expl" id="pd_expl" class="ui textarea"></textarea>
+                <div class="field four wide">
+                    <label class="property-label">Optionen</label>
+
+                    <g:checkBox type="text" name="pd_mandatory" /> ${message(code:'default.mandatory.tooltip')}
+                    <br />
+                    <g:checkBox type="text" name="pd_multiple_occurrence" /> ${message(code:'default.multipleOccurrence.tooltip')}
                 </div>
 
-                <div class="field six wide hide" id="cust_prop_ref_data_name">
-                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                </div>
             </div>
 
             <div class="fields">
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'default.mandatory.tooltip')}</label>
-                        <g:checkBox type="text" name="pd_mandatory" />
-                </div>
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
-                    <g:checkBox type="text" name="pd_multiple_occurrence" />
+                <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
+                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
+                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                 </div>
             </div>
 
