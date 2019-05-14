@@ -24,14 +24,17 @@ public class GokbDiffEngine {
             // println("packageId consistent");
         }
 
-        def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
+        //def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
 
-        //TODO: Umstellung auf UUID vielleicht
-        oldpkg.tipps.sort { it.tippId }
-        newpkg.tipps.sort { it.tippId }
+        compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
+
+        /*//TODO: Umstellung auf UUID vielleicht
+        oldpkg.tipps.sort { it.tippUuid }
+        newpkg.tipps.sort { it.tippUuid }
 
         def ai = oldpkg.tipps.iterator();
         def bi = newpkg.tipps.iterator();
+
 
         def tippa = ai.hasNext() ? ai.next() : null
         def tippb = bi.hasNext() ? bi.next() : null
@@ -77,12 +80,14 @@ public class GokbDiffEngine {
                 System.out.println("TIPP " + tippb + " Was added to the package");
                 newTippClosure(ctx, tippb, auto_accept)
                 tippb = bi.hasNext() ? bi.next() : null;
+                tippa = ai.hasNext() ? ai.next() : null;
             } else {
                 deletedTippClosure(ctx, tippa, auto_accept)
                 System.out.println("TIPP " + tippa + " Was removed from the package");
                 tippa = ai.hasNext() ? ai.next() : null;
+                tippb = bi.hasNext() ? bi.next() : null;
             }
-        }
+        }*/
 
     }
 
@@ -157,6 +162,57 @@ public class GokbDiffEngine {
 
         }
 
+    }
+
+    def static compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
+    {
+        def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
+        def oldpkgTipps = oldpkg.tipps.collect{it.tippUuid}
+        def newpkgTipps = newpkg.tipps.collect{it.tippUuid}
+
+        newpkg.tipps.each{ tippnew ->
+
+            replaceImpIDwithGokbID(ctx, tippnew, primaryUrl)
+
+            if(tippnew?.tippUuid in oldpkgTipps)
+            {
+                    def tippold = oldpkg.tipps.find{it.tippUuid == tippnew.tippUuid && it.status != 'Deleted'}
+
+                    def db_tipp = ctx.tipps.find {it.gokbId == tippnew.tippUuid && it.status != 'Deleted'}
+                    def tipp_diff = getTippDiff(tippold, tippnew)
+
+                if (tippnew.status != 'Current' && tipp_diff.size() == 0) {
+                    deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
+                    System.out.println("Title " + tippold + " Was removed from the package");
+
+                } else if (tipp_diff.size() == 0) {
+                    tippUnchangedClosure(ctx, tippold);
+
+                } else {
+                    // See if any of the actual properties are null
+                    println("Got tipp diffs: ${tipp_diff}")
+                    try {
+                        updatedTippClosure(ctx, tippnew, tippold, tipp_diff, auto_accept, db_tipp)
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error on executing updated TIPP closure! Please verify logs:")
+                        e.printStackTrace()
+                    }
+                }
+            }
+            else if (!(tippnew.tippUuid in oldpkgTipps)) {
+                System.out.println("TIPP " + tippnew + " Was added to the package");
+                newTippClosure(ctx, tippnew, auto_accept)
+
+            }
+        }
+        oldpkg.tipps.each { tippold ->
+            if(!(tippold?.tippUuid in newpkgTipps))
+            {
+                deletedTippClosure(ctx, tippold, auto_accept)
+                System.out.println("TIPP " + tippold + " Was removed from the package");
+            }
+        }
     }
 
 }

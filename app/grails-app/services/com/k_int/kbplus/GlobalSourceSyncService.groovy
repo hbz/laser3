@@ -488,7 +488,7 @@ class GlobalSourceSyncService {
             }
         }
 
-        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept ->
+        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept, db_tipp ->
             log.debug("updated tipp, ctx = ${ctx.toString()}");
 
             // Find title with ID tipp... in package ctx
@@ -517,7 +517,7 @@ class GlobalSourceSyncService {
             }
             updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id, tipp?.title?.gokbId)
 
-            def db_tipp = null
+            /*db_tipp = null
 
             if (tipp.tippUuid) {
                 db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
@@ -530,7 +530,7 @@ class GlobalSourceSyncService {
 
             if (!db_tipp) {
                 db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }
+            }*/
 
             if (db_tipp != null) {
 
@@ -619,7 +619,7 @@ class GlobalSourceSyncService {
             }
         }
 
-        def onDeletedTipp = { ctx, tipp, auto_accept ->
+        def onDeletedTipp = { ctx, tipp, auto_accept, db_tipp ->
 
             // Find title with ID tipp... in package ctx
 
@@ -643,7 +643,7 @@ class GlobalSourceSyncService {
                 TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
             }
 
-            def db_tipp = null
+            /*def db_tipp = null
 
             if (tipp.tippUuid) {
                 db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
@@ -654,7 +654,7 @@ class GlobalSourceSyncService {
             }
             if (!db_tipp) {
                 db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }
+            }*/
 
             if (db_tipp != null && !(db_tipp.status.equals(TippStatus))) {
 
