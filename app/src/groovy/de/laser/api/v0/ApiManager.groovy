@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.44'
+    static final VERSION = '0.45'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -226,8 +226,8 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('refdatas'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
+        else if ('refdataList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.refdataList) {
                 result = ApiCatalogue.getAllRefdatas()
             }
             else {
