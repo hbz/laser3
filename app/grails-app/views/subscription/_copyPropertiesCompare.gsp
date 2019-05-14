@@ -40,7 +40,7 @@
 
 
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="Ausgewählte Merkmale in Ziellizenz kopieren" onclick="return jsConfirmation() "/>
+                <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
             </div>
     </g:form>
     </semui:form>
