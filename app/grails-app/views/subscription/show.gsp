@@ -468,6 +468,16 @@
 
                 </div><!-- #new-dynamic-properties-block -->
 
+                <g:if test="${subscriptionInstance.owner}">
+                    <div id="derived-license-properties" style="margin: 1em 0">
+
+                        <g:render template="licProp" model="${[
+                                license: subscriptionInstance.owner,
+                                authorizedOrgs: authorizedOrgs
+                        ]}" />
+                    </div>
+                </g:if>
+
                <div class="clear-fix"></div>
             </div>
         </div><!-- .twelve -->
