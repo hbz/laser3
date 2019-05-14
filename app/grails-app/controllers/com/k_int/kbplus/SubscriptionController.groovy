@@ -3208,6 +3208,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
         result.subscription = baseSub
+        //Bugfix Aktualieriunsgproblem
+//        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.newSub = newSub
         result.targetSubscription = newSub
         result

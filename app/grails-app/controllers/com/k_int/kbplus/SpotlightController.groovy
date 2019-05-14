@@ -71,7 +71,7 @@ class SpotlightController extends AbstractDebugController {
     log.debug("spotlight::search");
     def result = [:]
     def filtered
-    def query = params.query
+    def query = "*${params.query}*"
     result.user = springSecurityService.getCurrentUser()
     //params.max = result.user.getDefaultPageSizeTMP() ?: 15
     params.max = 50

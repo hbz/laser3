@@ -922,6 +922,7 @@ from License as l where (
 
             result
         } else {
+            flash.message = "${message(code: 'default.notAutorized.message')}"
             redirect action: 'currentSubscriptions'
         }
     }
