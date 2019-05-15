@@ -3409,7 +3409,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.deleteProperties(propertiesToDelete, newSub, flash)
         }
 
-        newSub.refresh()
+        if (newSub) {
+            newSub = Subscription.get(newSub.id)
+        }
         subsToCompare.each{ sub ->
             TreeMap customProperties = result.customProperties
             customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
