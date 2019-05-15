@@ -2,20 +2,7 @@
 <laser:serviceInjection />
 <!-- _licProp -->
 
-<g:set var="derivedPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" /> <%-- TODO: getONLYshared --%>
-
-<g:if test="${derivedPropDefGroups.global || derivedPropDefGroups.local || derivedPropDefGroups.propDefInfo}">
-    <div class="ui card la-dl-no-table">
-        <div class="ui content">
-            <h3 class="ui header">
-                <g:link controller="license" action="show" id="${license.id}">${license}</g:link>
-            </h3>
-            <p>
-                Die folgenden Merkmale beziehen sich auf den anhängenden Vertrag.
-            </p>
-        </div>
-    </div>
-</g:if>
+<%-- grouped custom properties --%>
 
 <g:each in="${derivedPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
@@ -24,44 +11,58 @@
         <g:render template="licPropGroupWrapper" model="${[
                 propDefGroup: propDefGroup,
                 propDefGroupBinding: null,
-                prop_desc: PropertyDefinition.LIC_PROP,
-                ownobj: license,
-                custom_props_div: "derived_lic_props_div_${propDefGroup.id}"
+                ownObj: license
         ]}"/>
     </g:if>
 </g:each>
 
-<g:each in="${derivedPropDefGroups.local}" var="propDefInfo">
+<g:each in="${derivedPropDefGroups.local}" var="propDefGroup">
 <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup[1]?.visible?.value == 'Yes'}">
 
         <!-- local -->
         <g:render template="licPropGroupWrapper" model="${[
-                propDefGroup: propDefInfo[0],
-                propDefGroupBinding: propDefInfo[1],
-                prop_desc: PropertyDefinition.LIC_PROP,
-                ownobj: license,
-                custom_props_div: "derived_lic_props_div_${propDefInfo[0].id}"
+                propDefGroup: propDefGroup[0],
+                propDefGroupBinding: propDefGroup[1],
+                ownObj: license
         ]}"/>
     </g:if>
 </g:each>
 
-<g:each in="${derivedPropDefGroups.member}" var="propDefInfo">
+<g:each in="${derivedPropDefGroups.member}" var="propDefGroup">
 <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup[1]?.visible?.value == 'Yes'}">
     <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
+        <g:if test="${propDefGroup[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
 
             <!-- member -->
             <g:render template="licPropGroupWrapper" model="${[
-                    propDefGroup: propDefInfo[0],
-                    propDefGroupBinding: propDefInfo[1],
-                    prop_desc: PropertyDefinition.LIC_PROP,
-                    ownobj: license,
-                    custom_props_div: "derived_lic_props_div_${propDefInfo[0].id}"
+                    propDefGroup: propDefGroup[0],
+                    propDefGroupBinding: propDefGroup[1],
+                    ownObj: license
             ]}"/>
         </g:if>
     </g:if>
 </g:each>
+
+<%-- custom properties --%>
+
+<g:if test="${derivedPropDefGroups.fallback}">
+
+    <div class="ui card la-dl-no-table">
+        <div class="content">
+            <h5 class="ui header">
+                <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
+            </h5>
+
+            <g:render template="licPropGroup" model="${[
+                    propList: license.customProperties,
+                    ownObj: license
+            ]}"/>
+        </div>
+    </div><!--.card-->
+
+</g:if>
+
 
 <!-- _licProp -->

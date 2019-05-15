@@ -2,7 +2,7 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${propDefGroup}">
+    <g:if test="${propList}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
@@ -21,7 +21,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj).sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:each in="${propList.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -40,7 +40,7 @@
                             }
                             */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
-                                if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                if (ownObj.isSlaved?.value?.equalsIgnoreCase('yes')) {
                                     println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                                 }
                                 else {
@@ -68,7 +68,7 @@
                             ${prop.dateValue}
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            ${prop.refValue.getI10n('value')}
+                            ${prop.refValue?.getI10n('value')}
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             ${prop.urlValue}

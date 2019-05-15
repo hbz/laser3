@@ -857,7 +857,7 @@ class BootStrap {
             [
                     name: [key: "accessibilitycompliance", en: "Accessibility compliance", de: "Zugriff für Personen mit Einschränkungen"],
                     expl: [en: "An agreement that the data is provided in a form compliant with relevant accessibility (disabilities) legislation. For more information, see guidelines set forth by the World Wide Web Consortium at http://www.w3.org/wai/.", de: "Aussagen über Zugriffmöglichkeiten für Personen mit Einschränkungen."],
-                    descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
             ],
             [
                     name: [en: "Single-site license", de: "Einzelplatzlizenz"],
