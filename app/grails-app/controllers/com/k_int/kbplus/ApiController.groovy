@@ -396,7 +396,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (! result) {
             if ('GET' == request.method) {
-                if ((!query || !value) /*&& ! ApiReader.SUPPORTED_SIMPLE_QUERIES.contains(obj)*/) {
+                if (! (query && value) && ! ApiReader.SIMPLE_QUERIES.contains(obj)) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {

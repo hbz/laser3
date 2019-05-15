@@ -922,6 +922,7 @@ from License as l where (
 
             result
         } else {
+            flash.message = "${message(code: 'default.notAutorized.message')}"
             redirect action: 'currentSubscriptions'
         }
     }
@@ -4240,7 +4241,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                             name: params.name,
                             description: params.description,
                             tenant: result.institution,
-                            ownerType: ownerType
+                            ownerType: ownerType,
+                            visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

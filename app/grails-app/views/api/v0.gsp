@@ -188,10 +188,22 @@
                 var body      = ""
 
                 if(method == "GET") {
+                    var q = jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]')
+                    q = q.length ? "q=" + q.val().trim() : ''
+
+                    var v = jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]')
+                    v = v.length ? "v=" + v.val().trim() : ''
+
+                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '')
+
+                    console.log(query)
+                }
+                /*
+                if(method == "GET") {
                     query = "q=" + jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]').val().trim()
                             + "&v=" + jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]').val().trim()
                             + (context ? "&context=" + context : '')
-                }
+                }*/
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')
                     body  = jQuery(div).find('.body-param > textarea').val().trim()

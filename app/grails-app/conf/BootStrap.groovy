@@ -857,7 +857,7 @@ class BootStrap {
             [
                     name: [key: "accessibilitycompliance", en: "Accessibility compliance", de: "Zugriff für Personen mit Einschränkungen"],
                     expl: [en: "An agreement that the data is provided in a form compliant with relevant accessibility (disabilities) legislation. For more information, see guidelines set forth by the World Wide Web Consortium at http://www.w3.org/wai/.", de: "Aussagen über Zugriffmöglichkeiten für Personen mit Einschränkungen."],
-                    descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
             ],
             [
                     name: [en: "Single-site license", de: "Einzelplatzlizenz"],
@@ -1316,7 +1316,7 @@ class BootStrap {
                 [
                         name: [en: "Preis abhängig von", de: "Preis abhängig von"],
                         expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
                         name: [en: "Abbestellquote", de: "Abbestellquote"],
@@ -2397,12 +2397,12 @@ class BootStrap {
         RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'], BOOTSTRAP)
         //RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
 
-        RefdataValue.loc('IPv4 Address Format',      [key: 'cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
         RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w17/18', en: 'winter semester 2017/18', de: 'Wintersemester 2017/18'], BOOTSTRAP)
