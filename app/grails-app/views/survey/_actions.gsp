@@ -18,6 +18,6 @@
         <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                    message="openSurvey.button"/>
         </g:if>
-        ${surveyInfo.checkOpenSurvey()}
+     
     </g:if>
 </semui:actionsDropdown>
