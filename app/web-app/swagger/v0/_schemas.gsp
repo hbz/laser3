@@ -814,7 +814,7 @@
     StatisticList:
       type: array
       items:
-        $ref: "#/components/schemas/OrganisationStub"
+        $ref: "#/components/schemas/PackageStub"
 
 
     SubscriptionList:
