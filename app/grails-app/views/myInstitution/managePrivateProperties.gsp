@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; de.laser.domain.I10nTranslation" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.domain.I10nTranslation" %>
 
 <!doctype html>
 <html>
@@ -139,6 +139,24 @@
             <div class="fields">
                 <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
+
+                    <g:set var="propertyService" bean="propertyService"/>
+
+                    <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
+                        <p class="hidden" data-prop-def-desc="${cat.key}">
+                            Aktuell häufig verwendete Kategorien: <br />
+
+                            <%
+                                List catList =  cat.value?.take(5)
+                                catList = catList.collect { entry ->
+                                    '&nbsp; - ' + (RefdataCategory.findByDesc(entry[0]))?.getI10n('desc')
+                                }
+                                println catList.join('<br />')
+                            %>
+
+                        </p>
+                    </g:each>
+
                     <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                 </div>
             </div>
@@ -148,20 +166,27 @@
 
     <g:javascript>
 
-       if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
-            $("#cust_prop_ref_data_name").show();
-       } else {
-            $("#cust_prop_ref_data_name").hide();
-       }
+    $('#pd_descr').change(function() {
+        $('#cust_prop_modal_select').trigger('change');
+    });
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
         if( selectedText == "class com.k_int.kbplus.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
-        }else{
+
+            var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
+            if ($pMatch) {
+                $( "p[data-prop-def-desc]" ).addClass('hidden')
+                $pMatch.removeClass('hidden')
+            }
+        }
+        else {
             $("#cust_prop_ref_data_name").hide();
         }
     });
+
+    $('#cust_prop_modal_select').trigger('change');
 
     $("#cust_prop_refdatacatsearch").select2({
         placeholder: "Kategorie eintippen...",
