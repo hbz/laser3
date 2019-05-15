@@ -167,47 +167,63 @@ public class GokbDiffEngine {
     def static compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
     {
         def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
-        def oldpkgTipps = oldpkg.tipps.collect{it.tippUuid}
-        def newpkgTipps = newpkg.tipps.collect{it.tippUuid}
+        def oldpkgTippsTippUuid = oldpkg.tipps.collect{it.tippUuid}
+        def newpkgTippsTippUuid = newpkg.tipps.collect{it.tippUuid}
 
         newpkg.tipps.each{ tippnew ->
 
             replaceImpIDwithGokbID(ctx, tippnew, primaryUrl)
 
-            if(tippnew?.tippUuid in oldpkgTipps)
+            if(tippnew?.tippUuid in oldpkgTippsTippUuid)
             {
-                    def tippold = oldpkg.tipps.find{it.tippUuid == tippnew.tippUuid && it.status != 'Deleted'}
 
-                    def db_tipp = ctx.tipps.find {it.gokbId == tippnew.tippUuid && it.status != 'Deleted'}
-                    def tipp_diff = getTippDiff(tippold, tippnew)
+                    //Temporary
+                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])])
+                    def newAuto_accept = (localDuplicateTippEntries.size() > 1) ? true : false
+                    newAuto_accept = auto_accept ?: newAuto_accept
+                    if(newAuto_accept && tippnew.status != 'Deleted') {
+                        System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept" + newAuto_accept);
+                        newTippClosure(ctx, tippnew, newAuto_accept)
+                    } else
+                    {
+                    //Temporary END
 
-                if (tippnew.status != 'Current' && tipp_diff.size() == 0) {
-                    deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
-                    System.out.println("Title " + tippold + " Was removed from the package");
+                        def tippold = oldpkg.tipps.find{it.tippUuid == tippnew.tippUuid && it.status != 'Deleted'}
 
-                } else if (tipp_diff.size() == 0) {
-                    tippUnchangedClosure(ctx, tippold);
+                        def db_tipp = ctx.tipps.find {it.gokbId == tippnew.tippUuid && it.status?.value != 'Deleted'}
+                        def tipp_diff = getTippDiff(tippold, tippnew)
 
-                } else {
-                    // See if any of the actual properties are null
-                    println("Got tipp diffs: ${tipp_diff}")
-                    try {
-                        updatedTippClosure(ctx, tippnew, tippold, tipp_diff, auto_accept, db_tipp)
+                        if (tippnew.status != 'Current' && tipp_diff.size() == 0) {
+                            deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
+                            System.out.println("Title " + tippold + " Was removed from the package");
+
+                        } else if (tipp_diff.size() == 0) {
+                            tippUnchangedClosure(ctx, tippold);
+
+                        } else {
+                            // See if any of the actual properties are null
+                            println("Got tipp diffs: ${tipp_diff}")
+                            try {
+                                updatedTippClosure(ctx, tippnew, tippold, tipp_diff, auto_accept, db_tipp)
+                            }
+                            catch (Exception e) {
+                                System.err.println("Error on executing updated TIPP closure! Please verify logs:")
+                                e.printStackTrace()
+                            }
+                        }
                     }
-                    catch (Exception e) {
-                        System.err.println("Error on executing updated TIPP closure! Please verify logs:")
-                        e.printStackTrace()
-                    }
-                }
             }
-            else if (!(tippnew.tippUuid in oldpkgTipps)) {
-                System.out.println("TIPP " + tippnew + " Was added to the package");
-                newTippClosure(ctx, tippnew, auto_accept)
+            else if (!(tippnew.tippUuid in oldpkgTippsTippUuid) && tippnew.status != 'Deleted') {
+
+
+                    System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept" + auto_accept);
+                    newTippClosure(ctx, tippnew, auto_accept)
+
 
             }
         }
         oldpkg.tipps.each { tippold ->
-            if(!(tippold?.tippUuid in newpkgTipps))
+            if(!(tippold?.tippUuid in newpkgTippsTippUuid))
             {
                 deletedTippClosure(ctx, tippold, auto_accept)
                 System.out.println("TIPP " + tippold + " Was removed from the package");

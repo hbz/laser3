@@ -444,6 +444,22 @@ class GlobalSourceSyncService {
                         log.error("Error creating identifier instance for new TIPP!")
                     }
                 }
+
+                def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
+
+                tipps?.each { oldtipp ->
+                    if(oldtipp.id != new_tipp.id){
+                        def ies = IssueEntitlement.findAllByTipp(oldtipp)
+                        ies?.each { ie ->
+                            ie.tipp = new_tipp
+                            ie.save(flush: true)
+                        }
+                        oldtipp.status = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+                        oldtipp.save(flush: true)
+                    }
+                }
+
+
             } else {
                 log.debug("Register new tipp event for user to accept or reject");
 
@@ -486,6 +502,7 @@ class GlobalSourceSyncService {
                         ])
 
             }
+            cleanUpGorm()
         }
 
         def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept, db_tipp ->
@@ -617,6 +634,7 @@ class GlobalSourceSyncService {
             } else {
                 throw new RuntimeException("Unable to locate TIPP for update. ctx:${ctx}, tipp:${tipp}");
             }
+            cleanUpGorm()
         }
 
         def onDeletedTipp = { ctx, tipp, auto_accept, db_tipp ->
@@ -1488,7 +1506,7 @@ class GlobalSourceSyncService {
     }
 
     def setOrUpdateProviderPlattform(grt, providerUuid) {
-
+        log.debug("setOrUpdateProviderPlattform Beginn")
         if (providerUuid == null) {
             return
         }
@@ -1524,6 +1542,7 @@ class GlobalSourceSyncService {
             }
 
         }
+        log.debug("setOrUpdateProviderPlattform End")
     }
 
 }

@@ -422,8 +422,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.tipps = []
     this.tipps.each { tip ->
 
-      //Deleted Tipps should by overwrite if gokb tipps is current
-      //if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
+
+      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
       def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
@@ -469,7 +469,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       }
 
       result.tipps.add(newtip)
-         // }
+          }
     }
 
     result.tipps.sort{it.titleId}
