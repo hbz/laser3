@@ -168,6 +168,9 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
@@ -224,9 +227,8 @@ class SurveyController {
                     break
             }
         }
-
-        result.subscriptions = subscriptions
         result.num_sub_rows = subscriptions.size()
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result
 
@@ -1151,9 +1153,9 @@ class SurveyController {
                             surveyInfo.addToSurveyConfigs(surveyConfig)
                             surveyInfo.save(flush: true)
 
-                            flash.message = g.message(code: "survey.toggleSurveySub.add.success")
+                            flash.message = g.message(code: "survey.toggleSurveySub.add.success", args: [subscription.name])
                         } else {
-                            flash.error = g.message(code: "survey.toggleSurveySub.add.fail")
+                            flash.error = g.message(code: "survey.toggleSurveySub.add.fail", args: [subscription.name])
                         }
                     }
                 }
@@ -1171,10 +1173,10 @@ class SurveyController {
                                 it.delete(flush: true)
                             }
                             surveyConfig.delete(flush: true)
-                            flash.message = g.message(code: "survey.toggleSurveySub.remove.success")
+                            flash.message = g.message(code: "survey.toggleSurveySub.remove.success", args: [subscription.name])
                         }
                         catch (DataIntegrityViolationException e) {
-                            flash.error = g.message(code: "survey.toggleSurveySub.remove.fail")
+                            flash.error = g.message(code: "survey.toggleSurveySub.remove.fail", args: [subscription.name])
                         }
                     }
                 }
