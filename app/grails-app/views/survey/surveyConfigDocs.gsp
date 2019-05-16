@@ -16,13 +16,16 @@
     <g:render template="actions" />
 </semui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerIcon />
-<semui:xEditable owner="${surveyInfo}" field="name" />
+<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
+<semui:xEditable owner="${surveyInfo}" field="name"/>
 </h1>
 
-<semui:anualRings object="${surveyInfo}"/>
+
 
 <g:render template="nav" />
+
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}" />
 

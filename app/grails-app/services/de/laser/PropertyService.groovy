@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
@@ -118,6 +119,26 @@ class PropertyService {
         }
 
         [usedPdList.unique().sort(), detailsMap.sort()]
+    }
+
+    Map<String, Object> getRefdataCategoryUsage() {
+
+        Map<String, Object> result = [:]
+
+        List usage = PropertyDefinition.executeQuery(
+                "select pd.descr, pd.type, pd.refdataCategory, count(pd.refdataCategory) from PropertyDefinition pd " +
+                        "where pd.refdataCategory is not null group by pd.descr, pd.type, pd.refdataCategory " +
+                        "order by pd.descr, count(pd.refdataCategory) desc, pd.refdataCategory"
+        )
+
+        usage.each { u ->
+            if (! result.containsKey(u[0])) {
+                result.put(u[0], [])
+            }
+            result[u[0]].add([u[2], u[3]])
+        }
+
+        result
     }
 
     def replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {

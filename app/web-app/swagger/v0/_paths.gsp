@@ -309,7 +309,7 @@
         - Specials
       summary:
       description: >
-        Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -323,7 +323,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -336,7 +336,8 @@
       tags:
         - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/context"
@@ -348,7 +349,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020List"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -362,7 +363,7 @@
         - Specials
       summary:
       description: >
-        Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -376,7 +377,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Statistic_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -389,7 +390,8 @@
       tags:
         - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/context"
@@ -401,7 +403,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StatisticList"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
