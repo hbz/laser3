@@ -309,7 +309,7 @@
         - Specials
       summary:
       description: >
-        Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -336,7 +336,8 @@
       tags:
         - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/context"
@@ -362,7 +363,7 @@
         - Specials
       summary:
       description: >
-        Supported are queries by following identifiers: *globalUID*.
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -389,7 +390,8 @@
       tags:
         - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
         - $ref: "#/components/parameters/context"

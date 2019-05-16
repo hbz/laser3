@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.46'
+    static final VERSION = '0.47'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -236,17 +236,17 @@ class ApiManager {
         }
         else if ('statistic'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
-                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                result = ApiPkg.findPackageBy(query, value) // use of http status code
 
                 if (result && !(result in failureCodes)) {
-                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                    // TODO: def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
 
-                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiStatistic.getDummy()
-                    }
-                    else {
-                        result = Constants.HTTP_FORBIDDEN
-                    }
+                    //if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                        result = ApiStatistic.getPackage(result)
+                    //}
+                    //else {
+                    //    result = Constants.HTTP_FORBIDDEN
+                    //}
                 }
             }
             else {
