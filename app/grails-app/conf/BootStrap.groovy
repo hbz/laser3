@@ -2049,6 +2049,8 @@ class BootStrap {
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'DB1R4'], BOOTSTRAP)
+        RefdataValue.loc('FactType', [en: 'BR1R4'], BOOTSTRAP)
+        RefdataValue.loc('FactType', [en: 'BR2R4'], BOOTSTRAP)
 
         RefdataValue.loc('FactMetric', [en: 'ft_total'], BOOTSTRAP)
         RefdataValue.loc('FactMetric', [en: 'record_view'], BOOTSTRAP)

@@ -22,16 +22,24 @@
 
 <br>
 
-<h1 class="ui icon header"><semui:headerIcon/>
+<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 </h1>
-<semui:anualRings object="${surveyInfo}"/>
+
 
 
 <g:render template="nav"/>
 
 
 <semui:messages data="${flash}"/>
+
+
+<div class="ui icon info message">
+    <i class="info icon"></i>
+
+                ${message(code: 'allSubscriptions.info')}
+</div>
+
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
 <semui:totalNumber total="${num_sub_rows}"/>
@@ -288,6 +296,13 @@
         </g:each>
     </table>
 </div>
+
+<g:if test="${true}">
+    <semui:paginate action="allSubscriptions" controller="survey" params="${params}"
+                    next="${message(code: 'default.paginate.next', default: 'Next')}"
+                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                    total="${num_sub_rows}"/>
+</g:if>
 
 
 </body>
