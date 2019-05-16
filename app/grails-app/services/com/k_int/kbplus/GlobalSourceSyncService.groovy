@@ -502,7 +502,7 @@ class GlobalSourceSyncService {
                         ])
 
             }
-            cleanUpGorm()
+
         }
 
         def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept, db_tipp ->
@@ -634,7 +634,7 @@ class GlobalSourceSyncService {
             } else {
                 throw new RuntimeException("Unable to locate TIPP for update. ctx:${ctx}, tipp:${tipp}");
             }
-            cleanUpGorm()
+
         }
 
         def onDeletedTipp = { ctx, tipp, auto_accept, db_tipp ->

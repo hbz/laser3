@@ -194,8 +194,10 @@ public class GokbDiffEngine {
                         def tipp_diff = getTippDiff(tippold, tippnew)
 
                         if (tippnew.status != 'Current' && tipp_diff.size() == 0) {
-                            deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
-                            System.out.println("Title " + tippold + " Was removed from the package");
+                            if(tippnew.status != db_tipp.status.value) {
+                                deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
+                                System.out.println("Title " + tippold + " Was removed from the package");
+                            }
 
                         } else if (tipp_diff.size() == 0) {
                             tippUnchangedClosure(ctx, tippold);
@@ -216,7 +218,7 @@ public class GokbDiffEngine {
             else if (!(tippnew.tippUuid in oldpkgTippsTippUuid) && tippnew.status != 'Deleted') {
 
 
-                    System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept" + auto_accept);
+                    System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept " + auto_accept);
                     newTippClosure(ctx, tippnew, auto_accept)
 
 
@@ -225,8 +227,11 @@ public class GokbDiffEngine {
         oldpkg.tipps.each { tippold ->
             if(!(tippold?.tippUuid in newpkgTippsTippUuid))
             {
-                deletedTippClosure(ctx, tippold, auto_accept)
-                System.out.println("TIPP " + tippold + " Was removed from the package");
+                def db_tipp = ctx.tipps.find {it.gokbId == tippold.tippUuid && it.status?.value != 'Deleted'}
+                if(tippold.status.id != db_tipp.status.id) {
+                    deletedTippClosure(ctx, tippold, auto_accept)
+                    System.out.println("TIPP " + tippold + " Was removed from the package");
+                }
             }
         }
     }
