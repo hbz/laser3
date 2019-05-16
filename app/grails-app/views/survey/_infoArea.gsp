@@ -34,7 +34,7 @@
     </semui:card>
 </g:if>
 
-<g:if test="${surveyConfigs && actionName != 'showSurveyConfig'}">
+<g:if test="${surveyConfigs && actionName != 'surveyConfigs'}">
     <semui:card message="surveyInfo.property" class="">
         <div class="content">
             <g:each in="${surveyConfigs}" var="config" status="i">

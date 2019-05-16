@@ -343,98 +343,17 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.configID)
 
+        result.addSurveyConfigs = params.addSurveyConfigs ?: false
+
         result
 
     }
 
-
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
     })
-    def showSurveyInfo() {
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
-
-        result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
-        result
-
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
-    })
-    def locSurveyInfo() {
-
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-
-        def surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-
-        if (surveyInfo) {
-            surveyInfo.name = params.name
-            surveyInfo.comment = params.comment ?: null
-            surveyInfo.startDate = params.startDate ? sdf.parse(params.startDate) : null
-            surveyInfo.endDate = params.endDate ? sdf.parse(params.endDate) : null
-            //surveyInfo.type = RefdataValue.get(params.type)
-
-            if (surveyInfo.isDirty()) {
-                if (surveyInfo.save(flush: true)) {
-                    flash.message = g.message(code: "showSurveyInfo.save.successfully")
-                } else {
-                    flash.error = g.message(code: "showSurveyInfo.save.fail")
-                }
-            }
-
-        } else {
-
-            surveyInfo = new SurveyInfo(
-                    name: params.name,
-                    startDate: params.startDate ? sdf.parse(params.startDate) : null,
-                    endDate: params.endDate ? sdf.parse(params.endDate) : null,
-                    type: params.type,
-                    owner: contextService.getOrg(),
-                    status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
-                    comment: params.comment ?: null
-            ).save(flush: true)
-
-        }
-
-        redirect action: 'showSurveyInfo', id: surveyInfo.id
-
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
-    })
-    def showSurveyConfig() {
+    def surveyConfigsInfo() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -448,24 +367,15 @@ class SurveyController {
 
         result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
 
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        result.subscriptions = subscriptions
-
         result.properties = getSurveyProperties(result.institution)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
-
-        result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.configOrder }
+        result.surveyConfig = SurveyConfig.get(params.configID)
 
         result
 
     }
-
 
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
@@ -505,10 +415,10 @@ class SurveyController {
                             surveyProperty: SurveyProperty.findByName('Continue to license'),
                             surveyConfig: surveyConfig).save(flush: true)
 
-                    flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                    flash.message = g.message(code: "surveyConfigs.add.successfully")
 
                 } else {
-                    flash.error = g.message(code: "showSurveyConfig.exists")
+                    flash.error = g.message(code: "surveyConfigs.exists")
                 }
             }
             if (params.property && !params.addtoallSubs) {
@@ -524,10 +434,10 @@ class SurveyController {
                     surveyInfo.addToSurveyConfigs(surveyConfigProp)
                     surveyInfo.save(flush: true)
 
-                    flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                    flash.message = g.message(code: "surveyConfigs.add.successfully")
 
                 } else {
-                    flash.error = g.message(code: "showSurveyConfig.exists")
+                    flash.error = g.message(code: "surveyConfigs.exists")
                 }
             }
             if (params.propertytoSub) {
@@ -543,10 +453,10 @@ class SurveyController {
                     )
                     propertytoSub.save(flush: true)
 
-                    flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                    flash.message = g.message(code: "surveyConfigs.add.successfully")
 
                 } else {
-                    flash.error = g.message(code: "showSurveyConfig.exists")
+                    flash.error = g.message(code: "surveyConfigs.exists")
                 }
             }
 
@@ -565,17 +475,17 @@ class SurveyController {
                             )
                             propertytoSub.save(flush: true)
 
-                            flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                            flash.message = g.message(code: "surveyConfigs.add.successfully")
 
                         } else {
-                            flash.error = g.message(code: "showSurveyConfig.exists")
+                            flash.error = g.message(code: "surveyConfigs.exists")
                         }
                     }
                 }
             }
 
 
-            redirect action: 'showSurveyConfig', id: surveyInfo.id
+            redirect action: 'surveyConfigs', id: surveyInfo.id
 
         } else {
             redirect action: 'currentSurveysConsortia'
@@ -609,21 +519,42 @@ class SurveyController {
 
                     if (propertyID) {
                         def property = SurveyProperty.get(Long.parseLong(propertyID))
-                        def surveyConfig = SurveyConfig.get(Long.parseLong(params.configID))
+                        //Config is Sub
+                        if(params.configID) {
+                            def surveyConfig = SurveyConfig.get(Long.parseLong(params.configID))
 
-                        def propertytoSub = property ? SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(property, surveyConfig) : null
-                        if (!propertytoSub && property && surveyConfig) {
-                            propertytoSub = new SurveyConfigProperties(
-                                    surveyConfig: surveyConfig,
-                                    surveyProperty: property
+                            def propertytoSub = property ? SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(property, surveyConfig) : null
+                            if (!propertytoSub && property && surveyConfig) {
+                                propertytoSub = new SurveyConfigProperties(
+                                        surveyConfig: surveyConfig,
+                                        surveyProperty: property
 
-                            )
-                            propertytoSub.save(flush: true)
+                                )
+                                propertytoSub.save(flush: true)
 
-                            flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                                flash.message = g.message(code: "surveyConfigs.add.successfully")
 
-                        } else {
-                            flash.error = g.message(code: "showSurveyConfig.exists")
+                            } else {
+                                flash.error = g.message(code: "surveyConfigs.exists")
+                            }
+                        }
+                        else {
+                            def surveyConfigProp = property ? SurveyConfig.findAllBySurveyPropertyAndSurveyInfo(property, surveyInfo) : null
+                            if (!surveyConfigProp && property) {
+                                surveyConfigProp = new SurveyConfig(
+                                        surveyProperty: property,
+                                        configOrder: surveyInfo.surveyConfigs.size() + 1,
+                                        type: 'SurveyProperty'
+
+                                )
+                                surveyInfo.addToSurveyConfigs(surveyConfigProp)
+                                surveyInfo.save(flush: true)
+
+                                flash.message = g.message(code: "surveyConfigs.add.successfully")
+
+                            } else {
+                                flash.error = g.message(code: "surveyConfigs.exists")
+                            }
                         }
                     }
 
@@ -755,95 +686,6 @@ class SurveyController {
 
     }
 
-
-
-
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
-    })
-    def showSurveyParticipants() {
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-
-        params.tab = params.tab ?: 'selectedSubParticipants'
-
-        // new: filter preset
-        params.orgType = RDStore.OT_INSTITUTION?.id?.toString()
-        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
-
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
-
-        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        def fsq = filterService.getOrgComboQuery(params, result.institution)
-        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
-
-        if (params.filterPropDef && consortiaMemberIds) {
-            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
-        }
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
-
-        result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
-
-        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
-
-        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)
-
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs) - result.selectedParticipants
-
-        result
-
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
-    })
-    def showSurveyConfigDocs() {
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfigs = result.surveyInfo.surveyConfigs?.sort { it?.configOrder }
-
-        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0]?.id?.toString()
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        result
-
-    }
-
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
@@ -869,14 +711,14 @@ class SurveyController {
             params.list('selectedOrgs').each { soId ->
                 if (!(soId in surveyConfig.orgIDs)) {
                     surveyConfig.orgIDs?.add(Long.parseLong(soId))
-                    flash.message = g.message(code: "showSurveyParticipants.add.successfully")
+                    flash.message = g.message(code: "surveyParticipants.add.successfully")
                 }
             }
             surveyConfig.save(flush: true)
 
         }
 
-        redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']
+        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']
 
     }
 
@@ -1005,14 +847,14 @@ class SurveyController {
             params.list('selectedOrgs').each { soId ->
                 if (Long.parseLong(soId) in surveyConfig.orgIDs) {
                     surveyConfig.orgIDs?.remove(Long.parseLong(soId))
-                    flash.message = g.message(code: "showSurveyParticipants.delete.successfully")
+                    flash.message = g.message(code: "surveyParticipants.delete.successfully")
                 }
             }
             surveyConfig.save(flush: true)
 
         }
 
-        redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
+        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID]
 
     }
 
@@ -1049,7 +891,7 @@ class SurveyController {
 
         }
 
-        redirect action: 'showSurveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']
+        redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']
 
     }
 
@@ -1063,7 +905,7 @@ class SurveyController {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect action: 'showSurveyConfigDocs', id: SurveyConfig.get(params.instanceId).surveyInfo.id, params: [surveyConfigID: params.instanceId]
+        redirect action: 'surveyConfigDocs', id: SurveyConfig.get(params.instanceId).surveyInfo.id, params: [surveyConfigID: params.instanceId]
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")

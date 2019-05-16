@@ -2,7 +2,7 @@
 
 <g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig?.orgIDs) ?: null}" />
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedSubParticipants')}<semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
         total="${surveyConfigOrgs?.size()}"/></h2>
 <br>
 

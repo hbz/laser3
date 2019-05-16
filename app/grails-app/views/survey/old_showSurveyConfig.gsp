@@ -84,7 +84,7 @@
         <div class="two wide column">
             <g:if test="${surveyConfigs.size() > 0}">
 
-                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
+                <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                         class="ui huge button"><i class="angle right icon"></i></g:link>
 
             </g:if>

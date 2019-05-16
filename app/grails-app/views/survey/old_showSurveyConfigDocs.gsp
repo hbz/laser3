@@ -84,7 +84,7 @@
         <div class="two wide column">
             <g:if test="${surveyConfigs.size() > 0}">
 
-                <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
+                <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                         class="ui huge button"><i class="angle right icon"></i></g:link>
 
             </g:if>
@@ -102,7 +102,7 @@
 
 <br>
 
-<p><b>${message(code: 'showSurveyConfigDocs.info')}</b></p>
+<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
 <br>
 
 
@@ -143,9 +143,9 @@
                     <thead>
                     <tr>
                         <th></th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
                         <th>${message(code: 'default.actions', default: 'Actions')}</th>
                     </tr>
                     </thead>

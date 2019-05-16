@@ -28,10 +28,17 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
+
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
+<div class="ui icon info message">
+    <i class="info icon"></i>
+
+    ${message(code: 'surveyConfigs.info')}
+</div>
+<br>
+
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
 <div>
@@ -88,27 +95,34 @@
 
                 </td>
                 <td>
-                    <div class="ui middle aligned list">
-                    <div class="item">
-
-                        <div class="right floated content">
-                            <g:link controller="survey" action="allSurveyProperties" id="${surveyInfo.id}"
-                                    params="[configID: config?.id]" class="ui icon button"><i
-                                    class="write icon"></i></g:link>
+                    <g:if test="${config?.type == 'Subscription'}">
+                        <div class="ui middle aligned list">
+                            <div class="item">
+                                <div class="center aligned content">
+                                    <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                                </div>
+                            </div>
                         </div>
-
-                        <div class="center aligned content">
-                            <div class="ui circular label">${config?.surveyProperties?.size()}</div>
-                        </div>
-                    </div>
-                    </div>
+                    </g:if>
 
                 </td>
                 <td>
 
+                    <g:if test="${config?.type == 'Subscription'}">
+                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                params="[configID: config?.id]" class="ui icon button"><i
+                                class="write icon"></i></g:link>
+
+                    </g:if>
+
+                    <g:if test="${config?.type == 'SurveyProperty'}">
+                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                params="[configID: config?.id]" class="ui icon button"><i
+                                class="write icon"></i></g:link>
+                    </g:if>
                     <g:if test="${config?.getCurrentDocs()}">
                         <span data-position="top right"
-                              data-tooltip="${message(code: 'showSurveyConfig.delete.existingDocs')}">
+                              data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
                             <button class="ui icon button negative" disabled="disabled">
                                 <i class="trash alternate icon"></i>
                             </button>
