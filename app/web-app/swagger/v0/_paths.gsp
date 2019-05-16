@@ -323,7 +323,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -349,7 +349,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020List"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -377,7 +377,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Statistic_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -403,7 +403,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StatisticList"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
