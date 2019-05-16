@@ -1,8 +1,5 @@
 <%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
 <%@ page import="com.k_int.kbplus.SubscriptionController" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.COPY" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.REPLACE" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.DO_NOTHING" %>
 <laser:serviceInjection />
 
 <semui:form>
@@ -17,32 +14,23 @@
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
-                    <th class="center aligned">${message(code: 'default.copy.label')}</th>
-                    <th class="center aligned">${message(code: 'default.replace.label')}</th>
-                    <th class="center aligned">${message(code: 'default.doNothing.label')}</th>
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
+                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCopyCheckboxes(this)" checked="${true}" />
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+                    </th>
+                    <th class="one wide center aligned">
+                        <i class="ui icon trash alternate outline"></i>
+                        <g:if test="${targetSubscription}">
+                                <input type="checkbox" data-action="delete" onClick="toggleAllDeleteCheckboxes(this)" />
+                        </g:if>
                     </th>
                 </tr>
             </thead>
             <tbody>
             <tr>
-                <td class="center aligned" style="vertical-align: top">
-
-                </td>
-                <td class="center aligned" style="vertical-align: top">
-                    <div class="ui checkbox la-toggle-radio la-replace">
-                        <input type="radio" name="subscription.takeDates" value="${REPLACE}" />
-                    </div>
-                </td>
-                <td class="center aligned" style="vertical-align: top">
-                    <div class="ui checkbox la-toggle-radio la-noChange">
-                        <input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked />
-                    </div>
-                </td>
                 <td style="vertical-align: top" name="subscription.takeDates.source">
                     <div>
                         <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
@@ -50,6 +38,15 @@
                         ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                     </div>
                 </td>
+
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
+                        <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
+                        <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
+                    </g:if>
+                </td>
+
                 <td style="vertical-align: top" name="subscription.takeDates.target">
                     <div>
                         <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
@@ -57,11 +54,15 @@
                         ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                     </div>
                 </td>
+
+                <td>
+                    <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
+                        <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
+                    </g:if>
+                </td>
             </tr>
+
             <tr>
-                <td class="center aligned" style="vertical-align: top"></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
@@ -72,6 +73,15 @@
                         </g:if>
                     </div>
                 </td>
+
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:if test="${sourceSubscription?.owner}">
+                        <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
+                        <g:checkBox name="subscription.takeOwner" data-action="copy" checked="${true}" />
+                    </g:if>
+                </td>
+
                 <td style="vertical-align: top" name="subscription.takeOwner.target">
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
@@ -82,11 +92,14 @@
                         </g:if>
                     </div>
                 </td>
+
+                <td>
+                    <g:if test="${targetSubscription?.owner}">
+                        <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOwner" data-action="delete" />
+                    </g:if>
+                </td>
             </tr>
             <tr>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
                     <div>
                         <g:if test="${ ! source_visibleOrgRelations}">
@@ -94,14 +107,27 @@
                         </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
-                                <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
-                                    ${source_role?.org?.name}
-                                </g:link><br>
+                                <div value="${genericOIDService.getOID(source_role)}">
+                                    <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
+                                    <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
+                                        ${source_role?.org?.name}
+                                    </g:link><br>
+                                </div>
                             </g:if>
                         </g:each>
                     </div>
                 </td>
+
+                %{--AKTIONEN:--}%
+                <td class="center aligned">
+                    <g:each in="${source_visibleOrgRelations}" var="source_role">
+                        <g:if test="${source_role.org}">
+                            <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
+                            <g:checkBox name="subscription.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}" />
+                        </g:if>
+                    </g:each>
+                </td>
+
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.target">
                     <div>
                         <g:if test="${ ! target_visibleOrgRelations}">
@@ -109,70 +135,103 @@
                         </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
-                                <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
-                                    ${target_role?.org?.name}
-                                </g:link>
-                                <br>
+                                <div value="${genericOIDService.getOID(target_role)}">
+                                    <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
+                                    <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
+                                        ${target_role?.org?.name}
+                                    </g:link>
+                                    <br>
+                                </div>
                             </g:if>
                         </g:each>
                     </div>
+                </td>
+                <td>
+                    <g:each in="${target_visibleOrgRelations}" var="target_role">
+                        <g:if test="${target_role.org}">
+                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" />
+                            <br/>
+                        </g:if>
+                    </g:each>
                 </td>
             </tr>
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyElements.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button')}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
 
 <r:script>
-    $('input:radio[name="subscription.takeDates"]').change( function(event) {
-        if (this.checked && this.value=='REPLACE') {
+    $( document ).ready(function() {
+        toggleAllCopyCheckboxes(document.getElementsByName('checkAllCopyCheckboxes'))
+    })
+
+    function toggleAllCopyCheckboxes(source) {
+        var checkboxes = document.querySelectorAll('input[data-action="copy"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source){
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    }
+    function toggleAllDeleteCheckboxes(source) {
+        var checkboxes = document.querySelectorAll('input[data-action="delete"]');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source){
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    }
+    $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
+        if (this.checked) {
             $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
             $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced');
         } else {
             $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willStay');
             $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced');
         }
     })
-    $('input:radio[name="subscription.takeOwner"]').change( function(event) {
-        if (this.checked && this.value=='REPLACE') {
+    $('input:checkbox[name="subscription.deleteDates"]').change( function(event) {
+        if (this.checked) {
+            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplacedStrong');
+        } else {
+            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplacedStrong');
+        }
+    })
+    $('input:checkbox[name="subscription.takeOwner"]').change( function(event) {
+        if (this.checked) {
             $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
             $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced');
         } else {
             $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay')
             $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
         }
     })
-    $('input:radio[name="subscription.takeOwner"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
+    $('input:checkbox[name="subscription.deleteOwner"]').change( function(event) {
+        if (this.checked) {
+            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplacedStrong');
+        } else {
+            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplacedStrong');
         }
     })
-    $('input:radio[name="subscription.takeOrgRelations"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced');
+    $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
+        var generic_OrgRole_id = this.value
+        if (this.checked) {
+            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').addClass('willStay');
+        } else {
+            $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willStay');
+            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').removeClass('willStay');
         }
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willBeReplaced');
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced');
+    })
+    $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
+        var generic_OrgRole_id = this.value
+        if (this.checked) {
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').addClass('willBeReplacedStrong');
+        } else {
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willBeReplacedStrong');
         }
     })
 </r:script>

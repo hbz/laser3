@@ -75,6 +75,12 @@ class SubscriptionController extends AbstractDebugController {
     public static final String REPLACE = "REPLACE"
     public static final String DO_NOTHING = "DO_NOTHING"
 
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
+
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -3184,19 +3190,37 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeDates(params.subscription.takeDates, baseSub, newSub, flash)
+        boolean isTargetSubChanged = false
+        if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteDates(newSub, flash)
+            isTargetSubChanged = true
+        }else if (params?.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeDates(baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeOwner(params?.subscription?.takeOwner, baseSub, newSub, flash)
+        if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteOwner(newSub, flash)
+            isTargetSubChanged = true
+        }else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeOwner(baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
+        if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<OrgRole> toDeleteOrgRelations = params.list('subscription.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteOrgRelations(toDeleteOrgRelations, newSub, flash)
+            isTargetSubChanged = true
+        }
+        if (params?.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.takeOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        newSub = newSub?.refresh()
+        if (isTargetSubChanged) {
+            newSub.refresh()
+        }
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
