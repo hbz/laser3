@@ -341,7 +341,7 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfig = SurveyConfig.get(params.configID)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         result.addSurveyConfigs = params.addSurveyConfigs ?: false
 
@@ -371,7 +371,7 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfig = SurveyConfig.get(params.configID)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         result
 
@@ -520,8 +520,8 @@ class SurveyController {
                     if (propertyID) {
                         def property = SurveyProperty.get(Long.parseLong(propertyID))
                         //Config is Sub
-                        if(params.configID) {
-                            def surveyConfig = SurveyConfig.get(Long.parseLong(params.configID))
+                        if(params.surveyConfigID) {
+                            def surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfigID))
 
                             def propertytoSub = property ? SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(property, surveyConfig) : null
                             if (!propertytoSub && property && surveyConfig) {

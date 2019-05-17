@@ -51,7 +51,8 @@
             <th>${message(code: 'surveyProperty.name.label')}</th>
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
-            <th></th>
+            <th>${message(code: 'surveyConfig.documents.label')}</th>
+            <th>${message(code: 'surveyConfig.orgIDs.label')}</th>
             <th></th>
 
         </tr>
@@ -96,30 +97,28 @@
                 </td>
                 <td>
                     <g:if test="${config?.type == 'Subscription'}">
-                        <div class="ui middle aligned list">
-                            <div class="item">
-                                <div class="center aligned content">
-                                    <div class="ui circular label">${config?.surveyProperties?.size()}</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="ui circular label">${config?.surveyProperties?.size()}</div>
                     </g:if>
 
                 </td>
                 <td>
+                        <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                                params="[surveyConfigID: config?.id]" class="">
+                            ${config?.documents?.size()}
+                        </g:link>
+                </td>
+                <td>
+                        <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                params="[surveyConfigID: config?.id]" class="">
+                            ${config?.orgIDs?.size()?:0}
+                        </g:link>
+                </td>
+                <td>
 
-                    <g:if test="${config?.type == 'Subscription'}">
-                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
-                                params="[configID: config?.id]" class="ui icon button"><i
-                                class="write icon"></i></g:link>
+                    <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                            params="[surveyConfigID: config?.id]" class="ui icon button"><i
+                            class="write icon"></i></g:link>
 
-                    </g:if>
-
-                    <g:if test="${config?.type == 'SurveyProperty'}">
-                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
-                                params="[configID: config?.id]" class="ui icon button"><i
-                                class="write icon"></i></g:link>
-                    </g:if>
                     <g:if test="${config?.getCurrentDocs()}">
                         <span data-position="top right"
                               data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">

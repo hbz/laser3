@@ -37,67 +37,115 @@
 
 <g:if test="${surveyConfig}">
 
-        <div class="la-inline-lists">
-            <div class="ui two stackable cards">
-                <div class="ui card ">
-                    <div class="content">
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.header.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="header" /></dd>
+    <div class="la-inline-lists">
+        <div class="ui ${surveyConfig?.type == 'Subscription' ? 'three' : 'two'} stackable cards">
 
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.comment.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+            <div class="ui card">
+                <div class="content">
+                    <dl>
+                        <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
+                        <dd>
+                            ${surveyConfig.getTypeInLocaleI10n()}
 
-                        </dl>
+                            <g:if test="${surveyConfig?.surveyProperty}">
 
-                    </div>
-                </div>
+                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}
 
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
-                            <dd>
-                                ${surveyConfig.getTypeInLocaleI10n()}
-                            </dd>
+                                <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                    <g:set var="refdataValues" value="${[]}"/>
+                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
+                                            var="refdataValue">
+                                        <g:set var="refdataValues"
+                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                    </g:each>
+                                    (${refdataValues.join('/')})
+                                </g:if>
+                                </b>
+                            </g:if>
 
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'surveyConfig.orgIDs.label')}</dt>
-                            <dd>
-                                ${surveyConfig?.orgIDs?.size() ?: 0}
-                            </dd>
+                        </dd>
 
-                        </dl>
+                    </dl>
+                    <dl>
+                        <dt class="control-label">${message(code: 'surveyConfig.orgIDs.label')}</dt>
+                        <dd>
+                            ${surveyConfig?.orgIDs?.size() ?: 0}
+                        </dd>
 
-                    </div>
+                    </dl>
+
+                    <dl>
+                        <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
+                        <dd>
+                            ${surveyConfig?.documents?.size()}
+                        </dd>
+
+                    </dl>
                 </div>
             </div>
+            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                <div class="ui card">
+                    <div class="content">
+
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyConfig.costItemElement.label')}</dt>
+                            <dd>
+                                <semui:xEditableRefData config="CostItemElement" owner="${surveyConfig}"
+                                                        field="costItemElement"/>
+                            </dd>
+
+                        </dl>
+
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyConfig.priceComment.label')}</dt>
+                            <dd>
+                                <semui:xEditable owner="${surveyConfig}" field="priceComment" type="textarea"/>
+                            </dd>
+
+                        </dl>
+
+                    </div>
+                </div>
+            </g:if>
+            <div class="ui card ">
+                <div class="content">
+                    <dl>
+                        <dt class="control-label">${message(code: 'surveyConfig.header.label')}</dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
+
+                    </dl>
+                    <dl>
+                        <dt class="control-label">${message(code: 'surveyConfig.comment.label')}</dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+
+                    </dl>
+
+                </div>
+            </div>
+
         </div>
+    </div>
 </g:if>
 
 <br>
+<g:if test="${surveyConfig?.type == 'Subscription'}">
+    <h3><g:message code="surveyConfigsInfo.surveyConfig.info2"/>
 
-<h3><g:message code="surveyConfigsInfo.surveyConfig.info2"/>
-
-    <br>
-    <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <br>
         <g:link controller="subscription" action="show"
                 id="${surveyConfig?.subscription?.id}">${surveyConfig?.subscription?.dropdownNamingConvention()}
 
             ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type)}
         </g:link>
-    </g:if>
-</h3>
 
-<g:if test="${surveyConfig?.type == 'Subscription'}">
+    </h3>
+
+
     <div>
 
         <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
             <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-            <g:hiddenField name="configID" value="${surveyConfig?.id}"/>
+            <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
             <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.plural.label')} <semui:totalNumber
                     total="${properties.size()}"/></h4>

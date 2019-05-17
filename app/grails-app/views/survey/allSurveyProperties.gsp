@@ -46,7 +46,7 @@
 
     <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
         <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-        <g:hiddenField name="configID" value="${surveyConfig?.id}"/>
+        <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
 
         <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
