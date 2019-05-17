@@ -323,6 +323,42 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
     })
+    def surveyEvaluation() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        params.tab = params.tab ?: 'selectedSubParticipants'
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
+        result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
+
+        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+
+        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgIDs)
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
     def allSurveyProperties() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -405,11 +441,11 @@ class SurveyController {
                     surveyConfig = new SurveyConfig(
                             subscription: subscription,
                             configOrder: surveyInfo.surveyConfigs.size() + 1,
-                            type: 'Subscription'
+                            type: 'Subscription',
+                            surveyInfo: surveyInfo
 
                     )
-                    surveyInfo.addToSurveyConfigs(surveyConfig)
-                    surveyInfo.save(flush: true)
+                    surveyConfig.save(flush: true)
 
                     def configProperty = new SurveyConfigProperties(
                             surveyProperty: SurveyProperty.findByName('Continue to license'),
@@ -428,11 +464,11 @@ class SurveyController {
                     surveyConfigProp = new SurveyConfig(
                             surveyProperty: property,
                             configOrder: surveyInfo.surveyConfigs.size() + 1,
-                            type: 'SurveyProperty'
+                            type: 'SurveyProperty',
+                            surveyInfo: surveyInfo
 
                     )
-                    surveyInfo.addToSurveyConfigs(surveyConfigProp)
-                    surveyInfo.save(flush: true)
+                    surveyConfigProp.save(flush: true)
 
                     flash.message = g.message(code: "surveyConfigs.add.successfully")
 
@@ -537,6 +573,7 @@ class SurveyController {
                             } else {
                                 flash.error = g.message(code: "surveyConfigs.exists")
                             }
+                            redirect(url: request.getHeader('referer'))
                         }
                         else {
                             def surveyConfigProp = property ? SurveyConfig.findAllBySurveyPropertyAndSurveyInfo(property, surveyInfo) : null
@@ -544,22 +581,23 @@ class SurveyController {
                                 surveyConfigProp = new SurveyConfig(
                                         surveyProperty: property,
                                         configOrder: surveyInfo.surveyConfigs.size() + 1,
-                                        type: 'SurveyProperty'
+                                        type: 'SurveyProperty',
+                                        surveyInfo: surveyInfo
 
                                 )
-                                surveyInfo.addToSurveyConfigs(surveyConfigProp)
-                                surveyInfo.save(flush: true)
+                                surveyConfigProp.save(flush: true)
 
                                 flash.message = g.message(code: "surveyConfigs.add.successfully")
 
                             } else {
                                 flash.error = g.message(code: "surveyConfigs.exists")
                             }
+                            redirect action: 'surveyConfigs', id: surveyInfo.id
                         }
                     }
 
                 }
-                    redirect action: 'surveyConfigs', id: surveyInfo.id
+
             }
 
         } else {
@@ -989,11 +1027,12 @@ class SurveyController {
                             surveyConfig = new SurveyConfig(
                                     subscription: subscription,
                                     configOrder: surveyInfo.surveyConfigs.size() + 1,
-                                    type: 'Subscription'
+                                    type: 'Subscription',
+                                    surveyInfo: surveyInfo
 
                             )
-                            surveyInfo.addToSurveyConfigs(surveyConfig)
-                            surveyInfo.save(flush: true)
+
+                            surveyConfig.save(flush: true)
 
                             flash.message = g.message(code: "survey.toggleSurveySub.add.success", args: [subscription.name])
                         } else {

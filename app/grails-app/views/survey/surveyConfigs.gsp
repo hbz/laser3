@@ -129,7 +129,7 @@
                     </g:if>
                     <g:elseif test="${editable}">
                         <g:link class="ui icon negative button js-open-confirm-modal"
-                                data-confirm-term-what="Umfrage"
+                                data-confirm-term-what="Abfrage-Elemente"
                                 data-confirm-term-what-detail="${config?.getConfigNameShort()}"
                                 data-confirm-term-how="delete"
                                 controller="survey" action="deleteSurveyConfig"
