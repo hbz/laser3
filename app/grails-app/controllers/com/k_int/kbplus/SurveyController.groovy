@@ -859,7 +859,7 @@ class SurveyController {
         result.surveyInfo.save(flush: true)
         flash.message = g.message(code: "openSurvey.successfully")
 
-        redirect action: 'openSurvey', id: params.id
+        redirect action: 'surveyEvaluation', id: params.id
 
     }
 
