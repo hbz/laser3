@@ -3118,14 +3118,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
         result.sourceSubscription = Subscription.get(Long.parseLong(params?.sourceSubscriptionId ?: params?.id))
 
-        //remove all DO_NOTHING from params
-        //Funktioniert leider nur halb: Die Params Einträge sind im Debugger nicht mehr sichtbar, aber dennoch da!!!
-//        List toRemove = []
-//        params?.subscription?.each{ k, v ->
-//            if (DO_NOTHING.equals(v)){ toRemove << k}
-//        }
-//        toRemove.each {params.remove("subscription."+it)}
-
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         if (params?.targetSubscriptionId) {
             result.targetSubscriptionId = params?.targetSubscriptionId
@@ -3137,20 +3129,19 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         switch (params.workFlowPart) {
             case '2':
-                result << workFlowPart2();
+                result << copySubElements_DocsAnnouncementsTasks();
                 break;
             case '3':
-                result << workFlowPart3();
+                result << copySubElements_Subscriber();
                 break;
             case '4':
-//                result << workFlowPart4();
-                result << workFlowPart4_neu();
+                result << copySubElements_Properties();
                 break;
             case '5':
-                result << workFlowPart5();
+                result << copySubElements_PackagesEntitlements();
                 break;
             default:
-                result << workFlowPart1();
+                result << copySubElements_DatesOwnerRelations();
                 break;
         }
 
@@ -3185,7 +3176,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart1() {
+    private copySubElements_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
@@ -3239,7 +3230,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart2() {
+    private copySubElements_DocsAnnouncementsTasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
@@ -3274,7 +3265,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart3() {
+    private copySubElements_Subscriber() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
@@ -3397,24 +3388,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart4() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
-        }
-        result.sourceSubscription = baseSub
-        result.targetSubscription = newSub
-        params.workFlowPart = '4'
-        params.workFlowPartNext = '4'
-        result
-    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    Map workFlowPart4_neu(){
+    Map copySubElements_Properties(){
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = null
@@ -3448,7 +3425,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
 
-    private workFlowPart5() {
+    private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
