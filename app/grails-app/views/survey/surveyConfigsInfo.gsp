@@ -60,7 +60,7 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
                             <dd>
-                                ${surveyConfig.getType()}
+                                ${surveyConfig.getTypeInLocaleI10n()}
                             </dd>
 
                         </dl>

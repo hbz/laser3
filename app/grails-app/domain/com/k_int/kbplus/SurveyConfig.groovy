@@ -114,8 +114,9 @@ class SurveyConfig {
             return surveyProperty?.getI10n('name')
         }
     }
-    def getType() {
-        this.getLocalizedValue(this?.type)
+    def getTypeInLocaleI10n() {
+
+        return this.getLocalizedValue(this?.type)
     }
 
 
