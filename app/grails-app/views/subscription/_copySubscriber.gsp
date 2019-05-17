@@ -157,7 +157,7 @@
 							</td>
 					</table>
 
-				<input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.renewSubscriptionConsortia.finish')}"/>
+				<input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copySubscriber.button')}"/>
 			</g:if>
 			<g:else>
 				<br><strong><g:message code="subscription.details.copyElementsIntoSubscription.noMembers" /></strong>

@@ -143,12 +143,12 @@
 
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyConfig" id="${s.id}" class="ui icon button"><i
+                    <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button"><i
                             class="write icon"></i></g:link>
                 </td>
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="showSurveyParticipants" id="${s.id}" class="ui icon button"><i
+                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button"><i
                             class="write icon"></i></g:link>
                 </td>
 
@@ -158,7 +158,7 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i
+                        <g:link controller="survey" action="show" id="${s.id}" class="ui icon button"><i
                                 class="write icon"></i></g:link>
 
                     %{--<g:link controller="${controllerName}" action="deleteSurveyInfo"

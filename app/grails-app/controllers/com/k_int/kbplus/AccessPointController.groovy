@@ -88,8 +88,8 @@ class AccessPointController extends AbstractDebugController {
     def edit_ip() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
 
-        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'cidr'
-        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'cidr'
+        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4cidr'
+        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6cidr'
         Boolean autofocus = (params.autofocus) ? true : false
 
         //String ipv4Format = 'range'
@@ -102,8 +102,8 @@ class AccessPointController extends AbstractDebugController {
         orgAccessPoint.getAllRefdataValues('IPv6 Address Formats')
 
 
-        def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format)
-        def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format)
+        def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
+        def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
         def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
         def linkedPlatformsMap = Platform.executeQuery(hql)

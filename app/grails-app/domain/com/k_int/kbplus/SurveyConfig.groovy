@@ -89,7 +89,7 @@ class SurveyConfig {
     def getConfigNameShort(){
 
         if(type == 'Subscription'){
-            return subscription?.name
+            return subscription?.dropdownNamingConvention()
         }
         else
         {
@@ -113,6 +113,10 @@ class SurveyConfig {
         {
             return surveyProperty?.getI10n('name')
         }
+    }
+    def getTypeInLocaleI10n() {
+
+        return this.getLocalizedValue(this?.type)
     }
 
 

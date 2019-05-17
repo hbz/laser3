@@ -34,7 +34,7 @@ class ApiOA2020 {
 
         return (result ? new JSON(result) : null)
     }
-    
+
     /**
      * @return []
      */

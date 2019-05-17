@@ -31,7 +31,7 @@
     <div class="middle aligned row">
         <div class="two wide column">
 
-            <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
+            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                     class="ui huge button"><i class="angle left aligned icon"></i></g:link>
 
         </div>
@@ -89,7 +89,7 @@
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
 <br>
@@ -140,9 +140,9 @@
                                         <thead>
                                         <tr>
                                             <th></th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
                                             <th>${message(code: 'default.actions', default: 'Actions')}</th>
                                         </tr>
                                         </thead>
@@ -214,7 +214,7 @@
                                                         ${prop?.surveyProperty?.getI10n('name')}
                                                     </td>
                                                     <td>
-                                                        ${message(code: 'showSurveyConfig.surveyPropToSub')}
+                                                        ${message(code: 'surveyConfigs.surveyPropToSub')}
                                                         <br>
                                                         <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(prop?.surveyProperty?.type)}</b>
 
@@ -243,7 +243,7 @@
             </div>
         </g:if>
         <g:else>
-            <p><b>${message(code: 'showSurveyConfig.noConfigList')}</b></p>
+            <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
         </g:else>
     </div>
 </div>

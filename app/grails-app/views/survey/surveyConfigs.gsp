@@ -1,165 +1,47 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyConfigs.label')}</title>
 </head>
 
 <body>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="survey.label" class="active"/>
-</semui:breadcrumbs>
+<g:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'survey.label')}</h1>
+<semui:controlButtons>
+    <g:render template="actions"/>
+</semui:controlButtons>
+
+<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
+<semui:xEditable owner="${surveyInfo}" field="name"/>
+</h1>
 
 
-<g:render template="steps"/>
-<br>
+
+<g:render template="nav"/>
+
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 <semui:messages data="${flash}"/>
 
+
 <br>
 
-<div class="ui grid">
-    <div class="middle aligned row">
-        <div class="two wide column">
+<div class="ui icon info message">
+    <i class="info icon"></i>
 
-            <g:link controller="survey" action="showSurveyInfo" id="${surveyInfo.id}"
-                    class="ui huge button"><i class="angle left aligned icon"></i></g:link>
-
-        </div>
-
-        <div class="twelve wide column">
-
-            <div class="la-inline-lists">
-                <div class="ui card">
-                    <div class="content">
-
-                        <div class="header">
-                            <div class="ui grid">
-                                <div class="twelve wide column">
-                                    ${message(code: 'showSurveyInfo.step.first.title')}
-                                </div>
-                            </div>
-                        </div>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
-                            <dd>${surveyInfo.status?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
-                            <dd>${surveyInfo.name}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.startDate ?: null}"/></dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.endDate ?: null}"/></dd>
-                        </dl>
-
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.type.label')}</dt>
-                            <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.comment.label')}</dt>
-                            <dd>${surveyInfo?.comment}</dd>
-                        </dl>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="two wide column">
-            <g:if test="${surveyConfigs.size() > 0}">
-
-                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
-                        class="ui huge button"><i class="angle right icon"></i></g:link>
-
-            </g:if>
-        </div>
-    </div>
-
+    ${message(code: 'surveyConfigs.info')}
 </div>
-
-
 <br>
 
-
-
-<g:if test="${editable}">
-    <semui:form>
-
-        <p><b>${message(code: 'showSurveyConfig.add.info')}</b></p>
-
-        <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
-            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-
-
-            <div class="field required">
-                <label>${message(code: 'showSurveyConfig.subscription')}</label>
-                <g:select class="ui dropdown search" name="subscription"
-                          from="${subscriptions}"
-                          optionKey="id"
-                          optionValue="${{ it?.dropdownNamingConvention() }}"
-                          value=""
-                          noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyConfig.subscription.label')])]}"
-                          required=""/>
-            </div>
-            <input type="submit" class="ui button"
-                   value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
-
-        </g:form>
-
-        <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
-            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-
-
-            <div class="field required">
-                <label>${message(code: 'showSurveyConfig.property')}</label>
-                <laser:select class="ui dropdown search" name="property"
-                              from="${properties}"
-                              optionKey="id"
-                              optionValue="name"
-                              value=""
-                              noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                              required=""/>
-            </div>
-            <input type="submit" class="ui button"
-                   value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
-
-            <input type="submit" name="addtoallSubs" class="ui button"
-                   value="${message(code: 'showSurveyConfig.add.toAllSub.button', default: 'Add')}"/>
-
-        </g:form>
-
-        <br>
-
-        <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
-               data-semui="modal" data-href="#addSurveyPropertyModal" type="submit">
-        <br>
-
-    </semui:form>
-</g:if>
-
-
-<br>
-
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
-<div class="ui grid">
+<div>
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
@@ -168,6 +50,7 @@
             </th>
             <th>${message(code: 'surveyProperty.name.label')}</th>
             <th>${message(code: 'surveyProperty.type.label')}</th>
+            <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th></th>
             <th></th>
 
@@ -212,9 +95,34 @@
 
                 </td>
                 <td>
+                    <g:if test="${config?.type == 'Subscription'}">
+                        <div class="ui middle aligned list">
+                            <div class="item">
+                                <div class="center aligned content">
+                                    <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </g:if>
+
+                </td>
+                <td>
+
+                    <g:if test="${config?.type == 'Subscription'}">
+                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                params="[configID: config?.id]" class="ui icon button"><i
+                                class="write icon"></i></g:link>
+
+                    </g:if>
+
+                    <g:if test="${config?.type == 'SurveyProperty'}">
+                        <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                params="[configID: config?.id]" class="ui icon button"><i
+                                class="write icon"></i></g:link>
+                    </g:if>
                     <g:if test="${config?.getCurrentDocs()}">
                         <span data-position="top right"
-                              data-tooltip="${message(code: 'showSurveyConfig.delete.existingDocs')}">
+                              data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
                             <button class="ui icon button negative" disabled="disabled">
                                 <i class="trash alternate icon"></i>
                             </button>
@@ -232,70 +140,6 @@
                     </g:elseif>
                 </td>
             </tr>
-
-            <g:if test="${config?.type == 'Subscription'}">
-                <g:if test="${config?.surveyProperties?.surveyProperty}">
-                    <g:each in="${config?.surveyProperties.sort { it?.surveyProperty?.getI10n('name') }}" var="prop"
-                            status="x">
-                        <tr>
-                            <td style="background-color: #f4f8f9"></td>
-
-                            <td>
-                                ${prop?.surveyProperty?.getI10n('name')}
-                            </td>
-                            <td>
-                                ${message(code: 'showSurveyConfig.surveyPropToSub')}
-                                <br>
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(prop?.surveyProperty?.type)}</b>
-
-                                <g:if test="${prop?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(prop?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    <br>
-                                    (${refdataValues.join('/')})
-                                </g:if>
-                            </td>
-                            <td>
-                                <g:if test="${editable}">
-                                    <g:link class="ui icon negative button"
-                                            controller="survey" action="deleteSurveyPropfromSub"
-                                            id="${prop?.id}">
-                                        <i class="trash alternate icon"></i>
-                                    </g:link>
-                                </g:if>
-
-                            </td>
-                        </tr>
-                    </g:each>
-                </g:if>
-                <tr>
-                    <td style="background-color: #f4f8f9"></td>
-                    <td colspan="3">
-                        <g:if test="${editable}">
-                            <g:form action="addSurveyConfig" controller="survey" method="post"
-                                    params="[id: surveyInfo?.id, surveyConfig: config?.id]" class="ui form">
-
-                                <laser:select class="ui dropdown search" name="propertytoSub"
-                                              from="${properties}"
-                                              optionKey="id"
-                                              optionValue="name"
-                                              value=""
-                                              noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                                              required=""/>
-
-                                <input type="submit" class="ui button"
-                                       value="${message(code: 'showSurveyConfig.add.surveyPropToSub.button', default: 'Add Survey Property to this Subscription')}"/>
-
-                            </g:form>
-                        </g:if>
-                    </td>
-                </tr>
-            </g:if>
-
         </g:each>
     </table>
 </div>

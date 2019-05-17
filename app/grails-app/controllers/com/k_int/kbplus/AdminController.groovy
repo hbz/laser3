@@ -7,6 +7,7 @@ import de.laser.SystemEvent
 import de.laser.api.v0.ApiManager
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -1013,7 +1014,8 @@ class AdminController extends AbstractDebugController {
                         name: params.name,
                         description: params.description,
                         tenant: null,
-                        ownerType: ownerType
+                        ownerType: ownerType,
+                        visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

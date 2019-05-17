@@ -53,4 +53,25 @@ class SurveyInfo {
 
 
     }
+
+
+    def checkOpenSurvey()
+    {
+        boolean check
+
+        this.surveyConfigs.each {
+
+            if(it?.orgIDs?.size > 0){
+                check = check ? true : false
+            }
+            else
+            {
+                check = false
+            }
+
+
+        }
+
+        return check
+    }
 }
