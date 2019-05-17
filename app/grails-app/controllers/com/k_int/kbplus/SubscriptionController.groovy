@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -70,6 +71,7 @@ class SubscriptionController extends AbstractDebugController {
     def comparisonService
     def titleStreamService
     def escapeService
+    def deletionService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -302,6 +304,17 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def delete() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+
+        def stats = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+        result.stats = stats
+
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

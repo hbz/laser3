@@ -32,6 +32,10 @@
                 </g:if>
             </g:if>
             --%>
+            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+                <div class="divider"></div>
+                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> Vertrag löschen</g:link>
+            </g:if>
         </g:if>
 
     </semui:actionsDropdown>
