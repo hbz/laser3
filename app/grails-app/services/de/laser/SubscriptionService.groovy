@@ -121,7 +121,6 @@ class SubscriptionService {
     }
 
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
-        // restrict visible for templates/links/orgLinksAsList
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
             if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
@@ -132,7 +131,6 @@ class SubscriptionService {
     }
 
     List getVisibleOrgRelations(Subscription subscription) {
-        // restrict visible for templates/links/orgLinksAsList
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
             if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
@@ -142,22 +140,53 @@ class SubscriptionService {
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
-    boolean takeOwner(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
-        //Vertrag/License
-        switch (aktion) {
-            case REPLACE:
-                targetSub.owner = sourceSub.owner ?: null
-                return save(targetSub, flash)
-                break;
+    boolean deleteOwner(Subscription targetSub, def flash) {
+        targetSub.owner = null
+        return save(targetSub, flash)
+    }
 
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+    boolean takeOwner(Subscription sourceSub, Subscription targetSub, def flash) {
+        //Vertrag/License
+        targetSub.owner = sourceSub.owner ?: null
+        return save(targetSub, flash)
+    }
+
+    boolean deleteOrgRelations(Subscription targetSub, def flash) {
+        OrgRole.executeUpdate(
+                "delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",
+                [orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+        )
+    }
+
+    boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
+        OrgRole.executeUpdate(
+                "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
+                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+        )
+    }
+
+    boolean takeOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
+        sourceSub.orgRelations?.each { or ->
+            if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
+                if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
+                    flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
+                } else {
+                    def newProperties = or.properties
+                    //Vererbung ausschalten
+                    newProperties.sharedFrom = null
+                    newProperties.isShared = false
+                    OrgRole newOrgRole = new OrgRole()
+                    InvokerHelper.setProperties(newOrgRole, newProperties)
+                    newOrgRole.sub = targetSub
+                    save(newOrgRole, flash)
+                }
+            }
         }
     }
 
     boolean takeOrgRelations(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion) && targetSub?.orgRelations?.size() > 0) {
-            OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",[orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]])
+            deleteOrgRelations(targetSub, flash)
         }
         switch (aktion) {
             case REPLACE:
@@ -309,18 +338,17 @@ class SubscriptionService {
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
+    boolean deleteDates(Subscription targetSub, def flash){
+        targetSub.startDate = null
+        targetSub.endDate = null
+        return save(targetSub, flash)
+    }
 
-    boolean takeDates(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
-        switch (aktion) {
-            case REPLACE:
-                targetSub.setStartDate(sourceSub.getStartDate())
-                targetSub.setEndDate(sourceSub.getEndDate())
-                return save(targetSub, flash)
-                break;
 
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
-        }
+    boolean takeDates(Subscription sourceSub, Subscription targetSub, def flash) {
+        targetSub.setStartDate(sourceSub.getStartDate())
+        targetSub.setEndDate(sourceSub.getEndDate())
+        return save(targetSub, flash)
     }
 
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {

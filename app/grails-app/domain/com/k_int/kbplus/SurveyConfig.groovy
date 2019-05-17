@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -28,6 +29,11 @@ class SurveyConfig {
 
     ArrayList orgIDs
 
+    @RefdataAnnotation(cat = 'CostItemElement')
+    RefdataValue costItemElement
+
+    String priceComment
+
     static hasMany = [
             documents: DocContext,
             surveyProperties: SurveyConfigProperties
@@ -41,6 +47,8 @@ class SurveyConfig {
         comment  (nullable:true, blank:false)
         pickAndChoose (nullable:true, blank:false)
         documents (nullable:true, blank:false)
+        costItemElement (nullable:true, blank:false)
+        priceComment (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -51,6 +59,7 @@ class SurveyConfig {
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
         pickAndChoose column: 'surconf_pickandchoose'
+        priceComment column: 'surconf_priceComment' , type: 'text'
 
         orgIDs column: 'surconf_org_ids'
 
@@ -60,6 +69,8 @@ class SurveyConfig {
         surveyInfo column: 'surconf_surinfo_fk'
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
+
+        costItemElement column: 'surconf_cie_rv_fk'
 
         configOrder column: 'surconf_config_order'
     }
@@ -89,7 +100,7 @@ class SurveyConfig {
     def getConfigNameShort(){
 
         if(type == 'Subscription'){
-            return subscription?.name
+            return subscription?.dropdownNamingConvention()
         }
         else
         {
@@ -113,6 +124,10 @@ class SurveyConfig {
         {
             return surveyProperty?.getI10n('name')
         }
+    }
+    def getTypeInLocaleI10n() {
+
+        return this.getLocalizedValue(this?.type)
     }
 
 

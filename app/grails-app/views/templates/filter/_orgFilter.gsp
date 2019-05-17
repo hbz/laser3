@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*" %>
+<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.auth.Role" %>
 
 
 <g:each in="${tmplConfigShow}" var="row">
@@ -111,6 +111,19 @@
                                   value="${params.country}"
                                   noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
                 </div>
+            </g:if>
+            <g:if test="${field.equalsIgnoreCase('customerType')}">
+            <div class="field">
+                <label for="customerType">${message(code:'org.customerType.label')}</label>
+                <laser:select id="customerType" name="customerType"
+                              from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
+                              optionKey="id"
+                              optionValue="authority"
+                              value="${params.customerType}"
+                              class="ui dropdown"
+                              noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"
+                />
+            </div>
             </g:if>
 
         </g:each>
