@@ -84,7 +84,7 @@ class SubscriptionService {
         Map params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE.id
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
@@ -93,7 +93,7 @@ class SubscriptionService {
         Map params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id
+        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 

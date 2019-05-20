@@ -245,6 +245,18 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
+    @Secured(['ROLE_DATAMANAGER','ROLE_ORG_EDITOR'])
+    def setupBasicTestData() {
+        Org targetOrg = Org.get(params.id)
+        if(organisationService.setupBasicTestData(targetOrg)) {
+            flash.message = message(code:'org.setup.success')
+        }
+        else {
+            flash.error = message(code:'org.setup.error',args: [organisationService.dumpErrors()])
+        }
+        redirect action: 'show', id: params.id
+    }
+
     @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -291,7 +303,7 @@ class OrganisationController extends AbstractDebugController {
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
         Org contextOrg = contextService.org
-        //new institution = consortia member, implies combo type consortoium
+        //new institution = consortia member, implies combo type consortium
         if(params.institution) {
             RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             Org orgInstance = new Org(name: params.institution, sector: orgSector)

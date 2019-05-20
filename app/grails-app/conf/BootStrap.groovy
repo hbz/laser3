@@ -2145,8 +2145,8 @@ class BootStrap {
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('Package Status',      [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
 
-        RefdataValue.loc('Person Contact Type', [en: 'Personal contact', de: 'Personenkontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Personal Contact', de: 'Personenkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Functional Contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Responsible Contact', de: 'Verantwortlicher Kontakt'], BOOTSTRAP)
@@ -2237,6 +2237,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
         RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
+        RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)

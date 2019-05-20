@@ -13,7 +13,7 @@
                                            message="survey.SurveyProp.add.label"/>
 
             </g:if>
-
+            <div class="ui divider"></div>
             <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey()}">
                 <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"/>
@@ -27,6 +27,11 @@
             <div class="ui divider"></div>
             <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                        message="survey.SurveyProp.all"/>
+
+            <div class="ui divider"></div>
+            <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="survey.copyEmailaddresses.participants"/>
+
+            <g:render template="../templates/copyEmailaddresses" model="[orgList: surveyInfo?.surveyConfigs?.orgIDs.flatten() ? com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgIDs.flatten()) : null]"/>
 
         </g:else>
 

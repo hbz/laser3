@@ -159,6 +159,7 @@
                     <th>${message(code: 'surveyProperty.explain.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
                     <th>${message(code: 'surveyProperty.type.label')}</th>
+                    <th></th>
                 </tr>
                 </thead>
 
@@ -206,6 +207,16 @@
                                 </g:each>
                                 <br>
                                 (${refdataValues.join('/')})
+                            </g:if>
+
+                        </td>
+                        <td>
+                            <g:if test="${editable && com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, property)}">
+                                <g:link class="ui icon negative button"
+                                        controller="survey" action="deleteSurveyPropfromSub"
+                                        id="${property?.id}">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
                             </g:if>
 
                         </td>
