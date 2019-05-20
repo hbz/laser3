@@ -61,7 +61,7 @@ class SurveyInfo {
 
         this.surveyConfigs.each {
 
-            if(!(it?.orgIDs?.size > 0)){
+            if(!(it?.orgs.org?.size > 0)){
                 check = false
             }
         }

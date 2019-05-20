@@ -81,6 +81,11 @@
                 ${message(code: 'subscription')}
             </th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+            <th>
+                ${message(code: 'surveyCostItems.label')}
+            </th>
+        </g:if>
     </tr>
     </thead>
     <tbody>
@@ -315,10 +320,17 @@
                     <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
                         <g:link controller="subscription" action="show"
                                 id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
-                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConvention()}
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConventionWithoutOrg()}
                         </g:link>
 
                     </g:if>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+                <td>
+                    <g:link controller="finance" action="editCostItem" params="[]" class="ui icon button trigger-modal">
+                        <i class="write icon"></i>
+                    </g:link>
                 </td>
             </g:if>
             </tr>

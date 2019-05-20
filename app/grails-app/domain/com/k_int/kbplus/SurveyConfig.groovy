@@ -27,28 +27,21 @@ class SurveyConfig {
 
     boolean pickAndChoose
 
-    ArrayList orgIDs
-
-    @RefdataAnnotation(cat = 'CostItemElement')
-    RefdataValue costItemElement
-
-    String priceComment
-
     static hasMany = [
             documents: DocContext,
-            surveyProperties: SurveyConfigProperties
+            surveyProperties: SurveyConfigProperties,
+            orgs: SurveyOrg
     ]
 
     static constraints = {
         subscription (nullable:true, blank:false)
         surveyProperty (nullable:true, blank:false)
-        orgIDs (nullable:true, blank:false)
+
         header(nullable:true, blank:false)
         comment  (nullable:true, blank:false)
         pickAndChoose (nullable:true, blank:false)
         documents (nullable:true, blank:false)
-        costItemElement (nullable:true, blank:false)
-        priceComment (nullable:true, blank:false)
+        orgs  (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -59,9 +52,7 @@ class SurveyConfig {
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
         pickAndChoose column: 'surconf_pickandchoose'
-        priceComment column: 'surconf_priceComment' , type: 'text'
 
-        orgIDs column: 'surconf_org_ids'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
@@ -70,7 +61,6 @@ class SurveyConfig {
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
 
-        costItemElement column: 'surconf_cie_rv_fk'
 
         configOrder column: 'surconf_config_order'
     }

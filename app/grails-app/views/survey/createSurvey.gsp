@@ -56,8 +56,7 @@
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
 
-            <textarea name="comment" rows="4" cols="50">
-                ${surveyInfo?.comment}
+            <textarea name="comment">
             </textarea>
 
         </div>
