@@ -97,7 +97,7 @@
             <%
                 def fakeList = []
                 fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                 fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
             %>
 
@@ -172,7 +172,7 @@
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
                             if(!accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
                         %>
                         <g:each in="${subTypes}" var="subType">

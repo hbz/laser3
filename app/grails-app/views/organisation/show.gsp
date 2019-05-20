@@ -34,7 +34,7 @@
 
 <g:render template="breadcrumb" model="${[orgInstance: orgInstance, contextOrg: contextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
-<g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+<g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM','ROLE_ORG_EDITOR,ROLE_DATAMANAGER')}">
     <semui:controlButtons>
         <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
     </semui:controlButtons>
