@@ -311,8 +311,12 @@ class SubscriptionController extends AbstractDebugController {
     def delete() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
 
-        def stats = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
-        result.stats = stats
+        if (params.process) {
+            result.result = deletionService.deleteSubscription(result.subscription, false)
+        }
+        else {
+            result.preview = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+        }
 
         result
     }
