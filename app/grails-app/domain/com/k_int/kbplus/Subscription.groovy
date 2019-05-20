@@ -140,14 +140,22 @@ class Subscription
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false)
+        status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
         impId(nullable:true, blank:false)
-        startDate(nullable:true, blank:false)
-        endDate(nullable:true, blank:false)
+        startDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+            }
+        })
+        endDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+            }
+        })
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
@@ -670,7 +678,7 @@ class Subscription
   }
 
   def getHoldingTypes() {
-      def types = issueEntitlements?.tipp.title.type.unique()
+      def types = issueEntitlements?.tipp?.title?.type?.unique()
       types
   }
 

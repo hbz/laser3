@@ -2,8 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
@@ -28,7 +26,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -3083,7 +3080,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //        params = [:]
 //        params.status = RDStore.SUBSCRIPTION_CURRENT.id
 //        params.orgRole = RDStore.OR_SUBSCRIBER.value
-//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
 //        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
 //        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 //        result.sort{it.name}
@@ -3111,7 +3108,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
