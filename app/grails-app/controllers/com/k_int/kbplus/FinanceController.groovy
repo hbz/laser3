@@ -828,7 +828,7 @@ class FinanceController extends AbstractDebugController {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
-        def result =  [:]
+        def result =  [showView:params.tab]
         def newCostItem = null
 
       try {
@@ -1067,9 +1067,8 @@ class FinanceController extends AbstractDebugController {
       params.remove("Add")
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
-        result.tab = params.tab
 
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
     }
 
     @Deprecated

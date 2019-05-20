@@ -41,7 +41,7 @@
         </g:elseif>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
-
+        <g:hiddenField name="showView" value="${tab}" />
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />

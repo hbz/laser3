@@ -43,7 +43,7 @@ class OrganisationService {
      * @return a String containing the CSV output or the Excel sheet containing the output
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
-        def titles = ['Name', messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()), messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale())]
+        def titles = [messageSource.getMessage('org.sortname.label',null,LocaleContextHolder.getLocale()),messageSource.getMessage('org.shortname.label',null, LocaleContextHolder.getLocale()),'Name']
         def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
         if(addHigherEducationTitles) {
@@ -64,12 +64,12 @@ class OrganisationService {
             case "xlsx":
                 orgs.each{  org ->
                     List row = []
-                    //Name
-                    row.add([field: org.name ?: '',style: null])
-                    //Shortname
-                    row.add([field: org.shortname ?: '',style: null])
                     //Sortname
                     row.add([field: org.sortname ?: '',style: null])
+                    //Shortname
+                    row.add([field: org.shortname ?: '',style: null])
+                    //Name
+                    row.add([field: org.name ?: '',style: null])
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add([field: org.libraryType?.getI10n('value') ?: ' ',style: null])
@@ -132,12 +132,12 @@ class OrganisationService {
             case "csv":
                 orgs.each{  org ->
                     List row = []
-                    //Name
-                    row.add(org.name ? org.name.replaceAll(',','') : '')
-                    //Shortname
-                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
                     //Sortname
                     row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
+                    //Shortname
+                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
+                    //Name
+                    row.add(org.name ? org.name.replaceAll(',','') : '')
                     if(addHigherEducationTitles) {
                         //libraryType
                         row.add(org.libraryType?.getI10n('value') ?: ' ')
