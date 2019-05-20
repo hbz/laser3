@@ -2568,6 +2568,7 @@ class BootStrap {
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('CostItemStatus', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
         RefdataCategory.loc('Document Context Status', [en: 'Document Context Status'], BOOTSTRAP)
 
