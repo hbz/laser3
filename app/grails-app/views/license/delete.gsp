@@ -22,7 +22,9 @@
                    text="Wollen Sie den ausgewählten Vertrag endgültig aus dem System entfernen?" />
         <br />
         <g:link controller="license" action="show" params="${[id: license.id]}" class="ui button">Vorgang abbrechen</g:link>
-        <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">Vertrag löschen</g:link>
+        <g:if test="${editable}">
+            <g:link controller="license" action="delete" params="${[id: license.id, process: true]}" class="ui button red">Vertrag löschen</g:link>
+        </g:if>
         <br />
 
         <table class="ui celled la-table la-table-small table">

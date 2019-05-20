@@ -23,7 +23,9 @@
                    text="Wollen Sie die ausgewählte Lizenz endgültig aus dem System entfernen?" />
         <br />
         <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
-        <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenzen löschen</g:link>
+        <g:if test="${editable}">
+            <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenzen löschen</g:link>
+        </g:if>
         <br />
 
         <table class="ui celled la-table la-table-small table">
