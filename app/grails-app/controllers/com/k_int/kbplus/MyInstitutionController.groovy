@@ -967,6 +967,7 @@ from License as l where (
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
+                    status: RefdataValue.get(params.status),
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())

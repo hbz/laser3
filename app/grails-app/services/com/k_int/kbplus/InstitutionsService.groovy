@@ -17,7 +17,7 @@ class InstitutionsService {
             return null
         }
 
-        def org = contextService.getOrg()
+        def org = params.consortium ?: contextService.getOrg()
 
         def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
