@@ -358,7 +358,7 @@
 
                         <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
                             <div class="ui la-vertical buttons">
-                                <button id="derived-license-properties-toggle" class="ui button">Vertragsmerkmale anzeigen</button>
+                                <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
                                 <script>
                                     $('#derived-license-properties-toggle').on('click', function() {
                                         $('#derived-license-properties').toggleClass('hidden')
