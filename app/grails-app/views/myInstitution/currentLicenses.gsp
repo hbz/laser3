@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -15,7 +15,7 @@
   </semui:breadcrumbs>
   <semui:controlButtons>
       <semui:exportDropdown>
-          <g:if test="${filterSet}">
+          <g:if test="${filterSet || defaultSet}">
               <semui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
@@ -87,6 +87,21 @@
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div> --%>
 
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
+                %>
+
+                <div class="field">
+                    <label>${message(code: 'license.status')}</label>
+                    <laser:select class="ui dropdown" name="status"
+                                  from="${ fakeList }"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.status}"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
                 <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
             </div>
 
@@ -145,6 +160,7 @@
                   <g:if test="${params.orgRole == 'Licensing Consortium'}">
                       <th>${message(code:'license.details.incoming.childs')}</th>
                   </g:if>
+                  <th>${message(code:'license.status')}</th>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
                   <th>${message(code:'default.actions')}</th>
@@ -192,7 +208,7 @@
                             </g:each>
                         </td>
                     </g:if>
-
+                  <td>${l.status.getI10n('value')}</td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">

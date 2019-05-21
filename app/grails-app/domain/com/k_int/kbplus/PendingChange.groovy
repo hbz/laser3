@@ -27,6 +27,7 @@ class PendingChange {
     License license
     SystemObject systemObject
     Package pkg
+    CostItem costItem
     Date ts
     Org owner
     String oid
@@ -49,6 +50,7 @@ class PendingChange {
         subscription column:'pc_sub_fk'
             license column:'pc_lic_fk'
                 pkg column:'pc_pkg_fk'
+           costItem column:'pc_ci_fk'
                 oid column:'pc_oid', index:'pending_change_oid_idx'
           changeDoc column:'pc_change_doc', type:'text'
            msgToken column:'pc_msg_token'
@@ -69,7 +71,8 @@ class PendingChange {
         changeDoc(nullable:true, blank:false);
         msgToken(nullable:true, blank:false)
         msgParams(nullable:true, blank:false)
-        pkg(nullable:true, blank:false);
+        pkg(nullable:true, blank:false)
+        costItem(nullable:true, blank: false)
         ts(nullable:true, blank:false);
         owner(nullable:true, blank:false);
         oid(nullable:true, blank:false);
