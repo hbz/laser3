@@ -277,8 +277,7 @@
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th rowspan="2"  class="two wide"></th>
-
+            <th rowspan="2" class="two">${message(code:'default.actions')}</th>
         </tr>
 
         <tr>
@@ -408,6 +407,8 @@
                         (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
                         <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
+
+                        <%-- ERMS-1348 removing delete buttons
                         <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
@@ -428,6 +429,7 @@
                                 </g:link>
                             </g:else>
                         </g:if>
+                        --%>
                     </td>
                 </tr>
             </g:if>

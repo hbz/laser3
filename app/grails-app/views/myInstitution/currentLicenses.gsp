@@ -146,7 +146,8 @@
                       <th>${message(code:'license.details.incoming.childs')}</th>
                   </g:if>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
-                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" /><th>${message(code:'default.actions')}</th>
+                <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
+                  <th>${message(code:'default.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -217,6 +218,7 @@
                                 isLicTenant = true
                             }
                         %>
+                        <%-- ERMS-1348 removing delete buttons
                         <g:if test="${! l.subscriptions && isLicTenant}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-term-what="license"
@@ -227,94 +229,95 @@
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
-                    </g:if>
-                  </td>
-                </tr>
-              </g:each>
-            </tbody>
-          </table>
-        </div>
+                        --%>
+                </g:if>
+              </td>
+            </tr>
+          </g:each>
+        </tbody>
+      </table>
+    </div>
 
-          <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
+      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
-  <%--
-    <r:script>
+<%--
+<r:script>
 
-        $('.license-results input[type="radio"]').click(function () {
-            $('.license-options').slideDown('fast');
+    $('.license-results input[type="radio"]').click(function () {
+        $('.license-options').slideDown('fast');
+    });
+
+    function availableTypesSelectUpdated(optionSelected){
+
+      var selectedOption = $( "#availablePropertyTypes option:selected" )
+
+      var selectedValue = selectedOption.val()
+
+      //Set the value of the hidden input, to be passed on controller
+      $('#propertyFilterType').val(selectedOption.text())
+
+      updateInputType(selectedValue)
+    }
+
+    function updateInputType(selectedValue){
+      //If we are working with RefdataValue, grab the values and create select box
+      if(selectedValue.indexOf("RefdataValue") != -1){
+        var refdataType = selectedValue.split("&&")[1]
+        $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
+                    success: function(data) {
+                      var select = ' <select id="propertyFilter" name="propertyFilter" > '
+                      //we need empty when we dont want to search by property
+                      select += ' <option></option> '
+                      for(var index=0; index < data.length; index++ ){
+                        var option = data[index]
+                        select += ' <option value="'+option.text+'">'+option.text+'</option> '
+                      }
+                      select += '</select>'
+                      $('#propertyFilter').replaceWith(select)
+                    },async:false
         });
+      }else{
+        //If we dont have RefdataValues,create a simple text input
+        $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
+      }
+    }
 
-        function availableTypesSelectUpdated(optionSelected){
-
-          var selectedOption = $( "#availablePropertyTypes option:selected" )
-
-          var selectedValue = selectedOption.val()
-
-          //Set the value of the hidden input, to be passed on controller
-          $('#propertyFilterType').val(selectedOption.text())
-          
-          updateInputType(selectedValue)  
-        }
-
-        function updateInputType(selectedValue){
-          //If we are working with RefdataValue, grab the values and create select box
-          if(selectedValue.indexOf("RefdataValue") != -1){
-            var refdataType = selectedValue.split("&&")[1]
-            $.ajax({ url:'<g:createLink controller="ajax" action="sel2RefdataSearch"/>'+'/'+refdataType+'?format=json',
-                        success: function(data) {
-                          var select = ' <select id="propertyFilter" name="propertyFilter" > '
-                          //we need empty when we dont want to search by property
-                          select += ' <option></option> '
-                          for(var index=0; index < data.length; index++ ){
-                            var option = data[index]
-                            select += ' <option value="'+option.text+'">'+option.text+'</option> '
-                          }
-                          select += '</select>'
-                          $('#propertyFilter').replaceWith(select)
-                        },async:false
-            });
-          }else{
-            //If we dont have RefdataValues,create a simple text input
-            $('#propertyFilter').replaceWith('<input id="propertyFilter" type="text" name="propertyFilter" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />')
-          }
-        }
-
-        function setTypeAndSearch(){
-          var selectedType = $("#propertyFilterType").val()
-          //Iterate the options, find the one with the text we want and select it
-          var selectedOption = $("#availablePropertyTypes option").filter(function() {
-                return $(this).text() == selectedType ;
-          }).prop('selected', true); //This will trigger a change event as well.
+    function setTypeAndSearch(){
+      var selectedType = $("#propertyFilterType").val()
+      //Iterate the options, find the one with the text we want and select it
+      var selectedOption = $("#availablePropertyTypes option").filter(function() {
+            return $(this).text() == selectedType ;
+      }).prop('selected', true); //This will trigger a change event as well.
 
 
-          //Generate the correct select box
-          availableTypesSelectUpdated(selectedOption)
+      //Generate the correct select box
+      availableTypesSelectUpdated(selectedOption)
 
-          //Set selected value for the actual search
-          var paramPropertyFilter = "${params.propertyFilter}";
-          var propertyFilterElement = $("#propertyFilter");
-          if(propertyFilterElement.is("input")){
-            propertyFilterElement.val(paramPropertyFilter);
-          }else{
-              $("#propertyFilter option").filter(function() {
-                return $(this).text() == paramPropertyFilter ;
-              }).prop('selected', true);
-          }
-        }
+      //Set selected value for the actual search
+      var paramPropertyFilter = "${params.propertyFilter}";
+      var propertyFilterElement = $("#propertyFilter");
+      if(propertyFilterElement.is("input")){
+        propertyFilterElement.val(paramPropertyFilter);
+      }else{
+          $("#propertyFilter option").filter(function() {
+            return $(this).text() == paramPropertyFilter ;
+          }).prop('selected', true);
+      }
+    }
 
-        $('#availablePropertyTypes').change(function(e) {
-          var optionSelected = $("option:selected", this);
-          availableTypesSelectUpdated(optionSelected);
-        });
+    $('#availablePropertyTypes').change(function(e) {
+      var optionSelected = $("option:selected", this);
+      availableTypesSelectUpdated(optionSelected);
+    });
 
-        $('.license-options .delete-license').click(function () {
-            $('.license-results input:checked').each(function () {
-                $(this).parent().parent().fadeOut('slow');
-                $('.license-options').slideUp('fast');
-            })
+    $('.license-options .delete-license').click(function () {
+        $('.license-results input:checked').each(function () {
+            $(this).parent().parent().fadeOut('slow');
+            $('.license-options').slideUp('fast');
         })
-        window.onload = setTypeAndSearch()
-    </r:script>
+    })
+    window.onload = setTypeAndSearch()
+</r:script>
 --%>
 
   </body>

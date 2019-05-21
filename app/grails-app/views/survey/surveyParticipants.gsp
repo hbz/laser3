@@ -59,7 +59,7 @@
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                        <div class="ui floating circular label">${config?.orgIDs?.size() ?: 0}</div>
+                        <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
                     </g:link>
                 </g:each>
             </div>

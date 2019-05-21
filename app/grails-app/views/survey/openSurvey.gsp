@@ -178,9 +178,9 @@
                             </div>
 
                             <div class="title"><i
-                                    class="dropdown icon"></i>${message(code: 'surveyConfig.orgIDs.label')}
+                                    class="dropdown icon"></i>${message(code: 'surveyConfig.orgs.label')}
 
-                                <div class="ui circular label">${config?.orgIDs?.size() ?: 0}</div>
+                                <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                             </div>
 
                             <div class="content">
