@@ -829,7 +829,7 @@ class FinanceController extends AbstractDebugController {
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         def result =  [showView:params.tab]
-        def newCostItem = null
+        CostItem newCostItem = null
 
       try {
         log.debug("FinanceController::newCostItem() ${params}");
@@ -910,12 +910,12 @@ class FinanceController extends AbstractDebugController {
         Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
         def ie = null
-        if(params.newIe)
+        if(params.newIE)
         {
             try {
-                ie = IssueEntitlement.load(params.newIe.split(":")[1])
+                ie = IssueEntitlement.load(params.newIE.split(":")[1])
             } catch (Exception e) {
-                log.error("Non-valid IssueEntitlement sent ${params.newIe}",e)
+                log.error("Non-valid IssueEntitlement sent ${params.newIE}",e)
             }
         }
 
@@ -978,8 +978,12 @@ class FinanceController extends AbstractDebugController {
           }
           subsToDo.each { sub ->
 
+              List<CostItem> copiedCostItems = []
+
               if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-                  newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+                  newCostItem = (CostItem) genericOIDService.resolveOID(params.oldCostItem)
+                  //get copied cost items
+                  copiedCostItems = CostItem.findAllByCopyBase(newCostItem)
               }
               else {
                   newCostItem = new CostItem()
@@ -1015,6 +1019,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.endDate = endDate
               newCostItem.invoiceDate = invoiceDate
               newCostItem.financialYear = financialYear
+              newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
               newCostItem.reference = params.newReference ? params.newReference.trim() : null
@@ -1051,6 +1056,24 @@ class FinanceController extends AbstractDebugController {
                           }
                       }
 
+                      //notify cost items copied from this cost item
+                      copiedCostItems.each { cci ->
+                          List diffs = []
+                          String costTitle = cci.costTitle ?: ''
+                          if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                              diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
+                          }
+                          if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                              diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
+                          }
+                          diffs.each { diff ->
+                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date())
+                              if(!change.save(flush: true))
+                                  log.error(change.errors)
+                              //continue here: a) remove pending change again if a button has been clicked or after a certain time, b) check if everything works
+                          }
+                      }
+
                   } else {
                       result.error = "Unable to save!"
                   }
@@ -1069,6 +1092,15 @@ class FinanceController extends AbstractDebugController {
 
 
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR") })
+    def acknowledgeChange() {
+        PendingChange changeAccepted = PendingChange.get(params.id)
+        if(changeAccepted)
+            changeAccepted.delete()
+        redirect(uri:request.getHeader('referer'))
     }
 
     @Deprecated

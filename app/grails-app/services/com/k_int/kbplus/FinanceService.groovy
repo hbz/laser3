@@ -59,7 +59,7 @@ class FinanceService {
         else {
             ownSort = ""
         }
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub]+filterOwnQuery[1])
+        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub]+filterOwnQuery[1])
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownCostItems.size())
@@ -83,7 +83,7 @@ class FinanceService {
                     consSort = " order by ${params.sort} ${params.order}"
                 else
                     consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
@@ -111,7 +111,7 @@ class FinanceService {
                     subscrSort = " order by ${params.sort} ${params.order}"
                 else
                     subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -173,12 +173,12 @@ class FinanceService {
         }
         //get own costs
         List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
-                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted'+filterQueryOwn[0]+ownSort,
+                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
                 [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1])
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
-                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+ownSort,
+                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
                 [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
-        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
+        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null and ci.surveyOrg is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownSubscriptionCostItems.size())
@@ -203,7 +203,7 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations roleMC ' +
                 'join sub.orgRelations orgRoles ' +
-                'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType = :subscrType and subC.status != :statusC and sub.status != :statusM' +
+                'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType = :subscrType and subC.status != :statusC and sub.status != :statusM and ci.surveyOrg = null' +
                 filterQueryCons[0] + consSort,
                 [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS,statusC:RDStore.SUBSCRIPTION_DELETED,statusM:RDStore.SUBSCRIPTION_DELETED]+filterQueryCons[1])
         result.cons.costItems = []
@@ -230,7 +230,7 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations orgRoles ' +
                 'join ci.owner orgC ' +
-                'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
+                'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null'+
                 filterQuerySubscr[0] + subscrSort,
                 [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+filterQuerySubscr[1])
         result.subscr.costItems = []
