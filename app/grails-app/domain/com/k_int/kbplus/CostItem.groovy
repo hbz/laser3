@@ -33,6 +33,7 @@ class CostItem
     Subscription sub
     SubscriptionPackage subPkg
     IssueEntitlement issueEntitlement
+    SurveyOrg surveyOrg
     Order order
     Invoice invoice
 
@@ -111,6 +112,7 @@ class CostItem
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
         subPkg          column: 'ci_subPkg_fk'
         issueEntitlement    column: 'ci_e_fk'
+        surveyOrg       column: 'ci_surOrg_fk'
         order           column: 'ci_ord_fk'
         invoice         column: 'ci_inv_fk'
         costItemStatus  column: 'ci_status_rv_fk'
@@ -154,6 +156,7 @@ class CostItem
                 if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
             }
         })
+        surveyOrg       (nullable: true, blank: false)
         order(nullable: true, blank: false)
         invoice(nullable: true, blank: false)
         billingCurrency(nullable: true, blank: false)
