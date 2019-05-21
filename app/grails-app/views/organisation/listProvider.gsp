@@ -44,7 +44,7 @@
             </g:else>
         </semui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')}">
+            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR' || accessService.accessService.checkConstraint_ORG_COM_EDITOR())}">
                 <g:render template="actions" />
             </g:if>
         </semui:controlButtons>

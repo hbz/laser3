@@ -109,7 +109,7 @@
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                         <br />
-                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  (${ci.taxKey ? ci.taxKey.taxRate : 0}%)
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  ${ci.taxKey ? "${ci.taxKey.taxRate}%" : RDStore.GENERIC_NULL_VALUE.getI10n('value')}
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />

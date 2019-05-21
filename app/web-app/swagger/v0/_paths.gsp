@@ -1,31 +1,5 @@
 <%-- indention: 2 --%>
 
-  /refdatas:
-
-    get:
-      tags:
-        - Catalogues
-      summary: Retrieving catalogue of combined refdatas
-      description: >
-        Retrieving an overview for RefdataCategories and RefdataValues
-
-      parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/context"
-        - $ref: "#/components/parameters/authorization"
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Refdatas_Virtual"
-        401:
-          $ref: "#/components/responses/notAuthorized"
-
-
   /costItem:
 
     get:
@@ -99,7 +73,7 @@
     get:
       tags:
         - Objects
-      summary: Documents download
+      summary: Download a single document
       description: >
         Supported are queries by following identifiers: *uuid*
 
@@ -234,6 +208,30 @@
           $ref: "#/components/responses/preconditionFailed"
 
 
+  /refdataList:
+
+    get:
+      tags:
+        - Specials
+      summary: Retrieving catalogue of combined refdatas
+      description: >
+        Retrieving an overview for RefdataCategories and RefdataValues
+
+      parameters:
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refdatas_Virtual"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+
+
   /subscription:
 
     get:
@@ -308,9 +306,10 @@
 
     get:
       tags:
-        - Special Endpoints
+        - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -324,7 +323,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -335,13 +334,12 @@
 
     get:
       tags:
-        - Special Endpoints
+        - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
@@ -351,7 +349,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OA2020List"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -362,9 +360,10 @@
 
     get:
       tags:
-        - Special Endpoints
+        - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -378,7 +377,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Statistic_Virtual"
+                $ref: "#/components/schemas/PlaceholderObject"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
@@ -389,13 +388,12 @@
 
     get:
       tags:
-        - Special Endpoints
+        - Specials
       summary:
-      description:
+      description: >
+        **EXPERIMENTAL**
 
       parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
@@ -405,7 +403,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StatisticList"
+                $ref: "#/components/schemas/PlaceholderList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:

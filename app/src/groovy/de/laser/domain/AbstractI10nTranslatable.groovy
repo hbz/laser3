@@ -22,7 +22,7 @@ abstract class AbstractI10nTranslatable {
         else {
             result = "- requested locale ${locale} not supported -"
         }
-        result
+        result = (result != 'null') ? result : ''
     }
 
     // returning virtual property for template tags

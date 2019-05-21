@@ -78,6 +78,7 @@ class SemanticUiNavigationTagLib {
             log.debug("throwTagError(\"Tag [paginate] is missing required attribute [total]\")")
         }
 
+
         def messageSource = grailsAttributes.messageSource
         def locale = RequestContextUtils.getLocale(request)
 
@@ -90,7 +91,7 @@ class SemanticUiNavigationTagLib {
         def max = attrs.int('max')
         if (! max) max = (params.int('max') ?: 10)
 
-        def maxsteps = (attrs.int('maxsteps') ?: 10)
+        def maxsteps = (attrs.int('maxsteps') ?: 6)
 
         if (total <= max) {
             return
@@ -103,6 +104,7 @@ class SemanticUiNavigationTagLib {
 
         linkParams.offset = offset - max
         linkParams.max = max
+
 
         if (params.sort) {
             linkParams.sort = params.sort
@@ -128,64 +130,116 @@ class SemanticUiNavigationTagLib {
 
         // determine paging variables
         def steps = maxsteps > 0
-        int currentstep = (offset / max) + 1
+        int currentstep = Math.round(Math.ceil(offset / max)) + 1
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
         out << '<div class="ui center aligned basic segment">'
         out << '<div class="ui pagination menu">'
 
-        // prev-buttons
-        if (currentstep > firststep) {
-            // <<
-            int tmp = (offset - (max * (maxsteps +1)))
-            linkParams.offset = tmp > 0 ? tmp : 0
-            linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
-
-            def prevLinkAttrs1 = linkTagAttrs.clone()
-            out << link((prevLinkAttrs1 += prevMap), '<i class="double angle left icon"></i>')
-
-            // <
-            linkParams.offset = offset - max
-            linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
-
-            def prevLinkAttrs2 = linkTagAttrs.clone()
-            out << link((prevLinkAttrs2 += prevMap), '<i class="angle left icon"></i>')
-        }
-
-        // steps
         if (steps && laststep > firststep) {
-            for (int i in currentstep..(currentstep + maxsteps)) {
-                if (((i-1) * max) < total) {
-                    linkParams.offset = (i - 1) * max
-                    if (currentstep == i) {
-                        linkTagAttrs.class = "item active"
-                    } else {
-                        linkTagAttrs.class = "item"
+            if (maxsteps > laststep) { // | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | > |
+                // prev-buttons
+                if (currentstep > firststep) {
+                    // <
+                    linkParams.offset = offset - max
+                    linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
+
+                    def prevLinkAttrs2 = linkTagAttrs.clone()
+                    out << link((prevLinkAttrs2 += prevMap), '<i class="angle left icon"></i>')
+                }
+                // steps
+                for (int i in currentstep..(currentstep + maxsteps)) {
+                    if (((i - 1) * max) < total) {
+                        linkParams.offset = (i - 1) * max
+                        if (currentstep == i) {
+                            linkTagAttrs.class = "item active"
+                        } else {
+                            linkTagAttrs.class = "item"
+                        }
+                        out << link(linkTagAttrs.clone()) { i.toString() }
                     }
-                    out << link(linkTagAttrs.clone()) { i.toString() }
+                }
+                // next-buttons
+                if (currentstep < laststep) {
+                    // <
+                    linkParams.offset = offset + max
+                    linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
+
+                    def nextLinkAttrs1 = linkTagAttrs.clone()
+                    out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
+                }
+            }
+            else { // | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | ... | 8121 | > | >> |
+
+                // | << | < |
+                if (currentstep > firststep) {
+                    // | << |
+                    int tmp = (offset - (max * (maxsteps +1)))
+                    linkParams.offset = tmp > 0 ? tmp : 0
+                    linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
+
+                    def prevLinkAttrs1 = linkTagAttrs.clone()
+                    out << link((prevLinkAttrs1 += prevMap), '<i class="double angle left icon"></i>')
+
+                    // | < |
+                    linkParams.offset = offset - max
+                    linkTagAttrs.class = (currentstep == firststep) ? "item disabled prevLink" : "item prevLink"
+
+                    def prevLinkAttrs2 = linkTagAttrs.clone()
+                    out << link((prevLinkAttrs2 += prevMap), '<i class="angle left icon"></i>')
+                }
+                // steps | 1 | 2 | 3 | 4 |
+                for (int i in currentstep..(currentstep + maxsteps)) {
+                    if (((i) * max) < total) {
+                        linkParams.offset = (i - 1) * max
+                        if (currentstep == i) {
+                            linkTagAttrs.class = "item active"
+                        } else {
+                            linkTagAttrs.class = "item"
+                        }
+                        out << link(linkTagAttrs.clone()) { i.toString() }
+                    }
+                }
+                // | ... |
+                if (currentstep < laststep-maxsteps-1) {
+                    out << '  <div class="disabled item">\n' +
+                            '    ...\n' +
+                            '  </div>'
+                }
+                // laststep | 1154 |
+                if (currentstep == laststep) {
+                    linkTagAttrs.class = "item active"
+                } else {
+                    linkTagAttrs.class = "item"
+                }
+
+                def lastLinkAttrs = linkTagAttrs.clone()
+
+                linkParams.offset = total - max
+                out << link(lastLinkAttrs) {laststep.toString() }
+
+                // | > | >> |
+                if (currentstep < laststep) {
+                    // | > |
+                    linkParams.offset = offset + max
+                    linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
+
+                    def nextLinkAttrs1 = linkTagAttrs.clone()
+                    out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
+                    if (currentstep < laststep-maxsteps-1) {
+                        // | >> |
+                        int tmp = linkParams.offset + (max * maxsteps)
+                        linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
+                        linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
+
+                        def nextLinkAttrs2 = linkTagAttrs.clone()
+                        out << link((nextLinkAttrs2 += nextMap), '<i class="double angle right icon"></i>')
+                    }
                 }
             }
         }
-
-        // next-buttons
-        if (currentstep < laststep) {
-             // <
-            linkParams.offset = offset + max
-            linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
-
-            def nextLinkAttrs1 = linkTagAttrs.clone()
-            out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
-
-            // <<
-            int tmp = linkParams.offset + (max * maxsteps)
-            linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
-            linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
-
-            def nextLinkAttrs2 = linkTagAttrs.clone()
-            out << link((nextLinkAttrs2 += nextMap), '<i class="double angle right icon"></i>')
-        }
-
+        // all button
         def allLinkAttrs = linkTagAttrs.clone()
         allLinkAttrs.class = "item"
 
@@ -201,6 +255,21 @@ class SemanticUiNavigationTagLib {
 
 
     // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
+
+    def mainNavItem = { attrs, body ->
+
+        def lbText    = attrs.text ? attrs.text : ''
+        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+
+        out << g.link(linkBody,
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params,
+                class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
+                id: attrs.id
+        )
+    }
 
 
     def securedMainNavItem = { attrs, body ->

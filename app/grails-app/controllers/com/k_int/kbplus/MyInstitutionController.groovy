@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -31,7 +30,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -69,7 +67,6 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
-    def messageSource
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -632,7 +629,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
                 }
                 out.close()
             }
@@ -925,6 +922,7 @@ from License as l where (
 
             result
         } else {
+            flash.message = "${message(code: 'default.notAutorized.message')}"
             redirect action: 'currentSubscriptions'
         }
     }
@@ -969,6 +967,7 @@ from License as l where (
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
+                    status: RefdataValue.get(params.status),
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1120,7 +1119,9 @@ from License as l where (
                 response.sendError(401)
             }
             else {
-                def copyLicense = institutionsService.copyLicense(baseLicense, params)
+                def copyLicense = institutionsService.copyLicense(
+                        baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
+
                 if (copyLicense.hasErrors()) {
                     log.error("Problem saving license ${copyLicense.errors}");
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
@@ -2285,8 +2286,9 @@ AND EXISTS (
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
             XSSFWorkbook wb = new XSSFWorkbook()
+            POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(message('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
             CreationHelper factory = workbook.getCreationHelper()
@@ -3632,8 +3634,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def manageMembers() {
         def result = setResultGenerics()
 
@@ -3685,6 +3689,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.toalMembers     = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
@@ -3907,7 +3912,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
             POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-            coreProps.setCreator(messageSource.getMessage('laser',null, LocaleContextHolder.getLocale()))
+            coreProps.setCreator(message(code:'laser'))
             XSSFCellStyle lineBreaks = wb.createCellStyle()
             lineBreaks.setWrapText(true)
             XSSFCellStyle csPositive = wb.createCellStyle()
@@ -4237,7 +4242,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                             name: params.name,
                             description: params.description,
                             tenant: result.institution,
-                            ownerType: ownerType
+                            ownerType: ownerType,
+                            visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

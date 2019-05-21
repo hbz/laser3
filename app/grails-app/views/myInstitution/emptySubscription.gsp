@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="com.k_int.kbplus.Combo" %>
+<%@ page import="com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
     <head>
@@ -17,7 +17,7 @@
 
         <g:render template="actions" />
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.new')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
 
@@ -25,7 +25,7 @@
             <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
                 <input type="hidden" name="newEmptySubId" value="${defaultSubIdentifier}"/>
 
-                <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
+                <p>${message(code:'myinst.emptySubscription.notice')}</p>
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
@@ -36,6 +36,11 @@
                     <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
 
                     <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
+                </div>
+
+                <div class="field required">
+                    <label>${message(code:'myinst.emptySubscription.status')}</label>
+                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues('Subscription Status')}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
                 </div>
 
                 <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
@@ -126,7 +131,18 @@
 
         </g:if>
         <r:script language="JavaScript">
-
+            function formatDate(input) {
+                var inArr = input.split(/[\.-]/g);
+                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+            }
+             $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
+                if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
+                    var startDate = Date.parse(formatDate($("#valid_from").val()));
+                    var endDate = Date.parse(formatDate($("#valid_to").val()));
+                    return (startDate < endDate);
+                }
+                else return true;
+             };
                     $('.newLicence')
                             .form({
                         on: 'blur',
@@ -137,7 +153,34 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            },
+                            valid_from: {
+                                identifier: 'valid_from',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.startDateAfterEndDate"/>'
+                                    }
+                                ]
+                            },
+                            valid_to: {
+                                identifier: 'valid_to',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
+                                    }
+                                ]
+                            },
+                            status: {
+                                identifier  : 'status',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             }

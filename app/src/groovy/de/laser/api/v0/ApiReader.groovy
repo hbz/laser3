@@ -22,12 +22,16 @@ class ApiReader {
             'license':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
             'oa2020':               [Constants.MIME_APPLICATION_JSON],
+            'oa2020List':           [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
-            'refdatas':             [Constants.MIME_APPLICATION_JSON],
+            'refdataList':          [Constants.MIME_APPLICATION_JSON],
             'statistic':            [Constants.MIME_APPLICATION_JSON],
+            'statisticList':        [Constants.MIME_APPLICATION_JSON],
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
+
+    static SIMPLE_QUERIES = ['oa2020List', 'refdataList', 'statisticList']
 
     /**
      * @param com.k_int.kbplus.CostItem costItem

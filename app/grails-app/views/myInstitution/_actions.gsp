@@ -38,7 +38,7 @@
                 <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_department.label"/>
             </g:elseif>
             <g:if test="${actionName in ['manageMembers']}">
-                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
+                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:if>
         </semui:actionsDropdown>
     </g:if>

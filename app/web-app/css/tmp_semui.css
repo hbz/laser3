@@ -171,7 +171,6 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
     font-style: italic;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR

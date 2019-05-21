@@ -90,22 +90,34 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
+                                </sec:ifAnyGranted>
 
-                                <%-- TODO: check orgType --%>
-                                <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="listInstitution" message="menu.public.all_insts" />
+                                <g:if test="${accessService.checkConstraint_ORG_COM_EDITOR()}">
+                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                                              controller="organisation" action="listInstitution" message="menu.public.all_insts" />
+                                </g:else>
+
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
-                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
-
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
+
+                                <a href="${message(code:'url.gokb.' + grailsApplication.config.getCurrentServer())}" class="item">GOKB</a>
+
+                                <a href="${message(code:'url.ygor.' + grailsApplication.config.getCurrentServer())}" class="item">YGOR</a>
                         </div>
                     </div>
 
@@ -140,10 +152,9 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
-
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                           action="manageMembers" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"
@@ -479,11 +490,12 @@
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
+                                    <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
                                             data-confirm-term-how="ok"
-                                            controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>
+                                            controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>--%>
                                 </div>
                             </div>
 

@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Combo
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
@@ -33,58 +34,89 @@ class AccessService {
     }
 
     // --- for action closures: shortcuts ---
+    // --- checking current user and context org
 
-    boolean checkPerm(String codes) {
-        checkOrgPerm(codes.split(','))
+    boolean checkPerm(String orgPerms) {
+        checkOrgPerm(orgPerms.split(','))
     }
-    boolean checkPermType(String codes, String orgTypes) {
-        checkOrgPermAndOrgType(codes.split(','), orgTypes.split(','))
+    boolean checkPermType(String orgPerms, String orgTypes) {
+        checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
     }
-    boolean checkPermAffiliation(String codes, String userRole) {
-        checkOrgPermAndUserAffiliation(codes.split(','), userRole)
+    boolean checkPermAffiliation(String orgPerms, String userRole) {
+        checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
-    boolean checkPermTypeAffiliation(String codes, String orgTypes, String userRole) {
-        checkOrgPermAndOrgTypeAndUserAffiliation(codes.split(','), orgTypes.split(','), userRole)
+    boolean checkPermTypeAffiliation(String orgPerms, String orgTypes, String userRole) {
+        checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
     }
 
-    // --- for action closures: shortcuts / with special global role check ---
+    // --- for action closures: shortcuts ---
+    // --- checking current user and context org OR global roles
 
-    boolean checkPermX(String codes, String specRoles) {
+    boolean checkPermX(String orgPerms, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPerm(codes.split(','))
+        checkOrgPerm(orgPerms.split(','))
     }
-    boolean checkPermTypeX(String codes, String orgTypes, String specRoles) {
+    boolean checkPermTypeX(String orgPerms, String orgTypes, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgType(codes.split(','), orgTypes.split(','))
+        checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
     }
-    boolean checkPermAffiliationX(String codes, String userRole, String specRoles) {
+    boolean checkPermAffiliationX(String orgPerms, String userRole, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndUserAffiliation(codes.split(','), userRole)
+        checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
-    boolean checkPermTypeAffiliationX(String codes, String orgTypes, String userRole, String specRoles) {
+    boolean checkPermTypeAffiliationX(String orgPerms, String orgTypes, String userRole, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgTypeAndUserAffiliation(codes.split(','), orgTypes.split(','), userRole)
+        checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
+    }
+
+    // --- for action closures: shortcuts ---
+    // --- checking current user and context org and combo relation
+    // --- USE FOR FOREIGN ORG CHECKS
+
+    boolean checkForeignOrgComboPermAffiliation(Map<String, Object> attributes) {
+        Org ctx                 = contextService.getOrg()
+        Org currentOrg          = (Org) attributes.org
+        String ownerUserRole    = attributes.affiliation
+        String orgPerms         = attributes.comboPerm
+        String userRole         = attributes.comboAffiliation
+
+        // combo check
+        boolean check1 = checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
+        boolean check2 = (ctx.id == currentOrg.id) || Combo.findByToOrgAndFromOrg(ctx, currentOrg)
+
+        // currentOrg check
+        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser()?.hasAffiliation(ownerUserRole?.toUpperCase())
+
+        (check1 && check2) || check3
+    }
+    boolean checkForeignOrgComboPermAffiliationX(Map<String, Object> attributes) {
+          if (contextService.getUser()?.hasRole(attributes.specRoles)) {
+            return true
+        }
+
+        checkForeignOrgComboPermAffiliation(attributes)
     }
 
     // --- for action closures: implementations ---
+    // --- checking current user and context org
 
-    private boolean checkOrgPerm(String[] codes) {
+    private boolean checkOrgPerm(String[] orgPerms) {
         boolean check = false
 
-        if (codes) {
+        if (orgPerms) {
             Org ctx = contextService.getOrg()
             def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
 
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                codes.each{ cd ->
+                orgPerms.each{ cd ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) oss.getValue())
                 }
             }
@@ -94,8 +126,8 @@ class AccessService {
         check
     }
 
-    private boolean checkOrgPermAndOrgType(String[] codes, String[] orgTypes) {
-        boolean check1 = checkOrgPerm(codes)
+    private boolean checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
+        boolean check1 = checkOrgPerm(orgPerms)
         boolean check2 = false
 
         if (orgTypes) {
@@ -109,15 +141,15 @@ class AccessService {
         check1 && check2
     }
 
-    private boolean checkOrgPermAndUserAffiliation(String[] codes, String userRole) {
-        boolean check1 = checkOrgPerm(codes)
+    private boolean checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
+        boolean check1 = checkOrgPerm(orgPerms)
         boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
     }
 
-    private boolean checkOrgPermAndOrgTypeAndUserAffiliation(String[] codes, String[] orgTypes, String userRole) {
-        boolean check1 = checkOrgPermAndOrgType(codes, orgTypes)
+    private boolean checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String userRole) {
+        boolean check1 = checkOrgPermAndOrgType(orgPerms, orgTypes)
         boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
@@ -125,6 +157,17 @@ class AccessService {
 
     // ---- new stuff here
     // ---- new stuff here
+
+    // ----- REFACTORING -----
+
+    // ---- combined checks ----
+    // ---- combined checks ----
+
+    boolean checkConstraint_ORG_COM_EDITOR() {
+        checkPermAffiliation('ORG_BASIC,ORG_CONSORTIUM', 'INST_EDITOR')
+    }
+
+    // ----- REFACTORING -----
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
     boolean checkUserIsMember(User user, Org org) {

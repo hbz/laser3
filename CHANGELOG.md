@@ -1,3 +1,31 @@
+0.16.3
+
+- fixed: title search via elasticsearch
+- fixed: missing informations when copying licenses 
+- fixed: uncomplete list of email addresses when copying
+- fixed: financial export
+- fixed: inheritence problem under certain circumstances
+- fixed: pagination
+- removed debug informations
+
+0.16.2
+
+- fixed: initial property inheritance for adding new consortia members
+- fixed: creation of organisation caused errors
+- fixed: ezb identifier bug
+- fixed: faulty identifier creation for organisations 
+- fixed: cost per use mistakenly set to hidden
+- fixed: several excel exports
+- fixed: some wordings
+- fixed: some stylesheets
+- fixed: missing service in view
+- added functionality to add contacts for organisations
+- set filtering to active subscriptions
+- changed access to view 'all organisations'
+- changed acces to organisations 'numbers' and 'access' views
+- more minor view adaptions
+- changed some refdatas
+
 0.16.1
 
 - fixed: unable to view licenses
@@ -21,7 +49,7 @@
 - reworked affiliation request handling
 - added profile setting for accessibility
 - implemented data setup/reset
-- fixed some heredity/sharing bugs
+- fixed some inheritance/sharing bugs
 - reworked pagination
 - refactoring code: naming conventions
 - added various minor features
@@ -30,7 +58,7 @@
 0.15.4
 
 - bugfix: false creation of mandatory properties
-- reworked heredity of subscription name
+- reworked inheritance of subscription name
 
 0.15.3
 
@@ -58,7 +86,7 @@
 - reworked and improved user management for institutions
 - reworked views for managing consortia members
 - added new finance enhancements
-- reworked consortia heredity
+- reworked consortia inheritance
 - reworked sharing of documents
 - added/reworked api endpoints
 - switched to org based api access

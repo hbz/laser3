@@ -395,8 +395,13 @@ class FinanceService {
         }
         //tax type
         if(params.filterCITaxType) {
-            filterQuery += " and ci.taxKey = :filterCITaxType "
-            queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
+            if(params.filterCITaxType == 'null') {
+                filterQuery += " and ci.taxKey = null"
+            }
+            else {
+                filterQuery += " and ci.taxKey = :filterCITaxType "
+                queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
+            }
             log.info(params.filterCITaxType)
         }
         //financial year

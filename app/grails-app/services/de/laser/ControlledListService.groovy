@@ -88,10 +88,13 @@ class ControlledListService {
             filter.status = params.status
             queryString += " and s.status = :status "
         }
+        else {
+            filter.status = RDStore.SUBSCRIPTION_CURRENT
+            queryString += " and s.status = :status "
+        }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            log.debug("Now processing: ${s.name}")
             result.results.add([name:s.dropdownNamingConvention(org),value:s.class.name + ":" + s.id])
         }
         result
@@ -174,6 +177,10 @@ class ControlledListService {
         }
         if(params.status) {
             filter.status = params.status
+            queryString += " and s.status = :status "
+        }
+        else {
+            filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
         }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)

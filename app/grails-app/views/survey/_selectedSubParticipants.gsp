@@ -1,11 +1,11 @@
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedSubParticipants')}<semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
         total="${selectedSubParticipants?.size()}"/></h2>
 <br>
 <semui:filter>
-    <g:form action="showSurveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+    <g:form action="surveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['customerType']],
                           tmplConfigFormFilter: true,
                           useNewLayouter: true
                   ]"/>
