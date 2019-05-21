@@ -160,7 +160,7 @@
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
-                          <g:if test="${sub.status?.value != 'Deleted'}">
+                          <g:if test="${sub.status?.value == 'Current'}">
                                   <g:if test="${institution?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
