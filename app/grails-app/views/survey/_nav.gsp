@@ -10,6 +10,8 @@
 
     <semui:subNavItem controller="survey" action="surveyParticipants" params="${[id:params.id]}" message="surveyParticipants.label" />
 
+    <semui:subNavItem controller="survey" action="surveyCostItems" params="${[id:params.id]}" message="surveyCostItems.label" />
+
     <semui:subNavItem controller="survey" action="surveyEvaluation" params="${[id:params.id]}" message="surveyEvaluation.label" />
 
 

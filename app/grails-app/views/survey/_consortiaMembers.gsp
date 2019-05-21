@@ -24,20 +24,12 @@
               model="[orgList          : consortiaMembers,
                       tmplShowCheckbox : true,
                       tmplDisableOrgIds: surveyConfigOrgs?.id,
-                      tmplConfigShow   : ['sortname', 'name', 'libraryType']
+                      tmplConfigShow   : ['sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>
     <g:if test="${editable}">
         <input type="submit" class="ui button" value="${message(code: 'default.button.add.label', default: 'Add')}"/>
-    </g:if>
-
-    <g:if test="${showAddSubMembers && (selectedSubParticipants.size() != surveyConfigSubOrgs.size()) && editable}">
-        <br/>
-        <br/>
-        <g:link class="ui button" controller="survey" action="addSubMembers"
-                id="${surveyConfig?.surveyInfo?.id}"
-                params="[surveyConfigID: surveyConfig?.id]">${message(code: 'showAddSubMembers.button.addMembersofSub')}</g:link>
     </g:if>
 
 </g:form>
