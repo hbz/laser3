@@ -315,6 +315,8 @@ class DeletionService {
                     costs.each{ tmp ->
                         tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted','CostItemStatus')
                         tmp.sub = null
+                        tmp.subPkg = null
+                        tmp.issueEntitlement = null
                         tmp.save()
                     }
 
