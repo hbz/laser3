@@ -42,8 +42,8 @@
                 </div>
 
                 <div class="field la-field-right-aligned">
-                    <g:link controller="organisation" action="users" params="${[id: orgInstance.id]}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</g:link>
-                    <input type="submit" value="Search" class="ui secondary button"/>
+                    <g:link controller="organisation" action="users" params="${[id: orgInstance.id]}" class="ui reset primary button">${message(code:'default.button.reset.label')}</g:link>
+                    <input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button"/>
                 </div>
             </div>
         </g:form>

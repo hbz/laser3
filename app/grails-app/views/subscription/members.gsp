@@ -162,7 +162,11 @@
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">
+                            <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
 
+                        <%-- ERMS-1348 removing delete buttons
                             <g:if test="${CostItem.findBySub(sub)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
                                     <button class="ui icon button negative" disabled="disabled">
@@ -182,20 +186,23 @@
                                             params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}">
                                         <i class="unlink icon"></i>
                                     </g:link>
+
                                 </g:each>
+
                             </g:else>
+                            --%>
                         </g:if>
                     </td>
                 </tr>
             </g:each>
-            </tbody>
+        </tbody>
         </table>
-        <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
-    </g:if>
-    <g:else>
-        <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>
-    </g:else>
+                <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+            </g:if>
+            <g:else>
+                <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>
+            </g:else>
 
-</body>
-</html>
+        </body>
+        </html>
 

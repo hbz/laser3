@@ -1627,9 +1627,12 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Deprecated
     def deleteMember() {
         log.debug(params)
 
+        return
+        /*
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -1667,6 +1670,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         redirect action: 'members', params: [id: params.id], model: result
+        */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

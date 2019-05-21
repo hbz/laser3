@@ -16,6 +16,8 @@
 
 </semui:modal>
 
+<div class="ui card la-dl-no-table la-js-hideable">
+
 <%-- grouped custom properties --%>
 
 <g:set var="allPropDefGroups" value="${subscriptionInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
@@ -23,7 +25,6 @@
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
 
-        <!-- global -->
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefGroup,
                 propDefGroupBinding: null,
@@ -38,7 +39,6 @@
 <%-- check binding visibility --%>
     <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
 
-        <!-- local -->
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefInfo[0],
                 propDefGroupBinding: propDefInfo[1],
@@ -55,7 +55,6 @@
     <%-- check member visibility --%>
         <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
 
-            <!-- member -->
             <g:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: propDefInfo[0],
                     propDefGroupBinding: propDefInfo[1],
@@ -72,7 +71,7 @@
 <g:if test="${! allPropDefGroups.fallback}">
     <g:if test="${allPropDefGroups.orphanedProperties}">
 
-        <div class="ui card la-dl-no-table la-js-hideable">
+        <%--<div class="ui card la-dl-no-table la-js-hideable"> --%>
             <div class="content">
                 <h5 class="ui header">
                     ${message(code:'subscription.properties.orphaned')}
@@ -86,8 +85,13 @@
                             custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
             </div>
-        </div>
+        <%--</div>--%>
 
+        <r:script language="JavaScript">
+        $(document).ready(function(){
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+        });
+        </r:script>
     </g:if>
 </g:if>
 
@@ -95,7 +99,7 @@
 
 <g:else>
 
-    <div class="ui card la-dl-no-table la-js-hideable">
+    <%-- <div class="ui card la-dl-no-table la-js-hideable"> --%>
         <div class="content">
             <h5 class="ui header">
                 ${message(code:'subscription.properties')}
@@ -108,7 +112,7 @@
                         custom_props_div: "custom_props_div_props" ]}"/>
             </div>
         </div>
-    </div>
+    <%-- </div> --%>
 
     <r:script language="JavaScript">
         $(document).ready(function(){
@@ -117,6 +121,8 @@
     </r:script>
 
 </g:else>
+
+</div><!--.card -->
 
 <%-- private properties --%>
 
