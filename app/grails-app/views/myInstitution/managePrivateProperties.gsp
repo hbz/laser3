@@ -140,24 +140,35 @@
                 <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
 
+                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                     <g:set var="propertyService" bean="propertyService"/>
 
-                    <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
-                        <p class="hidden" data-prop-def-desc="${cat.key}">
-                            Aktuell häufig verwendete Kategorien: <br />
+                    <div class="ui grid" style="margin-top:1em">
+                        <div class="ten wide column">
+                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
 
-                            <%
-                                List catList =  cat.value?.take(5)
-                                catList = catList.collect { entry ->
-                                    '&nbsp; - ' + (RefdataCategory.findByDesc(entry[0]))?.getI10n('desc')
-                                }
-                                println catList.join('<br />')
-                            %>
+                                <p class="hidden" data-prop-def-desc="${cat.key}">
+                                    Häufig verwendete Kategorien: <br />
 
-                        </p>
-                    </g:each>
+                                    <%
+                                        List catList =  cat.value?.take(3)
+                                        catList = catList.collect { entry ->
+                                            '&nbsp; - ' + (RefdataCategory.findByDesc(entry[0]))?.getI10n('desc')
+                                        }
+                                        println catList.join('<br />')
+                                    %>
 
-                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                                </p>
+                            </g:each>
+                        </div>
+                        <div class="six wide column">
+                            <br />
+                            <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
+                                <i class="icon external alternate"></i>
+                                Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
+                            </a>
+                        </div>
+                    </div><!-- .grid -->
                 </div>
             </div>
 
