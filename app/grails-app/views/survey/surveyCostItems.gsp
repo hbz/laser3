@@ -10,10 +10,10 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[ params:params ]}"/>
+<g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions" />
+    <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -22,11 +22,11 @@
 
 
 
-<g:render template="nav" />
+<g:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}" />
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}" />
+<semui:messages data="${flash}"/>
 
 <br>
 
@@ -52,7 +52,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            controller="survey" action="surveyParticipants"
+                            controller="survey" action="surveyCostItems"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                         <h5 class="ui header">${config?.getConfigName()}</h5>
@@ -86,34 +86,31 @@
                             total="${selectedSubParticipants?.size()}"/></h2>
                     <br>
                     <semui:filter>
-                        <g:form action="surveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+                        <g:form action="surveyCostItems" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
                             <g:render template="/templates/filter/orgFilter"
                                       model="[
-                                              tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['customerType']],
+                                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
                                               tmplConfigFormFilter: true,
-                                              useNewLayouter: true
+                                              useNewLayouter      : true
                                       ]"/>
                         </g:form>
                     </semui:filter>
 
 
-                    <g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
-                            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
-                        <g:render template="/templates/filter/orgFilterTable"
-                                  model="[orgList         : selectedSubParticipants,
-                                          tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubInfo', 'surveySubCostItem']
-                                  ]"/>
+                    <g:render template="/templates/filter/orgFilterTable"
+                              model="[orgList       : selectedSubParticipants,
+                                      tmplConfigShow: ['sortname', 'name', 'libraryType', 'surveySubInfo', 'surveySubCostItem']
+                              ]"/>
 
-                        <br/>
+                    <br/>
 
-                        <g:if test="${selectedSubParticipants && editable}">
-                            <input type="submit" class="ui button"
-                                   value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                        </g:if>
+                    <g:if test="${selectedSubParticipants && editable}">
+                        <input type="submit" class="ui button"
+                               value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                    </g:if>
 
-                    </g:form>
                 </div>
 
             </div>
@@ -128,33 +125,31 @@
                     <br>
 
                     <semui:filter>
-                        <g:form action="surveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+                        <g:form action="surveyCostItems" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
                             <g:render template="/templates/filter/orgFilter"
                                       model="[
-                                              tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['customerType']],
+                                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
                                               tmplConfigFormFilter: true,
-                                              useNewLayouter: true
+                                              useNewLayouter      : true
                                       ]"/>
                         </g:form>
                     </semui:filter>
 
-                    <g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
-                            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
-                        <g:render template="/templates/filter/orgFilterTable"
-                                  model="[orgList         : selectedParticipants,
-                                          tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubCostItem']
-                                  ]"/>
 
-                        <br/>
+                    <g:render template="/templates/filter/orgFilterTable"
+                              model="[orgList       : selectedParticipants,
+                                      tmplConfigShow: ['sortname', 'name', 'libraryType', 'surveySubCostItem']
+                              ]"/>
 
-                        <g:if test="${selectedParticipants && editable}">
-                            <input type="submit" class="ui button"
-                                   value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                        </g:if>
+                    <br/>
 
-                    </g:form>
+                    <g:if test="${selectedParticipants && editable}">
+                        <input type="submit" class="ui button"
+                               value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
+                    </g:if>
+
                 </div>
 
             </div>

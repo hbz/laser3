@@ -6,12 +6,16 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.commons.lang.StringUtils
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -23,6 +27,7 @@ class SurveyController {
     def filterService
     def docstoreService
     def orgTypeService
+    def genericOIDService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -372,6 +377,22 @@ class SurveyController {
 
         result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
         result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+
+
+        def costItemElementConfigurations = []
+        def orgConfigurations = []
+
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        ciecs.each { ciec ->
+            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
+        }
+        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        orgConf.each { oc ->
+            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
+        }
+
+        result.costItemElementConfigurations = costItemElementConfigurations
+        result.orgConfigurations = orgConfigurations
 
         result
 
@@ -1190,6 +1211,176 @@ class SurveyController {
                 SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).delete(flush: true)
             }
         }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def newSurveyCostItem() {
+
+        def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        def result =  [:]
+        def newCostItem = null
+
+        try {
+            log.debug("SurveyController::newCostItem() ${params}");
+
+            result.institution  =  contextService.getOrg()
+            def user            =  User.get(springSecurityService.principal.id)
+            result.error        =  [] as List
+
+            if (!accessService.checkMinUserOrgRole(user,result.institution,"INST_EDITOR"))
+            {
+                result.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
+                response.sendError(403)
+            }
+
+
+            def billing_currency = null
+            if (params.long('newCostCurrency')) //GBP,etc
+            {
+                billing_currency = RefdataValue.get(params.newCostCurrency)
+                if (! billing_currency)
+                    billing_currency = defaultCurrency
+            }
+
+            //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
+            def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
+            def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
+            //moved to TAX_TYPES
+            //def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+
+            def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
+
+            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            def cost_billing_currency = params.newCostInBillingCurrency? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
+            def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
+            def cost_local_currency   = params.newCostInLocalCurrency?   format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00
+
+            def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : cost_billing_currency
+            def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : cost_local_currency
+            //moved to TAX_TYPES
+            //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+            def tax_key = null
+            if(!params.newTaxRate.contains("null")) {
+                String[] newTaxRate = params.newTaxRate.split("§")
+                RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+                int taxRate = Integer.parseInt(newTaxRate[1])
+                switch(taxType.id) {
+                    case RefdataValue.getByValueAndCategory("taxable","TaxType").id:
+                        switch(taxRate) {
+                            case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                break
+                            case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                break
+                        }
+                        break
+                    case RefdataValue.getByValueAndCategory("taxable tax-exempt","TaxType").id:
+                        tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                        break
+                    case RefdataValue.getByValueAndCategory("not taxable","TaxType").id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                        break
+                    case RefdataValue.getByValueAndCategory("not applicable","TaxType").id:
+                        tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                        break
+                }
+            }
+            def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
+
+            def cost_item_isVisibleForSubscriber = false // (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+
+            def surveyOrgsDo = []
+
+            if (params.surveyOrg)
+            {
+                try {
+                    surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
+                } catch (Exception e) {
+                    log.error("Non-valid surveyOrg sent ${params.surveyOrg}",e)
+                }
+            }
+
+            if (! surveyOrgsDo) {
+                surveyOrgsDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
+            }
+            surveyOrgsDo.each { surveyOrg ->
+
+                if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
+                    newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+                }
+                else {
+                    newCostItem = new CostItem()
+                }
+
+                newCostItem.owner = result.institution
+                newCostItem.surveyOrg = surveyOrg
+                newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
+                newCostItem.costItemCategory = cost_item_category
+                newCostItem.costItemElement = cost_item_element
+                newCostItem.costItemStatus = cost_item_status
+                newCostItem.billingCurrency = billing_currency //Not specified default to GDP
+                //newCostItem.taxCode = cost_tax_type -> to taxKey
+                newCostItem.costTitle = params.newCostTitle ?: null
+                newCostItem.costInBillingCurrency = cost_billing_currency as Double
+                newCostItem.costInLocalCurrency = cost_local_currency as Double
+
+                newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+                newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                newCostItem.currencyRate = cost_currency_rate as Double
+                //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
+                newCostItem.taxKey = tax_key
+                newCostItem.costItemElementConfiguration = cost_item_element_configuration
+
+
+                newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
+
+
+                if (! newCostItem.validate())
+                {
+                    result.error = newCostItem.errors.allErrors.collect {
+                        log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                        message(code:'finance.addNew.error', args:[it.properties.field])
+                    }
+                }
+                else
+                {
+                    if (newCostItem.save(flush: true)) {
+                       /* def newBcObjs = []
+
+                        params.list('newBudgetCodes')?.each { newbc ->
+                            def bc = genericOIDService.resolveOID(newbc)
+                            if (bc) {
+                                newBcObjs << bc
+                                if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
+                                    new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                                }
+                            }
+                        }
+
+                        def toDelete = newCostItem.getBudgetcodes().minus(newBcObjs)
+                        toDelete.each{ bc ->
+                            def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
+                            if (cig) {
+                                log.debug('deleting ' + cig)
+                                cig.delete()
+                            }
+                        }*/
+
+                    } else {
+                        result.error = "Unable to save!"
+                    }
+                }
+            } // subsToDo.each
+
+        }
+        catch ( Exception e ) {
+            log.error("Problem in add cost item", e);
+        }
+
+
+        redirect(uri: request.getHeader('referer'))
     }
 
 }
