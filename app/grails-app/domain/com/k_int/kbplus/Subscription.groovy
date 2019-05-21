@@ -719,6 +719,26 @@ class Subscription
        }
   }
 
+    def dropdownNamingConventionWithoutOrg() {
+        return dropdownNamingConventionWithoutOrg(contextService.org)
+    }
+
+    def dropdownNamingConventionWithoutOrg(contextOrg){
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        String period = startDate ? sdf.format(startDate)  : ''
+
+        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
+
+        period = period ? '('+period+')' : ''
+
+        String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+
+
+        return name + ' - ' + statusString + ' ' +period
+
+    }
+
     def getDerivedSubscriptionBySubscribers(Org org) {
         def result
 
