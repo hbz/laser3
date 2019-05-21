@@ -226,13 +226,14 @@ class MyInstitutionController extends AbstractDebugController {
         def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
         def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
-        def license_status          = RDStore.LICENSE_DELETED
 
         def base_qry
         def qry_params
 
         @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
+
+        result.filterSet = params.filterSet ? true : false
 
         if (! params.orgRole) {
             if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
@@ -248,11 +249,10 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -267,11 +267,10 @@ from License as l where (
                 )
             )
         )) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, deleted:license_status, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -294,13 +293,27 @@ from License as l where (
             qry_params += [date_restr: date_restriction]
         }
 
+        if(params.status) {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RefdataValue.get(params.status)]
+        }
+        else if(params.status == '') {
+            base_qry += " and l.status != :deleted "
+            qry_params += [deleted: RDStore.LICENSE_DELETED]
+            result.filterSet = false
+        }
+        else {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RDStore.LICENSE_CURRENT]
+            params.status = RDStore.LICENSE_CURRENT.id
+            result.defaultSet = true
+        }
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
-
-        result.filterSet = params.filterSet ? true : false
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
@@ -1129,6 +1142,7 @@ from License as l where (
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
@@ -1150,11 +1164,14 @@ from License as l where (
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,
+                status: RefdataValue.get(params.status)
+        )
 
         if (!licenseInstance.save(flush: true)) {
-            flash.error = licenseInstance.errors
-            return
+            log.error(licenseInstance.errors)
+            flash.error = message(code:'license.create.error')
+            redirect action: 'emptyLicense'
         }
         else {
             log.debug("Save ok");

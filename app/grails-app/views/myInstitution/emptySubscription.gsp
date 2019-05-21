@@ -40,7 +40,12 @@
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.status')}</label>
-                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues('Subscription Status')}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
+                    <%
+                        def fakeList = []
+                        fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                    %>
+                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
                 </div>
 
                 <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
