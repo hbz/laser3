@@ -85,6 +85,8 @@
                     <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
                             total="${selectedSubParticipants?.size()}"/></h2>
                     <br>
+                    <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+                    <br>
                     <semui:filter>
                         <g:form action="surveyCostItems" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
@@ -101,15 +103,8 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : selectedSubParticipants,
-                                      tmplConfigShow: ['sortname', 'name', 'libraryType', 'surveySubInfo', 'surveySubCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveySubCostItem', 'surveyCostItem']
                               ]"/>
-
-                    <br/>
-
-                    <g:if test="${selectedSubParticipants && editable}">
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                    </g:if>
 
                 </div>
 
@@ -122,6 +117,8 @@
                 <div>
                     <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedParticipants')}<semui:totalNumber
                             total="${selectedParticipants?.size()}"/></h2>
+                    <br>
+                    <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
                     <br>
 
                     <semui:filter>
@@ -140,15 +137,8 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : selectedParticipants,
-                                      tmplConfigShow: ['sortname', 'name', 'libraryType', 'surveySubCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem']
                               ]"/>
-
-                    <br/>
-
-                    <g:if test="${selectedParticipants && editable}">
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
-                    </g:if>
 
                 </div>
 

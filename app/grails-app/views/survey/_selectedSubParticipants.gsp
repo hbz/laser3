@@ -1,6 +1,9 @@
 <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
         total="${selectedSubParticipants?.size()}"/></h2>
 <br>
+<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+<br>
+
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
         <g:render template="/templates/filter/orgFilter"
@@ -18,8 +21,8 @@
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : selectedSubParticipants,
-                      tmplShowCheckbox: true,
-                      tmplConfigShow  : ['sortname', 'name', 'libraryType', 'surveySubInfo']
+                      tmplShowCheckbox: editable,
+                      tmplConfigShow  : ['lineNumber','sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>

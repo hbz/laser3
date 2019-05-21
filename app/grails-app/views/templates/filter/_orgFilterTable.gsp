@@ -83,6 +83,11 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
             <th>
+                ${message(code: 'financials.costItem')}
+            </th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+            <th>
                 ${message(code: 'surveyCostItems.label')}
             </th>
         </g:if>
@@ -328,6 +333,19 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
                 <td class="center aligned">
+                    <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+
+                        <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />
+
+                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                        <br>
+                    </g:each>
+
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+                <td class="center aligned">
                     <g:set var="surveyOrg" scope="request" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                     <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
                 <g:if test="${costItem}">
@@ -336,7 +354,9 @@
 
                     ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                    <button type="button" class="ui icon button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
+                    <br>
+
+                    <button type="button" class="ui icon mini button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
 
                     <g:render template="/survey/costItemModal"
                               model="[modalID: surveyOrg.id, mode: 'edit']"/>

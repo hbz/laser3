@@ -83,6 +83,7 @@
                     <g:render template="/templates/documents/modal"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </div>
+                <br><br>
 
 
                 <table class="ui celled la-table table license-documents">
