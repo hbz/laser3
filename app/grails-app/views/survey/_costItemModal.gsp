@@ -188,10 +188,23 @@
                         />
                     </div>
                 </div><!-- .field -->
+
+
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
-
         </div><!-- three fields -->
+
+        <div class="one fields">
+            <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
+                <div class="field">
+                    <label>${message(code:'financials.newCosts.description')}</label>
+                    <textarea name="newDescription" id="newDescription"
+                              placeholder="${message(code:'default.description.label')}">
+                        ${costItem?.costDescription}
+                    </textarea>
+                </div><!-- .field -->
+            </fieldset>
+        </div>
 
 
     </g:form>

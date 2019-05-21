@@ -665,7 +665,7 @@ class SurveyController {
                                 flash.error = g.message(code: "surveyConfigs.exists")
                             }
                         }
-                        if (params.surveyConfigID && params.addtoallSubs) {
+                        else if (params.surveyConfigID && params.addtoallSubs) {
 
                             surveyInfo.surveyConfigs.each { surveyConfig ->
 
@@ -1334,6 +1334,7 @@ class SurveyController {
                 newCostItem.taxKey = tax_key
                 newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
+                newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
 
                 newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
 

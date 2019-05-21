@@ -103,7 +103,7 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : selectedSubParticipants,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveySubCostItem', 'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubInfoStatus', 'surveySubCostItem',  'surveyCostItem']
                               ]"/>
 
                 </div>
