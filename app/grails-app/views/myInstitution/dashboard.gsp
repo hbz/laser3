@@ -153,16 +153,22 @@
                                 </div><!-- .column -->
                                 <div class="thirteen wide column">
 
-                                <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
+                                <g:if test="${change instanceof Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
                                     <br />
                                     <g:link controller="subscription" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
-                                <g:if test="${change instanceof com.k_int.kbplus.License}">
+                                <g:if test="${change instanceof License}">
                                     <strong>${message(code:'license')}</strong>
                                     <br />
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
+                               <g:if test="${change.costItem}">
+                                   <strong>${message(code:'financials.costItem')}</strong>
+                                   <br>
+                                   ${raw(change.desc)}
+                                   <g:link class="ui green button" controller="finance" action="acknowledgeChange" id="${change.id}"><g:message code="pendingChange.acknowledge"/></g:link>
+                               </g:if>
                            </div><!-- .column -->
                            </div><!-- .row -->
                        </div><!-- .grid -->

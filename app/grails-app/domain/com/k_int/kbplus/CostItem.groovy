@@ -86,6 +86,7 @@ class CostItem
     Date datePaid
     Date startDate
     Date endDate
+    CostItem copyBase              //the base cost item from which this item has been copied
 
     //Edits...
     Date lastUpdated
@@ -133,43 +134,53 @@ class CostItem
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
         endDate         column: 'ci_end_date'
         startDate       column: 'ci_start_date'
+        copyBase        column: 'ci_copy_base'
         reference       column: 'ci_reference'
         autoTimestamp true
     }
 
     static constraints = {
-        globalUID       (nullable:true, blank:false, unique:true, maxSize:255)
-        owner           (nullable: false, blank: false)
-        type            (nullable: true, blank:false)
-        sub             (nullable: true, blank: false)
-        subPkg          (nullable: true, blank: false)
-        issueEntitlement(nullable: true, blank: false)
-        order           (nullable: true, blank: false)
-        invoice         (nullable: true, blank: false)
-        billingCurrency (nullable: true, blank: false)
-        costDescription (nullable: true, blank: false)
-        costTitle       (nullable: true, blank: false)
-        costInBillingCurrency           (nullable: true, blank: false)
-        datePaid        (nullable: true, blank: false)
-        costInLocalCurrency             (nullable: true, blank: false)
-        currencyRate    (nullable: true, blank: false, scale: 9)
-        finalCostRounding               (nullable: true, blank: false)
-        taxCode         (nullable: true, blank: false)
-        taxRate                         (nullable: true, blank: false)
-        taxKey          (nullable: true, blank: false)
-        invoiceDate                     (nullable: true, blank: false)
-        financialYear   (nullable: true, blank: false)
+        globalUID(nullable: true, blank: false, unique: true, maxSize: 255)
+        owner(nullable: false, blank: false)
+        type(nullable: true, blank: false)
+        sub(nullable: true, blank: false)
+        subPkg(nullable: true, blank: false, validator: { val, obj ->
+            if (obj.subPkg) {
+                if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
+            }
+        })
+        issueEntitlement(nullable: true, blank: false, validator: { val, obj ->
+            if (obj.issueEntitlement) {
+                if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+            }
+        })
+        order(nullable: true, blank: false)
+        invoice(nullable: true, blank: false)
+        billingCurrency(nullable: true, blank: false)
+        costDescription(nullable: true, blank: false)
+        costTitle(nullable: true, blank: false)
+        costInBillingCurrency(nullable: true, blank: false)
+        datePaid(nullable: true, blank: false)
+        costInLocalCurrency(nullable: true, blank: false)
+        currencyRate(nullable: true, blank: false, scale: 9)
+        finalCostRounding(nullable: true, blank: false)
+        taxCode(nullable: true, blank: false)
+        taxRate(nullable: true, blank: false)
+        taxKey(nullable: true, blank: false)
+        invoiceDate(nullable: true, blank: false)
+        financialYear(nullable: true, blank: false)
         isVisibleForSubscriber(nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
-        costItemStatus  (nullable: true, blank: false)
-        costItemElement (nullable: true, blank: false)
-        costItemElementConfiguration (nullable: true, blank: false)
-        reference       (nullable: true, blank: false)
-        startDate       (nullable: true, blank: false)
-        endDate         (nullable: true, blank: false)
-        lastUpdatedBy   (nullable: true)
-        createdBy       (nullable: true)
+        costItemStatus(nullable: true, blank: false)
+        costItemElement(nullable: true, blank: false)
+        costItemElementConfiguration(nullable: true, blank: false)
+        reference(nullable: true, blank: false)
+        startDate(nullable: true, blank: false)
+        endDate(nullable: true, blank: false)
+        copyBase(nullable: true)
+        lastUpdatedBy(nullable: true)
+        createdBy(nullable: true)
     }
 
     @Override
