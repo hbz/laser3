@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore" %>
+<%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -15,7 +15,7 @@
   </semui:breadcrumbs>
   <semui:controlButtons>
       <semui:exportDropdown>
-          <g:if test="${filterSet}">
+          <g:if test="${filterSet || defaultSet}">
               <semui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
@@ -87,6 +87,21 @@
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div> --%>
 
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
+                %>
+
+                <div class="field">
+                    <label>${message(code: 'license.status')}</label>
+                    <laser:select class="ui dropdown" name="status"
+                                  from="${ fakeList }"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.status}"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
                 <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
             </div>
 
