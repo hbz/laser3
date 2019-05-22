@@ -431,12 +431,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
-          static_logger.debug("getting identifier value of title ...")
+          println "getting identifier value of title ..."
       def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}"
-          static_logger.debug("getting identifier value of TIPP ...")
+          println "getting identifier value of TIPP ..."
       def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}"
 
-          static_logger.debug("preparing TIPP ...")
+          println "preparing TIPP ..."
       def newtip = [
                      title: [
                        name:tip.title.title,
@@ -459,7 +459,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      accessEnd: tip.accessEndDate ?: null
                    ];
 
-          static_logger.debug("adding coverage ...")
+          println "adding coverage ..."
       // Need to format these dates using correct mask
       newtip.coverage.add([
                         startDate:tip.startDate ?: null,
@@ -473,9 +473,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         embargo: tip.embargo ?: ''
                       ]);
 
-          static_logger.debug("processing IDs ...")
+          println "processing IDs ..."
       tip.title.ids.each { id ->
-          static_logger.debug("adding identifier ${id}")
+          println "adding identifier ${id}"
         newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
       }
 

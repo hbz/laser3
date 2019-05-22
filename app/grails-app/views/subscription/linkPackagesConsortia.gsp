@@ -45,7 +45,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
             <g:each in="${parentPackages}" var="subPkg">
                 <div class="item">
                     <g:link controller="package" action="show"
-                            id="${subPkg?.pkg?.id}">${subPkg?.pkg?.name} ${subPkg.getIEandPackageSize()}</g:link>
+                            id="${subPkg?.pkg?.id}">${subPkg?.pkg?.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
                 </div>
             </g:each>
         </div>
@@ -177,7 +177,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                                     <div class="content">
                                         <g:link controller="subscription" action="index" id="${sub.id}"
                                                 params="[pkgfilter: sp.pkg?.id]">
-                                            ${sp?.pkg?.name} ${sp.getIEandPackageSize()}
+                                            ${sp?.pkg?.name}<br>${raw(sp.getIEandPackageSize())}
                                         </g:link>
                                     </div>
                                 </div>

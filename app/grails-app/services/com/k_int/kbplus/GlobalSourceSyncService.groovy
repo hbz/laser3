@@ -315,7 +315,8 @@ class GlobalSourceSyncService {
             }
             //oldpkg is the pkg in Laser
             oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
-            pkg.save()
+            if(!pkg.save())
+                log.error(pkg.errors)
         } else {
             // create a new package
             log.debug("Creating new Package..")
