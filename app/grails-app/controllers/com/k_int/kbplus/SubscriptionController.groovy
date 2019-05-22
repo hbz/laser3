@@ -3223,8 +3223,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
         result.subscription = baseSub
-        //Bugfix Aktualieriunsgproblem
-//        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.newSub = newSub
         result.targetSubscription = newSub
         result
@@ -3238,22 +3236,40 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        if (params?.subscription?.takeDocs && ( ! DO_NOTHING.equals(params.subscription.takeDocs)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteDocs = []
+            params.list('subscription.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
+            subscriptionService.deleteDoks(toDeleteDocs, newSub, flash)
+        }
+
+        if (params?.subscription?.takeDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyDocs = []
             params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
-            subscriptionService.takeDoks(params.subscription.takeDocs, baseSub, toCopyDocs, newSub, flash)
+            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
         }
 
-        if (params?.subscription?.takeAnnouncements && ( ! DO_NOTHING.equals(params.subscription.takeAnnouncements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteAnnouncements = []
+            params.list('subscription.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
+            subscriptionService.deleteAnnouncements(toDeleteAnnouncements, newSub, flash)
+        }
+
+        if (params?.subscription?.takeAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyAnnouncements = []
             params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-            subscriptionService.takeAnnouncements(params.subscription.takeAnnouncements, baseSub, toCopyAnnouncements, newSub, flash)
+            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
         }
 
-        if (params?.subscription?.takeTasks && ( ! DO_NOTHING.equals(params.subscription.takeTasks)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteTasks =  []
+            params.list('subscription.deleteTaskIds').each{ tsk -> toDeleteTasks << Long.valueOf(tsk) }
+            subscriptionService.deleteTasks(toDeleteTasks, newSub, flash)
+        }
+
+        if (params?.subscription?.takeTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyTasks =  []
             params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
-            subscriptionService.takeTasks(params.subscription.takeTasks, baseSub, toCopyTasks, newSub, flash)
+            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
         }
 
         result.sourceSubscription = baseSub

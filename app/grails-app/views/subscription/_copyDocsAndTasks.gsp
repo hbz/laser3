@@ -4,6 +4,7 @@
 <%@ page import="static com.k_int.kbplus.SubscriptionController.DO_NOTHING" %>
 <laser:serviceInjection />
 <semui:form>
+    <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
     <g:render template="selectSourceAndTargetSubscription" model="[
             sourceSubscription: sourceSubscription,
             targetSubscription: targetSubscription,
@@ -223,9 +224,12 @@
                     <td>
                         <i class="ui icon trash alternate outline"></i>
                         <g:each in="${targetTasks}" var="tsk">
-                            <div class="ui checkbox">
-                                <g:checkBox name="subscription.deleteTaskIds" value="${tsk?.id}" data-action="delete"  />
-                            </div>
+                            <g:if test="${tsk.creator.id == userId || isInstAdm}">
+                                <div class="ui checkbox">
+                                    <g:checkBox name="subscription.deleteTaskIds" value="${tsk?.id}" data-action="delete"  />
+                                </div>
+                            </g:if>
+                            <g:else><br></g:else>
                         </g:each>
                     </td>
                 </tr>
