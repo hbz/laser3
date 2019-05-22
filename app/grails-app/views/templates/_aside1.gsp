@@ -1,5 +1,5 @@
 
-<g:if test="${accessService.checkPerm("ORG_BASIC,ORG_CONSORTIUM")}">
+<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
     <g:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'']}"  />
 </g:if>
 

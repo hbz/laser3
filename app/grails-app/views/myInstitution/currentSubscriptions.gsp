@@ -46,7 +46,7 @@
                 </g:else>
             </semui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <g:render template="actions" />
             </g:if>
 
@@ -171,7 +171,7 @@
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
-                            if(!accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")) {
+                            if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
                         %>
@@ -409,7 +409,7 @@
                         <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
 
                         <%-- ERMS-1348 removing delete buttons
-                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">

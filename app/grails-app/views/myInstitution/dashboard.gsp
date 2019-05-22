@@ -49,10 +49,10 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked calendar icon large"></i>
                 ${tasksCount}
@@ -102,7 +102,7 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
                 ${surveys.groupBy { it.surveyConfig.surveyInfo.id }?.size()}
@@ -251,7 +251,7 @@
             </div>
         </div>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
 
@@ -322,7 +322,7 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
                 <div>

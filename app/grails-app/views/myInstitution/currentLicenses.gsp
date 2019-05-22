@@ -46,7 +46,7 @@
           </g:else>
       </semui:exportDropdown>
 
-      <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+      <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
          <g:render template="actions" />
       </g:if>
 
@@ -212,7 +212,7 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
-                    <g:if test="${editable && accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+                    <g:if test="${editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
                         %{-- bug: erms-459
                         <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
                             <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">

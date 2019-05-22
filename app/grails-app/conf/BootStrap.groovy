@@ -359,18 +359,18 @@ class BootStrap {
             }
         }
 
-        def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
-        def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+        def fakeRole                = locOrgRole('FAKE',                   'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
-        createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgBasicRole, ['ORG_BASIC','ORG_MEMBER'])
-        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE','ORG_MEMBER','ORG_BASIC'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY','ORG_CONSORTIUM'])
+        createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
+        createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
     def initializeDefaultSettings(){

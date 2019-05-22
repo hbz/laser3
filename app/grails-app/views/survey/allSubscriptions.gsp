@@ -278,7 +278,7 @@
 
 
                     <td class="x">
-                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
                             <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
                                 <g:link class="ui icon positive button" data-tooltip="${message(code:'survey.toggleSurveySub.add.label')}" controller="survey" action="toggleSurveySub" params="${params+[direction:'add', sub:s.id]}">
                                     <i class="plus icon"></i>

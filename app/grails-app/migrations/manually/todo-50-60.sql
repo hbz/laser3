@@ -27,3 +27,16 @@ insert into public.refdata_value (rdv_hard_data,rdv_version,rdv_owner,rdv_value)
 update license set lic_status_rv_fk = (select rdv_id from refdata_value where rdv_value = 'Status not defined' and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'License Status')) where lic_status_rv_fk is null;
 alter table license alter column lic_status_rv_fk set not null;
 alter table license drop column lic_license_status_str;
+
+
+-- 2019-05-22
+-- refactoring roles and perms
+-- execute before startup!
+
+update role set authority = 'ORG_BASIC_MEMBER' where authority = 'ORG_MEMBER';
+update role set authority = 'ORG_INST' where authority = 'ORG_BASIC';
+update role set authority = 'ORG_INST_COLLECTIVE' where authority = 'ORG_COLLECTIVE';
+
+update perm set code = 'org_basic_member' where code = 'org_member';
+update perm set code = 'org_inst' where code = 'org_basic';
+update perm set code = 'org_inst_collective' where code = 'org_collective';

@@ -22,7 +22,7 @@
             break
     }
 
-    boolean editable2 = accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>

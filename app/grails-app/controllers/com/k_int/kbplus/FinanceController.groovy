@@ -49,7 +49,7 @@ class FinanceController extends AbstractDebugController {
     def index() {
         log.debug("FinanceController::index() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         switch(params.view) {
@@ -88,7 +88,7 @@ class FinanceController extends AbstractDebugController {
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         if(result.subscription.instanceOf && result.institution.id == result.subscription.getConsortia().id)
@@ -115,7 +115,7 @@ class FinanceController extends AbstractDebugController {
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
             result.showView = "subscr"
-        else if(accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER"))
+        else if(accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER"))
             result.showView = "own"
         if(params.ownSort)
             result.view = "own"
@@ -150,7 +150,7 @@ class FinanceController extends AbstractDebugController {
         def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
         result.cost_item_tabs = [:]
-        if(accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) {
             result.cost_item_tabs["own"] = financialData.own
         }
         if(orgRoleCons) {
@@ -1094,8 +1094,8 @@ class FinanceController extends AbstractDebugController {
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
         if(changeAccepted)
