@@ -405,7 +405,7 @@ class Subscription
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }

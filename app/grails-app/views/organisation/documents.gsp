@@ -20,7 +20,7 @@
       <semui:crumb message="menu.my.documents" class="active"/>
     </semui:breadcrumbs>
 
-    <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+    <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
         <semui:controlButtons>
           <g:render template="actions" model="[org:org]" />
         </semui:controlButtons>

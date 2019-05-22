@@ -103,7 +103,7 @@
 </div><!-- .card -->
 
 <%-- private properties --%>
-<g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+<g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">

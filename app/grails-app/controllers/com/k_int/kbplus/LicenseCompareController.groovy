@@ -31,9 +31,9 @@ class LicenseCompareController extends AbstractDebugController {
         result
   }
 
-  @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+  @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
   @Secured(closure = {
-    ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+    ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
   })
   Map compare(){
     LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]

@@ -17,6 +17,7 @@ import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.TypeMismatchException
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -110,14 +111,27 @@ class ControlledListService {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
-        String subFilter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
+        String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
-            subFilter = '= :sub'
+            filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
         }
+        if(params.pkg) {
+            try {
+                def pkgObj = genericOIDService.resolveOID(params.pkg)
+                if(pkgObj && pkgObj instanceof SubscriptionPackage) {
+                    SubscriptionPackage pkg = (SubscriptionPackage) pkgObj
+                    filter += ' and ie.tipp.pkg.gokbId = :pkg'
+                    filterParams.pkg = pkg.pkg.gokbId
+                }
+            }
+            catch (Exception e) {
+                return [results:[]]
+            }
+        }
         filterParams.put('query','%'+params.query+'%')
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             log.debug("issue entitlements found")
             result.each { res ->

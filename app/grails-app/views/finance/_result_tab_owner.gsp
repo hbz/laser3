@@ -109,12 +109,12 @@
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                         <br />
-                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  ${ci.taxKey ? "${ci.taxKey.taxRate}%" : RDStore.GENERIC_NULL_VALUE.getI10n('value')}
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  (${ci.taxKey ? "${ci.taxKey.taxRate}%" : message(code:'financials.taxRate.notSet')})
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
                         <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxKey ? ci.taxKey.taxRate : 0}%)
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxKey ? "${ci.taxKey.taxRate}%" : message(code:'financials.taxRate.notSet')})
                     </td>
                     <td>
                         <g:if test="${editable}">

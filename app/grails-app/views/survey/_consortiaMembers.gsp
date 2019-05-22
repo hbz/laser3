@@ -2,7 +2,8 @@
         total="${consortiaMembers?.size()}"/></h2>
 <br>
 
-
+<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+<br>
 
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
@@ -22,9 +23,9 @@
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
-                      tmplShowCheckbox : true,
+                      tmplShowCheckbox : editable,
                       tmplDisableOrgIds: surveyConfigOrgs?.id,
-                      tmplConfigShow   : ['sortname', 'name', 'libraryType', 'surveySubInfo']
+                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>

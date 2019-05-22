@@ -24,7 +24,7 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
-                <g:if test="${accessService.checkPermAffiliation("ORG_BASIC","INST_EDITOR")}">
+                <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
                     <th>${message(code:'default.actions')}</th>
                 </g:if>
             </g:else>
@@ -93,7 +93,7 @@
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
-                    <g:if test="${accessService.checkPermAffiliation("ORG_BASIC","INST_USER")}">
+                    <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_USER")}">
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${fixedSubscription}">

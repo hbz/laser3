@@ -57,7 +57,7 @@ class SurveyInfo {
 
     def checkOpenSurvey()
     {
-        boolean check = true
+        boolean check = this.surveyConfigs.size() > 0 ? true : false
 
         this.surveyConfigs.each {
 
@@ -65,6 +65,8 @@ class SurveyInfo {
                 check = false
             }
         }
+
+
 
         return check
     }

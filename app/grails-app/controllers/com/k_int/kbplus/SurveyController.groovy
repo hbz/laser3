@@ -665,7 +665,7 @@ class SurveyController {
                                 flash.error = g.message(code: "surveyConfigs.exists")
                             }
                         }
-                        if (params.surveyConfigID && params.addtoallSubs) {
+                        else if (params.surveyConfigID && params.addtoallSubs) {
 
                             surveyInfo.surveyConfigs.each { surveyConfig ->
 
@@ -943,7 +943,7 @@ class SurveyController {
 
                         def surveyResult = new SurveyResult(
                                 owner: result.institution,
-                                participant: Org.get(org) ?: null,
+                                participant: org ?: null,
                                 startDate: result.surveyInfo.startDate,
                                 endDate: result.surveyInfo.endDate,
                                 type: property.surveyProperty,
@@ -1208,7 +1208,8 @@ class SurveyController {
         if (orgs) {
 
             orgs.each { org ->
-                SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).delete(flush: true)
+                CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))?.delete(flush: true)
+                SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)?.delete(flush: true)
             }
         }
     }
@@ -1314,7 +1315,7 @@ class SurveyController {
                 }
 
                 newCostItem.owner = result.institution
-                newCostItem.surveyOrg = surveyOrg
+                newCostItem.surveyOrg = newCostItem.surveyOrg ?: surveyOrg
                 newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
                 newCostItem.costItemCategory = cost_item_category
                 newCostItem.costItemElement = cost_item_element
@@ -1333,6 +1334,7 @@ class SurveyController {
                 newCostItem.taxKey = tax_key
                 newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
+                newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
 
                 newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
 

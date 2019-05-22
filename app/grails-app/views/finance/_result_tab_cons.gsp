@@ -159,7 +159,7 @@
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="" />
                     </td>
                     <td>
-                        ${ci.taxKey ? ci.taxKey.taxRate+'%' : RDStore.GENERIC_NULL_VALUE.getI10n('value')}
+                        ${ci.taxKey ? ci.taxKey.taxRate+'%' : message(code:'financials.taxRate.notSet')}
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="" />

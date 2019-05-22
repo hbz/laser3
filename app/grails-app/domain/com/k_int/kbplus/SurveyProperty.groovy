@@ -77,7 +77,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         I10nTranslation.createOrUpdateI10n(this, 'name', [de: this.name, en: this.name])
         I10nTranslation.createOrUpdateI10n(this, 'explain', [de: this.explain, en: this.explain])
         I10nTranslation.createOrUpdateI10n(this, 'introduction', [de: this.introduction, en: this.introduction])
-        I10nTranslation.createOrUpdateI10n(this, 'comment', [de: this.comment, en: this.comment])
+        //I10nTranslation.createOrUpdateI10n(this, 'comment', [de: this.comment, en: this.comment])
 
     }
 
