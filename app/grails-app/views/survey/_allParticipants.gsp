@@ -1,8 +1,8 @@
 <%@ page import="com.k_int.kbplus.Org;" %>
 
-<g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig?.orgIDs) ?: null}" />
+<g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig?.orgs.org.id) ?: null}" />
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedSubParticipants')}<semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
         total="${surveyConfigOrgs?.size()}"/></h2>
 <br>
 

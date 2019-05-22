@@ -226,11 +226,17 @@
                               noSelection="${['':'Alle ..']}"/>
                 --%>
                     <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
+                    <%
+                        List taxTypesList = [[key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"]]
+                        CostItem.TAX_TYPES.every { taxType ->
+                            taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
+                        }
+                    %>
                     <g:select id="filterCITaxType" class="ui dropdown selection"
                               name="filterCITaxType"
-                              from="${CostItem.TAX_TYPES}"
-                              optionKey="${{it}}"
-                              optionValue="${{it.taxType.getI10n("value")+" ("+it.taxRate+"%)"}}"
+                              from="${taxTypesList}"
+                              optionKey="${{it.key}}"
+                              optionValue="${{it.value}}"
                               value="${params.filterCITaxType}"
                               noSelection="${['':'Alle ..']}"/>
                 </div>

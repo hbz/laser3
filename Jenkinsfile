@@ -72,7 +72,7 @@ pipeline {
                                 }
                     }
 
-                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, andreas.galffy@hbz-nrw.de, rupp@hbz-nrw.de',
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, andreas.galffy@hbz-nrw.de, ingrid.bluoss@hbz-nrw.de, rupp@hbz-nrw.de, selbach@hbz-nrw.de',
                                                              subject: "SUCCESS: ${currentBuild.fullDisplayName}",
                                                              body: "(¬‿¬) \n\nSuccessfully deployed ${env.BUILD_URL} on Server ${SERVERDEPLOY} \n\n\n${changeLog}"
                 cleanWs()

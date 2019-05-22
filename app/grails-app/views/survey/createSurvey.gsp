@@ -32,10 +32,10 @@
 
         <div class="two fields ">
             <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                              value="${surveyInfo?.startDate}"/>
+                              value="${surveyInfo?.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                              value="${surveyInfo?.endDate}"/>
+                              value="${surveyInfo?.endDate}" required="" />
         </div>
 
 
@@ -56,8 +56,7 @@
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
 
-            <textarea name="comment" rows="4" cols="50">
-                ${surveyInfo?.comment}
+            <textarea name="comment">
             </textarea>
 
         </div>

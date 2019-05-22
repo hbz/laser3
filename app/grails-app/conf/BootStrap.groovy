@@ -359,18 +359,18 @@ class BootStrap {
             }
         }
 
-        def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
-        def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+        def fakeRole                = locOrgRole('FAKE',                   'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
-        createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgBasicRole, ['ORG_BASIC','ORG_MEMBER'])
-        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE','ORG_MEMBER','ORG_BASIC'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY','ORG_CONSORTIUM'])
+        createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
+        createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
     def initializeDefaultSettings(){
@@ -2145,8 +2145,8 @@ class BootStrap {
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('Package Status',      [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
 
-        RefdataValue.loc('Person Contact Type', [en: 'Personal contact', de: 'Personenkontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Personal Contact', de: 'Personenkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Functional Contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Responsible Contact', de: 'Verantwortlicher Kontakt'], BOOTSTRAP)
@@ -2237,6 +2237,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
         RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
+        RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
@@ -2567,6 +2568,7 @@ class BootStrap {
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('CostItemStatus', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
         RefdataCategory.loc('Document Context Status', [en: 'Document Context Status'], BOOTSTRAP)
 
@@ -2662,6 +2664,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataCategory.loc('PendingChangeStatus',
                 [en: 'PendingChangeStatus', de: 'PendingChangeStatus'], BOOTSTRAP)

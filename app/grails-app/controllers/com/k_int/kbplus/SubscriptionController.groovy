@@ -2,9 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -27,7 +26,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -70,6 +68,7 @@ class SubscriptionController extends AbstractDebugController {
     def comparisonService
     def titleStreamService
     def escapeService
+    def deletionService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -304,6 +303,21 @@ class SubscriptionController extends AbstractDebugController {
 
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def delete() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+
+        if (params.process  && result.editable) {
+            result.result = deletionService.deleteSubscription(result.subscription, false)
+        }
+        else {
+            result.preview = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+        }
+
+        result
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def unlinkPackage() {
@@ -392,9 +406,9 @@ class SubscriptionController extends AbstractDebugController {
         result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
         def result = [:]
@@ -1412,7 +1426,7 @@ class SubscriptionController extends AbstractDebugController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_COLLECTIVE"))
+        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
             tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
@@ -1613,9 +1627,12 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Deprecated
     def deleteMember() {
         log.debug(params)
 
+        return
+        /*
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -1653,6 +1670,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         redirect action: 'members', params: [id: params.id], model: result
+        */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1870,8 +1888,8 @@ class SubscriptionController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC", "INST_USER") })
+    @DebugAnnotation(perm="ORG_INST", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST", "INST_USER") })
     def tasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3070,7 +3088,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //        params = [:]
 //        params.status = RDStore.SUBSCRIPTION_CURRENT.id
 //        params.orgRole = RDStore.OR_SUBSCRIBER.value
-//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
 //        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
 //        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 //        result.sort{it.name}
@@ -3098,7 +3116,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result

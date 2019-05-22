@@ -1,12 +1,14 @@
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.selectedParticipants')}<semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedParticipants')}<semui:totalNumber
         total="${selectedParticipants?.size()}"/></h2>
+<br>
+<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
 <br>
 
 <semui:filter>
-    <g:form action="showSurveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+    <g:form action="surveyParticipants" method="post" class="ui form" params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property'], ['customerType']],
                           tmplConfigFormFilter: true,
                           useNewLayouter: true
                   ]"/>
@@ -18,8 +20,8 @@
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : selectedParticipants,
-                      tmplShowCheckbox: true,
-                      tmplConfigShow  : ['sortname', 'name', 'libraryType']
+                      tmplShowCheckbox: editable,
+                      tmplConfigShow  : ['lineNumber','sortname', 'name', 'libraryType']
               ]"/>
 
     <br/>

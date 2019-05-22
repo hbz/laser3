@@ -41,11 +41,14 @@
         </g:elseif>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
-
+        <g:hiddenField name="showView" value="${tab}" />
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
+        <g:elseif test="${costItem && (mode && mode.equals("copy"))}">
+            <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
+        </g:elseif>
 
         <!--
         Ctx.Sub: ${sub}
@@ -395,7 +398,7 @@
                         <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                         <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <div class="ui search selection dropdown newCISelect" id="newIE">
-                            <input type="hidden" name="newIE" value="${params.newIe}">
+                            <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "com.k_int.kbplus.IssueEntitlement:${costItem.issueEntitlement.id}" : params.newIE}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"></div>
@@ -549,7 +552,7 @@
                 checkValues();
             });
 
-            <%--$("#editCost").submit(function(e){
+            $("#editCost").submit(function(e){
                 e.preventDefault();
                 var valuesCorrect = checkValues();
                 if(valuesCorrect) {
@@ -558,7 +561,7 @@
                 else {
                     alert("${message(code:'financials.newCosts.calculationError')}");
                 }
-            });--%>
+            });
 
             $("#newCostCurrency").change(function(){
                 //console.log("event listener succeeded, picked value is: "+$(this).val());
@@ -570,6 +573,14 @@
 
             $("[name='newSubscription']").change(function(){
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();
+                $("#newIE").dropdown('clear');
+                $("#newPackage").val('');
+                ajaxPostFunc();
+            });
+
+            $("#newPackage").change(function(){
+                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val()+"&pkg="+$("#newPackage").val();
+                $("#newIE").dropdown('clear');
                 ajaxPostFunc();
             });
 
@@ -602,7 +613,7 @@
             }
 
             function convertDouble(input) {
-                console.log("input: "+input+", typeof: "+typeof(input))
+                //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
                 var locale = "${LocaleContextHolder.getLocale()}";
@@ -619,7 +630,7 @@
                         output = parseFloat(input.replace(/,/g, ""));
                     }
                     else console.log("Please check over regex!");
-                    console.log("string input parsed, output is: "+output);
+                    //console.log("string input parsed, output is: "+output);
                 }
                 return output;
             }

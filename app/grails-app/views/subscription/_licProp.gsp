@@ -4,6 +4,8 @@
 
 <%-- grouped custom properties --%>
 
+<div class="ui card la-dl-no-table">
+
 <g:each in="${derivedPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
 
@@ -49,20 +51,19 @@
 
 <g:if test="${derivedPropDefGroups.fallback}">
 
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-            <h5 class="ui header">
-                <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
-            </h5>
+    <div class="content">
+        <h5 class="ui header">
+            <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
+        </h5>
 
-            <g:render template="licPropGroup" model="${[
-                    propList: license.customProperties,
-                    ownObj: license
-            ]}"/>
-        </div>
-    </div><!--.card-->
+        <g:render template="licPropGroup" model="${[
+                propList: license.customProperties,
+                ownObj: license
+        ]}"/>
+    </div>
 
 </g:if>
 
+</div><!--.card-->
 
 <!-- _licProp -->

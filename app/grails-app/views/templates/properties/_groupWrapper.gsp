@@ -3,7 +3,7 @@
 <!-- _groupWrapper -->
 
 <%-- SHOW --%>
-<div class="ui card la-dl-no-table">
+<%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h5 class="ui header">
             ${message(code: 'subscription.properties.public')} ${propDefGroup.name}
@@ -29,7 +29,7 @@
             ]}"/>
         </div>
     </div>
-</div><!--.card-->
+<%--</div><!--.card-->--%>
 
 <r:script language="JavaScript">
         $(document).ready(function(){

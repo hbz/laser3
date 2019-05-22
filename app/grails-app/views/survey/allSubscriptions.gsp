@@ -20,15 +20,19 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <g:render template="actions"/>
+</semui:controlButtons>
+
 <br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 </h1>
 
-
-
 <g:render template="nav"/>
+
+
 
 
 <semui:messages data="${flash}"/>
@@ -278,7 +282,7 @@
 
 
                     <td class="x">
-                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
                             <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
                                 <g:link class="ui icon positive button" data-tooltip="${message(code:'survey.toggleSurveySub.add.label')}" controller="survey" action="toggleSurveySub" params="${params+[direction:'add', sub:s.id]}">
                                     <i class="plus icon"></i>

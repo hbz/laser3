@@ -39,23 +39,6 @@
 <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
        data-semui="modal" data-href="#addSurveyPropertyModal" type="submit">
 <br>
-<br>
-
-<g:if test="${surveyConfig}">
-
-    <h3><g:message code="allSurveyProperties.surveyConfig.info"/>
-
-        <br>
-        <g:if test="${surveyConfig?.type == 'Subscription'}">
-            <g:link controller="subscription" action="show"
-                    id="${surveyConfig?.subscription?.id}">${surveyConfig?.subscription?.dropdownNamingConvention()}
-
-                ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type)}
-            </g:link>
-        </g:if>
-
-    </h3>
-</g:if>
 
 <br>
 
@@ -63,16 +46,28 @@
 
     <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
         <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-        <g:hiddenField name="configID" value="${surveyConfig?.id}"/>
+        <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
-        <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.plural.label')} <semui:totalNumber
-                total="${properties.size()}"/></h4>
+
+        <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
+
+            <i class="question circle icon la-popup"></i>
+
+            <div class="ui popup">
+                <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
+            </div>
+            <semui:totalNumber total="${properties.size()}"/>
+
+        </h4>
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
-                <th class="left aligned"></th>
+                <g:if test="${addSurveyConfigs}">
+                    <th class="left aligned"></th>
+                </g:if>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'surveyProperty.name.label')}</th>
+                <th>${message(code: 'surveyProperty.name.label')}
+                </th>
                 <th>${message(code: 'surveyProperty.introduction.label')}</th>
                 <th>${message(code: 'surveyProperty.explain.label')}</th>
                 <th>${message(code: 'surveyProperty.comment.label')}</th>
@@ -82,34 +77,54 @@
 
             <g:each in="${properties}" var="property" status="i">
                 <tr>
-                    <td>
-                        <g:if test="${com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, property)}">
-                            <i class="check circle icon green"></i>
-                        </g:if>
-                        <g:else>
-                            <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
-                        </g:else>
-                    </td>
+                    <g:if test="${addSurveyConfigs}">
+                        <td>
+                            <g:if test="${com.k_int.kbplus.SurveyConfig.findBySurveyInfoAndSurveyProperty(surveyInfo, property)}">
+                                <i class="check circle icon green"></i>
+                            </g:if>
+                            <g:else>
+                                <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
+                            </g:else>
+                        </td>
+                    </g:if>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
                         ${property?.getI10n('name')}
+                        <g:if test="${property?.owner == institution}">
+                            <i class='shield alternate icon'></i>
+                        </g:if>
                     </td>
                     <td>
                         <g:if test="${property?.getI10n('introduction')}">
-                            ${property?.getI10n('introduction')}
+                            <g:if test="${property?.owner == institution}">
+                                <semui:xEditable owner="${property}" field="introduction" type="textarea"/>
+                            </g:if>
+                            <g:else>
+                                ${property?.getI10n('introduction')}
+                            </g:else>
                         </g:if>
                     </td>
 
                     <td>
                         <g:if test="${property?.getI10n('explain')}">
-                            ${property?.getI10n('explain')}
+                            <g:if test="${property?.owner == institution}">
+                                <semui:xEditable owner="${property}" field="explain" type="textarea"/>
+                            </g:if>
+                            <g:else>
+                                ${property?.getI10n('explain')}
+                            </g:else>
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${property?.getI10n('comment')}">
-                            ${property?.getI10n('comment')}
+                        <g:if test="${property?.comment}">
+                            <g:if test="${property?.owner == institution}">
+                                <semui:xEditable owner="${property}" field="comment" type="textarea"/>
+                            </g:if>
+                            <g:else>
+                                ${property?.comment}
+                            </g:else>
                         </g:if>
                     </td>
                     <td>
@@ -131,7 +146,7 @@
             </g:each>
         </table>
 
-        <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription'}">
+        <g:if test="${addSurveyConfigs}">
             <input type="submit" class="ui button"
                    value="${message(code: 'allSurveyProperties.add.button')}"/>
         </g:if>
@@ -141,7 +156,7 @@
 </div>
 
 <semui:modal id="addSurveyPropertyModal" message="surveyProperty.create_new.label">
-    <div class="scrolling content">
+    <div class=" content">
 
         <g:form class="ui form" action="addSurveyProperty" params="[surveyInfo: surveyInfo?.id]">
 
@@ -237,6 +252,6 @@
         }
     });
 
+        $(".la-popup").popup({
+    });
 </g:javascript>
-
-

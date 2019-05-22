@@ -10,7 +10,7 @@
         <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
     </g:elseif>
 
-    <semui:crumb text="${license.reference}" class="active" />
+    <semui:crumb text="${license?.reference}" class="active" />
 
     <g:if test="${actionName == 'index'}">
         <semui:exportDropdown>

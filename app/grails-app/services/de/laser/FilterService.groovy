@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
@@ -53,6 +54,12 @@ class FilterService {
         if (params.country?.length() > 0) {
             query << "o.country.id = :country"
              queryParams << [country : Long.parseLong(params.country)]
+        }
+
+        if (params.customerType?.length() > 0) {
+            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
         }
 
         // hack: applying filter on org subset
@@ -111,6 +118,12 @@ class FilterService {
         if (params.libraryType?.length() > 0) {
             query << "o.libraryType.id = :libraryType"
              queryParams << [libraryType : Long.parseLong(params.libraryType)]
+        }
+
+        if (params.customerType?.length() > 0) {
+            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
         }
 
          queryParams << [org : org]

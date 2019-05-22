@@ -32,14 +32,23 @@
 <semui:messages data="${flash}" />
 
 <br>
+<div class="ui icon info message">
+    <i class="info icon"></i>
 
+    ${message(code: 'surveyConfigDocs.info2')}
+</div>
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
-        total="${surveyConfigs.size()}"/></h2>
 
 <br>
 
-<p><b>${message(code: 'showSurveyConfigDocs.info')}</b></p>
+
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
+        total="${surveyConfigs.size()}"/></h2>
+
+
+<br>
+
+<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
 <br>
 
 
@@ -51,7 +60,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            controller="survey" action="showSurveyConfigDocs"
+                            controller="survey" action="surveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                         <h5 class="ui header">${config?.getConfigName()}</h5>
@@ -74,15 +83,16 @@
                     <g:render template="/templates/documents/modal"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </div>
+                <br><br>
 
 
                 <table class="ui celled la-table table license-documents">
                     <thead>
                     <tr>
                         <th></th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
                         <th>${message(code: 'default.actions', default: 'Actions')}</th>
                     </tr>
                     </thead>
