@@ -25,7 +25,7 @@
     </g:each>
 
     <br />
-    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 20 Lizenzen</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
     <br />
     <br />
 
@@ -42,7 +42,7 @@
     </g:each>
 
     <br />
-    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 20 Verträge</g:link>
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
     <br />
     <br />
 

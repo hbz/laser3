@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
@@ -16,11 +18,32 @@ class UserController extends AbstractDebugController {
     def instAdmService
     def contextService
     def accessService
+    def deletionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     def index() {
         redirect action: 'list', params: params
+    }
+
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
+    def _delete() {
+        def result = setResultGenerics()
+
+        if (params.process && result.editable) {
+            result.result = deletionService.deleteUser(result.user, false)
+        }
+        else {
+            result.preview = deletionService.deleteUser(result.user, DeletionService.DRY_RUN)
+        }
+
+        result
+
+        render view: 'delete', model: result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
