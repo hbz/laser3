@@ -93,9 +93,10 @@ class User {
     // refactoring -- tmp changes
 
     def getDefaultPageSizeTMP() {
-        //defaultPageSize
+        // create if no setting found
         def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, 10)
-        setting.getValue()
+        // if setting exists, but null value
+        setting.getValue() ?: 10
     }
 
     // refactoring -- tmp changes

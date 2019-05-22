@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" text="Merkmalgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -15,6 +15,8 @@
     ]}" />
 
 </semui:modal>
+
+<div class="ui card la-dl-no-table la-js-hideable">
 
 <%-- grouped custom properties --%>
 
@@ -68,7 +70,7 @@
 
 <g:if test="${! allPropDefGroups.fallback}">
 
-    <div class="ui card la-dl-no-table la-js-hideable">
+    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
         <div class="content">
             <h5 class="ui header">
                 ${message(code:'subscription.properties.orphaned')}
@@ -82,7 +84,7 @@
                         custom_props_div: "custom_props_div_props" ]}"/>
             </div>
         </div>
-    </div>
+    <%--</div>--%>
 
     <r:script language="JavaScript">
         $(document).ready(function(){
@@ -96,7 +98,7 @@
 
 <%-- custom properties --%>
 
-    <div class="ui card la-dl-no-table la-js-hideable">
+    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
         <div class="content">
             <h5 class="ui header">
                 ${message(code:'license.properties')}
@@ -109,7 +111,7 @@
                         custom_props_div: "custom_props_div_props" ]}"/>
             </div>
         </div>
-    </div>
+    <%--</div>--%>
 
     <r:script language="JavaScript">
         $(document).ready(function(){
@@ -119,12 +121,15 @@
 
 </g:else>
 
+</div><!-- .card -->
+
 <%-- private properties --%>
 
-<div class="ui card la-dl-no-table">
-    <div class="content">
-        <g:each in="${authorizedOrgs}" var="authOrg">
-            <g:if test="${authOrg.name == contextOrg?.name}">
+
+<g:each in="${authorizedOrgs}" var="authOrg">
+    <g:if test="${authOrg.name == contextOrg?.name}">
+        <div class="ui card la-dl-no-table la-js-hideable">
+            <div class="content">
                 <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
 
                 <div id="custom_props_div_${authOrg.id}">
@@ -140,10 +145,10 @@
                             });
                     </r:script>
                 </div>
-            </g:if>
-        </g:each>
-    </div>
-</div><!--.card-->
+            </div>
+        </div><!--.card-->
+    </g:if>
+</g:each>
 
 <%--<r:script>
     $(function(){

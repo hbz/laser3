@@ -50,7 +50,10 @@ class SemanticUiSubNavTagLib {
         def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
 
-        if (attrs.controller) {
+        if (attrs.disabled) {
+            out << '<div class="item disabled">' + linkBody + '</div>'
+        }
+        else if (attrs.controller) {
             out << g.link(linkBody,
                     class: aClass,
                     controller: attrs.controller,

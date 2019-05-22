@@ -46,7 +46,7 @@
                 </g:else>
             </semui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <g:render template="actions" />
             </g:if>
 
@@ -54,7 +54,7 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
 
@@ -97,7 +97,7 @@
             <%
                 def fakeList = []
                 fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                 fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
             %>
 
@@ -171,8 +171,8 @@
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
-                            if(!accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE
+                            if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
                         %>
                         <g:each in="${subTypes}" var="subType">
@@ -277,8 +277,7 @@
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th rowspan="2"  class="two wide"></th>
-
+            <th rowspan="2" class="two">${message(code:'default.actions')}</th>
         </tr>
 
         <tr>
@@ -408,7 +407,9 @@
                         (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
                         <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+
+                        <%-- ERMS-1348 removing delete buttons
+                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
@@ -428,6 +429,7 @@
                                 </g:link>
                             </g:else>
                         </g:if>
+                        --%>
                     </td>
                 </tr>
             </g:if>

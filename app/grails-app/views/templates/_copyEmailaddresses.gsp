@@ -2,9 +2,10 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection />
 
-<semui:modal id="copyEmailaddresses_ajaxModal" text="${message(code:'menu.institutions.copy_emailaddresses')}" hideSubmitButton="true">
+<semui:modal id="copyEmailaddresses_ajaxModal" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()])}" hideSubmitButton="true">
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
+    <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
 
@@ -16,7 +17,7 @@
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
-                      />
+                      value="${rdvGeneralContactPrs.id}"/>
     </div>
     <br>
     <div class="field">
@@ -41,8 +42,13 @@
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <%  emailsForFunction.add( email?.content?.trim() )
-                            functionAllEmailsSet.add( email?.content?.trim() ) %>
+                        <%
+                            def emailPF = email?.content?.trim()
+                            if (emailPF != null) {
+                                emailsForFunction.add( emailPF )
+                                functionAllEmailsSet.add( emailPF )
+                            }
+                        %>
                     </g:each>
                 </g:if>
             </g:each>
@@ -55,8 +61,13 @@
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <%  emailsForPosition.add( email?.content?.trim() )
-                        functionAllEmailsSet.add( email?.content?.trim() ) %>
+                        <%
+                            def emailPP = email?.content?.trim()
+                            if (emailPP != null) {
+                                emailsForPosition.add(emailPP)
+                                functionAllEmailsSet.add(emailPP)
+                            }
+                        %>
                     </g:each>
                 </g:if>
             </g:each>
@@ -67,6 +78,13 @@
         <div class="field">
             <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
+        <button class="ui icon button right floated" onclick="copyToClipboard()">
+            ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
+        </button>
+        <button class="ui icon button right floated" onclick="copyToEmailProgram()">
+            ${message(code:'menu.institutions.copy_emailaddresses_to_emailclient')}
+        </button>
+        <br>
     </div>
 
     <g:javascript>
@@ -98,6 +116,16 @@
 
         $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
         $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
+
+        function copyToEmailProgram() {
+            var emailAdresses = $('#emailAddressesTextArea').val();
+            window.location.href = "mailto:"+emailAdresses;
+        }
+
+        function copyToClipboard() {
+            $('#emailAddressesTextArea').select();
+            document.execCommand("copy");
+        }
 
         function updateTextArea() {
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );

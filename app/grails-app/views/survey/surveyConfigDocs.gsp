@@ -10,99 +10,45 @@
 
 <body>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="survey" class="active"/>
-</semui:breadcrumbs>
+<g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
+<semui:controlButtons>
+    <g:render template="actions" />
+</semui:controlButtons>
+
+<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
+<semui:xEditable owner="${surveyInfo}" field="name"/>
+</h1>
 
 
-<g:render template="steps"/>
+
+<g:render template="nav" />
+
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+
+
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}" />
+
+<semui:messages data="${flash}" />
+
 <br>
+<div class="ui icon info message">
+    <i class="info icon"></i>
 
-<semui:messages data="${flash}"/>
-
-<br>
-
-<div class="ui grid">
-    <div class="middle aligned row">
-        <div class="two wide column">
-
-            <g:link controller="survey" action="showSurveyConfig" id="${surveyInfo.id}"
-                    class="ui huge button"><i class="angle left aligned icon"></i></g:link>
-
-        </div>
-
-        <div class="twelve wide column">
-
-            <div class="la-inline-lists">
-                <div class="ui card">
-                    <div class="content">
-
-                        <div class="header">
-                            <div class="ui grid">
-                                <div class="twelve wide column">
-                                    ${message(code: 'showSurveyInfo.step.first.title')}
-                                </div>
-                            </div>
-                        </div>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
-                            <dd>${surveyInfo.status?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
-                            <dd>${surveyInfo.name}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.startDate ?: null}"/></dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
-                            <dd><g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyInfo.endDate ?: null}"/></dd>
-                        </dl>
-
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.type.label')}</dt>
-                            <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'surveyInfo.comment.label')}</dt>
-                            <dd>${surveyInfo?.comment}</dd>
-                        </dl>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="two wide column">
-            <g:if test="${surveyConfigs.size() > 0}">
-
-                <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}"
-                        class="ui huge button"><i class="angle right icon"></i></g:link>
-
-            </g:if>
-        </div>
-    </div>
-
+    ${message(code: 'surveyConfigDocs.info2')}
 </div>
 
 
 <br>
 
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
+
 
 <br>
 
-<p><b>${message(code: 'showSurveyConfigDocs.info')}</b></p>
+<p><b>${message(code: 'surveyConfigDocs.info')}</b></p>
 <br>
 
 
@@ -114,7 +60,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            controller="survey" action="showSurveyConfigDocs"
+                            controller="survey" action="surveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
                         <h5 class="ui header">${config?.getConfigName()}</h5>
@@ -137,15 +83,16 @@
                     <g:render template="/templates/documents/modal"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
                 </div>
+                <br><br>
 
 
                 <table class="ui celled la-table table license-documents">
                     <thead>
                     <tr>
                         <th></th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                        <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                        <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
                         <th>${message(code: 'default.actions', default: 'Actions')}</th>
                     </tr>
                     </thead>

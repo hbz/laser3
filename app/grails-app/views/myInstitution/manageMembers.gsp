@@ -3,10 +3,10 @@
 
 <%
     String title
-    if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
+    if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
         title = message(code: 'menu.institutions.manage_consortia')
     }
-    else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
+    else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
         title = message(code: 'menu.institutions.manage_departments')
     }
 %>
@@ -54,7 +54,12 @@
             </semui:exportDropdownItem>
         </g:else>
     </semui:exportDropdown>
-    <g:render template="actions"/>
+    <%
+        editable = (editable && accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
+    %>
+    <g:if test="${editable}">
+        <g:render template="actions"/>
+    </g:if>
 </semui:controlButtons>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${title}
@@ -63,19 +68,22 @@
 
 <semui:messages data="${flash}"/>
     <%
-        List configShow = []
-        if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
-            configShow = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+        List configShowFilter = []
+        List configShowTable = []
+        if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
+            configShowFilter = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'libraryType']
         }
-        else if(comboType == RDStore.COMBO_TYPE_DEPARTMENT) {
-            configShow = [['name'], ['property']]
+        else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
+            configShowFilter = [['name'], ['property']]
+            configShowTable = ['name', 'mainContact', 'numberOfSubscriptions']
         }
     %>
     <semui:filter>
         <g:form action="manageMembers" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: configShow,
+                              tmplConfigShow: configShowFilter,
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -83,21 +91,21 @@
     </semui:filter>
 
 
-    <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
+<g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
-                          tmplShowCheckbox: true,
+                          tmplShowCheckbox: editable,
                           comboType: comboType,
-                          tmplConfigShow: ['name', 'mainContact', 'numberOfSubscriptions']
+                          tmplConfigShow: configShowTable
                   ]"/>
 
 
-        <g:if test="${members && accessService.checkPerm('ORG_CONSORTIUM,ORG_COLLECTIVE')}">
+        <g:if test="${members && editable}">
             <input type="submit" class="ui button" data-confirm-term-what="function" data-confirm-term-what-detail="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
     </g:form>
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: members]"/>
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: toalMembers]"/>
     <semui:paginate action="'manageMembers'" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${membersCount}" />
 
 </body>

@@ -7,7 +7,7 @@
     </div>
 
     <div class="content">
-        <p>${message(code: 'subscription.details.unlink.note', default: 'No user actions required for this process.')}</p>
+        %{--<p>${message(code: 'subscription.details.unlink.note', default: 'No user actions required for this process.')}</p>--}%
         <table class="ui celled la-table table">
             <thead>
             <th>${message(code: 'default.item.label', default: 'Item')}</th>

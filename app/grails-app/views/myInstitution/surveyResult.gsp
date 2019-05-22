@@ -152,11 +152,6 @@
                                                         <p>${surveyResult.type?.explain}</p>
 
                                                     </div>
-                                                    <div class='column'>
-                                                        <h4 class='ui header'>${g.message(code: 'surveyProperty.comment.label')}</h4>
-                                                        <p>${surveyResult.type?.comment}</p>
-
-                                                    </div>
                                         </div>"
                                            data-variation="wide"></i>
                                     </g:if>

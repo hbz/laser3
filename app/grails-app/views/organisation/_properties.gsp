@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" text="Merkmalgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -15,6 +15,8 @@
     ]}" />
 
 </semui:modal>
+
+<div class="ui card la-dl-no-table la-js-hideable">
 
 <%-- grouped custom properties --%>
 
@@ -52,7 +54,7 @@
 <g:if test="${! allPropDefGroups.fallback}">
     <g:if test="${allPropDefGroups.orphanedProperties}">
 
-        <div class="ui card la-dl-no-table la-js-hideable">
+        <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
             <div class="content">
                 <h5 class="ui header">
                     ${message(code:'subscription.properties.orphaned')}
@@ -66,7 +68,7 @@
                             custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
             </div>
-        </div>
+        <%--</div>--%>
 
     </g:if>
 </g:if>
@@ -98,8 +100,10 @@
 
 </g:else>
 
+</div><!-- .card -->
+
 <%-- private properties --%>
-<g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+<g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">

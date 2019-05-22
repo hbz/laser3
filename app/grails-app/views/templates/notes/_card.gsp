@@ -12,9 +12,13 @@
             baseItems << it
         }
     }
+
+    boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    //println "EDITABLE: ${editable}"
+    //println "EDITABLE2: ${editable2}"
 %>
 
-    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || contextService.getUser().hasAffiliation("INST_EDITOR")}">
+    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
 
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">

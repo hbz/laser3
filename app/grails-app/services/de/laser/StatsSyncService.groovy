@@ -17,7 +17,7 @@ import groovyx.gpars.GParsPool
 
 class StatsSyncService {
 
-    static final THREAD_POOL_SIZE = 4
+    static final THREAD_POOL_SIZE = 1
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
@@ -69,7 +69,7 @@ class StatsSyncService {
        def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
+            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns in ('zdb','doi') "+
             "and po.roleType.value='Content Provider' "+
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +

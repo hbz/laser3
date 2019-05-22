@@ -16,7 +16,7 @@
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'survey.label')}</h1>
 
 
 <g:render template="steps"/>
@@ -84,7 +84,7 @@
         <div class="two wide column">
             <g:if test="${surveyConfigs.size() > 0}">
 
-                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
+                <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                         class="ui huge button"><i class="angle right icon"></i></g:link>
 
             </g:if>
@@ -407,8 +407,8 @@
                                 </g:if>
                             </td>
                             <td>
-                                <g:if test="${property?.getI10n('comment')}">
-                                    <span data-tooltip="${property?.getI10n('comment')}" data-position="top center">
+                                <g:if test="${property?.comment}">
+                                    <span data-tooltip="${property?.comment}" data-position="top center">
                                         <i class="inverted circular info icon"></i>
                                     </span>
                                 </g:if>

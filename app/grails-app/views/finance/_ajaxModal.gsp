@@ -12,7 +12,7 @@
     if (costItem) {
         if(mode && mode.equals("edit")) {
             modalText = g.message(code: 'financials.editCost')
-            submitButtonLabel = g.message(code:'default.button.edit.label')
+            submitButtonLabel = g.message(code:'default.button.save.label')
         }
         else if(mode && mode.equals("copy")) {
             modalText = g.message(code: 'financials.costItem.copy.tooltip')
@@ -41,11 +41,14 @@
         </g:elseif>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
-
+        <g:hiddenField name="showView" value="${tab}" />
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
+        <g:elseif test="${costItem && (mode && mode.equals("copy"))}">
+            <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
+        </g:elseif>
 
         <!--
         Ctx.Sub: ${sub}
@@ -395,7 +398,7 @@
                         <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                         <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <div class="ui search selection dropdown newCISelect" id="newIE">
-                            <input type="hidden" name="newIE" value="${params.newIe}">
+                            <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "com.k_int.kbplus.IssueEntitlement:${costItem.issueEntitlement.id}" : params.newIE}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"></div>
@@ -465,11 +468,12 @@
             }
             costItemElementConfigurations += sj.toString()+"}"
         %>
-            var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+            var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
             var selLinks = {
                 "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
                 "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}"
             };
+            var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
             if($("#pickedSubscription,#newSubscription input[type='hidden']").val().length > 0) {
                 selLinks.newIE += "&sub="+$("#pickedSubscription,#newSubscription input[type='hidden']").val();
             }
@@ -490,7 +494,7 @@
                     input.transition('glow');
                     var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
                     var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                    input.val((parsedLocalCurrency / parsedBillingCurrency).toFixed(9));
+                    input.val((parsedLocalCurrency / parsedBillingCurrency));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -559,8 +563,24 @@
                 }
             });
 
+            $("#newCostCurrency").change(function(){
+                //console.log("event listener succeeded, picked value is: "+$(this).val());
+                if($(this).val() === eurVal)
+                    $("#newCostCurrencyRate").val(1.0);
+                else $("#newCostCurrencyRate").val(0.0);
+                $("#costButton1").click();
+            });
+
             $("[name='newSubscription']").change(function(){
                 selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();
+                $("#newIE").dropdown('clear');
+                $("#newPackage").val('');
+                ajaxPostFunc();
+            });
+
+            $("#newPackage").change(function(){
+                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val()+"&pkg="+$("#newPackage").val();
+                $("#newIE").dropdown('clear');
                 ajaxPostFunc();
             });
 
@@ -582,18 +602,18 @@
             }
 
             function checkValues() {
-                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
-                    costElems.parent('.field').addClass('error')
+                if ( convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val()) ) {
+                    costElems.parent('.field').addClass('error');
                     return false;
                 }
                 else {
-                    costElems.parent('.field').removeClass('error')
+                    costElems.parent('.field').removeClass('error');
                     return true;
                 }
             }
 
             function convertDouble(input) {
-                console.log("input: "+input+", typeof: "+typeof(input))
+                //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
                 var locale = "${LocaleContextHolder.getLocale()}";
@@ -610,7 +630,7 @@
                         output = parseFloat(input.replace(/,/g, ""));
                     }
                     else console.log("Please check over regex!");
-                    console.log("string input parsed, output is: "+output);
+                    //console.log("string input parsed, output is: "+output);
                 }
                 return output;
             }

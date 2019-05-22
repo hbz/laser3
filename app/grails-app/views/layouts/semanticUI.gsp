@@ -90,22 +90,34 @@
                                     <div class="divider"></div>
                                 </g:if>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="index" message="menu.public.all_orgs" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
+                                </sec:ifAnyGranted>
 
-                                <%-- TODO: check orgType --%>
-                                <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ORG_EDITOR"
-                                                          controller="organisation" action="listInstitution" message="menu.public.all_insts" />
+                                <g:if test="${accessService.checkConstraint_ORG_COM_EDITOR()}">
+                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                                              controller="organisation" action="listInstitution" message="menu.public.all_insts" />
+                                </g:else>
+
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
-                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
+                                <div class="divider"></div>
+
+                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="package" action="compare" message="menu.public.comp_pkg" />
+                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
+
+                                <a href="${message(code:'url.gokb.' + grailsApplication.config.getCurrentServer())}" class="item">GOKB</a>
+
+                                <a href="${message(code:'url.ygor.' + grailsApplication.config.getCurrentServer())}" class="item">YGOR</a>
                         </div>
                     </div>
 
@@ -123,11 +135,11 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
                                                       action="documents" message="menu.my.documents" />
 
 
-                    <g:if test="${accessService.checkPerm('ORG_MEMBER')}">
+                    <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
 
                         <div class="divider"></div>
                         <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
@@ -140,16 +152,15 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
-
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                           action="manageMembers" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"
                                                           action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
-                            <g:elseif test="${accessService.checkPerm('ORG_COLLECTIVE')}">
+                            <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
@@ -158,15 +169,15 @@
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <div class="divider"></div>
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
                             <%--
                             <div class="divider"></div>
@@ -192,25 +203,25 @@
 
                             <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
+                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
 
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ADMIN"
+                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ADMIN"
                                                           controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
 
                                 <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
-                                <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
+                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                             </g:if>
@@ -475,10 +486,16 @@
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>
-                                    <g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
+                                    <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
+                                    <g:link class="item js-open-confirm-modal"
+                                            data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
+                                            data-confirm-term-how="ok"
+                                            controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>--%>
                                 </div>
                             </div>
 

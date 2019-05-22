@@ -197,7 +197,7 @@ class Org
 
         if (oss == OrgSettings.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_MEMBER', 'org'))
+            OrgSettings.add(this, OrgSettings.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
             return true
         }
 
@@ -569,7 +569,8 @@ class Org
         result
     }
 
-    def checkAndAddMissingIdentifier(ns,value) {
+    // Only for ISIL, EZB, WIBID
+    def addOnlySpecialIdentifiers(ns,value) {
         boolean found = false
         this.ids.each {
             if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
@@ -578,13 +579,12 @@ class Org
         }
 
         if ( ! found ) {
-            def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-            def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.org = ?", [id ,this])
-
-            if ( !id_occ || id_occ.size() == 0 ){
-                log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
-                new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
-            }
+            value = value?.trim()
+            ns = ns?.trim()
+            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save(flush:true);
+            def id = new Identifier(ns:namespace, value:value).save(flush:true);
+            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}");
+            new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
         }
     }
 }

@@ -17,6 +17,7 @@ import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.TypeMismatchException
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -70,7 +71,6 @@ class ControlledListService {
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
     Map getSubscriptions(Map params) {
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
@@ -89,10 +89,14 @@ class ControlledListService {
             filter.status = params.status
             queryString += " and s.status = :status "
         }
+        else {
+            filter.status = RDStore.SUBSCRIPTION_CURRENT
+            queryString += " and s.status = :status "
+        }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            result.results.add([name:s.dropdownNamingConvention(),value:s.class.name + ":" + s.id])
+            result.results.add([name:s.dropdownNamingConvention(org),value:s.class.name + ":" + s.id])
         }
         result
     }
@@ -107,19 +111,32 @@ class ControlledListService {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
-        String subFilter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
+        String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
-            subFilter = '= :sub'
+            filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
         }
+        if(params.pkg) {
+            try {
+                def pkgObj = genericOIDService.resolveOID(params.pkg)
+                if(pkgObj && pkgObj instanceof SubscriptionPackage) {
+                    SubscriptionPackage pkg = (SubscriptionPackage) pkgObj
+                    filter += ' and ie.tipp.pkg.gokbId = :pkg'
+                    filterParams.pkg = pkg.pkg.gokbId
+                }
+            }
+            catch (Exception e) {
+                return [results:[]]
+            }
+        }
         filterParams.put('query','%'+params.query+'%')
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             log.debug("issue entitlements found")
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
-                issueEntitlements.results.add([name:s.dropdownNamingConvention(),value:res.class.name+":"+res.id])
+                issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
             }
         }
         issueEntitlements
@@ -176,11 +193,15 @@ class ControlledListService {
             filter.status = params.status
             queryString += " and s.status = :status "
         }
+        else {
+            filter.status = RDStore.SUBSCRIPTION_CURRENT
+            queryString += " and s.status = :status "
+        }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()}",value:sp.class.name + ":" + sp.id])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:sp.class.name + ":" + sp.id])
             }
         }
         result

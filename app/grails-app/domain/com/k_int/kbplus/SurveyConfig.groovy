@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -26,21 +27,21 @@ class SurveyConfig {
 
     boolean pickAndChoose
 
-    ArrayList orgIDs
-
     static hasMany = [
             documents: DocContext,
-            surveyProperties: SurveyConfigProperties
+            surveyProperties: SurveyConfigProperties,
+            orgs: SurveyOrg
     ]
 
     static constraints = {
         subscription (nullable:true, blank:false)
         surveyProperty (nullable:true, blank:false)
-        orgIDs (nullable:true, blank:false)
+
         header(nullable:true, blank:false)
         comment  (nullable:true, blank:false)
         pickAndChoose (nullable:true, blank:false)
         documents (nullable:true, blank:false)
+        orgs  (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -50,9 +51,8 @@ class SurveyConfig {
         type column: 'surconf_type'
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
-        pickAndChoose column: 'surconf_pickAndChoose'
+        pickAndChoose column: 'surconf_pickandchoose'
 
-        orgIDs column: 'surconf_org_ids'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
@@ -60,6 +60,7 @@ class SurveyConfig {
         surveyInfo column: 'surconf_surinfo_fk'
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
+
 
         configOrder column: 'surconf_config_order'
     }
@@ -89,7 +90,7 @@ class SurveyConfig {
     def getConfigNameShort(){
 
         if(type == 'Subscription'){
-            return subscription?.name
+            return subscription?.dropdownNamingConvention()
         }
         else
         {
@@ -113,6 +114,10 @@ class SurveyConfig {
         {
             return surveyProperty?.getI10n('name')
         }
+    }
+    def getTypeInLocaleI10n() {
+
+        return this.getLocalizedValue(this?.type)
     }
 
 

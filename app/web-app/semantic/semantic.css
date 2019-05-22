@@ -1226,7 +1226,6 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.icon.button.la-hidden {
   visibility: hidden;
-  margin-right: 0.5rem;
 }
 
 /* new buttons */
@@ -1235,6 +1234,10 @@ aside.ui.accordion .title:not(.ui) {
   text-align: right;
   margin-right: 0;
   white-space: nowrap;
+}
+
+.js-gost {
+  display: none;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
@@ -26939,6 +26942,15 @@ Floated Menu / Item
   .ui.fixed.stackable.menu {
     position: relative;
   }
+}
+
+/*--------------
+   Pagination
+---------------*/
+
+.ui.pagination.menu {
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 /*!
  * # Semantic UI 2.3.1 - Message

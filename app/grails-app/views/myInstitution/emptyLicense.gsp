@@ -1,3 +1,4 @@
+<%@page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
 <head>
@@ -17,7 +18,7 @@
         <g:render template="actions"/>
     </semui:controlButtons>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code: 'license.new')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'license.new')}</h1>
 
     <semui:messages data="${flash}"/>
 
@@ -43,6 +44,16 @@
                 <semui:datepicker label="license.startDate" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
                 <semui:datepicker label="license.endDate" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+            </div>
+
+            <div class="field required">
+                <label>${message(code:'myinst.emptyLicense.status')}</label>
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
+                %>
+                <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
             </div>
 
             <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
@@ -166,7 +177,62 @@
             $(this).parent().parent().fadeOut('slow');
             $('.license-options').slideUp('fast');
         })
-    })
+    });
+
+    function formatDate(input) {
+        var inArr = input.split(/[\.-]/g);
+        return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+    }
+    $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
+                if($("#licenseStartDate").val() !== '' && $("#licenseEndDate").val() !== '') {
+                    var startDate = Date.parse(formatDate($("#licenseStartDate").val()));
+                    var endDate = Date.parse(formatDate($("#licenseEndDate").val()));
+                    return (startDate < endDate);
+                }
+                else return true;
+             };
+                    $('.newLicence').form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            licenseName: {
+                                identifier  : 'licenseName',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            },
+                            licenseStartDate: {
+                                identifier: 'licenseStartDate',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.startDateAfterEndDate"/>'
+                                    }
+                                ]
+                            },
+                            licenseEndDate: {
+                                identifier: 'licenseEndDate',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
+                                    }
+                                ]
+                            },
+                            status: {
+                                identifier  : 'status',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            }
+                         }
+                    });
 </r:script>
 
 </body>

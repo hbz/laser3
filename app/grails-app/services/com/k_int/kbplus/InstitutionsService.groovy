@@ -1,18 +1,23 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
+import de.laser.AuditConfig
 import de.laser.helper.RDStore
 
 class InstitutionsService {
 
     def contextService
 
-    def copyLicense(License base, params) {
+    static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
+    static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'
+
+    def copyLicense(License base, params, Object option) {
 
         if (! base) {
             return null
         }
 
-        def org = contextService.getOrg()
+        def org = params.consortium ?: contextService.getOrg()
 
         def lic_name = params.lic_name ?: "Kopie von ${base.reference}"
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
@@ -43,11 +48,38 @@ class InstitutionsService {
         } else {
             log.debug("Save ok");
 
-            for (prop in base.customProperties) {
-                def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-                copiedProp = prop.copyInto(copiedProp)
-                copiedProp.save(flush: true)
-                //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+            if (option == InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED) {
+
+                LicenseCustomProperty.findAllByOwner(base).each { lcp ->
+                    AuditConfig ac = AuditConfig.getConfig(lcp)
+
+                    if (ac) {
+                        // multi occurrence props; add one additional with backref
+                        if (lcp.type.multipleOccurrence) {
+                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
+                            additionalProp = lcp.copyInto(additionalProp)
+                            additionalProp.instanceOf = lcp
+                            additionalProp.save(flush: true)
+                        }
+                        else {
+                            // no match found, creating new prop with backref
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, licenseInstance, lcp.type)
+                            newProp = lcp.copyInto(newProp)
+                            newProp.instanceOf = lcp
+                            newProp.save(flush: true)
+                        }
+                    }
+                }
+            }
+            else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
+
+                for (prop in base.customProperties) {
+                    def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                    copiedProp = prop.copyInto(copiedProp)
+                    copiedProp.instanceOf = null
+                    copiedProp.save(flush: true)
+                    //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+                }
             }
 
             def licensee_role = RDStore.OR_LICENSEE
@@ -129,6 +161,7 @@ class InstitutionsService {
         for (prop in baseLicense?.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
+            copiedProp.instanceOf = null
             copiedProp.save(flush: true)
             //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
         }

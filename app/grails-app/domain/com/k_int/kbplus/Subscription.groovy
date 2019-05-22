@@ -140,14 +140,22 @@ class Subscription
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false)
+        status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
         impId(nullable:true, blank:false)
-        startDate(nullable:true, blank:false)
-        endDate(nullable:true, blank:false)
+        startDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+            }
+        })
+        endDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+            }
+        })
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
@@ -397,7 +405,7 @@ class Subscription
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }
@@ -670,31 +678,34 @@ class Subscription
   }
 
   def getHoldingTypes() {
-      def types = issueEntitlements?.tipp.title.type.unique()
+      def types = issueEntitlements?.tipp?.title?.type?.unique()
       types
   }
 
-   def dropdownNamingConvention(){
+  def dropdownNamingConvention() {
+      return dropdownNamingConvention(contextService.org)
+  }
 
-       def contextOrg = contextService.getOrg()
+  def dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
-
        String period = startDate ? sdf.format(startDate)  : ''
 
        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
 
        period = period ? '('+period+')' : ''
 
-
-       String statusString = status ? status.getI10n('value') : RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').getI10n('value')
+       String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
        if(instanceOf) {
            def additionalInfo
-
-           if(contextOrg.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id))
-           {
-               additionalInfo = (getSubscriber() ? getSubscriber()?.sortname : '')
+           Map<Long,Org> orgRelationsMap = [:]
+           orgRelations.each { or ->
+               orgRelationsMap.put(or.roleType.id,or.org)
+           }
+           //log.debug(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id))
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+               additionalInfo = orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id) ? orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname : ''
            }else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
@@ -706,7 +717,27 @@ class Subscription
 
            return name + ' - ' + statusString + ' ' +period
        }
-   }
+  }
+
+    def dropdownNamingConventionWithoutOrg() {
+        return dropdownNamingConventionWithoutOrg(contextService.org)
+    }
+
+    def dropdownNamingConventionWithoutOrg(contextOrg){
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        String period = startDate ? sdf.format(startDate)  : ''
+
+        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
+
+        period = period ? '('+period+')' : ''
+
+        String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+
+
+        return name + ' - ' + statusString + ' ' +period
+
+    }
 
     def getDerivedSubscriptionBySubscribers(Org org) {
         def result

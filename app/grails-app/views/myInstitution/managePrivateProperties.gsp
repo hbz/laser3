@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; de.laser.domain.I10nTranslation" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataCategory; de.laser.domain.I10nTranslation" %>
 
 <!doctype html>
 <html>
@@ -14,15 +14,18 @@
         <semui:crumb message="menu.institutions.manage_private_props" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}<semui:headerIcon /></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_private_props')}<semui:headerIcon /></h1>
 
     <semui:messages data="${flash}" />
 
             <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
                    data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
 
-
             <g:if test="${privatePropertyDefinitions}">
+
+                <div class="ui info message">
+                    ${message(code:'propertyDefinition.private.info')}
+                </div>
 
                 <g:form class="ui form" action="managePrivateProperties" method="post">
                     <table class="ui celled la-table table">
@@ -32,6 +35,7 @@
                                 <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                                 <th>Name (DE)</th>
                                 <th>Name (EN)</th>
+                                <th>${message(code:'propertyDefinition.type.label')}</th>
                                 <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
                                 <th>${message(code:'default.actions')}</th>
                             </tr>
@@ -57,6 +61,19 @@
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
+                                    <td>
+                                        ${PropertyDefinition.getLocalizedValue(ppd?.type)}
+                                        <g:if test="${ppd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                            <g:set var="refdataValues" value="${[]}"/>
+                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(ppd.refdataCategory)}"
+                                                    var="refdataValue">
+                                                <g:set var="refdataValues"
+                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                            </g:each>
+                                            <br>
+                                            (${refdataValues.join('/')})
+                                        </g:if>
+                                    </td>
                                     <td>${ppd.countUsages()}</td>
                                     <td class="x">
                                         <g:if test="${ppd.countUsages()==0}">
@@ -69,8 +86,6 @@
                             </g:each>
                         </tbody>
                     </table>
-
-                    <p>${message(code:'propertyDefinition.private.info')}</p>
                 </g:form>
             </g:if>
 
@@ -85,9 +100,14 @@
                 <input type="text" name="pd_name"/>
             </div>
 
+            <div class="field">
+                <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
+            </div>
+
             <div class="fields">
 
-                <div class="field five wide">
+                <div class="field six wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label', default:'Description')}</label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <select name="pd_descr" id="pd_descr" class="ui dropdown">
@@ -106,25 +126,49 @@
                         id="cust_prop_modal_select" />
                 </div>
 
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
-                    <textarea name="pd_expl" id="pd_expl" class="ui textarea"></textarea>
+                <div class="field four wide">
+                    <label class="property-label">Optionen</label>
+
+                    <g:checkBox type="text" name="pd_mandatory" /> ${message(code:'default.mandatory.tooltip')}
+                    <br />
+                    <g:checkBox type="text" name="pd_multiple_occurrence" /> ${message(code:'default.multipleOccurrence.tooltip')}
                 </div>
 
-                <div class="field six wide hide" id="cust_prop_ref_data_name">
-                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                </div>
             </div>
 
             <div class="fields">
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'default.mandatory.tooltip')}</label>
-                        <g:checkBox type="text" name="pd_mandatory" />
-                </div>
-                <div class="field five wide">
-                    <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
-                    <g:checkBox type="text" name="pd_multiple_occurrence" />
+                <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
+                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
+
+                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                    <g:set var="propertyService" bean="propertyService"/>
+
+                    <div class="ui grid" style="margin-top:1em">
+                        <div class="ten wide column">
+                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
+
+                                <p class="hidden" data-prop-def-desc="${cat.key}">
+                                    Häufig verwendete Kategorien: <br />
+
+                                    <%
+                                        List catList =  cat.value?.take(3)
+                                        catList = catList.collect { entry ->
+                                            '&nbsp; - ' + (RefdataCategory.findByDesc(entry[0]))?.getI10n('desc')
+                                        }
+                                        println catList.join('<br />')
+                                    %>
+
+                                </p>
+                            </g:each>
+                        </div>
+                        <div class="six wide column">
+                            <br />
+                            <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
+                                <i class="icon external alternate"></i>
+                                Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
+                            </a>
+                        </div>
+                    </div><!-- .grid -->
                 </div>
             </div>
 
@@ -133,20 +177,27 @@
 
     <g:javascript>
 
-       if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
-            $("#cust_prop_ref_data_name").show();
-       } else {
-            $("#cust_prop_ref_data_name").hide();
-       }
+    $('#pd_descr').change(function() {
+        $('#cust_prop_modal_select').trigger('change');
+    });
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
         if( selectedText == "class com.k_int.kbplus.RefdataValue") {
             $("#cust_prop_ref_data_name").show();
-        }else{
+
+            var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
+            if ($pMatch) {
+                $( "p[data-prop-def-desc]" ).addClass('hidden')
+                $pMatch.removeClass('hidden')
+            }
+        }
+        else {
             $("#cust_prop_ref_data_name").hide();
         }
     });
+
+    $('#cust_prop_modal_select').trigger('change');
 
     $("#cust_prop_refdatacatsearch").select2({
         placeholder: "Kategorie eintippen...",

@@ -21,8 +21,12 @@
         default: documentMessage = "license.documents"
             break
     }
+
+    boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    //println "EDITABLE: ${editable}"
+    //println "EDITABLE2: ${editable2}"
 %>
-<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || contextService.user.hasAffiliation("INST_EDITOR")}">
+<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
     <g:each in="${baseItems}" var="docctx">
         <%
             boolean visible = false

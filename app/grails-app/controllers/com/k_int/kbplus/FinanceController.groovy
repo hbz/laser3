@@ -7,6 +7,7 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
+import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
@@ -33,7 +34,6 @@ class FinanceController extends AbstractDebugController {
     def navigationGenerationService
     def filterService
     def financeService
-    def messageSource
     def escapeService
     def exportService
 
@@ -49,7 +49,7 @@ class FinanceController extends AbstractDebugController {
     def index() {
         log.debug("FinanceController::index() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         switch(params.view) {
@@ -88,7 +88,7 @@ class FinanceController extends AbstractDebugController {
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         LinkedHashMap result = setResultGenerics()
-        result.editable = accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         if(result.subscription.instanceOf && result.institution.id == result.subscription.getConsortia().id)
@@ -115,7 +115,7 @@ class FinanceController extends AbstractDebugController {
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
             result.showView = "subscr"
-        else if(accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER"))
+        else if(accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER"))
             result.showView = "own"
         if(params.ownSort)
             result.view = "own"
@@ -149,15 +149,15 @@ class FinanceController extends AbstractDebugController {
         def orgRoleCons = accessService.checkPerm('ORG_CONSORTIUM')
         def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
-        result.cost_item_tabs = []
+        result.cost_item_tabs = [:]
+        if(accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) {
+            result.cost_item_tabs["own"] = financialData.own
+        }
         if(orgRoleCons) {
             result.cost_item_tabs["cons"] = financialData.cons
         }
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
-        }
-        else if(accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')) {
-            result.cost_item_tabs["own"] = financialData.own
         }
         SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
@@ -423,6 +423,9 @@ class FinanceController extends AbstractDebugController {
     SXSSFWorkbook processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         XSSFWorkbook workbook = new XSSFWorkbook()
+        POIXMLProperties xmlProps = workbook.getProperties()
+        POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+        coreProps.setCreator(message(code:'laser'))
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
         LinkedHashMap<Subscription,List<Org>> providers = [:]
         LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
@@ -825,8 +828,8 @@ class FinanceController extends AbstractDebugController {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
-        def result =  [:]
-        def newCostItem = null
+        def result =  [showView:params.tab]
+        CostItem newCostItem = null
 
       try {
         log.debug("FinanceController::newCostItem() ${params}");
@@ -907,12 +910,12 @@ class FinanceController extends AbstractDebugController {
         Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
         def ie = null
-        if(params.newIe)
+        if(params.newIE)
         {
             try {
-                ie = IssueEntitlement.load(params.newIe.split(":")[1])
+                ie = IssueEntitlement.load(params.newIE.split(":")[1])
             } catch (Exception e) {
-                log.error("Non-valid IssueEntitlement sent ${params.newIe}",e)
+                log.error("Non-valid IssueEntitlement sent ${params.newIE}",e)
             }
         }
 
@@ -975,8 +978,12 @@ class FinanceController extends AbstractDebugController {
           }
           subsToDo.each { sub ->
 
+              List<CostItem> copiedCostItems = []
+
               if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-                  newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+                  newCostItem = (CostItem) genericOIDService.resolveOID(params.oldCostItem)
+                  //get copied cost items
+                  copiedCostItems = CostItem.findAllByCopyBase(newCostItem)
               }
               else {
                   newCostItem = new CostItem()
@@ -1012,6 +1019,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.endDate = endDate
               newCostItem.invoiceDate = invoiceDate
               newCostItem.financialYear = financialYear
+              newCostItem.copyBase = params.copyBase ? genericOIDService.resolveOID(params.copyBase) : null
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
               newCostItem.reference = params.newReference ? params.newReference.trim() : null
@@ -1048,6 +1056,24 @@ class FinanceController extends AbstractDebugController {
                           }
                       }
 
+                      //notify cost items copied from this cost item
+                      copiedCostItems.each { cci ->
+                          List diffs = []
+                          String costTitle = cci.costTitle ?: ''
+                          if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                              diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem.costInBillingCurrencyAfterTax]))
+                          }
+                          if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                              diffs.add(message(code:'pendingChange.message_CI02',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInLocalCurrency,newCostItem.costInLocalCurrencyAfterTax]))
+                          }
+                          diffs.each { diff ->
+                              PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date())
+                              if(!change.save(flush: true))
+                                  log.error(change.errors)
+                              //continue here: a) remove pending change again if a button has been clicked or after a certain time, b) check if everything works
+                          }
+                      }
+
                   } else {
                       result.error = "Unable to save!"
                   }
@@ -1064,9 +1090,17 @@ class FinanceController extends AbstractDebugController {
       params.remove("Add")
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
-        result.tab = params.tab
 
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
+    def acknowledgeChange() {
+        PendingChange changeAccepted = PendingChange.get(params.id)
+        if(changeAccepted)
+            changeAccepted.delete()
+        redirect(uri:request.getHeader('referer'))
     }
 
     @Deprecated
