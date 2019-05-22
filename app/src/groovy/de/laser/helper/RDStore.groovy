@@ -48,8 +48,10 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('subscription.status.no.status.set.but.null','filter.fake.values')
 
-    static final SUBSCRIPTION_TYPE_LOCAL_LICENSE      = getRefdataValue('Local Licence', 'Subscription Type')
-    static final SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE      = getRefdataValue('Consortial Licence', 'Subscription Type')
+    static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
+
+    static final SUBSCRIPTION_TYPE_LOCAL = getRefdataValue('Local Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_CONSORTIAL = getRefdataValue('Consortial Licence', 'Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
@@ -80,6 +82,9 @@ class RDStore {
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
+    static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact','Person Contact Type')
+    static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact','Person Contact Type')
+
     static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid','TitleInstancePackagePlatform.PaymentType')
@@ -90,6 +95,7 @@ class RDStore {
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
+    static final CCT_PHONE                  = getRefdataValue('Phone','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')

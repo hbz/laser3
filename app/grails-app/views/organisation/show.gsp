@@ -34,7 +34,7 @@
 
 <g:render template="breadcrumb" model="${[orgInstance: orgInstance, contextOrg: contextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
-<g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+<g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM','ROLE_ORG_EDITOR,ROLE_DATAMANAGER')}">
     <semui:controlButtons>
         <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
     </semui:controlButtons>
@@ -565,7 +565,7 @@ ${orgInstance.name}
         </div>
         </div>
             <aside class="four wide column la-sidekick">
-                <g:if test="${accessService.checkPermAffiliation('ORG_BASIC,ORG_CONSORTIUM', 'INST_USER')}">
+                <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_USER')}">
                     <g:render template="/templates/documents/card"
                               model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
                 </g:if>

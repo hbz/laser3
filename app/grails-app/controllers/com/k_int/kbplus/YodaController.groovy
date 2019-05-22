@@ -5,6 +5,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -40,6 +41,7 @@ class YodaController {
     def documentUpdateService
     def quartzScheduler
     def identifierService
+    def deletionService
 
     static boolean ftupdate_running = false
 
@@ -1082,6 +1084,55 @@ class YodaController {
             flash.error = e.printStackTrace()
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dropDeletedObjects() {
+        Map<String, Object> result = [:]
+
+        if (params.cmd == 'subscription') {
+
+            List<Subscription> subList =
+                    Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id desc", [max:20])
+
+            subList.each { sub ->
+                try {
+                    if (!sub.derivedSubscriptions) {
+                        println 'deleting subscription: ' + sub.id
+                        deletionService.deleteSubscription(sub, false)
+                    }
+                } catch (Exception e) {
+                    println e
+                }
+            }
+        }
+        else if (params.cmd == 'license') {
+
+            List<License> licList =
+                    License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id desc", [max:20])
+
+            licList.each { lic ->
+                try {
+                    if (!lic.derivedLicenses) {
+                        println 'deleting license: ' + lic.id
+                        deletionService.deleteLicense(lic, false)
+                    }
+                } catch (Exception e) {
+                    println e
+                }
+            }
+        }
+
+        List<Subscription> subList =
+                Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id desc")
+
+        List<License> licList =
+                License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id desc")
+
+        result.subscriptions = subList
+        result.licenses = licList
+
+        result
     }
 
     @Secured(['ROLE_YODA'])

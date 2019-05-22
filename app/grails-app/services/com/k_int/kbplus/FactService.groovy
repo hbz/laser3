@@ -84,6 +84,11 @@ class FactService {
       log.debug('No Costitems found for for this subscription')
       return null
     }
+    // temp solution
+    if (type.value == 'EBook'){
+      log.debug('CostPerUse not supported for EBooks')
+      return null
+    }
     def preferedMetrics = preferedCostPerUseMetrics[type.value]
     def report = costPerUseReportForDatatype[type.value]
     def costPerUseMetric = preferedMetrics.findAll {

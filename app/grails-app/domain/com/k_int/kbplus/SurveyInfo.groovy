@@ -20,7 +20,7 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
-    List surveyConfigs
+    //List surveyConfigs
 
     static hasMany = [
             surveyConfigs: SurveyConfig
@@ -52,5 +52,22 @@ class SurveyInfo {
 
 
 
+    }
+
+
+    def checkOpenSurvey()
+    {
+        boolean check = this.surveyConfigs.size() > 0 ? true : false
+
+        this.surveyConfigs.each {
+
+            if(!(it?.orgs.org?.size > 0)){
+                check = false
+            }
+        }
+
+
+
+        return check
     }
 }

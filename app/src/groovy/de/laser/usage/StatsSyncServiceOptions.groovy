@@ -1,5 +1,6 @@
 package de.laser.usage
 
+import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IdentifierOccurrence
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
@@ -26,6 +27,7 @@ class StatsSyncServiceOptions {
     String requestor
     String mostRecentClosedPeriod
     String statsTitleIdentifier
+    String identifierType
     TitleInstance title_inst
     Org supplier_inst
     Org org_inst
@@ -37,8 +39,8 @@ class StatsSyncServiceOptions {
         supplier_inst = (Org)objectList[1]
         org_inst = (Org)objectList[2]
         title_io_inst = (IdentifierOccurrence)objectList[3]
-
         statsTitleIdentifier = title_io_inst?.identifier?.value
+        identifierType = title_io_inst?.identifier?.ns?.ns
     }
 
     void setBasicQueryParams()
@@ -84,6 +86,12 @@ class StatsSyncServiceOptions {
                 break
             case "DB1":
                 reportType = "database"
+                break
+            case "BR1":
+                reportType = "book"
+                break
+            case "BR2":
+                reportType = "book"
                 break
             default:
                 reportType = "journal"

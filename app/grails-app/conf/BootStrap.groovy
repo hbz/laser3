@@ -359,18 +359,18 @@ class BootStrap {
             }
         }
 
-        def fakeRole                = locOrgRole('FAKE',                  'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
-        def orgMemberRole           = locOrgRole('ORG_MEMBER',             'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        def orgBasicRole            = locOrgRole('ORG_BASIC',              'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        def orgCollectiveRole       = locOrgRole('ORG_COLLECTIVE',         'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
+        def fakeRole                = locOrgRole('FAKE',                   'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
+        def orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
+        def orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
-        createOrgPerms(orgMemberRole, ['ORG_MEMBER'])
-        createOrgPerms(orgBasicRole, ['ORG_BASIC','ORG_MEMBER'])
-        createOrgPerms(orgCollectiveRole, ['ORG_COLLECTIVE','ORG_MEMBER','ORG_BASIC'])
-        createOrgPerms(orgConsortiumRole, ['ORG_CONSORTIUM'])
-        createOrgPerms(orgConsortiumSurveyRole, ['ORG_CONSORTIUM_SURVEY','ORG_CONSORTIUM'])
+        createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
+        createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
+        createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+        createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
     def initializeDefaultSettings(){
@@ -857,7 +857,7 @@ class BootStrap {
             [
                     name: [key: "accessibilitycompliance", en: "Accessibility compliance", de: "Zugriff für Personen mit Einschränkungen"],
                     expl: [en: "An agreement that the data is provided in a form compliant with relevant accessibility (disabilities) legislation. For more information, see guidelines set forth by the World Wide Web Consortium at http://www.w3.org/wai/.", de: "Aussagen über Zugriffmöglichkeiten für Personen mit Einschränkungen."],
-                    descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
             ],
             [
                     name: [en: "Single-site license", de: "Einzelplatzlizenz"],
@@ -1316,7 +1316,7 @@ class BootStrap {
                 [
                         name: [en: "Preis abhängig von", de: "Preis abhängig von"],
                         expl : [en: "", de: "Ist der Preis von etwas abhängig?"],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
                         name: [en: "Abbestellquote", de: "Abbestellquote"],
@@ -2049,6 +2049,8 @@ class BootStrap {
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'DB1R4'], BOOTSTRAP)
+        RefdataValue.loc('FactType', [en: 'BR1R4'], BOOTSTRAP)
+        RefdataValue.loc('FactType', [en: 'BR2R4'], BOOTSTRAP)
 
         RefdataValue.loc('FactMetric', [en: 'ft_total'], BOOTSTRAP)
         RefdataValue.loc('FactMetric', [en: 'record_view'], BOOTSTRAP)
@@ -2143,8 +2145,8 @@ class BootStrap {
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('Package Status',      [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
 
-        RefdataValue.loc('Person Contact Type', [en: 'Personal contact', de: 'Personenkontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Personal Contact', de: 'Personenkontakt'], BOOTSTRAP)
+        RefdataValue.loc('Person Contact Type', [en: 'Functional Contact', de: 'Funktionskontakt'], BOOTSTRAP)
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'Responsible Contact', de: 'Verantwortlicher Kontakt'], BOOTSTRAP)
@@ -2235,6 +2237,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
         RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
+        RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
@@ -2397,12 +2400,12 @@ class BootStrap {
         RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'], BOOTSTRAP)
         //RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'], BOOTSTRAP)
 
-        RefdataValue.loc('IPv4 Address Format',      [key: 'cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv4 Address Format',      [key: 'input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
-        RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'], BOOTSTRAP)
+        RefdataValue.loc('IPv4 Address Format',      [key: 'v4input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
+        RefdataValue.loc('IPv6 Address Format',      [key: 'v6input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
         RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w17/18', en: 'winter semester 2017/18', de: 'Wintersemester 2017/18'], BOOTSTRAP)
@@ -2565,6 +2568,7 @@ class BootStrap {
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+        RefdataValue.loc('CostItemStatus', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
         RefdataCategory.loc('Document Context Status', [en: 'Document Context Status'], BOOTSTRAP)
 
@@ -2660,6 +2664,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataCategory.loc('PendingChangeStatus',
                 [en: 'PendingChangeStatus', de: 'PendingChangeStatus'], BOOTSTRAP)

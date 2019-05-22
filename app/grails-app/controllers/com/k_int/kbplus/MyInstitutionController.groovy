@@ -226,13 +226,14 @@ class MyInstitutionController extends AbstractDebugController {
         def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
         def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
-        def license_status          = RDStore.LICENSE_DELETED
 
         def base_qry
         def qry_params
 
         @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
+
+        result.filterSet = params.filterSet ? true : false
 
         if (! params.orgRole) {
             if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
@@ -248,11 +249,10 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -267,11 +267,10 @@ from License as l where (
                 )
             )
         )) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, deleted:license_status, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -294,13 +293,27 @@ from License as l where (
             qry_params += [date_restr: date_restriction]
         }
 
+        if(params.status) {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RefdataValue.get(params.status)]
+        }
+        else if(params.status == '') {
+            base_qry += " and l.status != :deleted "
+            qry_params += [deleted: RDStore.LICENSE_DELETED]
+            result.filterSet = false
+        }
+        else {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RDStore.LICENSE_CURRENT]
+            params.status = RDStore.LICENSE_CURRENT.id
+            result.defaultSet = true
+        }
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
-
-        result.filterSet = params.filterSet ? true : false
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
@@ -488,9 +501,9 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptyLicense() {
         def result = setResultGenerics()
@@ -891,9 +904,9 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptySubscription() {
         def result = setResultGenerics()
@@ -922,6 +935,7 @@ from License as l where (
 
             result
         } else {
+            flash.message = "${message(code: 'default.notAutorized.message')}"
             redirect action: 'currentSubscriptions'
         }
     }
@@ -966,6 +980,7 @@ from License as l where (
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
+                    status: RefdataValue.get(params.status),
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1127,6 +1142,7 @@ from License as l where (
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
@@ -1148,11 +1164,14 @@ from License as l where (
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,
+                status: RefdataValue.get(params.status)
+        )
 
         if (!licenseInstance.save(flush: true)) {
-            flash.error = licenseInstance.errors
-            return
+            log.error(licenseInstance.errors)
+            flash.error = message(code:'license.create.error')
+            redirect action: 'emptyLicense'
         }
         else {
             log.debug("Save ok");
@@ -3114,8 +3133,15 @@ AND EXISTS (
                 [max: result.max, offset: result.offset]
         )
 
-        // println result.changes
+
         result.changes.addAll(result2)
+
+        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null and (ci.costItemStatus.value != 'Deleted' or ci.costItemStatus is null)",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+
+        //println result.changes
+        result3.each { row ->
+            result.changes.add([row,1])
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -3251,9 +3277,9 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
       def result = setResultGenerics()
@@ -3276,9 +3302,9 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
@@ -3300,9 +3326,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
     })
     def surveyResult() {
         def result = [:]
@@ -3325,9 +3351,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_MEMBER,ORG_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
         def result = [:]
@@ -3396,9 +3422,9 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
 
@@ -3450,9 +3476,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
       }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def budgetCodes() {
         def result = setResultGenerics()
@@ -3496,8 +3522,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -3550,8 +3576,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         def result = setResultGenerics()
 
@@ -3560,7 +3586,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.comboType == 'Consortium'
             params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
         }
-        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             result.comboType == 'Department'
             params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
         }
@@ -3632,9 +3658,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
         def result = setResultGenerics()
@@ -3656,7 +3682,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             }
         }
-        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
@@ -3731,8 +3757,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
     def removeDepartment() {
         Org department = Org.get(params.dept)
         if(organisationService.removeDepartment(department))
@@ -4188,9 +4214,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def managePropertyGroups() {
         def result = setResultGenerics()
@@ -4240,7 +4266,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                             name: params.name,
                             description: params.description,
                             tenant: result.institution,
-                            ownerType: ownerType
+                            ownerType: ownerType,
+                            visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true
@@ -4271,9 +4298,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def managePrivateProperties() {
         def result = setResultGenerics()

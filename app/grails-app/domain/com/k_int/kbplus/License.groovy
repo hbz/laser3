@@ -65,7 +65,7 @@ class License
   String noticePeriod
   String licenseUrl
   String licenseType
-  String licenseStatus
+  //String licenseStatus
   String impId
 
   long lastmod
@@ -118,7 +118,7 @@ class License
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
-          licenseStatus column:'lic_license_status_str'
+          //licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
               documents sort:'owner.id', order:'desc'
           onixplLicense column: 'lic_opl_fk'
@@ -132,7 +132,7 @@ class License
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false)
+        status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         impId(nullable:true, blank:false)
         reference(nullable:false, blank:false)
@@ -143,12 +143,20 @@ class License
         instanceOf(nullable:true, blank:false)
         isSlaved(nullable:true, blank:false)
         licenseType(nullable:true, blank:true)
-        licenseStatus(nullable:true, blank:true)
+        //licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
         onixplLicense(nullable: true, blank: true)
         licenseCategory(nullable: true, blank: true)
-        startDate(nullable: true, blank: true)
-        endDate(nullable: true, blank: true)
+        startDate(nullable: true, blank: false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+            }
+        })
+        endDate(nullable: true, blank: false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+            }
+        })
         lastUpdated(nullable: true, blank: true)
     }
 
