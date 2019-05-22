@@ -87,6 +87,18 @@
                     <br>
                     <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
                     <br>
+
+                    <div class="four wide column">
+                        <button type="button" class="ui icon button right floated" data-semui="modal" data-href="#modalCostItemAllSub" ><i class="plus icon"></i></button>
+
+
+                        <g:render template="/survey/costItemModal"
+                                  model="[modalID: 'AllSub', setting: 'bulkForAll']"/>
+                    </div>
+
+                    <br>
+                    <br>
+
                     <semui:filter>
                         <g:form action="surveyCostItems" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
@@ -119,6 +131,17 @@
                             total="${selectedParticipants?.size()}"/></h2>
                     <br>
                     <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+                    <br>
+
+                    <div class="four wide column">
+                    <button type="button" class="ui icon button right floated" data-semui="modal" data-href="#modalCostItemAllNewSub" ><i class="plus icon"></i></button>
+
+
+                    <g:render template="/survey/costItemModal"
+                              model="[modalID: 'AllNewSub', setting: 'bulkForAll']"/>
+                    </div>
+
+                    <br>
                     <br>
 
                     <semui:filter>

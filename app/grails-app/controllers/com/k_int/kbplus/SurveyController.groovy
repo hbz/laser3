@@ -1302,6 +1302,17 @@ class SurveyController {
                 }
             }
 
+            if (params.surveyConfig) {
+                def surveyConfig = genericOIDService.resolveOID(params.surveyConfig)
+
+                surveyConfig?.orgs?.each{
+
+                    if(!CostItem.findBySurveyOrg(it)) {
+                        surveyOrgsDo << it
+                    }
+                }
+            }
+
             if (! surveyOrgsDo) {
                 surveyOrgsDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
