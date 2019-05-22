@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
@@ -18,7 +19,7 @@ class DeletionService {
 
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -168,7 +169,7 @@ class DeletionService {
 
     static Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
@@ -336,4 +337,108 @@ class DeletionService {
         result
     }
 
+    static Map<String, Object> deleteUser(User user, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        List userOrgs       = new ArrayList(user.affiliations)
+        List userRoles      = new ArrayList(user.roles)
+        List userFolder     = UserFolder.findAllWhere(user: user)
+        List userSettings   = UserSettings.findAllWhere(user: user)
+        List userTransforms = UserTransforms.findAllWhere(user: user)
+
+        List costItems = CostItem.executeQuery(
+                'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+        List ciecs = CostItemElementConfiguration.executeQuery(
+                'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+
+        List ddds = DashboardDueDate.findAllByResponsibleUser(user)
+
+        List docs = Doc.executeQuery(
+                'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
+        List links = Links.executeQuery(
+                'select x from Links x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+
+        List pendingChanges = PendingChange.findAllByUser(user)
+
+        List reminders = new ArrayList(user.reminders)
+
+        List surveyResults = SurveyResult.findAllByUser(user)
+
+        List systemTickets = SystemTicket.findAllByAuthor(user)
+
+        List tasks = Task.executeQuery(
+                'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
+
+        if (dryRun) {
+            result.'Zugehörigkeiten'        = userOrgs
+            result.'Rollen'                 = userRoles
+            result.'Folder'                 = userFolder  // impl. FolderItem ?
+            result.'Einstellungen'          = userSettings
+            result.'Transforms'             = userTransforms  // impl. Transforms ?
+
+            result.'Kosten'                 = costItems
+            result.'Kostenkonfigurationen'  = ciecs
+            result.'DashboardDueDate'       = ddds
+            result.'Dokumente'              = docs
+            result.'Links'                  = links
+            result.'Anstehende Änderungen'  = pendingChanges
+            result.'Reminder'               = reminders
+            result.'Umfrageergebnisse'      = surveyResults
+            result.'Tickets'                = systemTickets
+            result.'Aufgaben'               = tasks
+        }
+        else {
+            return // TODO
+
+            User.withTransaction { status ->
+
+                try {
+
+                    // user orgs
+                    user.affiliations.clear()
+                    userOrgs.each { tmp -> tmp.delete() }
+
+                    // user roles
+                    user.roles.clear()
+                    userOrgs.each { tmp -> tmp.delete() }
+
+                    // user folder
+                    userFolder.each { tmp -> tmp.delete() }
+
+                    // user settings
+                    userSettings.each { tmp -> tmp.delete() }
+
+                    // user transforms
+                    userTransforms.each { tmp -> tmp.delete() }
+
+                    costItems.each { tmp -> null /* tmp.delete() */ }
+                    ciecs.each { tmp -> null /* tmp.delete() */ }
+
+                    // dashboard due date
+                    ddds.each { tmp -> tmp.delete() }
+
+                    docs.each { tmp -> null /* tmp.delete() */ }
+                    links.each { tmp -> null /* tmp.delete() */ }
+                    pendingChanges.each { tmp -> null /* tmp.delete() */ }
+                    reminders.each { tmp -> null /* tmp.delete() */ }
+                    surveyResults.each { tmp -> null /* tmp.delete() */ }
+                    systemTickets.each { tmp -> null /* tmp.delete() */ }
+                    tasks.each { tmp -> null /* tmp.delete() */ }
+
+                    //user.delete()
+                    //status.flush()
+                }
+                catch (Exception e) {
+                    println 'error while deleting user ' + user.id + ' .. rollback'
+                    println e.message
+                    status.setRollbackOnly()
+                    result = [status: RESULT_ERROR]
+                }
+                result = [status: RESULT_SUCCESS]
+            }
+        }
+
+        result
+    }
 }
