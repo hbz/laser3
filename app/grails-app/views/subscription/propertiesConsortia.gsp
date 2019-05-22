@@ -28,7 +28,7 @@
 <g:render template="navSubscriberManagement"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesConsortium.header')}
+${message(code: 'subscription.propertiesConsortia.header')}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -42,7 +42,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
 
 <semui:filter>
-    <h4>${message(code: 'subscription.propertiesConsortia.onlyPropOfConsortialSubscription')}</h4>
+    <h4>${message(code: 'subscription.propertiesConsortia.onlyPropOfConsortialSubscription', args: [parentSub.name])}</h4>
     <g:form action="propertiesConsortia" method="post" class="ui form" id="${params.id}">
         <g:render template="../templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
@@ -61,7 +61,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
 %{--<div class="ui segment">
 
-    <b>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.name}</b>
+    <b>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'propertyDefinition.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -105,8 +105,16 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
             <div class="field required">
                 <h4>${message(code: 'subscription.propertiesConsortia.info')}</h4>
 
-                <label>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.name}</label>
+                <div class="inline field">
+                    <label>${message(code: 'subscription.propertiesConsortia.propertySelected')}:</label>
 
+                    <b>${filterPropDef?.getI10n('name')}
+                        <g:if test="${filterPropDef?.tenant != null}">
+                            <i class="shield alternate icon"></i>
+                        </g:if>
+                    </b>
+
+                </div>
                 <g:hiddenField name="filterPropDef" value="${filterPropDef}"/>
 
 
@@ -118,7 +126,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                         <g:set var="refdataValues"
                                value="${refdataValues + refdataValue?.getI10n('value')}"/>
                     </g:each>
-                    <br>
+
                     (${refdataValues.join('/')})
                 </g:if>
 
@@ -146,6 +154,16 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
     <g:set var="editableOld" value="${editable}"/>
 
+
+    <div class="ui segment">
+        <h4>${message(code: 'subscription.propertiesConsortia.deletePropetyInfo')}</h4>
+
+            <g:link class="ui button js-open-confirm-modal"
+                    data-confirm-term-content = "${message(code: 'subscription.propertiesConsortia.deletePropety.button.confirm')}"
+                    data-confirm-term-how="ok" action="processDeletePropertiesConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesConsortia.deletePropety.button', args: [filterPropDef?.getI10n('name')])}</g:link>
+
+    </div>
+
     <div class="divider"></div>
 
     <div class="ui segment">
@@ -157,7 +175,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
-                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.name}</th>
+                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -172,131 +190,147 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
                 <div class="ui middle aligned selection list">
 
-                    <div class="item">
+                    <g:if test="${filterPropDef?.tenant == null}">
+                        <div class="item">
 
-                        <div class="right floated content">
-                            <semui:totalNumber total="${parentSub.customProperties?.size()}"/>
-                        </div>
-
-                        <g:set var="customProperty"
-                               value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
-                        <g:if test="${customProperty}">
-                            <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
-
-                            <div class="content">
-
-                                %{-- <g:set var="editable" value="${!(AuditConfig.getConfig(customProperty))}"
-                                        scope="request"/>--}%
-
-                                <g:if test="${customProperty.type.type == Integer.toString()}">
-                                    <semui:xEditable owner="${customProperty}" type="number" field="intValue"/>
-                                </g:if>
-                                <g:elseif test="${customProperty.type.type == String.toString()}">
-                                    <semui:xEditable owner="${customProperty}" type="text" field="stringValue"/>
-                                </g:elseif>
-                                <g:elseif test="${customProperty.type.type == BigDecimal.toString()}">
-                                    <semui:xEditable owner="${customProperty}" type="text" field="decValue"/>
-                                </g:elseif>
-                                <g:elseif test="${customProperty.type.type == Date.toString()}">
-                                    <semui:xEditable owner="${customProperty}" type="date" field="dateValue"/>
-                                </g:elseif>
-                                <g:elseif test="${customProperty.type.type == URL.toString()}">
-                                    <semui:xEditable owner="${customProperty}" type="url" field="urlValue"
-
-                                                     class="la-overflow la-ellipsis"/>
-                                    <g:if test="${customProperty.value}">
-                                        <semui:linkIcon href="${customProperty.value}"/>
-                                    </g:if>
-                                </g:elseif>
-                                <g:elseif test="${customProperty.type.type == RefdataValue.toString()}">
-                                    <semui:xEditableRefData owner="${customProperty}" type="text" field="refValue"
-                                                            config="${customProperty.type.refdataCategory}"/>
-                                </g:elseif>
-
-                                <%
-                                    if (AuditConfig.getConfig(customProperty)) {
-                                        if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                        } else {
-                                            println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                        }
-                                    }
-                                %>
-
+                            <div class="right floated content">
+                                <semui:totalNumber total="${parentSub.customProperties?.size()}"/>
                             </div>
-                        </g:if><g:else>
-                        <div class="content">
-                            ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
-                        </div>
-                    </g:else>
 
-                    </div>
+                            <g:set var="customProperty"
+                                   value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
+                            <g:if test="${customProperty}">
+                                <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
 
-                    <div class="item">
+                                <div class="content">
 
-                        <div class="right floated content">
-                            <semui:totalNumber total="${parentSub.privateProperties?.size()}"/>
-                        </div>
+                                    %{-- <g:set var="editable" value="${!(AuditConfig.getConfig(customProperty))}"
+                                            scope="request"/>--}%
 
-                        <g:set var="privateProperty"
-                               value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
-                        <g:if test="${privateProperty}">
-                            <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
-
-                            <div class="content">
-
-                                <g:set var="editable" value="${!(AuditConfig.getConfig(privateProperty))}"
-                                       scope="request"/>
-
-                                <g:if test="${privateProperty.type.type == Integer.toString()}">
-                                    <semui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
-                                </g:if>
-                                <g:elseif test="${privateProperty.type.type == String.toString()}">
-                                    <semui:xEditable owner="${privateProperty}" type="text" field="stringValue"/>
-                                </g:elseif>
-                                <g:elseif test="${privateProperty.type.type == BigDecimal.toString()}">
-                                    <semui:xEditable owner="${privateProperty}" type="text" field="decValue"/>
-                                </g:elseif>
-                                <g:elseif test="${privateProperty.type.type == Date.toString()}">
-                                    <semui:xEditable owner="${privateProperty}" type="date" field="dateValue"/>
-                                </g:elseif>
-                                <g:elseif test="${privateProperty.type.type == URL.toString()}">
-                                    <semui:xEditable owner="${privateProperty}" type="url" field="urlValue"
-
-                                                     class="la-overflow la-ellipsis"/>
-                                    <g:if test="${privateProperty.value}">
-                                        <semui:linkIcon href="${privateProperty.value}"/>
+                                    <g:if test="${customProperty.type.type == Integer.toString()}">
+                                        <semui:xEditable owner="${customProperty}" type="number"
+                                                         field="intValue"/>
                                     </g:if>
-                                </g:elseif>
-                                <g:elseif test="${privateProperty.type.type == RefdataValue.toString()}">
-                                    <semui:xEditableRefData owner="${privateProperty}" type="text" field="refValue"
-                                                            config="${privateProperty.type.refdataCategory}"/>
-                                </g:elseif>
+                                    <g:elseif test="${customProperty.type.type == String.toString()}">
+                                        <semui:xEditable owner="${customProperty}" type="text"
+                                                         field="stringValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${customProperty.type.type == BigDecimal.toString()}">
+                                        <semui:xEditable owner="${customProperty}" type="text"
+                                                         field="decValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${customProperty.type.type == Date.toString()}">
+                                        <semui:xEditable owner="${customProperty}" type="date"
+                                                         field="dateValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${customProperty.type.type == URL.toString()}">
+                                        <semui:xEditable owner="${customProperty}" type="url" field="urlValue"
 
-                                <%
-                                    if (AuditConfig.getConfig(privateProperty)) {
-                                        if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                        } else {
-                                            println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                         class="la-overflow la-ellipsis"/>
+                                        <g:if test="${customProperty.value}">
+                                            <semui:linkIcon href="${customProperty.value}"/>
+                                        </g:if>
+                                    </g:elseif>
+                                    <g:elseif test="${customProperty.type.type == RefdataValue.toString()}">
+                                        <semui:xEditableRefData owner="${customProperty}" type="text"
+                                                                field="refValue"
+                                                                config="${customProperty.type.refdataCategory}"/>
+                                    </g:elseif>
+
+                                    <%
+                                        if (AuditConfig.getConfig(customProperty)) {
+                                            if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                                println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                            } else {
+                                                println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                            }
                                         }
-                                    }
-                                %>
+                                    %>
 
+                                </div>
+                            </g:if><g:else>
+                            <div class="content">
+                                ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
                             </div>
-                        </g:if><g:else>
-                        <div class="content">
-                            ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
-                        </div>
-                    </g:else>
+                        </g:else>
 
-                    </div>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${filterPropDef?.tenant != null}">
+
+                        <div class="item">
+
+                            <div class="right floated content">
+                                <semui:totalNumber total="${parentSub.privateProperties?.size()}"/>
+                            </div>
+
+                            <g:set var="privateProperty"
+                                   value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
+                            <g:if test="${privateProperty}">
+                                <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
+
+                                <div class="content">
+
+                                    <g:set var="editable" value="${!(AuditConfig.getConfig(privateProperty))}"
+                                           scope="request"/>
+
+                                    <g:if test="${privateProperty.type.type == Integer.toString()}">
+                                        <semui:xEditable owner="${privateProperty}" type="number"
+                                                         field="intValue"/>
+                                    </g:if>
+                                    <g:elseif test="${privateProperty.type.type == String.toString()}">
+                                        <semui:xEditable owner="${privateProperty}" type="text"
+                                                         field="stringValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${privateProperty.type.type == BigDecimal.toString()}">
+                                        <semui:xEditable owner="${privateProperty}" type="text"
+                                                         field="decValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${privateProperty.type.type == Date.toString()}">
+                                        <semui:xEditable owner="${privateProperty}" type="date"
+                                                         field="dateValue"/>
+                                    </g:elseif>
+                                    <g:elseif test="${privateProperty.type.type == URL.toString()}">
+                                        <semui:xEditable owner="${privateProperty}" type="url" field="urlValue"
+
+                                                         class="la-overflow la-ellipsis"/>
+                                        <g:if test="${privateProperty.value}">
+                                            <semui:linkIcon href="${privateProperty.value}"/>
+                                        </g:if>
+                                    </g:elseif>
+                                    <g:elseif test="${privateProperty.type.type == RefdataValue.toString()}">
+                                        <semui:xEditableRefData owner="${privateProperty}" type="text"
+                                                                field="refValue"
+                                                                config="${privateProperty.type.refdataCategory}"/>
+                                    </g:elseif>
+
+                                    <%
+                                        if (AuditConfig.getConfig(privateProperty)) {
+                                            if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                                println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                            } else {
+                                                println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                            }
+                                        }
+                                    %>
+
+                                </div>
+                            </g:if><g:else>
+                            <div class="content">
+                                ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
+                            </div>
+                        </g:else>
+
+                        </div>
+                    </g:if>
                 </div>
 
             </td>
 
             <td class="x">
-                <g:link controller="subscription" action="show" id="${parentSub.id}" class="ui icon button"><i
+                <g:link controller="subscription" action="show" id="${parentSub.id}"
+                        class="ui icon button"><i
                         class="write icon"></i></g:link>
             </td>
             </tr>
@@ -305,7 +339,8 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
     </div>
 
     <div class="ui segment">
-        <h3>${message(code: 'subscription.propertiesConsortia.subscriber')} <semui:totalNumber total="${filteredSubChilds?.size()}"/></h3>
+        <h3>${message(code: 'subscription.propertiesConsortia.subscriber')} <semui:totalNumber
+                total="${filteredSubChilds?.size()}"/></h3>
         <table class="ui celled la-table table">
             <thead>
             <tr>
@@ -315,7 +350,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
-                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.name}</th>
+                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -328,7 +363,8 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                     <g:each in="${filteredSubscribers}" var="subscr">
                         <td>${subscr.sortname}</td>
                         <td>
-                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
+                            <g:link controller="organisation" action="show"
+                                    id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
                                 <span data-position="top right"
@@ -353,125 +389,143 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
                         <div class="ui middle aligned selection list">
 
-                            <div class="item">
+                            <g:if test="${filterPropDef?.tenant == null}">
+                                <div class="item">
 
-                                <div class="right floated content">
-                                    <semui:totalNumber total="${sub.customProperties?.size()}"/>
-                                </div>
-
-                                <g:set var="customProperty"
-                                       value="${sub.customProperties.find { it.type == filterPropDef }}"/>
-                                <g:if test="${customProperty}">
-                                    <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
-
-                                    <div class="content">
-                                        <g:if test="${customProperty.type.type == Integer.toString()}">
-                                            <semui:xEditable owner="${customProperty}" type="number" field="intValue"/>
-                                        </g:if>
-                                        <g:elseif test="${customProperty.type.type == String.toString()}">
-                                            <semui:xEditable owner="${customProperty}" type="text" field="stringValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${customProperty.type.type == BigDecimal.toString()}">
-                                            <semui:xEditable owner="${customProperty}" type="text" field="decValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${customProperty.type.type == Date.toString()}">
-                                            <semui:xEditable owner="${customProperty}" type="date" field="dateValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${customProperty.type.type == URL.toString()}">
-                                            <semui:xEditable owner="${customProperty}" type="url" field="urlValue"
-
-                                                             class="la-overflow la-ellipsis"/>
-                                            <g:if test="${customProperty.value}">
-                                                <semui:linkIcon href="${customProperty.value}"/>
-                                            </g:if>
-                                        </g:elseif>
-                                        <g:elseif test="${customProperty.type.type == RefdataValue.toString()}">
-                                            <semui:xEditableRefData owner="${customProperty}" type="text"
-                                                                    field="refValue"
-                                                                    config="${customProperty.type.refdataCategory}"/>
-                                        </g:elseif>
-
-                                        <%
-                                            if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
-                                                if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                    println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                                } else {
-                                                    println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                                }
-                                            }
-                                        %>
-
+                                    <div class="right floated content">
+                                        <semui:totalNumber total="${sub.customProperties?.size()}"/>
                                     </div>
-                                </g:if><g:else>
-                                <div class="content">
-                                    ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
-                                </div>
-                            </g:else>
-                            </div>
 
-                            <div class="item">
+                                    <g:set var="customProperty"
+                                           value="${sub.customProperties.find { it.type == filterPropDef }}"/>
+                                    <g:if test="${customProperty}">
+                                        <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
 
-                                <g:set var="privateProperty"
-                                       value="${sub.privateProperties.find { it.type == filterPropDef }}"/>
-
-                                <div class="right floated content">
-                                    <semui:totalNumber total="${sub.privateProperties?.size()}"/>
-                                </div>
-
-                                <g:if test="${privateProperty}">
-                                    <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
-
-                                    <div class="content">
-                                        <g:if test="${privateProperty.type.type == Integer.toString()}">
-                                            <semui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
-                                        </g:if>
-                                        <g:elseif test="${privateProperty.type.type == String.toString()}">
-                                            <semui:xEditable owner="${privateProperty}" type="text"
-                                                             field="stringValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${privateProperty.type.type == BigDecimal.toString()}">
-                                            <semui:xEditable owner="${privateProperty}" type="text" field="decValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${privateProperty.type.type == Date.toString()}">
-                                            <semui:xEditable owner="${privateProperty}" type="date" field="dateValue"/>
-                                        </g:elseif>
-                                        <g:elseif test="${privateProperty.type.type == URL.toString()}">
-                                            <semui:xEditable owner="${privateProperty}" type="url" field="urlValue"
-                                                             class="la-overflow la-ellipsis"/>
-                                            <g:if test="${privateProperty.value}">
-                                                <semui:linkIcon href="${privateProperty.value}"/>
+                                        <div class="content">
+                                            <g:if test="${customProperty.type.type == Integer.toString()}">
+                                                <semui:xEditable owner="${customProperty}" type="number"
+                                                                 field="intValue"/>
                                             </g:if>
-                                        </g:elseif>
-                                        <g:elseif test="${privateProperty.type.type == RefdataValue.toString()}">
-                                            <semui:xEditableRefData owner="${privateProperty}" type="text"
-                                                                    field="refValue"
-                                                                    config="${privateProperty.type.refdataCategory}"/>
-                                        </g:elseif>
+                                            <g:elseif test="${customProperty.type.type == String.toString()}">
+                                                <semui:xEditable owner="${customProperty}" type="text"
+                                                                 field="stringValue"/>
+                                            </g:elseif>
+                                            <g:elseif
+                                                    test="${customProperty.type.type == BigDecimal.toString()}">
+                                                <semui:xEditable owner="${customProperty}" type="text"
+                                                                 field="decValue"/>
+                                            </g:elseif>
+                                            <g:elseif test="${customProperty.type.type == Date.toString()}">
+                                                <semui:xEditable owner="${customProperty}" type="date"
+                                                                 field="dateValue"/>
+                                            </g:elseif>
+                                            <g:elseif test="${customProperty.type.type == URL.toString()}">
+                                                <semui:xEditable owner="${customProperty}" type="url"
+                                                                 field="urlValue"
 
-                                        <%
-                                            if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
-                                                if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                    println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                                } else {
-                                                    println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                 class="la-overflow la-ellipsis"/>
+                                                <g:if test="${customProperty.value}">
+                                                    <semui:linkIcon href="${customProperty.value}"/>
+                                                </g:if>
+                                            </g:elseif>
+                                            <g:elseif
+                                                    test="${customProperty.type.type == RefdataValue.toString()}">
+                                                <semui:xEditableRefData owner="${customProperty}" type="text"
+                                                                        field="refValue"
+                                                                        config="${customProperty.type.refdataCategory}"/>
+                                            </g:elseif>
+
+                                            <%
+                                                if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
+                                                    if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                    } else {
+                                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                    }
                                                 }
-                                            }
-                                        %>
+                                            %>
 
+                                        </div>
+                                    </g:if><g:else>
+                                    <div class="content">
+                                        ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
                                     </div>
-                                </g:if><g:else>
-                                <div class="content">
-                                    ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
+                                </g:else>
                                 </div>
-                            </g:else>
+                            </g:if>
+                            <g:if test="${filterPropDef?.tenant != null}">
 
-                            </div>
+                                <div class="item">
+
+                                    <g:set var="privateProperty"
+                                           value="${sub.privateProperties.find { it.type == filterPropDef }}"/>
+
+                                    <div class="right floated content">
+                                        <semui:totalNumber total="${sub.privateProperties?.size()}"/>
+                                    </div>
+
+                                    <g:if test="${privateProperty}">
+                                        <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
+
+                                        <div class="content">
+                                            <g:if test="${privateProperty.type.type == Integer.toString()}">
+                                                <semui:xEditable owner="${privateProperty}" type="number"
+                                                                 field="intValue"/>
+                                            </g:if>
+                                            <g:elseif test="${privateProperty.type.type == String.toString()}">
+                                                <semui:xEditable owner="${privateProperty}" type="text"
+                                                                 field="stringValue"/>
+                                            </g:elseif>
+                                            <g:elseif
+                                                    test="${privateProperty.type.type == BigDecimal.toString()}">
+                                                <semui:xEditable owner="${privateProperty}" type="text"
+                                                                 field="decValue"/>
+                                            </g:elseif>
+                                            <g:elseif test="${privateProperty.type.type == Date.toString()}">
+                                                <semui:xEditable owner="${privateProperty}" type="date"
+                                                                 field="dateValue"/>
+                                            </g:elseif>
+                                            <g:elseif test="${privateProperty.type.type == URL.toString()}">
+                                                <semui:xEditable owner="${privateProperty}" type="url"
+                                                                 field="urlValue"
+                                                                 class="la-overflow la-ellipsis"/>
+                                                <g:if test="${privateProperty.value}">
+                                                    <semui:linkIcon href="${privateProperty.value}"/>
+                                                </g:if>
+                                            </g:elseif>
+                                            <g:elseif
+                                                    test="${privateProperty.type.type == RefdataValue.toString()}">
+                                                <semui:xEditableRefData owner="${privateProperty}" type="text"
+                                                                        field="refValue"
+                                                                        config="${privateProperty.type.refdataCategory}"/>
+                                            </g:elseif>
+
+                                            <%
+                                                if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
+                                                    if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                    } else {
+                                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                    }
+                                                }
+                                            %>
+
+                                        </div>
+                                    </g:if><g:else>
+                                    <div class="content">
+                                        ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
+                                    </div>
+                                </g:else>
+
+                                </div>
+                            </g:if>
                         </div>
 
                     </td>
 
                     <td class="x">
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i
+                        <g:link controller="subscription" action="show" id="${sub.id}"
+                                class="ui icon button"><i
                                 class="write icon"></i></g:link>
                     </td>
                 </tr>
@@ -489,7 +543,8 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                                                   default="No members have been added to this license. You must first add members."/></strong>
     </g:if>
 
-    <g:if test="${!filterPropDef}"><g:message code="subscription.propertiesConsortia.noPropertySeleced"/></strong>
+    <g:if test="${!filterPropDef}"><g:message
+            code="subscription.propertiesConsortia.noPropertySeleced"/></strong>
     </g:if>
 </g:else>
 
