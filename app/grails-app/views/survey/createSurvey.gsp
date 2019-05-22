@@ -32,10 +32,10 @@
 
         <div class="two fields ">
             <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                              value="${surveyInfo?.startDate}"/>
+                              value="${surveyInfo?.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                              value="${surveyInfo?.endDate}"/>
+                              value="${surveyInfo?.endDate}" required="" />
         </div>
 
 

@@ -118,12 +118,12 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${property?.getI10n('comment')}">
+                        <g:if test="${property?.comment}">
                             <g:if test="${property?.owner == institution}">
                                 <semui:xEditable owner="${property}" field="comment" type="textarea"/>
                             </g:if>
                             <g:else>
-                                ${property?.getI10n('comment')}
+                                ${property?.comment}
                             </g:else>
                         </g:if>
                     </td>

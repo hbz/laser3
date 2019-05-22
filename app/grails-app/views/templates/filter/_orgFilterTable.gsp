@@ -81,7 +81,22 @@
                 ${message(code: 'subscription')}
             </th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
+            <th>
+                ${message(code: 'surveyProperty.subDate')}
+            </th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
+            <th>
+                ${message(code: 'subscription.status.label')}
+            </th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+            <th>
+                ${message(code: 'financials.costItem')}
+            </th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
             <th>
                 ${message(code: 'surveyCostItems.label')}
             </th>
@@ -326,17 +341,55 @@
                     </g:if>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
+                <td>
+                    <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
+                        <g:link controller="subscription" action="show"
+                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
+                            <g:formatDate formatName="default.date.format.notime" date="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.startDate}"/><br>
+                            <g:formatDate formatName="default.date.format.notime" date="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.endDate}"/>
+                        </g:link>
+
+                    </g:if>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
+                <td>
+                    <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
+                        <g:link controller="subscription" action="show"
+                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
+                           ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.status.getI10n('value')}
+                        </g:link>
+
+                    </g:if>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
+                <td class="center aligned">
+                    <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+
+                        <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number" />
+
+                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                        <br>
+                    </g:each>
+
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
                 <td class="center aligned">
                     <g:set var="surveyOrg" scope="request" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                     <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
                 <g:if test="${costItem}">
 
-                    <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />
+                    <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number"/>
 
                     ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                    <button type="button" class="ui icon button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
+                    <br>
+
+                    <button type="button" class="ui icon mini button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
 
                     <g:render template="/survey/costItemModal"
                               model="[modalID: surveyOrg.id, mode: 'edit']"/>

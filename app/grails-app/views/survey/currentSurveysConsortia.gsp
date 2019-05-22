@@ -153,7 +153,8 @@
                 </td>
 
                 <td>
-
+                    <g:link controller="survey" action="surveyEvaluation" id="${s.id}" class="ui icon button"><i
+                            class="write icon"></i></g:link>
                 </td>
                 <td class="x">
 

@@ -407,8 +407,8 @@
                                 </g:if>
                             </td>
                             <td>
-                                <g:if test="${property?.getI10n('comment')}">
-                                    <span data-tooltip="${property?.getI10n('comment')}" data-position="top center">
+                                <g:if test="${property?.comment}">
+                                    <span data-tooltip="${property?.comment}" data-position="top center">
                                         <i class="inverted circular info icon"></i>
                                     </span>
                                 </g:if>

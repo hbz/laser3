@@ -21,6 +21,10 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <g:render template="actions"/>
+</semui:controlButtons>
+
 <br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -154,8 +158,8 @@
                             </g:if>
                         </td>
                         <td>
-                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('comment')}">
-                                ${surveyProperty?.surveyProperty?.getI10n('comment')}
+                            <g:if test="${surveyProperty?.surveyProperty?.comment}">
+                                ${surveyProperty?.surveyProperty?.comment}
                             </g:if>
                         </td>
                         <td>
@@ -238,8 +242,8 @@
                             </g:if>
                         </td>
                         <td>
-                            <g:if test="${property?.getI10n('comment')}">
-                                ${property?.getI10n('comment')}
+                            <g:if test="${property?.comment}">
+                                ${property?.comment}
                             </g:if>
                         </td>
                         <td>
