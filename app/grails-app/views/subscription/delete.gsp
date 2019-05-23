@@ -21,7 +21,7 @@
     <g:if test="${dryRun}">
         <semui:msg class="info" header="" message="subscription.delete.info" />
         <br />
-        <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
+        <g:link controller="subscription" action="edit" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
         <g:if test="${editable}">
             <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenzen löschen</g:link>
         </g:if>

@@ -35,14 +35,20 @@ class UserController extends AbstractDebugController {
         def result = setResultGenerics()
 
         if (params.process && result.editable) {
-            result.result = deletionService.deleteUser(result.user, false)
+            println params
+            User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+            println userReplacement
+
+            result.result = deletionService.deleteUser(result.user, userReplacement, false)
         }
         else {
-            result.dryRun = deletionService.deleteUser(result.user, DeletionService.DRY_RUN)
+            result.dryRun = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        result
-
+        result.ctxOrgUserList = User.executeQuery(
+                'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg',
+                [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg()]
+        )
         render view: 'delete', model: result
     }
 

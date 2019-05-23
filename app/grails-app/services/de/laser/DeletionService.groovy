@@ -342,7 +342,7 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteUser(User user, boolean dryRun) {
+    static Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
@@ -380,24 +380,22 @@ class DeletionService {
 
             result.info << ['Zugehörigkeiten', userOrgs]
             result.info << ['Rollen', userRoles]
-            result.info << ['Folder', userFolder]  // impl. FolderItem ?
+            result.info << ['Folder', userFolder]
             result.info << ['Einstellungen', userSettings]
-            result.info << ['Transforms', userTransforms]  // impl. Transforms ?
+            result.info << ['Transforms', userTransforms]
 
-            result.info << ['Kosten', costItems]
-            result.info << ['Kostenkonfigurationen', ciecs]
+            result.info << ['Kosten', costItems, 'blue']
+            result.info << ['Kostenkonfigurationen', ciecs, 'blue']
             result.info << ['DashboardDueDate', ddds]
-            result.info << ['Dokumente', docs]
-            result.info << ['Links', links]
-            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['Dokumente', docs, 'teal']
+            result.info << ['Links', links, 'blue']
+            result.info << ['Anstehende Änderungen', pendingChanges, 'teal']
             result.info << ['Reminder', reminders]
-            result.info << ['Umfrageergebnisse', surveyResults]
-            result.info << ['Tickets', systemTickets]
-            result.info << ['Aufgaben', tasks]
+            result.info << ['Umfrageergebnisse', surveyResults, 'teal']
+            result.info << ['Tickets', systemTickets, 'teal']
+            result.info << ['Aufgaben', tasks, 'teal']
         }
         else {
-            return // TODO
-
             User.withTransaction { status ->
 
                 try {
@@ -408,7 +406,7 @@ class DeletionService {
 
                     // user roles
                     user.roles.clear()
-                    userOrgs.each { tmp -> tmp.delete() }
+                    userRoles.each { tmp -> tmp.delete() }
 
                     // user folder
                     userFolder.each { tmp -> tmp.delete() }
@@ -419,22 +417,65 @@ class DeletionService {
                     // user transforms
                     userTransforms.each { tmp -> tmp.delete() }
 
-                    costItems.each { tmp -> null /* tmp.delete() */ }
-                    ciecs.each { tmp -> null /* tmp.delete() */ }
+                    // cost items
+                    costItems.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
 
-                    // dashboard due date
+                    // cost item element configurations
+                    ciecs.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
+
                     ddds.each { tmp -> tmp.delete() }
 
-                    docs.each { tmp -> null /* tmp.delete() */ }
-                    links.each { tmp -> null /* tmp.delete() */ }
-                    pendingChanges.each { tmp -> null /* tmp.delete() */ }
-                    reminders.each { tmp -> null /* tmp.delete() */ }
-                    surveyResults.each { tmp -> null /* tmp.delete() */ }
-                    systemTickets.each { tmp -> null /* tmp.delete() */ }
-                    tasks.each { tmp -> null /* tmp.delete() */ }
+                    // docs
+                    docs.each { tmp ->
+                        if (tmp.creator.id == user.id) {
+                            tmp.creator = replacement
+                        }
+                        if (tmp.user.id == user.id) {
+                            tmp.user = replacement
+                        }
+                        tmp.save()
+                    }
+                    docs.each { tmp -> tmp.delete() }
 
-                    //user.delete()
-                    //status.flush()
+                    links.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
+
+                    pendingChanges.each { tmp ->
+                        tmp.user = replacement
+                        tmp.save()
+                    }
+
+                    reminders.each { tmp -> tmp.delete() }
+
+                    surveyResults.each { tmp ->
+                        tmp.user = replacement
+                        tmp.save()
+                    }
+
+                    systemTickets.each { tmp ->
+                        tmp.author = replacement
+                        tmp.save()
+                    }
+
+                    tasks.each { tmp ->
+                        tmp.responsibleUser = replacement
+                        tmp.creator = replacement
+                        tmp.save()
+                    }
+
+                    user.delete()
+                    status.flush()
 
                     result = [status: RESULT_SUCCESS]
                 }

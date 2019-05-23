@@ -15,20 +15,25 @@
     </h1>
 
     <g:if test="${dryRun}">
-        <semui:msg class="info" header=""
-                   text="Wollen Sie den ausgewählten Nutzer endgültig aus dem System entfernen?" />
+        <semui:msg class="info" header="" message="user.delete.info" />
         <br />
-        <g:link controller="user" action="show" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
+
         <g:if test="${editable}">
-            <g:form controller="yoda" action="delete" params="${[id: user.id, process: true]}">
+            <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
+                <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
+                <input type="submit" class="ui button red" value="Benutzer löschen" />
+                <br />
+                <br />
+                <p>
+                    Gekennzeichnete Daten dabei an folgenden Nutzer übertragen:
 
-                <g:select id="userReplacement" name="userReplacement" class="many-to-one"
-                          from="${com.k_int.kbplus.auth.User.findAll()}"
-                          optionKey="${{'com.k_int.kbplus.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
-
-                <input type="submit" class="ui button red" value="Nutzer löschen" />
+                    <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
+                          from="${ctxOrgUserList.sort()}"
+                          optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                </p>
             </g:form>
         </g:if>
+
         <br />
 
         <table class="ui celled la-table la-table-small table">
@@ -46,8 +51,15 @@
                         ${info[0]}
                     </td>
                     <td style="text-align:center">
-                        <g:if test="${info.size() > 2}">
-                            <span class="ui circular label ${info[2]}">${info[1].size()}</span>
+                        <g:if test="${info.size() > 2 && info[1].size() > 0}">
+                            <span class="ui circular label ${info[2]}"
+                                <g:if test="${info[2] == 'blue'}">
+                                    data-tooltip="${message(code:'user.delete.moveToNewUser')}"
+                                </g:if>
+                                <g:if test="${info[2] == 'teal'}">
+                                    data-tooltip="${message(code:'user.delete.moveToNewUser')}"
+                                </g:if>
+                            >${info[1].size()}</span>
                         </g:if>
                         <g:else>
                             ${info[1].size()}
@@ -65,7 +77,7 @@
     <g:if test="${result?.status == deletionService.RESULT_SUCCESS}">
         <semui:msg class="positive" header=""
                    text="Löschvorgang wurde erfolgreich durchgeführt." />
-        <g:link controller="todo" action="todo" class="ui button">todo</g:link>
+        <g:link controller="organisation" action="users" params="${[id: contextService.getOrg()?.id]}" class="ui button">Nutzerverwaltung</g:link>
     </g:if>
     <g:if test="${result?.status == deletionService.RESULT_QUIT}">
         <semui:msg class="negative" header="Löschvorgang abgebrochen"

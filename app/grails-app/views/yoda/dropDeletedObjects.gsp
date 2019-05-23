@@ -13,6 +13,10 @@
 
 <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
+    <br/>
+    <br/>
+
     <g:each in="${subscriptions}" var="sub">
         <a href="<g:createLink controller="subscription" action="show" params="${[id: sub.id]}"/>">
             <g:if test="${sub.derivedSubscriptions}">
@@ -28,10 +32,15 @@
 
     <br />
     <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
+
     <br />
     <br />
 
     <h2 class="ui header">Verträge - ${licenses.size()}</h2>
+
+    <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
+    <br />
+    <br />
 
     <g:each in="${licenses}" var="lic">
         <a href="<g:createLink controller="license" action="show" params="${[id: lic.id]}"/>">
