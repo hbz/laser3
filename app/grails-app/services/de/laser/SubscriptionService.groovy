@@ -18,6 +18,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
 
 class SubscriptionService {
     def contextService
@@ -275,16 +276,14 @@ class SubscriptionService {
         def userId = contextService.user.id
         toDeleteTasks.each { deleteTaskId ->
             def dTask = Task.get(deleteTaskId)
-            if (dTask && (dTask.creator.id == userId || isInstAdm)) {
-                try {
-                    dTask.delete(flush: true)
-                    flash.message = messageSource.getMessage(code: 'default.deleted.message', args: [messageSource.getMessage(code: 'task.label', default: 'Task'), deleteTaskId])
-                }
-                catch (Exception e) {
-                    flash.message = messageSource.getMessage(code: 'default.not.deleted.message', args: [messageSource.getMessage(code: 'task.label', default: 'Task'), deleteTaskId])
+            if (dTask) {
+                if (dTask.creator.id == userId || isInstAdm) {
+                    delete(dTask, flash)
+                } else {
+                    flash.error += "Sie sind nicht berechtigt Aufgabe ${deleteTaskId} zu löschen."
                 }
             } else {
-                flash.message = messageSource.getMessage(code: 'default.not.deleted.notAutorized.message', args: [messageSource.getMessage(code: 'task.label', default: 'Task'), deleteTaskId])
+                flash.error += "Die Aufgabe ${deleteTaskId} konnte nicht gelöscht werden. Sie existiert nicht (mehr)."
             }
         }
     }
@@ -389,20 +388,17 @@ class SubscriptionService {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
-        targetSub.documents.each {
-            if (toDeleteDocs.contains(it.id) && (it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-                Map params = [deleteId: it.id]
-                log.debug("deleteDocuments ${params}");
-                docstoreService.unifiedDeleteDocuments(params)
-            }
-        }
+        log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
+        def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
+        [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
+        log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
                 if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-                    it.status = RDStore.IE_DELETED
+                    it.status = RDStore.DOC_DELETED
                     save(it, flash)
                 }
             }
@@ -474,23 +470,22 @@ class SubscriptionService {
         }
     }
 
-    private boolean delete(obj, flash){
-        if (obj.delete(flush: true)){
+    private boolean delete(obj, flash) {
+        if (obj) {
+            obj.delete(flush: true)
             log.debug("Delete ${obj} ok")
-            return true
         } else {
-            log.error("Problem deleting ${obj.errors}")
-            flash.error += "Es ist ein Problem beim Löschen von ${obj} aufgetreten."
-            return false
+            flash.error += "Es ist ein Problem beim Löschen aufgetreten."
         }
     }
+
     private boolean save(obj, flash){
         if (obj.save(flush: true)){
             log.debug("Save ${obj} ok")
             return true
         } else {
             log.error("Problem saving ${obj.errors}")
-            flash.error += "Es ist ein Fehler beim Speichern von ${obj.value} aufgetreten."
+            flash.error += "Es ist ein Fehler beim Speichern von ${obj} aufgetreten."
             return false
         }
     }
