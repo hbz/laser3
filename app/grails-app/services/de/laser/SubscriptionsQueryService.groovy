@@ -185,7 +185,7 @@ from Subscription as s where (
         if (params.status) {
 
             if (params.status == 'FETCH_ALL') {
-                // ignore subscription.status
+                base_qry += " AND ( s.status.value != 'Deleted' ) "
             }
             else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
                 base_qry += " AND s.status is null "
