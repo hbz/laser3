@@ -51,7 +51,7 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     List getMySubscriptions_writeRights(){
@@ -72,14 +72,15 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.showParentsAndChildsSubs = 'true'
+        params.showParentsAndChildsSubs = false
+//        params.showParentsAndChildsSubs = 'true'
         params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
