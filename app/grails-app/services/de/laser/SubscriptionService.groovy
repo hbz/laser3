@@ -78,7 +78,7 @@ class SubscriptionService {
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.showParentsAndChildsSubs = false
 //        params.showParentsAndChildsSubs = 'true'
         params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
@@ -88,7 +88,7 @@ class SubscriptionService {
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
@@ -97,7 +97,7 @@ class SubscriptionService {
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
