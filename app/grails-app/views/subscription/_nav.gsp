@@ -31,7 +31,7 @@
         </g:if>
     --%>
 
-    <semui:subNavItem controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <semui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" message="default.notes.label" />
 
     <g:if test="${grailsApplication.config.feature_finance}">
