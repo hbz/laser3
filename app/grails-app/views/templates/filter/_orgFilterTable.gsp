@@ -93,7 +93,18 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
             <th>
-                ${message(code: 'financials.costItem')}
+                <g:set var="costItemElements"  value="${com.k_int.kbplus.RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:institution])}"/>
+
+            <g:form action="surveyCostItems" method="post"
+                    params="${params+[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}">
+                <laser:select name="selectedCostItemElement"
+                              from="${costItemElements}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${selectedCostItemElement}"
+                              class="ui dropdown"
+                              onchange="this.form.submit()"/>
+            </g:form>
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
@@ -367,12 +378,12 @@
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
                 <td class="center aligned">
                     <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+                        <g:if test="${costItem.costItemElement.id.toString() == selectedCostItemElement}">
 
-                        <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number" />
+                            <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number" />
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                        <br>
+                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        </g:if>
                     </g:each>
 
                 </td>
