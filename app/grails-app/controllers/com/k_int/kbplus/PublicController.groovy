@@ -214,7 +214,7 @@ class PublicController {
                 if (idv) {
                     query += " AND ( EXISTS ( " +
                         " SELECT io FROM IdentifierOccurrence AS io " +
-                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+                        " WHERE io.ti = ie.tipp.title AND io.identifier.value LIKE :idv "
 
                     if (params.idns) {
                         query += " AND io.identifier.ns = :idns "
