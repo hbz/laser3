@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -48,12 +48,12 @@
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
                 </div>
 
-                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+                <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
                         <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
+                            <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
                         </select>
@@ -71,7 +71,7 @@
 
     <hr>
 
-        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+        <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
 
             <g:if test="${! cons_members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
@@ -114,17 +114,17 @@
 
             <r:script language="JavaScript">
                 $('#submitterFallback').click(function(e){
-                    e.preventDefault()
-                    $('#dynHiddenValues').empty()
+                    e.preventDefault();
+                    $('#dynHiddenValues').empty();
                     $('input[name=selectedOrgs]:checked').each(function(index, elem){
-                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">')
+                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">');
                         $('#dynHiddenValues').append(newElem)
-                    })
+                    });
                     $(this).parents('form').submit()
-                })
+                });
 
                 $('#asOrgType').change(function() {
-                    var selVal = $(this).find('option:selected').attr('data-value')
+                    var selVal = $(this).find('option:selected').attr('data-value');
                     if ('Consortium' == selVal) {
                         $('.cons-options').show()
                     }

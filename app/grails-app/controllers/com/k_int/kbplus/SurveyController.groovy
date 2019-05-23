@@ -317,8 +317,8 @@ class SurveyController {
 
         result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
 
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.surveyConfigSubOrgs)
+        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.selectedParticipants)
 
         result
 
@@ -358,8 +358,7 @@ class SurveyController {
         if (params.filterPropDef && consortiaMemberIds) {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
@@ -371,12 +370,12 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+        result.surveyConfigSubOrgs = Org.findAllByIdInList(com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers().id)
 
         result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
 
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+        result.selectedParticipants = result.surveyConfigOrgs.minus(result.surveyConfigSubOrgs)
+        result.selectedSubParticipants = result.surveyConfigOrgs.minus(result.selectedParticipants)
 
 
         def costItemElementConfigurations = []
@@ -393,6 +392,7 @@ class SurveyController {
 
         result.costItemElementConfigurations = costItemElementConfigurations
         result.orgConfigurations = orgConfigurations
+        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result
 
@@ -1299,6 +1299,17 @@ class SurveyController {
                     surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
                 } catch (Exception e) {
                     log.error("Non-valid surveyOrg sent ${params.surveyOrg}",e)
+                }
+            }
+
+            if (params.surveyConfig) {
+                def surveyConfig = genericOIDService.resolveOID(params.surveyConfig)
+
+                surveyConfig?.orgs?.each{
+
+                    if(!CostItem.findBySurveyOrg(it)) {
+                        surveyOrgsDo << it
+                    }
                 }
             }
 

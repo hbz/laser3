@@ -37,8 +37,6 @@ import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
 
-// import org.json.simple.JSONArray;
-// import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
@@ -67,6 +65,7 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
+    def financeService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -694,7 +693,7 @@ from License as l where (
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
         if(!params.exportXLS)
         result.num_sub_rows = subscriptions.size()
 
@@ -732,7 +731,7 @@ from License as l where (
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls")
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -750,7 +749,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportcurrentSubscription(subscriptions,"csv"))
+                    writer.write((String) exportcurrentSubscription(subscriptions,"csv", result.institution))
                 }
                 out.close()
             }
@@ -758,13 +757,35 @@ from License as l where (
     }
 
 
-    private def exportcurrentSubscription(subscriptions, String format) {
+    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
-        List titles = ['Name', g.message(code: 'subscription.owner.label'), g.message(code: 'subscription.packages.label'), g.message(code: 'consortium.label'), g.message(code: 'default.provider.label'), g.message(code: 'default.agency.label'), g.message(code: 'subscription.startDate.label'), g.message(code: 'subscription.endDate.label'), 'Status', 'Typ']
+        List titles = ['Name',
+                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'subscription.packages.label'),
+                       g.message(code: 'consortium.label'),
+                       g.message(code: 'default.provider.label'),
+                       g.message(code: 'default.agency.label'),
+                       g.message(code: 'subscription.startDate.label'),
+                       g.message(code: 'subscription.endDate.label'),
+                       g.message(code: 'subscription.manualCancellationDate.label'),
+                       g.message(code: 'default.identifiers.label'),
+                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'subscription.form.label'),
+                       g.message(code: 'subscription.resource.label')]
+        boolean asCons = false
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            asCons = true
+            titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
+        }
         Map<Subscription,Set> providers = [:]
         Map<Subscription,Set> agencies = [:]
+        Map<Subscription,Set> identifiers = [:]
+        Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
+        List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and s.status != :subDeleted and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[subDeleted:RDStore.SUBSCRIPTION_DELETED,ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -783,42 +804,61 @@ from License as l where (
             subAgencies.add(agency.org.name)
             agencies.put(agency.sub,subAgencies)
         }
+        allIdentifiers.each { identifier ->
+            Set subIdentifiers
+            if(identifiers.get(identifier.sub))
+                subIdentifiers = identifiers.get(identifier.sub)
+            else subIdentifiers = new TreeSet()
+            subIdentifiers.add("(${identifier.identifier.ns.ns}) ${identifier.identifier.value}")
+            identifiers.put(identifier.sub,subIdentifiers)
+        }
+        allCostItems.each { row ->
+            costItemCounts.put(row[1],row[0])
+        }
+        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null and s.status != :deleted group by s.instanceOf.id',[deleted:RDStore.SUBSCRIPTION_DELETED])
+        Map subscriptionMembers = [:]
+        membershipCounts.each { row ->
+            subscriptionMembers.put(row[1],row[0])
+        }
         List subscriptionData = []
-        switch(format) {
-            case "xls":
-            case "xlsx":
-                subscriptions.each { sub ->
-                    List row = []
-                    row.add([field: sub.name ?: "",style: null])
+        subscriptions.each { sub ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+                    row.add([field: sub.name ?: "", style: null])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
-                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '',style:null])
-                    List packageNames = sub.packages.collect {
+                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
-                    row.add([field: packageNames ? packageNames.join(", ") : '',style: null])
-                    row.add([field: sub.getConsortia()?.name ?: '',style: null])
-                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '',style: null])
-                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '',style: null])
-                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '',style: null])
-                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '',style: null])
-                    row.add([field: sub.status?.getI10n("value"),style: null])
-                    row.add([field: sub.type?.getI10n("value"),style: null])
+                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+                    row.add([field: sub.getConsortia()?.name ?: '', style: null])
+                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '', style: null])
+                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '', style: null])
+                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
+                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
+                    row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
+                    row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
+                    row.add([field: sub.status?.getI10n("value"), style: null])
+                    row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+                    if(asCons) {
+                        row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
+                        row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
+                    }
                     subscriptionData.add(row)
-                }
-                Map sheetData = [:]
-                sheetData[message(code:'menu.my.subscriptions')] = [titleRow:titles,columnData:subscriptionData]
-                return exportService.generateXLSXWorkbook(sheetData)
-            case "csv":
-                subscriptions.each { sub ->
-                    List row = []
-                    row.add(sub.name ?: "")
+                    break
+                case "csv":
+                    row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
                     row.add(ownerReferences ? ownerReferences.join("; ") : '')
-                    List packageNames = sub.packages.collect {
+                    List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
@@ -827,11 +867,27 @@ from License as l where (
                     row.add(agencies.get(sub) ? agencies.get(sub).join("; ") : '')
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
+                    row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
+                    row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
                     row.add(sub.status?.getI10n("value"))
                     row.add(sub.type?.getI10n("value"))
+                    row.add(sub.form?.getI10n("value"))
+                    row.add(sub.resource?.getI10n("value"))
+                    if(asCons) {
+                        row.add(subscriptionMembers.get(sub.id))
+                        row.add(costItemCounts.get(sub.id))
+                    }
                     subscriptionData.add(row)
-                }
-                return exportService.generateSeparatorTableString(titles,subscriptionData,',')
+                    break
+            }
+        }
+        switch(format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: subscriptionData]
+                return exportService.generateXLSXWorkbook(sheetData)
+            case 'csv': return exportService.generateSeparatorTableString(titles, subscriptionData, ',')
         }
     }
 

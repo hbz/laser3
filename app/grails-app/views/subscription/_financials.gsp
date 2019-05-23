@@ -3,13 +3,13 @@
     <table class="ui la-table-small la-table-inCard table">
         <thead>
         <tr>
-            <th>${message(code:'financials.costInBillingCurrency')}</th>
+            <th>${message(code:'financials.sum.billing')}</th>
             <th>${message(code:'financials.billingCurrency')}</th>
-            <th>${message(code:'financials.newCosts.valueInEuro')}</th>
+            <th>${message(code:'financials.sum.local')}</th>
             <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
-                <th>${message(code:'financials.costInBillingCurrencyAfterTax')}</th>
+                <th>${message(code:'financials.sum.billingAfterTax')}</th>
                 <th>${message(code:'financials.billingCurrency')}</th>
-                <th>${message(code:'financials.newCosts.valueInEuro')}</th>
+                <th>${message(code:'financials.sum.localAfterTax')}</th>
             </g:if>
         </tr>
         </thead>

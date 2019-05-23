@@ -312,7 +312,7 @@ class SubscriptionController extends AbstractDebugController {
             result.result = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
-            result.preview = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+            result.dryRun = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
         }
 
         result
@@ -1072,6 +1072,41 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
     })
+    def processUnLinkLicenseConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentLicense = result.parentSub.owner
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        def removeLic = []
+        validSubChilds.each { subChild ->
+                def sub = Subscription.get(subChild.id)
+                sub.owner = null
+                if (sub.save(flush: true)) {
+                    removeLic << subChild?.dropdownNamingConvention(result.institution)
+                }
+            }
+            if (removeLic) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.removeAcceptedAll', args: [removeLic.join(', ')])
+            }
+
+
+        redirect(action: 'linkLicenseConsortia', id: params.id)
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def linkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1369,14 +1404,14 @@ class SubscriptionController extends AbstractDebugController {
                                 log.debug("New private property created: " + newProp.type.name)
 
                                 newProperties++
-                                setProperty(newProp, params.filterPropValue)
+                                def prop = setProperty(newProp, params.filterPropValue)
                             }
                         }
 
                         if (existingProps?.size() == 1){
                             def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
                             changeProperties++
-                            setProperty(privateProp, params.filterPropValue)
+                            def prop = setProperty(privateProp, params.filterPropValue)
 
                         }
 
@@ -1395,20 +1430,111 @@ class SubscriptionController extends AbstractDebugController {
                             } else {
                                 log.debug("New custom property created: " + newProp.type.name)
                                 newProperties++
-                                setProperty(newProp, params.filterPropValue)
+                                def prop = setProperty(newProp, params.filterPropValue)
                             }
                         }
 
                         if (existingProp){
                             def customProp = SubscriptionCustomProperty.get(existingProp.id)
                             changeProperties++
-                            setProperty(customProp, params.filterPropValue)
+                            def prop = setProperty(customProp, params.filterPropValue)
 
                         }
                     }
 
                 }
                 flash.message = message(code: 'subscription.propertiesConsortia.successful', args: [newProperties, changeProperties])
+            }
+
+        }
+
+        def filterPropDef = params.filterPropDef
+        def id = params.id
+        redirect(action: 'propertiesConsortia', id: id, params: [filterPropDef: filterPropDef])
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def processDeletePropertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        if (params.filterPropDef) {
+
+            def filterPropDef = params.filterPropDef
+            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+
+            def deletedProperties = 0
+
+            if (propDef) {
+                validSubChilds.each { subChild ->
+
+                    if (propDef?.tenant != null) {
+                        //private Property
+                        def owner = subChild
+
+                        def existingProps = owner.privateProperties.findAll {
+                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        }
+                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+
+
+                        if (existingProps?.size() == 1 ){
+                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+
+                            try {
+                                owner.privateProperties.remove(privateProp)
+                                owner.refresh()
+                                privateProp?.delete(failOnError: true, flush: true)
+                                deletedProperties++
+                            } catch (Exception e)
+                            {
+                                log.error(e)
+                            }
+
+                        }
+
+                    } else {
+                        //custom Property
+                        def owner = subChild
+
+                        def existingProp = owner.customProperties.find {
+                            it.type.id == propDef.id && it.owner.id == owner.id
+                        }
+
+
+                        if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
+                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+
+                            try {
+                                customProp?.owner = null
+                                customProp.save()
+                                owner.customProperties.remove(customProp)
+                                customProp?.delete(failOnError: true, flush: true)
+                                owner.refresh()
+                                deletedProperties++
+                            } catch (Exception e){
+                                log.error(e)
+                            }
+
+                        }
+                    }
+
+                }
+                flash.message = message(code: 'subscription.propertiesConsortia.deletedProperties', args: [deletedProperties])
             }
 
         }
@@ -4043,7 +4169,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         if(property instanceof SubscriptionCustomProperty || property instanceof SubscriptionPrivateProperty)
         {
-            return
+
         }
 
         if(property.type.type == Integer.toString()) {
@@ -4088,7 +4214,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     def binding_properties = ["${field}": value]
                     bindData(property, binding_properties)
                     //property.save()
-                    if(!property.save(failOnError: true))
+                    if(!property.save(failOnError: true, flush: true))
                     {
                         println(property.error)
                     }
@@ -4105,7 +4231,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             // delete existing date
                             property."${field}" = null
                         }
-                        property.save(failOnError: true);
+                        property.save(failOnError: true, flush: true);
                     }
                     catch (Exception e) {
                         property."${field}" = backup
@@ -4121,7 +4247,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             // delete existing url
                             property."${field}" = null
                         }
-                        property.save(failOnError: true)
+                        property.save(failOnError: true, flush: true)
                     }
                     catch (Exception e) {
                         property."${field}" = backup
@@ -4136,11 +4262,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     binding_properties["${field}"] = value
                     bindData(property, binding_properties)
 
-                    property.save(failOnError: true)
+                    property.save(failOnError: true, flush: true)
 
                 }
 
             }
         }
+
     }
 }
