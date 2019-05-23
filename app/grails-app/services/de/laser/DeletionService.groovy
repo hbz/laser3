@@ -38,23 +38,24 @@ class DeletionService {
         List customProps    = new ArrayList(lic.customProperties)
 
         if (dryRun) {
-            result.'Referenzen: Teilnehmer'   = ref_instanceOf
+            result.info = []
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
 
-            result.'Aufgaben'           = tasks
-            result.'Merkmalsgruppen'    = propDefGroupBindings
-            result.'Lizenzen'           = subs
-            result.'Vererbungskonfigurationen'  = ac ? [ac] : []
+            result.info << ['Aufgaben', tasks]
+            result.info << ['Merkmalsgruppen', propDefGroupBindings]
+            result.info << ['Lizenzen', subs]
+            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
             // lic.onixplLicense
 
-            result.'Identifikatoren'         = ios
-            result.'Dokumente'               = docContexts   // delete ? docContext->doc
-            result.'Organisationen'          = oRoles
-            result.'Personen'                = pRoles        // delete ? personRole->person
-            result.'Pakete'                  = packages
-            result.'Anstehende Änderungen'   = pendingChanges
-            result.'Private Merkmale'        = lic.privateProperties
-            result.'Allgemeine Merkmale'     = lic.customProperties
+            result.info << ['Identifikatoren', ios]
+            result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
+            result.info << ['Organisationen', oRoles]
+            result.info << ['Personen', pRoles]     // delete ? personRole->person
+            result.info << ['Pakete', packages]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['Private Merkmale', lic.privateProperties]
+            result.info << ['Allgemeine Merkmale', lic.customProperties]
         }
         else if (ref_instanceOf) {
 
@@ -153,6 +154,8 @@ class DeletionService {
 
                     lic.delete()
                     status.flush()
+
+                    result = [status: RESULT_SUCCESS]
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
@@ -160,7 +163,6 @@ class DeletionService {
                     status.setRollbackOnly()
                     result = [status: RESULT_ERROR]
                 }
-                result = [status: RESULT_SUCCESS]
             }
         }
 
@@ -191,24 +193,26 @@ class DeletionService {
         List customProps    = new ArrayList(sub.customProperties)
 
         if (dryRun) {
-            result.'Referenzen: Teilnehmer' = ref_instanceOf
-            result.'Referenzen: Nachfolger' = ref_previousSubscription
+            result.info = []
 
-            result.'Aufgaben'                   = tasks
-            result.'Merkmalsgruppen'            = propDefGroupBindings
-            result.'Vererbungskonfigurationen'  = ac ? [ac] : []
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
+            result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
 
-            result.'Identifikatoren'     = ios
-            result.'Dokumente'           = docContexts   // delete ? docContext->doc
-            result.'Organisationen'      = oRoles
-            result.'Personen'            = pRoles        // delete ? personRole->person
-            result.'Pakete'              = subPkgs
-            result.'Anstehende Änderungen' = pendingChanges
-            result.'IssueEntitlements'   = ies
-            result.'Kostenposten'        = costs
-            result.'OrgAccessPointLink'  = oapl
-            result.'Private Merkmale'    = sub.privateProperties
-            result.'Allgemeine Merkmale' = sub.customProperties
+            result.info << ['Aufgaben', tasks]
+            result.info << ['Merkmalsgruppen', propDefGroupBindings]
+            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
+
+            result.info << ['Identifikatoren', ios]
+            result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+            result.info << ['Organisationen', oRoles]
+            result.info << ['Personen', pRoles]       // delete ? personRole->person
+            result.info << ['Pakete', subPkgs]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['IssueEntitlements', ies]
+            result.info << ['Kostenposten', costs, 'yellow']
+            result.info << ['OrgAccessPointLink', oapl]
+            result.info << ['Private Merkmale', sub.privateProperties]
+            result.info << ['Allgemeine Merkmale', sub.customProperties]
         }
         else if (ref_instanceOf) {
 
@@ -323,6 +327,8 @@ class DeletionService {
 
                     sub.delete()
                     status.flush()
+
+                    result = [status: RESULT_SUCCESS]
                 }
                 catch (Exception e) {
                     println 'error while deleting subscription ' + sub.id + ' .. rollback'
@@ -330,7 +336,6 @@ class DeletionService {
                     status.setRollbackOnly()
                     result = [status: RESULT_ERROR]
                 }
-                result = [status: RESULT_SUCCESS]
             }
         }
 
@@ -371,22 +376,24 @@ class DeletionService {
                 'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
 
         if (dryRun) {
-            result.'Zugehörigkeiten'        = userOrgs
-            result.'Rollen'                 = userRoles
-            result.'Folder'                 = userFolder  // impl. FolderItem ?
-            result.'Einstellungen'          = userSettings
-            result.'Transforms'             = userTransforms  // impl. Transforms ?
+            result.info = []
 
-            result.'Kosten'                 = costItems
-            result.'Kostenkonfigurationen'  = ciecs
-            result.'DashboardDueDate'       = ddds
-            result.'Dokumente'              = docs
-            result.'Links'                  = links
-            result.'Anstehende Änderungen'  = pendingChanges
-            result.'Reminder'               = reminders
-            result.'Umfrageergebnisse'      = surveyResults
-            result.'Tickets'                = systemTickets
-            result.'Aufgaben'               = tasks
+            result.info << ['Zugehörigkeiten', userOrgs]
+            result.info << ['Rollen', userRoles]
+            result.info << ['Folder', userFolder]  // impl. FolderItem ?
+            result.info << ['Einstellungen', userSettings]
+            result.info << ['Transforms', userTransforms]  // impl. Transforms ?
+
+            result.info << ['Kosten', costItems]
+            result.info << ['Kostenkonfigurationen', ciecs]
+            result.info << ['DashboardDueDate', ddds]
+            result.info << ['Dokumente', docs]
+            result.info << ['Links', links]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['Reminder', reminders]
+            result.info << ['Umfrageergebnisse', surveyResults]
+            result.info << ['Tickets', systemTickets]
+            result.info << ['Aufgaben', tasks]
         }
         else {
             return // TODO
@@ -428,6 +435,8 @@ class DeletionService {
 
                     //user.delete()
                     //status.flush()
+
+                    result = [status: RESULT_SUCCESS]
                 }
                 catch (Exception e) {
                     println 'error while deleting user ' + user.id + ' .. rollback'
@@ -435,7 +444,6 @@ class DeletionService {
                     status.setRollbackOnly()
                     result = [status: RESULT_ERROR]
                 }
-                result = [status: RESULT_SUCCESS]
             }
         }
 

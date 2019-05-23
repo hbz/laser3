@@ -18,16 +18,14 @@
         <g:render template="nav" />
     </g:if>
 
-    <g:if test="${preview}">
-        <semui:msg class="info" header=""
-                   text="Wollen Sie die ausgewählte Lizenz endgültig aus dem System entfernen?" />
+    <g:if test="${dryRun}">
+        <semui:msg class="info" header="" message="subscription.delete.info" />
         <br />
         <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
         <g:if test="${editable}">
             <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenzen löschen</g:link>
         </g:if>
         <br />
-
         <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
@@ -37,16 +35,28 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${preview.sort()}" var="stat">
+            <g:each in="${dryRun.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
                 <tr>
                     <td>
-                        ${stat.key}
+                        ${info[0]}
+                    </td>
+                    <td style="text-align:center">
+                        <g:if test="${info.size() > 2 && info[1].size() > 0}">
+                            <span class="ui circular label ${info[2]}"
+                                <g:if test="${info[2] == 'red'}">
+                                    data-tooltip="${message(code:'subscription.delete.blocker')}"
+                                </g:if>
+                                <g:if test="${info[2] == 'yellow'}">
+                                    data-tooltip="${message(code:'subscription.existingCostItems.warning')}"
+                                </g:if>
+                            >${info[1].size()}</span>
+                        </g:if>
+                        <g:else>
+                            ${info[1].size()}
+                        </g:else>
                     </td>
                     <td>
-                        ${stat.value.size()}
-                    </td>
-                    <td>
-                        ${stat.value.collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
+                        ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
                     </td>
                 </tr>
             </g:each>

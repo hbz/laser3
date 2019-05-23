@@ -38,7 +38,7 @@ class UserController extends AbstractDebugController {
             result.result = deletionService.deleteUser(result.user, false)
         }
         else {
-            result.preview = deletionService.deleteUser(result.user, DeletionService.DRY_RUN)
+            result.dryRun = deletionService.deleteUser(result.user, DeletionService.DRY_RUN)
         }
 
         result

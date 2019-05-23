@@ -14,12 +14,14 @@
 <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 
     <g:each in="${subscriptions}" var="sub">
-        <g:if test="${sub.derivedSubscriptions}">
-            <span class="ui label red">${sub.id} [ ${sub.derivedSubscriptions.size()} ] </span>
-        </g:if>
-        <g:else>
-            <span class="ui label green">${sub.id}</span>
-        </g:else>
+        <a href="<g:createLink controller="subscription" action="show" params="${[id: sub.id]}"/>">
+            <g:if test="${sub.derivedSubscriptions}">
+                <span class="ui label red">${sub.id} [ ${sub.derivedSubscriptions.size()} ] </span>
+            </g:if>
+            <g:else>
+                <span class="ui label green">${sub.id}</span>
+            </g:else>
+        </a>
         > ${sub} > ${sub.status.getI10n('value')}
         <br/>
     </g:each>
@@ -32,12 +34,14 @@
     <h2 class="ui header">Verträge - ${licenses.size()}</h2>
 
     <g:each in="${licenses}" var="lic">
-        <g:if test="${lic.derivedLicenses}">
-            <span class="ui label red">${lic.id} [ ${lic.derivedLicenses.size()} ] </span>
-        </g:if>
-        <g:else>
-            <span class="ui label green">${lic.id}</span>
-        </g:else>
+        <a href="<g:createLink controller="license" action="show" params="${[id: lic.id]}"/>">
+            <g:if test="${lic.derivedLicenses}">
+                <span class="ui label red">${lic.id} [ ${lic.derivedLicenses.size()} ] </span>
+            </g:if>
+            <g:else>
+                <span class="ui label green">${lic.id}</span>
+            </g:else>
+        </a>
         > ${lic} > ${lic.status.getI10n('value')} <br/>
     </g:each>
 

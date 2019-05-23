@@ -14,13 +14,20 @@
         ${user.username} : ${user.displayName?:'No username'}
     </h1>
 
-    <g:if test="${preview}">
+    <g:if test="${dryRun}">
         <semui:msg class="info" header=""
                    text="Wollen Sie den ausgewählten Nutzer endgültig aus dem System entfernen?" />
         <br />
         <g:link controller="user" action="show" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
         <g:if test="${editable}">
-            <g:link controller="user" action="delete" params="${[id: user.id, process: true]}" class="ui button red">Nutzer löschen</g:link>
+            <g:form controller="yoda" action="delete" params="${[id: user.id, process: true]}">
+
+                <g:select id="userReplacement" name="userReplacement" class="many-to-one"
+                          from="${com.k_int.kbplus.auth.User.findAll()}"
+                          optionKey="${{'com.k_int.kbplus.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+
+                <input type="submit" class="ui button red" value="Nutzer löschen" />
+            </g:form>
         </g:if>
         <br />
 
@@ -33,16 +40,21 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${preview.sort()}" var="stat">
+            <g:each in="${dryRun.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
                 <tr>
                     <td>
-                        ${stat.key}
+                        ${info[0]}
+                    </td>
+                    <td style="text-align:center">
+                        <g:if test="${info.size() > 2}">
+                            <span class="ui circular label ${info[2]}">${info[1].size()}</span>
+                        </g:if>
+                        <g:else>
+                            ${info[1].size()}
+                        </g:else>
                     </td>
                     <td>
-                        ${stat.value.size()}
-                    </td>
-                    <td>
-                        ${stat.value.collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
+                        ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
                     </td>
                 </tr>
             </g:each>
