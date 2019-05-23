@@ -146,12 +146,14 @@
                         <%
                             def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
                             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-                                println apiLevel.getValue()
+                                println '<div>' + apiLevel.getValue() + '</div>'
                             }
 
                             def statistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
                             if (statistics != OrgSettings.SETTING_NOT_FOUND) {
-                                println '* Statistikserver'
+                                if (statistics.getValue()?.value == 'Yes') {
+                                    println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
+                                }
                             }
                         %>
                     </td>

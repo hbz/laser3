@@ -27,22 +27,6 @@ class ApiStatistic {
         orgs
     }
 
-    /**
-     * @return [] | HTTP_FORBIDDEN
-     */
-    static getAllOrgs() {
-        def result = []
-
-        // if (requestingOrghasNoAccess) { return Constants.HTTP_FORBIDDEN }
-
-        List<Org> orgs = getAccessibleOrgs()
-        orgs.each{ o ->
-            result << ApiReaderHelper.resolveOrganisationStub(o, o)
-        }
-
-        return (result ? new JSON(result) : null)
-    }
-
     static getAllPackages() {
         def result = []
 
@@ -81,7 +65,7 @@ class ApiStatistic {
         result.identifiers      = ApiReaderHelper.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
         //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
         //result.tipps            = resolvePkgTipps(pkg.tipps)
-        result.subscriptions    = resolvePkgSubscriptions(pkg.subscriptions)
+        result.subscriptions    = resolvePkgSubscriptions(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
 
         result = ApiReaderHelper.cleanUp(result, true, true)
 
@@ -142,7 +126,7 @@ class ApiStatistic {
     }
     */
 
-    static resolvePkgSubscriptions(Set<SubscriptionPackage> subscriptionPackages) {
+    static resolvePkgSubscriptions(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (! subscriptionPackages) {
             return null
         }
@@ -156,10 +140,11 @@ class ApiStatistic {
             OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
                 if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
-
-                    def org = ApiReaderHelper.resolveOrganisationStub(ogr.org, null)
-                    if (org) {
-                        orgList.add(ApiReaderHelper.cleanUp(org, true, true))
+                    if (ogr.org.id in accessibleOrgs.collect{ it -> it.id }) {
+                        def org = ApiReaderHelper.resolveOrganisationStub(ogr.org, null)
+                        if (org) {
+                            orgList.add(ApiReaderHelper.cleanUp(org, true, true))
+                        }
                     }
                 }
             }
@@ -170,7 +155,7 @@ class ApiStatistic {
             List<IssueEntitlement> ieList = []
             def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
 
-            println subPkg.pkg?.id + " , " + subPkg.subscription?.id + " > " + tipps
+            //println subPkg.pkg?.id + " , " + subPkg.subscription?.id + " > " + tipps
             tipps.each{ tipp ->
                 def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
                 if (ie) {
