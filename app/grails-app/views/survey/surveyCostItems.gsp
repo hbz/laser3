@@ -43,8 +43,6 @@
 
 <br>
 
-
-
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
         <div class="four wide column">

@@ -34,15 +34,33 @@ class UserController extends AbstractDebugController {
     def _delete() {
         def result = setResultGenerics()
 
+        List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
+                [user: User.get(params.id), status: UserOrg.STATUS_APPROVED])
+
+        if (affils.size() > 1) {
+            flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+            redirect action: 'edit', params: [id: params.id]
+            return
+        }
+        else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+            redirect action: 'edit', params: [id: params.id]
+            return
+        }
+
         if (params.process && result.editable) {
-            result.result = deletionService.deleteUser(result.user, false)
+            User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+
+            result.result = deletionService.deleteUser(result.user, userReplacement, false)
         }
         else {
-            result.preview = deletionService.deleteUser(result.user, DeletionService.DRY_RUN)
+            result.dryRun = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        result
-
+        result.ctxOrgUserList = User.executeQuery(
+                'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg',
+                [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg()]
+        )
         render view: 'delete', model: result
     }
 
