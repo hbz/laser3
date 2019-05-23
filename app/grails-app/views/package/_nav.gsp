@@ -8,9 +8,9 @@
 
     <semui:subNavItem controller="package" action="previous" params="${[id:params.id]}" message="package.show.nav.previous" />
 
-    <semui:subNavItem controller="package" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="package" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
-    <semui:subNavItem controller="package" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="package" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
 
     <semui:subNavItem controller="package" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />
 
