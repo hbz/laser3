@@ -43,7 +43,7 @@
                     <%
                         def fakeList = []
                         fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                        fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
                 </div>
