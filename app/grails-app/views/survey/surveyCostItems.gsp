@@ -30,14 +30,6 @@
 
 <br>
 
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    ${message(code: 'surveyParticipants.info')}
-</div>
-
-<br>
-
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
@@ -113,7 +105,7 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : selectedSubParticipants,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubInfoStatus', 'surveySubCostItem',  'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem',  'surveyCostItem']
                               ]"/>
 
                 </div>
