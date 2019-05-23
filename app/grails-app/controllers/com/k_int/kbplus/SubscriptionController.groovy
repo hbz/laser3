@@ -312,7 +312,7 @@ class SubscriptionController extends AbstractDebugController {
             result.result = deletionService.deleteSubscription(result.subscription, false)
         }
         else {
-            result.preview = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+            result.dryRun = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
         }
 
         result

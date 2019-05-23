@@ -488,6 +488,12 @@
                     calcTaxResults()
                 }
             });
+            $("#newCostInBillingCurrency").change(function(){
+                var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
+                if($("#newCostCurrency").val() == currencyEUR) {
+                    $("#costButton1").click();
+                }
+            });
             $("#costButton2").click(function() {
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");

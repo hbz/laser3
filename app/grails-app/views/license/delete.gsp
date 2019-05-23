@@ -17,9 +17,8 @@
         <g:render template="nav" />
     </g:if>
 
-    <g:if test="${preview}">
-        <semui:msg class="info" header=""
-                   text="Wollen Sie den ausgewählten Vertrag endgültig aus dem System entfernen?" />
+    <g:if test="${dryRun}">
+        <semui:msg class="info" header="" message="license.delete.info" />
         <br />
         <g:link controller="license" action="show" params="${[id: license.id]}" class="ui button">Vorgang abbrechen</g:link>
         <g:if test="${editable}">
@@ -36,16 +35,25 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${preview.sort()}" var="stat">
+            <g:each in="${dryRun.info.sort{ a,b -> a[0] <=> b[0] }}" var="info">
                 <tr>
                     <td>
-                        ${stat.key}
+                        ${info[0]}
+                    </td>
+                    <td style="text-align:center">
+                        <g:if test="${info.size() > 2 && info[1].size() > 0}">
+                            <span class="ui circular label ${info[2]}"
+                                <g:if test="${info[2] == 'red'}">
+                                    data-tooltip="${message(code:'license.delete.blocker')}"
+                                </g:if>
+                            >${info[1].size()}</span>
+                        </g:if>
+                        <g:else>
+                            ${info[1].size()}
+                        </g:else>
                     </td>
                     <td>
-                        ${stat.value.size()}
-                    </td>
-                    <td>
-                        ${stat.value.collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
+                        ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
                     </td>
                 </tr>
             </g:each>
@@ -56,7 +64,7 @@
     <g:if test="${result?.status == deletionService.RESULT_SUCCESS}">
         <semui:msg class="positive" header=""
                    text="Löschvorgang wurde erfolgreich durchgeführt." />
-        <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">Meine Verträge</g:link>
+        <g:link controller="myInstitution" action="currentLicenses" class="ui button">Meine Verträge</g:link>
     </g:if>
     <g:if test="${result?.status == deletionService.RESULT_QUIT}">
         <semui:msg class="negative" header="Löschvorgang abgebrochen"
