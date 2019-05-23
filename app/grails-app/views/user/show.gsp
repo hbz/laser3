@@ -7,7 +7,11 @@
   </head>
   <body>
 
-    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+      <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
+      <semui:controlButtons>
+        <g:render template="actions" />
+      </semui:controlButtons>
 
       <h1 class="ui left aligned icon header"><semui:headerIcon />${user.username} : ${user.displayName?:'No username'}</h1>
 

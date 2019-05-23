@@ -7,6 +7,8 @@ class SurveyOrg {
     Org org
 
     String priceComment
+    Date dateCreated
+    Date lastUpdated
 
 
     static constraints = {
@@ -20,5 +22,7 @@ class SurveyOrg {
         surveyConfig column: 'surorg_surveyConfig_fk'
         org column: 'surorg_org_fk'
         priceComment column: 'surorg_priceComment', type: 'text'
+        dateCreated column: 'surorg_dateCreated'
+        lastUpdated column: 'surorg_lastUpdated'
     }
 }

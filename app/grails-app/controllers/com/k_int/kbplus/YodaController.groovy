@@ -1093,7 +1093,7 @@ class YodaController {
         if (params.cmd == 'subscription') {
 
             List<Subscription> subList =
-                    Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id desc", [max:20])
+                    Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id desc", [max:10])
 
             subList.each { sub ->
                 try {
@@ -1109,7 +1109,7 @@ class YodaController {
         else if (params.cmd == 'license') {
 
             List<License> licList =
-                    License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id desc", [max:20])
+                    License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id desc", [max:10])
 
             licList.each { lic ->
                 try {

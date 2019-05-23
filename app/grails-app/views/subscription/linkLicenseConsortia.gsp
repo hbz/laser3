@@ -74,6 +74,15 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
 
     <div class="divider"></div>
 
+    <div class="ui segment">
+        <h4>${message(code: 'subscription.linkLicenseConsortium.deleteLicensesInfo')}</h4>
+
+        <g:link class="ui button js-open-confirm-modal"
+                data-confirm-term-content = "${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkLicenseConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button')}</g:link>
+
+    </div>
+
     <g:form action="processLinkLicenseConsortia" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
         <table class="ui celled la-table table">
