@@ -50,6 +50,9 @@ class RDStore {
 
     static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
 
+    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')
+    static final COST_ITEM_DELETED          = getRefdataValue('Deleted','CostItemStatus')
+
     static final SUBSCRIPTION_TYPE_LOCAL = getRefdataValue('Local Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_CONSORTIAL = getRefdataValue('Consortial Licence', 'Subscription Type')
 
