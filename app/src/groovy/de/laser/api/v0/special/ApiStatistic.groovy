@@ -170,7 +170,7 @@ class ApiStatistic {
             List<IssueEntitlement> ieList = []
             def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
 
-            println subPkg.pkg?.id + " , " + subPkg.subscription?.id + " > " + tipps
+            //println subPkg.pkg?.id + " , " + subPkg.subscription?.id + " > " + tipps
             tipps.each{ tipp ->
                 def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
                 if (ie) {
