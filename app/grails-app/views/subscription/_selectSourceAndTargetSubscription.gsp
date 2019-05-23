@@ -9,7 +9,7 @@
             <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                   name="sourceSubscriptionId"
-                  from="${allSubscriptions_readRights}"
+                  from="${((List<Subscription>)allSubscriptions_readRights).sort {it.dropdownNamingConvention()}}"
                   optionValue="${{it?.dropdownNamingConvention()}}"
                   optionKey="id"
                   value="${sourceSubscription?.id}"
@@ -20,7 +20,7 @@
             <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                   name="targetSubscriptionId"
-                  from="${allSubscriptions_writeRights}"
+                  from="${((List<Subscription>)allSubscriptions_writeRights).sort {it.dropdownNamingConvention()}}"
                   optionValue="${{it?.dropdownNamingConvention()}}"
                   optionKey="id"
                   value="${targetSubscription?.id}"
