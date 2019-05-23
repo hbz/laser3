@@ -18,7 +18,6 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 
 class SubscriptionService {
     def contextService
@@ -52,7 +51,7 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     List getMySubscriptions_writeRights(){
@@ -73,14 +72,15 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.showParentsAndChildsSubs = 'true'
+        params.showParentsAndChildsSubs = false
+//        params.showParentsAndChildsSubs = 'true'
         params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
@@ -158,15 +158,6 @@ class SubscriptionService {
     }
 
     boolean deleteOrgRelations(Subscription targetSub, def flash) {
-//        def or = OrgRole.get(params.id)
-//
-//        def owner = or.getOwner()
-//        if (owner instanceof ShareSupport && or.isShared) {
-//            or.isShared = false
-//            owner.updateShare(or)
-//        }
-//        or.delete(flush:true)
-
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",
                 [orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
@@ -343,14 +334,6 @@ class SubscriptionService {
         }
     }
 
-//    boolean deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
-//        targetSub.documents.each {
-//            if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain)){
-//                it.status = RDStore.IE_DELETED
-//                save(it, flash)
-//            }
-//        }
-//    }
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
@@ -377,14 +360,6 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-//    boolean deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
-//        targetSub.documents.each {
-//            if (toDeleteDocs.contains(it.id) && (it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-//                it.status = RDStore.IE_DELETED
-//                save(it, flash)
-//            }
-//        }
-//    }
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
