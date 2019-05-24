@@ -156,11 +156,11 @@ ${message(code: 'subscription.propertiesConsortia.header')}
 
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.propertiesConsortia.deletePropetyInfo')}</h4>
+        <h4>${message(code: 'subscription.propertiesConsortia.deletePropertyInfo')}</h4>
 
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content = "${message(code: 'subscription.propertiesConsortia.deletePropety.button.confirm')}"
-                    data-confirm-term-how="ok" action="processDeletePropertiesConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesConsortia.deletePropety.button', args: [filterPropDef?.getI10n('name')])}</g:link>
+                    data-confirm-term-content = "${message(code: 'subscription.propertiesConsortia.deleteProperty.button.confirm')}"
+                    data-confirm-term-how="ok" action="processDeletePropertiesConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesConsortia.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
 
     </div>
 
