@@ -1,3 +1,7 @@
+0.17-RC
+
+- todo ..
+
 0.16.3
 
 - fixed: title search via elasticsearch
