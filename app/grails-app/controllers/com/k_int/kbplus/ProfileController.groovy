@@ -29,7 +29,7 @@ class ProfileController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = true
 
-        result.availableOrgs  = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
+        result.availableOrgs  = Org.executeQuery('from Org o where o.sector.value = ? order by o.sortname', 'Higher Education')
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result
     }
