@@ -252,7 +252,7 @@ class GlobalSourceSyncService {
         def pkg = null;
         boolean auto_accept_flag = true
 
-        log.debug("Reconciling new Package!")
+        println "Reconciling new Package!"
 
         def scope = RefdataValue.loc(RefdataCategory.PKG_SCOPE, [en: (newpkg?.scope) ?: 'Unknown']);
         def listStatus = RefdataValue.loc(RefdataCategory.PKG_LIST_STAT, [en: (newpkg?.listStatus) ?: 'Unknown']);
@@ -270,12 +270,14 @@ class GlobalSourceSyncService {
         def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
         def orgRole = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter'])
         if(newpkg.packageProvider) {
+            println "checking package provider ${newpkg.packageProvider}"
             provider = (Org) Org.lookupOrCreate2(newpkg.packageProvider, orgSector, null, [:], null, orgType, newpkg.packageProviderUuid ?: null)
             setOrUpdateProviderPlattform(grt, newpkg.packageProviderUuid ?: null)
         }
 
         // Firstly, make sure that there is a package for this record
         if (grt.localOid != null) {
+            println "getting local package ..."
             pkg = genericOIDService.resolveOID(grt.localOid)
 
             if (pkg && newpkg.status != 'Current') {
@@ -306,12 +308,12 @@ class GlobalSourceSyncService {
                         pkg.gokbId = newpkg.gokbId
                     }
                 }
-
+                println "before processing identifiers"
                 newpkg.identifiers.each {
-                    log.debug("Checking package has ${it.namespace}:${it.value}");
-                    pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
+                    println "Checking package has ${it.namespace}:${it.value}"
+                    pkg.checkAndAddMissingIdentifier(it.namespace, it.value)
                 }
-
+                println "after processing identifiers"
             }
             //oldpkg is the pkg in Laser
             oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
@@ -389,12 +391,15 @@ class GlobalSourceSyncService {
               title_instance.save(flush: true)
             }*/
 
+            println "before tipp title identifiers, GSSC line 392"
             def origin_uri = null
             tipp.title.identifiers.each { i ->
+                println "processing identifier ${i}"
                 if (i.namespace.toLowerCase() == 'uri') {
                     origin_uri = i.value
                 }
             }
+            println "before updatedTitleafterPckageReconcile"
             updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
@@ -1357,6 +1362,7 @@ class GlobalSourceSyncService {
             return
         }
 
+        println "before titleConv"
         def titleinfo = titleConv(titlerecord.metadata, null)
 
         log.debug("TitleRecord:" + titleinfo)
@@ -1428,9 +1434,10 @@ class GlobalSourceSyncService {
                 }
             }
 
+            println "before title history"
             // Title history!!
             titleinfo.history.each { historyEvent ->
-                log.debug("Processing title history event");
+                println "Processing title history event"
                 // See if we already have a reference
                 def fromset = []
                 def toset = []
@@ -1447,38 +1454,38 @@ class GlobalSourceSyncService {
 
                 // Now - See if we can find a title history event for data and these particiapnts.
                 // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-                def base_query = "select the from TitleHistoryEvent as the where"
-                // Need to parse date...
-                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                def query_params = [:]
-
+                // parse only history events WITH date - according to Moritz Horn and as of May 23rd, 2019, this field should be MANDATORY!
                 if (historyEvent.date && historyEvent.date.trim().length() > 0) {
-                    query_params.eventDate = sdf.parse(historyEvent.date)
-                    base_query += " the.eventDate = :eventDate "
-                }
-
-                if(fromset) {
-                    base_query += " and exists ( select p from the.participants as p where p.participant in :from and p.participantRole = 'from' ) "
-                    query_params.from = fromset
-                }
+                    def base_query = "select the from TitleHistoryEvent as the where the.eventDate = :eventDate "
+                    // Need to parse date...
+                    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    def query_params = [eventDate: sdf.parse(historyEvent.date)]
 
 
-                if(toset) {
-                    base_query += " and exists ( select p from the.participants as p where p.participant in :to and p.participantRole = 'to' ) "
-                    query_params.to = toset
-                }
-
-                def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);
-                log.debug("Result of title history event lookup : ${existing_title_history_event}");
-
-                if (existing_title_history_event.size() == 0) {
-                    log.debug("Create new history event");
-                    def he = new TitleHistoryEvent(eventDate: query_params[0]).save(flush: true)
-                    fromset.each {
-                        new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save(flush: true)
+                    if (fromset) {
+                        base_query += " and exists ( select p from the.participants as p where p.participant in :from and p.participantRole = 'from' ) "
+                        query_params.from = fromset
                     }
-                    toset.each {
-                        new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save(flush: true)
+
+
+                    if (toset) {
+                        base_query += " and exists ( select p from the.participants as p where p.participant in :to and p.participantRole = 'to' ) "
+                        query_params.to = toset
+                    }
+
+                    def existing_title_history_event = TitleHistoryEvent.executeQuery(base_query, query_params);
+                    println "Result of title history event lookup : ${existing_title_history_event}"
+                    println "at line 1459"
+
+                    if (existing_title_history_event.size() == 0) {
+                        log.debug("Create new history event");
+                        def he = new TitleHistoryEvent(eventDate: query_params[0]).save(flush: true)
+                        fromset.each {
+                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save(flush: true)
+                        }
+                        toset.each {
+                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save(flush: true)
+                        }
                     }
                 }
             }
@@ -1546,15 +1553,17 @@ class GlobalSourceSyncService {
     }
 
     def setOrUpdateProviderPlattform(grt, providerUuid) {
-        log.debug("setOrUpdateProviderPlattform Beginn")
+        println "set or update provider plattform, start ..."
         if (providerUuid == null) {
             return
         }
 
         def oai = new OaiClientLaser()
+        //we need to proceed that way because otherwise, we have a LazyInitialisationException
         def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
 
         uri = uri.replaceAll("packages", "")
+        println "getting oai record"
         def record = oai.getRecord(uri, 'orgs', providerUuid)
 
         if (record == null) {
@@ -1563,7 +1572,7 @@ class GlobalSourceSyncService {
 
         if (record?.metadata) {
             record?.metadata.gokb?.org?.providedPlatforms?.platform.each { plat ->
-
+                println "checking provider ${providerUuid}"
                 def provider = Org.findByGokbId(providerUuid)
 
                 if (provider) {
@@ -1582,7 +1591,7 @@ class GlobalSourceSyncService {
             }
 
         }
-        log.debug("setOrUpdateProviderPlattform End")
+        println "set or update provider plattform, end ..."
     }
 
 }

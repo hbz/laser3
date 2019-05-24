@@ -401,10 +401,11 @@ class Org
           imp_uuid = null
         }
 
+        println "before org lookup"
         def result = Org.lookup(name, identifiers, imp_uuid)
 
         if ( result == null ) {
-          // log.debug("Create new entry for ${name}");
+          println "Create new entry for ${name}";
           if (sector instanceof String){
             sector = RefdataValue.getByValueAndCategory(sector,'OrgSector')
           }
@@ -412,7 +413,7 @@ class Org
           if (orgRoleTyp instanceof String) {
              orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, 'OrgRoleType')
           }
-
+            println "creating new org"
           result = new Org(
                            name:name,
                            sector:sector,
@@ -452,7 +453,7 @@ class Org
           result.impId = imp_uuid
           result.save()
         }
- 
+        println "org lookup end"
         result
     }
 

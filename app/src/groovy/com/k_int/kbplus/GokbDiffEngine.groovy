@@ -94,29 +94,32 @@ public class GokbDiffEngine {
     def static getTippDiff(tippa, tippb) {
         def result = []
 
-        if ((tippa.url ?: '').toString().compareTo((tippb.url ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.url ?: '').toString().compareTo((tippb.url ?: '').toString()) != 0) {
             result.add([field: 'hostPlatformURL', newValue: tippb.url, oldValue: tippa.url])
         }
 
-        if ((tippa.coverage ?: '').toString().compareTo((tippb.coverage ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.coverage ?: '').toString().compareTo((tippb.coverage ?: '').toString()) != 0) {
             result.add([field: 'coverage', newValue: tippb.coverage, oldValue: tippa.coverage])
         }
 
-        if ((tippa.accessStart ?: '').toString().compareTo((tippb.accessStart ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.accessStart ?: '').toString().compareTo((tippb.accessStart ?: '').toString()) != 0) {
             result.add([field: 'accessStart', newValue: tippb.accessStart, oldValue: tippa.accessStart])
         }
 
-        if ((tippa.accessEnd ?: '').toString().compareTo((tippb.accessEnd ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.accessEnd ?: '').toString().compareTo((tippb.accessEnd ?: '').toString()) != 0) {
             result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
         }
 
-        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) == 0) {
-        } else {
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) != 0) {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
+        }
+
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) != 0) {
+            result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
+        }
+
+        if ((tippa?.platform?.gokbId ?: '').toString().compareTo((tippb?.platform?.gokbId ?: '').toString()) != 0) {
+            result.add([field: 'titleName', newValue: "${tippb?.platform?.name}, url: ${tippb?.platform?.primaryUrl}", oldValue: "${tippa?.platform?.name}, url: ${tippa?.platform?.primaryUrl}"])
         }
 
         result;

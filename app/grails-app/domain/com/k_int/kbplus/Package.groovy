@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory
 
 import java.text.Normalizer
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class Package
         extends AbstractBaseDomain
@@ -416,19 +417,20 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Transient
   def toComparablePackage() {
     def result = [:]
-
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
+    println "converting old package to comparable package"
+    def sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier
     result.impId = this.impId
     result.gokbId = this.gokbId
 
     result.tipps = []
+    println "before tipps"
     this.tipps.each { tip ->
-
-
-      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
+        println "Now processing TIPP ${tip}"
+      //NO DELETED TIPPS because from only come no deleted tipps
+      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
           println "getting identifier value of title ..."
@@ -484,7 +486,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     result.tipps.sort{it.titleId}
-    log.debug("Rec conversion for package returns object with title ${result.title} and ${result.tipps?.size()} tipps");
+    println "Rec conversion for package returns object with title ${result.title} and ${result.tipps?.size()} tipps"
 
     result
   }
@@ -510,20 +512,24 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   def checkAndAddMissingIdentifier(ns,value) {
     boolean found = false
-    static_logger.debug("processing identifier ${value}")
+    println "processing identifier ${value}"
     this.ids.each {
+        println "processing identifier occurrence ${it}"
       if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+          println "occurrence found"
         found = true
       }
     }
 
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+        println "before execute query"
       def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
+        println "id_occ query executed"
 
       if ( !id_occ || id_occ.size() == 0 ){
-        static_logger.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
-        new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
+        println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
+        new IdentifierOccurrence(identifier:id, pkg:this).save()
       }
     }
   }
