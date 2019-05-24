@@ -19,10 +19,10 @@ class SurveyOrg {
         id column: 'surorg_id'
         version column: 'surorg_version'
 
-        surveyConfig column: 'surorg_surveyConfig_fk'
+        surveyConfig column: 'surorg_surveyconfig_fk'
         org column: 'surorg_org_fk'
-        priceComment column: 'surorg_priceComment', type: 'text'
-        dateCreated column: 'surorg_dateCreated'
-        lastUpdated column: 'surorg_lastUpdated'
+        priceComment column: 'surorg_pricecomment', type: 'text'
+        dateCreated column: 'surorg_date_created'
+        lastUpdated column: 'surorg_last_updated'
     }
 }
