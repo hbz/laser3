@@ -143,13 +143,11 @@
 
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
+                    <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.size()}</g:link>
                 </td>
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
+                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}</g:link>
                 </td>
 
                 <td>
