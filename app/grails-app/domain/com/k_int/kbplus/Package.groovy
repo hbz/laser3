@@ -425,10 +425,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.gokbId = this.gokbId
 
     result.tipps = []
-    this.tipps.eachWithIndex { tip ->
-        static_logger.debug("Now processing TIPP ${tip}")
-      //NO DELETED TIPPS because from only come no deleted tipps
-      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
+    this.tipps.each { tip ->
+
+
+      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
           println "getting identifier value of title ..."

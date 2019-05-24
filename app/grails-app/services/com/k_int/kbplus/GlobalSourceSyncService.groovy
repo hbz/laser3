@@ -439,6 +439,22 @@ class GlobalSourceSyncService {
                         log.error("Error creating identifier instance for new TIPP!")
                     }
                 }
+
+                def tipps = TitleInstancePackagePlatform.findAllByGokbId(tipp?.tippUuid)
+
+                tipps?.each { oldtipp ->
+                    if(oldtipp.id != new_tipp.id){
+                        def ies = IssueEntitlement.findAllByTipp(oldtipp)
+                        ies?.each { ie ->
+                            ie.tipp = new_tipp
+                            ie.save(flush: true)
+                        }
+                        oldtipp.status = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+                        oldtipp.save(flush: true)
+                    }
+                }
+
+
             } else {
                 log.debug("Register new tipp event for user to accept or reject");
 
@@ -484,7 +500,7 @@ class GlobalSourceSyncService {
             cleanUpGorm()
         }
 
-        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept ->
+        def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept, db_tipp ->
             log.debug("updated tipp, ctx = ${ctx.toString()}");
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
             // Find title with ID tipp... in package ctx
@@ -513,7 +529,7 @@ class GlobalSourceSyncService {
             }
             updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id, tipp?.title?.gokbId)
 
-            def db_tipp = null
+            /*db_tipp = null
 
             if (tipp.tippUuid) {
                 db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
@@ -526,7 +542,7 @@ class GlobalSourceSyncService {
 
             if (!db_tipp) {
                 db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }
+            }*/
 
             if (db_tipp != null) {
 
@@ -655,9 +671,10 @@ class GlobalSourceSyncService {
             } else {
                 throw new RuntimeException("Unable to locate TIPP for update. ctx:${ctx}, tipp:${tipp}");
             }
+
         }
 
-        def onDeletedTipp = { ctx, tipp, auto_accept ->
+        def onDeletedTipp = { ctx, tipp, auto_accept, db_tipp ->
 
             // Find title with ID tipp... in package ctx
 
@@ -681,7 +698,7 @@ class GlobalSourceSyncService {
                 tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
             }
 
-            def db_tipp = null
+            /*def db_tipp = null
 
             if (tipp.tippUuid) {
                 db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
@@ -692,7 +709,7 @@ class GlobalSourceSyncService {
             }
             if (!db_tipp) {
                 db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
-            }
+            }*/
 
             if (db_tipp != null && !(db_tipp.status.equals(tippStatus))) {
                 if(!auto_accept) {
@@ -1529,7 +1546,7 @@ class GlobalSourceSyncService {
     }
 
     def setOrUpdateProviderPlattform(grt, providerUuid) {
-
+        log.debug("setOrUpdateProviderPlattform Beginn")
         if (providerUuid == null) {
             return
         }
@@ -1565,6 +1582,7 @@ class GlobalSourceSyncService {
             }
 
         }
+        log.debug("setOrUpdateProviderPlattform End")
     }
 
 }
