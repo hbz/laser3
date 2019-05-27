@@ -34,7 +34,7 @@
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pckoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
+                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
                                 <label>
                                     <i class="gift icon"></i>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
@@ -48,8 +48,8 @@
                 <td class="center aligned">
                     <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pckoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgId="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
+                            <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
                             <br />
                         </div>
                     </g:each>
@@ -58,7 +58,7 @@
                     <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
                     <div>
                         <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                            <div data-pckoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
+                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
                                 <i class="gift icon"></i>
                                 <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
                                 <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
@@ -72,8 +72,8 @@
                 <td class="center aligned">
                     <i class="ui icon trash alternate outline"></i>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pckoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgId="${sp.pkg?.id}" data-action="delete" checked="${false}"/>
+                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
+                            <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="delete" checked="${false}"/>
                             <br />
                         </div>
                     </g:each>
@@ -104,13 +104,10 @@
                 <td name="subscription.takeEntitlements.target">
                     <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <div class="la-element" data-pckoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}">
+                        <div class="la-element" data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}">
                             <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                             <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                            <br>
-                            data-pckoid=${genericOIDService.getOID(ie?.tipp?.pkg)}<br>
-                            data-ieoid=${genericOIDService.getOID(ie)}
                         </div>
                     </g:each>
                 </td>
@@ -144,12 +141,12 @@
     }
 
     $('input[name="subscription.takePackageIds"]').change( function(event) {
-        var pckOId = this.value
+        var pkgoid = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pckoid="' + pckOId + '"]').addClass('willStay');
+            $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + pkgoid + '"]').addClass('willStay');
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pckoid="' + pckOId + '"]').removeClass('willStay');
+            $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willStay');
             if (getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
                 $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
             }
@@ -157,26 +154,25 @@
     })
 
     $('input[name="subscription.deletePackageIds"]').change( function(event) {
-        var pckOId = this.value
-        alert(pckOId)
+        var pkgoid = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pckoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pckoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
         } else {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pckoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pckoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willBeReplacedStrong');
         }
     })
 
     $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
-        var pckOId = this.value
+        var ieoid = this.value
         if (this.checked) {
             //TODO: GEHT NOCH NICHT
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + pckOId + '"]').addClass('willStay');
+            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + ieoid + '"]').addClass('willStay');
             $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + pckOId + '"]').removeClass('willStay');
+            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + ieoid + '"]').removeClass('willStay');
             if (getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
                 $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
             }
@@ -184,11 +180,11 @@
     })
 
     $('input[name="subscription.deleteEntitlementIds"]').change( function(event) {
-        var pckOId = this.value
+        var ieoid = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').addClass('willBeReplacedStrong');
         } else {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').removeClass('willBeReplacedStrong');
         }
     })
 
