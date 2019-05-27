@@ -200,6 +200,14 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
                 </div>
             </g:if>
+
+            <g:if test="${tipp.hostPlatformURL}">
+                <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                   href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
+                   target="_blank"><i class="share square icon"></i></a>
+            </g:if>
+
             <g:each in="${tipp?.title?.ids.sort { it.identifier.ns.ns }}" var="id">
                 <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                     <span class="ui small teal image label">
@@ -251,10 +259,10 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                             controller="platform" action="show" id="${tipp?.platform.id}"><i
                             class="pencil alternate icon"></i></g:link>
                 </g:if>
-                <g:if test="${tipp.hostPlatformURL}">
+                <g:if test="${tipp?.platform?.primaryUrl}">
                     <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                       href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
+                       href="${tipp?.platform?.primaryUrl.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
                        target="_blank"><i class="share square icon"></i></a>
                 </g:if>
             </div>
