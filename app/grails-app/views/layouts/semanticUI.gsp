@@ -596,7 +596,22 @@
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
-
+                            <r:script>
+                                $(function(){
+                                     <g:if
+                                        test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                        deckSaver.configs.editMode  = true;
+                                    </g:if>
+                                    <g:else>
+                                        deckSaver.configs.editMode  = false;
+                                    </g:else>
+                                $(".ui.toggle.button").click(function(){
+                                    deckSaver.configs.editMode = !deckSaver.configs.editMode;
+                                    deckSaver.toggleEditableElements();
+                                });
+                            })
+                            </r:script>
+                                <%--
                             <r:script>
                                 $(function(){
                                      <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
@@ -677,6 +692,7 @@
                                 });
 
                             </r:script>
+                            --%>
                             </div>
                             </g:if>
                             <g:if test="${(params.mode)}">

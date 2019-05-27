@@ -62,12 +62,12 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                             </dl>
                             <% /*
                             <dl>
@@ -78,7 +78,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.manualCancellationlDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
 
                         </div>
@@ -88,7 +88,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
@@ -101,17 +101,17 @@
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
                                     </g:else>
                                 </dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>

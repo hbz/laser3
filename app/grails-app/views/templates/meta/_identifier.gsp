@@ -92,10 +92,10 @@
                 </dd>
 
                 <g:if test="${editable}">
-                    <dt>
+                    <dt class="la-js-hideMe">
                         Indentifikator hinzufügen
                     </dt>
-                    <dd>
+                    <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">
                             <semui:formAddIdentifier owner="${object}"
                                                      buttonText="${message(code: 'license.edit.identifier.select.add')}"
