@@ -17,6 +17,7 @@ class OrgSettings {
         API_KEY         (String),
         API_PASSWORD    (String),
         CUSTOMER_TYPE   (Role),
+        GASCO_ENTRY              (RefdataValue, 'YN'),
         STATISTICS_SERVER_ACCESS (RefdataValue, 'YN')
 
         KEYS(type, rdc) {

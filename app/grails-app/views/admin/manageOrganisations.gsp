@@ -139,6 +139,11 @@
                             if (customerType != OrgSettings.SETTING_NOT_FOUND) {
                                 println customerType.getValue()?.getI10n('authority')
                             }
+
+                            def gascoEntry = OrgSettings.get(org, OrgSettings.KEYS.GASCO_ENTRY)
+                            if (gascoEntry != OrgSettings.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                                println '<i class="icon green globe"></i>'
+                            }
                         %>
                     </td>
 
@@ -159,6 +164,13 @@
                     </td>
 
                     <td class="x">
+                        <g:if test="${org.hasPerm('org_consortium')}">
+                            <button type="button" class="ui icon button"
+                                    data-gascoTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
+                                    data-semui="modal" data-href="#gascoEntryModal"
+                                    data-tooltip="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
+                        </g:if>
+
                         <button type="button" class="ui icon button"
                                 data-ctTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
                                 data-semui="modal" data-href="#customerTypeModal"
@@ -175,6 +187,40 @@
 
         </tbody>
     </table>
+
+    <%-- changing gasco entry --%>
+
+    <semui:modal id="gascoEntryModal" message="org.gascoEntry.label" editmodal="editmodal">
+
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="changeGascoEntry"/>
+            <input type="hidden" name="target" value="" />
+
+            <div class="field">
+                <label for="orgName_ct">${message(code:'org.label')}</label>
+                <input type="text" id="orgName_gasco" name="orgName" value="" readonly />
+            </div>
+
+            <div class="field">
+                <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
+                <laser:select id="gascoEntry" name="gascoEntry"
+                              from="${RefdataCategory.getAllRefdataValues('YN')}"
+                              optionKey="${{'com.k_int.kbplus.RefdataValue:' + it.id}}"
+                              optionValue="value"
+                              class="ui dropdown"
+                />
+            </div>
+        </g:form>
+
+        <r:script>
+            $('button[data-gascoTarget]').on('click', function(){
+
+                $('#gascoEntryModal #orgName_gasco').attr('value', $(this).attr('data-orgName'))
+                $('#gascoEntryModal input[name=target]').attr('value', $(this).attr('data-gascoTarget'))
+            })
+        </r:script>
+
+    </semui:modal>
 
     <%-- changing customer type --%>
 
