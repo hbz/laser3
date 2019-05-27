@@ -270,7 +270,7 @@
                    value="${message(code: 'surveyConfigsInfo.add.button')}"/>
 
             <input type="submit" name="addtoallSubs" class="ui button"
-                   value="${message(code: 'surveyConfigsInfo.addtoallSubs.button')}"/>
+                   value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
 
         </g:form>
 

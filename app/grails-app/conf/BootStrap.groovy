@@ -2567,6 +2567,7 @@ class BootStrap {
         RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'geschätzt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'], BOOTSTRAP)
+        RefdataValue.loc('CostItemStatus', [en: 'Calculated', de: 'kalkuliert'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('CostItemStatus', [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 

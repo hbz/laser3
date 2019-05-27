@@ -36,8 +36,11 @@
             <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal"
                                        message="survey.copyEmailaddresses.participants"/>
 
+
+            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
             <g:render template="../templates/copyEmailaddresses"
-                      model="[orgList: surveyInfo?.surveyConfigs?.orgs.flatten() ? com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs.id.flatten()) : null]"/>
+                      model="[orgList: orgs ?: null]"/>
 
         </g:else>
 

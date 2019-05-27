@@ -245,6 +245,13 @@
 
         var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
 
+        $("#newCostInBillingCurrency").change(function(){
+            var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
+            if($("#newCostCurrency").val() == currencyEUR) {
+                $("#costButton1").click();
+            }
+        });
+
         $("#costButton1").click(function () {
             if (!isError("#newCostInBillingCurrency") && !isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");

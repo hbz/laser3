@@ -30,14 +30,6 @@
 
 <br>
 
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    ${message(code: 'surveyParticipants.info')}
-</div>
-
-<br>
-
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
@@ -83,11 +75,13 @@
                     <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
                             total="${selectedSubParticipants?.size()}"/></h2>
                     <br>
+
                     <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
                     <br>
 
                     <div class="four wide column">
-                        <button type="button" class="ui icon button right floated" data-semui="modal" data-href="#modalCostItemAllSub" ><i class="plus icon"></i></button>
+                        <button type="button" class="ui icon button right floated" data-semui="modal"
+                                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
                         <g:render template="/survey/costItemModal"
@@ -110,10 +104,23 @@
                     </semui:filter>
 
 
+                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedSubParticipants,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubInfoStatus', 'surveySubCostItem',  'surveyCostItem']
+                              model="[orgList       : selectedSubParticipants.findAll { it?.hasAccessOrg() }.sort {
+                                  it?.sortname
+                              },
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem']
+                              ]"/>
+
+
+                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+                    <g:render template="/templates/filter/orgFilterTable"
+                              model="[orgList       : selectedSubParticipants.findAll { !it?.hasAccessOrg() }.sort {
+                                  it?.sortname
+                              },
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem']
                               ]"/>
 
                 </div>
@@ -128,15 +135,17 @@
                     <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedParticipants')}<semui:totalNumber
                             total="${selectedParticipants?.size()}"/></h2>
                     <br>
+
                     <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
                     <br>
 
                     <div class="four wide column">
-                    <button type="button" class="ui icon button right floated" data-semui="modal" data-href="#modalCostItemAllNewSub" ><i class="plus icon"></i></button>
+                        <button type="button" class="ui icon button right floated" data-semui="modal"
+                                data-href="#modalCostItemAllNewSub"><i class="plus icon"></i></button>
 
 
-                    <g:render template="/survey/costItemModal"
-                              model="[modalID: 'AllNewSub', setting: 'bulkForAll']"/>
+                        <g:render template="/survey/costItemModal"
+                                  model="[modalID: 'AllNewSub', setting: 'bulkForAll']"/>
                     </div>
 
                     <br>
@@ -156,8 +165,23 @@
 
 
 
+                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+
+
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedParticipants,
+                              model="[orgList       : selectedParticipants.findAll { it?.hasAccessOrg() }.sort {
+                                  it?.sortname
+                              },
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem']
+                              ]"/>
+
+
+                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+                    <g:render template="/templates/filter/orgFilterTable"
+                              model="[orgList       : selectedParticipants.findAll { !it?.hasAccessOrg() }.sort {
+                                  it?.sortname
+                              },
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem']
                               ]"/>
 

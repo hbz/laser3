@@ -21,7 +21,7 @@ class ApiOA2020 {
 
         List<Org> orgs = OrgSettings.executeQuery(
                 //"select o from OrgSettings os join os.org o where o.status != :deleted and os.key = :key and os.rdValue = :rdValue",
-                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue",
+                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue and o.status.value != 'Deleted'",
                 [
                    // deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'),
                     key: OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
