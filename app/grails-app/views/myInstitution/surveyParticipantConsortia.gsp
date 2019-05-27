@@ -18,12 +18,9 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
 
 <br>
 
@@ -31,10 +28,10 @@
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 </h1>
 
-<g:render template="nav"/>
 
 
 <semui:messages data="${flash}"/>
+
 
 <g:if test="${participant}">
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}" />

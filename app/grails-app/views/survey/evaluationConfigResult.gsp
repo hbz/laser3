@@ -201,6 +201,20 @@
 
 
         <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+
+        <g:set var="surveyParticipantsHasNotAccess" value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort { it?.participant.sortname }.participant}"/>
+
+        <div class="four wide column">
+            <button type="button" class="ui icon button right floated" data-semui="modal"
+                    data-href="#copyEmailaddresses_selectedParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+        </div>
+
+        <g:render template="../templates/copyEmailaddresses"
+                  model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
+
+        <br>
+        <br>
+
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>

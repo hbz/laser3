@@ -71,7 +71,7 @@ class SurveyConfig {
     @Transient
     static def validTypes = [
             'Subscription'             : ['de': 'Lizenz', 'en': 'Subscription'],
-            'SurveyProperty'              : ['de': 'Abfrage-Merkmal', 'en': 'Survey-Property']
+            'SurveyProperty'              : ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
     static getLocalizedValue(key){
