@@ -200,7 +200,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
                 </div>
             </g:if>
-            <g:each in="${tipp.title.ids.sort { it.identifier.ns.ns }}" var="id">
+            <g:each in="${tipp?.title?.ids.sort { it.identifier.ns.ns }}" var="id">
                 <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                     <span class="ui small teal image label">
                         ${id.identifier.ns.ns}: <div class="detail"><a
