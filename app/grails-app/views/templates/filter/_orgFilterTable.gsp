@@ -38,6 +38,9 @@
         <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
             <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+            <th class="la-th-wrap">${message(code: 'survey.plural')}</th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
         </g:if>
@@ -271,6 +274,19 @@
                     </div>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+                <td>
+                    <div class="la-flexbox">
+                        <g:set var="numberOfSurveys" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).surveyConfig.surveyInfo.findAll{it.status.id != RDStore.SURVEY_IN_PROCESSING.id}.groupBy {it.id}.size()}"/>
+
+                        <g:link controller="myInstitution" action="manageConsortiaSurveys" params="${[participant: org.id]}">
+                            <div class="ui circular label">
+                                ${numberOfSurveys}
+                            </div>
+                        </g:link>
+                    </div>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
                     <div class="ui list">
@@ -414,6 +430,18 @@
                                   model="[modalID: surveyOrg.id]"/>
 
                     </g:else>
+                </td>
+
+                <td class="center aligned">
+                    <g:set var="surveyOrg" scope="request" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
+                    <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
+                    <g:if test="${costItem?.costDescription}">
+
+                        <div class="ui icon" data-tooltip="${costItem?.costDescription}">
+                            <i class="info circular inverted icon"></i>
+                        </div>
+                    </g:if>
+
                 </td>
             </g:if>
             </tr>

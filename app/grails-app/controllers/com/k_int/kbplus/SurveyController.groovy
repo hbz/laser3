@@ -283,9 +283,6 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-
-        params.tab = params.tab ?: 'selectedSubParticipants'
-
         // new: filter preset
         params.orgType = RDStore.OT_INSTITUTION?.id?.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -319,6 +316,8 @@ class SurveyController {
 
         result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.surveyConfigSubOrgs)
         result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.selectedParticipants)
+
+        params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
 
         result
 
@@ -446,13 +445,13 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        params.tab = params.tab ?: 'surveyConfigsView'
+        //params.tab = params.tab ?: 'surveyConfigsView'
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         result.participant = Org.get(params.participant)
 
-        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).groupBy {it.surveyConfig.id}.sort{it?.surveyConfig?.configOrder}
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
 
         result
 
@@ -479,6 +478,7 @@ class SurveyController {
         result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
         result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).groupBy {it.type.id}
 

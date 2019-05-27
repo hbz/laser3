@@ -464,7 +464,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         embargo: tip.embargo ?: ''
                       ]);
 
-      tip.title.ids.each { id ->
+      tip?.title?.ids.each { id ->
         newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
       }
 

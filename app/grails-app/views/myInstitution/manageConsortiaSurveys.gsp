@@ -1,31 +1,36 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
-<laser:serviceInjection/>
+<%@ page import="com.k_int.kbplus.SurveyInfo; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<laser:serviceInjection />
+
 <!doctype html>
-
-<r:require module="annotations"/>
-
 <html>
 <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
+    <meta name="layout" content="semanticUI">
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'manageConsortiaSurveys.header')}</title>
 </head>
 
 <body>
 
+
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb message="currentSurveys.label" class="active"/>
+    <semui:crumb message="manageConsortiaSurveys.header" class="active"/>
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <semui:exportDropdown>
+    </semui:exportDropdown>
+</semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurvey}"/>
+<h1 class="ui left aligned icon header">
+    <semui:headerIcon />${message(code: 'manageConsortiaSurveys.header')}
+    <semui:totalNumber total="${countSurvey}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="currentSurveys" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="manageConsortiaSurveys" controller="myInstitution" method="get" class="form-inline ui small form">
+
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
@@ -89,6 +94,31 @@
     </g:form>
 </semui:filter>
 
+<g:if test="${participant}">
+    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}" />
+    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}" />
+
+    <table class="ui table la-table la-table-small">
+        <tbody>
+        <tr>
+            <td>
+                <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+
+                ${choosenOrg?.libraryType?.getI10n('value')}
+            </td>
+            <td>
+                <g:if test="${choosenOrgCPAs}">
+                    <g:each in="${choosenOrgCPAs}" var="gcp">
+                        <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                    </g:each>
+                </g:if>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</g:if>
+
+
 <div>
     <table class="ui celled sortable table la-table">
         <thead>
@@ -96,17 +126,16 @@
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.name" title="${message(code: 'surveyInfo.name.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.type" title="${message(code: 'surveyInfo.type.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.startDate"
+            <g:sortableColumn params="${params}" property="si.name" title="${message(code: 'surveyInfo.name.label')}"/>
+            <g:sortableColumn params="${params}" property="si.type" title="${message(code: 'surveyInfo.type.label')}"/>
+            <g:sortableColumn params="${params}" property="si.startDate"
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.endDate"
+            <g:sortableColumn params="${params}" property="si.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.status"
+            <g:sortableColumn params="${params}" property="si.status"
                               title="${message(code: 'surveyInfo.status.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
-                              title="${message(code: 'surveyInfo.owner.label')}"/>
-            <th>${message(code:'default.actions')}</th>
+            <th>${message(code: 'surveyInfo.property')}</th>
+            <th>${message(code: 'surveyInfo.evaluation')}</th>
 
         </tr>
 
@@ -134,17 +163,26 @@
                 <td>
                     ${s.status?.getI10n('value')}
                 </td>
-                <td>
-                    ${s.owner}
+
+
+                <td class="center aligned">
+
+                    <g:set var="surveyConfigsOfParticipant" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(contextService.org, params.participant, s?.surveyConfigs)}"/>
+
+                    ${surveyConfigsOfParticipant?.groupBy {it.surveyConfig.id}.size()}
                 </td>
 
-                <td class="x">
-
-                    <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button"><i
-                                class="write icon"></i></g:link>
-
-                    </g:if>
+                <td>
+                    <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+                    <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+                    <g:link action="surveyParticipantConsortia" id="${s.id}" params="[participant: participant?.id]" class="ui icon button">
+                        <g:if test="${finish != 0 && total != 0}">
+                            ${(finish/total)*100}
+                        </g:if>
+                        <g:else>
+                            0%
+                        </g:else>
+                    </g:link>
                 </td>
             </tr>
 

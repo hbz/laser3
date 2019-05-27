@@ -7,6 +7,7 @@
 
 <h3 class="ui left aligned icon header">${message(code: 'subscription.plural')} <semui:totalNumber
         total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
+
 <semui:form>
 <table class="ui celled sortable table la-table">
     <thead>
@@ -119,7 +120,7 @@
         <g:if test="${config?.type == 'SurveyProperty'}">
             <tr>
                 <td class="center aligned">
-                    ${config.configOrder}"
+                    ${config.configOrder}
                 </td>
                 <td>
                     <g:if test="${config?.type == 'SurveyProperty'}">

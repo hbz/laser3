@@ -250,6 +250,16 @@
                                     <br/>
                                 </g:if>
 
+                                <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
+
+                                        <g:if test="${tipp?.hostPlatformURL}">
+                                            <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                               href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
+                                               target="_blank"><i class="share square icon"></i></a>
+                                        </g:if>
+                                </g:each>
+
                                 <g:each in="${ti?.ids?.sort { it.identifier.ns.ns }}" var="id">
                                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                                         <span class="ui small teal image label">
@@ -286,10 +296,10 @@
                                                         id="${tipp?.platform.id}"><i
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
-                                            <g:if test="${tipp?.hostPlatformURL}">
+                                            <g:if test="${tipp?.platform?.primaryUrl}">
                                                 <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
+                                                   href="${ttipp?.platform?.primaryUrl.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 

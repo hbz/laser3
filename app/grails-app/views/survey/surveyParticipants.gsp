@@ -67,10 +67,13 @@
 
         <div class="twelve wide stretched column">
             <div class="ui top attached tabular menu">
+
+                <g:if test="${surveyConfig?.type == 'Subscription'}">
                 <a class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                    data-tab="selectedSubParticipants">${message(code: 'surveyParticipants.selectedSubParticipants')}
                     <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
                 </a>
+                </g:if>
 
                 <a class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
                    data-tab="selectedParticipants">${message(code: 'surveyParticipants.selectedParticipants')}
