@@ -83,7 +83,7 @@
                 <td name="subscription.takeEntitlements.source">
                     <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
-                        <div class="la-element" data-ieOid="${genericOIDService.getOID(ie)}">
+                        <div class="la-element" data-ieoid="${genericOIDService.getOID(ie)}">
                                 <label>
                                     <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
                                     <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
@@ -104,11 +104,13 @@
                 <td name="subscription.takeEntitlements.target">
                     <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        %{--<div class="la-element" data-ieOid="${ie?.tipp?.pkg?.id}">--}%
-                        <div class="la-element" data-ieOid="${genericOIDService.getOID(ie)}">
+                        <div class="la-element" data-pckoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}">
                             <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                             <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                            <br>
+                            data-pckoid=${genericOIDService.getOID(ie?.tipp?.pkg)}<br>
+                            data-ieoid=${genericOIDService.getOID(ie)}
                         </div>
                     </g:each>
                 </td>
@@ -140,29 +142,7 @@
             }
         }
     }
-    // $('input[name="subscription.takePackages.source"]').change( function(event) {
-    //     var id = this.value;
-    //     if (this.checked) {
-    //         $('.table tr td[name="subscription.takePackages.source"] div[data-id="' + id + '"]').addClass('willStay');
-    //         $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
-    //     } else {
-    //         $('.table tr td[name="subscription.takePackages.source"] div[data-id="' + id + '"]').removeClass('willStay');
-    //         if (getNumberOfCheckedCheckboxes('subscription.takeTaskIds') < 1){
-    //             $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
-    //         }
-    //     }
-    // })
-    //
-    // $('input[name="subscription.deleteTaskIds"]').change( function(event) {
-    //     var id = this.value;
-    //     if (this.checked) {
-    //         $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + id + '"]').addClass('willBeReplaced');
-    //     } else {
-    //         $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + id + '"]').removeClass('willBeReplaced');
-    //     }
-    // })
 
-    // FUNKTIONIERT
     $('input[name="subscription.takePackageIds"]').change( function(event) {
         var pckOId = this.value
         if (this.checked) {
@@ -170,32 +150,33 @@
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
         } else {
             $('.table tr td[name="subscription.takePackages.source"] div[data-pckoid="' + pckOId + '"]').removeClass('willStay');
-            // $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay');
             if (getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
                 $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
             }
         }
     })
 
-    //FUNKTIONIERT
     $('input[name="subscription.deletePackageIds"]').change( function(event) {
         var pckOId = this.value
+        alert(pckOId)
         if (this.checked) {
             $('.table tr td[name="subscription.takePackages.target"] div[data-pckoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pckoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
         } else {
             $('.table tr td[name="subscription.takePackages.target"] div[data-pckoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pckoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
         }
     })
 
-    //FUNKTIONIERT
     $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
         var pckOId = this.value
         if (this.checked) {
             //TODO: GEHT NOCH NICHT
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieOid="' + pckOId + '"]').addClass('willStay');
+            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + pckOId + '"]').addClass('willStay');
             $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieOid="' + pckOId + '"]').removeClass('willStay');
+            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + pckOId + '"]').removeClass('willStay');
             if (getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
                 $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
             }
@@ -205,34 +186,11 @@
     $('input[name="subscription.deleteEntitlementIds"]').change( function(event) {
         var pckOId = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieOid="' + pckOId + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').addClass('willBeReplacedStrong');
         } else {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieOid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pckOId + '"]').removeClass('willBeReplacedStrong');
         }
     })
-
-    // $('input[name="subscription.takePackageIds"]').change( function(event) {
-    //     var pckOId = this.value
-    //     if (this.checked) {
-    //         $('.table tr td[name="subscription.takePackages.source"] div[data-pckoid="' + pckOId + '"]').addClass('willStay');
-    //     } else {
-    //         $('.table tr td[name="subscription.takePackages.source"] div[data-pckoid="' + pckOId + '"]').removeClass('willStay');
-    //     }
-    // })
-    // $('input:radio[name="subscription.takeEntitlements"]').change( function(event) {
-    //     if (this.checked && this.value=='COPY') {
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').addClass('willStay');
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').removeClass('willBeReplaced');
-    //     }
-    //     if (this.checked && this.value=='REPLACE') {
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').addClass('willBeReplaced');
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').removeClass('willStay');
-    //     }
-    //     if (this.checked && this.value=='DO_NOTHING') {
-    //         $('.table tr td[name="subscription.takeEntitlements.source"] >div').removeClass('willStay');
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').removeClass('willStay');
-    //         $('.table tr td[name="subscription.takeEntitlements.target"] >div').removeClass('willBeReplaced');
-    //         if ( $('input:radio[name="subscription.takePackages"]').checked) {
 
     function getNumberOfCheckedCheckboxes(inputElementName){
         var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
