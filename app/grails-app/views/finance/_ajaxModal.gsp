@@ -341,7 +341,7 @@
                                 <input class="la-full-width" readonly="readonly" value="${modalText}" />
                             </g:if>
                             <g:else>
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
                                           from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
@@ -375,7 +375,7 @@
                     <div class="field">
                         <label>${message(code:'package.label')}</label>
                         <g:if test="${costItem?.sub}">
-                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                            <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
                                       optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
@@ -383,7 +383,7 @@
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                         </g:if>
                         <g:elseif test="${sub}">
-                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                            <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + sub.packages}"
                                       optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
@@ -486,6 +486,12 @@
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
+                }
+            });
+            $("#newCostInBillingCurrency").change(function(){
+                var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
+                if($("#newCostCurrency").val() == currencyEUR) {
+                    $("#costButton1").click();
                 }
             });
             $("#costButton2").click(function() {

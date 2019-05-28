@@ -283,9 +283,6 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-
-        params.tab = params.tab ?: 'selectedSubParticipants'
-
         // new: filter preset
         params.orgType = RDStore.OT_INSTITUTION?.id?.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
@@ -317,8 +314,10 @@ class SurveyController {
 
         result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
 
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.surveyConfigSubOrgs)
+        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.selectedParticipants)
+
+        params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
 
         result
 
@@ -358,8 +357,7 @@ class SurveyController {
         if (params.filterPropDef && consortiaMemberIds) {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
@@ -371,12 +369,12 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+        result.surveyConfigSubOrgs = Org.findAllByIdInList(com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers().id)
 
         result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
 
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+        result.selectedParticipants = result.surveyConfigOrgs.minus(result.surveyConfigSubOrgs)
+        result.selectedSubParticipants = result.surveyConfigOrgs.minus(result.selectedParticipants)
 
 
         def costItemElementConfigurations = []
@@ -393,6 +391,7 @@ class SurveyController {
 
         result.costItemElementConfigurations = costItemElementConfigurations
         result.orgConfigurations = orgConfigurations
+        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result
 
@@ -415,7 +414,7 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        params.tab = params.tab ?: 'selectedSubParticipants'
+        params.tab = params.tab ?: 'surveyConfigsView'
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
@@ -423,16 +422,95 @@ class SurveyController {
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
-        params.surveyConfigID = params.surveyConfigID ?: result?.surveyConfigs[0]?.id?.toString()
+        def orgs = result.surveyConfigs?.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
+        result.participants = orgs.sort{it.sortname}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def evaluationParticipantInfo() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        //params.tab = params.tab ?: 'surveyConfigsView'
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.participant = Org.get(params.participant)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def evaluationConfigsInfo() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).groupBy {it.type.id}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def evaluationConfigResult() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+        result.surveyProperty = SurveyProperty.get(params.prop)
 
-        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
-
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.surveyConfigSubOrgs
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id) - result.selectedParticipants
+        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfigAndType(result.institution, result.surveyConfig, result.surveyProperty).sort{it.participant?.sortname}
 
         result
 
@@ -1299,6 +1377,17 @@ class SurveyController {
                     surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
                 } catch (Exception e) {
                     log.error("Non-valid surveyOrg sent ${params.surveyOrg}",e)
+                }
+            }
+
+            if (params.surveyConfig) {
+                def surveyConfig = genericOIDService.resolveOID(params.surveyConfig)
+
+                surveyConfig?.orgs?.each{
+
+                    if(!CostItem.findBySurveyOrg(it)) {
+                        surveyOrgsDo << it
+                    }
                 }
             }
 

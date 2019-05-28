@@ -14,12 +14,17 @@ import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
 class SubscriptionService {
     def contextService
+    def taskService
     def subscriptionsQueryService
+    def docstoreService
+    def messageSource
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -46,7 +51,7 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     List getMySubscriptions_writeRights(){
@@ -67,14 +72,15 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.showParentsAndChildsSubs = 'true'
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.showParentsAndChildsSubs = false
+//        params.showParentsAndChildsSubs = 'true'
         params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
@@ -82,7 +88,7 @@ class SubscriptionService {
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
@@ -91,7 +97,7 @@ class SubscriptionService {
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
@@ -184,34 +190,6 @@ class SubscriptionService {
         }
     }
 
-    boolean takeOrgRelations(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion) && targetSub?.orgRelations?.size() > 0) {
-            deleteOrgRelations(targetSub, flash)
-        }
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                getVisibleOrgRelationsWithoutConsortia(sourceSub)?.each { or ->
-                    if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                        flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
-                    } else {
-                        def newProperties = or.properties
-                        //Vererbung ausschalten
-                        newProperties.sharedFrom = null
-                        newProperties.isShared = false
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, newProperties)
-                        newOrgRole.sub = targetSub
-                        save(newOrgRole, flash)
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
-        }
-    }
-
     boolean takePackages(String aktion, List<Package> packagesToTake, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             //alle IEs löschen, die zu den zu löschenden Packages gehören
@@ -284,6 +262,23 @@ class SubscriptionService {
         }
     }
 
+    boolean deleteTasks(List<Long> toDeleteTasks, Subscription targetSub, def flash) {
+        boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
+        def userId = contextService.user.id
+        toDeleteTasks.each { deleteTaskId ->
+            def dTask = Task.get(deleteTaskId)
+            if (dTask) {
+                if (dTask.creator.id == userId || isInstAdm) {
+                    delete(dTask, flash)
+                } else {
+                    flash.error += "Sie sind nicht berechtigt Aufgabe ${deleteTaskId} zu löschen."
+                }
+            } else {
+                flash.error += "Die Aufgabe ${deleteTaskId} konnte nicht gelöscht werden. Sie existiert nicht (mehr)."
+            }
+        }
+    }
+
     boolean takeTasks(String aktion, Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         switch (aktion) {
             case COPY:
@@ -338,6 +333,20 @@ class SubscriptionService {
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
+        targetSub.documents.each {
+            if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain)){
+                Map params = [deleteId: it.id]
+                log.debug("deleteDocuments ${params}");
+                docstoreService.unifiedDeleteDocuments(params)
+            }
+        }
+    }
+
+
     boolean deleteDates(Subscription targetSub, def flash){
         targetSub.startDate = null
         targetSub.endDate = null
@@ -351,11 +360,20 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
+        log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
+        def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
+        [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
+        log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
+    }
+
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
                 if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-                    it.status = RDStore.IE_DELETED
+                    it.status = RDStore.DOC_DELETED
                     save(it, flash)
                 }
             }
@@ -427,13 +445,22 @@ class SubscriptionService {
         }
     }
 
+    private boolean delete(obj, flash) {
+        if (obj) {
+            obj.delete(flush: true)
+            log.debug("Delete ${obj} ok")
+        } else {
+            flash.error += "Es ist ein Problem beim Löschen aufgetreten."
+        }
+    }
+
     private boolean save(obj, flash){
         if (obj.save(flush: true)){
             log.debug("Save ${obj} ok")
             return true
         } else {
-            log.error("Problem saving property ${obj.errors}")
-            flash.error += "Es ist ein Fehler beim Speichern von ${obj.value} aufgetreten."
+            log.error("Problem saving ${obj.errors}")
+            flash.error += "Es ist ein Fehler beim Speichern von ${obj} aufgetreten."
             return false
         }
     }

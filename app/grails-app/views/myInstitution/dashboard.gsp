@@ -163,7 +163,7 @@
                                     <br />
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
-                               <g:if test="${change.costItems}">
+                               <g:if test="${change instanceof PendingChange && change.costItem}">
                                    <strong>${message(code:'financials.costItem')}</strong>
                                    <br>
                                    ${raw(change.desc)}

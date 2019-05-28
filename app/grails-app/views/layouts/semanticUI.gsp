@@ -94,14 +94,8 @@
                                     <semui:mainNavItem controller="organisation" action="index" message="menu.public.all_orgs" />
                                 </sec:ifAnyGranted>
 
-                                <g:if test="${accessService.checkConstraint_ORG_COM_EDITOR()}">
-                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
-                                </g:if>
-                                <g:else>
-                                    <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                               controller="organisation" action="listInstitution" message="menu.public.all_insts" />
-                                </g:else>
-
 
                                 <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
@@ -132,6 +126,8 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
+
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 

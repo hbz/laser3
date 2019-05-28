@@ -7,11 +7,15 @@
   </head>
     <body>
 
-    <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />
-        <g:message code="user.edit.label" />: ${user.username}
-    </h1>
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+
+        <h1 class="ui left aligned icon header"><semui:headerIcon />
+            <g:message code="user.edit.label" />: ${user.username}
+        </h1>
 
     <semui:messages data="${flash}" />
 

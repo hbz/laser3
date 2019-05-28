@@ -76,7 +76,7 @@
                             </dl>
                             */ %>
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.manualCancellationlDate.label')}</dt>
+                                <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
@@ -387,6 +387,7 @@
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
@@ -403,6 +404,7 @@
                             </g:elseif>
                         </div>
                     </div>
+                </g:if>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
