@@ -50,6 +50,13 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('subscription.status.no.status.set.but.null','filter.fake.values')
 
+    static final SURVEY_READY               = getRefdataValue('Ready', 'Survey Status')
+    static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', 'Survey Status')
+    static final SURVEY_IN_EVALUATION       = getRefdataValue('In Evaluation', 'Survey Status')
+    static final SURVEY_COMPLETED           = getRefdataValue('Completed', 'Survey Status')
+    static final SURVEY_SURVEY_STARTED      = getRefdataValue('Survey started', 'Survey Status')
+    static final SURVEY_SURVEY_COMPLETED    = getRefdataValue('Survey completed', 'Survey Status')
+
     static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
 
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')

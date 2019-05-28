@@ -3440,7 +3440,7 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
     })
-    def surveyResult() {
+    def surveyInfos() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -3454,9 +3454,39 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }.groupBy {it?.surveyConfig?.id}
 
-        result.editable = result.surveyResults.finishDate ? false : true
+        result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyConfigsInfo() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        result.editable = result.surveyResults.finishDate.contains(null) ? true : false
 
         result
     }
@@ -4324,6 +4354,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def manageConsortiaSurveys() {
+        def result = setResultGenerics()
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('filterService')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+
+        result.participant = Org.get(Long.parseLong(params.participant))
+
+        //For Filter
+        params.participant = params.participant ? Org.get(Long.parseLong(params.participant)) : null
+
+        def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
+
+        result.surveys = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
+        result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
+
+        result
+
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -4625,6 +4682,32 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 return;
             }
         }
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyParticipantConsortia() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.participant = Org.get(params.participant)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+
+        result
 
     }
 }
