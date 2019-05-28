@@ -100,7 +100,7 @@
                                 <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
                             </g:if>
                         </div>
-                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST_SINGLE,ORG_CONSORTIUM","INST_USER")}">
+                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
