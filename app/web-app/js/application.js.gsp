@@ -621,7 +621,58 @@ r2d2 = {
     }
 }
 
+
+bb8 = {
+
+    go: function() {
+
+        $(".la-js-remoteLink").click(function (event) {
+            event.preventDefault();
+
+            var url = $(this).attr('href')
+            var before = $(this).attr('js-before')      // before
+            var done = $(this).attr('js-done')          // onSuccess
+            var fail = $(this).attr('js-fail')
+            var always = $(this).attr('js-always')      // onComplete
+            var update = $(this).attr('update')
+
+            $.ajax({
+                url: url,
+
+                beforeSend: function (xhr) {
+                    if (before) {
+                        //console.log('before')
+                        eval(before)
+                    }
+                }
+            })
+                .done(function (data) {
+                    //console.log('done')
+                    $(update).empty()
+                    $(update).html(data)
+                    if (done) {
+                        eval(done)
+                    }
+                })
+                .fail(function () {
+                    //console.log('fail')
+                    if (fail) {
+                        eval(fail)
+                    }
+                })
+                .always(function () {
+                    //console.log('always')
+                    if (always) {
+                        eval(always)
+                    }
+                });
+
+        })
+    }
+}
+
 $(document).ready(function() {
     r2d2.go();
+    bb8.go();
 })
 
