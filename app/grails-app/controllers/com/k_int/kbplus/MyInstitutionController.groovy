@@ -185,6 +185,60 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def currentPlatforms() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ?: 0
+
+        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+
+        /*
+        String base_qry1 = "select distinct p from IssueEntitlement ie join ie.subscription s join ie.tipp tipp join tipp.platform p " +
+                "where s.id in (:currentSubIds)"
+        println base_qry1
+        platforms.addAll(Subscription.executeQuery(base_qry1, [currentSubIds: currentSubIds]))
+        */
+
+        /*
+        String base_qry2 = "select distinct p from TitleInstancePackagePlatform tipp join tipp.platform p join tipp.sub s " +
+                "where s.id in (:currentSubIds)"
+        println base_qry2
+        platforms.addAll(Subscription.executeQuery(base_qry2, [currentSubIds: currentSubIds]))
+        */
+
+        String qry3 = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+                "TitleInstancePackagePlatform tipp join tipp.platform p " +
+                "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+
+        qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
+        qry3 += " and ((s.status is null) or (s.status != :subDeleted))"
+        qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
+
+        def qryParams3 = [
+                currentSubIds: currentSubIds,
+                pkgDeleted: RDStore.PACKAGE_DELETED,
+                platformDeleted: RDStore.PLATFORM_DELETED,
+                subDeleted: RDStore.SUBSCRIPTION_DELETED,
+                tippDeleted: RDStore.TIPP_DELETED
+        ]
+
+        if ( params.q?.length() > 0 ) {
+            qry3 += "and p.normname like :query"
+            qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
+        }
+        else {
+            qry3 += "order by p.normname asc"
+        }
+
+        result.platformInstanceList  = Subscription.executeQuery(qry3, qryParams3) /*, [max:result.max, offset:result.offset])) */
+        result.platformInstanceTotal = result.platformInstanceList.size()
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {

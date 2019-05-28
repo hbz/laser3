@@ -200,7 +200,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                             <g:set var="customProperty"
                                    value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
+                                <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -268,7 +268,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                             <g:set var="privateProperty"
                                    value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
                             <g:if test="${privateProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
+                                <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -399,7 +399,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     <g:set var="customProperty"
                                            value="${sub.customProperties.find { it.type == filterPropDef }}"/>
                                     <g:if test="${customProperty}">
-                                        <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}</div>
+                                        <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
                                         <div class="content">
                                             <g:if test="${customProperty.type.type == Integer.toString()}">
@@ -465,7 +465,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     </div>
 
                                     <g:if test="${privateProperty}">
-                                        <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}</div>
+                                        <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
                                         <div class="content">
                                             <g:if test="${privateProperty.type.type == Integer.toString()}">

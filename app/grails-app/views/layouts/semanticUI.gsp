@@ -127,6 +127,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
+
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"

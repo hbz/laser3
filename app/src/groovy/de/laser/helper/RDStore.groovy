@@ -36,11 +36,13 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
+    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
+    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
-    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
-    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
+    static final PLATFORM_DELETED           = getRefdataValue('Deleted', 'Platform Status')
+    static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
 
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
