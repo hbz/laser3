@@ -159,8 +159,8 @@
 ;
 
 /* Striped */
-@stripedBackground: rgba(0, 0, 50, 0.02);
-@invertedStripedBackground: rgba(255, 255, 255, 0.05);
+@stripedBackground: #f4f8f9;
+@invertedStripedBackground: blue;
 
 /* Selectable */
 @selectableBackground: @transparentBlack;
@@ -182,13 +182,13 @@
 @sortableIconSort: '\f0dc';
 @sortableDisabledColor: @disabledTextColor;
 
-@sortableHoverBackground: @transparentBlack;
+@sortableHoverBackground: @#D3DAE3;
 @sortableHoverColor: @hoveredTextColor;
 
-@sortableActiveBackground: @transparentBlack;
+@sortableActiveBackground: @#D3DAE3;
 @sortableActiveColor: @selectedTextColor;
 
-@sortableActiveHoverBackground: @transparentBlack;
+@sortableActiveHoverBackground: @#D3DAE3;
 @sortableActiveHoverColor: @selectedTextColor;
 
 @sortableInvertedBorderColor: transparent;

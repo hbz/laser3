@@ -608,13 +608,13 @@
 /* Table Striping */
 .ui.striped.table > tr:nth-child(2n),
 .ui.striped.table tbody tr:nth-child(2n) {
-  background-color: rgba(0, 0, 50, 0.02);
+  background-color: #f4f8f9;
 }
 
 /* Stripes */
 .ui.inverted.striped.table > tr:nth-child(2n),
 .ui.inverted.striped.table tbody tr:nth-child(2n) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: blue;
 }
 
 /* Allow striped active hover */
@@ -1137,6 +1137,12 @@
 
 
 /* change classnames bec. of existing sort function in LAS:eR */
+
+/* Sorted */
+.ui.sortable.table thead th.sorted {
+  background: #F2F2F2;
+  color: rgba(0, 0, 0, 0.95);
+}
 .ui.sortable.table thead th.sortable:after {
   content: '\f0dc';
   color: #767676;
@@ -1157,11 +1163,11 @@
 
 /* Hover */
 .ui.sortable.table thead th:hover {
-  background: transparent;
+  background: #F2F2F2;
   color: #767676;
 }
 .ui.sortable.table thead th.sortable:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: #F2F2F2;
 }
 .ui.table tr td {
   padding: 20px 0;
@@ -1177,8 +1183,6 @@
   text-transform: uppercase;
 }
 .ui.table tr th a {
-  display: inline-block;
-  padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
 }
@@ -1191,10 +1195,6 @@
 ---------------*/
 
 .ui.la-table.table {
-  border-collapse: separate;
-  background-color: #f4f8f9;
-}
-.ui.la-table.table tr td {
   background-color: white;
 }
 .metaboxContent .ui.la-table.table {
@@ -1204,6 +1204,9 @@
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top: none;
+}
+.ui.la-table.table tr td {
+  border-top: 7px solid #F4F8F9;
 }
 
 /*--------------
@@ -1311,6 +1314,7 @@
 .ui.table thead th.la-smaller-table-head {
   padding-top: 0;
   padding-bottom: 0;
+  height: 28px;
 }
 
 /* wrap small needed th to avoid table layout break */
@@ -1326,10 +1330,16 @@
 .ui.la-table.table tr td.la-exposed-bg {
   background-color: #fffaf5;
 }
-.ui.table thead tr:first-child > th {
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
-  top: 90px;
   z-index: 2;
   background-color: #F4F8F9;
+}
+.ui.table thead tr:first-child > th {
+  top: 90px;
+}
+.ui.table thead tr:nth-child(2) > th {
+  top: 118px;
 }
