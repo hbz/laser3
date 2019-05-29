@@ -22,7 +22,6 @@ class ApiStatistic {
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSettings.executeQuery(
-                //"select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue", [
                 "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
                             key    : OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
@@ -185,9 +184,7 @@ class ApiStatistic {
 
             def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
 
-            //println subPkg.pkg?.id + " , " + subPkg.subscription?.id + " > " + tipps
-            if (tipps)
-                println "TIPPS COUNT > 0 ----------------------------------------------------------------------------------"
+            //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
 
             tipps.each{ tipp ->
                 if (tipp.status?.value == 'Deleted') {

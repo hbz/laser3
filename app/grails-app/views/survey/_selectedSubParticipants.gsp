@@ -31,8 +31,22 @@
 
 
     <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+
+    <g:set var="surveyParticipantsHasNotAccess" value="${selectedSubParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+
+    <div class="four wide column">
+        <button type="button" class="ui icon button right floated" data-semui="modal"
+                data-href="#copyEmailaddresses_selectedSubParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+    </div>
+
+    <g:render template="../templates/copyEmailaddresses"
+              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipants']"/>
+
+    <br>
+    <br>
     <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : selectedSubParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname },
+              model="[orgList         : surveyParticipantsHasNotAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>

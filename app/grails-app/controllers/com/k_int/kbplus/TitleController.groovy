@@ -153,7 +153,7 @@ class TitleController extends AbstractDebugController {
     private def reusedIdentifiers(title) {
     // Test for identifiers that are used accross multiple titles
     def duplicates = [:]
-    def identifiers = title.ids?.collect{it.identifier}
+    def identifiers = title?.ids?.collect{it.identifier}
     identifiers.each{ident ->
       ident.occurrences.each{
         if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){

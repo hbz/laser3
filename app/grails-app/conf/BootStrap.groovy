@@ -2408,8 +2408,6 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'v6input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
         RefdataValue.loc('Semester',      [key: 'semester.not.applicable', en: 'Not applicable', de: 'Nicht anwendbar'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 'w17/18', en: 'winter semester 2017/18', de: 'Wintersemester 2017/18'], BOOTSTRAP)
-        RefdataValue.loc('Semester',      [key: 's18', en: 'summer semester 2018', de: 'Sommersemester 2018'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w18/19', en: 'winter semester 2018/19', de: 'Wintersemester 2018/19'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 's19', en: 'summer semester 2019', de: 'Sommersemester 2019'], BOOTSTRAP)
         RefdataValue.loc('Semester',      [key: 'w19/20', en: 'winter semester 2019/20', de: 'Wintersemester 2019/20'], BOOTSTRAP)
@@ -2443,9 +2441,9 @@ class BootStrap {
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Evaluation', de: 'In Auswertung'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'Abgeschlossen', de: 'Completed'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Completed', de: 'Abgeschlossen'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
-        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage beendet'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Survey completed', de: 'Umfrage beendet'], BOOTSTRAP)
 
         createRefdataWithI10nExplanation()
     }

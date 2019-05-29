@@ -242,6 +242,13 @@
                                         </div>
                                     </g:if>
 
+                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                        <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                           data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                           target="_blank"><i class="share square icon"></i></a>
+                                    </g:if>
+
                                     <g:each in="${ie?.tipp?.title?.ids.sort { it.identifier.ns.ns }}" var="title_id">
                                         <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                                             <span class="ui small teal image label">
@@ -282,10 +289,10 @@
                                                         id="${ie.tipp?.platform.id}"><i
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
-                                            <g:if test="${ie.tipp?.hostPlatformURL}">
+                                            <g:if test="${ie.tipp?.platform?.primaryUrl}">
                                                 <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                                   href="${ie.tipp?.platform?.primaryUrl?.contains('http') ? ie.tipp?.platform?.primaryUrl : 'http://' + ie.tipp?.platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 

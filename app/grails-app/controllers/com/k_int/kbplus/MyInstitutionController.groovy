@@ -185,6 +185,60 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def currentPlatforms() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ?: 0
+
+        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+
+        /*
+        String base_qry1 = "select distinct p from IssueEntitlement ie join ie.subscription s join ie.tipp tipp join tipp.platform p " +
+                "where s.id in (:currentSubIds)"
+        println base_qry1
+        platforms.addAll(Subscription.executeQuery(base_qry1, [currentSubIds: currentSubIds]))
+        */
+
+        /*
+        String base_qry2 = "select distinct p from TitleInstancePackagePlatform tipp join tipp.platform p join tipp.sub s " +
+                "where s.id in (:currentSubIds)"
+        println base_qry2
+        platforms.addAll(Subscription.executeQuery(base_qry2, [currentSubIds: currentSubIds]))
+        */
+
+        String qry3 = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+                "TitleInstancePackagePlatform tipp join tipp.platform p " +
+                "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+
+        qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
+        qry3 += " and ((s.status is null) or (s.status != :subDeleted))"
+        qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
+
+        def qryParams3 = [
+                currentSubIds: currentSubIds,
+                pkgDeleted: RDStore.PACKAGE_DELETED,
+                platformDeleted: RDStore.PLATFORM_DELETED,
+                subDeleted: RDStore.SUBSCRIPTION_DELETED,
+                tippDeleted: RDStore.TIPP_DELETED
+        ]
+
+        if ( params.q?.length() > 0 ) {
+            qry3 += "and p.normname like :query"
+            qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
+        }
+        else {
+            qry3 += "order by p.normname asc"
+        }
+
+        result.platformInstanceList  = Subscription.executeQuery(qry3, qryParams3) /*, [max:result.max, offset:result.offset])) */
+        result.platformInstanceTotal = result.platformInstanceList.size()
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {
@@ -3386,7 +3440,7 @@ AND EXISTS (
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
     })
-    def surveyResult() {
+    def surveyInfos() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -3400,9 +3454,39 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }.groupBy {it?.surveyConfig?.id}
 
-        result.editable = result.surveyResults.finishDate ? false : true
+        result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyConfigsInfo() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        result.editable = result.surveyResults.finishDate.contains(null) ? true : false
 
         result
     }
@@ -4270,6 +4354,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def manageConsortiaSurveys() {
+        def result = setResultGenerics()
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('filterService')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+
+        result.participant = Org.get(Long.parseLong(params.participant))
+
+        //For Filter
+        params.participant = params.participant ? Org.get(Long.parseLong(params.participant)) : null
+
+        def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
+
+        result.surveys = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
+        result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
+
+        result
+
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -4571,6 +4682,32 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 return;
             }
         }
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyParticipantConsortia() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.participant = Org.get(params.participant)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+
+        result
 
     }
 }
