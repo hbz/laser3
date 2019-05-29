@@ -299,7 +299,7 @@
                                             <g:if test="${tipp?.platform?.primaryUrl}">
                                                 <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${ttipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
+                                                   href="${tipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 
