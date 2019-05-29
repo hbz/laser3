@@ -3,6 +3,15 @@
     Sortable
 ---------------*/
 /* change classnames bec. of existing sort function in LAS:eR */
+
+/* Sorted */
+.ui.sortable.table thead th.sorted {
+  background: #F2F2F2;
+  color: @sortableActiveColor;
+}
+
+
+
 .ui.sortable.table thead th.sortable:after {
   content: @sortableIconSort;
   color: @grey;
@@ -26,11 +35,11 @@
 
 /* Hover */
 .ui.sortable.table thead th:hover {
-  background: transparent;
+  background: #F2F2F2;
   color: @grey;
 }
 .ui.sortable.table thead th.sortable:hover {
-  background: @sortableHoverBackground;
+  background:#F2F2F2;
 
 }
 
@@ -50,8 +59,8 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       a {
-        display: inline-block;
-        padding: 0.5rem 0;
+        //display: inline-block;
+        //padding: 0.5rem 0;
         cursor: pointer;
         color: gray;
       }
@@ -67,11 +76,11 @@
      la-table
 ---------------*/
 .ui.la-table.table{
-  border-collapse: separate;
-  background-color: @simulateTransparency;
+
+  background-color: white;
   tr {
     td {
-      background-color: white;
+      //background-color: white;
     }
   }
 }
@@ -83,6 +92,9 @@
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top:none;
+}
+.ui.la-table.table tr td {
+  border-top:7px solid #F4F8F9;
 }
 /*--------------
      la-table-dashboard
@@ -214,9 +226,15 @@
 }
 
 // Fixed Table Header
-.ui.table thead tr:first-child > th {
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   position: sticky !important;
-  top: 90px;
   z-index: 2;
   background-color: #F4F8F9;
+}
+.ui.table thead tr:first-child > th {
+  top: 90px;
+}
+.ui.table thead tr:nth-child(2) > th {
+  top: 118px;
 }
