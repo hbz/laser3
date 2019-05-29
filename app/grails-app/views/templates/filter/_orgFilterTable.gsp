@@ -408,27 +408,33 @@
                 <td class="center aligned">
                     <g:set var="surveyOrg" scope="request" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                     <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
-                <g:if test="${costItem}">
 
-                    <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                        <g:if test="${costItem}">
 
-                    ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number"/>
 
-                    <br>
+                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                    <button type="button" class="ui icon mini button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
+                        <br>
 
-                    <g:render template="/survey/costItemModal"
-                              model="[modalID: surveyOrg.id, mode: 'edit']"/>
-
-                </g:if>
-                    <g:else>
-                        <button type="button" class="ui icon button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="plus icon"></i></button>
-
+                        <button type="button" class="ui icon mini button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
 
                         <g:render template="/survey/costItemModal"
-                                  model="[modalID: surveyOrg.id]"/>
+                                  model="[modalID: surveyOrg.id, mode: 'edit']"/>
 
+                        </g:if>
+                        <g:else>
+                            <button type="button" class="ui icon button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="plus icon"></i></button>
+
+
+                            <g:render template="/survey/costItemModal"
+                                      model="[modalID: surveyOrg.id]"/>
+
+                        </g:else>
+                    </g:if>
+                    <g:else>
+                        <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:else>
                 </td>
 

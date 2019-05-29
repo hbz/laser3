@@ -208,7 +208,7 @@ class MyInstitutionController extends AbstractDebugController {
         platforms.addAll(Subscription.executeQuery(base_qry2, [currentSubIds: currentSubIds]))
         */
 
-        String qry3 = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+        String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                 "TitleInstancePackagePlatform tipp join tipp.platform p " +
                 "where tipp.pkg = pkg and s.id in (:currentSubIds) "
 
@@ -226,16 +226,38 @@ class MyInstitutionController extends AbstractDebugController {
         ]
 
         if ( params.q?.length() > 0 ) {
-            qry3 += "and p.normname like :query"
+            qry3 += "and ("
+            qry3 += "  ( p.normname like :query ) or "
+            qry3 += "  ( p.primaryUrl like :query ) or"
+            qry3 += "  ( lower(p.org.name) like :query or lower(p.org.sortname) like :query or lower(p.org.shortname) like :query ) "
+            qry3 += ")"
             qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
         }
         else {
             qry3 += "order by p.normname asc"
         }
 
-        result.platformInstanceList  = Subscription.executeQuery(qry3, qryParams3) /*, [max:result.max, offset:result.offset])) */
-        result.platformInstanceTotal = result.platformInstanceList.size()
+        qry3 += " group by p, s"
 
+        List platformSubscriptionList   = Subscription.executeQuery(qry3, qryParams3) /*, [max:result.max, offset:result.offset])) */
+
+        result.platformInstanceList     = (platformSubscriptionList.collect{ it[0] }).unique()
+        result.platformInstanceTotal    = result.platformInstanceList.size()
+
+        result.subscriptionMap = [:]
+
+        platformSubscriptionList.each { entry ->
+            String key = 'platform_' + entry[0].id
+
+            if (! result.subscriptionMap.containsKey(key)) {
+                result.subscriptionMap.put(key, [])
+            }
+            if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value && ! entry[1].instanceOf) {
+                result.subscriptionMap.get(key).add(entry[1])
+            }
+        }
+
+        println result.subscriptionMap
         result
     }
 
@@ -3201,6 +3223,12 @@ AND EXISTS (
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])
 
+
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
         result.surveysConsortia = []
 
                 /*SurveyResult.findAll("from SurveyResult where " +
@@ -3487,6 +3515,7 @@ AND EXISTS (
         result.ownerId = result.surveyResults[0]?.owner?.id
 
         result.editable = result.surveyResults.finishDate.contains(null) ? true : false
+        result.consCostTransfer = true
 
         result
     }

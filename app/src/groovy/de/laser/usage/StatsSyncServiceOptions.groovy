@@ -40,7 +40,17 @@ class StatsSyncServiceOptions {
         org_inst = (Org)objectList[2]
         title_io_inst = (IdentifierOccurrence)objectList[3]
         statsTitleIdentifier = title_io_inst?.identifier?.value
-        identifierType = title_io_inst?.identifier?.ns?.ns
+        setIdentifierType(title_io_inst)
+    }
+
+    void setIdentifierType(title_io_inst) {
+        def type = title_io_inst?.identifier?.ns?.ns
+        // ugly difference in type name
+        if (type == 'zdb'){
+            identifierType = 'zdbid'
+        } else {
+            identifierType = type
+        }
     }
 
     void setBasicQueryParams()
@@ -73,6 +83,33 @@ class StatsSyncServiceOptions {
         def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
         def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"),org_inst)
         [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
+    }
+
+    Boolean identifierTypeAllowedForAPICall()
+    {
+        if (! identifierType || ! reportType){
+            return false
+        }
+        switch (reportType) {
+            case "book":
+            if (identifierType == "doi") {
+                return true
+            }
+            break
+            case "journal":
+            if (identifierType == "zdbid") {
+                return true
+            }
+            break
+            case "database":
+            if (identifierType == "zdbid") {
+                return true
+            }
+            break
+            default:
+                return false
+            break
+        }
     }
 
     void setReportType() {
