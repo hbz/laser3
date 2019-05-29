@@ -154,10 +154,17 @@
                                 println '<div>' + apiLevel.getValue() + '</div>'
                             }
 
-                            def statistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
-                            if (statistics != OrgSettings.SETTING_NOT_FOUND) {
-                                if (statistics.getValue()?.value == 'Yes') {
+                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                            if (accessStatistics != OrgSettings.SETTING_NOT_FOUND) {
+                                if (accessStatistics.getValue()?.value == 'Yes') {
                                     println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
+                                }
+                            }
+
+                            def accessOA2020 = OrgSettings.get(org, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
+                            if (accessOA2020 != OrgSettings.SETTING_NOT_FOUND) {
+                                if (accessOA2020.getValue()?.value == 'Yes') {
+                                    println '<div><i class="ui icon lock open"></i> OA2020</div>'
                                 }
                             }
                         %>
