@@ -3223,6 +3223,12 @@ AND EXISTS (
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])
 
+
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
         result.surveysConsortia = []
 
                 /*SurveyResult.findAll("from SurveyResult where " +
@@ -3509,6 +3515,7 @@ AND EXISTS (
         result.ownerId = result.surveyResults[0]?.owner?.id
 
         result.editable = result.surveyResults.finishDate.contains(null) ? true : false
+        result.consCostTransfer = true
 
         result
     }

@@ -105,7 +105,7 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
-                ${surveys.groupBy { it.surveyConfig.surveyInfo.id }?.size()}
+                ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
         </g:if>

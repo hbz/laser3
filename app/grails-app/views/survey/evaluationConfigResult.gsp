@@ -121,8 +121,13 @@
         <g:message code="surveyProperty.label"/>:
         ${surveyProperty?.getI10n('name')}
 
-        ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyProperty?.type)}
+        <g:if test="${surveyProperty?.getI10n('explain')}">
+            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyProperty?.getI10n('explain')}">
+            <i class="question circle icon"></i>
+            </span>
+        </g:if>
 
+        (${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyProperty?.type)}
         <g:if test="${surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
             <g:set var="refdataValues" value="${[]}"/>
             <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.refdataCategory)}"
@@ -130,8 +135,8 @@
                 <g:set var="refdataValues"
                        value="${refdataValues + refdataValue?.getI10n('value')}"/>
             </g:each>
-            (${refdataValues.join('/')})
-        </g:if>
+            : (${refdataValues.join('/')})
+        </g:if>)
     </h3>
 
 
