@@ -125,6 +125,13 @@
                 <td>
                     <g:if test="${config?.type == 'SurveyProperty'}">
                         ${config?.surveyProperty?.getI10n('name')}
+
+                        <g:if test="${config?.surveyProperty?.getI10n('explain')}">
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.surveyProperty?.getI10n('explain')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+
                     </g:if>
 
                 </td>
@@ -159,8 +166,8 @@
                 </td>
                 <td>
 
-                    <g:link controller="survey" action="evaluationConfigInfo" id="${surveyInfo.id}"
-                            params="[surveyConfigID: config?.id]" class="ui icon button"><i
+                    <g:link controller="survey" action="evaluationConfigResult" id="${surveyInfo.id}"
+                            params="[surveyConfigID: config?.id, prop: config?.surveyProperty?.id]" class="ui icon button"><i
                             class="chart bar icon"></i></g:link>
 
                 </td>

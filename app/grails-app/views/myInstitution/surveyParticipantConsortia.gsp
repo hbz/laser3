@@ -85,6 +85,13 @@
                     </td>
                     <td>
                         ${surveyResult?.type?.getI10n('name')}
+
+                        <g:if test="${surveyResult?.type?.getI10n('explain')}">
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyResult?.type?.getI10n('explain')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+
                     </td>
                     <td>
                         ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyResult?.type?.type)}
