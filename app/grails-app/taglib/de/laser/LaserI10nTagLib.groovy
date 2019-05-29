@@ -3,7 +3,7 @@ package de.laser
 import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
-class I10nTagLib {
+class LaserI10nTagLib {
 
     def springSecurityService
 
