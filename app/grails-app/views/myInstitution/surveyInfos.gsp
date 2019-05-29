@@ -16,7 +16,16 @@
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'survey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>
+${message(code: 'survey.label')} - ${surveyInfo.name}
+
+<g:if test="${surveyInfo.startDate || surveyInfo.endDate}"></g:if>
+(<g:formatDate formatName="default.date.format.notime"
+               date="${surveyInfo.startDate}"/>
+-
+<g:formatDate formatName="default.date.format.notime"
+              date="${surveyInfo.endDate}"/>)
+</h1>
 
 <br>
 
@@ -57,13 +66,14 @@
 
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfig.label')} <semui:totalNumber
         total="${surveyResults?.size()}"/></h2>
-
 <br>
 
 <semui:form>
 
     <h3 class="ui left aligned icon header">${message(code: 'subscription.plural')} <semui:totalNumber
-            total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults?.id, 'Subscription').size()}"/></h3>
+            total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults.collect {
+                it.key
+            }, 'Subscription').size()}"/></h3>
 
     <table class="ui celled sortable table la-table">
         <thead>
@@ -89,7 +99,7 @@
             <g:if test="${surveyConfig?.type == 'Subscription'}">
                 <tr>
                     <td class="center aligned">
-                        ${i+1}
+                        ${i + 1}
                     </td>
                     <td>
                         <g:link controller="subscription" action="show"
@@ -131,11 +141,14 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).providers}" var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
+                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).providers}"
+                                var="org">
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
                         </g:each>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).agencies}" var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).agencies}"
+                                var="org">
+                            <g:link controller="organisation" action="show"
+                                    id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
                         </g:each>
 
                     </td>
@@ -143,7 +156,7 @@
 
                         <g:link action="surveyConfigsInfo" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon button"><i
-                                class="chart bar icon"></i></g:link>
+                                class="tasks icon"></i></g:link>
 
                     </td>
                 </tr>
@@ -154,9 +167,11 @@
 <br>
 <br>
 
-<h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
-        total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults?.id, 'SurveyProperty').size()}"/></h3>
 <semui:form>
+    <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.propertys')} <semui:totalNumber
+            total="${com.k_int.kbplus.SurveyConfig.findAllByIdInListAndType(surveyResults.collect {
+                it.key
+            }, 'SurveyProperty').size()}"/></h3>
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
@@ -179,11 +194,18 @@
             <g:if test="${surveyConfig?.type == 'SurveyProperty'}">
                 <tr>
                     <td class="center aligned">
-                        ${j+1}
+                        ${j + 1}
                     </td>
                     <td>
                         <g:if test="${surveyConfig?.type == 'SurveyProperty'}">
                             ${surveyConfig?.surveyProperty?.getI10n('name')}
+
+                            <g:if test="${surveyConfig?.surveyProperty?.getI10n('explain')}">
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyConfig?.surveyProperty?.getI10n('explain')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+
                         </g:if>
 
                     </td>

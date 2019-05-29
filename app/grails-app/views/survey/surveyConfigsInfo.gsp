@@ -145,6 +145,13 @@
                         </td>
                         <td>
                             ${surveyProperty?.surveyProperty?.getI10n('name')}
+
+                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                         <td>
                             <g:if test="${surveyProperty?.surveyProperty?.getI10n('introduction')}">
@@ -229,6 +236,13 @@
                         </td>
                         <td>
                             ${property?.getI10n('name')}
+
+                            <g:if test="${property?.getI10n('explain')}">
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${property?.getI10n('explain')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                         <td>
                             <g:if test="${property?.getI10n('introduction')}">
