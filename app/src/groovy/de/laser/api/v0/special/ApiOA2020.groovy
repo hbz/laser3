@@ -11,6 +11,19 @@ import groovy.util.logging.Log4j
 @Log4j
 class ApiOA2020 {
 
+    static private List<Org> getAccessibleOrgs() {
+
+        List<Org> orgs = OrgSettings.executeQuery(
+                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+                        "and (o.status is null or o.status != :deleted)", [
+                key    : OrgSettings.KEYS.OA2020_SERVER_ACCESS,
+                rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN'),
+                deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+        ])
+
+        orgs
+    }
+
     /**
      * @return [] | HTTP_FORBIDDEN
      */
@@ -19,15 +32,8 @@ class ApiOA2020 {
 
         // if (requestingOrghasNoAccessDueSpecialFlag?) { return Constants.HTTP_FORBIDDEN }
 
-        List<Org> orgs = OrgSettings.executeQuery(
-                //"select o from OrgSettings os join os.org o where o.status != :deleted and os.key = :key and os.rdValue = :rdValue",
-                "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue and o.status.value != 'Deleted'",
-                [
-                   // deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'),
-                    key: OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
-                    rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN')
-                ]
-        )
+        List<Org> orgs = getAccessibleOrgs()
+
         orgs.each{ o ->
             result << ApiReaderHelper.resolveOrganisationStub(o, o)
         }
