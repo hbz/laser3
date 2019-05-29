@@ -209,6 +209,7 @@
 .ui.table thead th.la-smaller-table-head {
   padding-top: 0;
   padding-bottom: 0;
+  height: 28px;
 }
 /* wrap small needed th to avoid table layout break */
 .ui.sortable.table thead th.la-th-wrap {
