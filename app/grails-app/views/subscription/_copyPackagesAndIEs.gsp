@@ -73,7 +73,7 @@
                     <i class="ui icon trash alternate outline"></i>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="delete" checked="${false}"/>
+                            <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
                             <br />
                         </div>
                     </g:each>
@@ -154,21 +154,20 @@
     })
 
     $('input[name="subscription.deletePackageIds"]').change( function(event) {
-        var pkgoid = this.value
+        var subPkgOid = this.value;
+        var pkgOid = $(this).attr('data-pkgid');
         if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + pkgoid + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
         } else {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
         }
     })
 
     $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
         var ieoid = this.value
         if (this.checked) {
-            //TODO: GEHT NOCH NICHT
             $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + ieoid + '"]').addClass('willStay');
             $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
         } else {

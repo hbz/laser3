@@ -185,10 +185,9 @@ class SubscriptionService {
 
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
-        targetSub.issueEntitlements.each{ ie ->
-            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
-//            if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
-            if (packagesToDelete.find { p -> p.pkg.id == tipp.pkg.id } ) {
+//        targetSub.issueEntitlements.each{ ie ->
+        getIssueEntitlements(targetSub).each{ ie ->
+            if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
                 ie.status = RDStore.IE_DELETED
                 save(ie, flash)
             }
@@ -196,9 +195,6 @@ class SubscriptionService {
 
         //alle zugeordneten Packages löschen
         if (packagesToDelete) {
-//            SubscriptionPackage.executeUpdate(
-//                    "delete from SubscriptionPackage sp where sp in (:packagesToDelete)",
-//                    [packagesToDelete: packagesToDelete])
             SubscriptionPackage.executeUpdate(
                     "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
                     [packagesToDelete: packagesToDelete, sub: targetSub])
