@@ -37,10 +37,11 @@
 
 <div>
 
-    <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.subscriptions')} <semui:totalNumber
-            total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
-
     <semui:form>
+
+        <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.subscriptions')} <semui:totalNumber
+                total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
+
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
@@ -124,7 +125,7 @@
                                     params="[surveyConfigID: config?.id]" class="ui icon button"><i
                                     class="write icon"></i></g:link>
 
-                            <g:if test="${config?.getCurrentDocs()}">
+                            <g:if test="${editable && config?.getCurrentDocs()}">
                                 <span data-position="top right"
                                       data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
                                     <button class="ui icon button negative" disabled="disabled">
@@ -152,10 +153,12 @@
     <br>
     <br>
 
-    <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.selecetedPropertys')} <semui:totalNumber
-            total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
 
     <semui:form>
+
+        <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.selecetedPropertys')} <semui:totalNumber
+                total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
+
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
@@ -182,6 +185,12 @@
 
                             <g:if test="${config?.type == 'SurveyProperty'}">
                                 ${config?.surveyProperty?.getI10n('name')}
+
+                                <g:if test="${config?.getI10n('explain')}">
+                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.getI10n('explain')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
                             </g:if>
 
                         </td>
