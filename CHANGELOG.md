@@ -1,6 +1,17 @@
 0.17-RC
 
-- todo ..
+- added test data setup for orgs (only for QA)
+- added license properties at subscription overview
+- finance improvements
+- added customer type for organisations
+- added hard deletion for subscriptions and licenses
+- added imcomplete api endpoints for oa2020 and statistics
+- reworked modals for creating properties and property groups
+- replaced legacy user roles 
+- added filter for user management
+- improved alphabetical sorting
+- various minor improvements
+- other bugfixes
 
 0.16.3
 

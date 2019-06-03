@@ -123,5 +123,83 @@ class SurveyConfig {
         return this.getLocalizedValue(this?.type)
     }
 
+    def getAllOrgsWithSub() {
+
+        def result = []
+
+        orgs.each {
+            if(it.hasOrgSubscription())
+            {
+                result << it.org
+            }
+        }
+        result
+
+    }
+
+    def getAllOrgsWithSubNew() {
+
+        if(this.subscription){
+            return this.orgs.org.id.minus(this.getAllOrgsWithoutSubNew())
+        }
+
+    }
+
+    def getAllOrgsWithoutSubNew(){
+
+        if(this.subscription){
+            return this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+        }
+    }
+
+    def getSurveyOrgsIDs()
+    {
+        def result = [:]
+
+        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+
+        return result
+    }
+
+    def getAllOrgsWithoutSub(){
+        def result = []
+
+        orgs.each {
+            if(!it.hasOrgSubscription())
+            {
+                result << it?.org
+            }
+        }
+        result
+    }
+
+    def getAllOrgsWithSubIds() {
+
+        def result = []
+
+        orgs.each {
+            if(it.hasOrgSubscription())
+            {
+                result << it?.org?.id
+            }
+        }
+        result
+
+    }
+
+    def getAllOrgsWithoutSubIds(){
+        def result = []
+
+        orgs.each {
+            if(!it.hasOrgSubscription())
+            {
+                result << it?.org?.id
+            }
+        }
+        result
+    }
+
 
 }

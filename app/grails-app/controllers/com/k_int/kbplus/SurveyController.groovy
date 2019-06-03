@@ -310,12 +310,14 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers()
+        def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
+        result.surveyConfigSubOrgs = getSubscriptionMembers(result.surveyConfig?.subscription)
 
-        result.selectedParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.surveyConfigSubOrgs)
-        result.selectedSubParticipants = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id).minus(result.selectedParticipants)
+        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID)?.orgs.org
+
+        result.selectedParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.surveyConfigSubOrgs?.id))
+        result.selectedSubParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.selectedParticipants?.id))
 
         params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
 
@@ -369,29 +371,13 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = Org.findAllByIdInList(com.k_int.kbplus.Subscription.get(result.surveyConfig?.subscription?.id)?.getDerivedSubscribers().id)
+        result.surveyConfigSubOrgs = getSubscriptionMembers(result.surveyConfig?.subscription)
 
-        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID)?.orgs.org.id)
+        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID)?.orgs.org
 
-        result.selectedParticipants = result.surveyConfigOrgs.minus(result.surveyConfigSubOrgs)
-        result.selectedSubParticipants = result.surveyConfigOrgs.minus(result.selectedParticipants)
+        result.selectedParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.surveyConfigSubOrgs?.id))
+        result.selectedSubParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.selectedParticipants?.id))
 
-
-        def costItemElementConfigurations = []
-        def orgConfigurations = []
-
-        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
-        ciecs.each { ciec ->
-            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
-        }
-        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
-        orgConf.each { oc ->
-            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
-        }
-
-        result.costItemElementConfigurations = costItemElementConfigurations
-        result.orgConfigurations = orgConfigurations
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result
 
@@ -1326,7 +1312,7 @@ class SurveyController {
 
         result.costItemElementConfigurations = costItemElementConfigurations
         result.orgConfigurations = orgConfigurations
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
@@ -1368,7 +1354,7 @@ class SurveyController {
 
         result.costItemElementConfigurations = costItemElementConfigurations
         result.orgConfigurations = orgConfigurations
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result.setting = 'bulkForAll'
 
@@ -1556,6 +1542,32 @@ class SurveyController {
 
 
         redirect(uri: request.getHeader('referer'))
+    }
+
+    static def getSubscriptionMembers(Subscription subscription) {
+        def result = []
+
+        Subscription.findAllByInstanceOf(subscription).each { s ->
+            def ors = OrgRole.findAllWhere( sub: s )
+            ors.each { or ->
+                if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
+                    result << or.org
+                }
+            }
+        }
+        result = result.sort {it.name}
+    }
+
+    static def getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
+
+        def tmpQuery = query
+        tmpQuery.replace("order by ", "and o.id in (:orgIDs) order by")
+
+        def tmpQueryParams = queryParams
+        tmpQueryParams.put("orgIDs", orgIDs)
+        print(tmpQuery)
+
+        return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
 }
