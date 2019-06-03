@@ -312,12 +312,8 @@ class SurveyController {
 
         def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.surveyConfigSubOrgs = getSubscriptionMembers(result.surveyConfig?.subscription)
-
-        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID)?.orgs.org
-
-        result.selectedParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.surveyConfigSubOrgs?.id))
-        result.selectedSubParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.selectedParticipants?.id))
+        result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
         params.tab = params.tab ?: (result.surveyConfig.type == 'Subscription' ? 'selectedSubParticipants' : 'selectedParticipants')
 
@@ -371,13 +367,10 @@ class SurveyController {
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
-        result.surveyConfigSubOrgs = getSubscriptionMembers(result.surveyConfig?.subscription)
+        def surveyOrgs = result.surveyConfig?.getSurveyOrgsIDs()
 
-        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID)?.orgs.org
-
-        result.selectedParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.surveyConfigSubOrgs?.id))
-        result.selectedSubParticipants = Org.findAllByIdInList(result.surveyConfigOrgs?.id.minus(result.selectedParticipants?.id))
-
+        result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
+        result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
         result
 
@@ -1560,12 +1553,16 @@ class SurveyController {
 
     static def getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
 
+
         def tmpQuery = query
-        tmpQuery.replace("order by ", "and o.id in (:orgIDs) order by")
+        if(orgIDs?.size() > 0) {
+            tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+        }
 
         def tmpQueryParams = queryParams
-        tmpQueryParams.put("orgIDs", orgIDs)
-        print(tmpQuery)
+        if(orgIDs?.size() > 0) {
+            tmpQueryParams.put("orgIDs", orgIDs)
+        }
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
