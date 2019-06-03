@@ -104,6 +104,13 @@
 
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
+                                    <laser:remoteLink class="ui icon button" controller="ajax"
+                                                      action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      id="${prop.id}" xyz="xyz" abc="abc" update="${custom_props_div}"
+                                                      js-before="alert('js-before')" js-done="alert('js-done')" js-always="alert('js-always')">
+                                        <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                    </laser:remoteLink>
                                     <button class="ui icon button js-open-confirm-modal-copycat">
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                     </button>
