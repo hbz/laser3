@@ -38,7 +38,7 @@ class SurveyOrg {
             if(property?.type == 'class com.k_int.kbplus.RefdataValue'){
                 def sub = surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
 
-                if(sub.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
+                if(sub?.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
                     checkPerennialTerm = true
                 }
             }

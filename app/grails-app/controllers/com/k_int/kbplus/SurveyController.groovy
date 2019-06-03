@@ -376,6 +376,31 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyConfigFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        surveyConfig.configFinish = params.configFinish ?: false
+        surveyConfig.save(flush: true)
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -1553,16 +1578,14 @@ class SurveyController {
 
     static def getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
 
-
-        def tmpQuery = query
-        if(orgIDs?.size() > 0) {
-            tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
+        if(!(orgIDs?.size() > 0)) {
+            return []
         }
+        def tmpQuery = query
+        tmpQuery = tmpQuery.replace("order by", "and o.id in (:orgIDs) order by")
 
         def tmpQueryParams = queryParams
-        if(orgIDs?.size() > 0) {
-            tmpQueryParams.put("orgIDs", orgIDs)
-        }
+        tmpQueryParams.put("orgIDs", orgIDs)
 
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
