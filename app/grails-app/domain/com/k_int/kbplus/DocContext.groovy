@@ -19,7 +19,7 @@ class DocContext implements ShareableTrait {
         pkg:            Package,
         link:           Links,
         org:            Org,
-        sharedFrom:     DocContext,
+        /* sharedFrom:     DocContext, */ // self-referential GORM problem
         surveyConfig:   SurveyConfig
   ]
 

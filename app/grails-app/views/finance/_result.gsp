@@ -59,7 +59,8 @@
                                         r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                         r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                        ajaxPostFunc()
+                                        ajaxPostFunc();
+                                        setupCalendar();
                                     },
                                     detachable: true,
                                     closable: false,
@@ -155,7 +156,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc()
+                                ajaxPostFunc();
+                                setupCalendar();
                             },
                             detachable: true,
                             closable: false,
