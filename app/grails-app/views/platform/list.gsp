@@ -36,22 +36,32 @@
 
 			<table class="ui sortable celled la-table table">
 				<thead>
-					<tr>
-						<th>${message(code:'sidewide.number')}</th>
-						<g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
-						<th>${message(code:'default.actions')}</th>
-					</tr>
+				<tr>
+					<th>${message(code:'sidewide.number')}</th>
+					<g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
+					<th>${message(code:'default.provider.label')}</th>
+					<th>${message(code:'org.url.label')}</th>
+				</tr>
 				</thead>
 				<tbody>
 				<g:each in="${platformInstanceList}" var="platformInstance" status="jj">
 					<tr>
-						<td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
-						<td>${fieldValue(bean: platformInstance, field: "name")}</td>
-
-						<td class="x">
-							<g:link action="show" id="${platformInstance.id}" class="ui icon button">
-								<i class="write icon"></i>
-							</g:link>
+						<td>
+							${ (params.int('offset') ?: 0)  + jj + 1 }
+						</td>
+						<td>
+							<g:link controller="platform" action="show" id="${platformInstance.id}">${fieldValue(bean: platformInstance, field: "name")}</g:link>
+						</td>
+						<td>
+							<g:if test="${platformInstance.org}">
+								<g:link controller="organisation" action="show" id="${platformInstance.org?.id}">${platformInstance.org?.getDesignation()}</g:link>
+							</g:if>
+						</td>
+						<td>
+							<g:if test="${platformInstance.primaryUrl}">
+								${platformInstance.primaryUrl}
+								<a href="<g:createLink url="${platformInstance.primaryUrl}" />" target="_blank"><i class="external alternate icon"></i></a>
+							</g:if>
 						</td>
 					</tr>
 				</g:each>

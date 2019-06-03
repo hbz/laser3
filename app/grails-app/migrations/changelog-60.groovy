@@ -10,11 +10,11 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "surorg_dateCreated", type: "timestamp") {
+			column(name: "surorg_date_created", type: "timestamp") {
 				constraints(nullable: "false")
 			}
 
-			column(name: "surorg_lastUpdated", type: "timestamp") {
+			column(name: "surorg_last_updated", type: "timestamp") {
 				constraints(nullable: "false")
 			}
 
@@ -22,9 +22,9 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "surorg_priceComment", type: "text")
+			column(name: "surorg_pricecomment", type: "text")
 
-			column(name: "surorg_surveyConfig_fk", type: "int8") {
+			column(name: "surorg_surveyconfig_fk", type: "int8") {
 				constraints(nullable: "false")
 			}
 		}
@@ -38,7 +38,7 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1558613037606-3") {
 		addColumn(schemaName: "public", tableName: "cost_item") {
-			column(name: "ci_surOrg_fk", type: "int8")
+			column(name: "ci_surorg_fk", type: "int8")
 		}
 	}
 
@@ -56,26 +56,19 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (modified)", id: "1558613037606-6") {
-		grailsChange {
-			change {
-				sql.execute("DELETE FROM user_role WHERE role_id = (SELECT id FROM role WHERE authority = 'ROLE_ORG_COM_EDITOR')")
-				sql.execute("DELETE FROM role WHERE authority = 'ROLE_ORG_COM_EDITOR'")
+	changeSet(author: "kloberd (generated)", id: "1558613037606-6") {
+		addColumn(schemaName: "public", tableName: "survey_config") {
+			column(name: "surconf_config_finish", type: "bool") {
+				constraints(nullable: "false")
 			}
-			rollback {}
 		}
 	}
 
 	changeSet(author: "kloberd (modified)", id: "1558613037606-7") {
 		grailsChange {
 			change {
-				sql.execute("update role set authority = 'ORG_BASIC_MEMBER' where authority = 'ORG_MEMBER'")
-				sql.execute("update role set authority = 'ORG_INST' where authority = 'ORG_BASIC'")
-				sql.execute("update role set authority = 'ORG_INST_COLLECTIVE' where authority = 'ORG_COLLECTIVE'")
-
-				sql.execute("update perm set code = 'org_basic_member' where code = 'org_member'")
-				sql.execute("update perm set code = 'org_inst' where code = 'org_basic'")
-				sql.execute("update perm set code = 'org_inst_collective' where code = 'org_collective'")
+				sql.execute("DELETE FROM user_role WHERE role_id = (SELECT id FROM role WHERE authority = 'ROLE_ORG_COM_EDITOR')")
+				sql.execute("DELETE FROM role WHERE authority = 'ROLE_ORG_COM_EDITOR'")
 			}
 			rollback {}
 		}
@@ -114,7 +107,7 @@ databaseChangeLog = {
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1558613037606-12") {
-		addForeignKeyConstraint(baseColumnNames: "ci_surOrg_fk", baseTableName: "cost_item", baseTableSchemaName: "public", constraintName: "FKEFE45C45EF66BF04", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surorg_id", referencedTableName: "survey_org", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+		addForeignKeyConstraint(baseColumnNames: "ci_surorg_fk", baseTableName: "cost_item", baseTableSchemaName: "public", constraintName: "FKEFE45C45EF66BF04", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surorg_id", referencedTableName: "survey_org", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1558613037606-13") {
@@ -130,7 +123,7 @@ databaseChangeLog = {
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1558613037606-16") {
-		addForeignKeyConstraint(baseColumnNames: "surorg_surveyConfig_fk", baseTableName: "survey_org", baseTableSchemaName: "public", constraintName: "FKD7D9487F389C6156", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surconf_id", referencedTableName: "survey_config", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+		addForeignKeyConstraint(baseColumnNames: "surorg_surveyconfig_fk", baseTableName: "survey_org", baseTableSchemaName: "public", constraintName: "FKD7D9487F389C6156", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surconf_id", referencedTableName: "survey_config", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
 	changeSet(author: "kloberd (modified)", id: "1558613037606-21") {
@@ -169,5 +162,19 @@ databaseChangeLog = {
 		addNotNullConstraint(columnDataType: "int8", columnName: "sub_status_rv_fk", tableName: "subscription")
 	}
 
+	changeSet(author: "kloberd (modified)", id: "1558613037606-26") {
+		grailsChange {
+			change {
+				sql.execute("update role set authority = 'ORG_BASIC_MEMBER' where authority = 'ORG_MEMBER'")
+				sql.execute("update role set authority = 'ORG_INST' where authority = 'ORG_BASIC'")
+				sql.execute("update role set authority = 'ORG_INST_COLLECTIVE' where authority = 'ORG_COLLECTIVE'")
+
+				sql.execute("update perm set code = 'org_basic_member' where code = 'org_member'")
+				sql.execute("update perm set code = 'org_inst' where code = 'org_basic'")
+				sql.execute("update perm set code = 'org_inst_collective' where code = 'org_collective'")
+			}
+			rollback {}
+		}
+	}
 
 }

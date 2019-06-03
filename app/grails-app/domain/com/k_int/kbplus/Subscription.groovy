@@ -370,6 +370,15 @@ class Subscription
         return match ? Subscription.get(match?.destination) : null
     }
 
+    Subscription getCalculatedSuccessor() {
+        Links match = Links.findWhere(
+                destination: this.id,
+                objectType: Subscription.class.name,
+                linkType: RDStore.LINKTYPE_FOLLOWS
+        )
+        return match ? Subscription.get(match?.source) : null
+    }
+
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }

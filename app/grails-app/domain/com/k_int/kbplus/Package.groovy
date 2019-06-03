@@ -476,7 +476,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                       ]);
 
           println "processing IDs ..."
-      tip.title.ids.each { id ->
+      tip?.title?.ids.each { id ->
           println "adding identifier ${id}"
         newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
       }

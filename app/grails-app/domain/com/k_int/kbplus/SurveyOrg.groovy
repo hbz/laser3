@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
+
 class SurveyOrg {
 
 
@@ -19,10 +21,28 @@ class SurveyOrg {
         id column: 'surorg_id'
         version column: 'surorg_version'
 
-        surveyConfig column: 'surorg_surveyConfig_fk'
+        surveyConfig column: 'surorg_surveyconfig_fk'
         org column: 'surorg_org_fk'
-        priceComment column: 'surorg_priceComment', type: 'text'
-        dateCreated column: 'surorg_dateCreated'
-        lastUpdated column: 'surorg_lastUpdated'
+        priceComment column: 'surorg_pricecomment', type: 'text'
+        dateCreated column: 'surorg_date_created'
+        lastUpdated column: 'surorg_last_updated'
+    }
+
+    def checkPerennialTerm()
+    {
+        def checkPerennialTerm = false
+        if(surveyConfig.subscription)
+        {
+            def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+
+            if(property?.type == 'class com.k_int.kbplus.RefdataValue'){
+                def sub = surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
+
+                if(sub.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
+                    checkPerennialTerm = true
+                }
+            }
+        }
+        return checkPerennialTerm
     }
 }

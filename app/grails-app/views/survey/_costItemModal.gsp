@@ -8,7 +8,7 @@
     <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll')}"/>
 </g:if>
 <g:else>
-    <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg.org.name])}"/>
+    <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg?.org?.name])}"/>
 </g:else>
 <g:set var="submitButtonLabel" value="${message(code: 'default.button.create_new.label')}"/>
 <g:set var="org" value="${contextService.getOrg()}"/>
@@ -24,7 +24,7 @@
 
 %>
 
-<semui:modal id="modalCostItem${modalID}" text="${modalText}" msgSave="${submitButtonLabel}">
+<semui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg?.surveyConfig?.subscription ? ' ('+ surveyOrg?.surveyConfig?.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" id="editCost" action="newSurveyCostItem">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
@@ -221,7 +221,7 @@
         <div class="one fields">
             <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
                 <div class="field">
-                    <label>${message(code: 'financials.newCosts.description')}</label>
+                    <label>${message(code: 'survey.costItemModal.descriptionfor', args:[surveyOrg?.org?.name ?: 'alle'])}</label>
                     <textarea name="newDescription" id="newDescription"
                               placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
                 </div><!-- .field -->
@@ -231,7 +231,6 @@
     </g:form>
 
     <script>
-
 
         <%
             def costItemElementConfigurations = "{"

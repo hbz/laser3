@@ -112,7 +112,7 @@ class CostItem
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
         subPkg          column: 'ci_subPkg_fk'
         issueEntitlement    column: 'ci_e_fk'
-        surveyOrg       column: 'ci_surOrg_fk'
+        surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'
         invoice         column: 'ci_inv_fk'
         costItemStatus  column: 'ci_status_rv_fk'

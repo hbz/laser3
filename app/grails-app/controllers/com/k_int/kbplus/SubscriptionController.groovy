@@ -3625,25 +3625,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.deletePackages(packagesToDelete, newSub, flash)
+        }
+        if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
+            subscriptionService.takePackages(packagesToTake, newSub, flash)
         }
 
-        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
+        }
+        if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
+            subscriptionService.takeEntitlements(entitlementsToTake, newSub, flash)
         }
-
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
-
-        // restrict visible for templates/links/orgLinksAsList
-//        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
-//        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
         params?.workFlowPart = '5'
         params?.workFlowPartNext = '2'
+        if (newSub) {
+            newSub.refresh()
+        }
+//        result.sourceIEs = baseSub.getIssueEntitlements()
+//        result.targetIEs = newSub.getIssueEntitlements()
+
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
         result.subscription = baseSub
         result

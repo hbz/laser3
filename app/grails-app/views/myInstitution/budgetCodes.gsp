@@ -97,12 +97,12 @@
             <input type="hidden" name="cmd" value="newBudgetCode"/>
 
             <div class="field">
-                <label for="bc">Beschreibung</label>
+                <label for="bc">Budgetcode</label>
                 <input type="text" id="bc" name="bc"/>
             </div>
 
             <div class="field">
-                <label for="descr">Verwendung</label>
+                <label for="descr">Beschreibung</label>
                 <textarea id="descr" name="descr"></textarea>
             </div>
 
