@@ -861,6 +861,21 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
+        else if (params.cmd == 'changeGascoEntry') {
+          Org target = genericOIDService.resolveOID(params.target)
+          RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
+
+          if (target && option) {
+            def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
+
+            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+              oss.rdValue = option
+              oss.save(flush: true)
+            } else {
+              OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+            }
+          }
+        }
 
         result.orgList = Org.findAll()
         result.orgListTotal = result.orgList.size()

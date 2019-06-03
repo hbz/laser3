@@ -15,7 +15,7 @@ class OrgRole implements ShareableTrait {
 
     static belongsTo = [
         org: Org,
-        sharedFrom: OrgRole
+        /* sharedFrom: OrgRole */ // self-referential GORM problem
     ]
 
     @RefdataAnnotation(cat = 'Organisational Role')
@@ -170,5 +170,6 @@ class OrgRole implements ShareableTrait {
 
     void beforeDelete(PostUpdateEvent event) {
         log.debug('beforeDelete')
+        deleteShare_trait()
     }
 }

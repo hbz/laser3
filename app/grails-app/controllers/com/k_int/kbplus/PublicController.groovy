@@ -20,8 +20,13 @@ class PublicController {
     def gasco() {
         def result = [:]
 
-        result.allConsortia = Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :consortium )",
-                [consortium: RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')]
+        def consRoles = Role.findAll { authority == 'ORG_CONSORTIUM_SURVEY' || authority == 'ORG_CONSORTIUM' }
+
+        result.allConsortia = Org.executeQuery(
+                "select o from Org o, OrgSettings os_gs, OrgSettings os_ct where " +
+                        "os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and " +
+                        "os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) ",
+                    [roles: consRoles]
         ).sort { it.name?.toLowerCase() }
 
 
@@ -43,6 +48,9 @@ class PublicController {
             query += "           )"
             queryParams.put('gasco', PropertyDefinition.findByName('GASCO Entry'))
             query += "        ) "
+
+            query += " and exists ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )"
+            queryParams.put('validOrgs', result.allConsortia)
 
             if (q) {
                 query += " and ("
@@ -100,11 +108,12 @@ class PublicController {
                 queryParams.put('subTypes', [0.longValue()])
             }
 */
+            result.subscriptions = []
 
-            if (q || consortia || subTypes) {
+            if (result.allConsortia && (q || consortia || subTypes)) {
                 result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
-                result.subscriptionsCount = result.subscriptions.size()
             }
+            result.subscriptionsCount = result.subscriptions.size()
         }
 
         result
@@ -214,7 +223,7 @@ class PublicController {
                 if (idv) {
                     query += " AND ( EXISTS ( " +
                         " SELECT io FROM IdentifierOccurrence AS io " +
-                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+                        " WHERE io.ti = ie.tipp.title AND io.identifier.value LIKE :idv "
 
                     if (params.idns) {
                         query += " AND io.identifier.ns = :idns "

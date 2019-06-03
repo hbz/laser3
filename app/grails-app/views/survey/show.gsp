@@ -199,6 +199,13 @@
 
                                                         <td>
                                                             ${prop?.surveyProperty?.getI10n('name')}
+
+                                                            <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                    <i class="question circle icon"></i>
+                                                                </span>
+                                                            </g:if>
+
                                                         </td>
                                                         <td>
                                                             ${message(code: 'surveyConfigs.surveyPropToSub')}

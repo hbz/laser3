@@ -240,7 +240,7 @@ class StatsSyncService {
         def start_time = System.currentTimeMillis()
 
         Fact.withNewTransaction { status ->
-            def options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
+            StatsSyncServiceOptions options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
             def reports = getRelevantReportList(options.getBasicQueryParams())
             StatsTripleCursor csr = null
 
@@ -251,7 +251,8 @@ class StatsSyncService {
                 def jsonErrors = []
                 csr = getCursor(options)
                 def mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
-                if ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate)) {
+                if (options.identifierTypeAllowedForAPICall() &&
+                    ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate))) {
                     options.from = getNextFromPeriod(csr)
                     sushiClient.clientOptions = options
                     try {
@@ -304,10 +305,10 @@ class StatsSyncService {
         usageRanges.each {
             def factCount = 0
             def itemPerformancesForRange = getItemPerformancesForRange(itemPerformances, it)
-            csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
             // should only happen on first sync if there is a range without usage before the first ItemPerformance, e.g. if
             // we want to get usage for 2012ff from NatStat, but we cannot get usage this early
             if (itemPerformancesForRange.empty) {
+                csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
                 csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
                 csr.save(flush: true)
             } else {
@@ -337,7 +338,8 @@ class StatsSyncService {
                 }
                 // First csr -> update
                 if (csr.availTo == null){
-                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it.end)
+                    csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
+                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
                     csr.numFacts = factCount
                     csr.save(flush: true)
 
@@ -348,7 +350,7 @@ class StatsSyncService {
                     }
                     csr = new StatsTripleCursor()
                     csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it.begin) // update
-                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
+                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
                     csr.customerId = options.customer
                     csr.numFacts = factCount
                     csr.titleId = options.statsTitleIdentifier

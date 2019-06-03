@@ -60,20 +60,20 @@
                             <table class="ui table la-table-small hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
                                 <g:set var="clt" value="${de.laser.helper.SortUtil.getCollator()}" />
-                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a.getI10n('name'), b.getI10n('name'))}}" var="pd">
+                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a?.getI10n('name'), b?.getI10n('name'))}}" var="pd">
                                     <tr>
                                         <td>
-                                            ${pd.getI10n('name')}
+                                            ${pd?.getI10n('name')}
                                         </td>
                                         <td>
-                                                <g:set var="pdExpl" value="${pd.getI10n('expl')}" />
+                                                <g:set var="pdExpl" value="${pd?.getI10n('expl')}" />
                                                 ${pdExpl != 'null' ? pdExpl : ''}
                                         </td>
                                         <td>
                                             <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                             <g:if test="${'RefdataValue'.equals(pdRdc)}">
                                                 <g:set var="refDataCat" value="${RefdataCategory.findByDesc(pd.refdataCategory)}" />
-                                                <span data-position="top right" data-tooltip="${refDataCat.getI10n('desc')}">
+                                                <span data-position="top right" data-tooltip="${refDataCat?.getI10n('desc')}">
                                                     <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                                 </span>
                                             </g:if>

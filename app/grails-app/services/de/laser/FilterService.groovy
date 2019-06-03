@@ -272,6 +272,12 @@ class FilterService {
             queryParams << [endDate : sdFormat.parse(params.endDate)]
         }
 
+        if (params.participant) {
+            query << "exists (select surConfig from SurveyConfig as surConfig where surConfig.surveyInfo = si and " +
+                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant))"
+            queryParams << [participant : params.participant]
+        }
+
         def defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {

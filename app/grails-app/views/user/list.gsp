@@ -73,9 +73,6 @@
                         <th>${message(code:'user.displayName.label')}</th>
                         <th>${message(code:'user.org')}</th>
                         <th>${message(code:'user.enabled.label')}</th>
-                        <sec:ifAnyGranted roles="ROLE_ADMIN">
-                            <th>API</th>
-                        </sec:ifAnyGranted>
                         <th>${message(code:'default.actions')}</th>
                     </tr>
                 </thead>
@@ -123,15 +120,6 @@
                                     </g:if>
                                 </sec:ifNotGranted>
                             </td>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <td>
-                                    <div class="ui list">
-                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
-                                            <div class="item"><i class="icon circle outline"></i> API</div>
-                                        </g:if>
-                                    </div>
-                                </td>
-                            </sec:ifAnyGranted>
                             <td class="x">
                                 <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
                                     <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>

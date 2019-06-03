@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
@@ -18,7 +19,7 @@ class DeletionService {
 
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
@@ -37,23 +38,24 @@ class DeletionService {
         List customProps    = new ArrayList(lic.customProperties)
 
         if (dryRun) {
-            result.'Referenzen: Teilnehmer'   = ref_instanceOf
+            result.info = []
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
 
-            result.'Aufgaben'           = tasks
-            result.'Merkmalsgruppen'    = propDefGroupBindings
-            result.'Lizenzen'           = subs
-            result.'Vererbungskonfigurationen'  = ac ? [ac] : []
+            result.info << ['Aufgaben', tasks]
+            result.info << ['Merkmalsgruppen', propDefGroupBindings]
+            result.info << ['Lizenzen', subs]
+            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
             // lic.onixplLicense
 
-            result.'Identifikatoren'         = ios
-            result.'Dokumente'               = docContexts   // delete ? docContext->doc
-            result.'Organisationen'          = oRoles
-            result.'Personen'                = pRoles        // delete ? personRole->person
-            result.'Pakete'                  = packages
-            result.'Anstehende Änderungen'   = pendingChanges
-            result.'Private Merkmale'        = lic.privateProperties
-            result.'Allgemeine Merkmale'     = lic.customProperties
+            result.info << ['Identifikatoren', ios]
+            result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
+            result.info << ['Organisationen', oRoles]
+            result.info << ['Personen', pRoles]     // delete ? personRole->person
+            result.info << ['Pakete', packages]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['Private Merkmale', lic.privateProperties]
+            result.info << ['Allgemeine Merkmale', lic.customProperties]
         }
         else if (ref_instanceOf) {
 
@@ -152,6 +154,8 @@ class DeletionService {
 
                     lic.delete()
                     status.flush()
+
+                    result = [status: RESULT_SUCCESS]
                 }
                 catch (Exception e) {
                     println 'error while deleting license ' + lic.id + ' .. rollback'
@@ -159,7 +163,6 @@ class DeletionService {
                     status.setRollbackOnly()
                     result = [status: RESULT_ERROR]
                 }
-                result = [status: RESULT_SUCCESS]
             }
         }
 
@@ -168,7 +171,7 @@ class DeletionService {
 
     static Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
-        def result = [:]
+        Map<String, Object> result = [:]
 
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
@@ -190,24 +193,26 @@ class DeletionService {
         List customProps    = new ArrayList(sub.customProperties)
 
         if (dryRun) {
-            result.'Referenzen: Teilnehmer' = ref_instanceOf
-            result.'Referenzen: Nachfolger' = ref_previousSubscription
+            result.info = []
 
-            result.'Aufgaben'                   = tasks
-            result.'Merkmalsgruppen'            = propDefGroupBindings
-            result.'Vererbungskonfigurationen'  = ac ? [ac] : []
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
+            result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
 
-            result.'Identifikatoren'     = ios
-            result.'Dokumente'           = docContexts   // delete ? docContext->doc
-            result.'Organisationen'      = oRoles
-            result.'Personen'            = pRoles        // delete ? personRole->person
-            result.'Pakete'              = subPkgs
-            result.'Anstehende Änderungen' = pendingChanges
-            result.'IssueEntitlements'   = ies
-            result.'Kostenposten'        = costs
-            result.'OrgAccessPointLink'  = oapl
-            result.'Private Merkmale'    = sub.privateProperties
-            result.'Allgemeine Merkmale' = sub.customProperties
+            result.info << ['Aufgaben', tasks]
+            result.info << ['Merkmalsgruppen', propDefGroupBindings]
+            result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
+
+            result.info << ['Identifikatoren', ios]
+            result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+            result.info << ['Organisationen', oRoles]
+            result.info << ['Personen', pRoles]       // delete ? personRole->person
+            result.info << ['Pakete', subPkgs]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['IssueEntitlements', ies]
+            result.info << ['Kostenposten', costs, 'yellow']
+            result.info << ['OrgAccessPointLink', oapl]
+            result.info << ['Private Merkmale', sub.privateProperties]
+            result.info << ['Allgemeine Merkmale', sub.customProperties]
         }
         else if (ref_instanceOf) {
 
@@ -322,6 +327,8 @@ class DeletionService {
 
                     sub.delete()
                     status.flush()
+
+                    result = [status: RESULT_SUCCESS]
                 }
                 catch (Exception e) {
                     println 'error while deleting subscription ' + sub.id + ' .. rollback'
@@ -329,11 +336,158 @@ class DeletionService {
                     status.setRollbackOnly()
                     result = [status: RESULT_ERROR]
                 }
-                result = [status: RESULT_SUCCESS]
             }
         }
 
         result
     }
 
+    static Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        List userOrgs       = new ArrayList(user.affiliations)
+        List userRoles      = new ArrayList(user.roles)
+        List userFolder     = UserFolder.findAllWhere(user: user)
+        List userSettings   = UserSettings.findAllWhere(user: user)
+        List userTransforms = UserTransforms.findAllWhere(user: user)
+
+        List costItems = CostItem.executeQuery(
+                'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+        List ciecs = CostItemElementConfiguration.executeQuery(
+                'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+
+        List ddds = DashboardDueDate.findAllByResponsibleUser(user)
+
+        List docs = Doc.executeQuery(
+                'select x from Doc x where x.creator = :user or x.user = :user', [user: user])
+        List links = Links.executeQuery(
+                'select x from Links x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+
+        List pendingChanges = PendingChange.findAllByUser(user)
+
+        List reminders = new ArrayList(user.reminders)
+
+        List surveyResults = SurveyResult.findAllByUser(user)
+
+        List systemTickets = SystemTicket.findAllByAuthor(user)
+
+        List tasks = Task.executeQuery(
+                'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
+
+        if (dryRun) {
+            result.info = []
+
+            result.info << ['Zugehörigkeiten', userOrgs]
+            result.info << ['Rollen', userRoles]
+            result.info << ['Folder', userFolder]
+            result.info << ['Einstellungen', userSettings]
+            result.info << ['Transforms', userTransforms]
+
+            result.info << ['Kosten', costItems, 'blue']
+            result.info << ['Kostenkonfigurationen', ciecs, 'blue']
+            result.info << ['DashboardDueDate', ddds]
+            result.info << ['Dokumente', docs, 'teal']
+            result.info << ['Links', links, 'blue']
+            result.info << ['Anstehende Änderungen', pendingChanges, 'teal']
+            result.info << ['Reminder', reminders]
+            result.info << ['Umfrageergebnisse', surveyResults, 'teal']
+            result.info << ['Tickets', systemTickets, 'teal']
+            result.info << ['Aufgaben', tasks, 'teal']
+        }
+        else {
+            User.withTransaction { status ->
+
+                try {
+
+                    // user orgs
+                    user.affiliations.clear()
+                    userOrgs.each { tmp -> tmp.delete() }
+
+                    // user roles
+                    user.roles.clear()
+                    userRoles.each { tmp -> tmp.delete() }
+
+                    // user folder
+                    userFolder.each { tmp -> tmp.delete() }
+
+                    // user settings
+                    userSettings.each { tmp -> tmp.delete() }
+
+                    // user transforms
+                    userTransforms.each { tmp -> tmp.delete() }
+
+                    // cost items
+                    costItems.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
+
+                    // cost item element configurations
+                    ciecs.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
+
+                    ddds.each { tmp -> tmp.delete() }
+
+                    // docs
+                    docs.each { tmp ->
+                        if (tmp.creator.id == user.id) {
+                            tmp.creator = replacement
+                        }
+                        if (tmp.user.id == user.id) {
+                            tmp.user = replacement
+                        }
+                        tmp.save()
+                    }
+                    docs.each { tmp -> tmp.delete() }
+
+                    links.each { tmp ->
+                        tmp.lastUpdatedBy = replacement
+                        tmp.createdBy = replacement
+                        tmp.save()
+                    }
+
+                    pendingChanges.each { tmp ->
+                        tmp.user = replacement
+                        tmp.save()
+                    }
+
+                    reminders.each { tmp -> tmp.delete() }
+
+                    surveyResults.each { tmp ->
+                        tmp.user = replacement
+                        tmp.save()
+                    }
+
+                    systemTickets.each { tmp ->
+                        tmp.author = replacement
+                        tmp.save()
+                    }
+
+                    tasks.each { tmp ->
+                        tmp.responsibleUser = replacement
+                        tmp.creator = replacement
+                        tmp.save()
+                    }
+
+                    user.delete()
+                    status.flush()
+
+                    result = [status: RESULT_SUCCESS]
+                }
+                catch (Exception e) {
+                    println 'error while deleting user ' + user.id + ' .. rollback'
+                    println e.message
+                    status.setRollbackOnly()
+                    result = [status: RESULT_ERROR]
+                }
+            }
+        }
+
+        result
+    }
 }

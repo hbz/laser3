@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
+<laser:serviceInjection />
 
 <%
     List<DocContext> baseItems = []
@@ -13,7 +14,7 @@
         }
     }
 
-    boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation("ORG_BASIC_MEMBER","INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>

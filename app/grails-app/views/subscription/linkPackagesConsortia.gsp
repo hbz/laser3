@@ -53,6 +53,16 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
     </g:if>
 </h4>
 
+<div class="ui icon info message">
+    <i class="info icon"></i>
+
+    <div class="content">
+        <div class="header">Info</div>
+
+        <p>${message(code: 'subscription.linkPackagesConsortium.package.info')}</p>
+    </div>
+</div>
+
 
 <g:if test="${filteredSubChilds}">
 
@@ -104,15 +114,6 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
     <div class="divider"></div>
 
 
-    <div class="ui icon info message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header">Info</div>
-
-            <p>${message(code: 'subscription.linkPackagesConsortium.package.info')}</p>
-        </div>
-    </div>
 
     <div class="ui segment">
 

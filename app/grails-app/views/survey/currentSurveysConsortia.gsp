@@ -143,18 +143,24 @@
 
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
+                    <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.size()}</g:link>
                 </td>
 
                 <td class="center aligned">
-                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
+                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}</g:link>
                 </td>
 
                 <td>
-                    <g:link controller="survey" action="surveyEvaluation" id="${s.id}" class="ui icon button"><i
-                            class="write icon"></i></g:link>
+                    <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+                    <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+                    <g:link controller="survey" action="surveyEvaluation" id="${s.id}" class="ui icon button">
+                        <g:if test="${finish != 0 && total != 0}">
+                        ${(finish/total)*100}
+                        </g:if>
+                        <g:else>
+                            0%
+                        </g:else>
+                    </g:link>
                 </td>
                 <td class="x">
 

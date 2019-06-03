@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
-<table class="ui sortable celled la-table table">
+<table id="${tableID ?: ''}" class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
     <tr>
@@ -37,6 +37,9 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
             <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+            <th class="la-th-wrap">${message(code: 'survey.plural')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
@@ -93,7 +96,18 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
             <th>
-                ${message(code: 'financials.costItem')}
+                <g:set var="costItemElements"  value="${com.k_int.kbplus.RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:institution])}"/>
+
+            <g:form action="surveyCostItems" method="post"
+                    params="${params+[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}">
+                <laser:select name="selectedCostItemElement"
+                              from="${costItemElements}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${selectedCostItemElement}"
+                              class="ui dropdown"
+                              onchange="this.form.submit()"/>
+            </g:form>
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
@@ -260,6 +274,19 @@
                     </div>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+                <td>
+                    <div class="la-flexbox">
+                        <g:set var="numberOfSurveys" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).surveyConfig.surveyInfo.findAll{it.status.id != RDStore.SURVEY_IN_PROCESSING.id}.groupBy {it.id}.size()}"/>
+
+                        <g:link controller="myInstitution" action="manageConsortiaSurveys" params="${[participant: org.id]}">
+                            <div class="ui circular label">
+                                ${numberOfSurveys}
+                            </div>
+                        </g:link>
+                    </div>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
                     <div class="ui list">
@@ -367,42 +394,57 @@
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
                 <td class="center aligned">
                     <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+                        <g:if test="${costItem.costItemElement.id.toString() == selectedCostItemElement}">
 
-                        <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number" />
+                            <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" type="number" />
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                        <br>
+                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        </g:if>
                     </g:each>
 
                 </td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
-                <td class="center aligned">
-                    <g:set var="surveyOrg" scope="request" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
+                <td class="x">
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                     <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
-                <g:if test="${costItem}">
 
-                    <g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                        <g:if test="${costItem}">
 
-                    ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" type="number"/>
 
-                    <br>
+                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                    <button type="button" class="ui icon mini button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="write icon"></i></button>
+                        <br>
 
-                    <g:render template="/survey/costItemModal"
-                              model="[modalID: surveyOrg.id, mode: 'edit']"/>
+                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})" class="ui icon button right floated trigger-modal">
+                                <i class="write icon"></i>
+                            </g:link>
 
-                </g:if>
+                        </g:if>
+                        <g:else>
+
+                            <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${null})" class="ui icon button right floated trigger-modal">
+                                <i class="write icon"></i>
+                            </g:link>
+
+                        </g:else>
+                    </g:if>
                     <g:else>
-                        <button type="button" class="ui icon button" data-semui="modal" data-href="#modalCostItem${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org).id}" ><i class="plus icon"></i></button>
-
-
-                        <g:render template="/survey/costItemModal"
-                                  model="[modalID: surveyOrg.id]"/>
-
+                        <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:else>
+                </td>
+
+                <td class="center aligned"
+                    <g:set var="costItem" scope="request" value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
+                    <g:if test="${costItem?.costDescription}">
+
+                        <div class="ui icon" data-tooltip="${costItem?.costDescription}">
+                            <i class="info circular inverted icon"></i>
+                        </div>
+                    </g:if>
+
                 </td>
             </g:if>
             </tr>
@@ -433,5 +475,42 @@
 
             }
         </g:if>
+
     </script>
+
+</g:if>
+<g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
+    <r:script>
+        function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
+                                data: {
+                                    id: id,
+                                    surveyConfigID: surveyConfigID,
+                                    participant: participant,
+                                    costItem: costItem
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                        r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
+                    },
+                    detachable: true,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+
+    </r:script>
 </g:if>

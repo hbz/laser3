@@ -28,7 +28,7 @@ class FinanceService {
      * @param subscription - the subscription for which the financial data is retrieved. Its type determines the views displayed on return.
      * @return a LinkedHashMap with the cost items for each tab to display
      */
-    Map getCostItemsForSubscription(Subscription sub,GrailsParameterMap params,long max,int offset) {
+    Map getCostItemsForSubscription(Subscription sub,params,long max,int offset) {
         Org org = contextService.org
         LinkedHashMap result = [own:[:],cons:[:],subscr:[:]]
         int ownOffset = 0
@@ -145,7 +145,7 @@ class FinanceService {
      *
      * @return a LinkedHashMap with the cost items for each tab to display
      */
-    Map getCostItems(GrailsParameterMap params,long max) {
+    Map getCostItems(params,long max) {
         LinkedHashMap result = [own:[:],cons:[:],subscr:[:]]
         Org org = contextService.org
         List filterQueryOwn = processFilterParams(params,"own",false)
@@ -254,7 +254,7 @@ class FinanceService {
      * @param params - a GrailsParameterMap containing parameters to be processed
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
-    List processFilterParams(GrailsParameterMap params,String filterView,boolean forSingleSubscription) {
+    List processFilterParams(params,String filterView,boolean forSingleSubscription) {
         String filterQuery = ""
         LinkedHashMap queryParams = [:]
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))

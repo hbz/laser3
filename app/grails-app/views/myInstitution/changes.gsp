@@ -1,4 +1,4 @@
-<%@page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.License;com.k_int.kbplus.CostItem" %>
+<%@page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.License;com.k_int.kbplus.CostItem;com.k_int.kbplus.PendingChange" %>
 <!doctype html>
 <html>
     <head>
@@ -53,7 +53,7 @@
                                     <br>
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
-                                <g:if test="${change.costItem}">
+                                <g:if test="${change instanceof PendingChange && change.costItem}">
                                     <strong>${message(code:'financials.costItem')}</strong>
                                     <br>
                                     ${raw(change.desc)}

@@ -141,7 +141,7 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="surveyResult" id="${s.id}" class="ui icon button"><i
+                        <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button"><i
                                 class="write icon"></i></g:link>
 
                     </g:if>

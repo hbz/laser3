@@ -14,12 +14,17 @@ import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
 class SubscriptionService {
     def contextService
+    def taskService
     def subscriptionsQueryService
+    def docstoreService
+    def messageSource
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -46,7 +51,7 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     List getMySubscriptions_writeRights(){
@@ -67,14 +72,15 @@ class SubscriptionService {
             tmpQ = getSubscriptionsLocalLicenseQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         }
-        result.sort{it.name?.toLowerCase()}
+        result
     }
 
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.showParentsAndChildsSubs = 'true'
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.showParentsAndChildsSubs = false
+//        params.showParentsAndChildsSubs = 'true'
         params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
@@ -82,7 +88,7 @@ class SubscriptionService {
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
@@ -91,7 +97,7 @@ class SubscriptionService {
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
@@ -151,13 +157,6 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-    boolean deleteOrgRelations(Subscription targetSub, def flash) {
-        OrgRole.executeUpdate(
-                "delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",
-                [orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
-        )
-    }
-
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
@@ -184,106 +183,84 @@ class SubscriptionService {
         }
     }
 
-    boolean takeOrgRelations(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion) && targetSub?.orgRelations?.size() > 0) {
-            deleteOrgRelations(targetSub, flash)
-        }
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                getVisibleOrgRelationsWithoutConsortia(sourceSub)?.each { or ->
-                    if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                        flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
-                    } else {
-                        def newProperties = or.properties
-                        //Vererbung ausschalten
-                        newProperties.sharedFrom = null
-                        newProperties.isShared = false
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, newProperties)
-                        newOrgRole.sub = targetSub
-                        save(newOrgRole, flash)
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
-        }
-    }
-
-    boolean takePackages(String aktion, List<Package> packagesToTake, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-            //alle IEs löschen, die zu den zu löschenden Packages gehören
-            targetSub.issueEntitlements.each{ ie ->
-                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
-                if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
-                    ie.status = RDStore.IE_DELETED
-                    save(ie, flash)
-                }
+    boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
+        //alle IEs löschen, die zu den zu löschenden Packages gehören
+//        targetSub.issueEntitlements.each{ ie ->
+        getIssueEntitlements(targetSub).each{ ie ->
+            if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
+                ie.status = RDStore.IE_DELETED
+                save(ie, flash)
             }
+        }
 
-            //alle zugeordneten Packages löschen
+        //alle zugeordneten Packages löschen
+        if (packagesToDelete) {
             SubscriptionPackage.executeUpdate(
-                    "delete from SubscriptionPackage sp where sp.subscription = :sub ",
-                    [sub: targetSub])
-        }
-
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                packagesToTake?.each { pkg ->
-                    if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                        flash.error = "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                    } else {
-                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        newSubscriptionPackage.subscription = targetSub
-                        newSubscriptionPackage.pkg = pkg
-                        save(newSubscriptionPackage, flash)
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+                    "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
+                    [packagesToDelete: packagesToDelete, sub: targetSub])
         }
     }
 
-    boolean takeEntitlements(String aktion, List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-//            targetSub.issueEntitlements.each {
-            getIssueEntitlements(targetSub).each {
-                it.status = RDStore.IE_DELETED
-                save(it, flash)
+    boolean takePackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
+        packagesToTake?.each { pkg ->
+            if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
+                flash.error += "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+            } else {
+                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                newSubscriptionPackage.subscription = targetSub
+                newSubscriptionPackage.pkg = pkg
+                save(newSubscriptionPackage, flash)
             }
         }
+    }
 
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                entitlementsToTake.each { ieToTake ->
-                    if (ieToTake.status != RDStore.IE_DELETED) {
-                        def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
-                        if (list?.size() > 0) {
-                            // mich gibts schon! Fehlermeldung ausgeben!
-                            flash.error = ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                        } else {
-                            def properties = ieToTake.properties
-                            properties.globalUID = null
-                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                            InvokerHelper.setProperties(newIssueEntitlement, properties)
-                            newIssueEntitlement.subscription = targetSub
-                            save(newIssueEntitlement, flash)
-                        }
-                    }
+    boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
+        entitlementsToDelete.each {
+            it.status = RDStore.IE_DELETED
+            save(it, flash)
+        }
+//        IssueEntitlement.executeUpdate(
+//                "delete from IssueEntitlement ie where ie in (:entitlementsToDelete) and ie.subscription = :sub ",
+//                [entitlementsToDelete: entitlementsToDelete, sub: targetSub])
+    }
+
+    boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
+        entitlementsToTake.each { ieToTake ->
+            if (ieToTake.status != RDStore.IE_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
+                if (list?.size() > 0) {
+                    // mich gibts schon! Fehlermeldung ausgeben!
+                    flash.error += "Der Titel " + ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+                } else {
+                    def properties = ieToTake.properties
+                    properties.globalUID = null
+                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                    InvokerHelper.setProperties(newIssueEntitlement, properties)
+                    newIssueEntitlement.subscription = targetSub
+                    save(newIssueEntitlement, flash)
                 }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+            }
         }
     }
 
+    boolean deleteTasks(List<Long> toDeleteTasks, Subscription targetSub, def flash) {
+        boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
+        def userId = contextService.user.id
+        toDeleteTasks.each { deleteTaskId ->
+            def dTask = Task.get(deleteTaskId)
+            if (dTask) {
+                if (dTask.creator.id == userId || isInstAdm) {
+                    delete(dTask, flash)
+                } else {
+                    flash.error += "Sie sind nicht berechtigt Aufgabe ${deleteTaskId} zu löschen."
+                }
+            } else {
+                flash.error += "Die Aufgabe ${deleteTaskId} konnte nicht gelöscht werden. Sie existiert nicht (mehr)."
+            }
+        }
+    }
+
+    @Deprecated
     boolean takeTasks(String aktion, Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         switch (aktion) {
             case COPY:
@@ -305,6 +282,7 @@ class SubscriptionService {
         }
     }
 
+    @Deprecated
     boolean takeAnnouncements(String aktion, Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
@@ -338,6 +316,20 @@ class SubscriptionService {
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteAnnouncements(List<Long> toDeleteAnnouncements, Subscription targetSub, def flash) {
+        targetSub.documents.each {
+            if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain)){
+                Map params = [deleteId: it.id]
+                log.debug("deleteDocuments ${params}");
+                docstoreService.unifiedDeleteDocuments(params)
+            }
+        }
+    }
+
+
     boolean deleteDates(Subscription targetSub, def flash){
         targetSub.startDate = null
         targetSub.endDate = null
@@ -351,11 +343,21 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
+        log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
+        def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
+        [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
+        log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
+    }
+
+    @Deprecated
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
                 if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-                    it.status = RDStore.IE_DELETED
+                    it.status = RDStore.DOC_DELETED
                     save(it, flash)
                 }
             }
@@ -385,6 +387,7 @@ class SubscriptionService {
         }
     }
 
+    @Deprecated
     boolean takeProperties(String aktion, List<AbstractProperty> properties, Subscription targetSub, def flash){
         switch (aktion) {
             case COPY:
@@ -427,13 +430,22 @@ class SubscriptionService {
         }
     }
 
+    private boolean delete(obj, flash) {
+        if (obj) {
+            obj.delete(flush: true)
+            log.debug("Delete ${obj} ok")
+        } else {
+            flash.error += "Es ist ein Problem beim Löschen aufgetreten."
+        }
+    }
+
     private boolean save(obj, flash){
         if (obj.save(flush: true)){
             log.debug("Save ${obj} ok")
             return true
         } else {
-            log.error("Problem saving property ${obj.errors}")
-            flash.error += "Es ist ein Fehler beim Speichern von ${obj.value} aufgetreten."
+            log.error("Problem saving ${obj.errors}")
+            flash.error += "Es ist ein Fehler beim Speichern von ${obj} aufgetreten."
             return false
         }
     }

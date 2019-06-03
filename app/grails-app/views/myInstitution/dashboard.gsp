@@ -105,18 +105,18 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
-                ${surveys.groupBy { it.surveyConfig.surveyInfo.id }?.size()}
+                ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+       %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
                 <i class="checked tasks icon large"></i>
                 ${surveysConsortia?.size()}
                 ${message(code:'myinst.dash.surveyConsortia.label')}
             </a>
-        </g:if>
+        </g:if>--}%
 
 
     </div><!-- secondary -->
@@ -163,7 +163,7 @@
                                     <br />
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
-                               <g:if test="${change.costItem}">
+                               <g:if test="${change instanceof PendingChange && change.costItem}">
                                    <strong>${message(code:'financials.costItem')}</strong>
                                    <br>
                                    ${raw(change.desc)}
@@ -331,7 +331,7 @@
             </div>
         </g:if>
 
-    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+    %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
             <div>
@@ -339,7 +339,7 @@
             </div>
         </div>
     </g:if>
-
+--}%
         <g:render template="/templates/tasks/modal_create" />
 
     <g:javascript>

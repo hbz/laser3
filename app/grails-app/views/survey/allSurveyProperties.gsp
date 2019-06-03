@@ -97,35 +97,33 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${property?.getI10n('introduction')}">
-                            <g:if test="${property?.owner == institution}">
-                                <semui:xEditable owner="${property}" field="introduction" type="textarea"/>
-                            </g:if>
-                            <g:else>
-                                ${property?.getI10n('introduction')}
-                            </g:else>
+
+                        <g:if test="${property?.owner == institution}">
+                            <semui:xEditable owner="${property}" field="introduction" type="textarea"/>
                         </g:if>
+                        <g:else>
+                            ${property?.getI10n('introduction')}
+                        </g:else>
+
                     </td>
 
                     <td>
-                        <g:if test="${property?.getI10n('explain')}">
-                            <g:if test="${property?.owner == institution}">
-                                <semui:xEditable owner="${property}" field="explain" type="textarea"/>
-                            </g:if>
-                            <g:else>
-                                ${property?.getI10n('explain')}
-                            </g:else>
+
+                        <g:if test="${property?.owner == institution}">
+                            <semui:xEditable owner="${property}" field="explain" type="textarea"/>
                         </g:if>
+                        <g:else>
+                            ${property?.getI10n('explain')}
+                        </g:else>
+
                     </td>
                     <td>
-                        <g:if test="${property?.comment}">
-                            <g:if test="${property?.owner == institution}">
-                                <semui:xEditable owner="${property}" field="comment" type="textarea"/>
-                            </g:if>
-                            <g:else>
-                                ${property?.comment}
-                            </g:else>
+                        <g:if test="${property?.owner == institution}">
+                            <semui:xEditable owner="${property}" field="comment" type="textarea"/>
                         </g:if>
+                        <g:else>
+                            ${property?.comment}
+                        </g:else>
                     </td>
                     <td>
                         ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}

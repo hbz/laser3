@@ -587,4 +587,32 @@ class Org
             new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
         }
     }
+
+    def hasAccessOrg(){
+
+        if(UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
+            return true
+        }else {
+            return false
+        }
+
+
+    }
+
+    // copied from AccessService
+    // private boolean checkOrgPerm(String[] orgPerms) {}
+    boolean hasPerm(String perm) {
+        boolean check = false
+
+        if (perm) {
+            def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+                check = PermGrant.findByPermAndRole(Perm.findByCode(perm?.toLowerCase()?.trim()), (Role) oss.getValue())
+            }
+        }
+        else {
+            check = true
+        }
+        check
+    }
 }

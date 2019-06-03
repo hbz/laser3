@@ -70,6 +70,22 @@ class InstitutionsService {
                         }
                     }
                 }
+
+                // documents
+                base.documents?.each { dctx ->
+
+                    if (dctx.isShared) {
+                        DocContext ndc = new DocContext(
+                                owner: dctx.owner,
+                                license: licenseInstance,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype,
+                                sharedFrom: dctx
+                        )
+                        ndc.save()
+                    }
+                }
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
 
@@ -79,6 +95,32 @@ class InstitutionsService {
                     copiedProp.instanceOf = null
                     copiedProp.save(flush: true)
                     //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+                }
+
+                // clone documents
+                base.documents?.each { dctx ->
+                    Doc clonedContents = new Doc(
+                            blobContent: dctx.owner.blobContent,
+                            status: dctx.owner.status,
+                            type: dctx.owner.type,
+                            content: dctx.owner.content,
+                            uuid: dctx.owner.uuid,
+                            contentType: dctx.owner.contentType,
+                            title: dctx.owner.title,
+                            creator: dctx.owner.creator,
+                            filename: dctx.owner.filename,
+                            mimeType: dctx.owner.mimeType,
+                            user: dctx.owner.user,
+                            migrated: dctx.owner.migrated
+                    ).save()
+
+                    DocContext ndc = new DocContext(
+                            owner: clonedContents,
+                            license: licenseInstance,
+                            domain: dctx.domain,
+                            status: dctx.status,
+                            doctype: dctx.doctype
+                    ).save()
                 }
             }
 
@@ -100,34 +142,6 @@ class InstitutionsService {
                 // legacy
                 def licensor_role = RefdataValue.getByValueAndCategory('Licensor','Organisational Role')
                 new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role).save(flush: true)
-            }
-
-
-
-            // Clone documents
-            base.documents?.each { dctx ->
-                Doc clonedContents = new Doc(
-                        blobContent: dctx.owner.blobContent,
-                        status: dctx.owner.status,
-                        type: dctx.owner.type,
-                        content: dctx.owner.content,
-                        uuid: dctx.owner.uuid,
-                        contentType: dctx.owner.contentType,
-                        title: dctx.owner.title,
-                        creator: dctx.owner.creator,
-                        filename: dctx.owner.filename,
-                        mimeType: dctx.owner.mimeType,
-                        user: dctx.owner.user,
-                        migrated: dctx.owner.migrated
-                ).save()
-
-                DocContext ndc = new DocContext(
-                        owner: clonedContents,
-                        license: licenseInstance,
-                        domain: dctx.domain,
-                        status: dctx.status,
-                        doctype: dctx.doctype
-                ).save()
             }
 
             return licenseInstance

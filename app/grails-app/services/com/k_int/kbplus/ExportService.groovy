@@ -129,7 +129,12 @@ class ExportService {
 					rownum++
 				}
 				for(int i = 0;i < titleRow.size(); i++) {
-					sheet.autoSizeColumn(i)
+					try {
+						sheet.autoSizeColumn(i)
+					}
+					catch (Exception e) {
+						log.error("Null pointer exception in column ${i}")
+					}
 				}
 			}
 			catch (ClassCastException e) {

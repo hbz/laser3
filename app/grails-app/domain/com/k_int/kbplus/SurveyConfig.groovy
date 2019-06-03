@@ -26,6 +26,7 @@ class SurveyConfig {
     Date lastUpdated
 
     boolean pickAndChoose
+    boolean configFinish
 
     static hasMany = [
             documents: DocContext,
@@ -42,6 +43,7 @@ class SurveyConfig {
         pickAndChoose (nullable:true, blank:false)
         documents (nullable:true, blank:false)
         orgs  (nullable:true, blank:false)
+        configFinish (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -52,6 +54,7 @@ class SurveyConfig {
         header column: 'surconf_header'
         comment  column: 'surconf_comment'
         pickAndChoose column: 'surconf_pickandchoose'
+        configFinish column: 'surconf_config_finish', default: false
 
 
         dateCreated column: 'surconf_date_created'
@@ -68,7 +71,7 @@ class SurveyConfig {
     @Transient
     static def validTypes = [
             'Subscription'             : ['de': 'Lizenz', 'en': 'Subscription'],
-            'SurveyProperty'              : ['de': 'Abfrage-Merkmal', 'en': 'Survey-Property']
+            'SurveyProperty'              : ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
     static getLocalizedValue(key){
@@ -118,6 +121,84 @@ class SurveyConfig {
     def getTypeInLocaleI10n() {
 
         return this.getLocalizedValue(this?.type)
+    }
+
+    def getAllOrgsWithSub() {
+
+        def result = []
+
+        orgs.each {
+            if(it.hasOrgSubscription())
+            {
+                result << it.org
+            }
+        }
+        result
+
+    }
+
+    def getAllOrgsWithSubNew() {
+
+        if(this.subscription){
+            return this.orgs.org.id.minus(this.getAllOrgsWithoutSubNew())
+        }
+
+    }
+
+    def getAllOrgsWithoutSubNew(){
+
+        if(this.subscription){
+            return this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+        }
+    }
+
+    def getSurveyOrgsIDs()
+    {
+        def result = [:]
+
+        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+
+        return result
+    }
+
+    def getAllOrgsWithoutSub(){
+        def result = []
+
+        orgs.each {
+            if(!it.hasOrgSubscription())
+            {
+                result << it?.org
+            }
+        }
+        result
+    }
+
+    def getAllOrgsWithSubIds() {
+
+        def result = []
+
+        orgs.each {
+            if(it.hasOrgSubscription())
+            {
+                result << it?.org?.id
+            }
+        }
+        result
+
+    }
+
+    def getAllOrgsWithoutSubIds(){
+        def result = []
+
+        orgs.each {
+            if(!it.hasOrgSubscription())
+            {
+                result << it?.org?.id
+            }
+        }
+        result
     }
 
 

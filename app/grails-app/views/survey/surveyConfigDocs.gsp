@@ -31,12 +31,6 @@
 
 <semui:messages data="${flash}" />
 
-<br>
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    ${message(code: 'surveyConfigDocs.info2')}
-</div>
 
 
 <br>

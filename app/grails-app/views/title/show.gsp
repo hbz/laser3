@@ -339,7 +339,11 @@
                   </g:each>
                   <br>
 
-                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
+                  <g:if test="${t.hostPlatformURL}">
+                      <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                  </g:if>
+
+                  <g:each in="${t?.title?.ids?.sort{it.identifier.ns.ns}}" var="id">
                       <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                           <span class="ui small teal image label">
                               ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
@@ -367,8 +371,8 @@
                           <g:if test="${t?.platform.name}">
                               <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
                           </g:if>
-                          <g:if test="${t.hostPlatformURL}">
-                              <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                          <g:if test="${t?.platform.primaryUrl}">
+                              <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t?.platform.primaryUrl.contains('http') ? t?.platform.primaryUrl :'http://'+t?.platform.primaryUrl}" target="_blank"><i class="share square icon"></i></a>
                           </g:if>
                       </div>
                   </div>
