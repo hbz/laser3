@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
+<laser:serviceInjection />
 
 <%
     List<DocContext> baseItems = []
