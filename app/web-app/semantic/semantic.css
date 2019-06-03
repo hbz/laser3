@@ -29373,7 +29373,7 @@ Floated Menu / Item
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30450,16 +30450,7 @@ a.ui.card:hover,
 
 .ui.cards > .card,
 .ui.card {
-  max-width: 100%;
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30474,16 +30465,8 @@ a.ui.card:hover,
   z-index: auto;
 }
 
-.ui.cards > .card,
-.ui.card {
-  width: 271px;
-}
-
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
-  display: block;
-  margin: '';
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color: #767676;
 }
 
