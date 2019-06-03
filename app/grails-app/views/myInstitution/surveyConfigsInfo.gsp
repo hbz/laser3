@@ -63,24 +63,6 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
 <br>
 
-<div class="la-inline-lists">
-    <div class="ui stackable cards">
-        <div class="ui card la-time-card">
-            <div class="content">
-                <div class="header"><g:message code="surveyConfigsInfo.comment"/></div>
-            </div>
-
-            <div class="content">
-                <g:if test="${surveyConfig?.comment}">
-                ${surveyConfig?.comment}
-                </g:if><g:else>
-                    <g:message code="surveyConfigsInfo.comment.noComment"/>
-                </g:else>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <div class="la-inline-lists">
     <div class="ui two stackable cards">
@@ -133,6 +115,24 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <dd>${subscriptionInstance?.resource?.getI10n('value')}</dd>
                     <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                 </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="la-inline-lists">
+    <div class="ui stackable cards">
+        <div class="ui card la-time-card">
+            <div class="content">
+                <div class="header"><g:message code="surveyConfigsInfo.comment"/></div>
+            </div>
+
+            <div class="content">
+                <g:if test="${surveyConfig?.comment}">
+                    ${surveyConfig?.comment}
+                </g:if><g:else>
+                    <g:message code="surveyConfigsInfo.comment.noComment"/>
+                </g:else>
             </div>
         </div>
     </div>
