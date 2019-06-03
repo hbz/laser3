@@ -187,7 +187,7 @@
                                 ${config?.surveyProperty?.getI10n('name')}
 
                                 <g:if test="${config?.surveyProperty?.getI10n('explain')}">
-                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.surveyProperty??.getI10n('explain')}">
+                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.surveyProperty?.getI10n('explain')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
