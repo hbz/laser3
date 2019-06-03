@@ -243,11 +243,11 @@
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
-            <th rowspan="2" class="center aligned">
+            <th scope="col" rowspan="2" class="center aligned">
                 ${message(code:'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
-            <th rowspan="2">
+            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" scope="col" />
+            <th rowspan="2" scope="col">
                 ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>
             <% /*
@@ -257,10 +257,10 @@
             */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
-                <th rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <g:sortableColumn params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
+            <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
             <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
 
             <%--
@@ -268,20 +268,20 @@
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
 
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
-                <th rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th rowspan="2" class="two">${message(code:'default.actions')}</th>
+            <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
         </tr>
 
         <tr>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
