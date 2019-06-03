@@ -644,6 +644,7 @@ class GlobalSourceSyncService {
                     currTIPP.gokbId = tipp.tippUuid ?: null
                     currTIPP.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
                     currTIPP.accessEndDate = ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
+                    currTIPP.platform = tipp.platformUuid != null ? Platform.findByGokbId(tipp.platformUuid) : currTIPP.platform
 
                     // We rely upon there only being 1 coverage statement for now, it seems likely this will need
                     // to change in the future. Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014
@@ -881,6 +882,7 @@ class GlobalSourceSyncService {
                     platform    : tip.platform.name.text(),
                     platformId  : tip.platform.'@id'.text(),
                     platformUuid: tip.platform.'@uuid'?.text() ?: null,
+                    platformPrimaryUrl: tip.platform.primaryUrl.text(),
                     coverage    : [],
                     url         : tip.url.text() ?: '',
                     identifiers : [],
@@ -1067,13 +1069,13 @@ class GlobalSourceSyncService {
 
             log.debug("Collect ${cfg.name} changes since ${date}");
 
-            oai_client.getChangesSince(date, sync_job.fullPrefix) { rec ->
+            oai_client.getChangesSince(date, sync_job) { rec, syncObj ->
 
-                def sync_obj = GlobalRecordSource.get(sync_job_id)
-                log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_obj.id} url:${sync_obj.uri} cfg:${cfg.name}")
+                //def syncObj = GlobalRecordSource.get(sync_job_id)
+                log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${syncObj.id} url:${syncObj.uri} cfg:${cfg.name}")
                 def rec_uuid = rec.header.uuid?.text() ?: null
                 def rec_identifier = rec.header.identifier.text()
-                def qryparams = [sync_obj.id, rec_identifier, rec_uuid ?: "0"]
+                def qryparams = [syncObj.id, rec_identifier, rec_uuid ?: "0"]
                 def record_timestamp = sdf.parse(rec.header.datestamp.text())
                 def existing_record_info = null
 
@@ -1100,7 +1102,7 @@ class GlobalSourceSyncService {
 
                 if (existing_record_info) {
                     log.debug("convert xml into json - config is ${cfg} ");
-                    def parsed_rec = cfg.converter.call(rec.metadata, sync_obj)
+                    def parsed_rec = cfg.converter.call(rec.metadata, syncObj)
 
                     // Deserialize
                     def bais = new ByteArrayInputStream((byte[]) (existing_record_info.record))
@@ -1143,7 +1145,7 @@ class GlobalSourceSyncService {
                     existing_record_info.save()
                 } else {
                     log.debug("First time we have seen this record - converting ${cfg.name}");
-                    def parsed_rec = cfg.converter.call(rec.metadata, sync_obj)
+                    def parsed_rec = cfg.converter.call(rec.metadata, syncObj)
                     log.debug("Converter thinks this rec has title :: ${parsed_rec.title}");
 
                     // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
@@ -1177,8 +1179,8 @@ class GlobalSourceSyncService {
                             identifier: rec.header.identifier.text(),
                             uuid: rec_uuid,
                             desc: "${parsed_rec.title}",
-                            source: sync_obj,
-                            rectype: sync_obj.rectype,
+                            source: syncObj,
+                            rectype: syncObj.rectype,
                             record: baos.toByteArray(),
                             kbplusCompliant: kbplus_compliant,
                             globalRecordInfoStatus: status)
@@ -1208,8 +1210,7 @@ class GlobalSourceSyncService {
                 }
 
                 log.debug("Updating sync job max timestamp");
-                sync_obj.haveUpTo = new Date(max_timestamp)
-                sync_obj.save(flush: true);
+                syncObj.haveUpTo = new Date(max_timestamp)
 
                 if (rectype == 'Package') {
                     sleep(3000);
@@ -1230,7 +1231,7 @@ class GlobalSourceSyncService {
             log.debug("Reset sync job haveUpTo");
             def sync_object = GlobalRecordSource.get(sync_job_id)
             sync_object.haveUpTo = olddate
-            sync_object.save(flush: true);
+            sync_object.save(flush: true)
         }
         finally {
             log.debug("internalOAISync completed for job ${sync_job_id}");
@@ -1240,6 +1241,7 @@ class GlobalSourceSyncService {
             // TODO: remove due SystemEvent
             new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save(flush: true)
         }
+        sync_job.save(flush:true)
     }
 
     def parseDate(datestr, possible_formats) {

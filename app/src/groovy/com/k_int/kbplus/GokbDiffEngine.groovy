@@ -92,6 +92,7 @@ public class GokbDiffEngine {
     }
 
     def static getTippDiff(tippa, tippb) {
+        println "processing tipp diffs between ${tippa} and ${tippb}"
         def result = []
 
         if ((tippa.url ?: '').toString().compareTo((tippb.url ?: '').toString()) != 0) {
@@ -114,12 +115,8 @@ public class GokbDiffEngine {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
         }
 
-        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) != 0) {
-            result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
-        }
-
-        if ((tippa?.platform?.gokbId ?: '').toString().compareTo((tippb?.platform?.gokbId ?: '').toString()) != 0) {
-            result.add([field: 'titleName', newValue: "${tippb?.platform?.name}, url: ${tippb?.platform?.primaryUrl}", oldValue: "${tippa?.platform?.name}, url: ${tippa?.platform?.primaryUrl}"])
+        if ((tippa?.platformUuid ?: '').toString().compareTo((tippb?.platformUuid ?: '').toString()) != 0) {
+            result.add([field: 'platform', newValue: "${tippb?.platformUuid}", oldValue: "${tippa?.platformUuid}"])
         }
 
         result;
@@ -170,6 +167,9 @@ public class GokbDiffEngine {
     def static compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
     {
         def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
+        println oldpkg
+        println "---------------------------------------------------------------------------------------------------------------------------------------"
+        println newpkg
         def oldpkgTippsTippUuid = oldpkg.tipps.collect{it.tippUuid}
         def newpkgTippsTippUuid = newpkg.tipps.collect{it.tippUuid}
 
@@ -184,7 +184,7 @@ public class GokbDiffEngine {
                     def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])])
                     def newAuto_accept = (localDuplicateTippEntries.size() > 1) ? true : false
                     newAuto_accept = auto_accept ?: newAuto_accept
-                    if(newAuto_accept && tippnew.status != 'Deleted') {
+                    if(localDuplicateTippEntries.size() > 1 && tippnew.status != 'Deleted') {
                         System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept" + newAuto_accept);
                         newTippClosure(ctx, tippnew, newAuto_accept)
                     } else
