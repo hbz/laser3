@@ -80,12 +80,17 @@
                     <br>
 
                     <div class="four wide column">
-                        <button type="button" class="ui icon button right floated" data-semui="modal"
+
+                        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
                                 data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
                         <g:render template="/survey/costItemModal"
-                                  model="[modalID: 'AllSub', setting: 'bulkForAll']"/>
+                                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+
+                       <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                                <i class="plus icon"></i>
+                            </g:link>
                     </div>
 
                     <br>
@@ -110,7 +115,8 @@
                               model="[orgList       : selectedSubParticipants.findAll { it?.hasAccessOrg() }.sort {
                                   it?.sortname
                               },
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                      tableID: 'costTable'
                               ]"/>
 
 
@@ -131,7 +137,8 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasNotAccess,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                                      tableID: 'costTable'
                               ]"/>
 
                 </div>
@@ -151,12 +158,17 @@
                     <br>
 
                     <div class="four wide column">
-                        <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#modalCostItemAllNewSub"><i class="plus icon"></i></button>
+
+                        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+                                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
                         <g:render template="/survey/costItemModal"
-                                  model="[modalID: 'AllNewSub', setting: 'bulkForAll']"/>
+                                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+
+                        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                            <i class="plus icon"></i>
+                        </g:link>
                     </div>
 
                     <br>
@@ -183,7 +195,8 @@
                               model="[orgList       : selectedParticipants.findAll { it?.hasAccessOrg() }.sort {
                                   it?.sortname
                               },
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                      tableID: 'costTable'
                               ]"/>
 
 
@@ -204,7 +217,8 @@
 
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasNotAccess,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem']
+                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                      tableID: 'costTable'
                               ]"/>
 
                 </div>
@@ -222,6 +236,47 @@
     $(document).ready(function () {
         $('.tabular.menu .item').tab()
     });
+
+var isClicked = false;
+function addForAllSurveyCostItem() {
+                        event.preventDefault();
+
+                        // prevent 2 Clicks open 2 Modals
+                        if (!isClicked) {
+                            isClicked = true;
+                            $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
+                            $('#dynamicModalContainer').empty()
+
+                           $.ajax({
+                                url: "<g:createLink controller='survey' action='addForAllSurveyCostItem'/>",
+                                data: {
+                                    id: "${params.id}",
+                                    surveyConfigID: "${surveyConfig?.id}"
+                                }
+                            }).done(function (data) {
+                                $('#dynamicModalContainer').html(data);
+
+                                $('#dynamicModalContainer .ui.modal').modal({
+                                    onVisible: function () {
+                                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                                        r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
+
+                                    },
+                                    detachable: true,
+                                    closable: false,
+                                    transition: 'scale',
+                                    onApprove: function () {
+                                        $(this).find('.ui.form').submit();
+                                        return false;
+                                    }
+                                }).modal('show');
+                            })
+                            setTimeout(function () {
+                                isClicked = false;
+                            }, 800);
+                        }
+                    }
+
 </r:script>
 
 </body>

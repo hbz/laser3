@@ -22,7 +22,7 @@
                     </th>
                     <th class="one wide center aligned">
                         <i class="ui icon angle double right"></i>
-                        <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCopyCheckboxes(this)" checked="${true}" />
+                        <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked="${true}" />
                     </th>
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
@@ -30,7 +30,7 @@
                     <th class="one wide center aligned">
                         <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
-                            <input type="checkbox" data-action="delete" onClick="toggleAllDeleteCheckboxes(this)" />
+                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" checked="${false}" />
                         </g:if>
                     </th>
                 </tr>
@@ -64,11 +64,13 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
+                        <br>
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
-                                <div class="ui checkbox">
+                                %{--<div class="ui checkbox">--}%
                                     <g:checkBox name="subscription.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
-                                </div>
+                                <br>
+                                %{--</div>--}%
                             </g:if>
                         </g:each>
                     </td>
@@ -101,11 +103,13 @@
                     %{--DELETE:--}%
                     <td>
                         <i class="ui icon trash alternate outline"></i>
+                        <br>
                         <g:each in="${targetSubscription?.documents?.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
-                                <div class="ui checkbox">
-                                    <g:checkBox name="subscription.deleteDocIds" value="${docctx?.id}" data-action="delete"/>
-                                </div>
+                                %{--<div class="ui checkbox">--}%
+                                    <g:checkBox name="subscription.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
+                                <br>
+                                %{--</div>--}%
                             </g:if>
                         </g:each>
                     </td>
@@ -137,12 +141,14 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
+                        <br>
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
-                                    <div class="ui checkbox">
+                                    %{--<div class="ui checkbox">--}%
                                         <g:checkBox name="subscription.takeAnnouncementIds" value="${docctx.id}" data-action="copy" checked="${true}" />
-                                    </div>
+                                <br>
+                                    %{--</div>--}%
                                 %{--</div>--}%
                             </g:if>
                         </g:each>
@@ -173,13 +179,15 @@
                     %{--DELETE:--}%
                     <td>
                         <i class="ui icon trash alternate outline"></i>
+                        <br>
                         <div>
                             <g:if test="${targetSubscription}">
                                 <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
-                                        <div class="ui checkbox">
-                                            <g:checkBox name="subscription.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete" />
-                                        </div>
+                                        %{--<div class="ui checkbox">--}%
+                                            <g:checkBox name="subscription.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
+                                        <br>
+                                        %{--</div>--}%
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -203,11 +211,13 @@
                     %{--COPY:--}%
                     <td class="center aligned">
                         <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
+                        <br>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
-                                <div class="ui checkbox">
+                                %{--<div class="ui checkbox">--}%
                                     <g:checkBox name="subscription.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
-                                </div>
+                                <br>
+                                %{--</div>--}%
                             </div>
                         </g:each>
                     </td>
@@ -223,11 +233,13 @@
                     %{--DELETE:--}%
                     <td>
                         <i class="ui icon trash alternate outline"></i>
+                        <br>
                         <g:each in="${targetTasks}" var="tsk">
                             <g:if test="${tsk.creator.id == userId || isInstAdm}">
-                                <div class="ui checkbox">
-                                    <g:checkBox name="subscription.deleteTaskIds" value="${tsk?.id}" data-action="delete"  />
-                                </div>
+                                %{--<div class="ui checkbox">--}%
+                                    <g:checkBox name="subscription.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
+                                <br>
+                                %{--</div>--}%
                             </g:if>
                             <g:else><br></g:else>
                         </g:each>
@@ -241,16 +253,9 @@
     </g:form>
 </semui:form>
 <r:script>
-    function toggleAllCopyCheckboxes(source) {
-        var checkboxes = document.querySelectorAll('input[data-action="copy"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-    function toggleAllDeleteCheckboxes(source) {
-        var checkboxes = document.querySelectorAll('input[data-action="delete"]');
+    function toggleAllCheckboxes(source) {
+        var action = $(source).attr("data-action")
+        var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
         for (var i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i] != source){
                 checkboxes[i].checked = source.checked;
