@@ -73,15 +73,18 @@ class InstitutionsService {
 
                 // documents
                 base.documents?.each { dctx ->
-                    DocContext ndc = new DocContext(
-                            owner: dctx.owner,
-                            license: licenseInstance,
-                            domain: dctx.domain,
-                            status: dctx.status,
-                            doctype: dctx.doctype,
-                            sharedFrom: dctx
-                    )
-                    ndc.save()
+
+                    if (dctx.isShared) {
+                        DocContext ndc = new DocContext(
+                                owner: dctx.owner,
+                                license: licenseInstance,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype,
+                                sharedFrom: dctx
+                        )
+                        ndc.save()
+                    }
                 }
             }
             else if (option == InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD) {
