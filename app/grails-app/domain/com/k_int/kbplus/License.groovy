@@ -28,6 +28,8 @@ class License
     @Transient
     def contextService
     @Transient
+    def accessService
+    @Transient
     def genericOIDService
     @Transient
     def messageSource
@@ -396,7 +398,8 @@ class License
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                return cons || licsee
+                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                    return cons || licsee
             }
         }
 

@@ -45,10 +45,10 @@
     </semui:exportDropdown>
 </g:if>
 <semui:actionsDropdown>
-    <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
 
         <div class="divider"></div>
 
@@ -107,9 +107,8 @@
     </g:if>
 </semui:actionsDropdown>
 
-    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
-
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>
