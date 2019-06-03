@@ -157,13 +157,6 @@ class SubscriptionService {
         return save(targetSub, flash)
     }
 
-    boolean deleteOrgRelations(Subscription targetSub, def flash) {
-        OrgRole.executeUpdate(
-                "delete from OrgRole o where o in (:orgRelations) and o.roleType not in (:roleTypes)",
-                [orgRelations: targetSub.orgRelations, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
-        )
-    }
-
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
@@ -190,75 +183,63 @@ class SubscriptionService {
         }
     }
 
-    boolean takePackages(String aktion, List<Package> packagesToTake, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-            //alle IEs löschen, die zu den zu löschenden Packages gehören
-            targetSub.issueEntitlements.each{ ie ->
-                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
-                if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
-                    ie.status = RDStore.IE_DELETED
-                    save(ie, flash)
-                }
+    boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
+        //alle IEs löschen, die zu den zu löschenden Packages gehören
+//        targetSub.issueEntitlements.each{ ie ->
+        getIssueEntitlements(targetSub).each{ ie ->
+            if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
+                ie.status = RDStore.IE_DELETED
+                save(ie, flash)
             }
-
-            //alle zugeordneten Packages löschen
-            SubscriptionPackage.executeUpdate(
-                    "delete from SubscriptionPackage sp where sp.subscription = :sub ",
-                    [sub: targetSub])
         }
 
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                packagesToTake?.each { pkg ->
-                    if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                        flash.error = "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                    } else {
-                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        newSubscriptionPackage.subscription = targetSub
-                        newSubscriptionPackage.pkg = pkg
-                        save(newSubscriptionPackage, flash)
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+        //alle zugeordneten Packages löschen
+        if (packagesToDelete) {
+            SubscriptionPackage.executeUpdate(
+                    "delete from SubscriptionPackage sp where sp in (:packagesToDelete) and sp.subscription = :sub ",
+                    [packagesToDelete: packagesToDelete, sub: targetSub])
         }
     }
 
-    boolean takeEntitlements(String aktion, List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-//            targetSub.issueEntitlements.each {
-            getIssueEntitlements(targetSub).each {
-                it.status = RDStore.IE_DELETED
-                save(it, flash)
+    boolean takePackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
+        packagesToTake?.each { pkg ->
+            if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
+                flash.error += "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+            } else {
+                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                newSubscriptionPackage.subscription = targetSub
+                newSubscriptionPackage.pkg = pkg
+                save(newSubscriptionPackage, flash)
             }
         }
+    }
 
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                entitlementsToTake.each { ieToTake ->
-                    if (ieToTake.status != RDStore.IE_DELETED) {
-                        def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
-                        if (list?.size() > 0) {
-                            // mich gibts schon! Fehlermeldung ausgeben!
-                            flash.error = ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                        } else {
-                            def properties = ieToTake.properties
-                            properties.globalUID = null
-                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                            InvokerHelper.setProperties(newIssueEntitlement, properties)
-                            newIssueEntitlement.subscription = targetSub
-                            save(newIssueEntitlement, flash)
-                        }
-                    }
+    boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
+        entitlementsToDelete.each {
+            it.status = RDStore.IE_DELETED
+            save(it, flash)
+        }
+//        IssueEntitlement.executeUpdate(
+//                "delete from IssueEntitlement ie where ie in (:entitlementsToDelete) and ie.subscription = :sub ",
+//                [entitlementsToDelete: entitlementsToDelete, sub: targetSub])
+    }
+
+    boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
+        entitlementsToTake.each { ieToTake ->
+            if (ieToTake.status != RDStore.IE_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
+                if (list?.size() > 0) {
+                    // mich gibts schon! Fehlermeldung ausgeben!
+                    flash.error += "Der Titel " + ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+                } else {
+                    def properties = ieToTake.properties
+                    properties.globalUID = null
+                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                    InvokerHelper.setProperties(newIssueEntitlement, properties)
+                    newIssueEntitlement.subscription = targetSub
+                    save(newIssueEntitlement, flash)
                 }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+            }
         }
     }
 
@@ -279,6 +260,7 @@ class SubscriptionService {
         }
     }
 
+    @Deprecated
     boolean takeTasks(String aktion, Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         switch (aktion) {
             case COPY:
@@ -300,6 +282,7 @@ class SubscriptionService {
         }
     }
 
+    @Deprecated
     boolean takeAnnouncements(String aktion, Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
@@ -369,6 +352,7 @@ class SubscriptionService {
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
+    @Deprecated
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         if (REPLACE.equals(aktion)) {
             targetSub.documents.each {
@@ -403,6 +387,7 @@ class SubscriptionService {
         }
     }
 
+    @Deprecated
     boolean takeProperties(String aktion, List<AbstractProperty> properties, Subscription targetSub, def flash){
         switch (aktion) {
             case COPY:
