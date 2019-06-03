@@ -45,4 +45,21 @@ class SurveyOrg {
         }
         return checkPerennialTerm
     }
+
+    def hasOrgSubscription()
+    {
+        def hasOrgSubscription = false
+        if(surveyConfig.subscription) {
+            Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
+                def ors = OrgRole.findAllWhere( sub: s, org: this.org )
+                ors.each { or ->
+                    if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
+                        hasOrgSubscription = true
+                    }
+                }
+            }
+        }
+        return hasOrgSubscription
+
+    }
 }
