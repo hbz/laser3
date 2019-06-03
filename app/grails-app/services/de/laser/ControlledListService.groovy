@@ -86,8 +86,12 @@ class ControlledListService {
             queryString += " and s != :ctx "
         }
         if(params.status) {
-            filter.status = params.status
-            queryString += " and s.status = :status "
+            if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                if(params.status instanceof RefdataValue)
+                    filter.status = params.status
+                else filter.status = RefdataValue.get(params.status)
+                queryString += " and s.status = :status "
+            }
         }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
@@ -190,8 +194,12 @@ class ControlledListService {
             queryString += " and s = :ctx"
         }
         if(params.status) {
-            filter.status = params.status
-            queryString += " and s.status = :status "
+            if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                if(params.status instanceof RefdataValue)
+                    filter.status = params.status
+                else filter.status = RefdataValue.get(params.status)
+                queryString += " and s.status = :status "
+            }
         }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
