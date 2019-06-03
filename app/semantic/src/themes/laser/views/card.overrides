@@ -36,6 +36,11 @@
 .ui.card.la-role-yoda {
   border-right: 10px solid @green;
 }
+/* Solving the Problem of negative Margins in Grid inside of Card */
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
+}
+
 
 /* definition list in cards */
 .control-label {

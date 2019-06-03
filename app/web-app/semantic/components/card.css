@@ -1024,6 +1024,11 @@ a.ui.card:hover,
   border-right: 10px solid #98B500;
 }
 
+/* Solving the Problem of negative Margins in Grid inside of Card */
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
+}
+
 /* definition list in cards */
 .control-label {
   color: gray;
