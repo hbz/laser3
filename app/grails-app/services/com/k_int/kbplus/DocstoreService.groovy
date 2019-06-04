@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.apache.http.entity.mime.*
 import org.apache.http.entity.mime.content.*
+import static de.laser.helper.RDStore.*
 
 class DocstoreService {
   
@@ -437,7 +438,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
+                docctx.status = DOC_DELETED
                 docctx.save(flush: true)
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
@@ -445,7 +446,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
+                docctx.status = DOC_DELETED
                 docctx.save(flush: true)
             }
         }
@@ -455,7 +456,7 @@ class DocstoreService {
             log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
             def docctx = DocContext.get(docctx_to_delete)
-            docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
+            docctx.status = DOC_DELETED
             docctx.save(flush: true)
         }
     }

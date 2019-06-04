@@ -12,8 +12,8 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <semui:securedSubNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" message="task.plural" />
-    <semui:subNavItem controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="license" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
 
     <semui:subNavItem controller="license" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />

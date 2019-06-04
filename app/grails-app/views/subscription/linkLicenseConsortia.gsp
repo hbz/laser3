@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.members.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
 </head>
 
 <body>
@@ -17,18 +17,24 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.linkLicenseConsortium.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
 
 </semui:breadcrumbs>
 
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkLicenseConsortium.header')}
+<h1 class="ui left aligned icon header">
+${message(code: 'subscription.details.subscriberManagement.label')}
 </h1>
+
+<g:render template="navSubscriberManagement" />
+
+
+<h3 class="ui left aligned icon header"><semui:headerIcon/>
+${message(code: 'subscription.linkLicenseConsortium.header')}
+</h3>
 
 <semui:messages data="${flash}"/>
 
-<h3>
+<h4>
     ${message(code: 'subscription.linkLicenseConsortium.consortialSubscription')}: <g:link
         controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
@@ -38,7 +44,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                                                                                           action="show"
                                                                                           id="${parentLicense?.id}">${parentLicense?.reference}</g:link>
     </g:if>
-</h3>
+</h4>
 
 
 <g:if test="${filteredSubChilds}">
@@ -67,6 +73,15 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
     </div>
 
     <div class="divider"></div>
+
+    <div class="ui segment">
+        <h4>${message(code: 'subscription.linkLicenseConsortium.deleteLicensesInfo')}</h4>
+
+        <g:link class="ui button js-open-confirm-modal"
+                data-confirm-term-content = "${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkLicenseConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button')}</g:link>
+
+    </div>
 
     <g:form action="processLinkLicenseConsortia" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>

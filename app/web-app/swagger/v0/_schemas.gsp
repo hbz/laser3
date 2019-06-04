@@ -538,6 +538,10 @@
           $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Subscription"
 
 
+    OA2020_Virtual:
+      type: object
+
+
     OrganisationRole_Virtual:
       properties:
         endDate:
@@ -597,6 +601,10 @@
                   type: string
                 label_en:
                   type: string
+
+
+    Statistic_Virtual:
+      type: object
 
 
     TitleInstancePackagePlatform_in_Subscription:
@@ -795,6 +803,18 @@
       type: array
       items:
         $ref: "#/components/schemas/LicenseStub"
+
+
+    OA2020List:
+      type: array
+      items:
+        $ref: "#/components/schemas/OrganisationStub"
+
+
+    StatisticList:
+      type: array
+      items:
+        $ref: "#/components/schemas/PackageStub"
 
 
     SubscriptionList:

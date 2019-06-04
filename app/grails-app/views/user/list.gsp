@@ -19,68 +19,46 @@
             <semui:totalNumber total="${total}"/>
         </h1>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">
-                    <g:set value="${Role.findAll()}" var="auth_values"/>
+                    <g:set value="${Role.executeQuery("select r from Role r where r.roleType in ('global','user')")}" var="auth_values"/>
 
                     <div class="four fields">
                         <div class="field">
                             <label for="name">${message(code:'default.search.text')}</label>
                             <input type="text" id="name" name="name" value="${params.name}"/>
                         </div>
+
                         <div class="field">
                             <label for="authority">${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
                                       value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
                         </div>
+
                         <div class="field">
                             <label for="org">${message(code:'user.org')}</label>
-                            <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
+
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
                                       value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                            </sec:ifAnyGranted>
+                            <sec:ifNotGranted roles="ROLE_ADMIN">
+                                <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                            </sec:ifNotGranted>
                         </div>
+
                         <div class="field la-field-right-aligned">
-                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                            <input type="submit" value="Search" class="ui secondary button"/>
+                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                            <input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button"/>
                         </div>
                     </div>
               </g:form>
             </semui:filter>
-        </sec:ifAnyGranted>
 
-        <sec:ifNotGranted roles="ROLE_ADMIN">
-            <semui:filter>
-                <g:form action="list" method="get" class="ui form">
-                    <g:set value="${Role.findAllByRoleType('user')}" var="auth_values"/>
-
-                    <div class="four fields">
-                        <div class="field">
-                            <label for="name2">${message(code:'default.search.text')}</label>
-                            <input type="text" id="name2" name="name" value="${params.name}"/>
-                        </div>
-                        <div class="field">
-                            <label for="authority">${message(code:'user.role')}</label>
-                            <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui search dropdown"
-                                      value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
-                        </div>
-                        <div class="field">
-                            <label for="org">${message(code:'user.org')}</label>
-                            <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
-                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
-                        </div>
-                        <div class="field la-field-right-aligned">
-                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                            <input type="submit" value="Search" class="ui secondary button"/>
-                        </div>
-                    </div>
-                </g:form>
-            </semui:filter>
-        </sec:ifNotGranted>
-
-        <sec:ifNotGranted roles="ROLE_ADMIN">
-            <div class="ui info message">${message(code:'user.edit.info')}</div>
-        </sec:ifNotGranted>
-
+            <sec:ifNotGranted roles="ROLE_ADMIN">
+                <div class="ui info message">${message(code:'user.edit.info')}</div>
+            </sec:ifNotGranted>
 
             <semui:messages data="${flash}" />
 
@@ -95,9 +73,6 @@
                         <th>${message(code:'user.displayName.label')}</th>
                         <th>${message(code:'user.org')}</th>
                         <th>${message(code:'user.enabled.label')}</th>
-                        <sec:ifAnyGranted roles="ROLE_ADMIN">
-                            <th>API</th>
-                        </sec:ifAnyGranted>
                         <th>${message(code:'default.actions')}</th>
                     </tr>
                 </thead>
@@ -145,15 +120,6 @@
                                     </g:if>
                                 </sec:ifNotGranted>
                             </td>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <td>
-                                    <div class="ui list">
-                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
-                                            <div class="item"><i class="icon circle outline"></i> API</div>
-                                        </g:if>
-                                    </div>
-                                </td>
-                            </sec:ifAnyGranted>
                             <td class="x">
                                 <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
                                     <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>

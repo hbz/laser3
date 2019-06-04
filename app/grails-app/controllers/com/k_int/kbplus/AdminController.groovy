@@ -7,6 +7,7 @@ import de.laser.SystemEvent
 import de.laser.api.v0.ApiManager
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -860,6 +861,21 @@ class AdminController extends AbstractDebugController {
                 }
             }
         }
+        else if (params.cmd == 'changeGascoEntry') {
+          Org target = genericOIDService.resolveOID(params.target)
+          RefdataValue option = genericOIDService.resolveOID(params.gascoEntry)
+
+          if (target && option) {
+            def oss = OrgSettings.get(target, OrgSettings.KEYS.GASCO_ENTRY)
+
+            if (oss != OrgSettings.SETTING_NOT_FOUND) {
+              oss.rdValue = option
+              oss.save(flush: true)
+            } else {
+              OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
+            }
+          }
+        }
 
         result.orgList = Org.findAll()
         result.orgListTotal = result.orgList.size()
@@ -964,6 +980,61 @@ class AdminController extends AbstractDebugController {
             ]
     }
 
+  @Secured(['ROLE_ADMIN'])
+  def manageSurveyPropertyDefinitions() {
+
+    if (params.cmd == 'deletePropertyDefinition') {
+      def pd = genericOIDService.resolveOID(params.pd)
+
+      if (pd) {
+        if (! pd.hardData) {
+          try {
+            pd.delete(flush:true)
+            flash.message = "${params.pd} wurde gelöscht."
+          }
+          catch(Exception e) {
+            flash.error = "${params.pd} konnte nicht gelöscht werden."
+          }
+        }
+      }
+    }
+    else if (params.cmd == 'replacePropertyDefinition') {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+        def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
+        def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
+
+        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
+
+          try {
+            def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+
+            flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
+          }
+          catch (Exception e) {
+            log.error(e)
+            flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
+          }
+
+        }
+      } else {
+        flash.error = "Keine ausreichenden Rechte!"
+      }
+    }
+
+    def propDefs = []
+    SurveyProperty.findAllByOwnerIsNull().each { it ->
+      propDefs << it
+
+    }
+
+    propDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
+
+    render view: 'manageSurveyPropertyDefinitions', model: [
+            editable    : true,
+            surveyPropertyDefinitions: propDefs
+    ]
+  }
+
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         //def result = setResultGenerics()
@@ -1013,7 +1084,8 @@ class AdminController extends AbstractDebugController {
                         name: params.name,
                         description: params.description,
                         tenant: null,
-                        ownerType: ownerType
+                        ownerType: ownerType,
+                        visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

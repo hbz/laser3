@@ -5,8 +5,8 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<g:set var="entityName" value="${message(code: 'subscription.label', default: 'Subscription')}"/>
-		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</title>
+		<g:set var="entityName" value="${message(code: 'subscription.label')}"/>
+		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.compare.label')}</title>
 	</head>
 
     <body>
@@ -16,14 +16,10 @@
             <h1 class="ui header">${message(code:'menu.my.comp_sub')}</h1>
         </g:if>
         <g:else>
-            <h2 class="ui header">${message(code:'subscription.compare.label',default:'Compare Subscriptions')}</h2>
+            <h2 class="ui header">${message(code:'subscription.compare.label')}</h2>
         </g:else>
 
         <semui:messages data="${flash}" />
-
-		<g:if test="${request.message}">
-			<bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
-		</g:if>
 
 				<g:form action="compare" controller="subscription" method="GET" class="ui form">
 					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
@@ -40,52 +36,64 @@
 						<tbody>
 							<tr>
 								<td> ${message(code:'subscription.compare.name', default:'Subscription name')} </td>
-					<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-					${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/> ${message(code:'default.compare.select.first', args:[sub_message] )}<br/>
-                      <input type="hidden" name="subA" id="subSelectA" value="${subA}"/> 
-					</td>
-					<td> 
-					    ${message(code:'default.compare.restrict.after', args:[subs_message] )}
-					    <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-				${message(code:'default.compare.restrict.before', default:'and/or ending before-')} <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/> ${message(code:'default.compare.select.second', args:[sub_message] )}<br/>
-	                      <input type="hidden" name="subB" id="subSelectB" value="${subB}" />
-					</td>
+								<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
+									<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
+									<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br/>
+									<div class="ui search selection dropdown">
+										<input type="hidden" name="subA" id="subSelectA" value="${subA}">
+										<i class="dropdown icon"></i>
+										<div class="default text">${message(code:'default.compare.select.first', args:[sub_message] )}</div>
+										<div class="menu"></div>
+									</div>
+								</td>
+								<td>
+									${message(code:'default.compare.restrict.after', args:[subs_message] )}
+									<semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
+									<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br/>
+									<div class="ui search selection dropdown">
+										<input type="hidden" name="subB" id="subSelectB" value="${subB}">
+										<i class="dropdown icon"></i>
+										<div class="default text">${message(code:'default.compare.select.second', args:[sub_message] )}</div>
+										<div class="menu"></div>
+									</div>
+								</td>
 							</tr>
 							<tr>
 								<td> ${message(code:'subscription.compare.snapshot', default:'Subscriptions on Date')}</td>
 								<td>
-									<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+									<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${dateA ? dateA : ''}" >
 									</semui:datepicker>
 								</td>
 								<td>
-									<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+									<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${dateB ? dateB : ''}" >
 									</semui:datepicker>
 								</td>
-						<tr>
-							<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
-							<td colspan="2">
-
-                                <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" id="insrt" name="insrt" value="Y" ${params.insrt=='Y'?'checked':''}/>
-                                    <label for="insrt">${message(code:'default.compare.filter.insert', default:'Insert')}</label>
-                                </div>
-                                <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" id="dlt" name="dlt" value="Y" ${params.dlt=='Y'?'checked':''}/>
-                                    <label for="dlt">${message(code:'default.compare.filter.delete', default:'Delete')}</label>
-                                </div>
-                                <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" id="updt" name="updt" value="Y" ${params.updt=='Y'?'checked':''}/>
-                                    <label for="updt">${message(code:'default.compare.filter.update', default:'Update')}</label>
-                                </div>
-                                <div class="ui checkbox">
-                                    <input type="checkbox" class="hidden" id="nochng" name="nochng" value="Y" ${params.nochng=='Y'?'checked':''}/>
-                                    <label for="nochng">${message(code:'default.compare.filter.no_change', default:'No Change')}</label>
-                                </div>
-
-							</td>		
-						</tr>
 							</tr>
+								<tr>
+									<td> ${message(code:'default.compare.filter.add', default:'Add Filter')}</td>
+									<td colspan="2">
+
+										<div class="ui checkbox">
+											<g:checkBox name="insrt" id="insrt" checked="${insrt ? insrt:true}"/>
+											<label for="insrt">${message(code:'default.compare.filter.insert')}</label>
+										</div>
+										<div class="ui checkbox">
+											<g:checkBox name="dlt" id="dlt" checked="${dlt ? dlt:true}"/>
+											<label for="dlt">${message(code:'default.compare.filter.delete')}</label>
+										</div>
+										<div class="ui checkbox">
+											<g:checkBox name="updt" id="updt" checked="${updt ? updt:true}"/>
+											<label for="updt">${message(code:'default.compare.filter.update')}</label>
+										</div>
+										<div class="ui checkbox">
+											<g:checkBox name="nochng" id="nochng" checked="${nochng ? nochng:false}"/>
+											<label for="nochng">${message(code:'default.compare.filter.no_change')}</label>
+										</div>
+
+									</td>
+								</tr>
 						</tbody>
 					</table>
 					<div class="fields">
@@ -93,16 +101,16 @@
                   			<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
                     	</div>
 						<div class="field">
-							<input type="submit" class="ui button" value="${message(code:'default.button.compare.label', default:'Compare')}" />
+							<input type="submit" class="ui button" value="${message(code:'default.button.compare.label')}" />
 						</div>
 					</div>
 				</g:form>
 
 
 			<g:if test="${subInsts?.get(0) && subInsts?.get(1)}">
-                                <g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
+                                <g:set var="subs_message" value="${message(code:'subscription.plural')}" />
 				<div class="row">
-				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message], default:'Subscriptions Compared')}</h3>
+				<h3 class="ui header">${message(code:'default.compare.overview', args:[subs_message])}</h3>
 				<table class="ui celled la-table table">
 					<thead>
 						<tr>
@@ -158,8 +166,8 @@
 					</table>
 				</g:form>
 
-				<div class="span6 offset3">
-				<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
+				<div>
+					<dt class="center">${message(code:'subscription.compare.results.pagination', args: [offset+1,offset+comparisonMap.size(),unionListSize])}</dt>
 				</div>
 				<table class="ui celled la-table table">
 					<thead>
@@ -186,7 +194,7 @@
 								<strong><g:link action="show" controller="title" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
-								<g:each in="${currentTitle.ids.sort{it.identifier.ns.ns}}" var="id">
+								<g:each in="${currentTitle?.ids?.sort{it.identifier.ns.ns}}" var="id">
 				                    <br>${id.identifier.ns.ns}: ${id.identifier.value}
 				                </g:each>
 								</td>
@@ -219,74 +227,17 @@
 		<g:set var="currentTitle" value="${subAIE?.tipp?.title ?:subBIE?.tipp?.title}"/>
 
 		<g:render template="compare_details"
-		 model="[subA:subAIE,subB:subBIE,currentTitle:currentTitle, subAName:"${subInsts.get(0).name}",
-		 subBName:"${subInsts.get(1).name}" ]"/>
+		 model="[subA:subAIE,subB:subBIE,currentTitle:currentTitle, subAName:subInsts.get(0).name, subBName:subInsts.get(1).name]"/>
 </g:each>
 
-<r:script language="JavaScript">
-    function applySelect2(filter) {
-      var subA = {id:'${subInsts?.get(0)?.id}',text:"${subInsts?.get(0)?.name}"};
-      var subB = {id:'${subInsts?.get(1)?.id}',text:"${subInsts?.get(1)?.name}"};
-      $("#subSelect"+filter).select2({
-        width: '90%',
-        placeholder: "${message(code:'subscription.compare.search.ph', default:'Type subscription name...')}",
-        minimumInputLength: 1,
-        formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-        },
-        ajax: { 
-            url: '<g:createLink controller='ajax' action='lookup'/>',
-            dataType: 'json',
-            data: function (term, page) {
-                return {
-    	            hasDate: 'true',
-                	hideIdent: 'true',
-                	inclSubStartDate: 'true',
-                	startDate: $("#start"+filter).val(),
-                	endDate: $("#end"+filter).val(),
-                	hideDeleted: 'true',
-                	inst_shortcode: '${contextService.getOrg()?.shortcode}',
-                    q: term , // search term
-                    page_limit: 10,
-                    baseClass:'com.k_int.kbplus.Subscription'
-                };
-            },
-            results: function (data, page) {
-                return {results: data.values};
-            }
-        },
-         allowClear: true,
-         formatSelection: function(data) { 
-            return data.text; 
-        },
-        initSelection : function (element, callback) {
-	        var obj
-         	if(filter == "A"){
-         		obj = subA;
-         	}else{
-         		obj = subB;
-         	}
-            callback(obj);
-        }
-        }).select2('val',':');
-	
-    }
-
-	$("#resetFilters").click(function() {
-	    $(this).closest('form').find("input[name=filter]").val("");
-	    $(this).closest('form').submit();
-	});
-
-    function showMore(ident) {
-		$("#compare_details"+ident).modal('show')
-    }
-
-    $(function(){
-    	applySelect2("A")
-     	applySelect2("B")
-    });
-
-
-</r:script>
+		<r:script>
+			$("div.dropdown").dropdown({
+				apiSettings: {
+				    url: '<g:link controller="ajax" action="lookupSubscriptions"/>?query={query}',
+				    cache: false
+				},
+				clearable: true
+			});
+		</r:script>
 	</body>
 </html>

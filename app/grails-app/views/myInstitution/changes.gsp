@@ -1,3 +1,4 @@
+<%@page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.License;com.k_int.kbplus.CostItem;com.k_int.kbplus.PendingChange" %>
 <!doctype html>
 <html>
     <head>
@@ -42,15 +43,21 @@
                         </td>
                         <td>
                             <strong>
-                                <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
+                                <g:if test="${change instanceof Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
-                                    <br />
+                                    <br>
                                     <g:link controller="subscription" action="changes" id="${change.id}"> ${change.toString()}</g:link>
                                 </g:if>
-                                <g:if test="${change instanceof com.k_int.kbplus.License}">
+                                <g:if test="${change instanceof License}">
                                     <strong>${message(code:'license')}</strong>
-                                    <br />
+                                    <br>
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                </g:if>
+                                <g:if test="${change instanceof PendingChange && change.costItem}">
+                                    <strong>${message(code:'financials.costItem')}</strong>
+                                    <br>
+                                    ${raw(change.desc)}
+                                    <g:link class="ui green button" controller="finance" action="acknowledgeChange" id="${change.id}"><g:message code="pendingChange.acknowledge"/></g:link>
                                 </g:if>
                             </strong>
                         </td>

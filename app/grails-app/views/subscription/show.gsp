@@ -76,7 +76,7 @@
                             </dl>
                             */ %>
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.manualCancellationlDate.label')}</dt>
+                                <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                                 <dd><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
@@ -200,7 +200,7 @@
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable hidden">
+                    <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
                             <table class="ui three column la-selectable table">
@@ -229,91 +229,54 @@
                                 </g:each>
                             </table>
 
-                            <table class="ui three column la-selectable table">
-                                <tr>
-                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
-                                    <td>
-                                        <g:if test="${subscriptionInstance.owner == null}">
-                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />
-                                        </g:if>
-                                        <g:else>
-                                            <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
-                                                ${subscriptionInstance.owner}
-                                            </g:link>
-                                        </g:else>
-                                        %{-- <g:if test="${subscriptionInstance.owner != null}">
-                                             [<g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
-                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
-                                             </g:link>]
-                                         </g:if>--}%
-                                    </td>
-                                    <td class="right aligned">
-                                        <g:if test="${editable && subscriptionInstance.owner}">
-                                            <div class="ui icon negative buttons">
-                                                <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
-                                                    <i class="unlink icon"></i>
-                                                </a>
-                                            </div>
-                                            <br />
-                                        </g:if>
-                                    </td>
-                            </table>
-
-                            <g:if test="${editable}">
-                                <g:if test="${subscriptionInstance.owner == null}">
-                                    <g:link  controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
-                                    </g:link>
-                                </g:if>
-                            </g:if>
-                        </div>
+                        </div><!-- .content -->
                     </div>
 
-
                 <div class="ui card la-js-hideable hidden">
-                        <div class="content">
+                    <div class="content">
 
-                    <g:render template="/templates/links/orgLinksAsList"
-                              model="${[roleLinks: visibleOrgRelations,
-                                        roleObject: subscriptionInstance,
-                                        roleRespValue: 'Specific subscription editor',
-                                        editmode: editable
-                              ]}" />
-
-                    <div class="ui la-vertical buttons la-js-hide-this-card">
-
-                        <g:render template="/templates/links/orgLinksSimpleModal"
-                                  model="${[linkType: subscriptionInstance?.class?.name,
-                                            parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
-                                            property: 'orgs',
-                                            recip_prop: 'sub',
-                                            tmplRole: RDStore.OR_PROVIDER,
-                                            tmplEntity:'Anbieter',
-                                            tmplText:'Anbieter mit dieser Lizenz verknüpfen',
-                                            tmplButtonText:'Anbieter verknüpfen',
-                                            tmplModalID:'modal_add_provider',
-                                            editmode: editable,
-                                            orgList: availableProviderList,
-                                            signedIdList: existingProviderIdList
+                        <g:render template="/templates/links/orgLinksAsList"
+                                  model="${[roleLinks: visibleOrgRelations,
+                                            roleObject: subscriptionInstance,
+                                            roleRespValue: 'Specific subscription editor',
+                                            editmode: editable
                                   ]}" />
 
-                        <g:render template="/templates/links/orgLinksSimpleModal"
-                                    model="${[linkType: subscriptionInstance?.class?.name,
-                                            parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
-                                            property: 'orgs',
-                                            recip_prop: 'sub',
-                                            tmplRole: RDStore.OR_AGENCY,
-                                            tmplEntity: 'Lieferanten',
-                                            tmplText: 'Lieferanten mit dieser Lizenz verknüpfen',
-                                            tmplButtonText: 'Lieferant verknüpfen',
-                                            tmplModalID:'modal_add_agency',
-                                            editmode: editable,
-                                            orgList: availableAgencyList,
-                                            signedIdList: existingAgencyIdList
-                                    ]}" />
+                        <div class="ui la-vertical buttons la-js-hide-this-card">
 
-                    </div><!-- la-js-hide-this-card -->
+                            <g:render template="/templates/links/orgLinksSimpleModal"
+                                      model="${[linkType: subscriptionInstance?.class?.name,
+                                                parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
+                                                property: 'orgs',
+                                                recip_prop: 'sub',
+                                                tmplRole: RDStore.OR_PROVIDER,
+                                                tmplEntity:'Anbieter',
+                                                tmplText:'Anbieter mit dieser Lizenz verknüpfen',
+                                                tmplButtonText:'Anbieter verknüpfen',
+                                                tmplModalID:'modal_add_provider',
+                                                editmode: editable,
+                                                orgList: availableProviderList,
+                                                signedIdList: existingProviderIdList
+                                      ]}" />
 
-                <% /*
+                            <g:render template="/templates/links/orgLinksSimpleModal"
+                                      model="${[linkType: subscriptionInstance?.class?.name,
+                                                parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
+                                                property: 'orgs',
+                                                recip_prop: 'sub',
+                                                tmplRole: RDStore.OR_AGENCY,
+                                                tmplEntity: 'Lieferanten',
+                                                tmplText: 'Lieferanten mit dieser Lizenz verknüpfen',
+                                                tmplButtonText: 'Lieferant verknüpfen',
+                                                tmplModalID:'modal_add_agency',
+                                                editmode: editable,
+                                                orgList: availableAgencyList,
+                                                signedIdList: existingAgencyIdList
+                                      ]}" />
+
+                        </div><!-- la-js-hide-this-card -->
+
+                    <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
                         <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:visibleOrgRelations,editmode:editable]}" />
@@ -321,21 +284,21 @@
                </dl>
                */ %>
 
-               <% /*g:if test="${params.mode=='advanced'}">
+                    <% /*g:if test="${params.mode=='advanced'}">
                  <dl><dt><label class="control-label" for="licenseeRef">${message(code:'default.status.label', default:'Status')}</label></dt><dd>
                       <semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status'/>
                      </dd>
                </dl>
                </g:if */ %>
 
-                <%--
-                    <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
+                    <%--
+                        <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
 
-                    <g:render template="/templates/links/prsLinksModal"
-                          model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                --%>
+                        <g:render template="/templates/links/prsLinksModal"
+                              model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
+                    --%>
 
-                <% /*
+                    <% /*
                 <dl>
                     <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
                     <dd>
@@ -348,10 +311,83 @@
             */ %>
 
 
-                        </div>
                     </div>
+                </div>
+
+                <div class="ui card la-js-hideable hidden">
+                    <div class="content">
+
+                        <table class="ui three column la-selectable table">
+                            <tr>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
+                                <td>
+                                    <g:if test="${subscriptionInstance.owner == null}">
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscription" dataAction="possibleLicensesForSubscription" />
+                                    </g:if>
+                                    <g:else>
+                                        <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
+                                            ${subscriptionInstance.owner}
+                                        </g:link>
+                                    </g:else>
+                                    %{-- <g:if test="${subscriptionInstance.owner != null}">
+                                         [<g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
+                                             <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                                         </g:link>]
+                                     </g:if>--}%
+                                </td>
+                                <td class="right aligned">
+                                    <g:if test="${editable && subscriptionInstance.owner}">
+                                        <div class="ui icon negative buttons">
+                                            <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
+                                                <i class="unlink icon"></i>
+                                            </a>
+                                        </div>
+                                        <br />
+                                    </g:if>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <g:if test="${editable}">
+                            <g:if test="${subscriptionInstance.owner == null}">
+                                <g:link controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}</g:link>
+                            </g:if>
+                        </g:if>
+
+                        <g:set var="derivedPropDefGroups" value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}" />
+
+                        <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                            <div class="ui la-vertical buttons">
+                                <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
+                                <script>
+                                    $('#derived-license-properties-toggle').on('click', function() {
+                                        $('#derived-license-properties').toggleClass('hidden')
+                                        if ($('#derived-license-properties').hasClass('hidden')) {
+                                            $(this).text('Vertragsmerkmale anzeigen')
+                                        } else {
+                                            $(this).text('Vertragsmerkmale ausblenden')
+                                        }
+                                    })
+                                </script>
+                            </div>
+                        </g:if>
+
+                    </div><!-- .content -->
+                </div>
+
+                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                    <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
+
+                        <g:render template="licProp" model="${[
+                                license: subscriptionInstance.owner,
+                                derivedPropDefGroups: derivedPropDefGroups
+                        ]}" />
+                    </div>
+                </g:if>
+
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
@@ -368,6 +404,7 @@
                             </g:elseif>
                         </div>
                     </div>
+                </g:if>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">

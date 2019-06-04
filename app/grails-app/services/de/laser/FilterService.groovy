@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
@@ -53,6 +54,12 @@ class FilterService {
         if (params.country?.length() > 0) {
             query << "o.country.id = :country"
              queryParams << [country : Long.parseLong(params.country)]
+        }
+
+        if (params.customerType?.length() > 0) {
+            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
         }
 
         // hack: applying filter on org subset
@@ -111,6 +118,12 @@ class FilterService {
         if (params.libraryType?.length() > 0) {
             query << "o.libraryType.id = :libraryType"
              queryParams << [libraryType : Long.parseLong(params.libraryType)]
+        }
+
+        if (params.customerType?.length() > 0) {
+            query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            queryParams << [customerType : Long.parseLong(params.customerType)]
+            queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
         }
 
          queryParams << [org : org]
@@ -234,7 +247,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getSurveyQuery(Map params, DateFormat sdFormat, Org contextOrg) {
+    Map<String,Object> getSurveyQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
@@ -259,12 +272,56 @@ class FilterService {
             queryParams << [endDate : sdFormat.parse(params.endDate)]
         }
 
+        if (params.participant) {
+            query << "exists (select surConfig from SurveyConfig as surConfig where surConfig.surveyInfo = si and " +
+                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant))"
+            queryParams << [participant : params.participant]
+        }
+
         def defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             result.query = "from SurveyInfo si where si.owner = :contextOrg and " + query.join(" and ") + defaultOrder
         } else {
             result.query = "from SurveyInfo si where si.owner = :contextOrg" + defaultOrder
+        }
+        queryParams << [contextOrg : contextOrg]
+
+
+        result.queryParams = queryParams
+        result
+    }
+    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org contextOrg) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.name) {
+            query << "lower(surveyConfig.surveyInfo.name) like lower(:name)"
+            queryParams << [name:"%${params.name}%"]
+        }
+        if(params.status) {
+            query << "surveyConfig.surveyInfo.status = :status"
+            queryParams << [status: RefdataValue.get(params.status)]
+        }
+        if(params.type) {
+            query << "surveyConfig.surveyInfo.type = :type"
+            queryParams << [type: RefdataValue.get(params.type)]
+        }
+        if (params.startDate && sdFormat) {
+            query << "surveyConfig.surveyInfo.startDate >= :startDate"
+            queryParams << [startDate : sdFormat.parse(params.startDate)]
+        }
+        if (params.endDate && sdFormat) {
+            query << "surveyConfig.surveyInfo.endDate <= :endDate"
+            queryParams << [endDate : sdFormat.parse(params.endDate)]
+        }
+
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
+
+        if (query.size() > 0) {
+            result.query = "from SurveyResult where participant = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyResult where participant = :contextOrg" + defaultOrder
         }
         queryParams << [contextOrg : contextOrg]
 

@@ -4,6 +4,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
+import de.laser.api.v0.special.ApiOA2020
+import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -16,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.41'
+    static final VERSION = '0.51'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -161,6 +163,33 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
+        else if ('oa2020'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
+                result = ApiOrg.findOrganisationBy(query, value)
+
+                if (result && !(result in failureCodes)) {
+                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+
+                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                        result = ApiOA2020.getDummy()
+                    }
+                    else {
+                        result = Constants.HTTP_FORBIDDEN
+                    }
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('oa2020List'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
+                result = ApiOA2020.getAllOrgs()
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
                 def lic = ApiLicense.findLicenseBy(query, value)
@@ -197,9 +226,37 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('refdatas'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
+        else if ('refdataList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.refdataList) {
                 result = ApiCatalogue.getAllRefdatas()
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('statistic'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
+                result = ApiPkg.findPackageBy(query, value) // use of http status code
+
+                if (result && !(result in failureCodes)) {
+                    // TODO: def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+
+                    //if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                        result = ApiStatistic.getPackage(result)
+                    //}
+                    //else {
+                    //    result = Constants.HTTP_FORBIDDEN
+                    //}
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('statisticList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
+                //result = ApiStatistic.getAllOrgs()
+                result = ApiStatistic.getAllPackages()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
@@ -296,21 +353,31 @@ class ApiManager {
 
         def response = []
 
+        def trimJson = { map ->
+            Map<String, Object> rm = [:]
+            map.each{ key, val ->
+                if (key && val) {
+                    rm.put(key, val)
+                }
+            }
+            rm
+        }
+
         // POST
 
         if (result instanceof HashMap) {
 
             switch(result['result']) {
                 case Constants.HTTP_CREATED:
-                    response << new JSON(["message": "resource successfully created", "debug": result['debug']])
+                    response << new JSON( trimJson(["message": "resource successfully created", "debug": result['debug']]))
                     response << HttpStatus.CREATED.value()
                     break
                 case Constants.HTTP_CONFLICT:
-                    response << new JSON(["message": "conflict with existing resource", "debug": result['debug']])
+                    response << new JSON( trimJson(["message": "conflict with existing resource", "debug": result['debug']]))
                     response << HttpStatus.CONFLICT.value()
                     break
                 case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    response << new JSON(["message": "resource not created", "debug": result['debug']])
+                    response << new JSON( trimJson(["message": "resource not created", "debug": result['debug']]))
                     response << HttpStatus.INTERNAL_SERVER_ERROR.value()
                     break
             }
@@ -320,33 +387,33 @@ class ApiManager {
 
         else if (Constants.HTTP_FORBIDDEN == result) {
             if (contextOrg) {
-                response << new JSON(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode])
+                response << new JSON( trimJson(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode]))
                 response << HttpStatus.FORBIDDEN.value()
             }
             else {
-                response << new JSON(["message": "forbidden", "obj": obj, "context": context])
+                response << new JSON( trimJson(["message": "forbidden", "obj": obj, "context": context]))
                 response << HttpStatus.FORBIDDEN.value()
             }
         }
         else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            response << new JSON(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj])
+            response << new JSON( trimJson(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj]))
             response << HttpStatus.NOT_ACCEPTABLE.value()
         }
         else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            response << new JSON(["message": "requested method not implemented", "method": request.method, "obj": obj])
+            response << new JSON( trimJson(["message": "requested method not implemented", "method": request.method, "obj": obj]))
             response << HttpStatus.NOT_IMPLEMENTED.value()
         }
         else if (Constants.HTTP_BAD_REQUEST == result) {
-            response << new JSON(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context])
+            response << new JSON( trimJson(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context]))
             response << HttpStatus.BAD_REQUEST.value()
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            response << new JSON(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context])
+            response << new JSON( trimJson(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context]))
             response << HttpStatus.PRECONDITION_FAILED.value()
         }
 
         if (! result) {
-            response << new JSON(["message": "object not found", "obj": obj, "q": query, "v": value, "context": context])
+            response << new JSON( trimJson(["message": "result not found", "obj": obj, "q": query, "v": value, "context": context]))
             response << HttpStatus.NOT_FOUND.value()
         }
         else {

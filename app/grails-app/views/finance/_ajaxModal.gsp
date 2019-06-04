@@ -41,11 +41,14 @@
         </g:elseif>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
-
+        <g:hiddenField name="showView" value="${tab}" />
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
+        <g:elseif test="${costItem && (mode && mode.equals("copy"))}">
+            <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
+        </g:elseif>
 
         <!--
         Ctx.Sub: ${sub}
@@ -338,31 +341,15 @@
                                 <input class="la-full-width" readonly="readonly" value="${modalText}" />
                             </g:if>
                             <g:else>
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown search"
                                           from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                           noSelection="['':'']"
-                                          value="${'com.k_int.kbplus.Subscription:' + contextSub.id}" />
+                                          value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
+                                          onchange="onSubscriptionUpdate()"
+                                />
                             </g:else>
-                            <script>
-                                $(function() {
-                                    $('#newLicenseeTarget').on('change', function () {
-                                        var $elems = $('#newPackageWrapper select, #newPackageWrapper .dropdown')
-                                        if ( [
-                                                'com.k_int.kbplus.Subscription:forConsortia',
-                                                'com.k_int.kbplus.Subscription:forAllSubscribers'
-                                            ].includes($(this).val())
-                                        ) {
-                                            $elems.removeAttr('disabled')
-                                            $elems.removeClass('disabled')
-                                        } else {
-                                            $elems.attr('disabled', 'disabled')
-                                            $elems.addClass('disabled')
-                                        }
-                                    })
-                                })
-                            </script>
                         </g:if>
                     </g:if>
 
@@ -372,30 +359,28 @@
                     <div class="field">
                         <label>${message(code:'package.label')}</label>
                         <g:if test="${costItem?.sub}">
-                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                            <g:select name="newPackage" id="newPackage" class="ui dropdown search"
                                       from="${[{}] + costItem?.sub?.packages}"
                                       optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
                                       noSelection="['':'']"
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                         </g:if>
-                        <g:elseif test="${sub}">
-                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                      from="${[{}] + sub.packages}"
-                                      optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
-                                      optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                      noSelection="['':'']"
-                                      value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
-                        </g:elseif>
                         <g:else>
-                            <input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />
+                            <%--<input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
+                            <div class="ui search selection dropdown newCISelect" id="newPackage">
+                                <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "com.k_int.kbplus.SubscriptionPackage:${costItem.subPkg.id}" : params.newPackage}">
+                                <i class="dropdown icon"></i>
+                                <input type="text" class="search">
+                                <div class="default text"></div>
+                            </div>
                         </g:else>
                     </div>
                     <div class="field">
                         <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                         <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <div class="ui search selection dropdown newCISelect" id="newIE">
-                            <input type="hidden" name="newIE" value="${params.newIe}">
+                            <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "com.k_int.kbplus.IssueEntitlement:${costItem.issueEntitlement.id}" : params.newIE}">
                             <i class="dropdown icon"></i>
                             <input type="text" class="search">
                             <div class="default text"></div>
@@ -465,13 +450,16 @@
             }
             costItemElementConfigurations += sj.toString()+"}"
         %>
-            var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+            var costItemElementConfigurations = ${raw(costItemElementConfigurations)};
             var selLinks = {
                 "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
+                "newPackage": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}",
                 "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}"
             };
-            if($("#pickedSubscription,#newSubscription input[type='hidden']").val().length > 0) {
-                selLinks.newIE += "&sub="+$("#pickedSubscription,#newSubscription input[type='hidden']").val();
+            var eurVal = "${RefdataValue.getByValueAndCategory('EUR','Currency').id}";
+            if($("[name='newSubscription']").val().length > 0) {
+                selLinks.newPackage += "&sub="+$("[name='newSubscription']").val();
+                selLinks.newIE += "&sub="+$("[name='newSubscription']").val();
             }
             $("#costButton1").click(function() {
                 if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -484,13 +472,19 @@
                     calcTaxResults()
                 }
             });
+            $("#newCostInBillingCurrency").change(function(){
+                var currencyEUR = ${RefdataValue.getByValueAndCategory('EUR','Currency').id};
+                if($("#newCostCurrency").val() == currencyEUR) {
+                    $("#costButton1").click();
+                }
+            });
             $("#costButton2").click(function() {
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
                     var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
                     var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
-                    input.val((parsedLocalCurrency / parsedBillingCurrency).toFixed(9));
+                    input.val((parsedLocalCurrency / parsedBillingCurrency));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -548,20 +542,54 @@
                 checkValues();
             });
 
-            <%--$("#editCost").submit(function(e){
+            $("#editCost").submit(function(e){
                 e.preventDefault();
                 var valuesCorrect = checkValues();
                 if(valuesCorrect) {
-                    $(this).unbind('submit').submit();
+                    if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
+                        alert("${message(code:'financials.newCosts.entitlementError')}");
+                    else $(this).unbind('submit').submit();
                 }
                 else {
                     alert("${message(code:'financials.newCosts.calculationError')}");
                 }
-            });--%>
+            });
 
-            $("[name='newSubscription']").change(function(){
-                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();
+            $("#newCostCurrency").change(function(){
+                //console.log("event listener succeeded, picked value is: "+$(this).val());
+                if($(this).val() === eurVal)
+                    $("#newCostCurrencyRate").val(1.0);
+                else $("#newCostCurrencyRate").val(0.0);
+                $("#costButton1").click();
+            });
+
+            $("[name='newSubscription'][name='newLicenseeTarget']").change(function(){
+                onSubscriptionUpdate();
                 ajaxPostFunc();
+            });
+
+            function onSubscriptionUpdate() {
+                var context = $("[name='newSubscription']").val();
+                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/))
+                    context = $("[name='newLicenseeTarget']").val();
+                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
+                selLinks.newPackage = "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
+                $("#newIE").dropdown('clear');
+                $("#newPackage").dropdown('clear');
+                ajaxPostFunc();
+            }
+
+            $("#newPackage").change(function(){
+                var context = $("[name='newSubscription']").val();
+                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/))
+                    context = $("[name='newLicenseeTarget']").val();
+                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+$("[name='newPackage']").val();
+                $("#newIE").dropdown('clear');
+                ajaxPostFunc();
+            });
+
+            $("#newIE").change(function(){
+                checkPackageBelongings();
             });
 
             function ajaxPostFunc() {
@@ -575,25 +603,48 @@
                         minCharacters: 0
                     });
                 });
+                $("#newIE").dropdown('set text',"${costItem?.issueEntitlement ? "${costItem.issueEntitlement.tipp.title.title} (${costItem.issueEntitlement.tipp.title.type.getI10n('value')}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})" : ''}");
+            }
 
+            function setupCalendar() {
                 $("[name='newFinancialYear']").parents(".datepicker").calendar({
                     type: 'year'
                 });
             }
 
             function checkValues() {
-                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
-                    costElems.parent('.field').addClass('error')
+                if ( convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val()) ) {
+                    costElems.parent('.field').addClass('error');
                     return false;
                 }
                 else {
-                    costElems.parent('.field').removeClass('error')
+                    costElems.parent('.field').removeClass('error');
                     return true;
                 }
             }
 
+            function checkPackageBelongings() {
+                var subscription = $("[name='newSubscription'], #pickedSubscription").val();
+                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/)) {
+                    subscription = $("[name='newLicenseeTarget']").val();
+                }
+                $.ajax({
+                    url: "<g:createLink controller="ajax" action="checkCascade"/>?subscription="+subscription+"&package="+$("[name='newPackage']").val()+"&issueEntitlement="+$("[name='newIE']").val(),
+                }).done(function (response) {
+                    //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
+                    if(!response.sub) $("#newSubscription").addClass("error");
+                    else $("#newSubscription").removeClass("error");
+                    if(!response.subPkg) $("#newPackage").addClass("error");
+                    else $("#newPackage").removeClass("error");
+                    if(!response.ie) $("#newIE").addClass("error");
+                    else $("#newIE").removeClass("error");
+                }).fail(function () {
+                    console.log("AJAX error! Please check logs!");
+                });
+            }
+
             function convertDouble(input) {
-                console.log("input: "+input+", typeof: "+typeof(input))
+                //console.log("input: "+input+", typeof: "+typeof(input));
                 var output;
                 //determine locale from server
                 var locale = "${LocaleContextHolder.getLocale()}";
@@ -610,7 +661,7 @@
                         output = parseFloat(input.replace(/,/g, ""));
                     }
                     else console.log("Please check over regex!");
-                    console.log("string input parsed, output is: "+output);
+                    //console.log("string input parsed, output is: "+output);
                 }
                 return output;
             }

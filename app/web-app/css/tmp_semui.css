@@ -171,7 +171,6 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
     font-style: italic;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
-body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
 body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR
@@ -319,3 +318,11 @@ h1 .icon.h1-icon-overwrite {
 .ui.la-table.table tr td.table-td-info    { }
 .ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
+
+.ui.label.survey-renewal {
+    background-color: greenyellow;
+}
+
+.ui.label.survey-interest {
+    background-color: deepskyblue;
+}

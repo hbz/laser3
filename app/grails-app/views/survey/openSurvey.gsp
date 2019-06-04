@@ -13,7 +13,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -26,68 +26,70 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<semui:form>
-    <div class="ui grid">
-        <div class="middle aligned row">
-            <div class="two wide column">
 
-                <g:link controller="survey" action="showSurveyConfigDocs" id="${surveyInfo.id}"
-                        class="ui huge button"><i class="angle left aligned icon"></i></g:link>
+<div class="ui grid">
+    <div class="middle aligned row">
+        <div class="two wide column">
 
-            </div>
+            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                    class="ui huge button"><i class="angle left aligned icon"></i></g:link>
 
-            <div class="twelve wide column">
+        </div>
 
-                <div class="la-inline-lists">
-                    <div class="ui card">
-                        <div class="content">
+        <div class="twelve wide column">
 
-                            <div class="header">
-                                <div class="ui grid">
-                                    <div class="twelve wide column">
-                                        ${message(code: 'showSurveyInfo.step.first.title')}
-                                    </div>
+            <div class="la-inline-lists">
+                <div class="ui card">
+                    <div class="content">
+
+                        <div class="header">
+                            <div class="ui grid">
+                                <div class="twelve wide column">
+                                    ${message(code: 'showSurveyInfo.step.first.title')}
                                 </div>
                             </div>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
-                                <dd>${surveyInfo.status?.getI10n('value')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
-                                <dd>${surveyInfo.name}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
-                                <dd><g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyInfo.startDate ?: null}"/></dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
-                                <dd><g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyInfo.endDate ?: null}"/></dd>
-                            </dl>
-
-                            <dl>
-                                <dt>${message(code: 'surveyInfo.type.label')}</dt>
-                                <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
-                            </dl>
-
                         </div>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
+                            <dd>${surveyInfo.status?.getI10n('value')}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
+                            <dd>${surveyInfo.name}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
+                            <dd><g:formatDate formatName="default.date.format.notime"
+                                              date="${surveyInfo.startDate ?: null}"/></dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
+                            <dd><g:formatDate formatName="default.date.format.notime"
+                                              date="${surveyInfo.endDate ?: null}"/></dd>
+                        </dl>
+
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.type.label')}</dt>
+                            <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'surveyInfo.comment.label')}</dt>
+                            <dd>${surveyInfo?.comment}</dd>
+                        </dl>
+
                     </div>
                 </div>
             </div>
-
-
         </div>
 
     </div>
 
-</semui:form>
+</div>
+
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyConfig.list')} <semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
 <br>
@@ -101,9 +103,24 @@
 
                     <div class="title active"><i class="dropdown icon"></i>
 
-                        ${config?.getConfigName()}
+                    ${config?.getConfigName()}
 
-                        ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+                    <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
+
+                    <g:if test="${config?.type != 'Subscription'}">
+                        ${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
+
+                        <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                            <g:set var="refdataValues" value="${[]}"/>
+                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
+                                    var="refdataValue">
+                                <g:set var="refdataValues"
+                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            </g:each>
+                            <br>
+                            (${refdataValues.join('/')})
+                        </g:if>
+                    </g:if>
 
                     </div>
 
@@ -123,9 +140,9 @@
                                         <thead>
                                         <tr>
                                             <th></th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.title', default: 'Title')}</th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
-                                            <th>${message(code: 'showSurveyConfigDocs.docs.table.type', default: 'Type')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.title', default: 'Title')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.fileName', default: 'File Name')}</th>
+                                            <th>${message(code: 'surveyConfigDocs.docs.table.type', default: 'Type')}</th>
                                             <th>${message(code: 'default.actions', default: 'Actions')}</th>
                                         </tr>
                                         </thead>
@@ -161,9 +178,9 @@
                             </div>
 
                             <div class="title"><i
-                                    class="dropdown icon"></i>${message(code: 'surveyConfig.orgIDs.label')}
+                                    class="dropdown icon"></i>${message(code: 'surveyConfig.orgs.label')}
 
-                                <div class="ui circular label">${config?.orgIDs?.size() ?: 0}</div>
+                                <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                             </div>
 
                             <div class="content">
@@ -183,7 +200,7 @@
                                         <table class="ui celled sortable table la-table">
                                             <thead>
                                             <tr>
-                                                <th>${message(code: 'surveyProperty.name.label')}</th>
+                                                <th>${message(code: 'surveyProperty.name')}</th>
                                                 <th>${message(code: 'surveyProperty.type.label')}</th>
                                             </tr>
 
@@ -197,9 +214,9 @@
                                                         ${prop?.surveyProperty?.getI10n('name')}
                                                     </td>
                                                     <td>
-                                                        ${message(code: 'showSurveyConfig.surveyPropToSub')}
+                                                        ${message(code: 'surveyConfigs.surveyPropToSub')}
                                                         <br>
-                                                        <b>${com.k_int.kbplus.SurveyProperty.getLocalizedValue(prop?.surveyProperty?.type)}:</b>
+                                                        <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(prop?.surveyProperty?.type)}</b>
 
                                                         <g:if test="${prop?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
                                                             <g:set var="refdataValues" value="${[]}"/>
@@ -226,7 +243,7 @@
             </div>
         </g:if>
         <g:else>
-            <p><b>${message(code: 'showSurveyConfig.noConfigList')}</b></p>
+            <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
         </g:else>
     </div>
 </div>
@@ -235,8 +252,8 @@
 
 <br>
 <g:if test="${editable}">
-<g:link controller="survey" action="processOpenSurvey" id="${surveyInfo.id}"
-        class="ui button">${message(code: 'openSurvey.button')}</g:link>
+    <g:link controller="survey" action="processOpenSurvey" id="${surveyInfo.id}"
+            class="ui button">${message(code: 'openSurvey.button')}</g:link>
 </g:if>
 
 <r:script>

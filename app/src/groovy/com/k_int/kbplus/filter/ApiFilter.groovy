@@ -41,11 +41,6 @@ class ApiFilter extends GenericFilterBean {
                 def body = IOUtils.toString(request.getInputStream())
 
                 String authorization = request.getHeader('X-Authorization')
-
-                if (! authorization) {
-                    authorization = request.getHeader('Authorization') // tmp fallback v1
-                }
-
                 try {
                     if (authorization) {
                         def p1 = authorization.split(' ')
@@ -63,17 +58,12 @@ class ApiFilter extends GenericFilterBean {
 
                             // checking digest
 
-                            def apiUser = User.findByApikey(key) // tmp fallback v1
-                            def apiSecret = apiUser?.apisecret   // tmp fallback v1
-
                             Org apiOrg = OrgSettings.executeQuery(
                                     'SELECT os.org FROM OrgSettings os WHERE os.key = :key AND os.strValue = :value',
                                     [key: OrgSettings.KEYS.API_KEY, value: key]
                             )?.get(0)
 
-                            if (apiOrg) {
-                                apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
-                            }
+                            String apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
 
                             checksum = hmac(
                                         method +    // http-method
@@ -86,8 +76,6 @@ class ApiFilter extends GenericFilterBean {
 
                             isAuthorized = (checksum == digest)
                             if (isAuthorized) {
-                                request.setAttribute('authorizedApiUser', apiUser) // tmp fallback v1
-
                                 request.setAttribute('authorizedApiOrg', apiOrg)
                                 request.setAttribute('authorizedApiPostBody', body)
                             }

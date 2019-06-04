@@ -66,7 +66,7 @@ class SemanticUiTagLib {
             out << attrs.text
         }
         if (attrs.message) {
-            out << "${message(code: attrs.message)}"
+            out << "${message(code: attrs.message, args: attrs.args)}"
         }
         out << '</p>'
 
@@ -191,6 +191,9 @@ class SemanticUiTagLib {
                 break
             case 'EBook':
                 out << '<i class="circular icon la-object-ebook"></i> '
+                break
+            case 'Survey':
+                out << '<i class="circular icon inverted blue chart bar"></i> '
                 break
             default:
                 out << '<i class="circular icon la-object"></i> '

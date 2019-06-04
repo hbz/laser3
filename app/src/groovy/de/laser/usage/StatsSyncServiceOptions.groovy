@@ -1,5 +1,6 @@
 package de.laser.usage
 
+import com.k_int.kbplus.IdentifierNamespace
 import com.k_int.kbplus.IdentifierOccurrence
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
@@ -26,6 +27,7 @@ class StatsSyncServiceOptions {
     String requestor
     String mostRecentClosedPeriod
     String statsTitleIdentifier
+    String identifierType
     TitleInstance title_inst
     Org supplier_inst
     Org org_inst
@@ -37,8 +39,18 @@ class StatsSyncServiceOptions {
         supplier_inst = (Org)objectList[1]
         org_inst = (Org)objectList[2]
         title_io_inst = (IdentifierOccurrence)objectList[3]
-
         statsTitleIdentifier = title_io_inst?.identifier?.value
+        setIdentifierType(title_io_inst)
+    }
+
+    void setIdentifierType(title_io_inst) {
+        def type = title_io_inst?.identifier?.ns?.ns
+        // ugly difference in type name
+        if (type == 'zdb'){
+            identifierType = 'zdbid'
+        } else {
+            identifierType = type
+        }
     }
 
     void setBasicQueryParams()
@@ -73,6 +85,33 @@ class StatsSyncServiceOptions {
         [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 
+    Boolean identifierTypeAllowedForAPICall()
+    {
+        if (! identifierType || ! reportType){
+            return false
+        }
+        switch (reportType) {
+            case "book":
+            if (identifierType == "doi") {
+                return true
+            }
+            break
+            case "journal":
+            if (identifierType == "zdbid") {
+                return true
+            }
+            break
+            case "database":
+            if (identifierType == "zdbid") {
+                return true
+            }
+            break
+            default:
+                return false
+            break
+        }
+    }
+
     void setReportType() {
         if (reportName)
         switch (reportName) {
@@ -84,6 +123,12 @@ class StatsSyncServiceOptions {
                 break
             case "DB1":
                 reportType = "database"
+                break
+            case "BR1":
+                reportType = "book"
+                break
+            case "BR2":
+                reportType = "book"
                 break
             default:
                 reportType = "journal"

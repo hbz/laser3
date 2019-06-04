@@ -677,6 +677,45 @@ class AjaxController {
       render controlledListService.getElements(params) as JSON
   }
 
+  @Secured(['ROLE_USER'])
+  def checkCascade() {
+      Map result = [sub:true,subPkg:true,ie:true]
+      if(!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
+          result.sub = false
+          result.subPkg = false
+          result.ie = false
+      }
+      else if(params.subscription) {
+          Subscription sub = genericOIDService.resolveOID(params.subscription)
+          if(!sub) {
+              result.sub = false
+              result.subPkg = false
+              result.ie = false
+          }
+          else if(params.issueEntitlement) {
+              if(!params.package || params.package.contains('null')) {
+                  result.subPkg = false
+                  result.ie = false
+              }
+              else if(params.package && !params.package.contains('null')) {
+                  SubscriptionPackage subPkg = genericOIDService.resolveOID(params.package)
+                  if(!subPkg || subPkg.subscription != sub) {
+                      result.subPkg = false
+                      result.ie = false
+                  }
+                  else {
+                      IssueEntitlement ie = genericOIDService.resolveOID(params.issueEntitlement)
+                      if(!ie || ie.subscription != subPkg.subscription || ie.tipp.pkg != subPkg.pkg) {
+                          result.ie = false
+                      }
+                  }
+              }
+          }
+      }
+      //Map result = [sub: params.subscription ? true : false,subPkg: params.package && !params.package.contains(":null"),ie: params.issueEntitlement ? true : false]
+      render result as JSON
+  }
+
   /**
    * connects the context subscription with the given pair.
    *
@@ -1162,7 +1201,7 @@ class AjaxController {
         }
         else {
           def existingProps = owner.privateProperties.findAll {
-            it.owner.id == owner.id
+            it.owner.id == owner.id &&
             it.type.name == type.name // this sucks due lazy proxy problem
           }
           existingProps.removeAll { it.type.name != type.name } // dubious fix

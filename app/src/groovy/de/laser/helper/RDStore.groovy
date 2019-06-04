@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.interfaces.Permissions
 import groovy.transform.CompileStatic
@@ -36,11 +37,13 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
+    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
+    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
-    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
-    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
+    static final PLATFORM_DELETED           = getRefdataValue('Deleted', 'Platform Status')
+    static final TIPP_DELETED               = getRefdataValue('Deleted', 'TIPP Status')
 
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
@@ -48,8 +51,20 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('subscription.status.no.status.set.but.null','filter.fake.values')
 
-    static final SUBSCRIPTION_TYPE_LOCAL_LICENSE      = getRefdataValue('Local Licence', 'Subscription Type')
-    static final SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE      = getRefdataValue('Consortial Licence', 'Subscription Type')
+    static final SURVEY_READY               = getRefdataValue('Ready', 'Survey Status')
+    static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', 'Survey Status')
+    static final SURVEY_IN_EVALUATION       = getRefdataValue('In Evaluation', 'Survey Status')
+    static final SURVEY_COMPLETED           = getRefdataValue('Completed', 'Survey Status')
+    static final SURVEY_SURVEY_STARTED      = getRefdataValue('Survey started', 'Survey Status')
+    static final SURVEY_SURVEY_COMPLETED    = getRefdataValue('Survey completed', 'Survey Status')
+
+    static final LICENSE_CURRENT            = getRefdataValue('Current','License Status')
+
+    static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')
+    static final COST_ITEM_DELETED          = getRefdataValue('Deleted','CostItemStatus')
+
+    static final SUBSCRIPTION_TYPE_LOCAL = getRefdataValue('Local Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_CONSORTIAL = getRefdataValue('Consortial Licence', 'Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
@@ -80,6 +95,9 @@ class RDStore {
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
+    static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact','Person Contact Type')
+    static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact','Person Contact Type')
+
     static final TIPP_PAYMENT_COMPLIMENTARY     = getRefdataValue('Complimentary','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_LIMITED_PROMOTION = getRefdataValue('Limited Promotion','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_PAID              = getRefdataValue('Paid','TitleInstancePackagePlatform.PaymentType')
@@ -88,8 +106,15 @@ class RDStore {
     static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown','TitleInstancePackagePlatform.PaymentType')
 
+    static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', 'TIPP Status')
+    static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected','TIPP Status')
+    static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted', 'TIPP Status')
+    static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
+    static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
+
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
+    static final CCT_PHONE                  = getRefdataValue('Phone','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')

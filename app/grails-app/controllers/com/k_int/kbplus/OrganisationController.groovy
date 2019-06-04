@@ -35,9 +35,9 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(perm="ORG_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
         def result = [:]
@@ -56,6 +56,22 @@ class OrganisationController extends AbstractDebugController {
         if (! result.editable && result.orgInstance.id != contextService.getOrg().id) {
             redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
 
+        }
+
+        // adding default settings
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance,
+                    OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.OA2020_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance,
+                    OrgSettings.KEYS.OA2020_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
         }
 
         result.settings = OrgSettings.findAllByOrg(result.orgInstance)
@@ -122,9 +138,9 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR")
+        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     Map listInstitution() {
         Map result = setResultGenerics()
@@ -154,7 +170,7 @@ class OrganisationController extends AbstractDebugController {
         def result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = User.get(springSecurityService.principal.id)
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
 
         params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType = RDStore.OT_PROVIDER?.id?.toString()
@@ -236,7 +252,22 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+    @Secured(['ROLE_DATAMANAGER','ROLE_ORG_EDITOR'])
+    def setupBasicTestData() {
+        Org targetOrg = Org.get(params.id)
+        if(organisationService.setupBasicTestData(targetOrg)) {
+            flash.message = message(code:'org.setup.success')
+        }
+        else {
+            flash.error = message(code:'org.setup.error',args: [organisationService.dumpErrors()])
+        }
+        redirect action: 'show', id: params.id
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def createProvider() {
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
@@ -259,7 +290,11 @@ class OrganisationController extends AbstractDebugController {
             redirect ( action:'findProviderMatches' )
         }
     }
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+    })
     def findProviderMatches() {
 
         def result=[:]
@@ -271,11 +306,11 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
         Org contextOrg = contextService.org
-        //new institution = consortia member, implies combo type consortoium
+        //new institution = consortia member, implies combo type consortium
         if(params.institution) {
             RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             Org orgInstance = new Org(name: params.institution, sector: orgSector)
@@ -321,14 +356,14 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     Map findOrganisationMatches() {
         Map memberMap = [:]
         RefdataValue comboType
         if(accessService.checkPerm('ORG_CONSORTIUM'))
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
-        else if(accessService.checkPerm('ORG_COLLECTIVE'))
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
             comboType = RDStore.COMBO_TYPE_DEPARTMENT
         Combo.findAllByType(comboType).each { lObj ->
             Combo link = (Combo) lObj
@@ -444,8 +479,10 @@ class OrganisationController extends AbstractDebugController {
         if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
             du.setBenchMark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
-        }else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') ||
+                    accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        }
+        else {
             du.setBenchMark('editable2')
             List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
                 it.toOrg.id
@@ -546,9 +583,9 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
         Map result = setResultGenerics()
@@ -631,7 +668,6 @@ class OrganisationController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
 
         // forbidden access
@@ -647,13 +683,36 @@ class OrganisationController extends AbstractDebugController {
       }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+        //result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
+
+        List baseQuery  = ['select distinct uo from UserOrg uo, User u']
+        List whereQuery = ['uo.user = u and uo.org = :org']
+        Map queryParams = [org: orgInstance]
+
+        whereQuery.add('uo.status = :status')
+        queryParams.put('status', UserOrg.STATUS_APPROVED)
+
+        if (params.authority) {
+            whereQuery.add('uo.formalRole = :role')
+            queryParams.put('role', Role.get(params.authority.toLong()))
+        }
+
+        if (params.name && params.name != '' ) {
+            whereQuery.add('(lower(u.username) like :name or lower(u.display) like :name)')
+            queryParams.put('name', "%${params.name.toLowerCase()}%")
+        }
+
+        result.users = User.executeQuery(
+                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
+                queryParams,
+                [sort:'user.username', order: 'asc']
+        )
 
         result.orgInstance = orgInstance
         result
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def edit() {
         redirect controller: 'organisation', action: 'show', params: params
         return
@@ -724,9 +783,9 @@ class OrganisationController extends AbstractDebugController {
       }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
         def result = [:]

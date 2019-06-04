@@ -20,13 +20,14 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
-    List surveyConfigs
+    //List surveyConfigs
 
     static hasMany = [
             surveyConfigs: SurveyConfig
     ]
 
     static constraints = {
+        startDate (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
@@ -47,8 +48,31 @@ class SurveyInfo {
 
         owner column: 'surin_owner_org_fk'
         type column: 'surin_type_rv_fk'
+        status column: 'surin_status_rv_fk'
 
 
 
+    }
+
+
+    def checkOpenSurvey()
+    {
+        boolean check = this.surveyConfigs.size() > 0 ? true : false
+
+        this.surveyConfigs.each {
+
+            if(it?.subscription && !(it?.surveyProperties?.size() > 0))
+            {
+                check = false
+            }
+
+            if(!(it?.orgs.org?.size > 0)){
+                check = false
+            }
+        }
+
+
+
+        return check
     }
 }

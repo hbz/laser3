@@ -17,6 +17,7 @@ import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.TypeMismatchException
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
@@ -85,8 +86,12 @@ class ControlledListService {
             queryString += " and s != :ctx "
         }
         if(params.status) {
-            filter.status = params.status
-            queryString += " and s.status = :status "
+            if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                if(params.status instanceof RefdataValue)
+                    filter.status = params.status
+                else filter.status = RefdataValue.get(params.status)
+                queryString += " and s.status = :status "
+            }
         }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
@@ -110,14 +115,27 @@ class ControlledListService {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
-        String subFilter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
+        String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
-            subFilter = '= :sub'
+            filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
         }
+        if(params.pkg) {
+            try {
+                def pkgObj = genericOIDService.resolveOID(params.pkg)
+                if(pkgObj && pkgObj instanceof SubscriptionPackage) {
+                    SubscriptionPackage pkg = (SubscriptionPackage) pkgObj
+                    filter += ' and ie.tipp.pkg.gokbId = :pkg'
+                    filterParams.pkg = pkg.pkg.gokbId
+                }
+            }
+            catch (Exception e) {
+                return [results:[]]
+            }
+        }
         filterParams.put('query','%'+params.query+'%')
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             log.debug("issue entitlements found")
             result.each { res ->
@@ -176,8 +194,12 @@ class ControlledListService {
             queryString += " and s = :ctx"
         }
         if(params.status) {
-            filter.status = params.status
-            queryString += " and s.status = :status "
+            if(params.status != 'FETCH_ALL') { //FETCH_ALL may be sent from finances/_filter.gsp
+                if(params.status instanceof RefdataValue)
+                    filter.status = params.status
+                else filter.status = RefdataValue.get(params.status)
+                queryString += " and s.status = :status "
+            }
         }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
@@ -281,6 +303,7 @@ class ControlledListService {
             List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
             allSubscriptions.each { it ->
                 Subscription subscription = (Subscription) it[0]
+                /*
                 String tenant
                 if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
                     try {
@@ -301,7 +324,8 @@ class ControlledListService {
                     dateString += sdf.format(subscription.endDate)
                 else dateString += ""
                 dateString += ")"
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it[1]} - ${subscription.status.getI10n("value")} ${dateString} ${tenant}",value:"${it[0].class.name}:${it[0].id}"])
+                */
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${subscription.dropdownNamingConvention()}",value:"${it[0].class.name}:${it[0].id}"])
             }
         }
         if(params.package == "true") {

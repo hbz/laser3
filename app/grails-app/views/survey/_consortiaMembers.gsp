@@ -1,15 +1,16 @@
-<h2 class="ui left aligned icon header">${message(code: 'showSurveyParticipants.consortiaMembers')}<semui:totalNumber
+<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.consortiaMembers')}<semui:totalNumber
         total="${consortiaMembers?.size()}"/></h2>
 <br>
 
-
+<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+<br>
 
 <semui:filter>
-    <g:form action="showSurveyParticipants" method="post" class="ui form"
+    <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'consortiaMembers']">
         <g:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property']],
+                          tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
                           tmplConfigFormFilter: true,
                           useNewLayouter      : true
                   ]"/>
@@ -22,22 +23,14 @@
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
-                      tmplShowCheckbox : true,
+                      tmplShowCheckbox : editable,
                       tmplDisableOrgIds: surveyConfigOrgs?.id,
-                      tmplConfigShow   : ['sortname', 'name', 'libraryType']
+                      tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 
     <br/>
     <g:if test="${editable}">
         <input type="submit" class="ui button" value="${message(code: 'default.button.add.label', default: 'Add')}"/>
-    </g:if>
-
-    <g:if test="${showAddSubMembers && (selectedSubParticipants.size() != surveyConfigSubOrgs.size()) && editable}">
-        <br/>
-        <br/>
-        <g:link class="ui button" controller="survey" action="addSubMembers"
-                id="${surveyConfig?.surveyInfo?.id}"
-                params="[surveyConfigID: surveyConfig?.id]">${message(code: 'showAddSubMembers.button.addMembersofSub')}</g:link>
     </g:if>
 
 </g:form>

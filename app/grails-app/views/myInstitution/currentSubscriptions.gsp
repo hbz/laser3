@@ -46,7 +46,7 @@
                 </g:else>
             </semui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_BASIC,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <g:render template="actions" />
             </g:if>
 
@@ -97,7 +97,7 @@
             <%
                 def fakeList = []
                 fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                 fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
             %>
 
@@ -171,8 +171,8 @@
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
-                            if(!accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE
+                            if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
                         %>
                         <g:each in="${subTypes}" var="subType">
@@ -243,11 +243,11 @@
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
-            <th rowspan="2" class="center aligned">
+            <th scope="col" rowspan="2" class="center aligned">
                 ${message(code:'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
-            <th rowspan="2">
+            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" scope="col" />
+            <th rowspan="2" scope="col">
                 ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>
             <% /*
@@ -257,10 +257,10 @@
             */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
-                <th rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <g:sortableColumn params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
+            <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
             <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
 
             <%--
@@ -268,21 +268,20 @@
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
 
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
-                <th rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th rowspan="2"  class="two wide"></th>
-
+            <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
         </tr>
 
         <tr>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
@@ -408,7 +407,9 @@
                         (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
                         <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+
+                        <%-- ERMS-1348 removing delete buttons
+                        <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
@@ -428,6 +429,7 @@
                                 </g:link>
                             </g:else>
                         </g:if>
+                        --%>
                     </td>
                 </tr>
             </g:if>

@@ -40,6 +40,7 @@ class SushiClient {
     def query() {
         log.debug("Calling STATS API:  ${clientOptions.reportName}, Title with ID ${clientOptions.statsTitleIdentifier}")
         log.debug("Period Begin: ${clientOptions.from}, Period End: ${clientOptions.mostRecentClosedPeriod}")
+        def iType = clientOptions.identifierType ?: 'zdbid'
         getClient().get(
             path: getPath(),
             contentType: ANY, // We get no XmlSlurper Objects for value XML
@@ -52,7 +53,7 @@ class SushiClient {
                 BeginDate     : clientOptions.from,
                 EndDate       : clientOptions.mostRecentClosedPeriod,
                 Platform      : clientOptions.platform,
-                ItemIdentifier: "${clientOptions.reportType}:zdbid:" + clientOptions.statsTitleIdentifier
+                ItemIdentifier: "${clientOptions.reportType}:${iType}:" + clientOptions.statsTitleIdentifier
             ]) { response, xml ->
             if (xml) {
                 result = xml

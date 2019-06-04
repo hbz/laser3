@@ -89,13 +89,6 @@
         </tr>
 
         <tr>
-            <td>ROLE_ORG_COM_EDITOR</td>
-            <td>global</td>
-            <td>
-            </td>
-        </tr>
-
-        <tr>
             <td>ROLE_PACKAGE_EDITOR</td>
             <td>global</td>
             <td>

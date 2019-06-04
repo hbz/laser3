@@ -66,7 +66,7 @@ class TitleController extends AbstractDebugController {
         if (springSecurityService.isLoggedIn()) {
             params.rectype = "Title" // Tells ESSearchService what to look for
             result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.getDefaultPageSizeTMP()
+            params.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
             if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
@@ -153,7 +153,7 @@ class TitleController extends AbstractDebugController {
     private def reusedIdentifiers(title) {
     // Test for identifiers that are used accross multiple titles
     def duplicates = [:]
-    def identifiers = title.ids?.collect{it.identifier}
+    def identifiers = title?.ids?.collect{it.identifier}
     identifiers.each{ident ->
       ident.occurrences.each{
         if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){

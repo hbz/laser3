@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
+<laser:serviceInjection />
 
 <%
     List<DocContext> baseItems = []
@@ -13,7 +14,7 @@
         }
     }
 
-    boolean editable2 = accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation("ORG_BASIC_MEMBER","INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
@@ -27,11 +28,25 @@
 
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:if test="${docctx.owner.title}">
-                                <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
+                            <g:if test="${editable || editable2}">
+                                <a onclick="noteedit(${docctx.owner.id});">
+                                    <g:if test="${docctx.owner.title}">
+                                        ${docctx.owner.title}</a>
+                                    </g:if>
+                                    <g:else>
+                                        Ohne Titel
+                                    </g:else>
+                                </a>
                             </g:if>
                             <g:else>
-                                <a onclick="noteedit(${docctx.owner.id});">Ohne Titel</a>
+                                <a onclick="noteread(${docctx.owner.id});">
+                                    <g:if test="${docctx.owner.title}">
+                                        ${docctx.owner.title}</a>
+                                    </g:if>
+                                    <g:else>
+                                        Ohne Titel
+                                    </g:else>
+                                </a>
                             </g:else>
                             <br/>
 

@@ -2,15 +2,15 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import de.laser.oai.OaiClientLaser
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import de.laser.AuditConfig
@@ -27,7 +27,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -70,10 +69,17 @@ class SubscriptionController extends AbstractDebugController {
     def comparisonService
     def titleStreamService
     def escapeService
+    def deletionService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
     public static final String DO_NOTHING = "DO_NOTHING"
+
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
 
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -236,18 +242,17 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        if(params.exportKBart) {
+        if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.entitlements)
             out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
             out.flush()
             out.close()
-        }
-        else {
+        } else {
             withFormat {
                 html result
                 csv {
@@ -297,6 +302,21 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def delete() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+
+        if (params.process  && result.editable) {
+            result.result = deletionService.deleteSubscription(result.subscription, false)
+        }
+        else {
+            result.dryRun = deletionService.deleteSubscription(result.subscription, DeletionService.DRY_RUN)
+        }
+
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -387,12 +407,15 @@ class SubscriptionController extends AbstractDebugController {
         result.entitlements = result.entitlements.subList(result.offset, (result.offset + result.max).intValue())
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
-        def result = [:]
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+
+        result
+        /*
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
@@ -427,7 +450,7 @@ class SubscriptionController extends AbstractDebugController {
             def mapA = listA.collectEntries { [it.tipp.title.title, it] }
             def mapB = listB.collectEntries { [it.tipp.title.title, it] }
 
-            //FIXME: It should be possible to optimize the following lines
+            //FIXME: It should be possible to optimize the following lines - it is. The whole code can be optimised as it is legacy
             def unionList = mapA.keySet().plus(mapB.keySet()).toList()
             unionList = unionList.unique()
             result.unionListSize = unionList.size()
@@ -490,7 +513,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
         }
-        result
+        */
     }
 
     def formatDateOrNull(formatter, date) {
@@ -875,7 +898,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def sdf = new SimpleDateFormat('yyyy-MM-dd')
         def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        def message = escapeService.escapeString(result.subscription.name)+"_"+g.message(code: 'subscriptionDetails.members.members')+"_"+datetoday
+        def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
         if (params.exportXLS || params.format) {
             Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
@@ -899,9 +922,9 @@ class SubscriptionController extends AbstractDebugController {
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
                     String generalContacts = ""
-                    if(publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join("; ")+"; "
-                    if(privateContacts.get(subscr))
+                    if (publicContacts.get(subscr))
+                        generalContacts += publicContacts.get(subscr).join("; ") + "; "
+                    if (privateContacts.get(subscr))
                         generalContacts += privateContacts.get(subscr).join("; ")
                     org.generalContacts = generalContacts
                     orgs << org
@@ -909,11 +932,10 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
-        if(params.exportXLS) {
+        if (params.exportXLS) {
             exportOrg(orgs, message, true, 'xlsx')
             return
-        }
-        else {
+        } else {
             withFormat {
                 html {
                     result
@@ -923,17 +945,17 @@ class SubscriptionController extends AbstractDebugController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportOrg(orgs,message,true,"csv"))
+                        writer.write((String) exportOrg(orgs, message, true, "csv"))
                     }
                     out.close()
                 }
             }
         }
-
     }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def linkLicenseConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -992,6 +1014,10 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def processLinkLicenseConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1030,7 +1056,7 @@ class SubscriptionController extends AbstractDebugController {
                     if (it.owner != newLicense) {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
-                        if(sub.save(flush: true)){
+                        if (sub.save(flush: true)) {
                             changeAccepted << it?.dropdownNamingConvention(result.institution)
                         }
                     }
@@ -1046,8 +1072,45 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkLicenseConsortia', id: params.id)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def processUnLinkLicenseConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentLicense = result.parentSub.owner
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        def removeLic = []
+        validSubChilds.each { subChild ->
+                def sub = Subscription.get(subChild.id)
+                sub.owner = null
+                if (sub.save(flush: true)) {
+                    removeLic << subChild?.dropdownNamingConvention(result.institution)
+                }
+            }
+            if (removeLic) {
+                flash.message = message(code: 'subscription.linkLicenseConsortium.removeAcceptedAll', args: [removeLic.join(', ')])
+            }
+
+
+        redirect(action: 'linkLicenseConsortia', id: params.id)
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def linkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1056,19 +1119,10 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+        result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
         result.validPackages
         result.validPackages = result.parentPackages
-
-        /*def childPackages = License.where {
-            (instanceOf == result.parentLicense) && (status.value != 'Deleted')
-        }
-
-        childPackages?.each {
-            result.validLicenses << it
-        }*/
-
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
@@ -1081,10 +1135,10 @@ class SubscriptionController extends AbstractDebugController {
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }
 
-        def oldID =  params.id
+        def oldID = params.id
         params.id = result.parentSub.id
 
-      ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
         result.validSubChilds.each { sub ->
             List<Org> subscr = sub.getAllSubscribers()
@@ -1104,6 +1158,10 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def processLinkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1112,7 +1170,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        result.parentPackages = result.parentSub.packages.sort{it.pkg.name}
+        result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
@@ -1130,7 +1188,7 @@ class SubscriptionController extends AbstractDebugController {
 
             validSubChilds.each { subChild ->
 
-                if(!(pkg_to_link in subChild.packages.pkg)) {
+                if (!(pkg_to_link in subChild.packages.pkg)) {
 
                     if (params.withIssueEntitlements) {
 
@@ -1142,7 +1200,7 @@ class SubscriptionController extends AbstractDebugController {
                         changeAccepted << subChild?.dropdownNamingConvention(result.institution)
 
                     }
-                }else {
+                } else {
                     changeFailed << subChild?.dropdownNamingConvention(result.institution)
                 }
 
@@ -1194,6 +1252,301 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkPackagesConsortia', id: params.id)
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def processUnLinkPackagesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        validSubChilds.each { subChild ->
+
+            subChild.packages.pkg.each { pkg ->
+
+                def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                def queryParams = [sub: subChild, pkg_id: pkg.id]
+
+
+
+                if (subChild.isEditableBy(result.user)) {
+                    result.editable = true
+                    if (params.withIE) {
+                        //delete matches
+                        IssueEntitlement.withTransaction { status ->
+                            removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
+                            def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                            if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                            SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
+
+                            flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.successful')
+                        }
+                    } else {
+                        SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
+
+                        flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage.successful')
+                    }
+                }
+            }
+        }
+
+
+        redirect(action: 'linkPackagesConsortia', id: params.id)
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def propertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        params.remove('filterPropDef')
+
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
+
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+        //Sortieren
+        result.validSubChilds = validSubChilds.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }
+
+        def oldID = params.id
+        params.id = result.parentSub.id
+
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
+                }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID
+
+        result
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def processPropertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        if (params.filterPropDef && params.filterPropValue) {
+
+            def filterPropDef = params.filterPropDef
+            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+
+
+            def newProperties = 0
+            def changeProperties = 0
+
+            if (propDef) {
+                validSubChilds.each { subChild ->
+
+                    if (propDef?.tenant != null) {
+                        //private Property
+                        def owner = subChild
+
+                        def existingProps = owner.privateProperties.findAll {
+                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        }
+                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+
+                        if (existingProps.size() == 0 || propDef.multipleOccurrence) {
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, propDef)
+                            if (newProp.hasErrors()) {
+                                log.error(newProp.errors)
+                            } else {
+                                log.debug("New private property created: " + newProp.type.name)
+
+                                newProperties++
+                                def prop = setProperty(newProp, params.filterPropValue)
+                            }
+                        }
+
+                        if (existingProps?.size() == 1){
+                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+                            changeProperties++
+                            def prop = setProperty(privateProp, params.filterPropValue)
+
+                        }
+
+                    } else {
+                        //custom Property
+                        def owner = subChild
+
+                        def existingProp = owner.customProperties.find {
+                            it.type.id == propDef.id && it.owner.id == owner.id
+                        }
+
+                        if (existingProp == null || propDef.multipleOccurrence) {
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, propDef)
+                            if (newProp.hasErrors()) {
+                                log.error(newProp.errors)
+                            } else {
+                                log.debug("New custom property created: " + newProp.type.name)
+                                newProperties++
+                                def prop = setProperty(newProp, params.filterPropValue)
+                            }
+                        }
+
+                        if (existingProp){
+                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+                            changeProperties++
+                            def prop = setProperty(customProp, params.filterPropValue)
+
+                        }
+                    }
+
+                }
+                flash.message = message(code: 'subscription.propertiesConsortia.successful', args: [newProperties, changeProperties])
+            }
+
+        }
+
+        def filterPropDef = params.filterPropDef
+        def id = params.id
+        redirect(action: 'propertiesConsortia', id: id, params: [filterPropDef: filterPropDef])
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
+    def processDeletePropertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+
+        if (params.filterPropDef) {
+
+            def filterPropDef = params.filterPropDef
+            def propDef = genericOIDService.resolveOID(filterPropDef.replace(" ", ""))
+
+            def deletedProperties = 0
+
+            if (propDef) {
+                validSubChilds.each { subChild ->
+
+                    if (propDef?.tenant != null) {
+                        //private Property
+                        def owner = subChild
+
+                        def existingProps = owner.privateProperties.findAll {
+                            it.owner.id == owner.id &&  it.type.id == propDef.id
+                        }
+                        existingProps.removeAll { it.type.name != propDef.name } // dubious fix
+
+
+                        if (existingProps?.size() == 1 ){
+                            def privateProp = SubscriptionPrivateProperty.get(existingProps[0].id)
+
+                            try {
+                                owner.privateProperties.remove(privateProp)
+                                owner.refresh()
+                                privateProp?.delete(failOnError: true, flush: true)
+                                deletedProperties++
+                            } catch (Exception e)
+                            {
+                                log.error(e)
+                            }
+
+                        }
+
+                    } else {
+                        //custom Property
+                        def owner = subChild
+
+                        def existingProp = owner.customProperties.find {
+                            it.type.id == propDef.id && it.owner.id == owner.id
+                        }
+
+
+                        if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
+                            def customProp = SubscriptionCustomProperty.get(existingProp.id)
+
+                            try {
+                                customProp?.owner = null
+                                customProp.save()
+                                owner.customProperties.remove(customProp)
+                                customProp?.delete(failOnError: true, flush: true)
+                                owner.refresh()
+                                deletedProperties++
+                            } catch (Exception e){
+                                log.error(e)
+                            }
+
+                        }
+                    }
+
+                }
+                flash.message = message(code: 'subscription.propertiesConsortia.deletedProperties', args: [deletedProperties])
+            }
+
+        }
+
+        def filterPropDef = params.filterPropDef
+        def id = params.id
+        redirect(action: 'propertiesConsortia', id: id, params: [filterPropDef: filterPropDef])
+    }
 
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1201,9 +1554,9 @@ class SubscriptionController extends AbstractDebugController {
         def tmpParams = params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
-        if(accessService.checkPerm("ORG_CONSORTIUM"))
+        if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if(accessService.checkPerm("ORG_COLLECTIVE"))
+        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
             tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
@@ -1295,10 +1648,14 @@ class SubscriptionController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
-                        } else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(
+                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                        }
+                        else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
                         }
 
@@ -1400,9 +1757,12 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Deprecated
     def deleteMember() {
         log.debug(params)
 
+        return
+        /*
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -1440,6 +1800,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         redirect action: 'members', params: [id: params.id], model: result
+        */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1657,8 +2018,8 @@ class SubscriptionController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC", "INST_USER") })
+    @DebugAnnotation(perm="ORG_INST", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST", "INST_USER") })
     def tasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1864,6 +2225,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
+        //to be deployed in prallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
@@ -1873,13 +2235,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
                 if (!gri) {
-                    redirect(url: request.getHeader('referer'))
-                    flash.error = message(code: 'subscription.details.link.no_works', default: "Package can not be linked right now. Try again later.")
-                    return
+                    OaiClientLaser oaiClient = new OaiClientLaser()
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
+                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
+                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
+                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
+                    ObjectOutputStream out = new ObjectOutputStream(baos)
+                    out.writeObject(parsedRec.parsedRec)
+                    out.close()
+                    gri = new GlobalRecordInfo(
+                            ts: sdf.parse(rec.header.datestamp.text()),
+                            name: parsedRec.title,
+                            identifier: rec.header.identifier.text(),
+                            uuid: rec.header.uuid?.text() ?: null,
+                            desc: "${parsedRec.title}",
+                            source: grs,
+                            rectype: grs.rectype,
+                            record: baos.toByteArray(),
+                            kbplusCompliant: kbplusCompliant,
+                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status,"Package Status")
+                    )
+                    flash.message = message(code:'subscription.details.link.no_package_yet')
+                    gri.save(flush: true)
                 }
                 def grt = GlobalRecordTracker.findByOwner(gri)
                 if (!grt) {
-                    def new_tracker_id = java.util.UUID.randomUUID().toString()
+                    def new_tracker_id = UUID.randomUUID().toString()
 
                     grt = new GlobalRecordTracker(
                             owner: gri,
@@ -1889,41 +2272,50 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
                             autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
                             autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (grt.save()) {
-                        globalSourceSyncService.initialiseTracker(grt);
-                        //Update INDEX ES
-                        dataloadService.updateFTIndexes();
-                    } else {
+                    if (!grt.save()) {
                         log.error(grt.errors)
                     }
                 }
 
-                if (!Package.findByGokbId(grt.owner.uuid)) {
-                    globalSourceSyncService.initialiseTracker(grt);
+                //if(Package.findByGokbId(grt.owner.uuid)) {
+                String addType = params.addType
+                    executorWrapperService.processClosure({
+                        globalSourceSyncService.initialiseTracker(grt)
+                        //Update INDEX ES
+                        dataloadService.updateFTIndexes()
+
+                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
+                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
+
+                        if (addType == 'With') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, true)
+                            }
+                        } else if (addType == 'Without') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, false)
+                            }
+                        }
+                    },gri)
+                /*}
+                else {
+                    //setup new
+                    globalSourceSyncService.initialiseTracker(grt)
                     //Update INDEX ES
-                    dataloadService.updateFTIndexes();
-                }
-
-                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
+                    dataloadService.updateFTIndexes()
+                }*/
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', id: params.id
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', id: params.id
+                        break
                 }
 
             } else {
@@ -2512,6 +2904,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
+                                copiedProp.instanceOf = null
                                 copiedProp.save(flush: true)
                                 //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
@@ -2760,6 +3153,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
+                                    copiedProp.instanceOf = null
                                     copiedProp.save(flush: true)
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
@@ -2855,7 +3249,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //        params = [:]
 //        params.status = RDStore.SUBSCRIPTION_CURRENT.id
 //        params.orgRole = RDStore.OR_SUBSCRIBER.value
-//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
 //        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
 //        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 //        result.sort{it.name}
@@ -2883,7 +3277,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params = [:]
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
         params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
@@ -2903,14 +3297,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
         result.sourceSubscription = Subscription.get(Long.parseLong(params?.sourceSubscriptionId ?: params?.id))
 
-        //remove all DO_NOTHING from params
-        //Funktioniert leider nur halb: Die Params Einträge sind im Debugger nicht mehr sichtbar, aber dennoch da!!!
-//        List toRemove = []
-//        params?.subscription?.each{ k, v ->
-//            if (DO_NOTHING.equals(v)){ toRemove << k}
-//        }
-//        toRemove.each {params.remove("subscription."+it)}
-
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         if (params?.targetSubscriptionId) {
             result.targetSubscriptionId = params?.targetSubscriptionId
@@ -2922,20 +3308,19 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         switch (params.workFlowPart) {
             case '2':
-                result << workFlowPart2();
+                result << copySubElements_DocsAnnouncementsTasks();
                 break;
             case '3':
-                result << workFlowPart3();
+                result << copySubElements_Subscriber();
                 break;
             case '4':
-//                result << workFlowPart4();
-                result << workFlowPart4_neu();
+                result << copySubElements_Properties();
                 break;
             case '5':
-                result << workFlowPart5();
+                result << copySubElements_PackagesEntitlements();
                 break;
             default:
-                result << workFlowPart1();
+                result << copySubElements_DatesOwnerRelations();
                 break;
         }
 
@@ -2960,31 +3345,52 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-        result.targetSubscription = Subscription.get(result.targetSubscription?.id)
-//        result.targetSubscription = result.targetSubscription?.refresh()
+//        result.targetSubscription?.refresh()
+        if (params?.targetSubscriptionId) {
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
         result.workFlowPart = params?.workFlowPart ?: '1'
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
     }
 
-    private workFlowPart1() {
+    private copySubElements_DatesOwnerRelations() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeDates(params.subscription.takeDates, baseSub, newSub, flash)
+        boolean isTargetSubChanged = false
+        if (params?.subscription?.deleteDates && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteDates(newSub, flash)
+            isTargetSubChanged = true
+        }else if (params?.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeDates(baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeOwner(params?.subscription?.takeOwner, baseSub, newSub, flash)
+        if (params?.subscription?.deleteOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteOwner(newSub, flash)
+            isTargetSubChanged = true
+        }else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeOwner(baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
+        if (params?.subscription?.deleteOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<OrgRole> toDeleteOrgRelations = params.list('subscription.deleteOrgRelations').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.deleteOrgRelations(toDeleteOrgRelations, newSub, flash)
+            isTargetSubChanged = true
+        }
+        if (params?.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
+            subscriptionService.takeOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        newSub = newSub?.refresh()
+        if (isTargetSubChanged) {
+            newSub.refresh()
+        }
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
@@ -2996,14 +3402,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
         result.subscription = baseSub
-        //Bugfix Aktualieriunsgproblem
-//        newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.newSub = newSub
         result.targetSubscription = newSub
         result
     }
 
-    private workFlowPart2() {
+    private copySubElements_DocsAnnouncementsTasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
@@ -3011,26 +3415,44 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        if (params?.subscription?.takeDocs && ( ! DO_NOTHING.equals(params.subscription.takeDocs)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteDocs = []
+            params.list('subscription.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
+            subscriptionService.deleteDoks(toDeleteDocs, newSub, flash)
+        }
+
+        if (params?.subscription?.takeDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyDocs = []
             params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
-            subscriptionService.takeDoks(params.subscription.takeDocs, baseSub, toCopyDocs, newSub, flash)
+            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
         }
 
-        if (params?.subscription?.takeAnnouncements && ( ! DO_NOTHING.equals(params.subscription.takeAnnouncements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteAnnouncements = []
+            params.list('subscription.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
+            subscriptionService.deleteAnnouncements(toDeleteAnnouncements, newSub, flash)
+        }
+
+        if (params?.subscription?.takeAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyAnnouncements = []
             params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-            subscriptionService.takeAnnouncements(params.subscription.takeAnnouncements, baseSub, toCopyAnnouncements, newSub, flash)
+            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
         }
 
-        if (params?.subscription?.takeTasks && ( ! DO_NOTHING.equals(params.subscription.takeTasks)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toDeleteTasks =  []
+            params.list('subscription.deleteTaskIds').each{ tsk -> toDeleteTasks << Long.valueOf(tsk) }
+            subscriptionService.deleteTasks(toDeleteTasks, newSub, flash)
+        }
+
+        if (params?.subscription?.takeTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyTasks =  []
             params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
-            subscriptionService.takeTasks(params.subscription.takeTasks, baseSub, toCopyTasks, newSub, flash)
+            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
         }
 
         result.sourceSubscription = baseSub
-        result.targetSubscription = newSub
+        result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
         params.workFlowPart = '2'
@@ -3038,7 +3460,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart3() {
+    private copySubElements_Subscriber() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
@@ -3161,24 +3583,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private workFlowPart4() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
-        }
-        result.sourceSubscription = baseSub
-        result.targetSubscription = newSub
-        params.workFlowPart = '4'
-        params.workFlowPartNext = '4'
-        result
-    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    Map workFlowPart4_neu(){
+    Map copySubElements_Properties(){
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = null
@@ -3186,6 +3594,19 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(params.targetSubscriptionId)
             subsToCompare.add(newSub)
+        }
+        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+        }
+
+        List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.deleteProperties(propertiesToDelete, newSub, flash)
+        }
+
+        if (newSub) {
+            newSub = Subscription.get(newSub.id)
         }
         subsToCompare.each{ sub ->
             TreeMap customProperties = result.customProperties
@@ -3195,40 +3616,43 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
             result.privateProperties = privateProperties
         }
-
-        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
-        }
-
         result
     }
 
 
-    private workFlowPart5() {
+    private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.deletePackages(packagesToDelete, newSub, flash)
+        }
+        if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
+            subscriptionService.takePackages(packagesToTake, newSub, flash)
         }
 
-        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+        if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
+        }
+        if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
+            subscriptionService.takeEntitlements(entitlementsToTake, newSub, flash)
         }
-
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
-
-        // restrict visible for templates/links/orgLinksAsList
-//        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
-//        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
         params?.workFlowPart = '5'
         params?.workFlowPartNext = '2'
+        if (newSub) {
+            newSub.refresh()
+        }
+//        result.sourceIEs = baseSub.getIssueEntitlements()
+//        result.targetIEs = newSub.getIssueEntitlements()
+
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
         result.subscription = baseSub
         result
@@ -3473,6 +3897,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
+                        copiedProp.instanceOf = null
                         copiedProp.save(flush: true)
                         //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }
@@ -3779,5 +4204,114 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             log.error("Problem", e);
             response.sendError(500)
         }
+    }
+
+    private def setProperty(def property, def value) {
+
+        def field = null
+
+
+        if(property instanceof SubscriptionCustomProperty || property instanceof SubscriptionPrivateProperty)
+        {
+
+        }
+
+        if(property.type.type == Integer.toString()) {
+            field = "intValue"
+        }
+        else if (property.type.type == String.toString())  {
+            field = "stringValue"
+        }
+        else if (property.type.type == BigDecimal.toString())  {
+            field = "decValue"
+        }
+        else if (property.type.type == Date.toString())  {
+            field = "dateValue"
+        }
+        else if (property.type.type == URL.toString())  {
+            field = "urlValue"
+        }
+        else if (property.type.type == RefdataValue.toString())  {
+            field = "refValue"
+        }
+
+        //Wenn eine Vererbung vorhanden ist.
+        if(field && property.hasProperty('instanceOf') && property.instanceOf && AuditConfig.getConfig(property.instanceOf)){
+            if(property.instanceOf."${field}" == '' || property.instanceOf."${field}" == null)
+            {
+                value = property.instanceOf."${field}" ?: ''
+            }else{
+                //
+                return
+            }
+        }
+
+        if (value == '' && field) {
+            // Allow user to set a rel to null be calling set rel ''
+            property[field] = null
+            property.save(flush: true);
+        } else {
+
+            if (property && value && field){
+
+                if(field == "refValue") {
+                    def binding_properties = ["${field}": value]
+                    bindData(property, binding_properties)
+                    //property.save()
+                    if(!property.save(failOnError: true, flush: true))
+                    {
+                        println(property.error)
+                    }
+                } else if(field == "dateValue") {
+                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            // parse new date
+                            def parsed_date = sdf.parse(value)
+                            property."${field}" = parsed_date
+                        } else {
+                            // delete existing date
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true);
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else if(field == "urlValue") {
+
+                    def backup = property."${field}"
+                    try {
+                        if (value && value.size() > 0) {
+                            property."${field}" = new URL(value)
+                        } else {
+                            // delete existing url
+                            property."${field}" = null
+                        }
+                        property.save(failOnError: true, flush: true)
+                    }
+                    catch (Exception e) {
+                        property."${field}" = backup
+                        log.error(e)
+                    }
+                } else {
+                    def binding_properties = [:]
+                    if (property."${field}" instanceof Double) {
+                        value = Double.parseDouble(value)
+                    }
+
+                    binding_properties["${field}"] = value
+                    bindData(property, binding_properties)
+
+                    property.save(failOnError: true, flush: true)
+
+                }
+
+            }
+        }
+
     }
 }

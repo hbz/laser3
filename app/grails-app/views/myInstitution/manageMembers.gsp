@@ -55,7 +55,7 @@
         </g:else>
     </semui:exportDropdown>
     <%
-        editable = (editable && accessService.checkPerm('ORG_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        editable = (editable && accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
     %>
     <g:if test="${editable}">
         <g:render template="actions"/>
@@ -72,7 +72,7 @@
         List configShowTable = []
         if(comboType.id == RDStore.COMBO_TYPE_CONSORTIUM.id) {
             configShowFilter = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
-            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'libraryType']
+            configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'numberOfSurveys', 'libraryType']
         }
         else if(comboType.id == RDStore.COMBO_TYPE_DEPARTMENT.id) {
             configShowFilter = [['name'], ['property']]
@@ -91,7 +91,7 @@
     </semui:filter>
 
 
-    <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
+<g:form action="manageMembers" controller="myInstitution" method="post" class="ui form">
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: members,
                           tmplShowCheckbox: editable,

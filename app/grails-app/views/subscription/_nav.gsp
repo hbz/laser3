@@ -18,7 +18,7 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <semui:securedSubNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
     <%-- <semui:subNavItem controller="subscription" action="renewals" params="${[id:params.id]}" message="subscription.details.renewals.label" /> --%>
     <%--
@@ -31,7 +31,7 @@
         </g:if>
     --%>
 
-    <semui:subNavItem controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
+    <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <semui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" message="default.notes.label" />
 
     <g:if test="${grailsApplication.config.feature_finance}">

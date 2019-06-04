@@ -244,13 +244,21 @@
                                     <br><b>${ti?.getEbookFirstAutorOrFirstEditor()}</b>
                                 </g:if>
 
-                                <br>
-
-
                                 <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
                                     <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ti?.editionStatement}
                                     </div>
+                                    <br/>
                                 </g:if>
+
+                                <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
+
+                                        <g:if test="${tipp?.hostPlatformURL}">
+                                            <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                               href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
+                                               target="_blank"><i class="share square icon"></i></a>
+                                        </g:if>
+                                </g:each>
 
                                 <g:each in="${ti?.ids?.sort { it.identifier.ns.ns }}" var="id">
                                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
@@ -271,6 +279,34 @@
                                         </span>
                                     </g:else>
                                 </g:each>
+                                <br/>
+
+                                <div class="ui list">
+                                <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
+                                        <div class="item"><b>${message(code: 'tipp.platform', default: 'Platform')}:</b>
+                                            <g:if test="${tipp?.platform.name}">
+                                                ${tipp?.platform.name}
+                                            </g:if>
+                                            <g:else>${message(code: 'default.unknown')}</g:else>
+
+                                            <g:if test="${tipp?.platform.name}">
+                                                <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                        data-content="${message(code: 'tipp.tooltip.changePlattform')}"
+                                                        controller="platform" action="show"
+                                                        id="${tipp?.platform.id}"><i
+                                                        class="pencil alternate icon"></i></g:link>
+                                            </g:if>
+                                            <g:if test="${tipp?.platform?.primaryUrl}">
+                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                                   href="${tipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
+                                                   target="_blank"><i class="share square icon"></i></a>
+                                            </g:if>
+
+                                        </div>
+                                </g:each>
+                                </div>
+
                             </td>
 
                             <g:set var="title_coverage_info"

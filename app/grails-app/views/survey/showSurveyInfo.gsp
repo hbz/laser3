@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="survey" class="active"/>
 </semui:breadcrumbs>
 
@@ -24,64 +24,73 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<semui:form>
-    <div class="ui grid">
-        <div class="middle aligned row">
 
-            <div class="fourteen wide column">
-                <g:form action="locSurveyInfo" controller="survey" method="post" class="ui form">
+<div class="ui grid">
+    <div class="middle aligned row">
 
-                    <g:hiddenField name="id" value="${surveyInfo?.id}"/>
+        <div class="fourteen wide column">
+            <g:form action="locSurveyInfo" controller="survey" method="post" class="ui form">
 
-                    <div class="field required ${editable ? '': 'disabled'}">
-                        <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
-                        <input type="text" name="name" placeholder="" value="${surveyInfo?.name}" required/>
-                    </div>
+                <g:hiddenField name="id" value="${surveyInfo?.id}"/>
 
-                    <div class="two fields ${editable ? '': 'disabled'}">
-                        <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
-                                          value="${surveyInfo?.startDate}"/>
+                <div class="field required ${editable ? '' : 'disabled'}">
+                    <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
+                    <input type="text" name="name" placeholder="" value="${surveyInfo?.name}" required/>
+                </div>
 
-                        <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
-                                          value="${surveyInfo?.endDate}"/>
-                    </div>
+                <div class="two fields ${editable ? '' : 'disabled'}">
+                    <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+                                      value="${surveyInfo?.startDate}"/>
+
+                    <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+                                      value="${surveyInfo?.endDate}"/>
+                </div>
 
 
-                    <div class="field required ${editable ? '': 'disabled'}">
-                        <label>${message(code: 'surveyInfo.type.label')}</label>
-                        <g:if test="${surveyInfo?.type}">
-                            <b>${surveyInfo?.type?.getI10n('value')}</b>
-                        </g:if><g:else>
-                        <laser:select class="ui dropdown" name="type"
-                                      from="${RefdataCategory.getAllRefdataValues('Survey Type')}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${surveyInfo?.type?.id}"
-                                      noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
-                    </g:else>
-                    </div>
-                    <br/>
+                <div class="field required ${editable ? '' : 'disabled'}">
+                    <label>${message(code: 'surveyInfo.type.label')}</label>
+                    <g:if test="${surveyInfo?.type}">
+                        <b>${surveyInfo?.type?.getI10n('value')}</b>
+                    </g:if><g:else>
+                    <laser:select class="ui dropdown" name="type"
+                                  from="${RefdataCategory.getAllRefdataValues('Survey Type')}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${surveyInfo?.type?.id}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
+                </g:else>
+                </div>
 
-                    <g:if test="${editable}">
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'showSurveyInfo.save', default: 'Save')}"/>
+                <div class="field ${editable ? '' : 'disabled'}">
+                    <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
 
-                    </g:if>
-                </g:form>
-            </div>
+                    <textarea name="comment" rows="4" cols="50">
+                        ${surveyInfo?.comment}
+                    </textarea>
 
-            <div class="two wide column">
-                <g:if test="${surveyInfo}">
+                </div>
 
-                    <g:link controller="survey" action="showSurveyConfig" id="${surveyInfo.id}"
-                            class="ui huge button"><i class="angle right icon"></i></g:link>
+                <br/>
+
+                <g:if test="${editable}">
+                    <input type="submit" class="ui button"
+                           value="${message(code: 'showSurveyInfo.save', default: 'Save')}"/>
 
                 </g:if>
-            </div>
+            </g:form>
         </div>
 
+        <div class="two wide column">
+            <g:if test="${surveyInfo}">
+
+                <g:link controller="survey" action="showSurveyConfig" id="${surveyInfo.id}"
+                        class="ui huge button"><i class="angle right icon"></i></g:link>
+
+            </g:if>
+        </div>
     </div>
-</semui:form>
+
+</div>
 
 </body>
 </html>

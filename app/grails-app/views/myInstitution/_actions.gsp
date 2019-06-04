@@ -4,7 +4,7 @@
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
 <g:if test="${actionName == 'currentSubscriptions'}">
     <semui:actionsDropdown>
-        <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+        <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
             <semui:actionsDropdownItem controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <div class="divider"></div>
         </g:if>
@@ -17,7 +17,7 @@
 
 <g:if test="${actionName in ['currentLicenses']}">
     <semui:actionsDropdown>
-        <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+        <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
             <semui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
             <div class="divider"></div>
         </g:if>
@@ -28,7 +28,7 @@
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") || springSecurityService.getCurrentUser().hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_ADM")}">
         <semui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <semui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
@@ -38,7 +38,7 @@
                 <semui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_department.label"/>
             </g:elseif>
             <g:if test="${actionName in ['manageMembers']}">
-                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
+                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:if>
         </semui:actionsDropdown>
     </g:if>

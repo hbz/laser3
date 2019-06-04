@@ -151,12 +151,12 @@
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
-                                                    params="${[impId: hit.uuid, addType: 'Without']}"
+                                                    params="${[impId: hit.uuid, source: hit.url, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
                                             <br/><br/>
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
-                                                    params="${[impId: hit.uuid, addType: 'With']}"
+                                                    params="${[impId: hit.uuid, source: hit.url, addType: 'With']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents', default: 'Link (with Entitlements)')}</g:link>
                                         </g:if>
                                         <g:else>

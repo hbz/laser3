@@ -47,13 +47,19 @@
                             <td>${pdI10nExpl?.valueEn}</td>
                             <td>
                                 <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
-                                <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                    <span data-position="top right" data-tooltip="${pd.refdataCategory}">
-                                        <small>${pd.type?.split('\\.').last()}</small>
+                                <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+
+                                    <g:set var="refdataValues" value="${[]}"/>
+                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">
+                                        <g:set var="refdataValues" value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                    </g:each>
+
+                                    <span data-position="top right" data-tooltip="${refdataValues.join('/')}">
+                                        <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <small>${pd.type?.split('\\.').last()}</small>
+                                    <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                 </g:else>
                             </td>
                             <td>

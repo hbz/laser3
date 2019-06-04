@@ -17,7 +17,7 @@ import groovyx.gpars.GParsPool
 
 class StatsSyncService {
 
-    static final THREAD_POOL_SIZE = 4
+    static final THREAD_POOL_SIZE = 1
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
@@ -69,7 +69,7 @@ class StatsSyncService {
        def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns = 'zdb' "+
+            "join ie.tipp.title.ids as zdbtitle where zdbtitle.identifier.ns.ns in ('zdb','doi') "+
             "and po.roleType.value='Content Provider' "+
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
@@ -240,7 +240,7 @@ class StatsSyncService {
         def start_time = System.currentTimeMillis()
 
         Fact.withNewTransaction { status ->
-            def options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
+            StatsSyncServiceOptions options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
             def reports = getRelevantReportList(options.getBasicQueryParams())
             StatsTripleCursor csr = null
 
@@ -251,7 +251,8 @@ class StatsSyncService {
                 def jsonErrors = []
                 csr = getCursor(options)
                 def mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
-                if ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate)) {
+                if (options.identifierTypeAllowedForAPICall() &&
+                    ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate))) {
                     options.from = getNextFromPeriod(csr)
                     sushiClient.clientOptions = options
                     try {
@@ -304,10 +305,10 @@ class StatsSyncService {
         usageRanges.each {
             def factCount = 0
             def itemPerformancesForRange = getItemPerformancesForRange(itemPerformances, it)
-            csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
             // should only happen on first sync if there is a range without usage before the first ItemPerformance, e.g. if
             // we want to get usage for 2012ff from NatStat, but we cannot get usage this early
             if (itemPerformancesForRange.empty) {
+                csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
                 csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
                 csr.save(flush: true)
             } else {
@@ -337,7 +338,8 @@ class StatsSyncService {
                 }
                 // First csr -> update
                 if (csr.availTo == null){
-                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it.end)
+                    csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
+                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
                     csr.numFacts = factCount
                     csr.save(flush: true)
 
@@ -348,7 +350,7 @@ class StatsSyncService {
                     }
                     csr = new StatsTripleCursor()
                     csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it.begin) // update
-                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
+                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
                     csr.customerId = options.customer
                     csr.numFacts = factCount
                     csr.titleId = options.statsTitleIdentifier

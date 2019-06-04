@@ -49,10 +49,10 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
 
-                        <semui:securedMainNavItem orgPerm="ORG_BASIC,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked calendar icon large"></i>
                 ${tasksCount}
@@ -102,13 +102,25 @@
             </a>
         </g:if>
 
-        <g:if test="${false}">
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
+
+            <g:if test="${grailsApplication.config.featureSurvey}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
-                ${2}
+                ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
+            </g:if>
         </g:if>
+
+       %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
+                <i class="checked tasks icon large"></i>
+                ${surveysConsortia?.size()}
+                ${message(code:'myinst.dash.surveyConsortia.label')}
+            </a>
+        </g:if>--}%
+
 
     </div><!-- secondary -->
 
@@ -144,16 +156,22 @@
                                 </div><!-- .column -->
                                 <div class="thirteen wide column">
 
-                                <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
+                                <g:if test="${change instanceof Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
                                     <br />
                                     <g:link controller="subscription" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
-                                <g:if test="${change instanceof com.k_int.kbplus.License}">
+                                <g:if test="${change instanceof License}">
                                     <strong>${message(code:'license')}</strong>
                                     <br />
                                     <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
+                               <g:if test="${change instanceof PendingChange && change.costItem}">
+                                   <strong>${message(code:'financials.costItem')}</strong>
+                                   <br>
+                                   ${raw(change.desc)}
+                                   <g:link class="ui green button" controller="finance" action="acknowledgeChange" id="${change.id}"><g:message code="pendingChange.acknowledge"/></g:link>
+                               </g:if>
                            </div><!-- .column -->
                            </div><!-- .row -->
                        </div><!-- .grid -->
@@ -236,7 +254,7 @@
             </div>
         </div>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
         <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
 
@@ -307,16 +325,25 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM')}">
-
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
+            <g:if test="${grailsApplication.config.featureSurvey}">
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
                 <div>
-                    <g:render template="/user/dueDatesView"
-                              model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
+                    <g:render template="surveys"/>
                 </div>
             </div>
+            </g:if>
         </g:if>
 
+    %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="six" style="border-top: 1px solid #d4d4d5; ">
+            <div>
+                <g:render template="surveysConsortia"/>
+            </div>
+        </div>
+    </g:if>
+--}%
         <g:render template="/templates/tasks/modal_create" />
 
     <g:javascript>

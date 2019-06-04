@@ -11,6 +11,7 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser'
+featureSurvey = false
 
 globalDataSync = [
   "replaceLocalImpIds": [
@@ -42,7 +43,7 @@ System.out.println("~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
 
 getCurrentServer = {
-    // laserSystemId mapping for runtime check
+    // laserSystemId mapping for runtime check; do not delete
     switch (grailsApplication.config.laserSystemId) {
         case 'LAS:eR-Dev':
             return ContextService.SERVER_DEV

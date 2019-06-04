@@ -16,11 +16,11 @@ class AccessService {
     static final CHECK_EDIT = 'CHECK_EDIT'
     static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
-    static final ORG_BASIC = 'ORG_BASIC'
-    static final ORG_MEMBER = 'ORG_MEMBER'
+    static final ORG_INST = 'ORG_INST'
+    static final ORG_BASIC_MEMBER = 'ORG_BASIC_MEMBER'
     static final ORG_CONSORTIUM = 'ORG_CONSORTIUM'
     static final ORG_CONSORTIUM_SURVEY = 'ORG_CONSORTIUM_SURVEY'
-    static final ORG_COLLECTIVE = 'ORG_COLLECTIVE'
+    static final ORG_INST_COLLECTIVE = 'ORG_INST_COLLECTIVE'
 
     def grailsApplication
     def springSecurityService
@@ -50,7 +50,7 @@ class AccessService {
     }
 
     // --- for action closures: shortcuts ---
-    // --- checking current user and context org and global roles
+    // --- checking current user and context org OR global roles
 
     boolean checkPermX(String orgPerms, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
@@ -157,6 +157,17 @@ class AccessService {
 
     // ---- new stuff here
     // ---- new stuff here
+
+    // ----- REFACTORING -----
+
+    // ---- combined checks ----
+    // ---- combined checks ----
+
+    boolean checkConstraint_ORG_COM_EDITOR() {
+        checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')
+    }
+
+    // ----- REFACTORING -----
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
     boolean checkUserIsMember(User user, Org org) {

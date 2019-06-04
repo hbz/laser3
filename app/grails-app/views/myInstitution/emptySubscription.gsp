@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="com.k_int.kbplus.Combo" %>
+<%@ page import="com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -25,10 +25,10 @@
             <g:form action="processEmptySubscription" controller="myInstitution" method="post" class="ui form newLicence">
                 <input type="hidden" name="newEmptySubId" value="${defaultSubIdentifier}"/>
 
-                <p>${message(code:'myinst.emptySubscription.notice', default:'This form will create a new subscription not attached to any packages. You will need to add packages using the Add Package tab on the subscription details page')}</p>
+                <p>${message(code:'myinst.emptySubscription.notice')}</p>
 
                 <div class="field required">
-                    <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
+                    <label>${message(code:'myinst.emptySubscription.name')}</label>
                     <input type="text" name="newEmptySubName" placeholder=""/>
                  </div>
 
@@ -38,12 +38,22 @@
                     <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
-                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+                <div class="field required">
+                    <label>${message(code:'myinst.emptySubscription.status')}</label>
+                    <%
+                        def fakeList = []
+                        fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                        fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                    %>
+                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
+                </div>
+
+                <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
                         <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
+                            <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
                         </select>
@@ -61,7 +71,7 @@
 
     <hr>
 
-        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+        <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
 
             <g:if test="${! cons_members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
@@ -104,17 +114,17 @@
 
             <r:script language="JavaScript">
                 $('#submitterFallback').click(function(e){
-                    e.preventDefault()
-                    $('#dynHiddenValues').empty()
+                    e.preventDefault();
+                    $('#dynHiddenValues').empty();
                     $('input[name=selectedOrgs]:checked').each(function(index, elem){
-                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">')
+                        var newElem = $('<input type="hidden" name="selectedOrgs" value="' + $(elem).attr('value') + '">');
                         $('#dynHiddenValues').append(newElem)
-                    })
+                    });
                     $(this).parents('form').submit()
-                })
+                });
 
                 $('#asOrgType').change(function() {
-                    var selVal = $(this).find('option:selected').attr('data-value')
+                    var selVal = $(this).find('option:selected').attr('data-value');
                     if ('Consortium' == selVal) {
                         $('.cons-options').show()
                     }
@@ -126,7 +136,18 @@
 
         </g:if>
         <r:script language="JavaScript">
-
+            function formatDate(input) {
+                var inArr = input.split(/[\.-]/g);
+                return inArr[2]+"-"+inArr[1]+"-"+inArr[0];
+            }
+             $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
+                if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
+                    var startDate = Date.parse(formatDate($("#valid_from").val()));
+                    var endDate = Date.parse(formatDate($("#valid_to").val()));
+                    return (startDate < endDate);
+                }
+                else return true;
+             };
                     $('.newLicence')
                             .form({
                         on: 'blur',
@@ -137,7 +158,34 @@
                                 rules: [
                                     {
                                         type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            },
+                            valid_from: {
+                                identifier: 'valid_from',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.startDateAfterEndDate"/>'
+                                    }
+                                ]
+                            },
+                            valid_to: {
+                                identifier: 'valid_to',
+                                rules: [
+                                    {
+                                        type: 'endDateNotBeforeStartDate',
+                                        prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
+                                    }
+                                ]
+                            },
+                            status: {
+                                identifier  : 'status',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
                                     }
                                 ]
                             }

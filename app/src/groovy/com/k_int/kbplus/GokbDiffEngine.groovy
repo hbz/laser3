@@ -24,14 +24,17 @@ public class GokbDiffEngine {
             // println("packageId consistent");
         }
 
-        def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
+        //def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
 
-        //TODO: Umstellung auf UUID vielleicht
-        oldpkg.tipps.sort { it.tippId }
-        newpkg.tipps.sort { it.tippId }
+        compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
+
+        /*//TODO: Umstellung auf UUID vielleicht
+        oldpkg.tipps.sort { it.tippUuid }
+        newpkg.tipps.sort { it.tippUuid }
 
         def ai = oldpkg.tipps.iterator();
         def bi = newpkg.tipps.iterator();
+
 
         def tippa = ai.hasNext() ? ai.next() : null
         def tippb = bi.hasNext() ? bi.next() : null
@@ -77,41 +80,43 @@ public class GokbDiffEngine {
                 System.out.println("TIPP " + tippb + " Was added to the package");
                 newTippClosure(ctx, tippb, auto_accept)
                 tippb = bi.hasNext() ? bi.next() : null;
+                tippa = ai.hasNext() ? ai.next() : null;
             } else {
                 deletedTippClosure(ctx, tippa, auto_accept)
                 System.out.println("TIPP " + tippa + " Was removed from the package");
                 tippa = ai.hasNext() ? ai.next() : null;
+                tippb = bi.hasNext() ? bi.next() : null;
             }
-        }
+        }*/
 
     }
 
     def static getTippDiff(tippa, tippb) {
+        println "processing tipp diffs between ${tippa} and ${tippb}"
         def result = []
 
-        if ((tippa.url ?: '').toString().compareTo((tippb.url ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.url ?: '').toString().compareTo((tippb.url ?: '').toString()) != 0) {
             result.add([field: 'hostPlatformURL', newValue: tippb.url, oldValue: tippa.url])
         }
 
-        if ((tippa.coverage ?: '').toString().compareTo((tippb.coverage ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.coverage ?: '').toString().compareTo((tippb.coverage ?: '').toString()) != 0) {
             result.add([field: 'coverage', newValue: tippb.coverage, oldValue: tippa.coverage])
         }
 
-        if ((tippa.accessStart ?: '').toString().compareTo((tippb.accessStart ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.accessStart ?: '').toString().compareTo((tippb.accessStart ?: '').toString()) != 0) {
             result.add([field: 'accessStart', newValue: tippb.accessStart, oldValue: tippa.accessStart])
         }
 
-        if ((tippa.accessEnd ?: '').toString().compareTo((tippb.accessEnd ?: '').toString()) == 0) {
-        } else {
+        if ((tippa.accessEnd ?: '').toString().compareTo((tippb.accessEnd ?: '').toString()) != 0) {
             result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
         }
 
-        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) == 0) {
-        } else {
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) != 0) {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
+        }
+
+        if ((tippa?.platformUuid ?: '').toString().compareTo((tippb?.platformUuid ?: '').toString()) != 0) {
+            result.add([field: 'platform', newValue: "${tippb?.platformUuid}", oldValue: "${tippa?.platformUuid}"])
         }
 
         result;
@@ -157,6 +162,81 @@ public class GokbDiffEngine {
 
         }
 
+    }
+
+    def static compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
+    {
+        def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
+        println oldpkg
+        println "---------------------------------------------------------------------------------------------------------------------------------------"
+        println newpkg
+        def oldpkgTippsTippUuid = oldpkg.tipps.collect{it.tippUuid}
+        def newpkgTippsTippUuid = newpkg.tipps.collect{it.tippUuid}
+
+        newpkg.tipps.each{ tippnew ->
+
+            replaceImpIDwithGokbID(ctx, tippnew, primaryUrl)
+
+            if(tippnew?.tippUuid in oldpkgTippsTippUuid)
+            {
+
+                    //Temporary
+                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])])
+                    def newAuto_accept = (localDuplicateTippEntries.size() > 1) ? true : false
+                    newAuto_accept = auto_accept ?: newAuto_accept
+                    if(localDuplicateTippEntries.size() > 1 && tippnew.status != 'Deleted') {
+                        System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept" + newAuto_accept);
+                        newTippClosure(ctx, tippnew, newAuto_accept)
+                    } else
+                    {
+                    //Temporary END
+
+                        def tippold = oldpkg.tipps.find{it.tippUuid == tippnew.tippUuid && it.status != 'Deleted'}
+
+                        def db_tipp = ctx.tipps.find {it.gokbId == tippnew.tippUuid && it.status?.value != 'Deleted'}
+                        def tipp_diff = getTippDiff(tippold, tippnew)
+
+                        if (tippnew.status != 'Current' && tipp_diff.size() == 0) {
+                            if(tippnew.status != db_tipp.status.value) {
+                                deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
+                                System.out.println("Title " + tippold + " Was removed from the package");
+                            }
+
+                        } else if (tipp_diff.size() == 0) {
+                            tippUnchangedClosure(ctx, tippold);
+
+                        } else {
+                            // See if any of the actual properties are null
+                            println("Got tipp diffs: ${tipp_diff}")
+                            try {
+                                updatedTippClosure(ctx, tippnew, tippold, tipp_diff, auto_accept, db_tipp)
+                            }
+                            catch (Exception e) {
+                                System.err.println("Error on executing updated TIPP closure! Please verify logs:")
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+            }
+            else if (!(tippnew.tippUuid in oldpkgTippsTippUuid) && tippnew.status != 'Deleted') {
+
+
+                    System.out.println("TIPP " + tippnew + " Was added to the package with autoAccept " + auto_accept);
+                    newTippClosure(ctx, tippnew, auto_accept)
+
+
+            }
+        }
+        oldpkg.tipps.each { tippold ->
+            if(!(tippold?.tippUuid in newpkgTippsTippUuid))
+            {
+                def db_tipp = ctx.tipps.find {it.gokbId == tippold.tippUuid && it.status?.value != 'Deleted'}
+                if(tippold.status.id != db_tipp.status.id) {
+                    deletedTippClosure(ctx, tippold, auto_accept)
+                    System.out.println("TIPP " + tippold + " Was removed from the package");
+                }
+            }
+        }
     }
 
 }

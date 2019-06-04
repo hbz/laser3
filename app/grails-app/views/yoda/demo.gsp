@@ -13,6 +13,17 @@
 
 <h1 class="ui header">debug only</h1>
 
+
+<laser:remoteLink controller="ajax" action="readNote" id="1" xyz="xyz" abc="abc" update="#test123"
+                  js-before="alert('js-before')" js-done="alert('js-done')" js-always="alert('js-always')">
+    Click here @ div#test123
+</laser:remoteLink>
+
+<br/><br/>
+
+<div id="test123"> div#test123 </div>
+
+
 <%--
 com.k_int.kbplus.SystemTicket.findAll() <br />
 ${com.k_int.kbplus.SystemTicket.findAll()}

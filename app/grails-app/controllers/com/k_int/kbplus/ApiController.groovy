@@ -364,7 +364,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def format
 
         Org contextOrg = null
-
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
 
         if (apiOrg) {
@@ -372,7 +371,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             def apiLevel = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_LEVEL)
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-
                 if ("GET" == request.method) {
                     hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_READ, ApiManager.API_LEVEL_DATAMANAGER])
                 }
@@ -396,7 +394,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (! result) {
             if ('GET' == request.method) {
-                if ((!query || !value) /*&& ! ApiReader.SUPPORTED_SIMPLE_QUERIES.contains(obj)*/) {
+                if (! (query && value) && ! ApiReader.SIMPLE_QUERIES.contains(obj)) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
@@ -467,6 +465,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
      *
      * @return
      */
+    @Deprecated
     @Secured(['permitAll']) // TODO
     def v1() {
         log.debug("API Call: " + params)

@@ -59,7 +59,8 @@
                                         r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                         r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                        ajaxPostFunc()
+                                        ajaxPostFunc();
+                                        setupCalendar();
                                     },
                                     detachable: true,
                                     closable: false,
@@ -90,7 +91,7 @@
                         <%--${financialData}--%>
                         <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
                         <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
-                            <g:if test="${!showView.equals("consAtSubscr") && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
+                            <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
                                 <div class="item" data-tab="own">${message(code:'financials.tab.ownCosts')}</div>
                             </g:if>
                             <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
@@ -100,7 +101,7 @@
                                 <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
                             </g:if>
                         </div>
-                        <g:if test="${!showView.equals("consAtSubscr") && accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_USER")}">
+                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
@@ -155,7 +156,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                ajaxPostFunc()
+                                ajaxPostFunc();
+                                setupCalendar();
                             },
                             detachable: true,
                             closable: false,

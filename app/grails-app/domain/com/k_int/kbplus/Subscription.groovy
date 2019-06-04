@@ -140,14 +140,22 @@ class Subscription
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false)
+        status(nullable:false, blank:false)
         type(nullable:true, blank:false)
         owner(nullable:true, blank:false)
         form        (nullable:true, blank:false)
         resource    (nullable:true, blank:false)
         impId(nullable:true, blank:false)
-        startDate(nullable:true, blank:false)
-        endDate(nullable:true, blank:false)
+        startDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+            }
+        })
+        endDate(nullable:true, blank:false, validator: { val, obj ->
+            if(obj.startDate != null && obj.endDate != null) {
+                if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+            }
+        })
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
@@ -362,6 +370,15 @@ class Subscription
         return match ? Subscription.get(match?.destination) : null
     }
 
+    Subscription getCalculatedSuccessor() {
+        Links match = Links.findWhere(
+                destination: this.id,
+                objectType: Subscription.class.name,
+                linkType: RDStore.LINKTYPE_FOLLOWS
+        )
+        return match ? Subscription.get(match?.source) : null
+    }
+
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
@@ -397,7 +414,7 @@ class Subscription
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if(accessService.checkPermAffiliationX('ORG_BASIC,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
                     return cons || subscr
             }
         }
@@ -670,7 +687,7 @@ class Subscription
   }
 
   def getHoldingTypes() {
-      def types = issueEntitlements?.tipp.title.type.unique()
+      def types = issueEntitlements?.tipp?.title?.type?.unique()
       types
   }
 
@@ -710,6 +727,26 @@ class Subscription
            return name + ' - ' + statusString + ' ' +period
        }
   }
+
+    def dropdownNamingConventionWithoutOrg() {
+        return dropdownNamingConventionWithoutOrg(contextService.org)
+    }
+
+    def dropdownNamingConventionWithoutOrg(contextOrg){
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        String period = startDate ? sdf.format(startDate)  : ''
+
+        period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
+
+        period = period ? '('+period+')' : ''
+
+        String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+
+
+        return name + ' - ' + statusString + ' ' +period
+
+    }
 
     def getDerivedSubscriptionBySubscribers(Org org) {
         def result

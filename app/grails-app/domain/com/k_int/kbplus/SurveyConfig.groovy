@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -20,27 +21,31 @@ class SurveyConfig {
     String type
     String header
     String comment
+    String internalComment
 
     Date dateCreated
     Date lastUpdated
 
     boolean pickAndChoose
-
-    ArrayList orgIDs
+    boolean configFinish
 
     static hasMany = [
             documents: DocContext,
-            surveyProperties: SurveyConfigProperties
+            surveyProperties: SurveyConfigProperties,
+            orgs: SurveyOrg
     ]
 
     static constraints = {
         subscription (nullable:true, blank:false)
         surveyProperty (nullable:true, blank:false)
-        orgIDs (nullable:true, blank:false)
+
         header(nullable:true, blank:false)
         comment  (nullable:true, blank:false)
         pickAndChoose (nullable:true, blank:false)
         documents (nullable:true, blank:false)
+        orgs  (nullable:true, blank:false)
+        configFinish (nullable:true, blank:false)
+        internalComment  (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -49,10 +54,11 @@ class SurveyConfig {
 
         type column: 'surconf_type'
         header column: 'surconf_header'
-        comment  column: 'surconf_comment'
-        pickAndChoose column: 'surconf_pickAndChoose'
+        comment  column: 'surconf_comment', type: 'text'
+        internalComment column: 'surconf_internal_comment', type: 'text'
+        pickAndChoose column: 'surconf_pickandchoose'
+        configFinish column: 'surconf_config_finish', default: false
 
-        orgIDs column: 'surconf_org_ids'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
@@ -61,13 +67,14 @@ class SurveyConfig {
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
 
+
         configOrder column: 'surconf_config_order'
     }
 
     @Transient
     static def validTypes = [
             'Subscription'             : ['de': 'Lizenz', 'en': 'Subscription'],
-            'SurveyProperty'              : ['de': 'Abfrage-Merkmal', 'en': 'Survey-Property']
+            'SurveyProperty'              : ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
     static getLocalizedValue(key){
@@ -89,7 +96,7 @@ class SurveyConfig {
     def getConfigNameShort(){
 
         if(type == 'Subscription'){
-            return subscription?.name
+            return subscription?.dropdownNamingConvention()
         }
         else
         {
@@ -114,6 +121,25 @@ class SurveyConfig {
             return surveyProperty?.getI10n('name')
         }
     }
+    def getTypeInLocaleI10n() {
+
+        return this.getLocalizedValue(this?.type)
+    }
+
+
+    def getSurveyOrgsIDs()
+    {
+        def result = [:]
+
+        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+
+        return result
+    }
+
+
+
 
 
 }

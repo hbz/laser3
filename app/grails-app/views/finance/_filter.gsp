@@ -44,7 +44,7 @@
                                 if(!rdv.equals(RDStore.SUBSCRIPTION_DELETED))
                                     fakeList.add(rdv)
                             }
-                            fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                            //fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                         %>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
                         <laser:select id="filterSubStatus" class="ui fluid dropdown" name="filterSubStatus"
@@ -53,6 +53,7 @@
                                       optionValue="value"
                                       value="${params.filterSubStatus}"
                                       noSelection="${['' : 'Alle ..']}"
+                            onchange="setupDropdowns()"
                         />
                     </div>
                 </g:if>
@@ -226,11 +227,17 @@
                               noSelection="${['':'Alle ..']}"/>
                 --%>
                     <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
+                    <%
+                        List taxTypesList = [[key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"]]
+                        CostItem.TAX_TYPES.every { taxType ->
+                            taxTypesList.add([key:taxType,value:taxType.taxType.getI10n("value")+" ("+taxType.taxRate+"%)"])
+                        }
+                    %>
                     <g:select id="filterCITaxType" class="ui dropdown selection"
                               name="filterCITaxType"
-                              from="${CostItem.TAX_TYPES}"
-                              optionKey="${{it}}"
-                              optionValue="${{it.taxType.getI10n("value")+" ("+it.taxRate+"%)"}}"
+                              from="${taxTypesList}"
+                              optionKey="${{it.key}}"
+                              optionValue="${{it.value}}"
                               value="${params.filterCITaxType}"
                               noSelection="${['':'Alle ..']}"/>
                 </div>
@@ -247,26 +254,33 @@
 <!-- _filter.gsp -->
 
 <r:script>
-    $(document).ready(function(){
-        var links = {
-            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
-            "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
-            "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
-            "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
-            "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
-            "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",
-            "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
-        };
-        $(".newFilter").each(function(k,v){
-            $(this).dropdown({
-                apiSettings: {
-                    url: links[$(this).attr("id")],
-                    cache: false
-                },
-                clearable: true,
-                minCharacters: 0
+        function setupDropdowns() {
+            var subStatus = $("#filterSubStatus").val();
+            if(subStatus.length === 0) {
+                subStatus = "FETCH_ALL";
+            }
+            var links = {
+                "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
+                "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
+                "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+"&query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
+                "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
+                "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
+                "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",
+                "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
+            };
+            $(".newFilter").each(function(k,v){
+                $(this).dropdown({
+                    apiSettings: {
+                        url: links[$(this).attr("id")],
+                        cache: false
+                    },
+                    clearable: true,
+                    minCharacters: 0
+                });
             });
-        });
+        }
+    $(document).ready(function(){
+        setupDropdowns();
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year'
         });

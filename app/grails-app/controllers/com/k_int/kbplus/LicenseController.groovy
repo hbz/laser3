@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -37,6 +38,7 @@ class LicenseController extends AbstractDebugController {
     def filterService
     def controlledListService
     def orgTypeService
+    def deletionService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -248,6 +250,21 @@ class LicenseController extends AbstractDebugController {
     }
   }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def delete() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+
+        if (params.process && result.editable) {
+            result.result = deletionService.deleteLicense(result.license, false)
+        }
+        else {
+            result.dryRun = deletionService.deleteLicense(result.license, DeletionService.DRY_RUN)
+        }
+
+        result
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addMembers() {
@@ -349,11 +366,13 @@ class LicenseController extends AbstractDebugController {
                         ]
 
                         if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
                         else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            licenseCopy = institutionsService.copyLicense(
+                                    result.license, licenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
@@ -434,7 +453,7 @@ from Subscription as s where
     def consortia() {
         redirect controller: 'license', action: 'show', params: params
         return
-
+        /*
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -480,6 +499,7 @@ from Subscription as s where
     }
 
     result
+        */
   }
 
     @Deprecated
@@ -1020,6 +1040,7 @@ from Subscription as s where
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
+                            copiedProp.instanceOf = null
                             copiedProp.save(flush: true)
                             //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }

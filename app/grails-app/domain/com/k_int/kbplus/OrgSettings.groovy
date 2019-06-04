@@ -16,7 +16,10 @@ class OrgSettings {
         API_LEVEL       (String),
         API_KEY         (String),
         API_PASSWORD    (String),
-        CUSTOMER_TYPE   (Role)
+        CUSTOMER_TYPE   (Role),
+        GASCO_ENTRY              (RefdataValue, 'YN'),
+        OA2020_SERVER_ACCESS     (RefdataValue, 'YN'),
+        STATISTICS_SERVER_ACCESS (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type
@@ -54,6 +57,11 @@ class OrgSettings {
         strValue   (nullable: true)
         rdValue    (nullable: true)
         roleValue  (nullable: true)
+    }
+
+    static List<OrgSettings.KEYS> getEditableSettings() {
+
+        [OrgSettings.KEYS.STATISTICS_SERVER_ACCESS, OrgSettings.KEYS.OA2020_SERVER_ACCESS]
     }
 
     /*

@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -31,7 +30,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -39,8 +37,6 @@ import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
 
-// import org.json.simple.JSONArray;
-// import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
@@ -69,6 +65,7 @@ class MyInstitutionController extends AbstractDebugController {
     def orgDocumentService
     def organisationService
     def titleStreamService
+    def financeService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -188,6 +185,103 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Secured(['ROLE_USER'])
+    def currentPlatforms() {
+        long timestamp = System.currentTimeSeconds()
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ?: 0
+
+        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+
+        /*
+        String base_qry1 = "select distinct p from IssueEntitlement ie join ie.subscription s join ie.tipp tipp join tipp.platform p " +
+                "where s.id in (:currentSubIds)"
+        println base_qry1
+        platforms.addAll(Subscription.executeQuery(base_qry1, [currentSubIds: currentSubIds]))
+        */
+
+        /*
+        String base_qry2 = "select distinct p from TitleInstancePackagePlatform tipp join tipp.platform p join tipp.sub s " +
+                "where s.id in (:currentSubIds)"
+        println base_qry2
+        platforms.addAll(Subscription.executeQuery(base_qry2, [currentSubIds: currentSubIds]))
+        */
+
+        String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+                "TitleInstancePackagePlatform tipp join tipp.platform p " +
+                "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+
+        qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
+        qry3 += " and ((s.status is null) or (s.status != :subDeleted))"
+        qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
+
+        def qryParams3 = [
+                currentSubIds: currentSubIds,
+                pkgDeleted: RDStore.PACKAGE_DELETED,
+                platformDeleted: RDStore.PLATFORM_DELETED,
+                subDeleted: RDStore.SUBSCRIPTION_DELETED,
+                tippDeleted: RDStore.TIPP_DELETED
+        ]
+
+        if ( params.q?.length() > 0 ) {
+            qry3 += "and ("
+            qry3 += "  ( p.normname like :query ) or "
+            qry3 += "  ( p.primaryUrl like :query ) or"
+            qry3 += "  ( lower(p.org.name) like :query or lower(p.org.sortname) like :query or lower(p.org.shortname) like :query ) "
+            qry3 += ")"
+            qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
+        }
+        else {
+            qry3 += "order by p.normname asc"
+        }
+
+        qry3 += " group by p, s"
+
+        List platformSubscriptionList   = Subscription.executeQuery(qry3, qryParams3) /*, [max:result.max, offset:result.offset])) */
+
+        result.platformInstanceList     = (platformSubscriptionList.collect{ it[0] }).unique()
+        result.platformInstanceTotal    = result.platformInstanceList.size()
+
+        result.subscriptionMap = [:]
+
+        List allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
+        List allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
+        List allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
+
+        //println "platformSubscriptionList: " + platformSubscriptionList.size()
+        //println "allLocals:                " + allLocals.size()
+        //println "allSubscrCons:            " + allSubscrCons.size()
+        //println "allConsOnly:              " + allConsOnly.size()
+
+        platformSubscriptionList.each { entry ->
+            String key = 'platform_' + entry[0].id
+
+            if (! result.subscriptionMap.containsKey(key)) {
+                result.subscriptionMap.put(key, [])
+            }
+            if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+
+                if (allLocals.contains(entry[1].id)) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
+                else if (allSubscrCons.contains(entry[1].id)) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
+                else if (allConsOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
+            }
+        }
+
+        //println "${System.currentTimeSeconds() - timestamp} Sekunden"
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def actionLicenses() {
@@ -228,13 +322,14 @@ class MyInstitutionController extends AbstractDebugController {
         def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
         def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
         def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
-        def license_status          = RDStore.LICENSE_DELETED
 
         def base_qry
         def qry_params
 
         @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
+
+        result.filterSet = params.filterSet ? true : false
 
         if (! params.orgRole) {
             if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
@@ -250,11 +345,10 @@ class MyInstitutionController extends AbstractDebugController {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
         }
 
         if (params.orgRole == 'Licensing Consortium') {
@@ -269,11 +363,10 @@ from License as l where (
                 )
             )
         )) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, deleted:license_status, template:template_license_type]
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
@@ -296,13 +389,27 @@ from License as l where (
             qry_params += [date_restr: date_restriction]
         }
 
+        if(params.status) {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RefdataValue.get(params.status)]
+        }
+        else if(params.status == '') {
+            base_qry += " and l.status != :deleted "
+            qry_params += [deleted: RDStore.LICENSE_DELETED]
+            result.filterSet = false
+        }
+        else {
+            base_qry += " and l.status = :status "
+            qry_params += [status:RDStore.LICENSE_CURRENT]
+            params.status = RDStore.LICENSE_CURRENT.id
+            result.defaultSet = true
+        }
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
-
-        result.filterSet = params.filterSet ? true : false
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
@@ -490,9 +597,9 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptyLicense() {
         def result = setResultGenerics()
@@ -683,7 +790,7 @@ from License as l where (
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        List<Subscription> subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
         if(!params.exportXLS)
         result.num_sub_rows = subscriptions.size()
 
@@ -721,7 +828,7 @@ from License as l where (
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls")
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls", result.institution)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -739,7 +846,7 @@ from License as l where (
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportcurrentSubscription(subscriptions,"csv"))
+                    writer.write((String) exportcurrentSubscription(subscriptions,"csv", result.institution))
                 }
                 out.close()
             }
@@ -747,13 +854,35 @@ from License as l where (
     }
 
 
-    private def exportcurrentSubscription(subscriptions, String format) {
+    private def exportcurrentSubscription(List<Subscription> subscriptions, String format,contextOrg) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
-        List titles = ['Name', g.message(code: 'subscription.owner.label'), g.message(code: 'subscription.packages.label'), g.message(code: 'consortium.label'), g.message(code: 'default.provider.label'), g.message(code: 'default.agency.label'), g.message(code: 'subscription.startDate.label'), g.message(code: 'subscription.endDate.label'), 'Status', 'Typ']
+        List titles = ['Name',
+                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'subscription.packages.label'),
+                       g.message(code: 'consortium.label'),
+                       g.message(code: 'default.provider.label'),
+                       g.message(code: 'default.agency.label'),
+                       g.message(code: 'subscription.startDate.label'),
+                       g.message(code: 'subscription.endDate.label'),
+                       g.message(code: 'subscription.manualCancellationDate.label'),
+                       g.message(code: 'default.identifiers.label'),
+                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'subscription.form.label'),
+                       g.message(code: 'subscription.resource.label')]
+        boolean asCons = false
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            asCons = true
+            titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
+        }
         Map<Subscription,Set> providers = [:]
         Map<Subscription,Set> agencies = [:]
+        Map<Subscription,Set> identifiers = [:]
+        Map costItemCounts = [:]
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
+        List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and s.status != :subDeleted and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[subDeleted:RDStore.SUBSCRIPTION_DELETED,ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -772,42 +901,61 @@ from License as l where (
             subAgencies.add(agency.org.name)
             agencies.put(agency.sub,subAgencies)
         }
+        allIdentifiers.each { identifier ->
+            Set subIdentifiers
+            if(identifiers.get(identifier.sub))
+                subIdentifiers = identifiers.get(identifier.sub)
+            else subIdentifiers = new TreeSet()
+            subIdentifiers.add("(${identifier.identifier.ns.ns}) ${identifier.identifier.value}")
+            identifiers.put(identifier.sub,subIdentifiers)
+        }
+        allCostItems.each { row ->
+            costItemCounts.put(row[1],row[0])
+        }
+        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null and s.status != :deleted group by s.instanceOf.id',[deleted:RDStore.SUBSCRIPTION_DELETED])
+        Map subscriptionMembers = [:]
+        membershipCounts.each { row ->
+            subscriptionMembers.put(row[1],row[0])
+        }
         List subscriptionData = []
-        switch(format) {
-            case "xls":
-            case "xlsx":
-                subscriptions.each { sub ->
-                    List row = []
-                    row.add([field: sub.name ?: "",style: null])
+        subscriptions.each { sub ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+                    row.add([field: sub.name ?: "", style: null])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
-                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '',style:null])
-                    List packageNames = sub.packages.collect {
+                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
-                    row.add([field: packageNames ? packageNames.join(", ") : '',style: null])
-                    row.add([field: sub.getConsortia()?.name ?: '',style: null])
-                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '',style: null])
-                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '',style: null])
-                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '',style: null])
-                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '',style: null])
-                    row.add([field: sub.status?.getI10n("value"),style: null])
-                    row.add([field: sub.type?.getI10n("value"),style: null])
+                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+                    row.add([field: sub.getConsortia()?.name ?: '', style: null])
+                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '', style: null])
+                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '', style: null])
+                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
+                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
+                    row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
+                    row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
+                    row.add([field: sub.status?.getI10n("value"), style: null])
+                    row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+                    if(asCons) {
+                        row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
+                        row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
+                    }
                     subscriptionData.add(row)
-                }
-                Map sheetData = [:]
-                sheetData[message(code:'menu.my.subscriptions')] = [titleRow:titles,columnData:subscriptionData]
-                return exportService.generateXLSXWorkbook(sheetData)
-            case "csv":
-                subscriptions.each { sub ->
-                    List row = []
-                    row.add(sub.name ?: "")
+                    break
+                case "csv":
+                    row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
                     row.add(ownerReferences ? ownerReferences.join("; ") : '')
-                    List packageNames = sub.packages.collect {
+                    List packageNames = sub.packages?.collect {
                         it.pkg.name
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
@@ -816,11 +964,27 @@ from License as l where (
                     row.add(agencies.get(sub) ? agencies.get(sub).join("; ") : '')
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
+                    row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
+                    row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
                     row.add(sub.status?.getI10n("value"))
                     row.add(sub.type?.getI10n("value"))
+                    row.add(sub.form?.getI10n("value"))
+                    row.add(sub.resource?.getI10n("value"))
+                    if(asCons) {
+                        row.add(subscriptionMembers.get(sub.id))
+                        row.add(costItemCounts.get(sub.id))
+                    }
                     subscriptionData.add(row)
-                }
-                return exportService.generateSeparatorTableString(titles,subscriptionData,',')
+                    break
+            }
+        }
+        switch(format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: subscriptionData]
+                return exportService.generateXLSXWorkbook(sheetData)
+            case 'csv': return exportService.generateSeparatorTableString(titles, subscriptionData, ',')
         }
     }
 
@@ -893,9 +1057,9 @@ from License as l where (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def emptySubscription() {
         def result = setResultGenerics()
@@ -969,6 +1133,7 @@ from License as l where (
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
+                    status: RefdataValue.get(params.status),
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1120,7 +1285,9 @@ from License as l where (
                 response.sendError(401)
             }
             else {
-                def copyLicense = institutionsService.copyLicense(baseLicense, params)
+                def copyLicense = institutionsService.copyLicense(
+                        baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
+
                 if (copyLicense.hasErrors()) {
                     log.error("Problem saving license ${copyLicense.errors}");
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
@@ -1128,6 +1295,7 @@ from License as l where (
                     copyLicense.reference = params.licenseName
                     copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
+                    copyLicense.status = RefdataValue.get(params.status)
 
                     if (copyLicense.save(flush: true)) {
                         flash.message = message(code: 'license.createdfromTemplate.message')
@@ -1149,11 +1317,14 @@ from License as l where (
 
         def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
-                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
+                endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,
+                status: RefdataValue.get(params.status)
+        )
 
         if (!licenseInstance.save(flush: true)) {
-            flash.error = licenseInstance.errors
-            return
+            log.error(licenseInstance.errors)
+            flash.error = message(code:'license.create.error')
+            redirect action: 'emptyLicense'
         }
         else {
             log.debug("Save ok");
@@ -3064,12 +3235,33 @@ AND EXISTS (
 
 
         result.surveys = SurveyResult.findAll("from SurveyResult where " +
-                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
-                " (startDate >= :startDate and endDate <= :endDate)",
+                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
                 [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('Survey started', 'Survey Status'),
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
                  startDate: new Date(System.currentTimeMillis()),
                  endDate: new Date(System.currentTimeMillis())])
+
+
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
+        result.surveysConsortia = []
+
+                /*SurveyResult.findAll("from SurveyResult where " +
+                " owner = :contextOrg and surveyConfig.surveyInfo.status != :status and " +
+                " and ((startDate >= :startDate and endDate <= :endDate)" +
+                " or (startDate <= :startDate and endDate is null) " +
+                " or (startDate is null and endDate is null))",
+                [contextOrg: contextService.org,
+                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
+                 startDate: new Date(System.currentTimeMillis()),
+                 endDate: new Date(System.currentTimeMillis())])*/
+
         result
     }
 
@@ -3100,8 +3292,15 @@ AND EXISTS (
                 [max: result.max, offset: result.offset]
         )
 
-        // println result.changes
+
         result.changes.addAll(result2)
+
+        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null and (ci.costItemStatus.value != 'Deleted' or ci.costItemStatus is null)",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+
+        //println result.changes
+        result3.each { row ->
+            result.changes.add([row,1])
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -3237,9 +3436,9 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
       def result = setResultGenerics()
@@ -3261,6 +3460,227 @@ AND EXISTS (
       }
       result
     }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_ADM", "ROLE_ADMIN")
+    })
+    def currentSurveys() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyInfos() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.editable = result.surveyResults?.finishDate?.contains(null) ? true : false
+
+        result.surveyResults = result.surveyResults.groupBy {it?.surveyConfig?.id}
+
+        result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyConfigsInfo() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        result.editable = result.surveyResults.finishDate.contains(null) ? true : false
+        result.consCostTransfer = true
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyFinishConfig() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+            if(value == null || value == "")
+            {
+                allResultHaveValue = false
+            }
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.info")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyInfoFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.error")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyResultFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        result.surveyResults.each{
+
+           if(it.participant == result.institution) {
+               it.finishDate = new Date(System.currentTimeMillis())
+               it.save(flush: true)
+
+               flash.message = g.message(code: "default.notAutorized.message")
+           }
+        }
+
+
+        redirect action: 'surveyResult', id: result.surveyInfo.id
+    }
+
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -3298,9 +3718,9 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def addressbook() {
 
@@ -3352,9 +3772,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
       }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def budgetCodes() {
         def result = setResultGenerics()
@@ -3398,8 +3818,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 
@@ -3452,8 +3872,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE, ORG_CONSORTIUM", affil="INST_ADM",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
         def result = setResultGenerics()
 
@@ -3462,7 +3882,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.comboType == 'Consortium'
             params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
         }
-        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             result.comboType == 'Department'
             params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
         }
@@ -3534,9 +3954,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def manageMembers() {
         def result = setResultGenerics()
@@ -3558,7 +3978,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             }
         }
-        else if(accessService.checkPerm('ORG_COLLECTIVE')) {
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
@@ -3633,8 +4053,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_INST_COLLECTIVE", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE", "INST_ADM", "ROLE_ADMIN") })
     def removeDepartment() {
         Org department = Org.get(params.dept)
         if(organisationService.removeDepartment(department))
@@ -4090,9 +4510,36 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def manageConsortiaSurveys() {
+        def result = setResultGenerics()
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('filterService')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+
+        result.participant = Org.get(Long.parseLong(params.participant))
+
+        //For Filter
+        params.participant = params.participant ? Org.get(Long.parseLong(params.participant)) : null
+
+        def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
+
+        result.surveys = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
+        result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
+
+        result
+
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def managePropertyGroups() {
         def result = setResultGenerics()
@@ -4142,7 +4589,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                             name: params.name,
                             description: params.description,
                             tenant: result.institution,
-                            ownerType: ownerType
+                            ownerType: ownerType,
+                            visible: RDStore.YN_YES
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true
@@ -4173,9 +4621,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     /**
      * Display and manage PrivateProperties for this institution
      */
-    @DebugAnnotation(perm="ORG_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def managePrivateProperties() {
         def result = setResultGenerics()
@@ -4390,6 +4838,32 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 return;
             }
         }
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyParticipantConsortia() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.participant = Org.get(params.participant)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+
+        result
 
     }
 }

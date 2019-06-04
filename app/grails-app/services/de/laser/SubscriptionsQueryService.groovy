@@ -97,6 +97,12 @@ from Subscription as s where (
             filterSet = true
         }
 
+        if (params.provider) {
+            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id = :provider) ")
+            qry_params.put('provider', (params.provider as Long))
+            filterSet = true
+        }
+
         if (params.q?.length() > 0) {
             base_qry += (
                     " and ( lower(s.name) like :name_filter " // filter by subscription
@@ -179,7 +185,7 @@ from Subscription as s where (
         if (params.status) {
 
             if (params.status == 'FETCH_ALL') {
-                // ignore subscription.status
+                base_qry += " AND ( s.status.value != 'Deleted' ) "
             }
             else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
                 base_qry += " AND s.status is null "
