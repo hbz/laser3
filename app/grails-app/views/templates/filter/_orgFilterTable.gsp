@@ -114,6 +114,7 @@
             <th>
                 ${message(code: 'surveyCostItems.label')}
             </th>
+            <th></th>
         </g:if>
     </tr>
     </thead>
