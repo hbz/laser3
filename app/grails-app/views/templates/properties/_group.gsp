@@ -104,64 +104,60 @@
 
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
-                                    <laser:remoteLink class="ui icon button" controller="ajax"
+                                    <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                      controller="ajax"
                                                       action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
-                                                      id="${prop.id}" xyz="xyz" abc="abc" update="${custom_props_div}"
-                                                      js-before="alert('js-before')" js-done="alert('js-done')" js-always="alert('js-always')">
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      id="${prop.id}"
+                                                      data-content="${message(code:'property.audit.off.tooltip')}"
+                                                      js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      js-always="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}"
+                                    >
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
-                                    <button class="ui icon button js-open-confirm-modal-copycat">
-                                        <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                  controller="ajax" action="togglePropertyAuditConfig"
-                                                  params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
-                                                  id="${prop.id}"
-                                                  data-confirm-term-what="property"
-                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                                  data-confirm-term-how="inherit"
-                                                  onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  onComplete="c3po.loadJsAfterAjax()"
-                                                  update="${custom_props_div}">
-                                    </g:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <button class="ui icon button green js-open-confirm-modal-copycat la-popup-tooltip la-delay"  data-content="${message(code:'property.audit.on.tooltip')}">
+                                    <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                      controller="ajax"
+                                                      action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      id="${prop.id}"
+                                                      data-content="${message(code:'property.audit.on.tooltip')}"
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      js-always="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}"
+                                    >
                                         <i class="thumbtack icon la-js-editmode-icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                   controller="ajax" action="togglePropertyAuditConfig"
-                                                   params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
-                                                   id="${prop.id}"
-                                                   data-confirm-term-what="property"
-                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                                   data-confirm-term-how="inherit"
-                                                   onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                   onComplete="c3po.loadJsAfterAjax()"
-                                                   update="${custom_props_div}">
-                                    </g:remoteLink>
+                                    </laser:remoteLink>
                                 </g:else>
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-                                <button class="ui icon negative button js-open-confirm-modal-copycat">
+                                <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                                  controller="ajax"
+                                                  action="deleteCustomProperty"
+                                                  params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
+                                                  id="${prop.id}"
+                                                  data-confirm-term-what="property"
+                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                  data-confirm-term-how="delete"
+                                                  js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  js-always="c3po.loadJsAfterAjax()"
+                                                  update="${custom_props_div}"
+                                >
                                     <i class="trash alternate icon"></i>
-                                </button>
-                                <g:remoteLink class="js-gost"
-                                              controller="ajax" action="deleteCustomProperty"
-                                              params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
-                                              id="${prop.id}"
-                                              data-confirm-term-what="property"
-                                              data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                              data-confirm-term-how="delete"
-                                              onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                              onComplete="c3po.loadJsAfterAjax()"
-                                              update="${custom_props_div}" >
-                                </g:remoteLink>
+                                </laser:remoteLink>
                             </g:if>
                             <g:else>
+                                <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="ui icon button la-hidden">
                                     <i class="coffee icon"></i>
                                 </div>

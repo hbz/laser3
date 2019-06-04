@@ -436,8 +436,7 @@ r2d2 = {
                     default:
                         messageHow = "löschen";
                 }
-                var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
-
+                var url = that.getAttribute('href') && (that.getAttribute('class') == 'la-js-remoteLink') ? that.getAttribute('href'): false; // use url only if not remote link
 
                 // INHERIT BUTTON
 
@@ -586,6 +585,9 @@ r2d2 = {
                         $('').html('Entfernen<i class="x icon"></i>');
                 }
 
+                var remoteLink = $(that).hasClass('la-js-remoteLink')
+
+
                 $('.tiny.modal')
                     .modal({
                         closable  : false,
@@ -598,7 +600,10 @@ r2d2 = {
                             if (url){
                                 window.location.href = url;
                             }
-                        },
+                            if (remoteLink) {
+                                bb8.ajax(that)
+                            }
+                        }
                     })
                     .modal('show')
                 ;
@@ -748,46 +753,55 @@ bb8 = {
 
         $(".la-js-remoteLink").click(function (event) {
             event.preventDefault();
+            alert (this)
+            if (! $(this).hasClass('js-open-confirm-modal')) {
+                bb8.ajax(this);
+            }
 
-            var url = $(this).attr('href')
-            var before = $(this).attr('js-before')      // before
-            var done = $(this).attr('js-done')          // onSuccess
-            var fail = $(this).attr('js-fail')
-            var always = $(this).attr('js-always')      // onComplete
-            var update = $(this).attr('update')
-
-            $.ajax({
-                url: url,
-
-                beforeSend: function (xhr) {
-                    if (before) {
-                        //console.log('before')
-                        eval(before)
-                    }
-                }
-            })
-                .done(function (data) {
-                    //console.log('done')
-                    $(update).empty()
-                    $(update).html(data)
-                    if (done) {
-                        eval(done)
-                    }
-                })
-                .fail(function () {
-                    //console.log('fail')
-                    if (fail) {
-                        eval(fail)
-                    }
-                })
-                .always(function () {
-                    //console.log('always')
-                    if (always) {
-                        eval(always)
-                    }
-                });
 
         })
+    },
+
+    ajax: function(elem) {
+
+        var url = $(elem).attr('href')
+        var before = $(elem).attr('js-before')      // before
+        var done = $(elem).attr('js-done')          // onSuccess
+        var fail = $(elem).attr('js-fail')
+        var always = $(elem).attr('js-always')      // onComplete
+        var update = '#' + $(elem).attr('update')
+
+        $.ajax({
+            url: url,
+
+            beforeSend: function (xhr) {
+                if (before) {
+                    //console.log('before')
+                    eval(before)
+                }
+            }
+        })
+            .done(function (data) {
+                //console.log('done')
+                $(update).empty()
+                $(update).html(data)
+                if (done) {
+                    eval(done)
+                }
+            })
+            .fail(function () {
+                //console.log('fail')
+                if (fail) {
+                    eval(fail)
+                }
+            })
+            .always(function () {
+                //console.log('always')
+                if (always) {
+                    eval(always)
+                }
+            });
+
     }
 }
 
