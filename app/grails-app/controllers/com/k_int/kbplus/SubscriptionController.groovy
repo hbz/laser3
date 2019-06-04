@@ -801,13 +801,13 @@ class SubscriptionController extends AbstractDebugController {
                     serial = tipp?.title?.getIdentifierValue('ISSN')
                     electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                 }
-                if(identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                if(result.identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
                     checked = "checked"
                 }
-                else if(identifiers.onlineIds.indexOf(electronicSerial) > -1) {
+                else if(result.identifiers.onlineIds.indexOf(electronicSerial) > -1) {
                     checked = "checked"
                 }
-                else if(identifiers.printIds.indexOf(serial) > -1) {
+                else if(result.identifiers.printIds.indexOf(serial) > -1) {
                     checked = "checked"
                 }
                 result.checked[t] = checked
