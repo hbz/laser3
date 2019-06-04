@@ -170,36 +170,48 @@
                         </g:link>
                     </td>
 
-                    <td>
-                        <g:if test="${result.type?.type == Integer.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="intValue"/>
-                        </g:if>
-                        <g:elseif test="${result.type?.type == String.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == Date.toString()}">
-                            <semui:xEditable owner="${result}" type="date" field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == URL.toString()}">
-                            <semui:xEditable owner="${result}" type="url" field="urlValue"
-                                             overwriteEditable="${overwriteEditable}"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${result.value}">
-                                <semui:linkIcon/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${result}" type="text" field="refValue"
-                                                    config="${result.type?.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <td>
-                        ${result?.comment}
-                    </td>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+
+                        <td>
+                            <g:if test="${result?.type?.type == Integer.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="intValue"/>
+                            </g:if>
+                            <g:elseif test="${result?.type?.type == String.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="stringValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == BigDecimal.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="decValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == Date.toString()}">
+                                <semui:xEditable owner="${result}" type="date" field="dateValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == URL.toString()}">
+                                <semui:xEditable owner="${result}" type="url" field="urlValue"
+                                                 overwriteEditable="${overwriteEditable}"
+                                                 class="la-overflow la-ellipsis"/>
+                                <g:if test="${result.value}">
+                                    <semui:linkIcon/>
+                                </g:if>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == RefdataValue.toString()}">
+                                <semui:xEditableRefData owner="${result}" type="text" field="refValue"
+                                                        config="${result.type?.refdataCategory}"/>
+                            </g:elseif>
+                        </td>
+                        <td>
+                            ${result?.comment}
+                        </td>
+                    </g:if>
+                    <g:else>
+                        <td>
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </g:else>
                 </tr>
             </g:each>
         </table>
@@ -245,36 +257,48 @@
                         </g:link>
                     </td>
 
-                    <td>
-                        <g:if test="${result.type?.type == Integer.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="intValue"/>
-                        </g:if>
-                        <g:elseif test="${result.type?.type == String.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == Date.toString()}">
-                            <semui:xEditable owner="${result}" type="date" field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == URL.toString()}">
-                            <semui:xEditable owner="${result}" type="url" field="urlValue"
-                                             overwriteEditable="${overwriteEditable}"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${result.value}">
-                                <semui:linkIcon/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${result}" type="text" field="refValue"
-                                                    config="${result.type?.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <td>
-                        ${result?.comment}
-                    </td>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+
+                        <td>
+                            <g:if test="${result?.type?.type == Integer.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="intValue"/>
+                            </g:if>
+                            <g:elseif test="${result?.type?.type == String.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="stringValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == BigDecimal.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="decValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == Date.toString()}">
+                                <semui:xEditable owner="${result}" type="date" field="dateValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == URL.toString()}">
+                                <semui:xEditable owner="${result}" type="url" field="urlValue"
+                                                 overwriteEditable="${overwriteEditable}"
+                                                 class="la-overflow la-ellipsis"/>
+                                <g:if test="${result.value}">
+                                    <semui:linkIcon/>
+                                </g:if>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == RefdataValue.toString()}">
+                                <semui:xEditableRefData owner="${result}" type="text" field="refValue"
+                                                        config="${result.type?.refdataCategory}"/>
+                            </g:elseif>
+                        </td>
+                        <td>
+                            ${result?.comment}
+                        </td>
+                    </g:if>
+                    <g:else>
+                        <td>
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </g:else>
                 </tr>
             </g:each>
         </table>
