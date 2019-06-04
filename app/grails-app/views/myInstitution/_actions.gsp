@@ -4,7 +4,7 @@
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
 <g:if test="${actionName == 'currentSubscriptions'}">
     <semui:actionsDropdown>
-        <g:if test="${accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR")}">
+        <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
             <semui:actionsDropdownItem controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <div class="divider"></div>
         </g:if>
@@ -17,7 +17,7 @@
 
 <g:if test="${actionName in ['currentLicenses']}">
     <semui:actionsDropdown>
-        <g:if test="${accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM","INST_EDITOR")}">
+        <g:if test="${accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR")}">
             <semui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
             <div class="divider"></div>
         </g:if>
