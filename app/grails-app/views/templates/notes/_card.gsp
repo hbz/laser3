@@ -28,11 +28,25 @@
 
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:if test="${docctx.owner.title}">
-                                <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
+                            <g:if test="${editable || editable2}">
+                                <a onclick="noteedit(${docctx.owner.id});">
+                                    <g:if test="${docctx.owner.title}">
+                                        ${docctx.owner.title}</a>
+                                    </g:if>
+                                    <g:else>
+                                        Ohne Titel
+                                    </g:else>
+                                </a>
                             </g:if>
                             <g:else>
-                                <a onclick="noteedit(${docctx.owner.id});">Ohne Titel</a>
+                                <a onclick="noteread(${docctx.owner.id});">
+                                    <g:if test="${docctx.owner.title}">
+                                        ${docctx.owner.title}</a>
+                                    </g:if>
+                                    <g:else>
+                                        Ohne Titel
+                                    </g:else>
+                                </a>
                             </g:else>
                             <br/>
 
