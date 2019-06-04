@@ -21,6 +21,7 @@ class SurveyConfig {
     String type
     String header
     String comment
+    String internalComment
 
     Date dateCreated
     Date lastUpdated
@@ -44,6 +45,7 @@ class SurveyConfig {
         documents (nullable:true, blank:false)
         orgs  (nullable:true, blank:false)
         configFinish (nullable:true, blank:false)
+        internalComment  (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -52,7 +54,8 @@ class SurveyConfig {
 
         type column: 'surconf_type'
         header column: 'surconf_header'
-        comment  column: 'surconf_comment'
+        comment  column: 'surconf_comment', type: 'text'
+        internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
 
