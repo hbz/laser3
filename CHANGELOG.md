@@ -3,11 +3,12 @@
 - added test data setup for orgs (only for QA)
 - added license properties at subscription overview
 - finance improvements
-- added customer type for organisations
 - added hard deletion for subscriptions and licenses
-- added imcomplete api endpoints for oa2020 and statistics
-- reworked modals for creating properties and property groups
+- improved customer type integration
 - replaced legacy user roles 
+- reworked modals for creating properties and property groups
+- added imcomplete api endpoints for oa2020 and statistics
+- added my platforms overview
 - added filter for user management
 - improved alphabetical sorting
 - various minor improvements

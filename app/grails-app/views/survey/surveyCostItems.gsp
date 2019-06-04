@@ -42,7 +42,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            style="${config?.configFinish ? 'background-color: olive' : ''}"
+                            style="${config?.configFinish ? 'background-color: Lime' : ''}"
                             controller="survey" action="surveyCostItems"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
