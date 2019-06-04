@@ -680,7 +680,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def checkCascade() {
       Map result = [sub:true,subPkg:true,ie:true]
-      if(!params.subscription && (((params.package && !params.package.matches(":null|:for")) && params.issueEntitlement) || params.issueEntitlement)) {
+      if(!params.subscription && ((params.package && params.issueEntitlement) || params.issueEntitlement)) {
           result.sub = false
           result.subPkg = false
           result.ie = false
@@ -693,11 +693,11 @@ class AjaxController {
               result.ie = false
           }
           else if(params.issueEntitlement) {
-              if(!(params.package && !params.package.matches(":null:for"))) {
+              if(!params.package || params.package.contains('null')) {
                   result.subPkg = false
                   result.ie = false
               }
-              else if((params.package && !params.package.matches(":null|:for"))) {
+              else if(params.package && !params.package.contains('null')) {
                   SubscriptionPackage subPkg = genericOIDService.resolveOID(params.package)
                   if(!subPkg || subPkg.subscription != sub) {
                       result.subPkg = false

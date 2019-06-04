@@ -603,6 +603,7 @@
                         minCharacters: 0
                     });
                 });
+                $("#newIE").dropdown('set text',"${costItem?.issueEntitlement ? "${costItem.issueEntitlement.tipp.title.title} (${costItem.issueEntitlement.tipp.title.type.getI10n('value')}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})" : ''}");
             }
 
             function setupCalendar() {
@@ -624,7 +625,7 @@
 
             function checkPackageBelongings() {
                 var subscription = $("[name='newSubscription'], #pickedSubscription").val();
-                if($("[name='newLicenseeTarget']").length > 0) {
+                if($("[name='newLicenseeTarget']").length > 0 && !$("[name='newLicenseeTarget']").val().match(/:null|:for/)) {
                     subscription = $("[name='newLicenseeTarget']").val();
                 }
                 $.ajax({
