@@ -178,7 +178,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
             <th class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <th>${message(code: 'surveyProperty.name.label')}</th>
+            <th>${message(code: 'surveyProperty.name')}</th>
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
@@ -264,5 +264,10 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
     </table>
 </semui:form>
 
+<g:link class="ui button" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}">
+    <g:message code="surveyResult.finish"/>
+</g:link>
+<br>
+<br>
 </body>
 </html>

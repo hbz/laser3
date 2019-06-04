@@ -200,7 +200,7 @@
                                         <table class="ui celled sortable table la-table">
                                             <thead>
                                             <tr>
-                                                <th>${message(code: 'surveyProperty.name.label')}</th>
+                                                <th>${message(code: 'surveyProperty.name')}</th>
                                                 <th>${message(code: 'surveyProperty.type.label')}</th>
                                             </tr>
 

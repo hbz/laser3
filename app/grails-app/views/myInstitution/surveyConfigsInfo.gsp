@@ -350,6 +350,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
             </tr>
         </g:each>
     </table>
+
 </semui:form>
 
 
