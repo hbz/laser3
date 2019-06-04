@@ -230,19 +230,19 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
                     </td>
                     <td>
-                        <g:if test="${config.value[0].type?.type == Integer.toString()}">
+                        <g:if test="${config.value[0]?.type?.type == Integer.toString()}">
                             <semui:xEditable owner="${config.value[0]}" type="text" field="intValue"/>
                         </g:if>
-                        <g:elseif test="${config.value[0].type?.type == String.toString()}">
+                        <g:elseif test="${config.value[0]?.type?.type == String.toString()}">
                             <semui:xEditable owner="${config.value[0]}" type="text" field="stringValue"/>
                         </g:elseif>
-                        <g:elseif test="${config.value[0].type?.type == BigDecimal.toString()}">
+                        <g:elseif test="${config.value[0]?.type?.type == BigDecimal.toString()}">
                             <semui:xEditable owner="${config.value[0]}" type="text" field="decValue"/>
                         </g:elseif>
-                        <g:elseif test="${config.value[0].type?.type == Date.toString()}">
+                        <g:elseif test="${config.value[0]?.type?.type == Date.toString()}">
                             <semui:xEditable owner="${config.value[0]}" type="date" field="dateValue"/>
                         </g:elseif>
-                        <g:elseif test="${config.value[0].type?.type == URL.toString()}">
+                        <g:elseif test="${config.value[0]?.type?.type == URL.toString()}">
                             <semui:xEditable owner="${config.value[0]}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
@@ -250,7 +250,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
-                        <g:elseif test="${config.value[0].type?.type == RefdataValue.toString()}">
+                        <g:elseif test="${config.value[0]?.type?.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${config.value[0]}" type="text" field="refValue"
                                                     config="${config.value[0].type?.refdataCategory}"/>
                         </g:elseif>
