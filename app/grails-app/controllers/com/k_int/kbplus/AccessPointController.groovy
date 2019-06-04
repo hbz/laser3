@@ -101,7 +101,6 @@ class AccessPointController extends AbstractDebugController {
 
         orgAccessPoint.getAllRefdataValues('IPv6 Address Formats')
 
-
         def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format.substring(2))
         def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format.substring(2))
 
@@ -120,7 +119,8 @@ class AccessPointController extends AbstractDebugController {
                  ip: params.ip, editable: true,
                  ipv4Ranges: ipv4Ranges, ipv4Format: ipv4Format,
                  ipv6Ranges: ipv6Ranges, ipv6Format: ipv6Format,
-                        autofocus: autofocus
+                 autofocus: autofocus,
+                 orgInstance: orgAccessPoint.org
                 ]
                 break
             case 'POST':
