@@ -61,6 +61,11 @@ class SurveyInfo {
 
         this.surveyConfigs.each {
 
+            if(it?.subscription && !(it?.surveyProperties?.size() > 0))
+            {
+                check = false
+            }
+
             if(!(it?.orgs.org?.size > 0)){
                 check = false
             }

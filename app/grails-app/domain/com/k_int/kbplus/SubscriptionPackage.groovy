@@ -59,7 +59,7 @@ class SubscriptionPackage {
 
   def getIEandPackageSize(){
 
-    return '(' + this.getIssueEntitlementsofPackage().size() + '/' + this.getCurrentTippsofPkg()?.size() + ')'
+    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + this.getIssueEntitlementsofPackage().size() + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + this.getCurrentTippsofPkg()?.size() + ')'
   }
   def getCurrentTippsofPkg()
   {

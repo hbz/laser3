@@ -1,12 +1,16 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import java.text.Normalizer
 import javax.persistence.Transient
+import java.text.SimpleDateFormat
 
 class Package
         extends AbstractBaseDomain
@@ -15,6 +19,8 @@ class Package
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
     // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
+
+  static Log static_logger = LogFactory.getLog(Package)
 
   @Transient
   def grailsApplication
@@ -411,24 +417,28 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Transient
   def toComparablePackage() {
     def result = [:]
-
-    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
+    println "converting old package to comparable package"
+    def sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    println "processing metadata"
     result.packageName = this.name
     result.packageId = this.identifier
     result.impId = this.impId
     result.gokbId = this.gokbId
 
     result.tipps = []
+    println "before tipps"
     this.tipps.each { tip ->
-
+        println "Now processing TIPP ${tip}"
       //NO DELETED TIPPS because from only come no deleted tipps
-      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
+      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
-      def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
-      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}";
+          println "getting identifier value of title ..."
+      def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}"
+          println "getting identifier value of TIPP ..."
+      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}"
 
+          println "preparing TIPP ..."
       def newtip = [
                      title: [
                        name:tip.title.title,
@@ -443,6 +453,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      platform:tip.platform.name,
                      platformId:tip.platform.id,
                      platformUuid:tip.platform.gokbId,
+                     platformPrimaryUrl:tip.platform.primaryUrl,
                      coverage:[],
                      url:tip.hostPlatformURL ?: '',
                      identifiers:[],
@@ -451,6 +462,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      accessEnd: tip.accessEndDate ?: null
                    ];
 
+          println "adding coverage ..."
       // Need to format these dates using correct mask
       newtip.coverage.add([
                         startDate:tip.startDate ?: null,
@@ -464,7 +476,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         embargo: tip.embargo ?: ''
                       ]);
 
+          println "processing IDs ..."
       tip?.title?.ids.each { id ->
+          println "adding identifier ${id}"
         newtip.title.identifiers.add([namespace:id.identifier.ns.ns, value:id.identifier.value]);
       }
 
@@ -473,7 +487,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     result.tipps.sort{it.titleId}
-    log.debug("Rec conversion for package returns object with title ${result.title} and ${result.tipps?.size()} tipps");
+    println "Rec conversion for package returns object with title ${result.title} and ${result.tipps?.size()} tipps"
 
     result
   }
@@ -499,19 +513,24 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   def checkAndAddMissingIdentifier(ns,value) {
     boolean found = false
+    println "processing identifier ${value}"
     this.ids.each {
+        println "processing identifier occurrence ${it}"
       if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+          println "occurrence found"
         found = true
       }
     }
 
     if ( ! found ) {
       def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+        println "before execute query"
       def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
+        println "id_occ query executed"
 
       if ( !id_occ || id_occ.size() == 0 ){
-        log.debug("Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}");
-        new IdentifierOccurrence(identifier:id, pkg:this).save(flush:true)
+        println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
+        new IdentifierOccurrence(identifier:id, pkg:this).save()
       }
     }
   }

@@ -145,6 +145,12 @@ class PendingChangeService {
                                     event.changeDoc?.accessStartDate = ((event.changeDoc?.accessStartDate != null) && (event.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessStartDate) : null
                                     event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
                                 }
+
+                                if(event.changeDoc?.status)
+                                {
+                                    event.changeDoc?.status = event.changeDoc?.status?.id
+                                }
+
                                 DataBindingUtils.bindObjectToInstance(target_object, event.changeDoc)
 
                                 if(target_object.save())

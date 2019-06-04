@@ -62,7 +62,7 @@ class ApiReader {
 
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
-        result.taxRate             = costItem.taxKey?.taxRate ?: costItem.taxRate
+        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()

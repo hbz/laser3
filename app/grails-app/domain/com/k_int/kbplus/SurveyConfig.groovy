@@ -124,4 +124,19 @@ class SurveyConfig {
     }
 
 
+    def getSurveyOrgsIDs()
+    {
+        def result = [:]
+
+        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+
+        return result
+    }
+
+
+
+
+
 }
