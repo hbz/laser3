@@ -42,6 +42,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
+                            style="${config?.configFinish ? 'background-color: olive' : ''}"
                             controller="survey" action="surveyCostItems"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
@@ -59,12 +60,12 @@
             <div class="ui top attached tabular menu">
                 <a class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                    data-tab="selectedSubParticipants">${message(code: 'surveyParticipants.selectedSubParticipants')}
-                    <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
+                    <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
                 </a>
 
                 <a class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
                    data-tab="selectedParticipants">${message(code: 'surveyParticipants.selectedParticipants')}
-                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></a>
+                    <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div></a>
 
             </div>
 
@@ -81,16 +82,16 @@
 
                     <div class="four wide column">
 
-                        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+                    %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+                            data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
-                        <g:render template="/survey/costItemModal"
-                                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+                    <g:render template="/survey/costItemModal"
+                              model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-                       <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
-                                <i class="plus icon"></i>
-                            </g:link>
+                        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                            <i class="plus icon"></i>
+                        </g:link>
                     </div>
 
                     <br>
@@ -112,21 +113,23 @@
                     <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedSubParticipants.findAll { it?.hasAccessOrg() }.sort {
+                              model="[orgList       : selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
                                   it?.sortname
                               },
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID: 'costTable'
+                                      tableID       : 'costTable'
                               ]"/>
 
 
                     <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
-                    <g:set var="surveyParticipantsHasNotAccess" value="${selectedSubParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
                     <div class="four wide column">
                         <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
+                                code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
                     </div>
 
                     <g:render template="../templates/copyEmailaddresses"
@@ -138,7 +141,7 @@
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasNotAccess,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID: 'costTable'
+                                      tableID       : 'costTable'
                               ]"/>
 
                 </div>
@@ -159,12 +162,12 @@
 
                     <div class="four wide column">
 
-                        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+                    %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+                            data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
-                        <g:render template="/survey/costItemModal"
-                                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+                    <g:render template="/survey/costItemModal"
+                              model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
                         <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
                             <i class="plus icon"></i>
@@ -192,21 +195,23 @@
 
 
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedParticipants.findAll { it?.hasAccessOrg() }.sort {
+                              model="[orgList       : selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
                                   it?.sortname
                               },
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                      tableID: 'costTable'
+                                      tableID       : 'costTable'
                               ]"/>
 
 
                     <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
-                    <g:set var="surveyParticipantsHasNotAccess" value="${selectedParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
                     <div class="four wide column">
                         <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
+                                code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
                     </div>
 
                     <g:render template="../templates/copyEmailaddresses"
@@ -218,12 +223,24 @@
                     <g:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasNotAccess,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                      tableID: 'costTable'
+                                      tableID       : 'costTable'
                               ]"/>
 
                 </div>
 
             </div>
+
+            <g:form action="surveyConfigFinish" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+                <div class="ui right floated compact segment">
+                    <div class="ui checkbox">
+                        <input type="checkbox" onchange="this.form.submit()" name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyConfig.configFinish.label"/> </label>
+                    </div>
+                </div>
+
+            </g:form>
 
         </div>
     </div>

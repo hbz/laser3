@@ -5,10 +5,6 @@
 
 .ui.cards > .card,
 .ui.card {
-  max-width: 100%;
-  position: relative;
-  display: @display;
-  flex-direction: column;
 
   width: @width;
   min-height: @minHeight;
@@ -21,15 +17,9 @@
   transition: @transition;
   z-index: @zIndex;
 }
-.ui.cards > .card,
-.ui.card {
-  width: 271px;
-}
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
-  display: block;
-  margin: @headerMargin;
-  font-family: @headerFont;
+
   color: @headerColor;
 }
 /* Default Header Size */
@@ -46,6 +36,11 @@
 .ui.card.la-role-yoda {
   border-right: 10px solid @green;
 }
+/* Solving the Problem of negative Margins in Grid inside of Card */
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
+}
+
 
 /* definition list in cards */
 .control-label {
