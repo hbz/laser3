@@ -124,7 +124,7 @@
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.type.label')}</th>
                     <th>${message(code: 'surveyParticipants.label')}</th>
                     <th></th>

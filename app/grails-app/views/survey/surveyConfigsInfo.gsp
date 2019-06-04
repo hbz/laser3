@@ -153,7 +153,7 @@
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.introduction.label')}</th>
                     <th>${message(code: 'surveyProperty.explain.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
@@ -248,7 +248,7 @@
                     <tr>
                         <th class="left aligned"></th>
                         <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                        <th>${message(code: 'surveyProperty.name.label')}</th>
+                        <th>${message(code: 'surveyProperty.name')}</th>
                         <th>${message(code: 'surveyProperty.introduction.label')}</th>
                         <th>${message(code: 'surveyProperty.explain.label')}</th>
                         <th>${message(code: 'surveyProperty.comment.label')}</th>

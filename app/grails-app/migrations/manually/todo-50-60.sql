@@ -39,3 +39,15 @@
 --update perm set code = 'org_basic_member' where code = 'org_member';
 --update perm set code = 'org_inst' where code = 'org_basic';
 --update perm set code = 'org_inst_collective' where code = 'org_collective';
+
+
+-- erms-1214
+-- 2019-06-04
+-- removing ROLE_API_READER, ROLE_API_WRITER and ROLE_API_DATAMANAGER
+
+--DELETE FROM user_role WHERE role_id = (SELECT id FROM role WHERE authority = 'ROLE_API_READER');
+--DELETE FROM role WHERE authority = 'ROLE_API_READER';
+--DELETE FROM user_role WHERE role_id = (SELECT id FROM role WHERE authority = 'ROLE_API_WRITER');
+--DELETE FROM role WHERE authority = 'ROLE_API_WRITER';
+--DELETE FROM user_role WHERE role_id = (SELECT id FROM role WHERE authority = 'ROLE_API_DATAMANAGER');
+--DELETE FROM role WHERE authority = 'ROLE_API_DATAMANAGER';

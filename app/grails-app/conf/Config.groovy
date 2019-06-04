@@ -11,6 +11,7 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser'
+featureSurvey = false
 
 globalDataSync = [
   "replaceLocalImpIds": [

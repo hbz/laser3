@@ -166,7 +166,7 @@
             <th class="center aligned">
                 ${message(code: 'surveyConfig.configOrder.label')}
             </th>
-            <th>${message(code: 'surveyProperty.name.label')}</th>
+            <th>${message(code: 'surveyProperty.name')}</th>
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th></th>
             <th></th>
@@ -311,7 +311,7 @@
         <g:form class="ui form" action="addSurveyProperty" params="[surveyInfo: surveyInfo?.id]">
 
             <div class="field required">
-                <label class="property-label"><g:message code="surveyProperty.name.label"/></label>
+                <label class="property-label"><g:message code="surveyProperty.name"/></label>
                 <input type="text" name="name" required=""/>
             </div>
 
@@ -359,7 +359,7 @@
                     <thead>
                     <tr>
                         <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                        <th>${message(code: 'surveyProperty.name.label')}</th>
+                        <th>${message(code: 'surveyProperty.name')}</th>
                         <th>${message(code: 'surveyProperty.type.label')}</th>
                         <th>${message(code: 'surveyProperty.introduction.label')}</th>
                         <th>${message(code: 'surveyProperty.explain.label')}</th>
