@@ -52,11 +52,12 @@ class Identifier {
   }
 
   static def lookupOrCreateCanonicalIdentifier(ns, value) {
+      println "loc canonical identifier"
     value = value?.trim()
     ns = ns?.trim()
     // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-    def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save(flush:true);
-    Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save(flush:true);
+    def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
+    Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save()
   }
 
   static def refdataFind(params) {

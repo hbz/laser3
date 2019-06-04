@@ -2,10 +2,10 @@
 
 <semui:actionsDropdown>
 
-    <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
 
         <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
             <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
@@ -36,5 +36,5 @@
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <g:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
+    <g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
-<g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>

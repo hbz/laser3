@@ -11,7 +11,8 @@ public class OaiClient {
   public OaiClient() {
   }
 
-  public getChangesSince(datestamp, metadataPrefix, processing_closure) {
+  public getChangesSince(datestamp, syncJob, processing_closure) {
+    def metadataPrefix = syncJob.fullPrefix
     println("Get latest changes");
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -44,7 +45,7 @@ public class OaiClient {
             // println("Record id...${r.'header'.'identifier'}");
             // println("Package Name: ${r.metadata.package.packageName}");
             // println("Package Id: ${r.metadata.package.packageId}");
-            processing_closure.call(r);
+            processing_closure.call(r,syncJob);
           }
 
           if ( xml.'ListRecords'.'resumptionToken'.size() == 1 && xml.'ListRecords'.'resumptionToken'.text()?.size() > 0) {
