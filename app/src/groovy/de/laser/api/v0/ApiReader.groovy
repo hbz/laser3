@@ -85,7 +85,7 @@ class ApiReader {
         result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -115,7 +115,7 @@ class ApiReader {
         }
         */
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -209,7 +209,7 @@ class ApiReader {
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
         */
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -261,7 +261,7 @@ class ApiReader {
         //result.membership           = org.membership?.value // RefdataValue
         //result.outgoingCombos       = org.outgoingCombos // com.k_int.kbplus.Combo
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -317,7 +317,7 @@ class ApiReader {
                 pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
         */
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
 
@@ -399,7 +399,7 @@ class ApiReader {
         */
         // result.costItems    = exportHelperService.resolveCostItems(sub.costItems) // com.k_int.kbplus.CostItem
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     // ################### CATALOGUE ###################
@@ -437,23 +437,12 @@ class ApiReader {
                     tmpRdv.label_de = validLabel(rdv.getI10n('value', 'de'))
                     tmpRdv.label_en = validLabel(rdv.getI10n('value', 'en'))
 
-                    rdcTmp.entries << ApiReaderHelper.cleanUp(tmpRdv, true, true)
+                    rdcTmp.entries << ApiToolkit.cleanUp(tmpRdv, true, true)
                 }
-                result << ApiReaderHelper.cleanUp(rdcTmp, true, true)
+                result << ApiToolkit.cleanUp(rdcTmp, true, true)
             }
             cache.put('refdatas', result)
         }
         result
-    }
-
-    // ################### HELPER ###################
-
-    static boolean isDataManager(Org org) {
-        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-
-        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
-            return ApiManager.API_LEVEL_DATAMANAGER == apiLevel.getValue()
-        }
-        return false
     }
 }

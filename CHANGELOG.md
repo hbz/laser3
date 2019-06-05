@@ -1,3 +1,10 @@
+0.17.2
+
+- reworked sharing provider and agencies between subscriptions
+- fixed: non visible subscription informations for subscribers
+- fixed: document upload and deletion for organisations
+- fixed: wrong links at access point configuration
+
 0.17.1
 
 - optimized object deletion

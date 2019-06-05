@@ -1711,17 +1711,6 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            def providers = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_provider)
-
-                            providers.each { provider ->
-                                new OrgRole(org: provider.org, sub: cons_sub, roleType: role_provider).save()
-                            }
-
-                            def agencys = OrgRole.findAllBySubAndRoleType(result.subscriptionInstance, role_agency)
-                            agencys.each { agency ->
-                                new OrgRole(org: agency.org, sub: cons_sub, roleType: role_agency).save()
-                            }
-
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 

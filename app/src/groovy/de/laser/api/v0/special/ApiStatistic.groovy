@@ -12,6 +12,7 @@ import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -79,7 +80,7 @@ class ApiStatistic {
         //result.tipps            = resolvePkgTipps(pkg.tipps)
         result.subscriptions    = resolvePkgSubscriptions(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
 
-        result = ApiReaderHelper.cleanUp(result, true, true)
+        result = ApiToolkit.cleanUp(result, true, true)
 
         return (result ? new JSON(result) : null)
     }
@@ -99,7 +100,7 @@ class ApiStatistic {
             }
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     static resolvePkgLicense(License lic) {
@@ -108,7 +109,7 @@ class ApiStatistic {
         }
         def result = ApiReaderHelper.resolveLicenseStub(lic, null, true)
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /*
@@ -123,7 +124,7 @@ class ApiStatistic {
         result.name         = pform.name
         //result.identifiers  = ApiReaderHelper.resolveIdentifiers(pform.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 
@@ -138,7 +139,7 @@ class ApiStatistic {
             result.add( ApiReaderHelper.resolveTipp(tipp, ApiReaderHelper.IGNORE_NONE, null))
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 
@@ -170,14 +171,14 @@ class ApiStatistic {
                         else {
                             def org = ApiReaderHelper.resolveOrganisationStub(ogr.org, null)
                             if (org) {
-                                orgList.add(ApiReaderHelper.cleanUp(org, true, true))
+                                orgList.add(ApiToolkit.cleanUp(org, true, true))
                             }
                         }
                     }
                 }
             }
             if (orgList) {
-                sub?.put('organisations', ApiReaderHelper.cleanUp(orgList, true, true))
+                sub?.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
             }
 
             List<IssueEntitlement> ieList = []
@@ -201,7 +202,7 @@ class ApiStatistic {
                 }
             }
             if (ieList) {
-                sub?.put('issueEntitlements', ApiReaderHelper.cleanUp(ieList, true, true))
+                sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
             }
 
             //result.add( ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true))
@@ -209,7 +210,7 @@ class ApiStatistic {
             result.add( sub )
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
