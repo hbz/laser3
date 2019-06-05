@@ -204,13 +204,38 @@ class Subscription
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
+        if (sharedObject instanceof DocContext) {
             if (sharedObject.isShared) {
                 List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
                 log.debug('found targets: ' + newTargets)
 
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+        if (sharedObject instanceof OrgRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    // ERMS-1185
+                    if (sharedObject.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER]) {
+                        List<OrgRole> existingOrgRoles = OrgRole.findAll{
+                            sub == sub && roleType == sharedObject.roleType && org == sharedObject.org
+                        }
+                        if (existingOrgRoles) {
+                            log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
+                            existingOrgRoles.each{ tmp -> tmp.delete() }
+                        }
+                    }
                     sharedObject.addShareForTarget_trait(sub)
                 }
             }
