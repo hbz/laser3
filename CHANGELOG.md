@@ -1,3 +1,14 @@
+0.17.2
+
+- fixed: document upload and deletion for organisations
+- fixed: non visible subscription informations for subscribers
+- reworked sharing provider and agencies between subscriptions
+
+0.17.1
+
+- optimized object deletion
+- added missing access point template
+
 0.17
 
 - added license properties at subscription overview
