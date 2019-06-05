@@ -1,6 +1,8 @@
 0.17.2
 
 - fixed: document upload and deletion for organisations
+- fixed: non visible subscription informations for subscribers
+- reworked sharing provider and agencies between subscriptions
 
 0.17.1
 
