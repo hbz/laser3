@@ -1,3 +1,7 @@
+0.17.2
+
+- fixed: document upload and deletion for organisations
+
 0.17.1
 
 - optimized object deletion
