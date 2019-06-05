@@ -151,7 +151,7 @@
                 <td>
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
-                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" />
+                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                             <br/>
                         </g:if>
                     </g:each>
@@ -211,11 +211,13 @@
     $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
         var generic_OrgRole_id = this.value
         if (this.checked) {
-            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').addClass('willStay');
             $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
         } else {
             $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willStay');
-            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').removeClass('willStay');
+            if (getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
+            }
         }
     })
     $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
@@ -226,6 +228,18 @@
             $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willBeReplacedStrong');
         }
     })
+
+    function getNumberOfCheckedCheckboxes(inputElementName){
+        var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
+        var numberOfChecked = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                numberOfChecked++;
+            }
+        }
+        return numberOfChecked;
+    }
+
 </r:script>
 
 
