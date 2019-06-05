@@ -988,8 +988,8 @@ class FinanceController extends AbstractDebugController {
 
               newCostItem.owner = result.institution
               newCostItem.sub = sub
-              newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg.pkg)
-              newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie.tipp)
+              newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg.pkg) ?: null
+              newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie.tipp) ?: null
               newCostItem.order = order
               newCostItem.invoice = invoice
               newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
