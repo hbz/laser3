@@ -15,7 +15,7 @@
 
 
 <laser:remoteLink controller="ajax" action="readNote" id="1" xyz="xyz" abc="abc" update="#test123"
-                  js-before="alert('js-before')" js-done="alert('js-done')" js-always="alert('js-always')">
+                  data-before="alert('data-before')" data-done="alert('data-done')" data-always="alert('data-always')">
     Click here @ div#test123
 </laser:remoteLink>
 

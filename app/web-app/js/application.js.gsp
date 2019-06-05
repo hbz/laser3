@@ -615,7 +615,7 @@ r2d2 = {
             buildConfirmationModal(this);
         });
 
-        // for remote links = ajax calls
+        // for old remote links = ajax calls
         $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
             var onclickString = $(this).next('.js-gost').attr("onclick");
             $('#js-confirmation-button').attr("onclick", onclickString);
@@ -649,8 +649,10 @@ deckSaver = {
             dontHide: $(".la-js-dont-hide-button")
         },
         icon: $(".la-js-editmode-icon")
+
     },
     initializePopup: function(obj) {
+
         $(obj).popup({
             hoverable: true,
             inline     : true,
@@ -664,24 +666,31 @@ deckSaver = {
                 $(this).children('.content').attr({role:'tooltip',id:id});
             },
         });
+
     },
     removeClone: function () {
         $('.la-clone').remove();
     },
     removePopupFromClone:  function () {
+
         var clone = $('.la-clone');
         var clonePopup = $(clone).popup('get popup');
         $(clonePopup).each(function(){
             $(this).remove();
         })
+
     },
     enableXeditable: function (cssClass){
+
         var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', false);
+
     },
     diableXeditable: function(cssClass){
+
         var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
         selection.editable('option', 'disabled', true);
+
     },
     toggleEditableElements: function (){
 
@@ -749,27 +758,31 @@ deckSaver = {
 
 bb8 = {
 
+    loadJsAfterAjax: function () {
+
+        bb8.go();
+
+    },
+
     go: function() {
 
         $(".la-js-remoteLink").click(function (event) {
             event.preventDefault();
-            alert (this)
             if (! $(this).hasClass('js-open-confirm-modal')) {
                 bb8.ajax(this);
             }
-
-
         })
+
     },
 
     ajax: function(elem) {
 
         var url = $(elem).attr('href')
-        var before = $(elem).attr('js-before')      // before
-        var done = $(elem).attr('js-done')          // onSuccess
-        var fail = $(elem).attr('js-fail')
-        var always = $(elem).attr('js-always')      // onComplete
-        var update = '#' + $(elem).attr('update')
+        var before = $(elem).attr('data-before')      // before
+        var done = $(elem).attr('data-done')          // onSuccess
+        var fail = $(elem).attr('data-fail')
+        var always = $(elem).attr('data-always')      // onComplete
+        var update = '#' + $(elem).attr('data-update')
 
         $.ajax({
             url: url,
@@ -806,7 +819,9 @@ bb8 = {
 }
 
 $(document).ready(function() {
+
     r2d2.go();
     bb8.go();
+
 })
 

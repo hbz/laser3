@@ -113,9 +113,9 @@
                                                       data-confirm-term-how="inherit"
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.off.tooltip')}"
-                                                      js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      js-always="c3po.loadJsAfterAjax()"
-                                                      update="${custom_props_div}"
+                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
+                                                      data-always="c3po.loadJsAfterAjax()"
+                                                      data-update="${custom_props_div}"
                                     >
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -130,9 +130,9 @@
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
-                                                      js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                      js-always="c3po.loadJsAfterAjax()"
-                                                      update="${custom_props_div}"
+                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
+                                                      data-always="c3po.loadJsAfterAjax()"
+                                                      data-update="${custom_props_div}"
                                     >
                                         <i class="thumbtack icon la-js-editmode-icon"></i>
                                     </laser:remoteLink>
@@ -149,9 +149,9 @@
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                   data-confirm-term-how="delete"
-                                                  js-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  js-always="c3po.loadJsAfterAjax()"
-                                                  update="${custom_props_div}"
+                                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
+                                                  data-always="c3po.loadJsAfterAjax()"
+                                                  data-update="${custom_props_div}"
                                 >
                                     <i class="trash alternate icon"></i>
                                 </laser:remoteLink>
