@@ -30,37 +30,39 @@
                 </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="vertical-align: top" name="subscription.takeDates.source">
-                    <div>
-                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
-                        <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
-                    </div>
-                </td>
+            <g:if test="${ ! isRenewSub}">
+                <tr>
+                    <td style="vertical-align: top" name="subscription.takeDates.source">
+                        <div>
+                            <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
+                            <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                        </div>
+                    </td>
 
-                %{--AKTIONEN:--}%
-                <td class="center aligned">
-                    <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
-                        <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
-                        <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
-                    </g:if>
-                </td>
+                    %{--AKTIONEN:--}%
+                    <td class="center aligned">
+                        <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
+                            <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
+                            <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
+                        </g:if>
+                    </td>
 
-                <td style="vertical-align: top" name="subscription.takeDates.target">
-                    <div>
-                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
-                        <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
-                    </div>
-                </td>
+                    <td style="vertical-align: top" name="subscription.takeDates.target">
+                        <div>
+                            <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
+                            <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                        </div>
+                    </td>
 
-                <td>
-                    <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
-                        <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
-                    </g:if>
-                </td>
-            </tr>
+                    <td>
+                        <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
+                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
+                        </g:if>
+                    </td>
+                </tr>
+            </g:if>
 
             <tr>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
