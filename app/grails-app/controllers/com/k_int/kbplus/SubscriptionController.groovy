@@ -10,6 +10,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import de.laser.oai.OaiClientLaser
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import de.laser.AuditConfig
@@ -421,7 +422,10 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
-        def result = [:]
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+
+        result
+        /*
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
@@ -456,7 +460,7 @@ class SubscriptionController extends AbstractDebugController {
             def mapA = listA.collectEntries { [it.tipp.title.title, it] }
             def mapB = listB.collectEntries { [it.tipp.title.title, it] }
 
-            //FIXME: It should be possible to optimize the following lines
+            //FIXME: It should be possible to optimize the following lines - it is. The whole code can be optimised as it is legacy
             def unionList = mapA.keySet().plus(mapB.keySet()).toList()
             unionList = unionList.unique()
             result.unionListSize = unionList.size()
@@ -519,7 +523,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
         }
-        result
+        */
     }
 
     def formatDateOrNull(formatter, date) {
@@ -2231,6 +2235,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
+        //to be deployed in prallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
@@ -2240,13 +2245,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
                 if (!gri) {
-                    redirect(url: request.getHeader('referer'))
-                    flash.error = message(code: 'subscription.details.link.no_works', default: "Package can not be linked right now. Try again later.")
-                    return
+                    OaiClientLaser oaiClient = new OaiClientLaser()
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
+                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
+                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
+                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
+                    ObjectOutputStream out = new ObjectOutputStream(baos)
+                    out.writeObject(parsedRec.parsedRec)
+                    out.close()
+                    gri = new GlobalRecordInfo(
+                            ts: sdf.parse(rec.header.datestamp.text()),
+                            name: parsedRec.title,
+                            identifier: rec.header.identifier.text(),
+                            uuid: rec.header.uuid?.text() ?: null,
+                            desc: "${parsedRec.title}",
+                            source: grs,
+                            rectype: grs.rectype,
+                            record: baos.toByteArray(),
+                            kbplusCompliant: kbplusCompliant,
+                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status,"Package Status")
+                    )
+                    flash.message = message(code:'subscription.details.link.no_package_yet')
+                    gri.save(flush: true)
                 }
                 def grt = GlobalRecordTracker.findByOwner(gri)
                 if (!grt) {
-                    def new_tracker_id = java.util.UUID.randomUUID().toString()
+                    def new_tracker_id = UUID.randomUUID().toString()
 
                     grt = new GlobalRecordTracker(
                             owner: gri,
@@ -2256,41 +2282,50 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
                             autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
                             autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (grt.save()) {
-                        globalSourceSyncService.initialiseTracker(grt);
-                        //Update INDEX ES
-                        dataloadService.updateFTIndexes();
-                    } else {
+                    if (!grt.save()) {
                         log.error(grt.errors)
                     }
                 }
 
-                if (!Package.findByGokbId(grt.owner.uuid)) {
-                    globalSourceSyncService.initialiseTracker(grt);
+                //if(Package.findByGokbId(grt.owner.uuid)) {
+                String addType = params.addType
+                    executorWrapperService.processClosure({
+                        globalSourceSyncService.initialiseTracker(grt)
+                        //Update INDEX ES
+                        dataloadService.updateFTIndexes()
+
+                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
+                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
+
+                        if (addType == 'With') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, true)
+                            }
+                        } else if (addType == 'Without') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, false)
+                            }
+                        }
+                    },gri)
+                /*}
+                else {
+                    //setup new
+                    globalSourceSyncService.initialiseTracker(grt)
                     //Update INDEX ES
-                    dataloadService.updateFTIndexes();
-                }
-
-                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
+                    dataloadService.updateFTIndexes()
+                }*/
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', id: params.id
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', id: params.id
+                        break
                 }
 
             } else {

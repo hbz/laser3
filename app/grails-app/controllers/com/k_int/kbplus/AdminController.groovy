@@ -980,6 +980,61 @@ class AdminController extends AbstractDebugController {
             ]
     }
 
+  @Secured(['ROLE_ADMIN'])
+  def manageSurveyPropertyDefinitions() {
+
+    if (params.cmd == 'deletePropertyDefinition') {
+      def pd = genericOIDService.resolveOID(params.pd)
+
+      if (pd) {
+        if (! pd.hardData) {
+          try {
+            pd.delete(flush:true)
+            flash.message = "${params.pd} wurde gelöscht."
+          }
+          catch(Exception e) {
+            flash.error = "${params.pd} konnte nicht gelöscht werden."
+          }
+        }
+      }
+    }
+    else if (params.cmd == 'replacePropertyDefinition') {
+      if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+        def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
+        def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
+
+        if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
+
+          try {
+            def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+
+            flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
+          }
+          catch (Exception e) {
+            log.error(e)
+            flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
+          }
+
+        }
+      } else {
+        flash.error = "Keine ausreichenden Rechte!"
+      }
+    }
+
+    def propDefs = []
+    SurveyProperty.findAllByOwnerIsNull().each { it ->
+      propDefs << it
+
+    }
+
+    propDefs.sort { a, b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name') }
+
+    render view: 'manageSurveyPropertyDefinitions', model: [
+            editable    : true,
+            surveyPropertyDefinitions: propDefs
+    ]
+  }
+
     @Secured(['ROLE_ADMIN'])
     def managePropertyGroups() {
         //def result = setResultGenerics()

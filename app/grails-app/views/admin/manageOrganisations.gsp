@@ -46,6 +46,8 @@
 
                 <th>${message(code:'org.apiLevel.label')}</th>
 
+                <th>${message(code:'org.hasAccessOrg')}</th>
+
                 <th>${message(code:'default.actions')}</th>
             </tr>
         </thead>
@@ -168,6 +170,22 @@
                                 }
                             }
                         %>
+                    </td>
+                    <td>
+                        <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
+
+                        <g:if test="${accessUserList?.instAdms?.size() > 0}">
+                            Inst_Admins: ${accessUserList?.instAdms?.size()}<br>
+                        </g:if>
+
+                        <g:if test="${accessUserList?.instEditors?.size() > 0}">
+                            Inst_Editors: ${accessUserList?.instEditors?.size()}<br>
+                        </g:if>
+
+                        <g:if test="${accessUserList?.instUsers?.size() > 0}">
+                            Inst_Users: ${accessUserList?.instUsers?.size()}<br>
+                        </g:if>
+
                     </td>
 
                     <td class="x">

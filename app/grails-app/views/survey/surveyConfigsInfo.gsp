@@ -87,16 +87,38 @@
                     </dl>
                 </div>
             </div>
+
             <div class="ui card ">
                 <div class="content">
                     <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.header.label')}</dt>
+                        <dt class="control-label">
+                            <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                ${message(code: 'surveyConfig.header.label')}
+                                <i class="info small circular inverted icon"></i>
+                            </div>
+                        </dt>
                         <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
 
                     </dl>
                     <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.comment.label')}</dt>
+                        <dt class="control-label">
+                            <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                ${message(code: 'surveyConfig.comment.label')}
+                                <i class="info small circular inverted icon"></i>
+                            </div>
+                        </dt>
                         <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+
+                    </dl>
+                    <dl>
+                        <dt class="control-label">
+                            <div class="ui icon"
+                                 data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                ${message(code: 'surveyConfig.internalComment.label')}
+                                <i class="info small circular inverted icon"></i>
+                            </div>
+                        </dt>
+                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
 
                     </dl>
 
@@ -121,15 +143,17 @@
 
     </h3>
 
+    <br>
 
     <div>
-            <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
-                    total="${surveyProperties.size()}"/></h4>
+        <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
+                total="${surveyProperties.size()}"/></h4>
+        <semui:form>
             <table class="ui celled sortable table la-table">
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.introduction.label')}</th>
                     <th>${message(code: 'surveyProperty.explain.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
@@ -138,7 +162,7 @@
                 </tr>
                 </thead>
 
-                <g:each in="${surveyProperties.sort{it.surveyProperty?.name}}" var="surveyProperty" status="i">
+                <g:each in="${surveyProperties.sort { it.surveyProperty?.name }}" var="surveyProperty" status="i">
                     <tr>
                         <td class="center aligned">
                             ${i + 1}
@@ -147,7 +171,8 @@
                             ${surveyProperty?.surveyProperty?.getI10n('name')}
 
                             <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                                      data-tooltip="${surveyProperty?.surveyProperty?.getI10n('explain')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
@@ -195,100 +220,122 @@
                     </tr>
                 </g:each>
             </table>
+        </semui:form>
     </div>
 
     <br>
+
     <div class="ui divider"></div>
+
     <div>
 
         <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
             <g:hiddenField name="id" value="${surveyInfo?.id}"/>
             <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
 
-            <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')} <semui:totalNumber
-                    total="${properties.size()}"/></h4>
-            <table class="ui celled sortable table la-table">
-                <thead>
-                <tr>
-                    <th class="left aligned"></th>
-                    <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
-                    <th>${message(code: 'surveyProperty.introduction.label')}</th>
-                    <th>${message(code: 'surveyProperty.explain.label')}</th>
-                    <th>${message(code: 'surveyProperty.comment.label')}</th>
-                    <th>${message(code: 'surveyProperty.type.label')}</th>
+            <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
 
-                </tr>
-                </thead>
+                <i class="question circle icon la-popup"></i>
 
-                <g:each in="${properties}" var="property" status="i">
+                <div class="ui popup">
+                    <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
+                </div>
+                <semui:totalNumber
+                        total="${properties.size()}"/></h4>
+            <semui:form>
+                <table class="ui celled sortable table la-table">
+                    <thead>
                     <tr>
-                        <td>
-                            <g:if test="${com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, property)}">
-                                <i class="check circle icon green"></i>
-                            </g:if>
-                            <g:else>
-                                <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
-                            </g:else>
-                        </td>
-                        <td class="center aligned">
-                            ${i + 1}
-                        </td>
-                        <td>
-                            ${property?.getI10n('name')}
+                        <th class="left aligned"></th>
+                        <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                        <th>${message(code: 'surveyProperty.name')}</th>
+                        <th>${message(code: 'surveyProperty.introduction.label')}</th>
+                        <th>${message(code: 'surveyProperty.explain.label')}</th>
+                        <th>${message(code: 'surveyProperty.comment.label')}</th>
+                        <th>${message(code: 'surveyProperty.type.label')}</th>
 
-                            <g:if test="${property?.getI10n('explain')}">
+                    </tr>
+                    </thead>
+
+                    <g:each in="${properties}" var="property" status="i">
+                        <tr>
+                            <td>
+                                <g:if test="${com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, property)}">
+                                    <i class="check circle icon green"></i>
+                                </g:if>
+                                <g:else>
+                                    <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
+                                </g:else>
+                            </td>
+                            <td class="center aligned">
+                                ${i + 1}
+                            </td>
+                            <td>
+                                ${property?.getI10n('name')}
+
+                                <g:if test="${property?.owner == institution}">
+                                    <i class='shield alternate icon'></i>
+                                </g:if>
+
+                            %{--<g:if test="${property?.getI10n('explain')}">
                                 <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${property?.getI10n('explain')}">
                                     <i class="question circle icon"></i>
                                 </span>
-                            </g:if>
+                            </g:if>--}%
 
-                        </td>
-                        <td>
-                            <g:if test="${property?.getI10n('introduction')}">
-                                ${property?.getI10n('introduction')}
-                            </g:if>
-                        </td>
+                            </td>
+                            <td>
+                                <g:if test="${property?.getI10n('introduction')}">
+                                    ${property?.getI10n('introduction')}
+                                </g:if>
+                            </td>
 
-                        <td>
-                            <g:if test="${property?.getI10n('explain')}">
-                                ${property?.getI10n('explain')}
-                            </g:if>
-                        </td>
-                        <td>
-                            <g:if test="${property?.comment}">
-                                ${property?.comment}
-                            </g:if>
-                        </td>
-                        <td>
-                            ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
+                            <td>
+                                <g:if test="${property?.getI10n('explain')}">
+                                    ${property?.getI10n('explain')}
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${property?.comment}">
+                                    ${property?.comment}
+                                </g:if>
+                            </td>
+                            <td>
+                                ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
 
-                            <g:if test="${property?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                <g:set var="refdataValues" value="${[]}"/>
-                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(property?.refdataCategory)}"
-                                        var="refdataValue">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                </g:each>
-                                <br>
-                                (${refdataValues.join('/')})
-                            </g:if>
+                                <g:if test="${property?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                    <g:set var="refdataValues" value="${[]}"/>
+                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(property?.refdataCategory)}"
+                                            var="refdataValue">
+                                        <g:set var="refdataValues"
+                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                    </g:each>
+                                    <br>
+                                    (${refdataValues.join('/')})
+                                </g:if>
 
-                        </td>
-                    </tr>
-                </g:each>
-            </table>
+                            </td>
+                        </tr>
+                    </g:each>
+                </table>
 
+                <input type="submit" class="ui button"
+                       value="${message(code: 'surveyConfigsInfo.add.button')}"/>
 
-            <input type="submit" class="ui button"
-                   value="${message(code: 'surveyConfigsInfo.add.button')}"/>
+                <input type="submit" name="addtoallSubs" class="ui button"
+                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
 
-            <input type="submit" name="addtoallSubs" class="ui button"
-                   value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
+            </semui:form>
 
         </g:form>
 
     </div>
 </g:if>
+
+<g:javascript>
+    $(".la-popup").popup({});
+</g:javascript>
+</body>
+</html>
 
 

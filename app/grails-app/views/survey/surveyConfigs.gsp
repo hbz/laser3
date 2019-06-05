@@ -165,7 +165,7 @@
                 <th class="center aligned">
                     ${message(code: 'surveyConfig.configOrder.label')}
                 </th>
-                <th>${message(code: 'surveyProperty.name.label')}</th>
+                <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
                 <th>${message(code: 'surveyConfig.documents.label')}</th>
                 <th>${message(code: 'surveyConfig.orgs.label')}</th>
@@ -186,8 +186,8 @@
                             <g:if test="${config?.type == 'SurveyProperty'}">
                                 ${config?.surveyProperty?.getI10n('name')}
 
-                                <g:if test="${config?.getI10n('explain')}">
-                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.getI10n('explain')}">
+                                <g:if test="${config?.surveyProperty?.getI10n('explain')}">
+                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${config?.surveyProperty?.getI10n('explain')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>

@@ -1,4 +1,3 @@
-
 <%@ page import="com.k_int.kbplus.OrgAccessPoint" %>
 <!doctype html>
 <html>
@@ -6,11 +5,26 @@
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'accessPoint.label', default: 'Access Point')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
+    <g:javascript>
+      $(function() {
+        $('body').attr('class', 'organisation_accessPoint_edit_ip');
+     });
+    </g:javascript>
 	</head>
 	<body>
-
             <div>
                 <g:render template="breadcrumb" model="${[ accessPoint:accessPoint, params:params ]}"/>
+
+                %{--<semui:controlButtons>
+                  <g:render template="actions" />
+                </semui:controlButtons>--}%
+
+              <h1 class="ui left aligned icon header"><semui:headerIcon />
+              ${orgInstance.name}
+              </h1>
+
+              <g:render template="/organisation/nav"/>
+
                 <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
 
@@ -34,42 +48,44 @@
                                     <dt><g:message code="accessPoint.range.plural" default="Addressbereiche" /></dt>
                                     <dd></dd>
                                 </dl>
-
-                                <dl>
-                                    <dt>
-                                        <laser:select class="ui dropdown values" id="ipv4Format"
-                                                      name="ipv4Format"
-                                                      from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv4 Address Format')}"
-                                                      value="${ipv4Format}"
-                                                      optionKey="value"
-                                                      optionValue="value"
-                                                      onchange="submit()"
-                                        />
-                                    </dt>
-                                    <dd>
-
-                                        <g:each in="${ipv4Ranges}" var="ipv4Range">
-                                            <div >${ipv4Range}</div>
-                                        </g:each>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt>
-                                        <laser:select class="ui dropdown values" id="ipv6Format"
-                                                      name="ipv6Format"
-                                                      from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv6 Address Format')}"
-                                                      value="${ipv6Format}"
-                                                      optionKey="value"
-                                                      optionValue="value"
-                                                      onchange="submit()"
-                                        />
-                                       </dt>
-                                    <dd>
-                                        <g:each in="${ipv6Ranges}" var="ipv6Range">
-                                            <div >${ipv6Range}</div>
-                                        </g:each>
-                                    </dd>
-                                </dl>
+                                <div class="fields three">
+                                  <div class="field">
+                                    <div class="row">
+                                      <laser:select class="ui dropdown values" id="ipv4Format"
+                                                    name="ipv4Format"
+                                                    from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv4 Address Format')}"
+                                                    value="${ipv4Format}"
+                                                    optionKey="value"
+                                                    optionValue="value"
+                                                    onchange="submit()"
+                                      />
+                                    </div>
+                                    <p></p>
+                                    <div class="row">
+                                      <g:each in="${ipv4Ranges}" var="ipv4Range">
+                                        <div >${ipv4Range}</div>
+                                      </g:each>
+                                    </div>
+                                  </div>
+                                  <div class="field">
+                                    <div class="row">
+                                      <laser:select class="ui dropdown values" id="ipv6Format"
+                                                    name="ipv6Format"
+                                                    from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv6 Address Format')}"
+                                                    value="${ipv6Format}"
+                                                    optionKey="value"
+                                                    optionValue="value"
+                                                    onchange="submit()"
+                                      />
+                                    </div>
+                                    <p></p>
+                                    <div class="row">
+                                      <g:each in="${ipv6Ranges}" var="ipv6Range">
+                                        <div >${ipv6Range}</div>
+                                      </g:each>
+                                    </div>
+                                  </div>
+                                </div>
                             </div>
                         </div><!-- .card -->
                     </div>
@@ -93,7 +109,7 @@
                                 <td>${accessPointData.getInputStr()}</td>
                                 <td class="center aligned">
                                     <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" class="ui negative icon button">
-                                        <i class="delete icon"></i>
+                                        <i class="trash alternate icon"></i>
                                     </g:link>
                                 </td>
                             </tr>
@@ -117,7 +133,13 @@
                         </tbody>
                     </table>
                 </g:form>
-                <h5 class="ui header">${message(code: 'accessPoint.link.header', default: 'Access Config for Platform/License')}</h5>
+
+                <h5>${message(code: 'accessPoint.link.header', default: 'Access Config for Platform/License')}
+                  <span class="la-long-tooltip" data-variation="tiny"
+                        data-tooltip="${message(code:'accessPoint.platformHelp')}">
+                    <i class="question circle icon la-popup"></i>
+                  </span>
+                </h5>
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform" method="POST">
                     <g:hiddenField name="id" value="${accessPoint?.id}" />
                     <table class="ui celled la-table table compact collapsing ignore-floatThead">
@@ -133,7 +155,7 @@
                               <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
                                 <td class="center aligned">
                                     <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedPlatform.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
-                                        <i class="delete icon"></i>
+                                        <i class="trash alternate icon"></i>
                                     </g:link>
                                 </td>
                             </tr>
@@ -168,7 +190,7 @@
                       <td><g:link controller="subscription" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
                       <td class="center aligned">
                         <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedSubscription.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
-                          <i class="delete icon"></i>
+                          <i class="trash alternate icon"></i>
                         </g:link>
                       </td>
                     </tr>

@@ -38,7 +38,7 @@ class ApiReaderHelper {
      * @param removeEmptyLists
      * @return
      */
-    static cleanUp(Map map, removeNullValues, removeEmptyLists) {
+    static Map<String, Object> cleanUp(Map map, removeNullValues, removeEmptyLists) {
         if (! map) {
             return null
         }
@@ -55,12 +55,12 @@ class ApiReaderHelper {
     }
 
     /**
-     * @param def list
+     * @param Collection list
      * @param removeEmptyValues
      * @param removeEmptyLists
      * @return
      */
-    static cleanUp(def list, removeNullValues, removeEmptyLists) {
+    static Collection cleanUp(Collection list, removeNullValues, removeEmptyLists) {
         if (! list) {
             return null
         }
@@ -82,7 +82,7 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    static resolveStubs(def list, def type, Org context) {
+    static Collection resolveStubs(Collection list, def type, Org context) {
         def result = []
 
         list?.each { it ->
@@ -116,7 +116,7 @@ class ApiReaderHelper {
         resolveLicenseStub(lic, context, false)
     }
 
-    static resolveLicenseStub(License lic, Org context, hasAccess) {
+    static resolveLicenseStub(License lic, Org context, boolean hasAccess) {
         def result = [:]
 
         if (!lic) {
@@ -238,17 +238,17 @@ class ApiReaderHelper {
 
     static resolveSubscriptionPackageStub(SubscriptionPackage subpkg, ignoreRelation, Org context) {
         if (subpkg) {
-            if(IGNORE_SUBSCRIPTION == ignoreRelation) {
+            if (IGNORE_SUBSCRIPTION == ignoreRelation) {
                 return resolvePackageStub(subpkg.pkg, context)
             }
-            else if(IGNORE_PACKAGE == ignoreRelation) {
+            else if (IGNORE_PACKAGE == ignoreRelation) {
                 return resolveSubscriptionStub(subpkg.subscription, context)
             }
         }
         return null
     }
 
-    static resolveSubscriptionPackageStubs(def list, def ignoreRelation, Org context) {
+    static resolveSubscriptionPackageStubs(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
         def result = []
         if (! list) {
             return null
@@ -278,7 +278,7 @@ class ApiReaderHelper {
 
     // ################### FULL OBJECTS ###################
 
-    static resolveAddresses(def list, allowedTypes) {
+    static resolveAddresses(Collection<Address> list, allowedTypes) {
         def result = []
 
         list?.each { it ->   // com.k_int.kbplus.Address
@@ -307,31 +307,8 @@ class ApiReaderHelper {
         }
         result
     }
-/*
-    def resolveCluster(Cluster cluster) {
-        def result = [:]
 
-        // TODO
-        def allowedAddressTypes = ["Postal address", "Billing address", "Delivery address"]
-        def allowedContactTypes = ["Job-related", "Personal"]
-
-        if(cluster) {
-            result.id           = cluster.id
-            result.name         = cluster.name
-            result.definition   = cluster.definition
-
-            // References
-            def context = null // TODO: use context
-            result.organisations    = resolveOrgLinks(cluster.orgs, IGNORE_CLUSTER, context) // com.k_int.kbplus.OrgRole
-            // TODO
-            result.persons          = resolvePrsLinks(
-                    cluster.prsLinks, allowedAddressTypes, allowedContactTypes, true, true
-            ) // com.k_int.kbplus.PersonRole
-        }
-        return cleanUp(result, true, true)
-    }
-*/
-    static resolveContacts(def list, allowedTypes) {
+    static resolveContacts(Collection<Contact> list, allowedTypes) {
         def result = []
 
         list?.each { it ->       // com.k_int.kbplus.Contact
@@ -352,7 +329,7 @@ class ApiReaderHelper {
     }
 
     @Deprecated
-    static resolveCostItems(def list) {  // TODO
+    static resolveCostItems(Collection<CostItem> list) {  // TODO
         def result = []
 
         list?.each { it ->               // com.k_int.kbplus.CostItem
@@ -395,7 +372,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(def list, def generic, Org context) {
+    static resolveCustomProperties(Collection list, def generic, Org context) {
         def result = []
 
         if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
@@ -471,7 +448,7 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
 
-    static resolveDocuments(def list) {
+    static resolveDocuments(Collection<DocContext> list) {
         def result = []
         list?.each { it -> // com.k_int.kbplus.DocContext
             result << resolveDocument(it.owner)
@@ -479,7 +456,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveIdentifiers(def list) {
+    static resolveIdentifiers(Collection<IdentifierOccurrence> list) {
         def result = []
         list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
             def tmp = [:]
@@ -589,7 +566,7 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Org context
      * @return
     */
-    static resolvePackagesWithIssueEntitlements(def list, Org context) {  // TODO - TODO - TODO
+    static resolvePackagesWithIssueEntitlements(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
         def result = []
 
         list?.each { subPkg ->
@@ -708,7 +685,7 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
 
-    static resolveOrgLinks(def list, ignoreRelationType, Org context) { // TODO
+    static resolveOrgLinks(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
         def result = []
 
         list?.each { it ->   // com.k_int.kbplus.OrgRole
@@ -803,7 +780,7 @@ class ApiReaderHelper {
     /**
      * Access rights due wrapping object
      */
-    static resolvePlatformTipps(def list) {
+    static resolvePlatformTipps(Collection<PlatformTIPP> list) {
         def result = []
 
         list?.each { it -> // com.k_int.kbplus.PlatformTIPP
@@ -817,7 +794,7 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
 
-    static resolvePrivateProperties(def list, Org context) {
+    static resolvePrivateProperties(Collection list, Org context) {
         def result = []
 
         list?.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
@@ -841,7 +818,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveProperties(def generic, Org context) {
+    static resolveProperties(Object generic, Org context) {
         def cp = resolveCustomProperties(generic.customProperties, generic, context)
         def pp = resolvePrivateProperties(generic.privateProperties, context)
 
@@ -849,7 +826,7 @@ class ApiReaderHelper {
         cp
     }
 
-    static resolvePrsLinks(def list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
+    static resolvePrsLinks(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         def result = []
         def tmp = []
 
@@ -996,7 +973,7 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Org context
      * @return Map
      */
-    static resolveTipps(def list, def ignoreRelation, Org context) {
+    static resolveTipps(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         def result = []
 
         list?.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform

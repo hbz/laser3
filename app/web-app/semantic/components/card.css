@@ -29,7 +29,7 @@
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -990,16 +990,7 @@ a.ui.card:hover,
 
 .ui.cards > .card,
 .ui.card {
-  max-width: 100%;
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -1013,15 +1004,8 @@ a.ui.card:hover,
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   z-index: auto;
 }
-.ui.cards > .card,
-.ui.card {
-  width: 271px;
-}
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
-  display: block;
-  margin: '';
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color: #767676;
 }
 
@@ -1038,6 +1022,11 @@ a.ui.card:hover,
 }
 .ui.card.la-role-yoda {
   border-right: 10px solid #98B500;
+}
+
+/* Solving the Problem of negative Margins in Grid inside of Card */
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
 }
 
 /* definition list in cards */

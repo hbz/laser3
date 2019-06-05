@@ -38,11 +38,28 @@ class SurveyOrg {
             if(property?.type == 'class com.k_int.kbplus.RefdataValue'){
                 def sub = surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
 
-                if(sub.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
+                if(sub?.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
                     checkPerennialTerm = true
                 }
             }
         }
         return checkPerennialTerm
+    }
+
+    def hasOrgSubscription()
+    {
+        def hasOrgSubscription = false
+        if(surveyConfig.subscription) {
+            Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
+                def ors = OrgRole.findAllWhere( sub: s, org: this.org )
+                ors.each { or ->
+                    if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
+                        hasOrgSubscription = true
+                    }
+                }
+            }
+        }
+        return hasOrgSubscription
+
     }
 }
