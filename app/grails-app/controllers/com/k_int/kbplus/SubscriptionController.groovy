@@ -2817,12 +2817,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401)
             return;
         } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
-            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin', default: 'Renewals Upload screen is not available to read-only users.')
+            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin')
             response.sendError(401)
             return;
         }
-        //Wurde diese Lizenz schon verlängert?
-
+        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+        if (prevSubs){
+            flash.error = message(code: 'subscription.renewSubExist')
+            response.sendError(401)
+            return;
+        }
 
         def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
@@ -2881,8 +2885,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 form: Subscription.get(old_subOID)?.form ?: null
         )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
-        Date earliest_start_date = null
-        Date latest_end_date = null
 
         if (new_subscription.save()) {
             // assert an org-role
@@ -2891,18 +2893,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
-            Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-            if(old_subOID)
+            if(old_subOID) {
+                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 prevLink.save()
-            else log.error("Problem linking new subscription, ${prevLink.errors}")
+            } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
 
         new_subscription.save(flush: true);
-        new_subscription.startDate = sub_startDate ?: earliest_start_date
-        new_subscription.endDate = sub_endDate ?: latest_end_date
-        new_subscription.save()
 
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         redirect controller: 'subscription', action: 'copyElementsIntoSubscription', id: old_subOID, params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: new_subscription.id, isRenewSub: true]

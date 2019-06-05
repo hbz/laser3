@@ -73,8 +73,7 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in  contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
-contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
+        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
