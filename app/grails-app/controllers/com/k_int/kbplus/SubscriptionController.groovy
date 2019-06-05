@@ -71,15 +71,11 @@ class SubscriptionController extends AbstractDebugController {
     def escapeService
     def deletionService
 
-    public static final String COPY = "COPY"
-    public static final String REPLACE = "REPLACE"
-    public static final String DO_NOTHING = "DO_NOTHING"
-
-    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
-    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
-    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
-    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
-    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = '1'
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = '5'
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = '2'
+    public static final String WORKFLOW_NEXT_SUBSCRIBER = '3'
+    public static final String WORKFLOW_NEXT_PROPERTIES = '4'
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -89,8 +85,6 @@ class SubscriptionController extends AbstractDebugController {
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
     ]
-
-
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -3391,16 +3385,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
-            case '2':
+            case WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 break;
-            case '3':
+            case WORKFLOW_NEXT_SUBSCRIBER:
                 result << copySubElements_Subscriber();
                 break;
-            case '4':
+            case WORKFLOW_NEXT_PROPERTIES:
                 result << copySubElements_Properties();
                 break;
-            case '5':
+            case WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 break;
             default:
@@ -3434,8 +3428,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.workFlowPart = params?.workFlowPart ?: '1'
-        result.workFlowPartNext = params?.workFlowPartNext ?: '2'
+        result.workFlowPart = params?.workFlowPart ?: WORKFLOW_NEXT_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
         result
     }
 
@@ -3449,7 +3443,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.deleteDates(newSub, flash)
             isTargetSubChanged = true
         }else if (params?.subscription?.takeDates && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeDates(baseSub, newSub, flash)
+            subscriptionService.copyDates(baseSub, newSub, flash)
             isTargetSubChanged = true
         }
 
@@ -3457,7 +3451,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.deleteOwner(newSub, flash)
             isTargetSubChanged = true
         }else if (params?.subscription?.takeOwner && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeOwner(baseSub, newSub, flash)
+            subscriptionService.copyOwner(baseSub, newSub, flash)
             isTargetSubChanged = true
         }
 
@@ -3468,7 +3462,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         if (params?.subscription?.takeOrgRelations && isBothSubscriptionsSet(baseSub, newSub)) {
             List<OrgRole> toCopyOrgRelations = params.list('subscription.takeOrgRelations').collect { genericOIDService.resolveOID(it) }
-            subscriptionService.takeOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
+            subscriptionService.copyOrgRelations(toCopyOrgRelations, baseSub, newSub, flash)
             isTargetSubChanged = true
         }
 
@@ -3483,8 +3477,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
-        params?.workFlowPart = '1'
-        params?.workFlowPartNext = '2'
+        params?.workFlowPart = WORKFLOW_NEXT_DATES_OWNER_RELATIONS
+        params?.workFlowPartNext = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
@@ -3508,7 +3502,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params?.subscription?.takeDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyDocs = []
             params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
-            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
+            subscriptionService.copyDoks(baseSub, toCopyDocs, newSub, flash)
         }
 
         if (params?.subscription?.deleteAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3520,7 +3514,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params?.subscription?.takeAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyAnnouncements = []
             params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
+            subscriptionService.copyAnnouncements(baseSub, toCopyAnnouncements, newSub, flash)
         }
 
         if (params?.subscription?.deleteTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3532,15 +3526,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params?.subscription?.takeTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyTasks =  []
             params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
-            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
+            subscriptionService.copyTasks(baseSub, toCopyTasks, newSub, flash)
         }
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        params.workFlowPart = '2'
-        params.workFlowPartNext = '3'
+        params.workFlowPart = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
+        params.workFlowPartNext = WORKFLOW_NEXT_SUBSCRIBER
         result
     }
 
@@ -3681,7 +3675,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
+            subscriptionService.copyProperties(propertiesToTake, newSub, flash)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
@@ -3715,7 +3709,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takePackages(packagesToTake, newSub, flash)
+            subscriptionService.copyPackages(packagesToTake, newSub, flash)
         }
 
         if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
@@ -3724,11 +3718,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takeEntitlements(entitlementsToTake, newSub, flash)
+            subscriptionService.copyEntitlements(entitlementsToTake, newSub, flash)
         }
 
-        params?.workFlowPart = '5'
-        params?.workFlowPartNext = '2'
+        params?.workFlowPart = WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS
+        params?.workFlowPartNext = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
         if (newSub) {
             newSub.refresh()
         }
