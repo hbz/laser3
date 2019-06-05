@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.51'
+    static final VERSION = '0.52'
     static final NOT_SUPPORTED = false
 
     static final API_LEVEL_READ         = 'API_LEVEL_READ'
@@ -65,7 +65,7 @@ class ApiManager {
         def result
 
         def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def accessDueDatamanager = ApiReader.isDataManager(contextOrg)
+        def accessDueDatamanager = ApiToolkit.isDataManager(contextOrg)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 

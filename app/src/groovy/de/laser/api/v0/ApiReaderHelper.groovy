@@ -33,48 +33,6 @@ class ApiReaderHelper {
     // ################### HELPER ###################
 
     /**
-     * @param Map map
-     * @param removeEmptyValues
-     * @param removeEmptyLists
-     * @return
-     */
-    static Map<String, Object> cleanUp(Map map, removeNullValues, removeEmptyLists) {
-        if (! map) {
-            return null
-        }
-        Collection<String> values = map.values()
-
-        if (removeNullValues){
-            while (values.remove(null));
-            while (values.remove(""));
-        }
-        if (removeEmptyLists){
-            while (values.remove([]));
-        }
-        map
-    }
-
-    /**
-     * @param Collection list
-     * @param removeEmptyValues
-     * @param removeEmptyLists
-     * @return
-     */
-    static Collection cleanUp(Collection list, removeNullValues, removeEmptyLists) {
-        if (! list) {
-            return null
-        }
-        if (removeNullValues){
-            while (list.remove(null));
-            while (list.remove(""));
-        }
-        if (removeEmptyLists){
-            while (list.remove([]));
-        }
-        list
-    }
-
-    /**
      * Resolving list<type> of items to stubs. Delegate context to gain access
      *
      * @param list
@@ -109,7 +67,7 @@ class ApiReaderHelper {
             result.id           = cluster.id
             result.name         = cluster.name
         }
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     static resolveLicenseStub(License lic, Org context) {
@@ -138,7 +96,7 @@ class ApiReaderHelper {
             // References
             result.identifiers = resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-            result = cleanUp(result, true, true)
+            result = ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
@@ -160,7 +118,7 @@ class ApiReaderHelper {
         // References
         result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        result = cleanUp(result, true, true)
+        result = ApiToolkit.cleanUp(result, true, true)
 
         result
     }
@@ -183,7 +141,7 @@ class ApiReaderHelper {
         // References
         result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        result = cleanUp(result, true, true)
+        result = ApiToolkit.cleanUp(result, true, true)
 
         return result
     }
@@ -198,7 +156,7 @@ class ApiReaderHelper {
             result.normname     = pform.normname
             result.primaryUrl   = pform.primaryUrl
         }
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -230,7 +188,7 @@ class ApiReaderHelper {
             // References
             result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-            result = cleanUp(result, true, true)
+            result = ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
@@ -273,7 +231,7 @@ class ApiReaderHelper {
         // References
         result.identifiers = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     // ################### FULL OBJECTS ###################
@@ -299,7 +257,7 @@ class ApiReaderHelper {
             tmp.country     = it.country?.value
             tmp.type        = it.type?.value
 
-            tmp = cleanUp(tmp, true, false)
+            tmp = ApiToolkit.cleanUp(tmp, true, false)
 
             if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
@@ -319,7 +277,7 @@ class ApiReaderHelper {
             tmp.category        = it.contentType?.value
             tmp.type            = it.type?.value
 
-            tmp = cleanUp(tmp, true, false)
+            tmp = ApiToolkit.cleanUp(tmp, true, false)
 
             if(NO_CONSTRAINT == allowedTypes || allowedTypes.contains(it.type?.value)) {
                 result << tmp
@@ -419,7 +377,7 @@ class ApiReaderHelper {
                 tmp.paragraph = it.paragraph
             }
 
-            tmp = cleanUp(tmp, true, false)
+            tmp = ApiToolkit.cleanUp(tmp, true, false)
             result << tmp
         }
         result
@@ -445,7 +403,7 @@ class ApiReaderHelper {
             result.type     = doc.type?.value
         }
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     static resolveDocuments(Collection<DocContext> list) {
@@ -463,7 +421,7 @@ class ApiReaderHelper {
             tmp.put( 'namespace', it.identifier?.ns?.ns )
             tmp.put( 'value', it.identifier?.value )
 
-            tmp = cleanUp(tmp, true, true)
+            tmp = ApiToolkit.cleanUp(tmp, true, true)
             result << tmp
         }
         result
@@ -486,7 +444,7 @@ class ApiReaderHelper {
         def context = null // TODO: use context
         result.owner               = resolveOrganisationStub(invoice.owner, context) // com.k_int.kbplus.Org
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -541,7 +499,7 @@ class ApiReaderHelper {
             }
         }
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -578,7 +536,7 @@ class ApiReaderHelper {
             }
         }
 
-        return cleanUp(result, true, false)
+        return ApiToolkit.cleanUp(result, true, false)
     }
 
     /**
@@ -614,7 +572,7 @@ class ApiReaderHelper {
         result.fromLic  = resolveLicenseStub(link.fromLic, context) // com.k_int.kbplus.License
         result.toLic    = resolveLicenseStub(link.toLic, context) // com.k_int.kbplus.License
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 
@@ -664,7 +622,7 @@ class ApiReaderHelper {
             result.document = resolveDocument(opl.doc) // com.k_int.kbplus.Doc
             //result.licenses = resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
-            result = cleanUp(result, true, true)
+            result = ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
@@ -682,7 +640,7 @@ class ApiReaderHelper {
         def context = null // TODO: use context
         result.owner        = resolveOrganisationStub(order.owner, context) // com.k_int.kbplus.Org
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     static resolveOrgLinks(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
@@ -716,7 +674,7 @@ class ApiReaderHelper {
                 tmp.title = resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
             }
 
-            result << cleanUp(tmp, true, false)
+            result << ApiToolkit.cleanUp(tmp, true, false)
         }
         result
     }
@@ -742,7 +700,7 @@ class ApiReaderHelper {
             result.addresses    = resolveAddresses(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
             result.properties   = resolvePrivateProperties(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
         }
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -774,7 +732,7 @@ class ApiReaderHelper {
             // References
             //result.tipps = pform.tipps
         }
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -791,7 +749,7 @@ class ApiReaderHelper {
             result << tmp
         }
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     static resolvePrivateProperties(Collection list, Org context) {
@@ -812,7 +770,7 @@ class ApiReaderHelper {
 
             if(it.type.tenant?.id == context.id) {
                 tmp.isPublic    = "No" // derived to substitute tentant
-                result << cleanUp(tmp, true, false)
+                result << ApiToolkit.cleanUp(tmp, true, false)
             }
         }
         result
@@ -864,7 +822,7 @@ class ApiReaderHelper {
                     person.roles = []
                 }
                 if (role.functionType) {
-                    person.roles << cleanUp(role, true, false)
+                    person.roles << ApiToolkit.cleanUp(role, true, false)
                 }
 
 
@@ -962,7 +920,7 @@ class ApiReaderHelper {
         //result.derivedFrom      = resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
         //result.masterTipp       = resolveTippStub(tipp.masterTipp)   // com.k_int.kbplus.TitleInstancePackagePlatform
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
@@ -1014,7 +972,7 @@ class ApiReaderHelper {
         //historyEvents: TitleHistoryEventParticipant,
         //prsLinks: PersonRole
 
-        return cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 }
