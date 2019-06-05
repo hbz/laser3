@@ -1,3 +1,8 @@
+0.17.1
+
+- optimized object deletion
+- added missing access point template
+
 0.17
 
 - added license properties at subscription overview
