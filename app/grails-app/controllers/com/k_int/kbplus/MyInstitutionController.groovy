@@ -187,6 +187,8 @@ class MyInstitutionController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
+        long timestamp = System.currentTimeSeconds()
+
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
@@ -246,18 +248,37 @@ class MyInstitutionController extends AbstractDebugController {
 
         result.subscriptionMap = [:]
 
+        List allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
+        List allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
+        List allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
+
+        //println "platformSubscriptionList: " + platformSubscriptionList.size()
+        //println "allLocals:                " + allLocals.size()
+        //println "allSubscrCons:            " + allSubscrCons.size()
+        //println "allConsOnly:              " + allConsOnly.size()
+
         platformSubscriptionList.each { entry ->
             String key = 'platform_' + entry[0].id
 
             if (! result.subscriptionMap.containsKey(key)) {
                 result.subscriptionMap.put(key, [])
             }
-            if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value && ! entry[1].instanceOf) {
-                result.subscriptionMap.get(key).add(entry[1])
+            if (entry[1].status?.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+
+                if (allLocals.contains(entry[1].id)) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
+                else if (allSubscrCons.contains(entry[1].id)) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
+                else if (allConsOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
+                    result.subscriptionMap.get(key).add(entry[1])
+                }
             }
         }
 
-        println result.subscriptionMap
+        //println "${System.currentTimeSeconds() - timestamp} Sekunden"
+
         result
     }
 
@@ -3440,9 +3461,9 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_ADM", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
@@ -3482,9 +3503,13 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.editable = result.surveyResults?.finishDate?.contains(null) ? true : false
+
+        result.surveyResults = result.surveyResults.groupBy {it?.surveyConfig?.id}
 
         result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
+
         result
     }
 
@@ -3519,6 +3544,108 @@ AND EXISTS (
 
         result
     }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyFinishConfig() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+            if(value == null || value == "")
+            {
+                allResultHaveValue = false
+            }
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.info")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyInfoFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.error")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {

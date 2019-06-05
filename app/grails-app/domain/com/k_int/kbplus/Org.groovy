@@ -401,10 +401,11 @@ class Org
           imp_uuid = null
         }
 
+        println "before org lookup"
         def result = Org.lookup(name, identifiers, imp_uuid)
 
         if ( result == null ) {
-          // log.debug("Create new entry for ${name}");
+          println "Create new entry for ${name}";
           if (sector instanceof String){
             sector = RefdataValue.getByValueAndCategory(sector,'OrgSector')
           }
@@ -412,7 +413,7 @@ class Org
           if (orgRoleTyp instanceof String) {
              orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, 'OrgRoleType')
           }
-
+            println "creating new org"
           result = new Org(
                            name:name,
                            sector:sector,
@@ -452,7 +453,7 @@ class Org
           result.impId = imp_uuid
           result.save()
         }
- 
+        println "org lookup end"
         result
     }
 
@@ -588,6 +589,7 @@ class Org
         }
     }
 
+    //Only INST_ADM
     def hasAccessOrg(){
 
         if(UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
@@ -595,6 +597,19 @@ class Org
         }else {
             return false
         }
+
+
+    }
+
+    def hasAccessOrgListUser(){
+
+        def result = [:]
+
+        result.instAdms = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_USER'))
+
+        return result
 
 
     }

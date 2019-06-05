@@ -62,7 +62,7 @@ class ApiReader {
 
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
-        result.taxRate             = costItem.taxKey?.taxRate ?: costItem.taxRate
+        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
@@ -97,6 +97,15 @@ class ApiReader {
     static exportIssueEntitlements(SubscriptionPackage subPkg, def ignoreRelation, Org context){
         def result = []
 
+        List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
+                'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
+                        ' where sub = :sub and pkg = :pkg', [sub: subPkg.subscription, pkg: subPkg.pkg]
+        )
+        ieList.each{ ie ->
+            result << ApiReaderHelper.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+        }
+
+        /* 0.51
         def tipps = TitleInstancePackagePlatform.findAllByPkg(subPkg.pkg)
         tipps.each{ tipp ->
             def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
@@ -104,6 +113,8 @@ class ApiReader {
                 result << ApiReaderHelper.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
             }
         }
+        */
+
         return ApiReaderHelper.cleanUp(result, true, true)
     }
 
@@ -437,7 +448,7 @@ class ApiReader {
 
     // ################### HELPER ###################
 
-    static isDataManager(Org org) {
+    static boolean isDataManager(Org org) {
         def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
 
         if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {

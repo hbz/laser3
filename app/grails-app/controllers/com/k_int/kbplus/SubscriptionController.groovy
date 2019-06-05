@@ -10,6 +10,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import de.laser.oai.OaiClientLaser
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 import de.laser.AuditConfig
@@ -79,6 +80,16 @@ class SubscriptionController extends AbstractDebugController {
     public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
     public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
     public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
+
+    def possible_date_formats = [
+            new SimpleDateFormat('yyyy/MM/dd'),
+            new SimpleDateFormat('dd.MM.yyyy'),
+            new SimpleDateFormat('dd/MM/yyyy'),
+            new SimpleDateFormat('dd/MM/yy'),
+            new SimpleDateFormat('yyyy/MM'),
+            new SimpleDateFormat('yyyy')
+    ]
+
 
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -411,7 +422,10 @@ class SubscriptionController extends AbstractDebugController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def compare() {
-        def result = [:]
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+
+        result
+        /*
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
@@ -446,7 +460,7 @@ class SubscriptionController extends AbstractDebugController {
             def mapA = listA.collectEntries { [it.tipp.title.title, it] }
             def mapB = listB.collectEntries { [it.tipp.title.title, it] }
 
-            //FIXME: It should be possible to optimize the following lines
+            //FIXME: It should be possible to optimize the following lines - it is. The whole code can be optimised as it is legacy
             def unionList = mapA.keySet().plus(mapB.keySet()).toList()
             unionList = unionList.unique()
             result.unionListSize = unionList.size()
@@ -509,7 +523,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             flash.message = message(code: 'subscription.compare.note', default: "Please select two subscriptions for comparison")
         }
-        result
+        */
     }
 
     def formatDateOrNull(formatter, date) {
@@ -2221,6 +2235,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
+        //to be deployed in prallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
@@ -2230,13 +2245,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
                 if (!gri) {
-                    redirect(url: request.getHeader('referer'))
-                    flash.error = message(code: 'subscription.details.link.no_works', default: "Package can not be linked right now. Try again later.")
-                    return
+                    OaiClientLaser oaiClient = new OaiClientLaser()
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    GlobalRecordSource grs = GlobalRecordSource.findByUri(params.source+'/gokb/oai/packages')
+                    def rec = oaiClient.getRecord(params.source+'/gokb/oai/','packages',params.impId) //alright, we rely on fixToken to remain as is!!!
+                    def parsedRec = globalSourceSyncService.packageConv(rec.metadata,grs)
+                    def kbplusCompliant = globalSourceSyncService.testPackageCompliance(parsedRec.parsed_rec)
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream()
+                    ObjectOutputStream out = new ObjectOutputStream(baos)
+                    out.writeObject(parsedRec.parsedRec)
+                    out.close()
+                    gri = new GlobalRecordInfo(
+                            ts: sdf.parse(rec.header.datestamp.text()),
+                            name: parsedRec.title,
+                            identifier: rec.header.identifier.text(),
+                            uuid: rec.header.uuid?.text() ?: null,
+                            desc: "${parsedRec.title}",
+                            source: grs,
+                            rectype: grs.rectype,
+                            record: baos.toByteArray(),
+                            kbplusCompliant: kbplusCompliant,
+                            globalRecordInfoStatus: RefdataValue.getByValueAndCategory(parsedRec.parsed_rec.status,"Package Status")
+                    )
+                    flash.message = message(code:'subscription.details.link.no_package_yet')
+                    gri.save(flush: true)
                 }
                 def grt = GlobalRecordTracker.findByOwner(gri)
                 if (!grt) {
-                    def new_tracker_id = java.util.UUID.randomUUID().toString()
+                    def new_tracker_id = UUID.randomUUID().toString()
 
                     grt = new GlobalRecordTracker(
                             owner: gri,
@@ -2246,41 +2282,50 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                             autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
                             autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
                             autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if (grt.save()) {
-                        globalSourceSyncService.initialiseTracker(grt);
-                        //Update INDEX ES
-                        dataloadService.updateFTIndexes();
-                    } else {
+                    if (!grt.save()) {
                         log.error(grt.errors)
                     }
                 }
 
-                if (!Package.findByGokbId(grt.owner.uuid)) {
-                    globalSourceSyncService.initialiseTracker(grt);
+                //if(Package.findByGokbId(grt.owner.uuid)) {
+                String addType = params.addType
+                    executorWrapperService.processClosure({
+                        globalSourceSyncService.initialiseTracker(grt)
+                        //Update INDEX ES
+                        dataloadService.updateFTIndexes()
+
+                        def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
+                        def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                        println "Add package ${addType} to subscription ${result.subscriptionInstance}"
+
+                        if (addType == 'With') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, true)
+                            }
+                        } else if (addType == 'Without') {
+                            pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                            sub_instances.each {
+                                pkg_to_link.addToSubscription(it, false)
+                            }
+                        }
+                    },gri)
+                /*}
+                else {
+                    //setup new
+                    globalSourceSyncService.initialiseTracker(grt)
                     //Update INDEX ES
-                    dataloadService.updateFTIndexes();
-                }
-
-                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
-
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
-
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
+                    dataloadService.updateFTIndexes()
+                }*/
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', id: params.id
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', id: params.id
+                        break
                 }
 
             } else {
@@ -2797,6 +2842,107 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         result
     }
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def renewSubscription() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+
+        if (!accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = message(code: 'myinst.error.noMember', args: [result.institution.name]);
+            response.sendError(401)
+            return;
+        } else if (!accessService.checkMinUserOrgRole(result.user, result.institution, "INST_EDITOR")) {
+            flash.error = message(code: 'myinst.renewalUpload.error.noAdmin')
+            response.sendError(401)
+            return;
+        }
+        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+        if (prevSubs){
+            flash.error = message(code: 'subscription.renewSubExist')
+            response.sendError(401)
+            return;
+        }
+
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
+
+        def subscription = Subscription.get(params.id)
+
+        result.errors = []
+        def newStartDate
+        def newEndDate
+        use(TimeCategory) {
+            newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
+        }
+
+        result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
+                                 sub_endDate: newEndDate? sdf.format(newEndDate) : null,
+                                 sub_name: subscription.name,
+                                 sub_id: subscription.id,
+                                 sub_license: subscription?.owner?.reference?:'',
+                                 sub_status: RDStore.SUBSCRIPTION_INTENDED]
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def processSimpleRenewal() {
+        log.debug("-> renewalsUpload params: ${params}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
+            response.sendError(401)
+            return;
+        }
+
+        def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+        def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
+        def sub_status = params.subStatus
+        def old_subOID = params.subscription.old_subid
+        def new_subname = params.subscription.name
+
+        def new_subscription = new Subscription(
+                identifier: java.util.UUID.randomUUID().toString(),
+                status: sub_status,
+                impId: java.util.UUID.randomUUID().toString(),
+                name: new_subname ?: "Unset: Generated by import",
+                startDate: sub_startDate,
+                endDate: sub_endDate,
+                type: Subscription.get(old_subOID)?.type ?: null,
+                isPublic: RDStore.YN_NO,
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
+                resource: Subscription.get(old_subOID)?.resource ?: null,
+                form: Subscription.get(old_subOID)?.form ?: null
+        )
+        log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
+
+        if (new_subscription.save()) {
+            // assert an org-role
+            def org_link = new OrgRole(org: result.institution,
+                    sub: new_subscription,
+                    roleType: RDStore.OR_SUBSCRIBER
+            ).save();
+
+            if(old_subOID) {
+                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                prevLink.save()
+            } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
+        } else {
+            log.error("Problem saving new subscription, ${new_subscription.errors}");
+        }
+
+        new_subscription.save(flush: true);
+
+        if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+        redirect controller: 'subscription', action: 'copyElementsIntoSubscription', id: old_subOID, params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: new_subscription.id, isRenewSub: true]
+    }
+
+
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -3192,34 +3338,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     }
 
-//    private getMySubscriptions_readRights(){
-//        def params = [:]
-//        List result
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-//        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-//        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-//        params.orgRole = RDStore.OR_SUBSCRIBER.value
-//        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-//        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-//        result.sort{it.name}
-//    }
-//    private getMySubscriptions_writeRights(){
-//        List result
-//        Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-//        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-//        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-//        params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-//        params.orgRole = RDStore.OR_SUBSCRIBER.value
-//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
-//        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-//        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-//        result.sort{it.name}
-//    }
-
     private getMySubscriptions_readRights(){
         def params = [:]
         List result
@@ -3268,6 +3386,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
+        result.isRenewSub = params.isRenewSub
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
@@ -4278,5 +4397,18 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+    }
+    def parseDate(datestr, possible_formats) {
+        def parsed_date = null;
+        if (datestr && (datestr.toString().trim().length() > 0)) {
+            for (Iterator i = possible_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                try {
+                    parsed_date = i.next().parse(datestr.toString());
+                }
+                catch (Exception e) {
+                }
+            }
+        }
+        parsed_date
     }
 }

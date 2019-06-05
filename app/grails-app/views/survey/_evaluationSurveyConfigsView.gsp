@@ -106,7 +106,7 @@
         <th class="center aligned">
             ${message(code: 'surveyConfig.configOrder.label')}
         </th>
-        <th>${message(code: 'surveyProperty.name.label')}</th>
+        <th>${message(code: 'surveyProperty.name')}</th>
         <th>${message(code: 'surveyProperty.type.label')}</th>
         <th>${message(code: 'surveyConfig.documents.label')}</th>
         <th>${message(code: 'surveyConfig.orgs.label')}</th>

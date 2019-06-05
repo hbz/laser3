@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.interfaces.Permissions
 import groovy.transform.CompileStatic
@@ -104,6 +105,12 @@ class RDStore {
     static final TIPP_PAYMENT_OPT_OUT_PROMOTION = getRefdataValue('Opt Out Promotion','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_UNCHARGED         = getRefdataValue('Uncharged','TitleInstancePackagePlatform.PaymentType')
     static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown','TitleInstancePackagePlatform.PaymentType')
+
+    static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', 'TIPP Status')
+    static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected','TIPP Status')
+    static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted', 'TIPP Status')
+    static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
+    static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')

@@ -28195,14 +28195,14 @@ Floated Menu / Item
 
 .ui.striped.table > tr:nth-child(2n),
 .ui.striped.table tbody tr:nth-child(2n) {
-  background-color: rgba(0, 0, 50, 0.02);
+  background-color: #f4f8f9;
 }
 
 /* Stripes */
 
 .ui.inverted.striped.table > tr:nth-child(2n),
 .ui.inverted.striped.table tbody tr:nth-child(2n) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: blue;
 }
 
 /* Allow striped active hover */
@@ -28820,6 +28820,13 @@ Floated Menu / Item
 
 /* change classnames bec. of existing sort function in LAS:eR */
 
+/* Sorted */
+
+.ui.sortable.table thead th.sorted {
+  background: #F2F2F2;
+  color: rgba(0, 0, 0, 0.95);
+}
+
 .ui.sortable.table thead th.sortable:after {
   content: '\f0dc';
   color: #767676;
@@ -28844,12 +28851,12 @@ Floated Menu / Item
 /* Hover */
 
 .ui.sortable.table thead th:hover {
-  background: transparent;
+  background: #F2F2F2;
   color: #767676;
 }
 
 .ui.sortable.table thead th.sortable:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: #F2F2F2;
 }
 
 .ui.table tr td {
@@ -28869,8 +28876,6 @@ Floated Menu / Item
 }
 
 .ui.table tr th a {
-  display: inline-block;
-  padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
 }
@@ -28884,11 +28889,6 @@ Floated Menu / Item
 ---------------*/
 
 .ui.la-table.table {
-  border-collapse: separate;
-  background-color: #f4f8f9;
-}
-
-.ui.la-table.table tr td {
   background-color: white;
 }
 
@@ -28900,6 +28900,10 @@ Floated Menu / Item
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top: none;
+}
+
+.ui.la-table.table tr td {
+  border-top: 7px solid #F4F8F9;
 }
 
 /*--------------
@@ -29019,6 +29023,7 @@ Floated Menu / Item
 .ui.table thead th.la-smaller-table-head {
   padding-top: 0;
   padding-bottom: 0;
+  height: 28px;
 }
 
 /* wrap small needed th to avoid table layout break */
@@ -29039,12 +29044,20 @@ Floated Menu / Item
   background-color: #fffaf5;
 }
 
-.ui.table thead tr:first-child > th {
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
-  top: 90px;
   z-index: 2;
   background-color: #F4F8F9;
+}
+
+.ui.table thead tr:first-child > th {
+  top: 90px;
+}
+
+.ui.table thead tr:nth-child(2) > th {
+  top: 118px;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
@@ -29360,7 +29373,7 @@ Floated Menu / Item
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30437,16 +30450,7 @@ a.ui.card:hover,
 
 .ui.cards > .card,
 .ui.card {
-  max-width: 100%;
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  width: 290px;
+  width: 271px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30461,16 +30465,8 @@ a.ui.card:hover,
   z-index: auto;
 }
 
-.ui.cards > .card,
-.ui.card {
-  width: 271px;
-}
-
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
-  display: block;
-  margin: '';
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color: #767676;
 }
 
@@ -30490,6 +30486,12 @@ a.ui.card:hover,
 
 .ui.card.la-role-yoda {
   border-right: 10px solid #98B500;
+}
+
+/* Solving the Problem of negative Margins in Grid inside of Card */
+
+.ui.card .ui.grid {
+  margin-bottom: 0rem;
 }
 
 /* definition list in cards */

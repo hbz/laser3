@@ -738,9 +738,6 @@ class FinanceController extends AbstractDebugController {
         if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub))
             result.sub = Subscription.get(Long.parseLong(params.sub))
         result.costItem = CostItem.findById(params.id)
-        if(result.costItem)
-          result.issueEntitlement = result.costItem.issueEntitlement
-
         //format for dropdown: (o)id:value
         def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
         ciecs.each { ciec ->
@@ -991,8 +988,8 @@ class FinanceController extends AbstractDebugController {
 
               newCostItem.owner = result.institution
               newCostItem.sub = sub
-              newCostItem.subPkg = pkg
-              newCostItem.issueEntitlement = ie
+              newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg.pkg)
+              newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie.tipp)
               newCostItem.order = order
               newCostItem.invoice = invoice
               newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber

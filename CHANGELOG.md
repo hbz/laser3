@@ -1,6 +1,26 @@
-0.17-RC
+0.17.1
 
-- todo ..
+- optimized object deletion
+- added missing access point template
+
+0.17
+
+- added license properties at subscription overview
+- added hard deletion for subscriptions and licenses
+- added test data setup for orgs (only for QA)
+- reworked modals for creating properties and property groups
+- finance improvements
+- added survey functionality
+- improved customer type integration
+- improved accessibility criteria
+- added api endpoints for oa2020 and statistics (partial)
+- improved subscription management
+- added filter for user management
+- added my platforms overview
+- replaced legacy user roles 
+- improved alphabetical sorting
+- various minor improvements
+- other bugfixes
 
 0.16.3
 

@@ -11,9 +11,8 @@ databaseChangeLog = {
 
 	include file: 'changelog-20.groovy'		// v0.13
 
-	// include file: 'changelog-20-qa.groovy' 	// v0.13 @ QA only
-
-	// include file: 'changelog-20-prod.groovy'	// v0.13 @ PROD only
+	// include file: 'changelog-20-qa.groovy' 	// QA only
+	// include file: 'changelog-20-prod.groovy'	// PROD only
 
 	include file: 'changelog-30.groovy'		// v0.14
 
@@ -21,5 +20,9 @@ databaseChangeLog = {
 
 	include file: 'changelog-50.groovy'		// v0.16
 
+	// include file: 'changelog-50-qa.groovy' 	// QA only
+	// include file: 'changelog-50-prod.groovy'	// PROD only
+
 	include file: 'changelog-60.groovy'		// v0.17
+	include file: 'changelog-65.groovy'
 }

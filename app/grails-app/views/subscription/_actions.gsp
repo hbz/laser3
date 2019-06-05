@@ -45,11 +45,14 @@
     </semui:exportDropdown>
 </g:if>
 <semui:actionsDropdown>
-    <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
-
+    </g:if>
+    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR')}">
+        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+    </g:if>
+    <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <div class="divider"></div>
 
         <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
@@ -73,11 +76,15 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
+        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>      
+                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
-        
+        <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && !previousSubscriptions}">
+            <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
+                                       params="${[id: params.id]}" message="subscription.details.renewalsLocal.label"/>
+        </g:if>
+
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
 
               <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
@@ -107,9 +114,11 @@
     </g:if>
 </semui:actionsDropdown>
 
-    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
-
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+
+</g:if>
+<g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR')}">
+    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>

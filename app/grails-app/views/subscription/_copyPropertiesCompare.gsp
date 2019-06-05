@@ -38,10 +38,14 @@
                     </g:if>
 
 
-
-            <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
-            </div>
+            <g:if test="${customProperties.size() == 0 && privateProperties.size() == 0}">
+                ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}
+            </g:if>
+            <g:else>
+                <div class="sixteen wide field" style="text-align: right;">
+                    <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
+                </div>
+            </g:else>
     </g:form>
     </semui:form>
     </body>

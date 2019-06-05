@@ -11,7 +11,12 @@
     <g:render template="breadcrumb" model="${[params: params]}"/>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-    ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
+        <g:if test="${isRenewSub}">
+            ${message(code: 'subscription.details.renewals.renew_sub.label')}
+        </g:if>
+        <g:else>
+            ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
+        </g:else>
     </h1>
 
     <semui:messages data="${flash}"/>
@@ -19,6 +24,7 @@
     <% Map params = [id: params.id];
         if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
+        if (isRenewSub) params << [isRenewSub: isRenewSub];
     %>
     <semui:subNav>
         <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
