@@ -71,11 +71,11 @@ class SubscriptionController extends AbstractDebugController {
     def escapeService
     def deletionService
 
-    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = '1'
-    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = '5'
-    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = '2'
-    public static final String WORKFLOW_NEXT_SUBSCRIBER = '3'
-    public static final String WORKFLOW_NEXT_PROPERTIES = '4'
+    public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
+    public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
+    public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
+    public static final String WORKFLOW_SUBSCRIBER = '3'
+    public static final String WORKFLOW_PROPERTIES = '4'
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -3385,16 +3385,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
-            case WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS:
+            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 break;
-            case WORKFLOW_NEXT_SUBSCRIBER:
+            case WORKFLOW_SUBSCRIBER:
                 result << copySubElements_Subscriber();
                 break;
-            case WORKFLOW_NEXT_PROPERTIES:
+            case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 break;
-            case WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS:
+            case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 break;
             default:
@@ -3428,8 +3428,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.workFlowPart = params?.workFlowPart ?: WORKFLOW_NEXT_DATES_OWNER_RELATIONS
-        result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
+        result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
+        result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result
     }
 
@@ -3477,8 +3477,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
-        params?.workFlowPart = WORKFLOW_NEXT_DATES_OWNER_RELATIONS
-        params?.workFlowPartNext = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
+        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
+        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
@@ -3533,8 +3533,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        params.workFlowPart = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
-        params.workFlowPartNext = WORKFLOW_NEXT_SUBSCRIBER
+        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
         result
     }
 
@@ -3721,8 +3721,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.copyEntitlements(entitlementsToTake, newSub, flash)
         }
 
-        params?.workFlowPart = WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS
-        params?.workFlowPartNext = WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS
+        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         if (newSub) {
             newSub.refresh()
         }

@@ -17,14 +17,14 @@
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
-                                <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
                     </th>
                 </tr>
@@ -166,16 +166,6 @@
 </semui:form>
 
 <r:script>
-    function toggleAllCheckboxes(source) {
-        var action = $(source).attr("data-action")
-        var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-
     $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
         if (this.checked) {
             $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
