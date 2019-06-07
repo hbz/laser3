@@ -159,6 +159,7 @@
                                     >
                                         <i class="trash alternate icon"></i>
                                     </laser:remoteLink>
+                                </g:if>
                             </g:if>
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
