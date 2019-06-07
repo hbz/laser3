@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.SystemEvent
 import de.laser.api.v0.ApiManager
+import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -835,11 +836,11 @@ class AdminController extends AbstractDebugController {
         if (params.cmd == 'changeApiLevel') {
             Org target = genericOIDService.resolveOID(params.target)
 
-            if (ApiManager.getAllApiLevels().contains(params.apiLevel)) {
-                ApiManager.setApiLevel(target, params.apiLevel)
+            if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
+                ApiToolkit.setApiLevel(target, params.apiLevel)
             }
             else if (params.apiLevel == 'Kein Zugriff') {
-                ApiManager.removeApiLevel(target)
+                ApiToolkit.removeApiLevel(target)
             }
         }
         else if (params.cmd == 'changeCustomerType') {

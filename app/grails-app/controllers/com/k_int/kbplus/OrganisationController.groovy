@@ -610,13 +610,11 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
-        def ctxlist = []
-
         log.debug("deleteDocuments ${params}");
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisation', action: 'documents' /*, fragment: 'docstab' */
+        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
     }
 
     @Deprecated

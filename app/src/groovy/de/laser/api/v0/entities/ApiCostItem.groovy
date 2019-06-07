@@ -3,7 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiReader
-import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
 
@@ -38,7 +38,7 @@ class ApiCostItem {
      * @return grails.converters.JSON | FORBIDDEN
      */
     static getCostItem(CostItem costItem, Org context, boolean hasAccess){
-        def result = []
+        Map<String, Object> result = [:]
 
         if (! hasAccess) {
             if (costItem.owner?.id == context.id) {
@@ -46,7 +46,7 @@ class ApiCostItem {
             }
         }
         if (hasAccess) {
-            result = ApiReader.exportCostItem(costItem, context)
+            result = ApiReader.retrieveCostItemMap(costItem, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -56,7 +56,7 @@ class ApiCostItem {
      * @return [] | FORBIDDEN
      */
     static getCostItemList(Org owner, Org context, boolean hasAccess){
-        def result = []
+        Collection<Object> result = []
 
         if (! hasAccess) {
             if (owner.id == context.id) {
@@ -66,7 +66,7 @@ class ApiCostItem {
         if (hasAccess) {
             // TODO
             result = CostItem.findAllByOwner(owner).globalUID
-            result = ApiReaderHelper.cleanUp(result, true, true)
+            result = ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
@@ -76,7 +76,7 @@ class ApiCostItem {
      * @return [] | FORBIDDEN
      */
     static getCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
-        def result = []
+        Collection<Object> result = []
 
         if (! hasAccess) {
             if (owner.id == context.id) {
@@ -89,7 +89,7 @@ class ApiCostItem {
             Date apiDate= new Date(ts.getTime());
             def today = new Date()
             result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
-            result = ApiReaderHelper.cleanUp(result, true, true)
+            result = ApiToolkit.cleanUp(result, true, true)
         }
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)

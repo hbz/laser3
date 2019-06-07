@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
+import de.laser.api.v0.ApiToolkit
 import de.laser.api.v0.ApiReader
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
@@ -372,10 +373,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_READ, ApiManager.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_WRITE, ApiManager.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
             }
 

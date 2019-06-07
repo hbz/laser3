@@ -41,5 +41,5 @@
     </g:if>
 </semui:actionsDropdown>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
-    <g:render template="/templates/documents/modal" model="${[ownobj: org, institution: contextService.org, owntp: 'org']}"/>
+    <g:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: contextService.org, owntp: 'org']}"/>
 </g:if>
