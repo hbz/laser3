@@ -67,11 +67,11 @@ class ApiSubscription {
      * @return grails.converters.JSON | FORBIDDEN
      */
     static getSubscription(Subscription sub, Org context, boolean hasAccess){
-        def result = []
+        Map<String, Object> result = [:]
         hasAccess = calculateAccess(sub, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.exportSubscription(sub, context)
+            result = ApiReader.retrieveSubscriptionMap(sub, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -81,7 +81,7 @@ class ApiSubscription {
      * @return [] | FORBIDDEN
      */
     static getSubscriptionList(Org owner, Org context, boolean hasAccess){
-        def result = []
+        Collection<Object> result = []
 
         List<Subscription> available = Subscription.executeQuery(
                 'SELECT sub FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND sub.status != :del' ,
@@ -95,7 +95,7 @@ class ApiSubscription {
         available.each { sub ->
             //if (calculateAccess(sub, context, hasAccess)) {
                 println sub.id + ' ' + sub.name
-                result.add(ApiReaderHelper.resolveSubscriptionStub(sub, context, true))
+                result.add(ApiReaderHelper.requestSubscriptionStub(sub, context, true))
                 //result.add([globalUID: sub.globalUID])
             //}
         }

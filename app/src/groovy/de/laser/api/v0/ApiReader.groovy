@@ -1,14 +1,9 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserRole
 import de.laser.CacheService
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
-import de.laser.interfaces.TemplateSupport
-import groovy.text.Template
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -36,9 +31,9 @@ class ApiReader {
     /**
      * @param com.k_int.kbplus.CostItem costItem
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
-    static exportCostItem(CostItem costItem, Org context){
+    static Map<String, Object> retrieveCostItemMap(CostItem costItem, Org context){
         def result = [:]
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
@@ -78,12 +73,12 @@ class ApiReader {
 
         // References
 
-        result.owner    = ApiReaderHelper.resolveOrganisationStub(costItem.owner, context) // com.k_int.kbplus.Org
-        result.sub      = ApiReaderHelper.resolveSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        result.owner    = ApiReaderHelper.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
+        result.sub      = ApiReaderHelper.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
         //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-        result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-        result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
-        result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)
+        result.issueEntitlement = ApiReaderHelper.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order    = ApiReaderHelper.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
+        result.invoice  = ApiReaderHelper.retrieveInvoiceMap(costItem.invoice)
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -92,9 +87,9 @@ class ApiReader {
      * @param com.k_int.kbplus.SubscriptionPackage subPkg
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Collection<Object>
      */
-    static exportIssueEntitlements(SubscriptionPackage subPkg, def ignoreRelation, Org context){
+    static Collection<Object> retrieveIssueEntitlementCollection(SubscriptionPackage subPkg, ignoreRelation, Org context){
         def result = []
 
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
@@ -102,7 +97,7 @@ class ApiReader {
                         ' where sub = :sub and pkg = :pkg', [sub: subPkg.subscription, pkg: subPkg.pkg]
         )
         ieList.each{ ie ->
-            result << ApiReaderHelper.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
+            result << ApiReaderHelper.retrieveIssueEntitlementMap(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
         }
 
         /* 0.51
@@ -122,9 +117,9 @@ class ApiReader {
      * @param com.k_int.kbplus.License lic
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
-    static exportLicense(License lic, def ignoreRelation, Org context){
+    static Map<String, Object> retrieveLicenseMap(License lic, def ignoreRelation, Org context){
         def result = [:]
 
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
@@ -158,15 +153,15 @@ class ApiReader {
 
         // References
 
-        result.identifiers      = ApiReaderHelper.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.instanceOf       = ApiReaderHelper.resolveLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
-        result.properties       = ApiReaderHelper.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
-        result.documents        = ApiReaderHelper.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
-        result.onixplLicense    = ApiReaderHelper.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf       = ApiReaderHelper.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
+        result.properties       = ApiReaderHelper.retrievePropertyCollection(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.documents        = ApiReaderHelper.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
+        result.onixplLicense    = ApiReaderHelper.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
         if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
             if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
-                result.subscriptions = ApiReaderHelper.resolveStubs(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+                result.subscriptions = ApiReaderHelper.retrieveStubCollection(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
             if (ignoreRelation != ApiReaderHelper.IGNORE_LICENSE) {
                 def allOrgRoles = []
@@ -198,7 +193,7 @@ class ApiReader {
                 }
                 allOrgRoles = allOrgRoles.unique()
 
-                result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+                result.organisations = ApiReaderHelper.retrieveOrgLinkCollection(allOrgRoles, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
             }
         }
 
@@ -215,9 +210,9 @@ class ApiReader {
     /**
      * @param com.k_int.kbplus.Org org
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
-    static exportOrganisation(Org org, Org context) {
+    static Map<String, Object> retrieveOrganisationMap(Org org, Org context) {
         def result = [:]
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
@@ -244,14 +239,14 @@ class ApiReader {
 
         // References
 
-        result.addresses    = ApiReaderHelper.resolveAddresses(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
-        result.contacts     = ApiReaderHelper.resolveContacts(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = ApiReaderHelper.resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.persons      = ApiReaderHelper.resolvePrsLinks(
+        result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
                 org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties   = ApiReaderHelper.resolveProperties(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 
@@ -267,10 +262,10 @@ class ApiReader {
     /**
      * @param com.k_int.kbplus.Package pkg
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
     @Deprecated
-    static exportPackage(com.k_int.kbplus.Package pkg, Org context) {
+    static Map<String, Object> retrievePackageMap(com.k_int.kbplus.Package pkg, Org context) {
         def result = [:]
 
         pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
@@ -303,13 +298,13 @@ class ApiReader {
 
         // References
 
-        result.documents        = ApiReaderHelper.resolveDocuments(pkg.documents) // com.k_int.kbplus.DocContext
-        result.identifiers      = ApiReaderHelper.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.license          = ApiReaderHelper.resolveLicenseStub(pkg.license, context) // com.k_int.kbplus.License
-        result.nominalPlatform  = ApiReaderHelper.resolvePlatform(pkg.nominalPlatform) // com.k_int.kbplus.Platform
-        result.organisations    = ApiReaderHelper.resolveOrgLinks(pkg.orgs, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
-        result.subscriptions    = ApiReaderHelper.resolveSubscriptionPackageStubs(pkg.subscriptions, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
-        result.tipps            = ApiReaderHelper.resolveTipps(pkg.tipps, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+        result.documents        = ApiReaderHelper.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
+        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.license          = ApiReaderHelper.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
+        result.nominalPlatform  = ApiReaderHelper.retrievePlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+        result.organisations    = ApiReaderHelper.retrieveOrgLinkCollection(pkg.orgs, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
+        result.subscriptions    = ApiReaderHelper.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
+        result.tipps            = ApiReaderHelper.retrieveTippCollection(pkg.tipps, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // Ignored
         /*
@@ -324,9 +319,9 @@ class ApiReader {
     /**
      * @param com.k_int.kbplus.Subscription sub
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
-    static exportSubscription(Subscription sub, Org context){
+    static Map<String, Object> retrieveSubscriptionMap(Subscription sub, Org context){
         def result = [:]
 
         sub = GrailsHibernateUtil.unwrapIfProxy(sub)
@@ -357,19 +352,19 @@ class ApiReader {
 
         // References
 
-        result.documents            = ApiReaderHelper.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
+        result.documents            = ApiReaderHelper.retrieveDocumentCollection(sub.documents) // com.k_int.kbplus.DocContext
         //result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-        result.identifiers          = ApiReaderHelper.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.instanceOf           = ApiReaderHelper.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-        result.license              = ApiReaderHelper.resolveLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+        result.identifiers          = ApiReaderHelper.retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf           = ApiReaderHelper.requestSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+        result.license              = ApiReaderHelper.requestLicenseStub(sub.owner, context) // com.k_int.kbplus.License
         //removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
 
         //result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
         //TODO contact David upon this!
 
-        result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-        result.properties           = ApiReaderHelper.resolveProperties(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+        result.previousSubscription = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
+        result.properties           = ApiReaderHelper.retrievePropertyCollection(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
         def allOrgRoles = []
 
@@ -382,10 +377,10 @@ class ApiReader {
         }
         allOrgRoles.addAll(sub.orgRelations)
 
-        result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+        result.organisations = ApiReaderHelper.retrieveOrgLinkCollection(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
         // TODO refactoring with issueEntitlementService
-        result.packages = ApiReaderHelper.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
+        result.packages = ApiReaderHelper.retrievePackageWithIssueEntitlementsCollection(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
 
         // Ignored
 
@@ -405,9 +400,9 @@ class ApiReader {
     // ################### CATALOGUE ###################
 
     /**
-     * @return []
+     * @return
      */
-    static exportRefdatas(){
+    static Collection<Object> retrieveRefdataCollection(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
 
         def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas/')

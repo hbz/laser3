@@ -11,7 +11,7 @@ class ApiCatalogue {
      * @return []
      */
     static getAllRefdatas() {
-        def result = ApiReader.exportRefdatas()
+        Collection<Object> result = ApiReader.retrieveRefdataCollection()
 
         return (result ? new JSON(result) : null)
     }
