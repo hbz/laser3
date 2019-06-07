@@ -126,7 +126,7 @@
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay"  data-content="${message(code:'property.audit.on.tooltip')}">
-                                        <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax" action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true, onlyOrphaned:true]'
                                                           id="${prop.id}"
@@ -145,10 +145,12 @@
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
+
                                 <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
-                                                  params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
+                                                  params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}", onlyOrphaned:true]'
+
                                                   id="${prop.id}"
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"

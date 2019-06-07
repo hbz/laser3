@@ -141,6 +141,7 @@
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+
                                 <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
