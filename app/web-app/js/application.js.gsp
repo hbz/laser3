@@ -758,17 +758,17 @@ deckSaver = {
 
 bb8 = {
 
-    loadJsAfterAjax: function () {
-
-        bb8.go();
-
-    },
 
     go: function() {
+        bb8.init('body');
+    },
 
-        $(".la-js-remoteLink").click(function (event) {
+    init: function(ctxSel) {
+        $(ctxSel + " .la-js-remoteLink").click(function (event) {
+
             event.preventDefault();
             if (! $(this).hasClass('js-open-confirm-modal')) {
+
                 bb8.ajax(this);
             }
         })

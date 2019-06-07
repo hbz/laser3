@@ -113,8 +113,8 @@
                                                       data-confirm-term-how="inherit"
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.off.tooltip')}"
-                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
-                                                      data-always="c3po.loadJsAfterAjax()"
+                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}','#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                                       data-update="${custom_props_div}"
                                     >
                                         <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
@@ -130,8 +130,8 @@
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
-                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
-                                                      data-always="c3po.loadJsAfterAjax()"
+                                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                                       data-update="${custom_props_div}"
                                     >
                                         <i class="thumbtack icon la-js-editmode-icon"></i>
@@ -149,8 +149,8 @@
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                   data-confirm-term-how="delete"
-                                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}')"
-                                                  data-always="c3po.loadJsAfterAjax()"
+                                                  data-done="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                                   data-update="${custom_props_div}"
                                 >
                                     <i class="trash alternate icon"></i>

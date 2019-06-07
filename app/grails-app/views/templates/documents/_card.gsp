@@ -83,7 +83,7 @@
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                   data-content="${message(code:'property.share.tooltip.on')}"
                                                   data-done=""
-                                                  data-always="bb8.loadJsAfterAjax()"
+                                                  data-always="bb8.init('#container-documents')"
                                                   data-update="container-documents"
                                 >
                                     <i class="icon la-share la-js-editmode-icon"></i>
@@ -101,7 +101,7 @@
                                                   data-confirm-term-where="member"
                                                   data-confirm-term-how="share"
                                                   data-done=""
-                                                  data-always="bb8.loadJsAfterAjax()"
+                                                  data-always="bb8.init('#container-documents')"
                                                   data-update="container-documents"
                                 >
                                     <i class="la-share slash icon"></i>

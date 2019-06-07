@@ -64,23 +64,11 @@
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
                                                   data-content="${message(code:'property.share.tooltip.on')}"
                                                   data-done=""
-                                                  data-always="bb8.loadJsAfterAjax()"
+                                                  data-always="bb8.init('#container-notes')"
                                                   data-update="container-notes"
                                 >
                                     <i class="icon la-share la-js-editmode-icon"></i>
                                 </laser:remoteLink>
-
-
-                                    <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
-                                                  controller="ajax" action="toggleShare"
-                                                  params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
-                                                  onSuccess=""
-                                                  onComplete=""
-                                                  update="container-notes"
-                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
-                                    >
-                                        <i class="la-share icon"></i>
-                                    </g:remoteLink>
                             </g:if>
                             <g:else>
                                 <laser:remoteLink class="ui mini icon button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
@@ -93,30 +81,11 @@
                                                   data-confirm-term-where="member"
                                                   data-confirm-term-how="share"
                                                   data-done=""
-                                                  data-always="bb8.loadJsAfterAjax()"
+                                                  data-always="bb8.init('#container-notes')"
                                                   data-update="container-notes"
                                 >
                                     <i class="la-share slash icon"></i>
                                 </laser:remoteLink>
-
-
-                                    <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
-                                        <i class="la-share slash icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                  controller="ajax" action="toggleShare"
-                                                  params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
-                                                  onSuccess=""
-                                                  onComplete=""
-                                                  update="container-notes"
-                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
-
-                                                  data-confirm-term-what="element"
-                                                  data-confirm-term-what-detail="${docctx.owner.title}"
-                                                  data-confirm-term-where="member"
-                                                  data-confirm-term-how="share"
-                                    >
-                                    </g:remoteLink>
                             </g:else>
 
                         </g:if>
