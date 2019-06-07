@@ -1,8 +1,6 @@
-<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
-        total="${selectedSubParticipants?.size()}"/></h2>
-<br>
 
-<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+
+<h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
 <br>
 
 <semui:filter>

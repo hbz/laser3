@@ -50,8 +50,7 @@
                 </th>
                 <th>${message(code: 'surveyProperty.subName')}</th>
                 <th>${message(code: 'surveyProperty.subStatus')}</th>
-                <th>${message(code: 'surveyProperty.subDate')}</th>
-                <th>${message(code: 'surveyProperty.type.label')}</th>
+                <th>${message(code: 'surveyProperty.subProvider')}</th>
                 <th>${message(code: 'surveyProperty.plural.label')}</th>
                 <th>${message(code: 'surveyConfig.documents.label')}</th>
                 <th>${message(code: 'surveyConfig.orgs.label')}</th>
@@ -76,47 +75,29 @@
                             ${config?.subscription?.status?.getI10n('value')}
                         </td>
                         <td>
-                            <g:formatDate formatName="default.date.format.notime"
-                                          date="${config?.subscription?.startDate}"/><br>
-                            <g:formatDate formatName="default.date.format.notime"
-                                          date="${config?.subscription?.endDate}"/>
+                            <g:each in="${config?.subscription?.getProviders()+config?.subscription?.getAgencies()}" var="provider">
+                                <g:link controller="organisation" action="show" id="${provider?.id}">${provider?.name}</g:link><br>
+                            </g:each>
                         </td>
-                        <td>
-                            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
-
-                            <g:if test="${config?.surveyProperty}">
-                                <br>
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
-
-                                <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    <br>
-                                    (${refdataValues.join('/')})
-                                </g:if>
-                            </g:if>
-
-                        </td>
-                        <td>
+                        <td class="center aligned">
                             <g:if test="${config?.type == 'Subscription'}">
-                                <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                                <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: config?.id]" class="ui icon">
+                                    <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                                </g:link>
                             </g:if>
 
                         </td>
-                        <td>
+                        <td class="center aligned">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: config?.id]" class="">
-                                ${config?.documents?.size()}
+                                    params="[surveyConfigID: config?.id]" class="ui icon">
+                                <div class="ui circular label">${config?.documents?.size()}</div>
                             </g:link>
                         </td>
-                        <td>
+                        <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: config?.id]" class="">
-                                ${config?.orgs?.size() ?: 0}
+                                    params="[surveyConfigID: config?.id]" class="ui icon">
+                                <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                             </g:link>
                         </td>
                         <td>
@@ -128,6 +109,14 @@
                             <g:if test="${editable && config?.getCurrentDocs()}">
                                 <span data-position="top right"
                                       data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
+                                    <button class="ui icon button negative" disabled="disabled">
+                                        <i class="trash alternate icon"></i>
+                                    </button>
+                                </span>
+                            </g:if>
+                            <g:if test="${editable && config?.surveyProperties?.size() > 0}">
+                                <span data-position="top right"
+                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingProperties')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -199,31 +188,21 @@
 
                             <g:if test="${config?.surveyProperty}">
                                 <br>
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
+                                <b>${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
 
-                                <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    <br>
-                                    (${refdataValues.join('/')})
-                                </g:if>
                             </g:if>
 
                         </td>
-                        <td>
+                        <td class="center aligned">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: config?.id]" class="">
-                                ${config?.documents?.size()}
+                                    params="[surveyConfigID: config?.id]" class="ui icon">
+                                <div class="ui circular label">${config?.documents?.size()}</div>
                             </g:link>
                         </td>
-                        <td>
+                        <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: config?.id]" class="">
-                                ${config?.orgs?.size() ?: 0}
+                                    params="[surveyConfigID: config?.id]" class="ui icon">
+                                <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                             </g:link>
                         </td>
                         <td>

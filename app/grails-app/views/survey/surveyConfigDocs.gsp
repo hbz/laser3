@@ -57,7 +57,7 @@
                             controller="survey" action="surveyConfigDocs"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigName()}</h5>
+                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 

@@ -2,7 +2,7 @@
         total="${consortiaMembers?.size()}"/></h2>
 <br>
 
-<h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+<h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
 <br>
 
 <semui:filter>

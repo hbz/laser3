@@ -30,11 +30,6 @@
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
-        total="${surveyConfigs.size()}"/></h2>
-
-<br>
-
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
         <div class="four wide column">
@@ -46,7 +41,7 @@
                             controller="survey" action="surveyCostItems"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigName()}</h5>
+                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
@@ -73,12 +68,14 @@
                  data-tab="selectedSubParticipants">
 
                 <div>
-                    <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
-                            total="${selectedSubParticipants?.size()}"/></h2>
                     <br>
-
-                    <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
-                    <br>
+                    <g:if test="${surveyConfig?.type == 'Subscription'}">
+                        <h3 class="ui icon header"><semui:headerIcon/>
+                        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+                            ${surveyConfig?.subscription?.name}
+                        </g:link>
+                        </h3>
+                    </g:if>
 
                     <div class="four wide column">
 
@@ -157,7 +154,7 @@
                             total="${selectedParticipants?.size()}"/></h2>
                     <br>
 
-                    <h3 class="ui left aligned">${surveyConfig?.getConfigName()}</h3>
+                    <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
                     <br>
 
                     <div class="four wide column">
