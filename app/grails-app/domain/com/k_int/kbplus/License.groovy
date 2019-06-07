@@ -20,7 +20,7 @@ import com.k_int.ClassUtils
 
 class License
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, ShareSupport, Comparable<License>,
+        implements TemplateSupport, Permissions, ShareSupport, Comparable<License>,
                 AuditableTrait {
 
     @Transient
@@ -160,11 +160,6 @@ class License
             }
         })
         lastUpdated(nullable: true, blank: true)
-    }
-
-    @Override
-    boolean isDeleted() {
-        return RDStore.LICENSE_DELETED.id == status?.id
     }
 
     @Override

@@ -1,3 +1,8 @@
+0.17.3
+
+- fixed: creating cost items
+- fixed: orphaned links between subscriptions or licenses
+
 0.17.2
 
 - reworked sharing provider and agencies between subscriptions
