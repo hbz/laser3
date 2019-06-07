@@ -16,7 +16,6 @@
         <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
                 params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
 
-
                 <%
                     List subscriptions = [Subscription.get(sourceSubscriptionId)]
                     if (targetSubscriptionId) subscriptions.add(Subscription.get(targetSubscriptionId))
@@ -30,13 +29,11 @@
                         </table>
                     </g:if>
 
-
                     <g:if test="${privateProperties.size() > 0}">
                         <table class="ui celled table la-table">
                             <g:render template="propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
                         </table>
                     </g:if>
-
 
             <g:if test="${customProperties.size() == 0 && privateProperties.size() == 0}">
                 ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}

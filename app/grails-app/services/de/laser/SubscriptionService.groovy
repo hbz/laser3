@@ -10,7 +10,6 @@ import com.k_int.kbplus.SubscriptionCustomProperty
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionPrivateProperty
 import com.k_int.kbplus.Task
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
@@ -19,6 +18,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 
 class SubscriptionService {
@@ -27,10 +27,13 @@ class SubscriptionService {
     def subscriptionsQueryService
     def docstoreService
     def messageSource
+    def locale
 
-    public static final String COPY = "COPY"
-    public static final String REPLACE = "REPLACE"
-    public static final String DO_NOTHING = "DO_NOTHING"
+    @javax.annotation.PostConstruct
+    void init() {
+        messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+    }
 
     List getMySubscriptions_readRights(){
         List result = []
@@ -148,17 +151,23 @@ class SubscriptionService {
         visibleOrgRelations.sort { it.org?.name.toLowerCase() }
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteOwner(Subscription targetSub, def flash) {
         targetSub.owner = null
         return save(targetSub, flash)
     }
 
-    boolean takeOwner(Subscription sourceSub, Subscription targetSub, def flash) {
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyOwner(Subscription sourceSub, Subscription targetSub, def flash) {
         //Vertrag/License
         targetSub.owner = sourceSub.owner ?: null
         return save(targetSub, flash)
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
@@ -166,11 +175,14 @@ class SubscriptionService {
         )
     }
 
-    boolean takeOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Subscription sourceSub, Subscription targetSub, def flash) {
         sourceSub.orgRelations?.each { or ->
             if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial', 'Subscription Consortia'])) {
                 if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                    flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
+                    Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
+                    flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
                 } else {
                     def newProperties = or.properties
                     //Vererbung ausschalten
@@ -185,6 +197,8 @@ class SubscriptionService {
         }
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
 //        targetSub.issueEntitlements.each{ ie ->
@@ -203,10 +217,13 @@ class SubscriptionService {
         }
     }
 
-    boolean takePackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyPackages(List<Package> packagesToTake, Subscription targetSub, def flash) {
         packagesToTake?.each { pkg ->
             if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                flash.error += "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+                Object[] args = [pkg.name]
+                flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 newSubscriptionPackage.subscription = targetSub
@@ -216,6 +233,8 @@ class SubscriptionService {
         }
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
             it.status = RDStore.IE_DELETED
@@ -226,13 +245,16 @@ class SubscriptionService {
 //                [entitlementsToDelete: entitlementsToDelete, sub: targetSub])
     }
 
-    boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != RDStore.IE_DELETED) {
                 def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
-                    flash.error += "Der Titel " + ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert.<br>"
+                    Object[] args = [ieToTake.tipp.title.title]
+                    flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                 } else {
                     def properties = ieToTake.properties
                     properties.globalUID = null
@@ -245,6 +267,8 @@ class SubscriptionService {
         }
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteTasks(List<Long> toDeleteTasks, Subscription targetSub, def flash) {
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.user.id
@@ -254,68 +278,48 @@ class SubscriptionService {
                 if (dTask.creator.id == userId || isInstAdm) {
                     delete(dTask, flash)
                 } else {
-                    flash.error += "Sie sind nicht berechtigt Aufgabe ${deleteTaskId} zu löschen."
+                    Object[] args = [messageSource.getMessage('task.label', null, locale), deleteTaskId]
+                    flash.error += messageSource.getMessage('default.not.deleted.notAutorized.message', args, locale)
                 }
             } else {
-                flash.error += "Die Aufgabe ${deleteTaskId} konnte nicht gelöscht werden. Sie existiert nicht (mehr)."
+                Object[] args = [deleteTaskId]
+                flash.error += messageSource.getMessage('subscription.err.taskDoesNotExist', args, locale)
             }
         }
     }
 
-    @Deprecated
-    boolean takeTasks(String aktion, Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
-        switch (aktion) {
-            case COPY:
-                toCopyTasks.each { tsk ->
-                    def task = Task.findBySubscriptionAndId(sourceSub, tsk)
-                    if (task) {
-                        if (task.status != RDStore.TASK_STATUS_DONE) {
-                            Task newTask = new Task()
-                            InvokerHelper.setProperties(newTask, task.properties)
-                            newTask.subscription = targetSub
-                            save(newTask, flash)
-                        }
-                    }
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
-        }
-    }
-
-    @Deprecated
-    boolean takeAnnouncements(String aktion, Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-            targetSub.documents.each {
-                if ((it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain))){
-                    it.status = RDStore.IE_DELETED
-                    save(it, flash)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyTasks(Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
+        toCopyTasks.each { tsk ->
+            def task = Task.findBySubscriptionAndId(sourceSub, tsk)
+            if (task) {
+                if (task.status != RDStore.TASK_STATUS_DONE) {
+                    Task newTask = new Task()
+                    InvokerHelper.setProperties(newTask, task.properties)
+                    newTask.subscription = targetSub
+                    save(newTask, flash)
                 }
             }
         }
+    }
 
-        switch (aktion) {
-            case COPY:
-            case REPLACE:
-                sourceSub.documents?.each { dctx ->
-                    if (dctx.id in toCopyAnnouncements) {
-                        if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                            Doc newDoc = new Doc()
-                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                            save(newDoc, flash)
-                            DocContext newDocContext = new DocContext()
-                            InvokerHelper.setProperties(newDocContext, dctx.properties)
-                            newDocContext.subscription = targetSub
-                            newDocContext.owner = newDoc
-                            save(newDocContext, flash)
-                        }
-                    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyAnnouncements(Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
+        sourceSub.documents?.each { dctx ->
+            if (dctx.id in toCopyAnnouncements) {
+                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                    Doc newDoc = new Doc()
+                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                    save(newDoc, flash)
+                    DocContext newDocContext = new DocContext()
+                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    newDocContext.subscription = targetSub
+                    newDocContext.owner = newDoc
+                    save(newDocContext, flash)
                 }
-                break
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+            }
         }
     }
 
@@ -332,6 +336,8 @@ class SubscriptionService {
     }
 
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteDates(Subscription targetSub, def flash){
         targetSub.startDate = null
         targetSub.endDate = null
@@ -339,7 +345,9 @@ class SubscriptionService {
     }
 
 
-    boolean takeDates(Subscription sourceSub, Subscription targetSub, def flash) {
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyDates(Subscription sourceSub, Subscription targetSub, def flash) {
         targetSub.setStartDate(sourceSub.getStartDate())
         targetSub.setEndDate(sourceSub.getEndDate())
         return save(targetSub, flash)
@@ -347,89 +355,63 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
+    def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
         [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
-    @Deprecated
-    boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
-            targetSub.documents.each {
-                if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
-                    it.status = RDStore.DOC_DELETED
-                    save(it, flash)
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyDocs(Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
+        sourceSub.documents?.each { dctx ->
+            if (dctx.id in toCopyDocs) {
+                if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
+                    Doc newDoc = new Doc()
+                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                    save(newDoc, flash)
+                    DocContext newDocContext = new DocContext()
+                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    newDocContext.subscription = targetSub
+                    newDocContext.owner = newDoc
+                    save(newDocContext, flash)
                 }
             }
         }
+    }
 
-        switch (aktion) {
-            case REPLACE:
-            case COPY:
-                sourceSub.documents?.each { dctx ->
-                    if (dctx.id in toCopyDocs) {
-                        if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
-                            Doc newDoc = new Doc()
-                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                            save(newDoc, flash)
-                            DocContext newDocContext = new DocContext()
-                            InvokerHelper.setProperties(newDocContext, dctx.properties)
-                            newDocContext.subscription = targetSub
-                            newDocContext.owner = newDoc
-                            save(newDocContext, flash)
-                        }
-                    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+        def contextOrg = contextService.getOrg()
+        def targetProp
+
+        properties?.each { sourceProp ->
+            if (sourceProp instanceof CustomProperty) {
+                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
+            }
+            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
+                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
+            }
+            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+            if ( (! targetProp) || isAddNewProp) {
+                if (sourceProp instanceof CustomProperty) {
+                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                } else {
+                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
-                break
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
+            }
+            targetProp = sourceProp.copyInto(targetProp)
+            save(targetProp, flash)
         }
     }
 
-    @Deprecated
-    boolean takeProperties(String aktion, List<AbstractProperty> properties, Subscription targetSub, def flash){
-        switch (aktion) {
-            case COPY:
-                def contextOrg = contextService.getOrg()
-                def targetProp
-
-                properties?.each { sourceProp ->
-                    if (sourceProp instanceof CustomProperty) {
-                        targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-                    }
-                    if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                        targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-                    }
-                    boolean isAddNewProp = sourceProp.type?.multipleOccurrence
-                    if ( (! targetProp) || isAddNewProp) {
-                        if (sourceProp instanceof CustomProperty) {
-                            targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                        } else {
-                            targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                        }
-                    }
-                    targetProp = sourceProp.copyInto(targetProp)
-                    save(targetProp, flash)
-                }
-                break;
-
-            default:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
-        }
-    }
-
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
         int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
-        if (properties.size() == anzCP + anzPP) {
-            log.debug("Delete ok: " + properties)
-        } else {
-            log.error("Problem deleting properties: ${properties}. Number of Properties to delete: ${properties.size()}. Number of CustomProperties deleted: ${anzCP}. Number of PrivateProperties deleted: ${anzPP} ")
-            flash.error += "Es ist ein Fehler beim Löschen aufgetreten."
-        }
     }
 
     private boolean delete(obj, flash) {
@@ -437,7 +419,7 @@ class SubscriptionService {
             obj.delete(flush: true)
             log.debug("Delete ${obj} ok")
         } else {
-            flash.error += "Es ist ein Problem beim Löschen aufgetreten."
+            flash.error += messageSource.getMessage('default.delete.error.message', null, locale)
         }
     }
 
@@ -447,7 +429,8 @@ class SubscriptionService {
             return true
         } else {
             log.error("Problem saving ${obj.errors}")
-            flash.error += "Es ist ein Fehler beim Speichern von ${obj} aufgetreten."
+            Object[] args = [obj]
+            flash.error += messageSource.getMessage('default.save.error.message', args, locale)
             return false
         }
     }
