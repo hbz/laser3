@@ -44,7 +44,7 @@ class ApiPkg {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getPackage(Package pkg, Org context, boolean hasAccess) {
         Collection<Object> result = []

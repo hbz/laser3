@@ -31,7 +31,10 @@ class ApiStatistic {
         orgs
     }
 
-    static getAllPackages() {
+    /**
+     * @return JSON
+     */
+    static JSON getAllPackages() {
         def result = []
 
         List<Package> packages = []
@@ -55,7 +58,10 @@ class ApiStatistic {
         return (result ? new JSON(result) : null)
     }
 
-    static getPackage(Package pkg) {
+    /**
+     * @return JSON
+     */
+    static JSON getPackage(Package pkg) {
         if (! pkg || pkg.packageStatus?.value == 'Deleted') {
             return null
         }
@@ -71,23 +77,24 @@ class ApiStatistic {
         result.variantNames     = ['TODO-TODO-TODO'] // todo
 
         // References
-        result.contentProvider  = resolvePkgOrganisations(pkg.orgs)
-        result.license          = resolvePkgLicense(pkg.license)
+        result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
+        result.license          = requestPkgLicense(pkg.license)
         result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
         //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
         //result.tipps            = resolvePkgTipps(pkg.tipps)
-        result.subscriptions    = resolvePkgSubscriptions(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
+        result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
 
         result = ApiToolkit.cleanUp(result, true, true)
 
         return (result ? new JSON(result) : null)
     }
 
-    static List resolvePkgOrganisations(Set<OrgRole> orgRoles) {
+    static Collection<Object> retrievePkgOrganisationCollection(Set<OrgRole> orgRoles) {
         if (! orgRoles) {
             return null
         }
-        def result = []
+
+        Collection<Object> result = []
         orgRoles.each { ogr ->
             if (ogr.roleType.id == RDStore.OR_CONTENT_PROVIDER.id) {
                 if (ogr.org.status?.value == 'Deleted') {
@@ -101,7 +108,7 @@ class ApiStatistic {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolvePkgLicense(License lic) {
+    static requestPkgLicense(License lic) {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
@@ -141,7 +148,7 @@ class ApiStatistic {
     }
     */
 
-    static resolvePkgSubscriptions(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
+    static Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (! subscriptionPackages) {
             return null
         }

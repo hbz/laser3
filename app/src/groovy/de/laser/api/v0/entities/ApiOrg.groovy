@@ -45,7 +45,7 @@ class ApiOrg {
     /**
      * @return boolean
      */
-    static calculateAccess(Org org, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Org org, Org context, boolean hasAccess) {
 
         // TODO
         if (! hasAccess) {
@@ -56,7 +56,7 @@ class ApiOrg {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getOrganisation(Org org, Org context, boolean hasAccess) {
         Collection<Object> result = []

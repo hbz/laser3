@@ -47,7 +47,7 @@ class ApiLicense {
     /**
      * @return boolean
      */
-    static calculateAccess(License lic, Org context, boolean hasAccess) {
+    static boolean calculateAccess(License lic, Org context, boolean hasAccess) {
 
         if (! hasAccess) {
             if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
@@ -65,7 +65,7 @@ class ApiLicense {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getLicense(License lic, Org context, boolean hasAccess){
         Collection<Object> result = []
@@ -79,9 +79,9 @@ class ApiLicense {
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON
      */
-    static getLicenseList(Org owner, Org context, boolean hasAccess){
+    static JSON getLicenseList(Org owner, Org context, boolean hasAccess){
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(

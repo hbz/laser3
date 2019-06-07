@@ -46,7 +46,7 @@ class ApiSubscription {
     /**
      * @return boolean
      */
-    static calculateAccess(Subscription sub, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Subscription sub, Org context, boolean hasAccess) {
 
         if (! hasAccess) {
             if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
@@ -64,7 +64,7 @@ class ApiSubscription {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getSubscription(Subscription sub, Org context, boolean hasAccess){
         Map<String, Object> result = [:]
@@ -78,9 +78,9 @@ class ApiSubscription {
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON
      */
-    static getSubscriptionList(Org owner, Org context, boolean hasAccess){
+    static JSON getSubscriptionList(Org owner, Org context, boolean hasAccess){
         Collection<Object> result = []
 
         List<Subscription> available = Subscription.executeQuery(

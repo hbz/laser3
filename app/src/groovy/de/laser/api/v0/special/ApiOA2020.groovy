@@ -24,9 +24,9 @@ class ApiOA2020 {
     }
 
     /**
-     * @return [] | HTTP_FORBIDDEN
+     * @return JSON
      */
-    static getAllOrgs() {
+    static JSON getAllOrgs() {
         Collection<Object> result = []
 
         // if (requestingOrghasNoAccessDueSpecialFlag?) { return Constants.HTTP_FORBIDDEN }

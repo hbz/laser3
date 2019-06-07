@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.53'
+    static final VERSION = '0.54'
     static final NOT_SUPPORTED = false
 
     /**
@@ -303,7 +303,7 @@ class ApiManager {
         result
     }
 
-    static buildResponse(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
+    static buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
         def response = []
 

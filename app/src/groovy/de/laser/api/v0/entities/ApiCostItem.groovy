@@ -35,7 +35,7 @@ class ApiCostItem {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getCostItem(CostItem costItem, Org context, boolean hasAccess){
         Map<String, Object> result = [:]
@@ -53,7 +53,7 @@ class ApiCostItem {
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getCostItemList(Org owner, Org context, boolean hasAccess){
         Collection<Object> result = []
@@ -73,7 +73,7 @@ class ApiCostItem {
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
         Collection<Object> result = []

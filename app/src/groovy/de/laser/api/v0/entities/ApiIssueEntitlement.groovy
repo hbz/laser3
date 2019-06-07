@@ -36,7 +36,7 @@ class ApiIssueEntitlement {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getIssueEntitlements(SubscriptionPackage subPkg, Org context, boolean hasAccess){
         Collection<Object> result = []
