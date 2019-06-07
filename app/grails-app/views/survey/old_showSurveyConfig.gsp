@@ -196,18 +196,8 @@
 
                     <g:if test="${config?.surveyProperty}">
                         <br>
-                        <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
+                        <b>${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
 
-                        <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br>
-                            (${refdataValues.join('/')})
-                        </g:if>
                     </g:if>
 
                 </td>

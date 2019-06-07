@@ -292,17 +292,8 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
                 </td>
                 <td>
-                    ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyResult?.type?.type)}
-                    <g:if test="${surveyResult?.type?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                        <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyResult?.type?.refdataCategory)}"
-                                var="refdataValue">
-                            <g:set var="refdataValues"
-                                   value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                        </g:each>
-                        <br>
-                        (${refdataValues.join('/')})
-                    </g:if>
+                    ${surveyResult?.type?.getLocalizedType()}
+
                 </td>
                     <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
 

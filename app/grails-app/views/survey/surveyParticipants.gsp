@@ -30,14 +30,6 @@
 
 <br>
 
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    ${message(code: 'surveyParticipants.info')}
-</div>
-
-<br>
-
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
@@ -55,7 +47,7 @@
                             controller="survey" action="surveyParticipants"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigName()}</h5>
+                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
