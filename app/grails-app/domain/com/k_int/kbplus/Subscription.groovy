@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, ShareSupport,
+        implements TemplateSupport, Permissions, ShareSupport,
                 AuditableTrait {
 
     // AuditableTrait
@@ -165,11 +165,6 @@ class Subscription
         isPublic(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-    }
-
-    @Override
-    boolean isDeleted() {
-        return RDStore.SUBSCRIPTION_DELETED.id == status?.id
     }
 
     // TODO: implement
