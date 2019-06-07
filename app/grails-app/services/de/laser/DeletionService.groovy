@@ -23,6 +23,9 @@ class DeletionService {
 
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
+        List links                  = Links.where { objectType == lic.class.name &&
+                                        (source == lic.id || destination == lic.id) }.findAll()
+
         List tasks                  = Task.findAllByLicense(lic)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByLic(lic)
         List subs                   = Subscription.findAllByOwner(lic)
@@ -41,6 +44,7 @@ class DeletionService {
             result.info = []
             result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
 
+            result.info << ['Links: Verträge', links]
             result.info << ['Aufgaben', tasks]
             result.info << ['Merkmalsgruppen', propDefGroupBindings]
             result.info << ['Lizenzen', subs]
@@ -107,6 +111,9 @@ class DeletionService {
                     // ----- delete foreign objects
 
                     // lic.onixplLicense
+
+                    // links
+                    links.each{ tmp -> tmp.delete() }
 
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
@@ -176,6 +183,9 @@ class DeletionService {
         List ref_instanceOf = Subscription.findAllByInstanceOf(sub)
         List ref_previousSubscription = Subscription.findAllByPreviousSubscription(sub)
 
+        List links                  = Links.where { objectType == sub.class.name &&
+                                        (source == sub.id || destination == sub.id) }.findAll()
+
         List tasks                  = Task.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
         AuditConfig ac              = AuditConfig.getConfig(sub)
@@ -198,6 +208,7 @@ class DeletionService {
             result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
             result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
 
+            result.info << ['Links: Lizenzen', links]
             result.info << ['Aufgaben', tasks]
             result.info << ['Merkmalsgruppen', propDefGroupBindings]
             result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
@@ -257,6 +268,9 @@ class DeletionService {
 
                     // ----- delete foreign objects
                     // ----- delete foreign objects
+
+                    // links
+                    links.each{ tmp -> tmp.delete() }
 
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
