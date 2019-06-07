@@ -232,12 +232,8 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out   << '<div class="la-popup-tooltip la-delay la-js-editmode-container" title="Wert wird vererbt" data-content="Wert wird vererbt" id="tooltip2">'
-                            out     <<  '<span class="" ></span>'
-
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-audit-button">'
-                            out   << '<i class="icon thumbtack la-js-editmode-icon" aria-describedby="tooltip2"></i>'
-
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button la-audit-button">'
+                            out   << '<i class="icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
                             out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
@@ -254,15 +250,14 @@ class SemanticUiTagLib {
                             )
                             out   << '</div>'
                             out << '</div>'
-                            out << '</div>'
                         }
                         else {
-                            out << ' &nbsp; <span class="la-popup-tooltip la-delay la-js-editmode-container" data-content="Wert wird nicht vererbt">'
-                            out << g.link( '<i class="icon la-thumbtack slash la-js-editmode-icon"></i>',
+                            out << ' &nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt">'
+                            out << g.link( '<i class="icon la-thumbtack slash"></i>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button la-audit-button'
+                                    class: 'ui icon mini button la-js-dont-hide-button la-audit-button'
                             )
                             out <<  '</span>'
                         }
