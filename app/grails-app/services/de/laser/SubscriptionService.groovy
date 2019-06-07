@@ -355,7 +355,7 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def deleteDoks(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
+    def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
         [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
@@ -364,7 +364,7 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean copyDoks(Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
+    boolean copyDocs(Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
         sourceSub.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
