@@ -200,9 +200,9 @@
                     </div>
                 </div>
 
-                    <div class="ui card la-js-hideable hidden">
+                <g:if test="${subscriptionInstance.packages}">
+                    <div class="ui card la-js-hideable">
                         <div class="content">
-
                             <table class="ui three column la-selectable table">
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                     <tr>
@@ -231,8 +231,9 @@
 
                         </div><!-- .content -->
                     </div>
+                </g:if>
 
-                <div class="ui card la-js-hideable hidden">
+                <div class="ui card la-js-hideable">
                     <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
@@ -314,7 +315,7 @@
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable hidden">
+                <div class="ui card la-js-hideable">
                     <div class="content">
 
                         <table class="ui three column la-selectable table">

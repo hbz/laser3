@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
+import de.laser.api.v0.ApiToolkit
 import de.laser.api.v0.ApiReader
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
@@ -41,14 +42,6 @@ class ApiController extends AbstractDebugController {
         def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
-            case '1':
-            case 'v1':
-                result.apiKey  = user?.apikey
-                result.apiPassword = user?.apisecret
-                result.apiContext = org?.globalUID ?: ''
-                result.apiVersion = 'v1'
-                render view: 'v1', model: result
-                break
             default:
                 result.apiKey  = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
                 result.apiPassword = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
@@ -62,10 +55,6 @@ class ApiController extends AbstractDebugController {
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def loadSpec() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
-            case '1':
-            case 'v1':
-                render view: '/swagger/v1/laser.yaml.gsp'
-                break
             default:
                 render view: '/swagger/v0/laser.yaml.gsp'
                 break
@@ -75,10 +64,6 @@ class ApiController extends AbstractDebugController {
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def dispatch() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
-            case '1':
-            case 'v1':
-                v1()
-                break
             default:
                 v0()
                 break
@@ -354,13 +339,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         log.debug("API Call: " + params)
 
         def result
-        def hasAccess = false
+        boolean hasAccess = false
         def apiManager = ApiManager
 
-        def obj     = params.get('obj')
-        def query   = params.get('q')
-        def value   = params.get('v', '')
-        def context = params.get('context')
+        String obj     = params.get('obj')
+        String query   = params.get('q')
+        String value   = params.get('v', '')
+        String context = params.get('context')
         def format
 
         Org contextOrg = null
@@ -372,10 +357,10 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                 if ("GET" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_READ, ApiManager.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_READ, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
                 else if ("POST" == request.method) {
-                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_WRITE, ApiManager.API_LEVEL_DATAMANAGER])
+                    hasAccess = (apiLevel.getValue() in [ApiToolkit.API_LEVEL_WRITE, ApiToolkit.API_LEVEL_DATAMANAGER])
                 }
             }
 
@@ -429,145 +414,6 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         }
                         response.outputStream.flush()
                         return
-                    }
-                }
-            }
-            else if ('POST' == request.method) {
-                def postBody = request.getAttribute("authorizedApiPostBody")
-                def data = (postBody ? new JSON().parse(postBody) : null)
-
-                if (! data) {
-                    result = Constants.HTTP_BAD_REQUEST
-                }
-                else {
-                    result = apiManager.write((String) obj, data, (User) user, (Org) contextOrg)
-                }
-            }
-            else {
-                result = Constants.HTTP_NOT_IMPLEMENTED
-            }
-        }
-        def responseStruct = apiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
-
-        def responseJson = responseStruct[0]
-        def responseCode = responseStruct[1]
-
-        response.setContentType(Constants.MIME_APPLICATION_JSON)
-        response.setCharacterEncoding(Constants.UTF8)
-        response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
-        response.setStatus(responseCode)
-
-        render responseJson.toString(true)
-    }
-
-    /**
-     * API endpoint
-     *
-     * @return
-     */
-    @Deprecated
-    @Secured(['permitAll']) // TODO
-    def v1() {
-        log.debug("API Call: " + params)
-
-        def result
-        def hasAccess = false
-        def apiManager = de.laser.api.v1.ApiMainClass
-
-        def obj     = params.get('obj')
-        def query   = params.get('q')
-        def value   = params.get('v', '')
-        def context = params.get('context')
-        def startDate = params.get('startDate') ? new Date().parse("yyyy-MM-dd", params.get('startDate')) : null
-        def endDate = params.get('endDate') ? new Date().parse("yyyy-MM-dd", params.get('endDate')) : null
-        def format
-
-        Org contextOrg = null
-        User user = (User) request.getAttribute('authorizedApiUser')
-
-        if (user) {
-            // checking role permission
-            // TODO: refactoring: removing user bases api roles
-            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
-
-            if ("GET" == request.method) {
-                def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
-                hasAccess = ! (dmRole.isEmpty() && readRole.isEmpty())
-            }
-            else if ("POST" == request.method) {
-                def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API'))
-                hasAccess = ! (dmRole.isEmpty() && writeRole.isEmpty())
-            }
-
-            // getting context
-
-            if (context) {
-                user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
-                    def org = Org.findWhere(id: uo.org.id, shortcode: params.get('context'))
-                    if (org) {
-                        contextOrg = org
-                    }
-                }
-            }
-            else if (user.authorizedAffiliations.size() == 1) {
-                def uo = user.authorizedAffiliations[0]
-                contextOrg = Org.findWhere(id: uo.org.id)
-            }
-        }
-
-        if (!contextOrg || !hasAccess) {
-            result = Constants.HTTP_FORBIDDEN
-        }
-        else if (!obj) {
-            result = Constants.HTTP_BAD_REQUEST
-        }
-
-        // delegate api calls
-
-        if (! result) {
-            if ('GET' == request.method) {
-                if (!query || !value) {
-                    result = Constants.HTTP_BAD_REQUEST
-                }
-                else {
-                    switch(request.getHeader('accept')) {
-                        case Constants.MIME_APPLICATION_JSON:
-                        case Constants.MIME_TEXT_JSON:
-                            format = Constants.MIME_APPLICATION_JSON
-                            break
-                        case Constants.MIME_APPLICATION_XML:
-                        case Constants.MIME_TEXT_XML:
-                            format = Constants.MIME_APPLICATION_XML
-                            break
-                        case Constants.MIME_TEXT_PLAIN:
-                            format = Constants.MIME_TEXT_PLAIN
-                            break
-                        default:
-                            format = Constants.MIME_ALL
-                            break
-                    }
-
-                    if(startDate && endDate) {
-                        result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format, (Date) startDate, (Date) endDate)
-                    }else {
-                        result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
-                    }
-                    if (result instanceof Doc) {
-                        if (result.contentType == Doc.CONTENT_TYPE_STRING) {
-                            response.contentType = result.mimeType
-                            response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '"')
-                            response.outputStream << result.content
-                            response.outputStream.flush()
-                            return
-                        }
-                        else if (result.contentType == Doc.CONTENT_TYPE_BLOB) {
-                            response.contentType = result.mimeType
-                            response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '-' + result.filename + '"')
-                            response.setHeader('Content-Length', "${result.getBlobSize()}")
-                            response.outputStream << result.getBlobData()
-                            response.outputStream.flush()
-                            return
-                        }
                     }
                 }
             }

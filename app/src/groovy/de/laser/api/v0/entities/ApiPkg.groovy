@@ -44,10 +44,10 @@ class ApiPkg {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getPackage(Package pkg, Org context, boolean hasAccess) {
-        def result = []
+        Collection<Object> result = []
         // TODO
         if (! hasAccess) {
             pkg.orgs.each { orgRole ->
@@ -58,7 +58,7 @@ class ApiPkg {
         }
 
         if (hasAccess) {
-            result = ApiReader.exportPackage(pkg, context) // TODO check orgRole.roleType
+            result = ApiReader.retrievePackageMap(pkg, context) // TODO check orgRole.roleType
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
