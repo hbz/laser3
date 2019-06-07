@@ -436,7 +436,7 @@ r2d2 = {
                     default:
                         messageHow = "löschen";
                 }
-                var url = that.getAttribute('href') && (that.getAttribute('class') == 'la-js-remoteLink') ? that.getAttribute('href'): false; // use url only if not remote link
+                var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) ? that.getAttribute('href'): false; // use url only if not remote link
 
                 // INHERIT BUTTON
 
