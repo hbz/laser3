@@ -20,7 +20,7 @@
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'survey.label')}</h1>
 
 
-<g:render template="steps"/>
+
 <br>
 
 <semui:messages data="${flash}"/>

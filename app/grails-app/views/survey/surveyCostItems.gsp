@@ -53,21 +53,27 @@
 
         <div class="twelve wide stretched column">
             <div class="ui top attached tabular menu">
-                <a class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                   data-tab="selectedSubParticipants">${message(code: 'surveyParticipants.selectedSubParticipants')}
+                <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
+                        controller="survey" action="surveyCostItems"
+                        id="${surveyConfig?.surveyInfo?.id}"
+                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                    ${message(code: 'surveyParticipants.selectedSubParticipants')}
                     <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
-                </a>
+                </g:link>
 
-                <a class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                   data-tab="selectedParticipants">${message(code: 'surveyParticipants.selectedParticipants')}
-                    <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div></a>
+                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+                        controller="survey" action="surveyCostItems"
+                        id="${surveyConfig?.surveyInfo?.id}"
+                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
+                    ${message(code: 'surveyParticipants.selectedParticipants')}
+                    <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
+                </g:link>
 
             </div>
 
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                 data-tab="selectedSubParticipants">
+            <g:if test="${params.tab == 'selectedSubParticipants'}">
 
-                <div>
+                <div class="ui bottom attached tab segment active">
                     <br>
                     <g:if test="${surveyConfig?.type == 'Subscription'}">
                         <h3 class="ui icon header"><semui:headerIcon/>
@@ -76,6 +82,9 @@
                         </g:link>
                         </h3>
                     </g:if>
+                    <g:else>
+                        <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
+                    </g:else>
 
                     <div class="four wide column">
 
@@ -143,19 +152,23 @@
 
                 </div>
 
-            </div>
+            </g:if>
 
 
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                 data-tab="selectedParticipants">
+            <g:if test="${params.tab == 'selectedParticipants'}">
 
-                <div>
-                    <h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedParticipants')}<semui:totalNumber
-                            total="${selectedParticipants?.size()}"/></h2>
+                <div class="ui bottom attached tab segment active">
                     <br>
-
-                    <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-                    <br>
+                    <g:if test="${surveyConfig?.type == 'Subscription'}">
+                        <h3 class="ui icon header"><semui:headerIcon/>
+                        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+                            ${surveyConfig?.subscription?.name}
+                        </g:link>
+                        </h3>
+                    </g:if>
+                    <g:else>
+                        <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
+                    </g:else>
 
                     <div class="four wide column">
 
@@ -225,15 +238,16 @@
 
                 </div>
 
-            </div>
+            </g:if>
 
             <g:form action="surveyConfigFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
                 <div class="ui right floated compact segment">
                     <div class="ui checkbox">
-                        <input type="checkbox" onchange="this.form.submit()" name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyConfig.configFinish.label"/> </label>
+                        <input type="checkbox" onchange="this.form.submit()"
+                               name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyConfig.configFinish.label"/></label>
                     </div>
                 </div>
 
@@ -247,9 +261,6 @@
 </g:else>
 
 <r:script>
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
 
 var isClicked = false;
 function addForAllSurveyCostItem() {
