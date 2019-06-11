@@ -293,7 +293,7 @@ class LicenseController extends AbstractDebugController {
                         [license: result.license]
                 )
 
-                def validOrgs = [[id:0]] // erms-582
+                def validOrgs = [[id:Long.parseLong('0')]] // erms-582
                 if (memberSubs) {
                     validOrgs = Org.executeQuery(
                             'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
