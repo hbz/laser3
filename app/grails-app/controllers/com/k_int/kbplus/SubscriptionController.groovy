@@ -70,6 +70,7 @@ class SubscriptionController extends AbstractDebugController {
     def titleStreamService
     def escapeService
     def deletionService
+    def auditService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -962,6 +963,11 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
@@ -1024,6 +1030,11 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
@@ -1082,6 +1093,11 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
@@ -1115,6 +1131,11 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
         }
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
@@ -1166,6 +1187,11 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
         }
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
@@ -1262,6 +1288,11 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
@@ -1315,6 +1346,11 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
         params.remove('filterPropDef')
@@ -1364,10 +1400,66 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
     })
+    def subscriptionPropertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+        //Sortieren
+        result.validSubChilds = validSubChilds.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+        }
+
+        def oldID = params.id
+        params.id = result.parentSub.id
+
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) {
+                    filteredSubscr << subOrg
+                }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+
+        params.id = oldID
+
+        result
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def processPropertiesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
         }
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
@@ -1461,10 +1553,87 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
     })
+    def processSubscriptionPropertiesConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.parentSub,
+                RDStore.SUBSCRIPTION_DELETED
+        )
+        def change = []
+                validSubChilds.each { subChild ->
+
+                    def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                    def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                    def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+
+
+                    if(startDate && !auditService.getAuditConfig(subChild?.instanceOf, 'startDate'))
+                    {
+                        subChild?.startDate = startDate
+                        change << message(code: 'default.startDate.label')
+                    }
+
+                    if(endDate && !auditService.getAuditConfig(subChild?.instanceOf, 'endDate'))
+                    {
+                        subChild?.endDate = endDate
+                        change << message(code: 'default.endDate.label')
+                    }
+
+
+                    if(params.status && !auditService.getAuditConfig(subChild?.instanceOf, 'status'))
+                    {
+                        subChild?.status = RefdataValue.get(params.status) ?: subChild?.status
+                        change << message(code: 'subscription.status.label')
+                    }
+
+                    if(params.form && !auditService.getAuditConfig(subChild?.instanceOf, 'form'))
+                    {
+                        subChild?.form = RefdataValue.get(params.form) ?: subChild?.form
+                        change << message(code: 'subscription.form.label')
+                    }
+
+                    if(params.resource && !auditService.getAuditConfig(subChild?.instanceOf, 'resource'))
+                    {
+                        subChild?.resource = RefdataValue.get(params.resource) ?: subChild?.resource
+                        change << message(code: 'subscription.resource.label')
+                    }
+
+                    if (subChild?.isDirty()) {
+                        subChild?.save(flush: true)
+                    }
+                }
+        if(change){
+            flash.message = message(code: 'subscription.subscriptionPropertiesConsortia.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
+        }
+
+        def id = params.id
+        redirect(action: 'subscriptionPropertiesConsortia', id: id)
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+    })
     def processDeletePropertiesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
+        }
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
         }
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
