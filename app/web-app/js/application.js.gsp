@@ -703,6 +703,7 @@ deckSaver = {
             $('.card').not('.ui.modal .card').removeClass('hidden');
             $(deckSaver.configs.element.hideSurroundingCard).removeClass('hidden');
             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
+            console.log(deckSaver.configs.areaThatIsAffected);
             $(deckSaver.configs.areaThatIsAffected).find('.button').removeClass('hidden');
 
 
@@ -740,7 +741,7 @@ deckSaver = {
             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
             $(deckSaver.configs.areaThatIsAffected).not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
-            $('.button').not('.la-js-dont-hide-button').addClass('hidden');
+            //$('.button').not('.la-js-dont-hide-button').addClass('hidden');
             $(deckSaver.configs.toggleButton).removeAttr();
             $(deckSaver.configs.toggleButton).attr("data-tooltip","Hide Buttons");
             $(deckSaver.configs.toggleIcon ).addClass( "slash" );

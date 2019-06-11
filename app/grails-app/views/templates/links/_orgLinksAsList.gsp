@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
-<table class="ui three column la-selectable table">
+<table class="ui three column table">
     <g:each in="${roleLinks.sort{it?.roleType?.getI10n("value")}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />

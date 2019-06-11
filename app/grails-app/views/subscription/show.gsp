@@ -141,7 +141,7 @@
 
                         </h5>
                         <g:if test="${links.entrySet()}">
-                            <table class="ui three column la-selectable table">
+                            <table class="ui three column table">
                                 <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
                                     <g:if test="${linkTypes.getValue().size() > 0}">
                                         <g:each in="${linkTypes.getValue()}" var="link">
@@ -203,7 +203,7 @@
                 <g:if test="${subscriptionInstance.packages}">
                     <div class="ui card la-js-hideable">
                         <div class="content">
-                            <table class="ui three column la-selectable table">
+                            <table class="ui three column table">
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                     <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
@@ -318,7 +318,7 @@
                 <div class="ui card la-js-hideable">
                     <div class="content">
 
-                        <table class="ui three column la-selectable table">
+                        <table class="ui three column table">
                             <tr>
                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                 <td>
