@@ -32,15 +32,17 @@
             <semui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                        message="survey.SurveyProp.all"/>
 
-            <div class="ui divider"></div>
-            <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal"
-                                       message="survey.copyEmailaddresses.participants"/>
 
 
-            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+        %{--Disabled because Problemes with copyEmailaddresses in tabs--}%
+        %{--<div class="ui divider"></div>
+        <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal"
+                                   message="survey.copyEmailaddresses.participants"/>--}%
 
-            <g:render template="../templates/copyEmailaddresses"
-                      model="[orgList: orgs ?: null]"/>
+        %{--<g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
+        <g:render template="../templates/copyEmailaddresses"
+                  model="[orgList: orgs ?: null]"/>--}%
 
         </g:else>
 

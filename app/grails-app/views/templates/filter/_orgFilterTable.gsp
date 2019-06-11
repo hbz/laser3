@@ -400,7 +400,6 @@
                 <td class="center aligned">
                     <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
 
-                        ${costItem.costItemElement.id.toString()}:${selectedCostItemElement}
                         <g:if test="${costItem.costItemElement.id.toString() == selectedCostItemElement}">
 
                             <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" type="number" />
