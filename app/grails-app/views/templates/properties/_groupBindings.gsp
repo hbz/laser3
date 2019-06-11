@@ -7,7 +7,7 @@
         <table class="ui la-table-small la-table-inCard table">
             <thead>
                 <tr>
-                    <th>Merkmalsgruppe</th>
+                    <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>
                     <th></th>
                     <th>Anzeigen<br />(Voreinstellung)</th>
                     <th>Anzeigen<br />(Überschreiben)</th>

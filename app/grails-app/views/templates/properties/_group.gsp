@@ -22,7 +22,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th>${message(code:'property.table.property')}</th>
+                <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${propDefGroup.ownerType == License.class.name}">
                     <th>${message(code:'property.table.paragraph')}</th>
