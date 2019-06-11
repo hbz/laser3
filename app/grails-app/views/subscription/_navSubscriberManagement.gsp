@@ -14,4 +14,8 @@
                                params="${[id: params.id]}"
                                message="subscription.propertiesConsortia.label"/>
 
+    <semui:subNavItem controller="subscription" action="subscriptionPropertiesConsortia"
+                      params="${[id: params.id]}"
+                      message="subscription.subscriptionPropertiesConsortia.label"/>
+
 </semui:subNav>
