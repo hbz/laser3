@@ -587,7 +587,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='subscription') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -601,18 +601,26 @@
                                 </g:else>
                             <r:script>
                                 $(function(){
-                                     <g:if
-                                        test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
                                         deckSaver.configs.editMode  = true;
                                     </g:if>
                                     <g:else>
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
-                                $(".ui.toggle.button").click(function(){
-                                    deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                     deckSaver.toggleEditableElements();
-                                });
-                            })
+                                    $(".ui.toggle.button").click(function(){
+                                        deckSaver.configs.editMode = !deckSaver.configs.editMode;
+                                         $.ajax({
+                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                            data: {
+                                                showEditMode: deckSaver.configs.editMode
+                                            },
+                                            success: function(){
+                                                deckSaver.toggleEditableElements();
+                                            }
+                                        })
+                                    });
+                                })
                             </r:script>
                                 <%--
                             <r:script>

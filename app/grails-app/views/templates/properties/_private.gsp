@@ -96,7 +96,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
-                    <td class="x">
+                    <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
                             <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
                                               controller="ajax"

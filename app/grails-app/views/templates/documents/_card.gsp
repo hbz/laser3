@@ -74,7 +74,7 @@
 
                         </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
-                    <div class="center aligned four wide column">
+                    <div class="center aligned four wide column la-js-editmode-container">
                         <g:if test="${!(ownobj instanceof Org) && ownobj.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
@@ -104,7 +104,7 @@
                                                   data-always="bb8.init('#container-documents')"
                                                   data-update="container-documents"
                                 >
-                                    <i class="la-share slash icon"></i>
+                                    <i class="la-share slash icon la-js-editmode-icon"></i>
                                 </laser:remoteLink>
                             </g:else>
                         </g:if>

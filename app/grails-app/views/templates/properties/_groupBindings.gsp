@@ -60,7 +60,7 @@
                                 </g:if>
                             </td>
                         </g:if>
-                        <td class="x">
+                        <td class="x la-js-editmode-container">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
                                     <g:if test="${propDefGroup.visible?.value=='Yes'}">

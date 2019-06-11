@@ -631,10 +631,10 @@ r2d2 = {
 // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
 deckSaver = {
     configs : {
-
+        // the trigger
         toggleButton: $(".ui.toggle.button"),
         toggleIcon: $(".ui.toggle.button .icon"),
-
+        // the target area
         areaThatIsAffected: $("#collapseableSubDetails"),
 
         card: {
@@ -695,7 +695,9 @@ deckSaver = {
     toggleEditableElements: function (){
 
         if (deckSaver.configs.editMode) {
+            // ***************************
             // show Contoll Elements
+            // ***************************
             $('.button').removeClass('hidden');
             deckSaver.removeClone();
             deckSaver.removePopupFromClone();
@@ -703,7 +705,6 @@ deckSaver = {
             $('.card').not('.ui.modal .card').removeClass('hidden');
             $(deckSaver.configs.element.hideSurroundingCard).removeClass('hidden');
             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
-            console.log(deckSaver.configs.areaThatIsAffected);
             $(deckSaver.configs.areaThatIsAffected).find('.button').removeClass('hidden');
 
 
@@ -720,9 +721,13 @@ deckSaver = {
 
         }
         else {
+            // ***************************
             // hide Contoll Elements
+            // ***************************
             $(deckSaver.configs.icon).each(function(){
                 var container = $(this).closest('.la-js-editmode-container');
+                console.log("container: ")
+                console.log(container)
                 var button = $(this).closest('.button');
                 var clone = $(this).clone();
                 clone.appendTo(container);

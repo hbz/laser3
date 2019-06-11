@@ -101,7 +101,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                    <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />

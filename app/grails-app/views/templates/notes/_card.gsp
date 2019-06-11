@@ -53,7 +53,7 @@
                             ${message(code:'template.notes.created')}
                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
                         </div>
-                        <div class="center aligned four wide column">
+                        <div class="center aligned four wide column la-js-editmode-container">
 
                             <g:if test="${ownobj.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
@@ -84,7 +84,7 @@
                                                   data-always="bb8.init('#container-notes')"
                                                   data-update="container-notes"
                                 >
-                                    <i class="la-share slash icon"></i>
+                                    <i class="la-share slash icon la-js-editmode-icon"></i>
                                 </laser:remoteLink>
                             </g:else>
 

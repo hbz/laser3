@@ -232,8 +232,8 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button la-audit-button">'
-                            out   << '<i class="icon thumbtack"></i>'
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-audit-button">'
+                            out   << '<i class="icon la-js-editmode-icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
                             out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
@@ -253,11 +253,11 @@ class SemanticUiTagLib {
                         }
                         else {
                             out << ' &nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt">'
-                            out << g.link( '<i class="icon la-thumbtack slash"></i>',
+                            out << g.link( '<i class="icon la-js-editmode-icon la-thumbtack slash"></i>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button la-js-dont-hide-button la-audit-button'
+                                    class: 'ui icon mini button la-audit-button'
                             )
                             out <<  '</span>'
                         }

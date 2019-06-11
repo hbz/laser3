@@ -95,7 +95,7 @@
         <div class="html ui top attached segment">
             <ui>
                 <li>versehen mit Label, das mit Extra-Inputdfeld verbunden ist </li>
-                <li><g:link controller="myInstitution" action="currentSubscriptions">zum Beipsiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
+                <li><g:link controller="myInstitution" action="currentSubscriptions">zum Beispiel hier verwendet (Merkmal innerhalb Filter)</g:link></li>
             </ui>
             <br>
             <div class="field">
@@ -208,6 +208,74 @@
         &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
+                </pre>
+            </div>
+        </div>
+    </div>
+    <h4 class="ui header">An- und Ausschalten von Buttons auf Show-Seiten</h4>
+    <div class="dropdown example">
+
+        <div class="html ui top attached segment">
+            <ui>
+                <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
+                    <ol>
+                    <li>class <b>'la-js-dont-hide-this-card'</b> zu ins Markup einer Tabellen-Zelle</li>
+                    <li>class <b>'la-js-hideable'</b> zu ins Markup einer Card</li>
+                    </ol>
+                </li>
+                <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
+            </ui>
+            <br>
+
+            <div class="ui top attached label">Cards müssen "ausgeschaltet" werden, wenn es keinen Inhalt gibt
+
+            </div>
+        </div>
+
+        <div class="annotation transition visible" style="display: none;">
+            <div class="ui instructive bottom attached segment">
+                <pre>
+&lt;thead&gt;
+&lt;tr&gt;
+    &lt;th class="<b>la-js-dont-hide-this-card</b>" &gt;${message(code:'property.table.property')}&lt;/th&gt;
+    &lt;th&gt;${message(code:'property.table.value')}&lt;/th&gt;
+    &lt;g:if test="${ownobj instanceof com.k_int.kbplus.License}"&gt;
+        &lt;th&gt;${message(code:'property.table.paragraph')}&lt;/th&gt;
+    &lt;/g:if&gt;
+    &lt;th&gt;${message(code:'property.table.notes')}&lt;/th&gt;
+    &lt;th&gt;${message(code:'default.actions')}&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+                    .
+                    .
+                    .
+
+&lt;div class="ui card la-dl-no-table <b>la-js-hideable</b>"&gt;
+                </pre>
+            </div>
+        </div>
+/////////////////////////////
+        <div class="html ui top attached segment">
+            <ui>
+                <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
+                    <ul>
+                        <li>class 'la-js-dont-hide-this-card' zu ins Markup einer Tabellen-Zelle</li>
+                    </ul>
+                </li>
+                <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
+            </ui>
+            <br>
+
+            <div class="ui top attached label">Cards müssen "ausgeschaltet" werden, wenn es keinen Inhalt gibt
+
+            </div>
+        </div>
+
+        <div class="annotation transition visible" style="display: none;">
+            <div class="ui instructive bottom attached segment">
+                <pre>
+
+
                 </pre>
             </div>
         </div>
