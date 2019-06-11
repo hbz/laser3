@@ -374,7 +374,7 @@ class SurveyController {
         result.selectedParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement[0] ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement[0] : RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
 
         result
 
