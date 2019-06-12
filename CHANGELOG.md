@@ -1,3 +1,11 @@
+0.17.4
+
+- fixed: commands in comment (various view changes)
+- improved legacy filter query 
+- display of shared docs for basic members reenabled
+- fixed: survey function bugs
+
+
 0.17.3
 
 - fixed: creating cost items
