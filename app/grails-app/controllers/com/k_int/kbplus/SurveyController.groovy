@@ -579,6 +579,7 @@ class SurveyController {
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.surveyConfig?.subscription?.orgRelations?.each { or ->
