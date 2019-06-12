@@ -165,7 +165,7 @@ class CostItem
         costInBillingCurrency(nullable: true, blank: false)
         datePaid(nullable: true, blank: false)
         costInLocalCurrency(nullable: true, blank: false)
-        currencyRate(nullable: true, blank: false, scale: 9)
+        currencyRate(nullable: true, blank: false)
         finalCostRounding(nullable: true, blank: false)
         taxCode(nullable: true, blank: false)
         taxRate(nullable: true, blank: false)

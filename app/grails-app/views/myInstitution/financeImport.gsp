@@ -17,7 +17,8 @@
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
-          <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_01.csv')}" download="template_bulk_load_cost_item_records.csv">
+          <%-- continue here: make the template and make then test processes --%>
+          <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_cost_item_records_template_02.csv')}" download="template_bulk_load_cost_item_records.csv">
             <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
           </a>
          <table class="ui celled striped table la-table">
@@ -27,36 +28,27 @@
                 <th>Description</th>
                 <th>maps to</th> --%>
                 <th>${message(code:'myinst.financeImport.tsvColumnName')}</th>
-                <th>${message(code:'myinst.financeImport.description')}</th>
-                <th>${message(code:'myinst.financeImport.mapsTo')}</th>
+                <th>${message(code:'myinst.financeImport.descriptionColumnName')}</th>
+                <th>${message(code:'myinst.financeImport.necessaryFormat')}</th>
               </tr>
             </thead>
             <tbody>
-              <g:each in="${grailsApplication.config.financialImportTSVLoaderMappings.cols}" var="mpg">
+              <g:each in="${mappingCols}" var="mpg">
                 <tr>
-                  <%-- <td>${mpg.colname}</td>
-                  <td>${mpg.desc} --%>
-                  <%
-                      String description
-                      switch(mpg.colname) {
-                          default: description = message(code:"myinst.financeImport.description.${mpg.colname}")
-                            break
-                      }
-                  %>
-                  <td>${message(code:"myinst.financeImport.${mpg.colname}")}</td>
-                  <td>${description}</td>
-                  <td></td>
+                  <td>${message(code:"myinst.financeImport.${mpg}")}</td>
+                  <td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>
+                  <td>${message(code:"myinst.financeImport.format.${mpg}") ?: ''}</td>
                 </tr>
               </g:each>
             </tbody>
           </table>
 
-          <g:form action="financeImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
+          <g:form action="processFinanceImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
             <dl>
               <div class="field">
                 <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
                 <dd>
-                  <input type="file" name="tsvfile" />
+                  <input type="file" name="tsvFile" />
                 </dd>
               </div>
               <div class="field">

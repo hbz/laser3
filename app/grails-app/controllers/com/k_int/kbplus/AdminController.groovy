@@ -26,7 +26,6 @@ class AdminController extends AbstractDebugController {
   def changeNotificationService
   def enrichmentService
   def sessionFactory
-  def tsvSuperlifterService
     def genericOIDService
 
     def contextService
@@ -823,7 +822,7 @@ class AdminController extends AbstractDebugController {
     def result = [:];
     if (request.method == 'POST'){
       def input_stream = request.getFile("tsvfile")?.inputStream
-      result.loaderResult = tsvSuperlifterService.load(input_stream,grailsApplication.config.financialImportTSVLoaderMappings,params.dryRun=='Y'?true:false)
+      //result.loaderResult = tsvSuperlifterService.load(input_stream,grailsApplication.config.financialImportTSVLoaderMappings,params.dryRun=='Y'?true:false)
     }
     result
   }

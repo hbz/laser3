@@ -524,6 +524,13 @@ class FinanceService {
         return [billingSums:billingSums,localSums:localSums]
     }
 
+    /**
+     * Finds the given currency in the given list of entries, returns -1 if the corrency is not found in the list.
+     *
+     * @param entryList - the list of currency entries
+     * @param currency - the currency to be retrieved
+     * @return the position index
+     */
     int getCurrencyIndexInList(List entryList,String currency) {
         int ret = -1
         entryList.eachWithIndex { negEntry, int i ->
@@ -533,5 +540,8 @@ class FinanceService {
         }
         return ret
     }
+
+
+    //def financeImport()
 
 }
