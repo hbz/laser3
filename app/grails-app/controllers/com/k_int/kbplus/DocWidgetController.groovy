@@ -115,11 +115,11 @@ class DocWidgetController extends AbstractDebugController {
                             if (instance != config) {
 
                                 Doc doc_content2 = new Doc(contentType: Doc.CONTENT_TYPE_BLOB,
-                                        filename: original_filename,
-                                        mimeType: request.getFile("upload_file")?.contentType,
-                                        title: params.upload_title ?: original_filename,
-                                        type: RefdataCategory.lookupOrCreate('Document Type', params.doctype),
-                                        creator: user,
+                                        filename: doc_content.filename,
+                                        mimeType: doc_content.mimeType,
+                                        title: doc_content.title,
+                                        type: doc_content.type,
+                                        creator: doc_content.creator,
                                         owner: contextService.getOrg())
 
                                 doc_content2.save()
@@ -136,7 +136,7 @@ class DocWidgetController extends AbstractDebugController {
                                 }
                                 catch (Exception e) {
                                     // fallback
-                                    doc_content2.setBlobData(input_stream, input_file.size)
+                                    doc_content2.setBlobData(doc_content.blobData, input_file.size)
                                     doc_content2.save()
                                 }
 
