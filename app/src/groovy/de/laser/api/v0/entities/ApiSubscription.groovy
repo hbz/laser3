@@ -46,7 +46,7 @@ class ApiSubscription {
     /**
      * @return boolean
      */
-    static calculateAccess(Subscription sub, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Subscription sub, Org context, boolean hasAccess) {
 
         if (! hasAccess) {
             if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
@@ -64,24 +64,24 @@ class ApiSubscription {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getSubscription(Subscription sub, Org context, boolean hasAccess){
-        def result = []
+        Map<String, Object> result = [:]
         hasAccess = calculateAccess(sub, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.exportSubscription(sub, context)
+            result = ApiReader.retrieveSubscriptionMap(sub, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON
      */
-    static getSubscriptionList(Org owner, Org context, boolean hasAccess){
-        def result = []
+    static JSON getSubscriptionList(Org owner, Org context, boolean hasAccess){
+        Collection<Object> result = []
 
         List<Subscription> available = Subscription.executeQuery(
                 'SELECT sub FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND sub.status != :del' ,
@@ -95,7 +95,7 @@ class ApiSubscription {
         available.each { sub ->
             //if (calculateAccess(sub, context, hasAccess)) {
                 println sub.id + ' ' + sub.name
-                result.add(ApiReaderHelper.resolveSubscriptionStub(sub, context, true))
+                result.add(ApiReaderHelper.requestSubscriptionStub(sub, context, true))
                 //result.add([globalUID: sub.globalUID])
             //}
         }

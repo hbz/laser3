@@ -6,12 +6,11 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.OrgSettings
-import com.k_int.kbplus.Platform
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleInstancePackagePlatform
-import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -32,7 +31,10 @@ class ApiStatistic {
         orgs
     }
 
-    static getAllPackages() {
+    /**
+     * @return JSON
+     */
+    static JSON getAllPackages() {
         def result = []
 
         List<Package> packages = []
@@ -50,13 +52,16 @@ class ApiStatistic {
         }
 
         packages.each{ p ->
-            result << ApiReaderHelper.resolvePackageStub(p, null) // ? null
+            result << ApiReaderHelper.retrievePackageStubMap(p, null) // ? null
         }
 
         return (result ? new JSON(result) : null)
     }
 
-    static getPackage(Package pkg) {
+    /**
+     * @return JSON
+     */
+    static JSON getPackage(Package pkg) {
         if (! pkg || pkg.packageStatus?.value == 'Deleted') {
             return null
         }
@@ -72,43 +77,44 @@ class ApiStatistic {
         result.variantNames     = ['TODO-TODO-TODO'] // todo
 
         // References
-        result.contentProvider  = resolvePkgOrganisations(pkg.orgs)
-        result.license          = resolvePkgLicense(pkg.license)
-        result.identifiers      = ApiReaderHelper.resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
+        result.license          = requestPkgLicense(pkg.license)
+        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
         //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
         //result.tipps            = resolvePkgTipps(pkg.tipps)
-        result.subscriptions    = resolvePkgSubscriptions(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
+        result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
 
-        result = ApiReaderHelper.cleanUp(result, true, true)
+        result = ApiToolkit.cleanUp(result, true, true)
 
         return (result ? new JSON(result) : null)
     }
 
-    static List resolvePkgOrganisations(Set<OrgRole> orgRoles) {
+    static Collection<Object> retrievePkgOrganisationCollection(Set<OrgRole> orgRoles) {
         if (! orgRoles) {
             return null
         }
-        def result = []
+
+        Collection<Object> result = []
         orgRoles.each { ogr ->
             if (ogr.roleType.id == RDStore.OR_CONTENT_PROVIDER.id) {
                 if (ogr.org.status?.value == 'Deleted') {
                 }
                 else {
-                    result.add(ApiReaderHelper.resolveOrganisationStub(ogr.org, null))
+                    result.add(ApiReaderHelper.retrieveOrganisationStubMap(ogr.org, null))
                 }
             }
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolvePkgLicense(License lic) {
+    static requestPkgLicense(License lic) {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
-        def result = ApiReaderHelper.resolveLicenseStub(lic, null, true)
+        def result = ApiReaderHelper.requestLicenseStub(lic, null, true)
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /*
@@ -123,7 +129,7 @@ class ApiStatistic {
         result.name         = pform.name
         //result.identifiers  = ApiReaderHelper.resolveIdentifiers(pform.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 
@@ -138,16 +144,16 @@ class ApiStatistic {
             result.add( ApiReaderHelper.resolveTipp(tipp, ApiReaderHelper.IGNORE_NONE, null))
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
     */
 
-    static resolvePkgSubscriptions(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
+    static Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (! subscriptionPackages) {
             return null
         }
 
-        def result = []
+        Collection<Object> result = []
         subscriptionPackages.each { subPkg ->
 
             def sub = [:]
@@ -155,7 +161,7 @@ class ApiStatistic {
             if (subPkg.subscription.status?.value == 'Deleted') {
             }
             else {
-                sub = ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true)
+                sub = ApiReaderHelper.requestSubscriptionStub(subPkg.subscription, null, true)
             }
 
             List<Org> orgList = []
@@ -168,16 +174,16 @@ class ApiStatistic {
                         if (ogr.org.status?.value == 'Deleted') {
                         }
                         else {
-                            def org = ApiReaderHelper.resolveOrganisationStub(ogr.org, null)
+                            def org = ApiReaderHelper.retrieveOrganisationStubMap(ogr.org, null)
                             if (org) {
-                                orgList.add(ApiReaderHelper.cleanUp(org, true, true))
+                                orgList.add(ApiToolkit.cleanUp(org, true, true))
                             }
                         }
                     }
                 }
             }
             if (orgList) {
-                sub?.put('organisations', ApiReaderHelper.cleanUp(orgList, true, true))
+                sub?.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
             }
 
             List<IssueEntitlement> ieList = []
@@ -195,13 +201,13 @@ class ApiStatistic {
                         if (ie.status?.value == 'Deleted') {
 
                         } else {
-                            ieList.add(ApiReaderHelper.resolveIssueEntitlement(ie, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                            ieList.add(ApiReaderHelper.retrieveIssueEntitlementMap(ie, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
                         }
                     }
                 }
             }
             if (ieList) {
-                sub?.put('issueEntitlements', ApiReaderHelper.cleanUp(ieList, true, true))
+                sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
             }
 
             //result.add( ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true))
@@ -209,7 +215,7 @@ class ApiStatistic {
             result.add( sub )
         }
 
-        return ApiReaderHelper.cleanUp(result, true, true)
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**

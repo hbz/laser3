@@ -122,4 +122,21 @@ class SurveyProperty extends AbstractI10nTranslatable {
         }
         prop
     }
+
+    def getLocalizedType() {
+
+        def propertyType = this.getLocalizedValue(this.type)
+        def refdataValues =[]
+        if(this.type == 'class com.k_int.kbplus.RefdataValue'){
+
+                com.k_int.kbplus.RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
+                    refdataValues << it?.getI10n('value')
+                }
+        }
+
+        return propertyType + ((refdataValues?.size() > 0) ? " (" + refdataValues?.join('/')+")" : "")
+
+    }
+
+
 }

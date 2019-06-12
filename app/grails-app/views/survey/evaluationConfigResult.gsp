@@ -53,17 +53,8 @@
 
                             <g:if test="${surveyConfig?.surveyProperty}">
 
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}
+                                <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
-                                <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    (${refdataValues.join('/')})
-                                </g:if>
                                 </b>
                             </g:if>
 
@@ -73,7 +64,9 @@
                     <dl>
                         <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
                         <dd>
-                            ${surveyConfig?.orgs?.size() ?: 0}
+                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
+                                    class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div></g:link>
                         </dd>
 
                     </dl>
@@ -81,7 +74,9 @@
                     <dl>
                         <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
                         <dd>
-                            ${surveyConfig?.documents?.size()}
+                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
+                                    class="ui circular label">${surveyConfig?.documents?.size()}</div></g:link>
                         </dd>
 
                     </dl>
@@ -122,21 +117,13 @@
         ${surveyProperty?.getI10n('name')}
 
         <g:if test="${surveyProperty?.getI10n('explain')}">
-            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyProperty?.getI10n('explain')}">
-            <i class="question circle icon"></i>
+            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                  data-tooltip="${surveyProperty?.getI10n('explain')}">
+                <i class="question circle icon"></i>
             </span>
         </g:if>
 
-        (${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyProperty?.type)}
-        <g:if test="${surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-            <g:set var="refdataValues" value="${[]}"/>
-            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.refdataCategory)}"
-                    var="refdataValue">
-                <g:set var="refdataValues"
-                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-            </g:each>
-            : (${refdataValues.join('/')})
-        </g:if>)
+        (${surveyProperty?.getLocalizedType()})
     </h3>
 
 
@@ -155,7 +142,8 @@
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
             </tr>
             </thead>
-            <g:each in="${surveyResult?.findAll { it.participant.hasAccessOrg() }.sort { it?.participant.sortname }}" var="result" status="i">
+            <g:each in="${surveyResult?.findAll { it.participant.hasAccessOrg() }.sort { it?.participant.sortname }}"
+                    var="result" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -170,36 +158,49 @@
                         </g:link>
                     </td>
 
-                    <td>
-                        <g:if test="${result.type?.type == Integer.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="intValue"/>
-                        </g:if>
-                        <g:elseif test="${result.type?.type == String.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == Date.toString()}">
-                            <semui:xEditable owner="${result}" type="date" field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == URL.toString()}">
-                            <semui:xEditable owner="${result}" type="url" field="urlValue"
-                                             overwriteEditable="${overwriteEditable}"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${result.value}">
-                                <semui:linkIcon/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${result}" type="text" field="refValue"
-                                                    config="${result.type?.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
+                    <g:set var="surveyOrg"
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <td>
-                        ${result?.comment}
-                    </td>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+
+                        <td>
+                            <g:if test="${result?.type?.type == Integer.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="intValue"/>
+                            </g:if>
+                            <g:elseif test="${result?.type?.type == String.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="stringValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == BigDecimal.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="decValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == Date.toString()}">
+                                <semui:xEditable owner="${result}" type="date" field="dateValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == URL.toString()}">
+                                <semui:xEditable owner="${result}" type="url" field="urlValue"
+                                                 overwriteEditable="${overwriteEditable}"
+                                                 class="la-overflow la-ellipsis"/>
+                                <g:if test="${result.value}">
+                                    <semui:linkIcon/>
+                                </g:if>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == RefdataValue.toString()}">
+                                <semui:xEditableRefData owner="${result}" type="text" field="refValue"
+                                                        config="${result.type?.refdataCategory}"/>
+                            </g:elseif>
+                        </td>
+                        <td>
+                            ${result?.comment}
+                        </td>
+                    </g:if>
+                    <g:else>
+                        <td>
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </g:else>
                 </tr>
             </g:each>
         </table>
@@ -207,11 +208,15 @@
 
         <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
-        <g:set var="surveyParticipantsHasNotAccess" value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort { it?.participant.sortname }.participant}"/>
+        <g:set var="surveyParticipantsHasNotAccess"
+               value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort {
+                   it?.participant.sortname
+               }.participant}"/>
 
         <div class="four wide column">
             <button type="button" class="ui icon button right floated" data-semui="modal"
-                    data-href="#copyEmailaddresses_selectedParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+                    data-href="#copyEmailaddresses_selectedParticipants"><g:message
+                    code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
         </div>
 
         <g:render template="../templates/copyEmailaddresses"
@@ -230,7 +235,8 @@
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
             </tr>
             </thead>
-            <g:each in="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort { it?.participant.sortname }}" var="result" status="i">
+            <g:each in="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort { it?.participant.sortname }}"
+                    var="result" status="i">
 
                 <tr>
                     <td class="center aligned">
@@ -245,36 +251,49 @@
                         </g:link>
                     </td>
 
-                    <td>
-                        <g:if test="${result.type?.type == Integer.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="intValue"/>
-                        </g:if>
-                        <g:elseif test="${result.type?.type == String.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == BigDecimal.toString()}">
-                            <semui:xEditable owner="${result}" type="text" field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == Date.toString()}">
-                            <semui:xEditable owner="${result}" type="date" field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == URL.toString()}">
-                            <semui:xEditable owner="${result}" type="url" field="urlValue"
-                                             overwriteEditable="${overwriteEditable}"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${result.value}">
-                                <semui:linkIcon/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${result.type?.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${result}" type="text" field="refValue"
-                                                    config="${result.type?.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
+                    <g:set var="surveyOrg"
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <td>
-                        ${result?.comment}
-                    </td>
+                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+
+                        <td>
+                            <g:if test="${result?.type?.type == Integer.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="intValue"/>
+                            </g:if>
+                            <g:elseif test="${result?.type?.type == String.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="stringValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == BigDecimal.toString()}">
+                                <semui:xEditable owner="${result}" type="text" field="decValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == Date.toString()}">
+                                <semui:xEditable owner="${result}" type="date" field="dateValue"/>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == URL.toString()}">
+                                <semui:xEditable owner="${result}" type="url" field="urlValue"
+                                                 overwriteEditable="${overwriteEditable}"
+                                                 class="la-overflow la-ellipsis"/>
+                                <g:if test="${result.value}">
+                                    <semui:linkIcon/>
+                                </g:if>
+                            </g:elseif>
+                            <g:elseif test="${result?.type?.type == RefdataValue.toString()}">
+                                <semui:xEditableRefData owner="${result}" type="text" field="refValue"
+                                                        config="${result.type?.refdataCategory}"/>
+                            </g:elseif>
+                        </td>
+                        <td>
+                            ${result?.comment}
+                        </td>
+                    </g:if>
+                    <g:else>
+                        <td>
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </g:else>
                 </tr>
             </g:each>
         </table>

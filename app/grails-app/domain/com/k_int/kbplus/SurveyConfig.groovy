@@ -96,7 +96,7 @@ class SurveyConfig {
     def getConfigNameShort(){
 
         if(type == 'Subscription'){
-            return subscription?.dropdownNamingConvention()
+            return subscription?.name
         }
         else
         {

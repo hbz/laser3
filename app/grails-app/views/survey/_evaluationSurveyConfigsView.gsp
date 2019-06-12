@@ -16,9 +16,7 @@
             ${message(code: 'surveyConfig.configOrder.label')}
         </th>
         <th>${message(code: 'surveyProperty.subName')}</th>
-        <th>${message(code: 'surveyProperty.subStatus')}</th>
-        <th>${message(code: 'surveyProperty.subDate')}</th>
-        <th>${message(code: 'surveyProperty.type.label')}</th>
+        <th>${message(code: 'surveyProperty.subProvider')}</th>
         <th>${message(code: 'surveyProperty.plural.label')}</th>
         <th>${message(code: 'surveyConfig.documents.label')}</th>
         <th>${message(code: 'surveyConfig.orgs.label')}</th>
@@ -40,47 +38,32 @@
 
                 </td>
                 <td>
-                    ${config?.subscription?.status?.getI10n('value')}
+                    <g:each in="${config?.subscription?.getProviders() + config?.subscription?.getAgencies()}"
+                            var="provider">
+                        <g:link controller="organisation" action="show"
+                                id="${provider?.id}">${provider?.name}</g:link><br>
+                    </g:each>
                 </td>
-                <td>
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${config?.subscription?.startDate}"/><br>
-                    <g:formatDate formatName="default.date.format.notime" date="${config?.subscription?.endDate}"/>
-                </td>
-                <td>
-                    ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
-
-                    <g:if test="${config?.surveyProperty}">
-                        <br>
-                        <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
-
-                        <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br>
-                            (${refdataValues.join('/')})
-                        </g:if>
-                    </g:if>
-
-                </td>
-                <td>
+                <td class="center aligned">
                     <g:if test="${config?.type == 'Subscription'}">
-                        <div class="ui circular label">${config?.surveyProperties?.size()}</div>
-                    </g:if>
+                        <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo.id}"
+                                params="[surveyConfigID: config?.id]" class="ui icon">
+                            <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                        </g:link>
 
+                    </g:if>
                 </td>
-                <td>
+                <td class="center aligned">
                     <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                            params="[surveyConfigID: config?.id]" class="">
-                        ${config?.documents?.size()}
+                            params="[surveyConfigID: config?.id]" class="ui icon">
+                        <div class="ui circular label"> ${config?.documents?.size()}</div>
                     </g:link>
                 </td>
-                <td>
-                    ${config?.orgs?.size() ?: 0}
+                <td class="center aligned">
+                    <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                            params="[surveyConfigID: config?.id]" class="ui icon">
+                        <div class="ui circular label">  ${config?.orgs?.size() ?: 0}</div>
+                    </g:link>
                 </td>
                 <td>
 
@@ -106,7 +89,7 @@
         <th class="center aligned">
             ${message(code: 'surveyConfig.configOrder.label')}
         </th>
-        <th>${message(code: 'surveyProperty.name.label')}</th>
+        <th>${message(code: 'surveyProperty.name')}</th>
         <th>${message(code: 'surveyProperty.type.label')}</th>
         <th>${message(code: 'surveyConfig.documents.label')}</th>
         <th>${message(code: 'surveyConfig.orgs.label')}</th>
@@ -140,29 +123,21 @@
 
                     <g:if test="${config?.surveyProperty}">
                         <br>
-                        <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(config?.surveyProperty?.type)}</b>
+                        <b>${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
 
-                        <g:if test="${config?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(config?.surveyProperty?.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br>
-                            (${refdataValues.join('/')})
-                        </g:if>
                     </g:if>
 
                 </td>
-                <td>
+                <td class="center aligned">
                     <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                            params="[surveyConfigID: config?.id]" class="">
-                        ${config?.documents?.size()}
+                            params="[surveyConfigID: config?.id]" class="ui icon">
+                        <div class="ui circular label"> ${config?.documents?.size()}</div>
                     </g:link>
                 </td>
-                <td>
-                        ${config?.orgs?.size() ?: 0}
+                <td class="center aligned">
+
+                        <div class="ui circular label">  ${config?.orgs?.size() ?: 0}</div>
+
                 </td>
                 <td>
 

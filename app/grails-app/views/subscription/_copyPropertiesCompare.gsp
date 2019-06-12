@@ -16,7 +16,6 @@
         <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
                 params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
 
-
                 <%
                     List subscriptions = [Subscription.get(sourceSubscriptionId)]
                     if (targetSubscriptionId) subscriptions.add(Subscription.get(targetSubscriptionId))
@@ -30,18 +29,20 @@
                         </table>
                     </g:if>
 
-
                     <g:if test="${privateProperties.size() > 0}">
                         <table class="ui celled table la-table">
                             <g:render template="propertyComparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,subscriptions:subscriptions]" />
                         </table>
                     </g:if>
 
-
-
-            <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
-            </div>
+            <g:if test="${customProperties.size() == 0 && privateProperties.size() == 0}">
+                ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}
+            </g:if>
+            <g:else>
+                <div class="sixteen wide field" style="text-align: right;">
+                    <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
+                </div>
+            </g:else>
     </g:form>
     </semui:form>
     </body>

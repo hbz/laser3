@@ -136,17 +136,23 @@
 
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-
                         <div class="divider"></div>
+                        <g:if test="${grailsApplication.config.featureSurvey}">
                         <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
-
-                        <div class="divider"></div>
+                        </g:if>
+                        <g:else>
+                            <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_ADM" controller="myInstitution" action="" message="menu.my.surveys" />
+                        </g:else>
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-
+                                <g:if test="${grailsApplication.config.featureSurvey}">
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
+                                </g:if>
+                                <g:else>
+                                <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_ADM" controller="myInstitution" action="" message="menu.my.surveys" />
+                                </g:else>
 
                                 <div class="divider"></div>
 
@@ -399,6 +405,7 @@
 
                             <g:link class="item" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link>
                             <g:link class="item" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</g:link>
+                            <g:link class="item" controller="admin" action="manageSurveyPropertyDefinitions">${message(code:'menu.admin.manageSurveyPropertyDefinitions')}</g:link>
                             <g:link class="item" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</g:link>
                             <g:link class="item" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</g:link>
                             <g:link class="item" controller="admin" action="manageContentItems">${message(code:'menu.admin.manageContentItems')}</g:link>

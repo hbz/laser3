@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -45,6 +45,8 @@
                 <th>${message(code:'org.customerType.label')}</th>
 
                 <th>${message(code:'org.apiLevel.label')}</th>
+
+                <th>${message(code:'org.hasAccessOrg')}</th>
 
                 <th>${message(code:'default.actions')}</th>
             </tr>
@@ -169,6 +171,22 @@
                             }
                         %>
                     </td>
+                    <td>
+                        <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
+
+                        <g:if test="${accessUserList?.instAdms?.size() > 0}">
+                            Inst_Admins: ${accessUserList?.instAdms?.size()}<br>
+                        </g:if>
+
+                        <g:if test="${accessUserList?.instEditors?.size() > 0}">
+                            Inst_Editors: ${accessUserList?.instEditors?.size()}<br>
+                        </g:if>
+
+                        <g:if test="${accessUserList?.instUsers?.size() > 0}">
+                            Inst_Users: ${accessUserList?.instUsers?.size()}<br>
+                        </g:if>
+
+                    </td>
 
                     <td class="x">
                         <g:if test="${org.hasPerm('org_consortium')}">
@@ -279,7 +297,7 @@
             <div class="field">
                 <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
-                          from="${['Kein Zugriff'] + ApiManager.getAllApiLevels()}"
+                          from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
                           class="ui dropdown"
                 />
             </div>

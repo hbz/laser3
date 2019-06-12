@@ -4,7 +4,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
 import de.laser.api.v0.ApiReaderHelper
-import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -25,17 +24,17 @@ class ApiOA2020 {
     }
 
     /**
-     * @return [] | HTTP_FORBIDDEN
+     * @return JSON
      */
-    static getAllOrgs() {
-        def result = []
+    static JSON getAllOrgs() {
+        Collection<Object> result = []
 
         // if (requestingOrghasNoAccessDueSpecialFlag?) { return Constants.HTTP_FORBIDDEN }
 
         List<Org> orgs = getAccessibleOrgs()
 
         orgs.each{ o ->
-            result << ApiReaderHelper.resolveOrganisationStub(o, o)
+            result << ApiReaderHelper.retrieveOrganisationStubMap(o, o)
         }
 
         return (result ? new JSON(result) : null)

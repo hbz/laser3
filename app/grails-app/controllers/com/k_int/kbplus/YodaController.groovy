@@ -1090,36 +1090,40 @@ class YodaController {
     def dropDeletedObjects() {
         Map<String, Object> result = [:]
 
+        String order = (params.option?.equals('reverse')) ? 'asc' : 'desc'
+
         if (params.cmd == 'subscription') {
 
             List<Subscription> subList =
-                    Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id desc", [max:10])
+                    Subscription.executeQuery("select s from Subscription s join s.status ss where ss.value = 'Deleted' order by s.id " + order, [max:10])
 
             subList.each { sub ->
                 try {
                     if (!sub.derivedSubscriptions) {
-                        println 'deleting subscription: ' + sub.id
+                        println '-----> deleting subscription: ' + sub.id
                         deletionService.deleteSubscription(sub, false)
                     }
                 } catch (Exception e) {
                     println e
                 }
+                sleep(1000)
             }
         }
         else if (params.cmd == 'license') {
 
             List<License> licList =
-                    License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id desc", [max:10])
+                    License.executeQuery("select l from License l join l.status ls where ls.value = 'Deleted' order by l.id "  + order, [max:10])
 
             licList.each { lic ->
                 try {
                     if (!lic.derivedLicenses) {
-                        println 'deleting license: ' + lic.id
+                        println '-----> deleting license: ' + lic.id
                         deletionService.deleteLicense(lic, false)
                     }
                 } catch (Exception e) {
                     println e
                 }
+                sleep(1000)
             }
         }
 

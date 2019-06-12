@@ -2,11 +2,8 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Subscription
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
-import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -48,7 +45,7 @@ class ApiOrg {
     /**
      * @return boolean
      */
-    static calculateAccess(Org org, Org context, boolean hasAccess) {
+    static boolean calculateAccess(Org org, Org context, boolean hasAccess) {
 
         // TODO
         if (! hasAccess) {
@@ -59,14 +56,14 @@ class ApiOrg {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getOrganisation(Org org, Org context, boolean hasAccess) {
-        def result = []
+        Collection<Object> result = []
         hasAccess = calculateAccess(org, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.exportOrganisation(org, context)
+            result = ApiReader.retrieveOrganisationMap(org, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

@@ -166,6 +166,7 @@ public class GokbDiffEngine {
 
     def static compareLocalPkgWithGokbPkg(ctx, oldpkg, newpkg, newTippClosure, updatedTippClosure, tippUnchangedClosure,deletedTippClosure, auto_accept)
     {
+        //oldpkg?.nominalPlatformPrimaryUrl always null
         def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
         println oldpkg
         println "---------------------------------------------------------------------------------------------------------------------------------------"
