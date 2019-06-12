@@ -1,3 +1,4 @@
+<%@ page import="de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
 <semui:actionsDropdown>
@@ -23,7 +24,7 @@
         <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
 
         <g:if test="${actionName == 'show'}">
-            <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
+            <g:if test="${(license.getLicensingConsortium()?.id == contextService.getOrg()?.id) || (license.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && license.getLicensee()?.id == contextService.getOrg()?.id) && ! license.isTemplate()}">
                 <div class="divider"></div>
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
