@@ -577,6 +577,18 @@ class SurveyController {
 
         result.surveyProperties = result.surveyConfig?.surveyProperties
 
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.surveyConfig?.subscription?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
         result.properties = []
         def allProperties = getSurveyProperties(result.institution)
         allProperties.each {
