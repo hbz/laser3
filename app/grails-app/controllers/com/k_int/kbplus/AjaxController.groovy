@@ -1368,13 +1368,13 @@ class AjaxController {
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
-                    openPD.each { pc ->
-                        def event = JSON.parse(pc.changeDoc)
-                        if (event && event.changeDoc) {
-                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                            def eventProp = event.changeDoc.prop
+                    openPD?.each { pc ->
+                        def event = JSON.parse(pc?.changeDoc)
+                        if (event && event?.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc?.OID)
+                            def eventProp = event.changeDoc?.prop
 
-                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                            if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
                                 pc.delete(flush: true)
                             }
                         }
