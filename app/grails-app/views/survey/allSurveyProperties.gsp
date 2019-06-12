@@ -68,7 +68,6 @@
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.name')}
                 </th>
-                <th>${message(code: 'surveyProperty.introduction.label')}</th>
                 <th>${message(code: 'surveyProperty.explain.label')}</th>
                 <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
@@ -96,16 +95,6 @@
                             <i class='shield alternate icon'></i>
                         </g:if>
                     </td>
-                    <td>
-
-                        <g:if test="${property?.owner == institution}">
-                            <semui:xEditable owner="${property}" field="introduction" type="textarea"/>
-                        </g:if>
-                        <g:else>
-                            ${property?.getI10n('introduction')}
-                        </g:else>
-
-                    </td>
 
                     <td>
 
@@ -126,18 +115,7 @@
                         </g:else>
                     </td>
                     <td>
-                        ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
-
-                        <g:if test="${property?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(property?.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br>
-                            (${refdataValues.join('/')})
-                        </g:if>
+                        ${property?.getLocalizedType()}
 
                     </td>
                 </tr>

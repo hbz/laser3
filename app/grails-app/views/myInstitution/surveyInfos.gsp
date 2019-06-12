@@ -82,11 +82,8 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                 ${message(code: 'sidewide.number')}
             </th>
             <th>${message(code: 'surveyProperty.subName')}</th>
-            <th>${message(code: 'surveyProperty.subStatus')}</th>
-            <th>${message(code: 'surveyProperty.subDate')}</th>
-            <th>${message(code: 'surveyProperty.type.label')}</th>
+            <th>${message(code: 'surveyProperty.subProvider')}</th>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
-            <th>${message(code: 'default.provider.label')}</th>
             <th></th>
 
         </tr>
@@ -107,40 +104,6 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
                     </td>
                     <td>
-                        ${surveyConfig?.subscription?.status?.getI10n('value')}
-                    </td>
-                    <td>
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyConfig?.subscription?.startDate}"/><br>
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyConfig?.subscription?.endDate}"/>
-                    </td>
-                    <td>
-                        ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type)}
-
-                        <g:if test="${surveyConfig?.surveyProperty}">
-                            <br>
-                            <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}</b>
-
-                            <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                <g:set var="refdataValues" value="${[]}"/>
-                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
-                                        var="refdataValue">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                </g:each>
-                                <br>
-                                (${refdataValues.join('/')})
-                            </g:if>
-                        </g:if>
-
-                    </td>
-                    <td>
-                        <g:if test="${surveyConfig?.type == 'Subscription'}">
-                            <div class="ui circular label">${surveyConfig?.surveyProperties?.size()}</div>
-                        </g:if>
-                    </td>
-                    <td>
                         <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).providers}"
                                 var="org">
                             <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
@@ -151,6 +114,14 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                     id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
                         </g:each>
 
+                    </td>
+                    <td>
+                        <g:if test="${surveyConfig?.type == 'Subscription'}">
+                            <g:link action="surveyConfigsInfo" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                                <div class="ui circular label">${surveyConfig?.surveyProperties?.size()}</div>
+                            </g:link>
+                        </g:if>
                     </td>
                     <td>
 
@@ -214,18 +185,8 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
                         <g:if test="${surveyConfig?.surveyProperty}">
                             <br>
-                            <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}</b>
+                            <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
-                            <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                <g:set var="refdataValues" value="${[]}"/>
-                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
-                                        var="refdataValue">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                </g:each>
-                                <br>
-                                (${refdataValues.join('/')})
-                            </g:if>
                         </g:if>
 
                     </td>

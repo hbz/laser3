@@ -2,10 +2,6 @@
 
 <g:set var="surveyConfigOrgs" value="${Org.findAllByIdInList(surveyConfig?.orgs.org.id) ?: null}" />
 
-<h2 class="ui left aligned icon header">${message(code: 'surveyParticipants.selectedSubParticipants')}<semui:totalNumber
-        total="${surveyConfigOrgs?.size()}"/></h2>
-<br>
-
 ${surveyConfigSubOrgs?.id}
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyConfigOrgs,
