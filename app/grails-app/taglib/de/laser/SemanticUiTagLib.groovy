@@ -735,7 +735,7 @@ class SemanticUiTagLib {
             }
             out <<  '">'
             out <<  optionValue(el).toString().encodeAsHTML()
-            if (el.tenant!= null){
+            if (el?.tenant!= null || el?.owner != null){
                 out <<  " <i class='${iconWhich} icon'></i>"
             }
             out <<  '</div>'

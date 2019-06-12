@@ -367,7 +367,7 @@
                     <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
                         <g:link controller="subscription" action="show"
                                 id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
-                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConventionWithoutOrg()}
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.name}
                         </g:link>
 
                     </g:if>
@@ -399,6 +399,7 @@
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
                 <td class="center aligned">
                     <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+
                         <g:if test="${costItem.costItemElement.id.toString() == selectedCostItemElement}">
 
                             <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" type="number" />
