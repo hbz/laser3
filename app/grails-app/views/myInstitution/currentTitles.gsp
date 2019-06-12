@@ -102,8 +102,8 @@
                             value="">${message(code: 'myinst.currentTitles.all_subs', default: 'All Subscriptions')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.name}${s.consortia ? ' (' + s.consortia.name + ')' : ''}">
-                            ${s.getNameConcatenated()}
+                                                                                                        title="${s.dropdownNamingConvention(institution)}">
+                            ${s.dropdownNamingConvention(institution)}
                         </option>
                     </g:each>
                 </select>
