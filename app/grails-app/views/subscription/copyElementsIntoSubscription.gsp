@@ -1,6 +1,9 @@
 <%@ page import="com.k_int.kbplus.Person" %>
 <%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionController.*"%>
+
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <!doctype html>
 <html>
 <head>
@@ -11,7 +14,12 @@
     <g:render template="breadcrumb" model="${[params: params]}"/>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-    ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
+        <g:if test="${isRenewSub}">
+            ${message(code: 'subscription.details.renewals.renew_sub.label')}
+        </g:if>
+        <g:else>
+            ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
+        </g:else>
     </h1>
 
     <semui:messages data="${flash}"/>
@@ -19,6 +27,7 @@
     <% Map params = [id: params.id];
         if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
+        if (isRenewSub) params << [isRenewSub: isRenewSub];
     %>
     <semui:subNav>
         <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
@@ -74,27 +83,35 @@
 
     <br>
 
-    <g:if test="${workFlowPart == '2'}">
+    <g:if test="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <g:render template="copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == '3'}">
+    <g:elseif test="${workFlowPart == WORKFLOW_SUBSCRIBER}">
         <g:render template="copySubscriber" />
     </g:elseif>
-    <g:elseif test="${workFlowPart == '4'}">
-        %{--<g:render template="copyProperties" />--}%
+    <g:elseif test="${workFlowPart == WORKFLOW_PROPERTIES}">
         <g:render template="copyPropertiesCompare" />
     </g:elseif>
-    <g:elseif test="${workFlowPart == '5'}">
+    <g:elseif test="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS}">
         <g:render template="copyPackagesAndIEs" />
     </g:elseif>
-    %{--workFlowPart == '1'--}%
+    %{--<g:elseif test="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS}">--}%
     <g:else>
         <g:render template="copyElements" />
     </g:else>
     <r:script>
         function jsConfirmation() {
-            if ($( "input[value ='REPLACE']" ).is( ":checked" )){
+            if ($( "td input[data-action='delete']" ).is( ":checked" )){
                 return confirm('Wollen Sie wirklich diese(s) Element(e) in der Ziellizenz löschen?')
+            }
+        }
+        function toggleAllCheckboxes(source) {
+            var action = $(source).attr("data-action")
+            var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i] != source){
+                    checkboxes[i].checked = source.checked;
+                }
             }
         }
     </r:script>

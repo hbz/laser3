@@ -11,7 +11,10 @@
                 <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
             </g:else>
         </th>
-        <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+        <th class="one wide center aligned">
+            <i class="ui icon angle double right"></i>
+            <input type="checkbox" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+        </th>
         <th class="six wide center aligned">
             <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
                 <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
@@ -20,7 +23,12 @@
                 <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
             </g:else>
         </th>
-        <th>${message(code:'property.table.delete')}?</th>
+        <th class="one wide center aligned">
+            <i class="ui icon trash alternate outline"></i>
+            <g:if test="${targetSubscription}">
+                <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+            </g:if>
+        </th>
     </tr>
 </thead>
 <tbody>
@@ -77,14 +85,14 @@
             </g:else>
         </td>
 
-        %{--AKTIONEN:--}%
+        %{--COPY:--}%
         <td class="center aligned">
         <g:if test="${propValues.containsKey(sourceSubscription)}">
             <% Set propValuesForSourceSub_ = propValues.get(sourceSubscription) %>
             <g:each var="propValue" in="${propValuesForSourceSub_}">
                 <g:if test="${propValues.containsKey(sourceSubscription)}">
                     <i class="ui icon angle double right"></i>
-                    <g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                    <g:checkBox name="subscription.takeProperty" data-action="copy"  value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                 </g:if>
                 <br>
             </g:each>
@@ -131,11 +139,12 @@
                 <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
             </g:else>
         </td>
+        %{--DELETE:--}%
         <td>
             <g:if test="${targetSubscription && propValues?.containsKey(targetSubscription)}">
                 <% Set propValuesForTargetSubTrash = propValues.get(targetSubscription) %>
                 <g:each var="propValue" in="${propValuesForTargetSubTrash}">
-                    <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteProperty" value="${genericOIDService.getOID(propValue)}" checked="false"/>
+                    <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteProperty" value="${genericOIDService.getOID(propValue)}" data-action="delete" checked="false"/>
                     <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                 </g:each>
             </g:if>
@@ -144,16 +153,6 @@
 </g:each>
 </tbody>
 <r:script>
-    function toggleAllCheckboxes(source) {
-        var checkboxes = document.querySelectorAll('input[name="subscription.takeProperty"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-
-    // TODO: Wenn die Checkbox gecheckt ist soll der Text in Zelle rechts daneben rot und durchgestrichen sein
 $('input[name="subscription.takeProperty"]').change( function(event) {
     if ($(this).prop('checked')){
         $(this).parent().next().addClass('willBeReplaced');
