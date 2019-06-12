@@ -617,7 +617,11 @@
                                             },
                                             success: function(){
                                                 deckSaver.toggleEditableElements();
+                                            },
+                                            complete: function () {
+
                                             }
+
                                         })
                                     });
                                 })
