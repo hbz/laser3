@@ -91,9 +91,9 @@ class CostItem
 
     //Edits...
     Date lastUpdated
-    User lastUpdatedBy
+    //User lastUpdatedBy
     Date dateCreated
-    User createdBy
+    //User createdBy
 
     //@Transient
     //def budgetcodes //Binds getBudgetcodes
@@ -182,8 +182,8 @@ class CostItem
         startDate(nullable: true, blank: false)
         endDate(nullable: true, blank: false)
         copyBase(nullable: true)
-        lastUpdatedBy(nullable: true)
-        createdBy(nullable: true)
+        //lastUpdatedBy(nullable: true)
+        //createdBy(nullable: true)
     }
 
     @Override
@@ -193,23 +193,10 @@ class CostItem
 
     def beforeInsert() {
         super.beforeInsert()
-
-        def user = springSecurityService.getCurrentUser()
-        if (user) {
-            createdBy     = user
-            lastUpdatedBy = user
-        } else
-            return false
     }
 
     def beforeUpdate() {
         super.beforeUpdate()
-
-        def user = springSecurityService.getCurrentUser()
-        if (user)
-            lastUpdatedBy = user
-        else
-            return false
     }
 
     @Deprecated
