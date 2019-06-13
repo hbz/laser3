@@ -1335,6 +1335,18 @@ class AjaxController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def toggleOrgRole() {
+        OrgRole oo = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType in :roleTypes',[sub:Subscription.get(params.id),roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+        if(oo) {
+            if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            else if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS
+        }
+        oo.save()
+        redirect(url: request.getHeader('referer'))
+    }
 
     @Secured(['ROLE_USER'])
     def toggleAudit() {
