@@ -460,3 +460,16 @@
 @hugeWidth: 20rem;
 @bigWidth: 22rem;
 @massiveWidth: 25rem;
+
+/* Übernommen von Steps */
+/* Title */
+@titleFontFamily: @headerFont;
+@titleFontWeight: @bold;
+@titleFontSize: @relativeLarge;
+@titleColor: @darkTextColor;
+
+/* Description */
+@descriptionDistance: 0.25em;
+@descriptionFontSize: @relativeSmall;
+@descriptionFontWeight: @normal;
+@descriptionColor: @textColor;
