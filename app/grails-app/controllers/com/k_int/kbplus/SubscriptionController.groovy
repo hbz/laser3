@@ -3093,7 +3093,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         new_subscription.save(flush: true);
 
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        result.isRenewSub = true
         redirect controller: 'subscription',
                  action: 'copyElementsIntoSubscription',
                  id: old_subOID,
@@ -3642,6 +3641,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
+            case WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copySubElements_DatesOwnerRelations();
+                break;
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 break;
@@ -3650,12 +3652,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
+                if (params?.targetSubscriptionId){
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 break;
             default:
-                result << copySubElements_DatesOwnerRelations();
+                result << loadDataFor_DatesOwnerRelations()
                 break;
         }
 
@@ -3680,18 +3685,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-//        result.targetSubscription?.refresh()
         if (params?.targetSubscriptionId) {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-
         result.isRenewSub = params?.isRenewSub
-        if (params?.isRenewSub && params.workFlowPartNext.equals(WORKFLOW_END)) {
-            redirect controller: 'subscription', action: 'show', id: params?.targetSubscriptionId
-        }
-
         result
     }
 
@@ -3739,11 +3738,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
-        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
+        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
         params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
+        result
+    }
+    private loadDataFor_DatesOwnerRelations(){
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+
+        // restrict visible for templates/links/orgLinksAsList
+        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
+        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result
     }
 
@@ -3795,8 +3808,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
+//        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
+        params.workFlowPart = WORKFLOW_PROPERTIES
+        params.workFlowPartNext = WORKFLOW_END
         result
     }
 
@@ -3983,13 +3998,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.copyEntitlements(entitlementsToTake, newSub, flash)
         }
 
-        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+//        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        params?.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        params?.workFlowPartNext = WORKFLOW_PROPERTIES
         if (newSub) {
             newSub.refresh()
         }
-//        result.sourceIEs = baseSub.getIssueEntitlements()
-//        result.targetIEs = newSub.getIssueEntitlements()
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
