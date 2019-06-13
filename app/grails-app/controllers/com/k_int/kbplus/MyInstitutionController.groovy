@@ -1783,19 +1783,12 @@ from License as l where (
         def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
-        
-        def allInst = []
-        if(result.availableConsortia){
-          allInst = result.availableConsortia
-        }
-        
-        allInst.add(result.institution)
 
-        def sub_params = [institution: allInst,roles:roles,sub_del:del_sub]
+        def sub_params = [institution: result.institution,roles:roles,sub_del:del_sub]
         def sub_qry = """
 Subscription AS s INNER JOIN s.orgRelations AS o
 WHERE o.roleType IN (:roles)
-AND o.org IN (:institution)
+AND o.org = :institution
 AND s.status !=:sub_del """
         if (date_restriction) {
             sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "

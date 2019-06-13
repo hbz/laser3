@@ -418,14 +418,14 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
-        def sorted_links = [:]
-        def offsets = [:]
+        //def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
+        //def sorted_links = [:]
+        //def offsets = [:]
 
         du.setBenchMark('orgRoles')
 
         // TODO: experimental asynchronous task
-        //def task_orgRoles = task {
+        /*def task_orgRoles = task {
 
             if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
                     (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
@@ -457,16 +457,16 @@ class OrganisationController extends AbstractDebugController {
                     }
                 }
             }
-        //}
+        }*/
 
-        if (params.ajax) {
+        /*if (params.ajax) {
             render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
             return
-        }
+        }*/
 
         du.setBenchMark('editable')
 
-        result.sorted_links = sorted_links
+        //result.sorted_links = sorted_links
 
         result.user = user
         result.orgInstance = orgInstance
