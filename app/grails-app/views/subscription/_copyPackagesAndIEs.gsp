@@ -9,7 +9,7 @@
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
@@ -123,8 +123,11 @@
             </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
