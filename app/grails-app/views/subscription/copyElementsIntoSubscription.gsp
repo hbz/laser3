@@ -75,7 +75,7 @@
         </div>
     </g:if>
     <g:else>
-        <semui:subNav">
+        <semui:subNav>
             <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
                 <div class="content" >
                     <div class="title">Rahmendaten</div>
