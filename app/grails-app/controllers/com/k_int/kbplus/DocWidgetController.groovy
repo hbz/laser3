@@ -105,7 +105,7 @@ class DocWidgetController extends AbstractDebugController {
                             owner: doc_content,
                             doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
                     )
-                    doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+                    doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
                     doc_context.save(flush: true)
 
                     //docForAllSurveyConfigs
@@ -145,7 +145,7 @@ class DocWidgetController extends AbstractDebugController {
                                         owner: doc_content2,
                                         doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
                                 )
-                                doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
+                                //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
                                 doc_context2.save(flush: true)
                             }
                         }
