@@ -28,7 +28,7 @@
 <g:set var="counter" value="${-1}"/>
 <g:set var="index" value="${0}"/>
 
-<g:form action="processSimpleRenewal" method="post" enctype="multipart/form-data" params="${params}">
+<g:form action="processSimpleRenewal_Local" method="post" enctype="multipart/form-data" params="${params}">
 
     <div>
         <hr/>
@@ -36,9 +36,7 @@
         ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br/>
         <table class="ui celled la-table table">
             <tbody>
-            %{--<input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>--}%
             <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
-            %{--<input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>--}%
 
             <tr>
                 <th>${message(code: 'myinst.renewalUpload.props', default: 'Subscription Properties')}</th>
@@ -71,7 +69,6 @@
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
                           value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"/>
-                          %{--value="${com.k_int.kbplus.Subscription.get(params.id).status?.id.toString()}"/>--}%
                 </td>
             </tr>
             </tbody>
