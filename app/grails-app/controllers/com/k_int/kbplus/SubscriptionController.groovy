@@ -186,9 +186,10 @@ class SubscriptionController extends AbstractDebugController {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                base_qry += " and ie.tipp.status = ? and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                qry_params.add(RefdataValue.getByValueAndCategory('Current','TIPP Status'))
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
             base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
@@ -198,9 +199,10 @@ class SubscriptionController extends AbstractDebugController {
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                base_qry += " and ie.tipp.status = ? and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                qry_params.add(RefdataValue.getByValueAndCategory('Current','TIPP Status'))
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
         }
 
@@ -806,13 +808,13 @@ class SubscriptionController extends AbstractDebugController {
                     serial = tipp?.title?.getIdentifierValue('ISSN')
                     electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                 }
-                if(result.identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
                     checked = "checked"
                 }
-                else if(result.identifiers.onlineIds.indexOf(electronicSerial) > -1) {
+                else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
                     checked = "checked"
                 }
-                else if(result.identifiers.printIds.indexOf(serial) > -1) {
+                else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
                     checked = "checked"
                 }
                 result.checked[t] = checked
