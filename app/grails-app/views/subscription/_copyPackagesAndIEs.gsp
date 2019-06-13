@@ -123,8 +123,11 @@
             </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>

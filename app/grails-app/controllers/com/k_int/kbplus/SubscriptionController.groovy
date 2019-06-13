@@ -77,6 +77,7 @@ class SubscriptionController extends AbstractDebugController {
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
     public static final String WORKFLOW_SUBSCRIBER = '3'
     public static final String WORKFLOW_PROPERTIES = '4'
+    public static final String WORKFLOW_END = '6'
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -3023,10 +3024,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def newStartDate
         def newEndDate
         use(TimeCategory) {
-            newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
 
+        result.isRenewSub = true
         result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
@@ -3091,6 +3093,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         new_subscription.save(flush: true);
 
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+        result.isRenewSub = true
         redirect controller: 'subscription',
                  action: 'copyElementsIntoSubscription',
                  id: old_subOID,
@@ -3543,6 +3546,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
                     if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                    result.isRenewSub = true
                     redirect controller: 'subscription',
                              action: 'copyElementsIntoSubscription',
                              id: old_subOID,
@@ -3570,10 +3574,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             def newStartDate
             def newEndDate
             use(TimeCategory) {
-                newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+                newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
                 newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
             }
 
+            result.isRenewSub = true
             result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
                                      sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                      sub_name     : subscription.name,
@@ -3679,9 +3684,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params?.targetSubscriptionId) {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+
+        result.isRenewSub = params?.isRenewSub
+        if (params?.isRenewSub && params.workFlowPartNext.equals(WORKFLOW_END)) {
+            redirect controller: 'subscription', action: 'show', id: params?.targetSubscriptionId
+        }
+
         result
     }
 

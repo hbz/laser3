@@ -69,16 +69,14 @@
             %{--</div>--}%
         %{--</semui:complexSubNavItem>--}%
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_YODA">
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
-                <i class="tags icon"></i>
-                <div class="content">
-                    <div class="title">
-                        ${message(code: 'properties')}
-                    </div>
+        <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
+            <i class="tags icon"></i>
+            <div class="content">
+                <div class="title">
+                    ${message(code: 'properties')}
                 </div>
-            </semui:complexSubNavItem>
-        </sec:ifAnyGranted>
+            </div>
+        </semui:complexSubNavItem>
     </semui:subNav>
 
     <br>

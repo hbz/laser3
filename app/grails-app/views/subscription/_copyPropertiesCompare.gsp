@@ -37,10 +37,20 @@
 
             <g:if test="${customProperties.size() == 0 && privateProperties.size() == 0}">
                 ${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.empty')}
+
+                <div class="sixteen wide field" style="text-align: right;">
+                    <g:set var="submitButtonText" value="${isRenewSub?
+                            message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStepWithoutSaveDate') :
+                            message(code: 'subscription.details.copyElementsIntoSubscription.lastStepWithoutSaveDate')}" />
+                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation() "/>
+                </div>
             </g:if>
             <g:else>
+                <g:set var="submitButtonText" value="${isRenewSub?
+                        message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.lastStep') :
+                        message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" />
                 <div class="sixteen wide field" style="text-align: right;">
-                    <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyProperties.button')}" onclick="return jsConfirmation() "/>
+                    <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation() "/>
                 </div>
             </g:else>
     </g:form>
