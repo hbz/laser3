@@ -53,249 +53,231 @@
 </g:else>
 
 <g:if test="${surveyConfig}">
+    <div id="collapseableSubDetails" class="ui stackable grid">
+        <div class="twelve wide column">
+            <div class="la-inline-lists">
 
-    <div class="la-inline-lists">
-        <div class="ui two stackable cards">
-
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
-                        <dd>
-                            ${surveyConfig.getTypeInLocaleI10n()}
-
-                            <g:if test="${surveyConfig?.surveyProperty}">
-
-                                <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
-
-                                </b>
-                            </g:if>
-
-                        </dd>
-
-                    </dl>
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
-                        <dd>
-                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
-                                    class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div></g:link>
-                        </dd>
-
-                    </dl>
-
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
-                        <dd>
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
-                                    class="ui circular label">${surveyConfig?.documents?.size()}</div></g:link>
-                        </dd>
-
-                    </dl>
-                </div>
-            </div>
-            <g:if test="${surveyConfig?.type == 'Subscription'}">
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
-                            <dd>${surveyConfig?.subscription?.status?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'status']"/></dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
-                            <dd>${surveyConfig?.subscription.type?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'type']"/></dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                            <dd>${surveyConfig?.subscription?.form?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'form']"/></dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                            <dd>${surveyConfig?.subscription?.resource?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'resource']"/></dd>
-                        </dl>
-                        <g:if test="${surveyConfig?.subscription.instanceOf && (contextOrg?.id == surveyConfig?.subscription.getConsortia()?.id)}">
+                        <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <dl>
-                                <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
-                                <dd>
-                                    <g:link controller="subscription" action="show"
-                                            id="${surveyConfig?.subscription.instanceOf.id}">${surveyConfig?.subscription.instanceOf}</g:link>
-                                </dd>
+                                <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
+                                <dd>${surveyConfig?.subscription?.status?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'status']"/></dd>
                             </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                                <dd>${surveyConfig?.subscription.type?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'type']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
+                                <dd>${surveyConfig?.subscription?.form?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'form']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
+                                <dd>${surveyConfig?.subscription?.resource?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'resource']"/></dd>
+                            </dl>
+                            <g:if test="${surveyConfig?.subscription.instanceOf && (contextOrg?.id == surveyConfig?.subscription.getConsortia()?.id)}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
+                                    <dd>
+                                        <g:link controller="subscription" action="show"
+                                                id="${surveyConfig?.subscription.instanceOf.id}">${surveyConfig?.subscription.instanceOf}</g:link>
+                                    </dd>
+                                </dl>
 
+                                <dl>
+                                    <dt class="control-label">
+                                        ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
+                                    </dt>
+                                    <dd>
+                                        ${surveyConfig?.subscription?.isSlaved?.getI10n('value')}
+                                    </dd>
+                                </dl>
+                            </g:if>
                             <dl>
                                 <dt class="control-label">
-                                    ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
+                                    <g:message code="default.identifiers.label"/>
                                 </dt>
                                 <dd>
-                                    ${surveyConfig?.subscription?.isSlaved?.getI10n('value')}
+                                    <g:each in="${surveyConfig?.subscription?.ids.sort { it.identifier.ns.ns }}"
+                                            var="id">
+                                        <span class="ui small teal image label">
+                                            ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        </span>
+                                    </g:each>
                                 </dd>
                             </dl>
                         </g:if>
                         <dl>
-                            <dt class="control-label">
-                                <g:message code="default.identifiers.label"/>
-                            </dt>
+                            <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
                             <dd>
-                                <g:each in="${surveyConfig?.subscription?.ids.sort { it.identifier.ns.ns }}" var="id">
-                                    <span class="ui small teal image label">
-                                        ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
-                                    </span>
-                                </g:each>
+                                <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
+                                        class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div></g:link>
                             </dd>
                         </dl>
                     </div>
                 </div>
 
-            </g:if>
-        </div>
 
-        <div class="ui card ">
-            <div class="content">
-                <dl>
-                    <dt class="control-label">
-                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
-                            ${message(code: 'surveyConfig.header.label')}
-                            <i class="info small circular inverted icon"></i>
-                        </div>
-                    </dt>
-                    <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
-
-                </dl>
-                <dl>
-                    <dt class="control-label">
-                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
-                            ${message(code: 'surveyConfig.comment.label')}
-                            <i class="info small circular inverted icon"></i>
-                        </div>
-                    </dt>
-                    <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
-
-                </dl>
-                <dl>
-                    <dt class="control-label">
-                        <div class="ui icon"
-                             data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
-                            ${message(code: 'surveyConfig.internalComment.label')}
-                            <i class="info small circular inverted icon"></i>
-                        </div>
-                    </dt>
-                    <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
-
-                </dl>
-
-            </div>
-        </div>
-        <g:if test="${surveyConfig?.type == 'Subscription'}">
-
-            <g:if test="${surveyConfig?.subscription?.packages}">
-                <div class="ui card la-js-hideable">
+                <div class="ui card ">
                     <div class="content">
-                        <table class="ui three column la-selectable table">
-                            <g:each in="${surveyConfig?.subscription?.packages.sort{it.pkg.name}}" var="sp">
-                                <tr>
-                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
-                                    <td>
-                                        <g:link controller="package" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                    ${message(code: 'surveyConfig.header.label')}
+                                    <i class="info small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
 
-                                        <g:if test="${sp.pkg?.contentProvider}">
-                                            (${sp.pkg?.contentProvider?.name})
-                                        </g:if>
-                                    </td>
-                                    <td class="right aligned">
-                                    </td>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="info small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
 
-                                </tr>
-                            </g:each>
-                        </table>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                    ${message(code: 'surveyConfig.internalComment.label')}
+                                    <i class="info small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
 
-                    </div><!-- .content -->
+                        </dl>
+
+                    </div>
                 </div>
-            </g:if>
+                <g:if test="${surveyConfig?.type == 'Subscription'}">
 
-            <div class="ui card la-js-hideable">
-                <div class="content">
+                    <g:if test="${surveyConfig?.subscription?.packages}">
+                        <div class="ui card la-js-hideable">
+                            <div class="content">
+                                <table class="ui three column la-selectable table">
+                                    <g:each in="${surveyConfig?.subscription?.packages.sort { it.pkg.name }}" var="sp">
+                                        <tr>
+                                            <th scope="row"
+                                                class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
+                                            <td>
+                                                <g:link controller="package" action="show"
+                                                        id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
-                    <g:render template="/templates/links/orgLinksAsList"
-                              model="${[roleLinks: visibleOrgRelations,
-                                        roleObject: surveyConfig?.subscription,
-                                        roleRespValue: 'Specific subscription editor',
-                                        editmode: false
-                              ]}" />
+                                                <g:if test="${sp.pkg?.contentProvider}">
+                                                    (${sp.pkg?.contentProvider?.name})
+                                                </g:if>
+                                            </td>
+                                            <td class="right aligned">
+                                            </td>
 
-                </div>
-            </div>
+                                        </tr>
+                                    </g:each>
+                                </table>
 
-            <div class="ui card la-js-hideable">
-                <div class="content">
-                    <g:set var="derivedPropDefGroups"
-                           value="${surveyConfig?.subscription?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
-
-                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-                        <div class="ui la-vertical buttons">
-                            <button id="derived-license-properties-toggle"
-                                    class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
-                            <script>
-                                $('#derived-license-properties-toggle').on('click', function () {
-                                    $('#derived-license-properties').toggleClass('hidden')
-                                    if ($('#derived-license-properties').hasClass('hidden')) {
-                                        $(this).text('Vertragsmerkmale anzeigen')
-                                    } else {
-                                        $(this).text('Vertragsmerkmale ausblenden')
-                                    }
-                                })
-                            </script>
-
-                            <button id="subscription-properties-toggle"
-                                    class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
-                            <script>
-                                $('#subscription-properties-toggle').on('click', function () {
-                                    $('#subscription-properties').toggleClass('hidden')
-                                    if ($('#subscription-properties').hasClass('hidden')) {
-                                        $(this).text('Lizenzsmerkmale anzeigen')
-                                    } else {
-                                        $(this).text('Lizenzsmerkmale ausblenden')
-                                    }
-                                })
-                            </script>
-
+                            </div><!-- .content -->
                         </div>
                     </g:if>
 
-                </div><!-- .content -->
+                    <div class="ui card la-js-hideable">
+                        <div class="content">
+
+                            <g:render template="/templates/links/orgLinksAsList"
+                                      model="${[roleLinks    : visibleOrgRelations,
+                                                roleObject   : surveyConfig?.subscription,
+                                                roleRespValue: 'Specific subscription editor',
+                                                editmode     : false
+                                      ]}"/>
+
+                        </div>
+                    </div>
+
+                    <div class="ui card la-js-hideable">
+                        <div class="content">
+                            <g:set var="derivedPropDefGroups"
+                                   value="${surveyConfig?.subscription?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
+
+                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                                <div class="ui la-vertical buttons">
+                                    <button id="derived-license-properties-toggle"
+                                            class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
+                                    <script>
+                                        $('#derived-license-properties-toggle').on('click', function () {
+                                            $('#derived-license-properties').toggleClass('hidden')
+                                            if ($('#derived-license-properties').hasClass('hidden')) {
+                                                $(this).text('Vertragsmerkmale anzeigen')
+                                            } else {
+                                                $(this).text('Vertragsmerkmale ausblenden')
+                                            }
+                                        })
+                                    </script>
+
+                                    <button id="subscription-properties-toggle"
+                                            class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                    <script>
+                                        $('#subscription-properties-toggle').on('click', function () {
+                                            $('#subscription-properties').toggleClass('hidden')
+                                            if ($('#subscription-properties').hasClass('hidden')) {
+                                                $(this).text('Lizenzsmerkmale anzeigen')
+                                            } else {
+                                                $(this).text('Lizenzsmerkmale ausblenden')
+                                            }
+                                        })
+                                    </script>
+
+                                </div>
+                            </g:if>
+
+                        </div><!-- .content -->
+                    </div>
+
+                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                        <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
+
+                            <g:render template="licProp" model="${[
+                                    license             : surveyConfig?.subscription?.owner,
+                                    derivedPropDefGroups: derivedPropDefGroups
+                            ]}"/>
+                        </div>
+                    </g:if>
+
+
+                    <div id="subscription-properties" class="hidden" style="margin: 1em 0">
+                        <g:set var="editable" value="${false}" scope="page"/>
+                        <g:set var="editable" value="${false}" scope="request"/>
+                        <g:render template="/subscription/properties" model="${[
+                                subscriptionInstance: surveyConfig?.subscription,
+                                authorizedOrgs      : authorizedOrgs
+                        ]}"/>
+
+
+                        <g:set var="editable" value="${true}" scope="page"/>
+
+                    </div>
+
+                </g:if>
             </div>
 
-            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-                <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
+        </div>
 
-                    <g:render template="licProp" model="${[
-                            license             : surveyConfig?.subscription?.owner,
-                            derivedPropDefGroups: derivedPropDefGroups
-                    ]}"/>
-                </div>
-            </g:if>
-
-
-            <div id="subscription-properties" class="hidden" style="margin: 1em 0">
-                <g:set var="editable" value="${false}" scope="page"/>
-                <g:set var="editable" value="${false}" scope="request"/>
-                <g:render template="/subscription/properties" model="${[
-                        subscriptionInstance: surveyConfig?.subscription,
-                        authorizedOrgs      : authorizedOrgs
-                ]}"/>
-
-
-                <g:set var="editable" value="${true}" scope="page"/>
-
+        <aside class="four wide column la-sidekick">
+            <div id="container-documents">
+                <g:render template="/templates/documents/card" model="${[ownobj:surveyConfig, owntp:'surveyConfig', css_class:'']}" />
             </div>
+        </aside><!-- .four -->
 
-        </g:if>
+    </div><!-- .grid -->
 
-    </div>
 </g:if>
 
 <br>
