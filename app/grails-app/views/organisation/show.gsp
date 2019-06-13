@@ -92,6 +92,9 @@ ${orgInstance.name}
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" field="url"/>
+                            <g:if test="${orgInstance.url}">
+                                <semui:linkIcon href="${orgInstance.url}" />
+                            </g:if>
                         </dd>
                     </dl>
                     <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
@@ -99,6 +102,9 @@ ${orgInstance.name}
                             <dt><g:message code="org.urlGov.label"/></dt>
                             <dd>
                                 <semui:xEditable owner="${orgInstance}" field="urlGov"/>
+                                <g:if test="${orgInstance.urlGov}">
+                                    <semui:linkIcon href="${orgInstance.urlGov}" />
+                                </g:if>
                             </dd>
                         </dl>
                     </g:if>
@@ -213,31 +219,49 @@ ${orgInstance.name}
 
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${(fromCreated && RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) || !fromCreated}">
+                    <g:if test="${RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()}">
                         <dl>
-                            <dt><g:message code="org.libraryType.label" default="Library Type"/></dt>
+                            <dt>
+                                <g:message code="org.libraryType.label" default="Library Type"/>
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${message(code:'org.libraryType.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
                             <dd>
                                 <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
                                                         config='Library Type'/>
                             </dd>
                         </dl>
-                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                            <dl>
-                                <dt><g:message code="org.libraryNetwork.label" default="Library Network"/></dt>
-                                <dd>
-                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                            config='Library Network'/>
-                                </dd>
-                            </dl>
-                        </g:if>
                         <dl>
-                            <dt><g:message code="org.funderType.label" default="Funder Type"/></dt>
+                            <dt>
+                                <g:message code="org.libraryNetwork.label" default="Library Network"/>
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${message(code:'org.libraryNetwork.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                                        config='Library Network'/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.funderType.label" default="Funder Type"/>
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${message(code:'org.funderType.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
                             <dd>
                                 <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
                             </dd>
                         </dl>
                         <dl>
-                            <dt><g:message code="org.federalState.label" default="Federal State"/></dt>
+                            <dt>
+                                <g:message code="org.federalState.label" default="Federal State"/>
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${message(code:'org.federalState.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
                             <dd>
                                 <semui:xEditableRefData owner="${orgInstance}" field="federalState"
                                                         config='Federal State'/>
@@ -245,7 +269,12 @@ ${orgInstance.name}
                         </dl>
                     </g:if>
                     <dl>
-                        <dt><g:message code="org.country.label" default="Country"/></dt>
+                        <dt>
+                            <g:message code="org.country.label" default="Country"/>
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${message(code:'org.country.expl')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </dt>
                         <dd>
                             <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
                         </dd>
@@ -452,7 +481,7 @@ ${orgInstance.name}
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                %{--<g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                     <g:if test="${orgInstance.id == contextService.getOrg().id}">
                         <div class="ui card">
                     </g:if>
@@ -541,7 +570,6 @@ ${orgInstance.name}
                                 <g:render template="/templates/links/orgRoleContainer"
                                           model="[listOfLinks: sorted_links]"/>
                             </div>
-                        </div><!--.card-->
                     </g:if>
                     <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
                         <div class="ui card">
@@ -549,9 +577,8 @@ ${orgInstance.name}
                                 <g:render template="/templates/links/orgRoleContainer"
                                           model="[listOfLinks: sorted_links]"/>
                             </div>
-                        </div><!--.card-->
                     </g:elseif>
-                </g:if><%-- sorted_links --%>
+                </g:if><%-- sorted_links --%>--}%
             </g:if>
 
 
