@@ -56,12 +56,12 @@
             <div id="sub_role_tab_${tmplModalID}" class="ui grid">
                 <div class="row">
                     <div class="column">
-                        Diese Lizenz mit einer anderen Lizenz verknüpfen
+                        <g:message code="subscription.linking.header"/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        Diese Lizenz
+                        <g:message code="subscription.linking.this" />
                     </div>
                     <div class="twelve wide column">
                         <g:select name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
@@ -70,7 +70,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        Lizenz
+                        <g:message code="subscription" />
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
@@ -83,7 +83,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        Kommentar
+                        <g:message code="subscription.linking.comment" />
                     </div>
                     <div class="twelve wide column">
                         <g:textArea name="${linkComment}" id="${linkComment}" value="${comment?.owner?.content}"/>

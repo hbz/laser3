@@ -76,11 +76,15 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
+        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>      
+                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
-        
+        <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && !previousSubscriptions}">
+            <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
+                                       params="${[id: params.id]}" message="subscription.details.renewalsLocal.label"/>
+        </g:if>
+
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
 
               <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"

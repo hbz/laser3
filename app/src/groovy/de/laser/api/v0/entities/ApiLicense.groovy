@@ -47,7 +47,7 @@ class ApiLicense {
     /**
      * @return boolean
      */
-    static calculateAccess(License lic, Org context, boolean hasAccess) {
+    static boolean calculateAccess(License lic, Org context, boolean hasAccess) {
 
         if (! hasAccess) {
             if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
@@ -65,24 +65,24 @@ class ApiLicense {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getLicense(License lic, Org context, boolean hasAccess){
-        def result = []
+        Collection<Object> result = []
         hasAccess = calculateAccess(lic, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context)
+            result = ApiReader.retrieveLicenseMap(lic, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
     /**
-     * @return [] | FORBIDDEN
+     * @return JSON
      */
-    static getLicenseList(Org owner, Org context, boolean hasAccess){
-        def result = []
+    static JSON getLicenseList(Org owner, Org context, boolean hasAccess){
+        Collection<Object> result = []
 
         List<License> available = License.executeQuery(
                 'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND lic.status != :del' ,
@@ -95,8 +95,8 @@ class ApiLicense {
 
         available.each { lic ->
             //if (calculateAccess(lic, context, hasAccess)) {
-                println lic.id + ' ' + lic.reference
-                result.add(ApiReaderHelper.resolveLicenseStub(lic, context, true))
+                //println lic.id + ' ' + lic.reference
+                result.add(ApiReaderHelper.requestLicenseStub(lic, context, true))
                 //result.add([globalUID: lic.globalUID])
             //}
         }

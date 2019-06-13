@@ -8,10 +8,10 @@ import groovy.util.logging.Log4j
 class ApiCatalogue {
 
     /**
-     * @return []
+     * @return JSON
      */
-    static getAllRefdatas() {
-        def result = ApiReader.exportRefdatas()
+    static JSON getAllRefdatas() {
+        Collection<Object> result = ApiReader.retrieveRefdataCollection()
 
         return (result ? new JSON(result) : null)
     }
