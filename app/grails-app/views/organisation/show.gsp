@@ -457,7 +457,7 @@ ${orgInstance.name}
                                                           model="['tenant'                           : contextOrg,
                                                                   'org'                              : orgInstance,
                                                                   'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('Billing contact', 'Person Function'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
                                                                   'modalId'                          : 'personFormModalBillingContact',
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
 
