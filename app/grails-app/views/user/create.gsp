@@ -15,7 +15,7 @@
         <semui:messages data="${flash}" />
 
         <g:if test="${editable}">
-            <g:form class="ui form" action="create" method="post">
+            <g:form id="newUser" class="ui form" action="create" method="post">
                 <fieldset>
                     <div class="field required">
                         <label for="username">${message(code:'user.username.label')}</label>
@@ -89,3 +89,33 @@
         </g:if>
     </body>
 </html>
+<r:script>
+    $.fn.form.settings.rules.usernameUnique = function() {
+        var res = true;
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="verifyUserInput" />",
+            data: {input: $(this).val()},
+            method: 'POST'
+        }).done(function(response){
+            res = response === "true";
+        }).fail(function(request,status,error){
+            console.log("Error occurred, verify logs: "+status+", error: "+error);
+        });
+        return res;
+    };
+    $("#newUser").form({
+        on: 'keypress',
+        inline: true,
+        fields: {
+            username: {
+                identifier: 'username',
+                rules: [
+                    {
+                        type: 'usernameUnique',
+                        prompt: 'Der Name ist schon vergeben!'
+                    }
+                ]
+            }
+        }
+    });
+</r:script>
