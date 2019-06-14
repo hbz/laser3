@@ -59,7 +59,7 @@
         <div class="fields">
             <div class="nine wide field">
                 <%
-                    OrgRole consortialRole = sub?.orgRelations?.find{it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id}
+                    OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id}
                 %>
                 <g:if test="${consortialRole && !sub.administrative}">
                     <div class="two fields la-fields-no-margin-button">

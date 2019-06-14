@@ -1787,6 +1787,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def role_sub = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         def role_lic = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
@@ -1853,6 +1854,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
+                                administrative: result.subscriptionInstance.administrative,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1875,7 +1877,10 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
+                            if(cons_sub.administrative)
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
+                            else
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)

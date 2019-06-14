@@ -131,7 +131,7 @@
                            <g:if test="${memberRoles.contains(or.roleType.id)}">
                                <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
 
-                               <g:if test="${or.roleType.id == RDStore.OR_SUBSCRIBER_CONS && ci.isVisibleForSubscriber}">
+                               <g:if test="${or.roleType.id == RDStore.OR_SUBSCRIBER_CONS.id && ci.isVisibleForSubscriber}">
                                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                        <i class="ui icon eye orange"></i>
                                    </span>
@@ -139,12 +139,7 @@
                            </g:if>
                         </g:each>
                         <br />
-                        <g:if test="${editable}">
-                            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
-                        </g:if>
-                        <g:else>
-                            ${ci.costTitle}
-                        </g:else>
+                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -173,24 +168,12 @@
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" currencySymbol="" />
                     </td>
                     <td>
-                        <g:if test="${editable}">
-                            <semui:xEditable owner="${ci}" type="date" field="startDate" />
-                            <br />
-                            <semui:xEditable owner="${ci}" type="date" field="endDate" />
-                        </g:if>
-                        <g:else>
-                            ${ci.startDate}
-                            <br>
-                            ${ci.endDate}
-                        </g:else>
+                        <semui:xEditable owner="${ci}" type="date" field="startDate" />
+                        <br>
+                        <semui:xEditable owner="${ci}" type="date" field="endDate" />
                     </td>
                     <td>
-                        <g:if test="${editable}">
-                            <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
-                        </g:if>
-                        <g:else>
-                            ${ci.costItemElement}
-                        </g:else>
+                        <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
                     </td>
                     <td class="x">
                         <g:if test="${editable}">
