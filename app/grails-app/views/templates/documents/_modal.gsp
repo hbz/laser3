@@ -94,6 +94,14 @@
             <g:if test="${ownobj instanceof Org}">
                 <dl>
                     <dt>
+                        <label>${message(code:'template.addDocument.target')}</label>
+                    </dt>
+                    <dd>
+                        <g:select name="targetOrg" id="targetOrg" from="${Org.findAllByStatusIsNullOrStatusNotEqual(RDStore.O_STATUS_DELETED)}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg}" noSelection="${[null:'']}"/>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
                         <label>${message(code:'template.addDocument.shareConf')}</label>
                     </dt>
                     <dd>

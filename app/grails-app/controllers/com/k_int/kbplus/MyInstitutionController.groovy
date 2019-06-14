@@ -1454,7 +1454,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
 

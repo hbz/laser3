@@ -62,9 +62,9 @@ class CostItem
 
     Boolean includeInSubscription //include in sub details page
 
-    Double costInBillingCurrency   //The actual amount - new cost ex tax
-    Double costInLocalCurrency     //local amount entered
-    Double currencyRate
+    BigDecimal costInBillingCurrency   //The actual amount - new cost ex tax
+    BigDecimal costInLocalCurrency     //local amount entered
+    BigDecimal currencyRate
 
     //legacy, to be replaced by ...
     Integer taxRate
@@ -74,9 +74,9 @@ class CostItem
     Boolean finalCostRounding
 
     @Transient
-    Double costInLocalCurrencyAfterTax
+    BigDecimal costInLocalCurrencyAfterTax
     @Transient
-    Double costInBillingCurrencyAfterTax
+    BigDecimal costInBillingCurrencyAfterTax
 
     Date invoiceDate
     Year financialYear
