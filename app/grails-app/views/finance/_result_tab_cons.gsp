@@ -113,22 +113,25 @@
                 %>
                 <tr id="bulkdelete-b${ci.id}">
                     <td>
-                        <% int offset = consOffset ? consOffset : 0 %>
+                        <%
+                            int offset = consOffset ? consOffset : 0
+                            Set<RefdataValue> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]
+                        %>
                         ${ jj + 1 + offset }
                     </td>
                     <td>
                         <g:each in="${ci.sub.orgRelations}" var="or">
-                            <g:if test="${or.roleType.equals(RDStore.OR_SUBSCRIBER_CONS)}">
+                            <g:if test="${memberRoles.contains(or.roleType.id)}">
                                 ${or.org.sortname}
                             </g:if>
                         </g:each>
                     </td>
                     <td>
                         <g:each in="${ci.sub.orgRelations}" var="or">
-                           <g:if test="${or.roleType.equals(RDStore.OR_SUBSCRIBER_CONS)}">
+                           <g:if test="${memberRoles.contains(or.roleType.id)}">
                                <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
 
-                               <g:if test="${ci.isVisibleForSubscriber}">
+                               <g:if test="${or.roleType.id == RDStore.OR_SUBSCRIBER_CONS && ci.isVisibleForSubscriber}">
                                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                        <i class="ui icon eye orange"></i>
                                    </span>
