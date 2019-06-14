@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
-<g:if test="${! (isRenewSub && sourceSubscription && targetSubscription)}">
+<g:if test="${! (sourceSubscription && targetSubscription)}">
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
                 workFlowPart: workFlowPart,
                 workFlowPartNext: workFlowPartNext

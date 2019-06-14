@@ -745,27 +745,27 @@ class AjaxController {
       //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
       //perspectiveIndex 0: source -> dest, 1: dest -> source
       if(params.link) {
-        if(params["linkType_${link.id}"]) {
-            link = genericOIDService.resolveOID(params.link)
-            Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
-            String linkTypeString = params["linkType_${link.id}"].split("§")[0]
-            int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
-            RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-            commentContent = params["linkComment_${link.id}"].trim()
-            if(perspectiveIndex == 0) {
-                link.source = context.id
-                link.destination = pair.id
-            }
-            else if(perspectiveIndex == 1) {
-                link.source = pair.id
-                link.destination = context.id
-            }
-            link.linkType = linkType
-            log.debug(linkType)
-        }
-        else if(!params["linkType_${link.id}"]) {
-            flash.error = message(code:'subscription.linking.linkTypeError')
-        }
+          link = genericOIDService.resolveOID(params.link)
+          if(params["linkType_${link.id}"]) {
+              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+              String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+              int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+              RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+              commentContent = params["linkComment_${link.id}"].trim()
+              if(perspectiveIndex == 0) {
+                  link.source = context.id
+                  link.destination = pair.id
+              }
+              else if(perspectiveIndex == 1) {
+                  link.source = pair.id
+                  link.destination = context.id
+              }
+              link.linkType = linkType
+              log.debug(linkType)
+          }
+          else if(!params["linkType_${link.id}"]) {
+              flash.error = message(code:'subscription.linking.linkTypeError')
+          }
       }
       else {
         if(params["linkType_new"]) {
@@ -1346,6 +1346,18 @@ class AjaxController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def toggleOrgRole() {
+        OrgRole oo = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType in :roleTypes',[sub:Subscription.get(params.id),roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+        if(oo) {
+            if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            else if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS
+        }
+        oo.save()
+        redirect(url: request.getHeader('referer'))
+    }
 
     @Secured(['ROLE_USER'])
     def toggleAudit() {

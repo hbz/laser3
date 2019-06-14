@@ -58,7 +58,10 @@
 
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
+                <%
+                    OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id}
+                %>
+                <g:if test="${consortialRole && !sub.administrative}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>

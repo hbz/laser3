@@ -64,7 +64,7 @@
                         <g:message code="subscription.linking.this" />
                     </div>
                     <div class="twelve wide column">
-                        <g:select name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
+                        <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
                                   optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="['':'']"/>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                         <g:message code="subscription.linking.comment" />
                     </div>
                     <div class="twelve wide column">
-                        <g:textArea name="${linkComment}" id="${linkComment}" value="${comment?.owner?.content}"/>
+                        <g:textArea class="ui" name="${linkComment}" id="${linkComment}" value="${comment?.owner?.content}"/>
                     </div>
                 </div>
             </div>

@@ -1206,40 +1206,43 @@ from License as l where (
         def result = setResultGenerics()
         result.orgType = result.institution?.getallOrgTypeIds()
 
-        def role_sub = RDStore.OR_SUBSCRIBER
-        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
-        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
-        def orgRole = null
-        def subType = null
+        RefdataValue orgRole = null
+        RefdataValue subType = null
 
-        if (params.asOrgType) {
-            log.debug("asOrgType ${params.asOrgType} in ${result.orgType} ?")
-
-            if ((Long.valueOf(params.asOrgType) in result.orgType)
-                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
-                orgRole = role_cons
-                subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
-            }
+        if (params.type) {
+            subType = RefdataValue.get(params.type)
+            if(subType == RDStore.SUBSCRIPTION_TYPE_LOCAL)
+                orgRole = role_sub
+            else orgRole = role_cons
         }
-        if (! subType) {
+        else if (!params.type) {
             orgRole = role_sub
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-            def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            RefdataValue status = RefdataValue.get(params.status)
 
+            boolean administrative = false
+            if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
+                administrative = true
 
             def new_sub = new Subscription(
                     type: subType,
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
-                    status: RefdataValue.get(params.status),
+                    status: status,
+                    administrative: administrative,
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1251,7 +1254,7 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
+                if(accessService.checkPerm('ORG_CONSORTIUM')) {
                     
                     def cons_members = []
 
@@ -1278,23 +1281,39 @@ from License as l where (
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
+                                          status: status,
+                                          administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                                          
-                        new OrgRole(org: cm,
-                            sub: cons_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.administrative) {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons).save()
+                        }
+
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
-                            roleType: role_cons).save();
+                            roleType: role_cons).save()
                     }
                     else {
-                        new OrgRole(org: cm,
-                            sub: new_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.administrative) {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons).save()
+                        }
                     }
                   }
                 }
@@ -1541,7 +1560,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
 
