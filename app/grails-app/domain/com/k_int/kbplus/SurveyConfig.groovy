@@ -11,6 +11,15 @@ import java.text.SimpleDateFormat
 
 class SurveyConfig {
 
+    @Transient
+    public static final ALL_RESULTS_FINISH_BY_ORG = "Finish"
+
+    @Transient
+    public static final ALL_RESULTS_NOT_FINISH_BY_ORG = "Not Finish"
+
+    @Transient
+    public static final ALL_RESULTS_HALF_FINISH_BY_ORG = "Half Finish"
+
     Integer configOrder
 
     Subscription subscription
@@ -30,22 +39,22 @@ class SurveyConfig {
     boolean configFinish
 
     static hasMany = [
-            documents: DocContext,
+            documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
-            orgs: SurveyOrg
+            orgs            : SurveyOrg
     ]
 
     static constraints = {
-        subscription (nullable:true, blank:false)
-        surveyProperty (nullable:true, blank:false)
+        subscription(nullable: true, blank: false)
+        surveyProperty(nullable: true, blank: false)
 
-        header(nullable:true, blank:false)
-        comment  (nullable:true, blank:false)
-        pickAndChoose (nullable:true, blank:false)
-        documents (nullable:true, blank:false)
-        orgs  (nullable:true, blank:false)
-        configFinish (nullable:true, blank:false)
-        internalComment  (nullable:true, blank:false)
+        header(nullable: true, blank: false)
+        comment(nullable: true, blank: false)
+        pickAndChoose(nullable: true, blank: false)
+        documents(nullable: true, blank: false)
+        orgs(nullable: true, blank: false)
+        configFinish(nullable: true, blank: false)
+        internalComment(nullable: true, blank: false)
     }
 
     static mapping = {
@@ -54,7 +63,7 @@ class SurveyConfig {
 
         type column: 'surconf_type'
         header column: 'surconf_header'
-        comment  column: 'surconf_comment', type: 'text'
+        comment column: 'surconf_comment', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
@@ -73,11 +82,11 @@ class SurveyConfig {
 
     @Transient
     static def validTypes = [
-            'Subscription'             : ['de': 'Lizenz', 'en': 'Subscription'],
-            'SurveyProperty'              : ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
+            'Subscription'  : ['de': 'Lizenz', 'en': 'Subscription'],
+            'SurveyProperty': ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
-    static getLocalizedValue(key){
+    static getLocalizedValue(key) {
         def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
         //println locale
@@ -88,47 +97,43 @@ class SurveyConfig {
         }
     }
 
-    def getCurrentDocs(){
+    def getCurrentDocs() {
 
-        return documents.findAll {it.status?.value != 'Deleted'}
+        return documents.findAll { it.status?.value != 'Deleted' }
     }
 
-    def getConfigNameShort(){
+    def getConfigNameShort() {
 
-        if(type == 'Subscription'){
+        if (type == 'Subscription') {
             return subscription?.name
-        }
-        else
-        {
+        } else {
             return surveyProperty?.getI10n('name')
         }
     }
 
-    def getConfigName(){
+    def getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, LocaleContextHolder.getLocale()))
 
-        if(type == 'Subscription'){
+        if (type == 'Subscription') {
             return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +
-                     (subscription?.startDate ? '(' : '') + sdf.format(subscription?.startDate) +
-                         (subscription?.endDate ? ' - ' : '') +  sdf.format(subscription?.endDate) +
-                          (subscription?.startDate ? ')' : '')
+                    (subscription?.startDate ? '(' : '') + sdf.format(subscription?.startDate) +
+                    (subscription?.endDate ? ' - ' : '') + sdf.format(subscription?.endDate) +
+                    (subscription?.startDate ? ')' : '')
 
-        }
-        else
-        {
+        } else {
             return surveyProperty?.getI10n('name')
         }
     }
+
     def getTypeInLocaleI10n() {
 
         return this.getLocalizedValue(this?.type)
     }
 
 
-    def getSurveyOrgsIDs()
-    {
+    def getSurveyOrgsIDs() {
         def result = [:]
 
         result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
@@ -138,8 +143,35 @@ class SurveyConfig {
         return result
     }
 
+    def checkResultsFinishByOrg(Org org) {
+
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
+            return ALL_RESULTS_FINISH_BY_ORG
+        } else {
+
+            def countFinish = 0
+            def countNotFinish = 0
+
+            def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+
+            surveyResult.each {
+                if (it.getFinish()) {
+                    countFinish++
+                } else {
+                    countNotFinish++
+                }
+            }
+            if (countFinish > 0 && countNotFinish == 0) {
+                return ALL_RESULTS_FINISH_BY_ORG
+            } else if (countFinish > 0 && countNotFinish > 0) {
+                return ALL_RESULTS_HALF_FINISH_BY_ORG
+            } else {
+                return ALL_RESULTS_NOT_FINISH_BY_ORG
+            }
+        }
 
 
+    }
 
 
 }
