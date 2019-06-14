@@ -34,11 +34,14 @@
                 boolean visible = false
                 if (docctx.org) {
                     boolean inOwnerOrg = false
+                    boolean inTargetOrg = false
                     boolean isCreator = false
 
                     if (docctx.owner.owner?.id == contextService.org.id)
                         inOwnerOrg = true
-                    if (docctx.owner.creator?.id == user.id)
+                    else if(contextService.org.id == docctx.org?.id)
+                        inTargetOrg = true
+                    if(docctx.owner.creator?.id == user.id)
                         isCreator = true
 
                     switch (docctx.shareConf) {
@@ -46,8 +49,8 @@
                             break
                         case RDStore.SHARE_CONF_UPLOADER_ORG: if (inOwnerOrg) visible = true
                             break
-                    /*case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.org?.id) visible = true
-                        break*/
+                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                            break
                         case RDStore.SHARE_CONF_CONSORTIUM:
                         case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                             break
