@@ -737,7 +737,10 @@ select s from Subscription as s where
 
         def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
 
-        if (showDeletedTipps != true) {
+        if (params.mode != 'advanced') {
+            base_qry += "and tipp.status.value = 'Current' "
+        }
+        else if (params.mode == 'advanced' && showDeletedTipps != true) {
             base_qry += "and tipp.status.value != 'Deleted' "
         }
 
