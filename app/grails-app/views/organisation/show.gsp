@@ -321,12 +321,12 @@ ${orgInstance.name}
                                                     controller          : 'org',
                                                     action              : 'show',
                                                     id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
 
                                     <div class="ui list">
                                         <div class="item">
@@ -379,7 +379,7 @@ ${orgInstance.name}
                                                     controller          : 'organisation',
                                                     action              : 'show',
                                                     id                  : orgInstance.id,
-                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                    editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
@@ -407,12 +407,12 @@ ${orgInstance.name}
                                                 action              : 'show',
                                                 id                  : orgInstance.id,
                                                 showAddContacts     : true,
-                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                         ]}"/>
                                     </g:if>
                                 </g:each>
                             <%-- </div> --%>
-                                <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_ADM')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                                <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
 
                                         <div class="ui list">
                                             <div class="item">
@@ -571,7 +571,7 @@ ${orgInstance.name}
                                           model="[listOfLinks: sorted_links]"/>
                             </div>
                     </g:if>
-                    <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
+                    <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')}">
                         <div class="ui card">
                             <div class="content">
                                 <g:render template="/templates/links/orgRoleContainer"

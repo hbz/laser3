@@ -51,8 +51,7 @@
                         case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                             break
                         default:
-                            if(docctx.shareConf) log.debug(docctx.shareConf)
-                            else visible = true
+                            if (!docctx.shareConf) visible = true
                             break
                     }
                 }

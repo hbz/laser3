@@ -304,7 +304,7 @@ class FinanceService {
         //cost item filter settings
         //cost item title
         if(params.filterCITitle) {
-            filterQuery += " and ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase "
+            filterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
             queryParams.filterCITitle = "%${params.filterCITitle}%"
             queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
             log.info(queryParams.filterCITitle)
