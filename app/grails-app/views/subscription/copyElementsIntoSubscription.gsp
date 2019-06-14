@@ -31,7 +31,7 @@
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps">
-            <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >
                         <div class="title">Rahmendaten</div>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == 2 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
                     <div class="title">Bestand</div>
                     <div class="description">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == 3 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">Anhänge</div>
                     <div class="description">
@@ -62,16 +62,14 @@
                     </div>
                 </div>
             </div>
-            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_YODA">
-                <div class="${workFlowPart == 4 ? 'active' : 'disabled'} step">
-                    <div class="content">
-                        <div class="title">${message(code: 'properties')}</div>
-                        <div class="description">
-                            <i class="tags icon"></i>${message(code: 'properties')}
-                        </div>
+            <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
+                <div class="content">
+                    <div class="title">${message(code: 'properties')}</div>
+                    <div class="description">
+                        <i class="tags icon"></i>${message(code: 'properties')}
                     </div>
                 </div>
-            </sec:ifAnyGranted>
+            </div>
         </div>
     </g:if>
     <g:else>
