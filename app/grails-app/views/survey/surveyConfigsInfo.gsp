@@ -53,7 +53,7 @@
 </g:else>
 
 <g:if test="${surveyConfig}">
-    <div id="collapseableSubDetails" class="ui stackable grid">
+    <div class="ui stackable grid">
         <div class="twelve wide column">
             <div class="la-inline-lists">
 
@@ -122,44 +122,6 @@
                         </dl>
                     </div>
                 </div>
-
-
-                <div class="ui card ">
-                    <div class="content">
-                        <dl>
-                            <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
-                                    ${message(code: 'surveyConfig.header.label')}
-                                    <i class="info small circular inverted icon"></i>
-                                </div>
-                            </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
-
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
-                                    ${message(code: 'surveyConfig.comment.label')}
-                                    <i class="info small circular inverted icon"></i>
-                                </div>
-                            </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
-
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
-                                    ${message(code: 'surveyConfig.internalComment.label')}
-                                    <i class="info small circular inverted icon"></i>
-                                </div>
-                            </dt>
-                            <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
-
-                        </dl>
-
-                    </div>
-                </div>
                 <g:if test="${surveyConfig?.type == 'Subscription'}">
 
                     <g:if test="${surveyConfig?.subscription?.packages}">
@@ -207,8 +169,9 @@
                             <g:set var="derivedPropDefGroups"
                                    value="${surveyConfig?.subscription?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
 
-                            <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
-                                <div class="ui la-vertical buttons">
+                            <div class="ui la-vertical buttons">
+                                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+
                                     <button id="derived-license-properties-toggle"
                                             class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
                                     <script>
@@ -222,21 +185,22 @@
                                         })
                                     </script>
 
-                                    <button id="subscription-properties-toggle"
-                                            class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
-                                    <script>
-                                        $('#subscription-properties-toggle').on('click', function () {
-                                            $('#subscription-properties').toggleClass('hidden')
-                                            if ($('#subscription-properties').hasClass('hidden')) {
-                                                $(this).text('Lizenzsmerkmale anzeigen')
-                                            } else {
-                                                $(this).text('Lizenzsmerkmale ausblenden')
-                                            }
-                                        })
-                                    </script>
+                                </g:if>
 
-                                </div>
-                            </g:if>
+                                <button id="subscription-properties-toggle"
+                                        class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                <script>
+                                    $('#subscription-properties-toggle').on('click', function () {
+                                        $('#subscription-properties').toggleClass('hidden')
+                                        if ($('#subscription-properties').hasClass('hidden')) {
+                                            $(this).text('Lizenzsmerkmale anzeigen')
+                                        } else {
+                                            $(this).text('Lizenzsmerkmale ausblenden')
+                                        }
+                                    })
+                                </script>
+
+                            </div>
 
                         </div><!-- .content -->
                     </div>
@@ -244,7 +208,7 @@
                     <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
                         <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
 
-                            <g:render template="licProp" model="${[
+                            <g:render template="/subscription/licProp" model="${[
                                     license             : surveyConfig?.subscription?.owner,
                                     derivedPropDefGroups: derivedPropDefGroups
                             ]}"/>
@@ -266,13 +230,51 @@
                     </div>
 
                 </g:if>
+
+                <div class="ui card ">
+                    <div class="content">
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                    ${message(code: 'surveyConfig.header.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
+
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                    ${message(code: 'surveyConfig.internalComment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                        </dl>
+
+                    </div>
+                </div>
+
             </div>
 
         </div>
 
         <aside class="four wide column la-sidekick">
             <div id="container-documents">
-                <g:render template="/templates/documents/card" model="${[ownobj:surveyConfig, owntp:'surveyConfig', css_class:'']}" />
+                <g:render template="/survey/cardDocuments" model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
         </aside><!-- .four -->
 
@@ -306,6 +308,10 @@
                         </td>
                         <td>
                             ${surveyProperty?.surveyProperty?.getI10n('name')}
+
+                            <g:if test="${surveyProperty?.surveyProperty?.owner == institution}">
+                                <i class='shield alternate icon'></i>
+                            </g:if>
 
                             <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
                                 <span class="la-long-tooltip" data-position="right center" data-variation="tiny"

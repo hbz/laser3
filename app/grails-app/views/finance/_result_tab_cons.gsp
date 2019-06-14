@@ -176,9 +176,11 @@
                             <semui:xEditable owner="${ci}" type="date" field="endDate" />
                         </g:if>
                         <g:else>
-                            ${ci.startDate}
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${ci.startDate}"/>
                             <br>
-                            ${ci.endDate}
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${ci.endDate}"/>
                         </g:else>
                     </td>
                     <td>
@@ -186,7 +188,7 @@
                             <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
                         </g:if>
                         <g:else>
-                            ${ci.costItemElement}
+                            ${ci.costItemElement?.getI10n('value')}
                         </g:else>
                     </td>
                     <td class="x">

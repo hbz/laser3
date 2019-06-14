@@ -136,14 +136,14 @@ class DocWidgetController extends AbstractDebugController {
                                 }
                                 catch (Exception e) {
                                     // fallback
-                                    doc_content2.setBlobData(doc_content.blobData, input_file.size)
+                                    doc_content2.setBlobData(doc_content2.blobData, doc_content2.blobData?.size)
                                     doc_content2.save()
                                 }
 
                                 DocContext doc_context2 = new DocContext(
                                         "${params.ownertp}": config,
                                         owner: doc_content2,
-                                        doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
+                                        doctype: doc_context.doctype
                                 )
                                 //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
                                 doc_context2.save(flush: true)
