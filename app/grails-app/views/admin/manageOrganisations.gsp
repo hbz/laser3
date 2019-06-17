@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -297,7 +297,7 @@
             <div class="field">
                 <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
-                          from="${['Kein Zugriff'] + ApiManager.getAllApiLevels()}"
+                          from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
                           class="ui dropdown"
                 />
             </div>

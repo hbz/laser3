@@ -10,57 +10,59 @@
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
                         <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
-                                <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
                     </th>
                 </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="vertical-align: top" name="subscription.takeDates.source">
-                    <div>
-                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
-                        <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
-                    </div>
-                </td>
+            <g:if test="${ ! isRenewSub}">
+                <tr>
+                    <td style="vertical-align: top" name="subscription.takeDates.source">
+                        <div>
+                            <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
+                            <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                        </div>
+                    </td>
 
-                %{--AKTIONEN:--}%
-                <td class="center aligned">
-                    <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
-                        <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
-                        <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
-                    </g:if>
-                </td>
+                    %{--AKTIONEN:--}%
+                    <td class="center aligned">
+                        <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
+                            <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
+                            <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
+                        </g:if>
+                    </td>
 
-                <td style="vertical-align: top" name="subscription.takeDates.target">
-                    <div>
-                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
-                        <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
-                    </div>
-                </td>
+                    <td style="vertical-align: top" name="subscription.takeDates.target">
+                        <div>
+                            <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
+                            <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                            ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                        </div>
+                    </td>
 
-                <td>
-                    <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
-                        <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
-                    </g:if>
-                </td>
-            </tr>
+                    <td>
+                        <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
+                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
+                        </g:if>
+                    </td>
+                </tr>
+            </g:if>
 
             <tr>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
@@ -149,7 +151,7 @@
                 <td>
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
-                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" />
+                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
                             <br/>
                         </g:if>
                     </g:each>
@@ -157,23 +159,16 @@
             </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button') }" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
 
 <r:script>
-    function toggleAllCheckboxes(source) {
-        var action = $(source).attr("data-action")
-        var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-
     $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
         if (this.checked) {
             $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
@@ -209,11 +204,13 @@
     $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
         var generic_OrgRole_id = this.value
         if (this.checked) {
-            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').addClass('willStay');
             $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
         } else {
             $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willStay');
-            // $('.table tr td[name="subscription.takeOrgRelations.source"] div div').removeClass('willStay');
+            if (getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
+            }
         }
     })
     $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
@@ -224,6 +221,18 @@
             $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willBeReplacedStrong');
         }
     })
+
+    function getNumberOfCheckedCheckboxes(inputElementName){
+        var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
+        var numberOfChecked = 0;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                numberOfChecked++;
+            }
+        }
+        return numberOfChecked;
+    }
+
 </r:script>
 
 

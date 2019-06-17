@@ -36,10 +36,10 @@ class ApiIssueEntitlement {
     }
 
     /**
-     * @return grails.converters.JSON | FORBIDDEN
+     * @return JSON | FORBIDDEN
      */
     static getIssueEntitlements(SubscriptionPackage subPkg, Org context, boolean hasAccess){
-        def result = []
+        Collection<Object> result = []
 
         if (! hasAccess) {
             def hasAccess2 = false
@@ -57,7 +57,7 @@ class ApiIssueEntitlement {
         }
 
         if (hasAccess) {
-            result = ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         // this is different to other Api<x>.get<x>-methods;

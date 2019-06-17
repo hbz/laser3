@@ -162,6 +162,22 @@
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">
+                            <g:if test="${sub.administrative}">
+                                <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
+                                    <span data-tooltip="${message(code:'subscription.details.hiddenForSubscriber')}">
+                                        <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                            <i class="eye orange icon"></i>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-tooltip="${message(code:'subscription.details.hideToSubscriber')}">
+                                        <g:link class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                            <i class="eye icon"></i>
+                                        </g:link>
+                                    </span>
+                                </g:else>
+                            </g:if>
                             <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
