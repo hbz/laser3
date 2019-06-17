@@ -1,7 +1,4 @@
 <%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Doc; com.k_int.kbplus.Subscription" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.COPY" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.REPLACE" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionController.DO_NOTHING" %>
 <laser:serviceInjection />
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
@@ -10,9 +7,8 @@
             targetSubscription: targetSubscription,
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <hr>
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
             %{--DOCUMENTS:--}%
@@ -22,7 +18,7 @@
                     </th>
                     <th class="one wide center aligned">
                         <i class="ui icon angle double right"></i>
-                        <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+                        <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     </th>
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
@@ -30,7 +26,7 @@
                     <th class="one wide center aligned">
                         <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
-                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" checked="${false}" />
+                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
                     </th>
                 </tr>
@@ -247,22 +243,15 @@
                 </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" onclick="return jsConfirmation() "/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation() "/>
         </div>
     </g:form>
 </semui:form>
 <r:script>
-    function toggleAllCheckboxes(source) {
-        var action = $(source).attr("data-action")
-        var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-
     $('input[name="subscription.takeDocIds"]').change( function(event) {
         var id = this.value;
         if (this.checked) {

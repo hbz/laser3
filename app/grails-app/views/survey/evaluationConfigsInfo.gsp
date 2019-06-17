@@ -53,17 +53,8 @@
 
                             <g:if test="${surveyConfig?.surveyProperty}">
 
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}
+                                <b>${message(code: 'surveyProperty.type.label')}: ${surveyConfig?.surveyProperty?.getLocalizedType()}
 
-                                <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    (${refdataValues.join('/')})
-                                </g:if>
                                 </b>
                             </g:if>
 
@@ -73,7 +64,10 @@
                     <dl>
                         <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
                         <dd>
-                            ${surveyConfig?.orgs?.size() ?: 0}
+                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                                <div class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div>
+                            </g:link>
                         </dd>
 
                     </dl>
@@ -81,7 +75,10 @@
                     <dl>
                         <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
                         <dd>
-                            ${surveyConfig?.documents?.size()}
+                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                                <div class="ui circular label">${surveyConfig?.documents?.size()}</div>
+                            </g:link>
                         </dd>
 
                     </dl>
@@ -124,7 +121,7 @@
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.type.label')}</th>
                     <th>${message(code: 'surveyParticipants.label')}</th>
                     <th></th>
@@ -142,31 +139,24 @@
                             ${surveyProperty?.getI10n('name')}
 
                             <g:if test="${surveyProperty?.getI10n('explain')}">
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${surveyProperty?.getI10n('explain')}">
+                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                                      data-tooltip="${surveyProperty?.getI10n('explain')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
 
                         </td>
                         <td>
-                            ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyProperty?.type)}
+                            ${surveyProperty?.getLocalizedType()}
 
-                            <g:if test="${surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                <g:set var="refdataValues" value="${[]}"/>
-                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.refdataCategory)}"
-                                        var="refdataValue">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                </g:each>
-                                (${refdataValues.join('/')})
-                            </g:if>
                         </td>
                         <td>
-                         ${prop?.value?.size()}
+                            ${prop?.value?.size()}
                         </td>
                         <td>
                             <g:link controller="survey" action="evaluationConfigResult" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id, prop: prop.key]" class="ui icon button"><i
+                                    params="[surveyConfigID: surveyConfig?.id, prop: prop.key]"
+                                    class="ui icon button"><i
                                     class="chart bar icon"></i></g:link>
 
                         </td>

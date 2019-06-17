@@ -409,6 +409,12 @@ class SemanticUiTagLib {
         out << body()
         out << '</div>'
     }
+    def filterTemp = { attrs, body ->
+
+        out << '<div class="ui la-filter-temp segment">'
+        out << body()
+        out << '</div>'
+    }
 
 
     def searchSegment = { attrs, body ->
@@ -735,7 +741,7 @@ class SemanticUiTagLib {
             }
             out <<  '">'
             out <<  optionValue(el).toString().encodeAsHTML()
-            if (el.tenant!= null){
+            if (el?.tenant!= null || el?.owner != null){
                 out <<  " <i class='${iconWhich} icon'></i>"
             }
             out <<  '</div>'

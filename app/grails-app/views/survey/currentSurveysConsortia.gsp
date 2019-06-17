@@ -155,7 +155,7 @@
                     <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
                     <g:link controller="survey" action="surveyEvaluation" id="${s.id}" class="ui icon button">
                         <g:if test="${finish != 0 && total != 0}">
-                        ${(finish/total)*100}
+                            <g:formatNumber number="${(finish/total)*100}" minFractionDigits="2" maxFractionDigits="2"/>%
                         </g:if>
                         <g:else>
                             0%

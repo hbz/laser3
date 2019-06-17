@@ -36,17 +36,13 @@
             <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
             <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
             <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span> |
-            <span class="ROLE_TICKET_EDITOR">ROLE_TICKET_EDITOR</span>
-        </div>
-    </div>
-    <div class="ui list">
-        <div class="item">
+            <span class="ROLE_TICKET_EDITOR">ROLE_TICKET_EDITOR</span> |
             <span class="ROLE_API">ROLE_API</span>
         </div>
     </div>
 </div>
 
-<h3 class="ui header">Hierarchical? Org Roles</h3>
+<h3 class="ui header">Hierarchical Org Roles (Customer Types)</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">

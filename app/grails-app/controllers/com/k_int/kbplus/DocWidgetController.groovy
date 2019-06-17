@@ -105,7 +105,10 @@ class DocWidgetController extends AbstractDebugController {
                             owner: doc_content,
                             doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
                     )
-                    doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+                    doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
+
+                    doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
+
                     doc_context.save(flush: true)
 
                     //docForAllSurveyConfigs
@@ -115,11 +118,11 @@ class DocWidgetController extends AbstractDebugController {
                             if (instance != config) {
 
                                 Doc doc_content2 = new Doc(contentType: Doc.CONTENT_TYPE_BLOB,
-                                        filename: original_filename,
-                                        mimeType: request.getFile("upload_file")?.contentType,
-                                        title: params.upload_title ?: original_filename,
-                                        type: RefdataCategory.lookupOrCreate('Document Type', params.doctype),
-                                        creator: user,
+                                        filename: doc_content.filename,
+                                        mimeType: doc_content.mimeType,
+                                        title: doc_content.title,
+                                        type: doc_content.type,
+                                        creator: doc_content.creator,
                                         owner: contextService.getOrg())
 
                                 doc_content2.save()
@@ -136,16 +139,16 @@ class DocWidgetController extends AbstractDebugController {
                                 }
                                 catch (Exception e) {
                                     // fallback
-                                    doc_content2.setBlobData(input_stream, input_file.size)
+                                    doc_content2.setBlobData(doc_content2.blobData, doc_content2.blobData?.size)
                                     doc_content2.save()
                                 }
 
                                 DocContext doc_context2 = new DocContext(
                                         "${params.ownertp}": config,
                                         owner: doc_content2,
-                                        doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
+                                        doctype: doc_context.doctype
                                 )
-                                doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
+                                //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
                                 doc_context2.save(flush: true)
                             }
                         }
@@ -183,6 +186,8 @@ class DocWidgetController extends AbstractDebugController {
                 doc_content.owner = contextService.org
                 doc_content.save()
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
+                if(params.targetOrg)
+                    doc_context.targetOrg = Org.get(params.targetOrg)
                 doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
                 doc_context.save(flush: true)
                 log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}");

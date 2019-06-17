@@ -18,6 +18,7 @@ class RDStore {
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
+    static final OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden','Organisational Role')
 
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
@@ -65,6 +66,7 @@ class RDStore {
 
     static final SUBSCRIPTION_TYPE_LOCAL = getRefdataValue('Local Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_CONSORTIAL = getRefdataValue('Consortial Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_ADMINISTRATIVE = getRefdataValue('Administrative Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 

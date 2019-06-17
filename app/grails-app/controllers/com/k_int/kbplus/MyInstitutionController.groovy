@@ -990,6 +990,112 @@ from License as l where (
         }
     }
 
+    private def exportSurveyInfo(List<SurveyResult> results, String format, Org org) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        List titles = [g.message(code: 'surveyInfo.owner.label'),
+
+                       g.message(code: 'surveyConfigsInfo.comment'),
+
+                       g.message(code: 'surveyProperty.subName'),
+                       g.message(code: 'surveyProperty.subProvider'),
+                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'subscription.packages.label'),
+                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'subscription.form.label'),
+                       g.message(code: 'subscription.resource.label'),
+
+                       g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
+
+                       g.message(code: 'surveyProperty.label'),
+                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'surveyResult.result'),
+                       g.message(code: 'surveyResult.comment'),
+                        g.message(code: 'surveyResult.finishDate')]
+
+        List surveyData = []
+        results.findAll{it.surveyConfig.type == 'Subscription'}.each { result ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+
+                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
+
+                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org))
+
+                    row.add([field: result?.owner?.name ?: '', style: null])
+                    row.add([field: result?.surveyConfig?.comment ?: '', style: null])
+                    row.add([field: sub?.name ?: "", style: null])
+
+                    List providersAndAgencies = sub?.providers + sub?.agencies
+                    row.add([field: providersAndAgencies ? providersAndAgencies.join(", ") : '', style: null])
+
+                    List ownerReferences = sub.owner?.collect {
+                        it.reference
+                    }
+                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    List packageNames = sub.packages?.collect {
+                        it.pkg.name
+                    }
+                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+                    row.add([field: sub.status?.getI10n("value"), style: null])
+                    row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+
+                    row.add([field: surveyCostItem ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
+
+                    row.add([field: surveyCostItem ? surveyCostItem?.costDescription : '', style: null])
+
+                    row.add([field: result.type?.getI10n('name') ?: '', style: null])
+                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+
+                    def value
+
+                    if(result?.type?.type == Integer.toString())
+                    {
+                        value = result?.intValue ? result?.intValue.toString() : ""
+                    }
+                    else if (result?.type?.type == String.toString())
+                    {
+                        value = result?.stringValue ?: ""
+                    }
+                    else if (result?.type?.type ==  BigDecimal.toString())
+                    {
+                        value = result?.decValue ? result?.decValue.toString() : ""
+                    }
+                    else if (result?.type?.type == Date.toString())
+                    {
+                        value = result?.dateValue ? sdf.format(result?.dateValue) : ""
+                    }
+                    else if (result?.type?.type == URL.toString())
+                    {
+                        value = result?.urlValue ? result?.urlValue.toString() : ""
+                    }
+                    else if (result?.type?.type == RefdataValue.toString())
+                    {
+                        value = result?.refValue ? result?.refValue.getI10n('value') : ""
+                    }
+
+                    row.add([field: value ?: '', style: null])
+                    row.add([field: result.comment ?: '', style: null])
+                    row.add([field: result.finishDate ? sdf.format(result.finishDate) : '', style: null])
+
+                    surveyData.add(row)
+                    break
+            }
+        }
+        switch(format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
+                return exportService.generateXLSXWorkbook(sheetData)
+        }
+    }
+
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1102,40 +1208,43 @@ from License as l where (
         def result = setResultGenerics()
         result.orgType = result.institution?.getallOrgTypeIds()
 
-        def role_sub = RDStore.OR_SUBSCRIBER
-        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
-        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
-        def orgRole = null
-        def subType = null
+        RefdataValue orgRole = null
+        RefdataValue subType = null
 
-        if (params.asOrgType) {
-            log.debug("asOrgType ${params.asOrgType} in ${result.orgType} ?")
-
-            if ((Long.valueOf(params.asOrgType) in result.orgType)
-                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
-                orgRole = role_cons
-                subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
-            }
+        if (params.type) {
+            subType = RefdataValue.get(params.type)
+            if(subType == RDStore.SUBSCRIPTION_TYPE_LOCAL)
+                orgRole = role_sub
+            else orgRole = role_cons
         }
-        if (! subType) {
+        else if (!params.type) {
             orgRole = role_sub
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-            def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            RefdataValue status = RefdataValue.get(params.status)
 
+            boolean administrative = false
+            if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
+                administrative = true
 
             def new_sub = new Subscription(
                     type: subType,
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
-                    status: RefdataValue.get(params.status),
+                    status: status,
+                    administrative: administrative,
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1147,7 +1256,7 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
+                if(accessService.checkPerm('ORG_CONSORTIUM')) {
                     
                     def cons_members = []
 
@@ -1174,23 +1283,39 @@ from License as l where (
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
+                                          status: status,
+                                          administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                                          
-                        new OrgRole(org: cm,
-                            sub: cons_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.administrative) {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons).save()
+                        }
+
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
-                            roleType: role_cons).save();
+                            roleType: role_cons).save()
                     }
                     else {
-                        new OrgRole(org: cm,
-                            sub: new_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.administrative) {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons).save()
+                        }
                     }
                   }
                 }
@@ -1437,7 +1562,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
 
@@ -1766,19 +1890,12 @@ from License as l where (
         def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
-        
-        def allInst = []
-        if(result.availableConsortia){
-          allInst = result.availableConsortia
-        }
-        
-        allInst.add(result.institution)
 
-        def sub_params = [institution: allInst,roles:roles,sub_del:del_sub]
+        def sub_params = [institution: result.institution,roles:roles,sub_del:del_sub]
         def sub_qry = """
 Subscription AS s INNER JOIN s.orgRelations AS o
 WHERE o.roleType IN (:roles)
-AND o.org IN (:institution)
+AND o.org = :institution
 AND s.status !=:sub_del """
         if (date_restriction) {
             sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
@@ -3849,10 +3966,35 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }.groupBy {it?.surveyConfig?.id}
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.editable = surveyResults?.finishDate?.contains(null) ? true : false
+
+        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
         result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
-        result
+
+        if ( params.exportXLS ) {
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            withFormat {
+                html {
+                    result
+                }
+            }
+        }
+
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
@@ -3881,11 +4023,126 @@ AND EXISTS (
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
         result.editable = result.surveyResults.finishDate.contains(null) ? true : false
         result.consCostTransfer = true
 
         result
     }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyFinishConfig() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+            if(value == null || value == "")
+            {
+                allResultHaveValue = false
+            }
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.info")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+    })
+    def surveyInfoFinish() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+
+        def allResultHaveValue = true
+        surveyResults.each {
+            def value = null
+            if (it?.type?.type == Integer.toString()) {
+                value = it.intValue.toString()
+            } else if (it?.type?.type == String.toString()) {
+                value = it.stringValue ?: ''
+            } else if (it?.type?.type == BigDecimal.toString()) {
+                value = it.decValue.toString()
+            } else if (it?.type?.type == Date.toString()) {
+                value = it.dateValue.toString()
+            } else if (it?.type?.type == RefdataValue.toString()) {
+                value = it.refValue?.getI10n('value') ?: ''
+            }
+
+
+
+        }
+        if(allResultHaveValue) {
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save(flush: true)
+            }
+            flash.message = message(code: "surveyResult.finish.info")
+        }else {
+            flash.error = message(code: "surveyResult.finish.error")
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {

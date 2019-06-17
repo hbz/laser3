@@ -159,10 +159,10 @@ class FinanceController extends AbstractDebugController {
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
+            SXSSFWorkbook workbook = processFinancialXLSX(result)
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
@@ -326,7 +326,12 @@ class FinanceController extends AbstractDebugController {
                                     sumCurrencyAfterTaxCell = cellnum
                                     //tax rate
                                     cellnum++
-                                    row.add("${ci.taxRate ?: 0} %")
+                                    String taxString
+                                    if(ci.taxKey) {
+                                        taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                                    }
+                                    else taxString = message(code:'financials.taxRate.notSet')
+                                    row.add(taxString)
                                 }
                                 if(["own","cons"].indexOf(viewMode) < 0)
                                     sumCurrencyAfterTaxCell = cellnum
@@ -629,7 +634,12 @@ class FinanceController extends AbstractDebugController {
                         }
                         //tax rate
                         cell = row.createCell(cellnum++)
-                        cell.setCellValue("${ci.taxRate ?: 0} %")
+                        String taxString
+                        if(ci.taxKey) {
+                            taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                        }
+                        else taxString = message(code:'financials.taxRate.notSet')
+                        cell.setCellValue(taxString)
                     }
                     //billing currency and value
                     cell = row.createCell(cellnum++)
@@ -738,9 +748,6 @@ class FinanceController extends AbstractDebugController {
         if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub))
             result.sub = Subscription.get(Long.parseLong(params.sub))
         result.costItem = CostItem.findById(params.id)
-        if(result.costItem)
-          result.issueEntitlement = result.costItem.issueEntitlement
-
         //format for dropdown: (o)id:value
         def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
         ciecs.each { ciec ->
@@ -991,11 +998,12 @@ class FinanceController extends AbstractDebugController {
 
               newCostItem.owner = result.institution
               newCostItem.sub = sub
-              newCostItem.subPkg = pkg
-              newCostItem.issueEntitlement = ie
+              newCostItem.subPkg = SubscriptionPackage.findBySubscriptionAndPkg(sub,pkg?.pkg) ?: null
+              newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
               newCostItem.order = order
               newCostItem.invoice = invoice
-              newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
+              //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
+              newCostItem.isVisibleForSubscriber = sub.administrative ? false : cost_item_isVisibleForSubscriber
               newCostItem.costItemCategory = cost_item_category
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status

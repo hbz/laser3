@@ -183,9 +183,18 @@ ${message(code: 'subscription.propertiesConsortia.header')}
 
             <td>${parentSub.name}</td>
 
-            <td><g:formatDate formatName="default.date.format.notime" date="${parentSub.startDate}"/></td>
-            <td><g:formatDate formatName="default.date.format.notime" date="${parentSub.endDate}"/></td>
-            <td>${parentSub.status.getI10n('value')}</td>
+            <td>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.startDate}"/>
+                <semui:auditButton auditable="[parentSub, 'startDate']"/>
+            </td>
+            <td>
+                <g:formatDate formatName="default.date.format.notime" date="${parentSub?.endDate}"/>
+                <semui:auditButton auditable="[parentSub, 'endDate']"/>
+            </td>
+            <td>
+                ${parentSub.status.getI10n('value')}
+                <semui:auditButton auditable="[parentSub, 'status']"/>
+            </td>
             <td>
 
                 <div class="ui middle aligned selection list">
@@ -380,11 +389,19 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                         <td></td>
                     </g:if>
 
-                    <td><semui:xEditable owner="${sub}" field="startDate" type="date"
-                                         overwriteEditable="${editableOld}"/></td>
+                    <td>
+                        <semui:xEditable owner="${sub}" field="startDate" type="date"
+                                         overwriteEditable="${editableOld}"/>
+                        <semui:auditButton auditable="[sub, 'startDate']"/>
+                    </td>
                     <td><semui:xEditable owner="${sub}" field="endDate" type="date"
-                                         overwriteEditable="${editableOld}"/></td>
-                    <td>${sub.status.getI10n('value')}</td>
+                                         overwriteEditable="${editableOld}"/>
+                        <semui:auditButton auditable="[sub, 'endDate']"/>
+                    </td>
+                    <td>
+                        ${sub.status.getI10n('value')}
+                        <semui:auditButton auditable="[sub, 'status']"/>
+                    </td>
                     <td>
 
                         <div class="ui middle aligned selection list">

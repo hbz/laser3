@@ -418,14 +418,14 @@ class OrganisationController extends AbstractDebugController {
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
 
-        def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
-        def sorted_links = [:]
-        def offsets = [:]
+        //def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
+        //def sorted_links = [:]
+        //def offsets = [:]
 
         du.setBenchMark('orgRoles')
 
         // TODO: experimental asynchronous task
-        //def task_orgRoles = task {
+        /*def task_orgRoles = task {
 
             if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
                     (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
@@ -457,16 +457,16 @@ class OrganisationController extends AbstractDebugController {
                     }
                 }
             }
-        //}
+        }*/
 
-        if (params.ajax) {
+        /*if (params.ajax) {
             render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
             return
-        }
+        }*/
 
         du.setBenchMark('editable')
 
-        result.sorted_links = sorted_links
+        //result.sorted_links = sorted_links
 
         result.user = user
         result.orgInstance = orgInstance
@@ -479,7 +479,7 @@ class OrganisationController extends AbstractDebugController {
         if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
             du.setBenchMark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') ||
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
@@ -487,10 +487,10 @@ class OrganisationController extends AbstractDebugController {
             List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
                 it.toOrg.id
             }
-            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
+            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_EDITOR'))
                 result.editable = true
             else
-                result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
       if (! orgInstance) {
@@ -610,13 +610,11 @@ class OrganisationController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
-        def ctxlist = []
-
         log.debug("deleteDocuments ${params}");
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisation', action: 'documents' /*, fragment: 'docstab' */
+        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
     }
 
     @Deprecated

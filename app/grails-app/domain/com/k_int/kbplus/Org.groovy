@@ -589,6 +589,7 @@ class Org
         }
     }
 
+    //Only INST_ADM
     def hasAccessOrg(){
 
         if(UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
@@ -596,6 +597,19 @@ class Org
         }else {
             return false
         }
+
+
+    }
+
+    def hasAccessOrgListUser(){
+
+        def result = [:]
+
+        result.instAdms = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_USER'))
+
+        return result
 
 
     }

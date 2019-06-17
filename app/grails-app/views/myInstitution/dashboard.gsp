@@ -103,11 +103,14 @@
         </g:if>
 
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
+
+            <g:if test="${grailsApplication.config.featureSurvey}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
                 ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
+            </g:if>
         </g:if>
 
        %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
@@ -323,12 +326,13 @@
         </g:if>
 
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-
+            <g:if test="${grailsApplication.config.featureSurvey}">
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
                 <div>
                     <g:render template="surveys"/>
                 </div>
             </div>
+            </g:if>
         </g:if>
 
     %{--<g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">

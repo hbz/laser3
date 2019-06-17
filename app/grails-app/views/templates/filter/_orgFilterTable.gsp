@@ -38,8 +38,10 @@
         <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
             <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
-            <th class="la-th-wrap">${message(code: 'survey.plural')}</th>
+        <g:if test="${grailsApplication.config.featureSurvey}">
+                <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+                    <th class="la-th-wrap">${message(code: 'survey.plural')}</th>
+                </g:if>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
@@ -275,18 +277,20 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
-                <td>
-                    <div class="la-flexbox">
-                        <g:set var="numberOfSurveys" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).surveyConfig.surveyInfo.findAll{it.status.id != RDStore.SURVEY_IN_PROCESSING.id}.groupBy {it.id}.size()}"/>
+            <g:if test="${grailsApplication.config.featureSurvey}">
+                <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
+                    <td>
+                        <div class="la-flexbox">
+                            <g:set var="numberOfSurveys" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).surveyConfig.surveyInfo.findAll{it.status.id != RDStore.SURVEY_IN_PROCESSING.id}.groupBy {it.id}.size()}"/>
 
-                        <g:link controller="myInstitution" action="manageConsortiaSurveys" params="${[participant: org.id]}">
-                            <div class="ui circular label">
-                                ${numberOfSurveys}
-                            </div>
-                        </g:link>
-                    </div>
-                </td>
+                            <g:link controller="myInstitution" action="manageConsortiaSurveys" params="${[participant: org.id]}">
+                                <div class="ui circular label">
+                                    ${numberOfSurveys}
+                                </div>
+                            </g:link>
+                        </div>
+                    </td>
+                </g:if>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
@@ -363,7 +367,7 @@
                     <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
                         <g:link controller="subscription" action="show"
                                 id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
-                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.dropdownNamingConventionWithoutOrg()}
+                            ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.name}
                         </g:link>
 
                     </g:if>
@@ -395,6 +399,7 @@
             <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
                 <td class="center aligned">
                     <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}" var="costItem">
+
                         <g:if test="${costItem.costItemElement.id.toString() == selectedCostItemElement}">
 
                             <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" type="number" />

@@ -10,10 +10,10 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[ params:params ]}"/>
+<g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions" />
+    <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -22,19 +22,11 @@
 
 
 
-<g:render template="nav" />
+<g:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}" />
+<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}" />
-
-<br>
-
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    ${message(code: 'surveyParticipants.info')}
-</div>
+<semui:messages data="${flash}"/>
 
 <br>
 
@@ -55,7 +47,7 @@
                             controller="survey" action="surveyParticipants"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigName()}</h5>
+                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
@@ -69,63 +61,60 @@
             <div class="ui top attached tabular menu">
 
                 <g:if test="${surveyConfig?.type == 'Subscription'}">
-                <a class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                   data-tab="selectedSubParticipants">${message(code: 'surveyParticipants.selectedSubParticipants')}
-                    <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
-                </a>
+                    <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
+                            controller="survey" action="surveyParticipants"
+                            id="${surveyConfig?.surveyInfo?.id}"
+                            params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+                        ${message(code: 'surveyParticipants.selectedSubParticipants')}
+                        <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
+                    </g:link>
                 </g:if>
 
-                <a class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                   data-tab="selectedParticipants">${message(code: 'surveyParticipants.selectedParticipants')}
-                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></a>
+                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+                        controller="survey" action="surveyParticipants"
+                        id="${surveyConfig?.surveyInfo?.id}"
+                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
+                    ${message(code: 'surveyParticipants.selectedParticipants')}
+                    <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
 
                 <g:if test="${editable}">
-                    <a class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                       data-tab="consortiaMembers">${message(code: 'surveyParticipants.consortiaMembers')}
-                        <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div></a>
+                    <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
+                            controller="survey" action="surveyParticipants"
+                            id="${surveyConfig?.surveyInfo?.id}"
+                            params="[surveyConfigID: surveyConfig?.id, tab: 'consortiaMembers']">
+                        ${message(code: 'surveyParticipants.consortiaMembers')}
+                        <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div>
+                    </g:link>
                 </g:if>
             </div>
 
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                 data-tab="selectedSubParticipants">
-
-                <div>
+            <g:if test="${params.tab == 'selectedSubParticipants'}">
+                <div class="ui bottom attached tab segment active">
                     <g:render template="selectedSubParticipants"/>
                 </div>
+            </g:if>
 
-            </div>
 
-
-            <div class="ui bottom attached tab segment ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                 data-tab="selectedParticipants">
-
-                <div>
+            <g:if test="${params.tab == 'selectedParticipants'}">
+                <div class="ui bottom attached tab segment active">
                     <g:render template="selectedParticipants"/>
                 </div>
+            </g:if>
 
-            </div>
 
-
-            <div class="ui bottom attached tab segment ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                 data-tab="consortiaMembers">
-                <div>
+            <g:if test="${params.tab == 'consortiaMembers'}">
+                <div class="ui bottom attached tab segment active">
                     <g:render template="consortiaMembers"
                               model="${[showAddSubMembers: (SurveyConfig.get(params.surveyConfigID)?.type == 'Subscription') ? true : false]}"/>
 
                 </div>
-            </div>
+            </g:if>
         </div>
     </div>
 </g:if>
 <g:else>
     <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
 </g:else>
-
-<r:script>
-    $(document).ready(function () {
-        $('.tabular.menu .item').tab()
-    });
-</r:script>
 
 </body>
 </html>

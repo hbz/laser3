@@ -1,15 +1,51 @@
-0.17-RC
+0.17.5
 
-- added test data setup for orgs (only for QA)
+- fixed: further tipp display correction
+- fixed: org data can now be edited by INST_EDITOR
+- fixed: costItems translation
+- improvement on survey function
+- fixed: survey function bugs
+
+0.17.4
+
+- fixed: commands in comment (various view changes)
+- improved legacy filter query 
+- display of shared docs for basic members reenabled
+- fixed: survey function bugs
+
+
+0.17.3
+
+- fixed: creating cost items
+- fixed: orphaned links between subscriptions or licenses
+
+0.17.2
+
+- reworked sharing provider and agencies between subscriptions
+- fixed: non visible subscription informations for subscribers
+- fixed: document upload and deletion for organisations
+- fixed: wrong links at access point configuration
+
+0.17.1
+
+- optimized object deletion
+- added missing access point template
+
+0.17
+
 - added license properties at subscription overview
-- finance improvements
 - added hard deletion for subscriptions and licenses
-- improved customer type integration
-- replaced legacy user roles 
+- added test data setup for orgs (only for QA)
 - reworked modals for creating properties and property groups
-- added imcomplete api endpoints for oa2020 and statistics
-- added my platforms overview
+- finance improvements
+- added survey functionality
+- improved customer type integration
+- improved accessibility criteria
+- added api endpoints for oa2020 and statistics (partial)
+- improved subscription management
 - added filter for user management
+- added my platforms overview
+- replaced legacy user roles 
 - improved alphabetical sorting
 - various minor improvements
 - other bugfixes

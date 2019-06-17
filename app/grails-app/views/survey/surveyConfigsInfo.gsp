@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyConfigsInfo.label')}</title>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="surveyConfigsInfo.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -37,114 +37,253 @@
 <semui:messages data="${flash}"/>
 
 
-<h2><g:message code="surveyConfigsInfo.surveyConfig.info" args="[surveyConfig?.getConfigNameShort()]"/></h2>
+
+<g:if test="${surveyConfig?.type == 'Subscription'}">
+    <h2 class="ui icon header"><semui:headerIcon/>
+    <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+        ${surveyConfig?.subscription?.name}
+    </g:link>
+    </h2>
+    <semui:auditButton auditable="[surveyConfig?.subscription, 'name']"/>
+    <semui:anualRings object="${surveyConfig?.subscription}" controller="subscription" action="show"
+                      navNext="${null}" navPrev="${null}"/>
+</g:if>
+<g:else>
+    <h2><g:message code="surveyConfigsInfo.surveyConfig.info" args="[surveyConfig?.getConfigNameShort()]"/></h2>
+</g:else>
 
 <g:if test="${surveyConfig}">
+    <div class="ui stackable grid">
+        <div class="twelve wide column">
+            <div class="la-inline-lists">
 
-    <div class="la-inline-lists">
-        <div class="ui two stackable cards">
+                <div class="ui card">
+                    <div class="content">
+                        <g:if test="${surveyConfig?.type == 'Subscription'}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
+                                <dd>${surveyConfig?.subscription?.status?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'status']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
+                                <dd>${surveyConfig?.subscription.type?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'type']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
+                                <dd>${surveyConfig?.subscription?.form?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'form']"/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
+                                <dd>${surveyConfig?.subscription?.resource?.getI10n('value')}</dd>
+                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'resource']"/></dd>
+                            </dl>
+                            <g:if test="${surveyConfig?.subscription.instanceOf && (contextOrg?.id == surveyConfig?.subscription.getConsortia()?.id)}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
+                                    <dd>
+                                        <g:link controller="subscription" action="show"
+                                                id="${surveyConfig?.subscription.instanceOf.id}">${surveyConfig?.subscription.instanceOf}</g:link>
+                                    </dd>
+                                </dl>
 
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.type.label')}</dt>
-                        <dd>
-                            ${surveyConfig.getTypeInLocaleI10n()}
-
-                            <g:if test="${surveyConfig?.surveyProperty}">
-
-                                <b>${message(code: 'surveyProperty.type.label')}: ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyConfig?.surveyProperty?.type)}
-
-                                <g:if test="${surveyConfig?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyConfig?.surveyProperty?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    (${refdataValues.join('/')})
-                                </g:if>
-                                </b>
+                                <dl>
+                                    <dt class="control-label">
+                                        ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
+                                    </dt>
+                                    <dd>
+                                        ${surveyConfig?.subscription?.isSlaved?.getI10n('value')}
+                                    </dd>
+                                </dl>
                             </g:if>
-
-                        </dd>
-
-                    </dl>
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
-                        <dd>
-                            ${surveyConfig?.orgs?.size() ?: 0}
-                        </dd>
-
-                    </dl>
-
-                    <dl>
-                        <dt class="control-label">${message(code: 'surveyConfig.documents.label')}</dt>
-                        <dd>
-                            ${surveyConfig?.documents?.size()}
-                        </dd>
-
-                    </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="default.identifiers.label"/>
+                                </dt>
+                                <dd>
+                                    <g:each in="${surveyConfig?.subscription?.ids.sort { it.identifier.ns.ns }}"
+                                            var="id">
+                                        <span class="ui small teal image label">
+                                            ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                        </span>
+                                    </g:each>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyConfig.orgs.label')}</dt>
+                            <dd>
+                                <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
+                                        class="ui circular label">${surveyConfig?.orgs?.size() ?: 0}</div></g:link>
+                            </dd>
+                        </dl>
+                    </div>
                 </div>
-            </div>
+                <g:if test="${surveyConfig?.type == 'Subscription'}">
 
-            <div class="ui card ">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">
-                            <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
-                                ${message(code: 'surveyConfig.header.label')}
-                                <i class="info small circular inverted icon"></i>
+                    <g:if test="${surveyConfig?.subscription?.packages}">
+                        <div class="ui card la-js-hideable">
+                            <div class="content">
+                                <table class="ui three column la-selectable table">
+                                    <g:each in="${surveyConfig?.subscription?.packages.sort { it.pkg.name }}" var="sp">
+                                        <tr>
+                                            <th scope="row"
+                                                class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.packages.label')}</th>
+                                            <td>
+                                                <g:link controller="package" action="show"
+                                                        id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+
+                                                <g:if test="${sp.pkg?.contentProvider}">
+                                                    (${sp.pkg?.contentProvider?.name})
+                                                </g:if>
+                                            </td>
+                                            <td class="right aligned">
+                                            </td>
+
+                                        </tr>
+                                    </g:each>
+                                </table>
+
+                            </div><!-- .content -->
+                        </div>
+                    </g:if>
+
+                    <div class="ui card la-js-hideable">
+                        <div class="content">
+
+                            <g:render template="/templates/links/orgLinksAsList"
+                                      model="${[roleLinks    : visibleOrgRelations,
+                                                roleObject   : surveyConfig?.subscription,
+                                                roleRespValue: 'Specific subscription editor',
+                                                editmode     : false
+                                      ]}"/>
+
+                        </div>
+                    </div>
+
+                    <div class="ui card la-js-hideable">
+                        <div class="content">
+                            <g:set var="derivedPropDefGroups"
+                                   value="${surveyConfig?.subscription?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
+
+                            <div class="ui la-vertical buttons">
+                                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+
+                                    <button id="derived-license-properties-toggle"
+                                            class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
+                                    <script>
+                                        $('#derived-license-properties-toggle').on('click', function () {
+                                            $('#derived-license-properties').toggleClass('hidden')
+                                            if ($('#derived-license-properties').hasClass('hidden')) {
+                                                $(this).text('Vertragsmerkmale anzeigen')
+                                            } else {
+                                                $(this).text('Vertragsmerkmale ausblenden')
+                                            }
+                                        })
+                                    </script>
+
+                                </g:if>
+
+                                <button id="subscription-properties-toggle"
+                                        class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                <script>
+                                    $('#subscription-properties-toggle').on('click', function () {
+                                        $('#subscription-properties').toggleClass('hidden')
+                                        if ($('#subscription-properties').hasClass('hidden')) {
+                                            $(this).text('Lizenzsmerkmale anzeigen')
+                                        } else {
+                                            $(this).text('Lizenzsmerkmale ausblenden')
+                                        }
+                                    })
+                                </script>
+
                             </div>
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
 
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
-                                ${message(code: 'surveyConfig.comment.label')}
-                                <i class="info small circular inverted icon"></i>
-                            </div>
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+                        </div><!-- .content -->
+                    </div>
 
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <div class="ui icon"
-                                 data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
-                                ${message(code: 'surveyConfig.internalComment.label')}
-                                <i class="info small circular inverted icon"></i>
-                            </div>
-                        </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+                    <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                        <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
 
-                    </dl>
+                            <g:render template="/subscription/licProp" model="${[
+                                    license             : surveyConfig?.subscription?.owner,
+                                    derivedPropDefGroups: derivedPropDefGroups
+                            ]}"/>
+                        </div>
+                    </g:if>
 
+
+                    <div id="subscription-properties" class="hidden" style="margin: 1em 0">
+                        <g:set var="editable" value="${false}" scope="page"/>
+                        <g:set var="editable" value="${false}" scope="request"/>
+                        <g:render template="/subscription/properties" model="${[
+                                subscriptionInstance: surveyConfig?.subscription,
+                                authorizedOrgs      : authorizedOrgs
+                        ]}"/>
+
+
+                        <g:set var="editable" value="${true}" scope="page"/>
+
+                    </div>
+
+                </g:if>
+
+                <div class="ui card ">
+                    <div class="content">
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                    ${message(code: 'surveyConfig.header.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="header"/></dd>
+
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                    ${message(code: 'surveyConfig.comment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="comment" type="textarea"/></dd>
+
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                    ${message(code: 'surveyConfig.internalComment.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div>
+                            </dt>
+                            <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+
+                        </dl>
+
+                    </div>
                 </div>
+
             </div>
 
         </div>
-    </div>
+
+        <aside class="four wide column la-sidekick">
+            <div id="container-documents">
+                <g:render template="/survey/cardDocuments" model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+            </div>
+        </aside><!-- .four -->
+
+    </div><!-- .grid -->
+
 </g:if>
 
 <br>
 <g:if test="${surveyConfig?.type == 'Subscription'}">
-
-    <h3><g:message code="surveyConfigsInfo.surveyConfig.info2"/>
-
-        <br>
-        <g:link controller="subscription" action="show"
-                id="${surveyConfig?.subscription?.id}">${surveyConfig?.subscription?.dropdownNamingConvention()}
-
-            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(surveyConfig?.type)}
-        </g:link>
-
-    </h3>
-
-    <br>
-
     <div>
         <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
@@ -153,8 +292,7 @@
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name.label')}</th>
-                    <th>${message(code: 'surveyProperty.introduction.label')}</th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
                     <th>${message(code: 'surveyProperty.explain.label')}</th>
                     <th>${message(code: 'surveyProperty.comment.label')}</th>
                     <th>${message(code: 'surveyProperty.type.label')}</th>
@@ -162,6 +300,7 @@
                 </tr>
                 </thead>
 
+                <tbody>
                 <g:each in="${surveyProperties.sort { it.surveyProperty?.name }}" var="surveyProperty" status="i">
                     <tr>
                         <td class="center aligned">
@@ -170,6 +309,10 @@
                         <td>
                             ${surveyProperty?.surveyProperty?.getI10n('name')}
 
+                            <g:if test="${surveyProperty?.surveyProperty?.owner == institution}">
+                                <i class='shield alternate icon'></i>
+                            </g:if>
+
                             <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
                                 <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
                                       data-tooltip="${surveyProperty?.surveyProperty?.getI10n('explain')}">
@@ -177,11 +320,6 @@
                                 </span>
                             </g:if>
 
-                        </td>
-                        <td>
-                            <g:if test="${surveyProperty?.surveyProperty?.getI10n('introduction')}">
-                                ${surveyProperty?.surveyProperty?.getI10n('introduction')}
-                            </g:if>
                         </td>
 
                         <td>
@@ -195,18 +333,9 @@
                             </g:if>
                         </td>
                         <td>
-                            ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(surveyProperty?.surveyProperty?.type)}
 
-                            <g:if test="${surveyProperty?.surveyProperty?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                <g:set var="refdataValues" value="${[]}"/>
-                                <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(surveyProperty?.surveyProperty?.refdataCategory)}"
-                                        var="refdataValue">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                </g:each>
-                                <br>
-                                (${refdataValues.join('/')})
-                            </g:if>
+                            ${surveyProperty?.surveyProperty?.getLocalizedType()}
+
                         </td>
                         <td>
                             <g:if test="${editable && com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)}">
@@ -219,117 +348,44 @@
                         </td>
                     </tr>
                 </g:each>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <g:if test="${editable}">
+                        <td colspan="6">
+                            <g:form action="addSurveyConfig" controller="survey" method="post" class="ui form">
+                                <g:hiddenField name="id" value="${surveyInfo?.id}"/>
+                                <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
+
+                                <div class="field required">
+                                    <label>${message(code: 'surveyConfigs.property')}</label>
+                                    <semui:dropdown name="selectedProperty"
+
+                                                    class="la-filterPropDef"
+                                                    from="${properties}"
+                                                    iconWhich="shield alternate"
+                                                    optionKey="${{ "com.k_int.kbplus.SurveyProperty:${it.id}" }}"
+                                                    optionValue="${{ it.getI10n('name') }}"
+                                                    noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
+                                                    required=""/>
+
+                                </div>
+                                <input type="submit" class="ui button"
+                                       value="${message(code: 'surveyConfigsInfo.add.button')}"/>
+
+                                <input type="submit" name="addtoallSubs" class="ui button"
+                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
+                            </g:form>
+                        </td>
+                    </g:if>
+                </tr>
+                </tfoot>
+
             </table>
+
         </semui:form>
     </div>
 
-    <br>
-
-    <div class="ui divider"></div>
-
-    <div>
-
-        <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
-            <g:hiddenField name="id" value="${surveyInfo?.id}"/>
-            <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
-
-            <h4 class="ui left aligned icon header">${message(code: 'surveyProperty.all.label')}
-
-                <i class="question circle icon la-popup"></i>
-
-                <div class="ui popup">
-                    <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
-                </div>
-                <semui:totalNumber
-                        total="${properties.size()}"/></h4>
-            <semui:form>
-                <table class="ui celled sortable table la-table">
-                    <thead>
-                    <tr>
-                        <th class="left aligned"></th>
-                        <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                        <th>${message(code: 'surveyProperty.name.label')}</th>
-                        <th>${message(code: 'surveyProperty.introduction.label')}</th>
-                        <th>${message(code: 'surveyProperty.explain.label')}</th>
-                        <th>${message(code: 'surveyProperty.comment.label')}</th>
-                        <th>${message(code: 'surveyProperty.type.label')}</th>
-
-                    </tr>
-                    </thead>
-
-                    <g:each in="${properties}" var="property" status="i">
-                        <tr>
-                            <td>
-                                <g:if test="${com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, property)}">
-                                    <i class="check circle icon green"></i>
-                                </g:if>
-                                <g:else>
-                                    <g:checkBox name="selectedProperty" value="${property.id}" checked="false"/>
-                                </g:else>
-                            </td>
-                            <td class="center aligned">
-                                ${i + 1}
-                            </td>
-                            <td>
-                                ${property?.getI10n('name')}
-
-                                <g:if test="${property?.owner == institution}">
-                                    <i class='shield alternate icon'></i>
-                                </g:if>
-
-                            %{--<g:if test="${property?.getI10n('explain')}">
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${property?.getI10n('explain')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </g:if>--}%
-
-                            </td>
-                            <td>
-                                <g:if test="${property?.getI10n('introduction')}">
-                                    ${property?.getI10n('introduction')}
-                                </g:if>
-                            </td>
-
-                            <td>
-                                <g:if test="${property?.getI10n('explain')}">
-                                    ${property?.getI10n('explain')}
-                                </g:if>
-                            </td>
-                            <td>
-                                <g:if test="${property?.comment}">
-                                    ${property?.comment}
-                                </g:if>
-                            </td>
-                            <td>
-                                ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
-
-                                <g:if test="${property?.type == 'class com.k_int.kbplus.RefdataValue'}">
-                                    <g:set var="refdataValues" value="${[]}"/>
-                                    <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(property?.refdataCategory)}"
-                                            var="refdataValue">
-                                        <g:set var="refdataValues"
-                                               value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                                    </g:each>
-                                    <br>
-                                    (${refdataValues.join('/')})
-                                </g:if>
-
-                            </td>
-                        </tr>
-                    </g:each>
-                </table>
-
-                <input type="submit" class="ui button"
-                       value="${message(code: 'surveyConfigsInfo.add.button')}"/>
-
-                <input type="submit" name="addtoallSubs" class="ui button"
-                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
-
-            </semui:form>
-
-        </g:form>
-
-    </div>
 </g:if>
 
 <g:javascript>

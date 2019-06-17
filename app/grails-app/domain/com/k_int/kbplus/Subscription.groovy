@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 
 class Subscription
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, ShareSupport,
+        implements TemplateSupport, Permissions, ShareSupport,
                 AuditableTrait {
 
     // AuditableTrait
@@ -73,6 +73,8 @@ class Subscription
 
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
+  // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
+  boolean administrative
 
   String noticePeriod
   Date dateCreated
@@ -131,6 +133,7 @@ class Subscription
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
+        administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'
@@ -159,17 +162,13 @@ class Subscription
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
+        administrative(nullable:false, blank:false, default: false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved(nullable:true, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-    }
-
-    @Override
-    boolean isDeleted() {
-        return RDStore.SUBSCRIPTION_DELETED.id == status?.id
     }
 
     // TODO: implement
@@ -204,13 +203,38 @@ class Subscription
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
+        if (sharedObject instanceof DocContext) {
             if (sharedObject.isShared) {
                 List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
                 log.debug('found targets: ' + newTargets)
 
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+        if (sharedObject instanceof OrgRole) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+
+                    // ERMS-1185
+                    if (sharedObject.roleType in [RDStore.OR_AGENCY, RDStore.OR_PROVIDER]) {
+                        List<OrgRole> existingOrgRoles = OrgRole.findAll{
+                            sub == sub && roleType == sharedObject.roleType && org == sharedObject.org
+                        }
+                        if (existingOrgRoles) {
+                            log.debug('found existing orgRoles, deleting: ' + existingOrgRoles)
+                            existingOrgRoles.each{ tmp -> tmp.delete() }
+                        }
+                    }
                     sharedObject.addShareForTarget_trait(sub)
                 }
             }
@@ -253,20 +277,20 @@ class Subscription
 
     @Override
     String getCalculatedType() {
-        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+        def result = CALCULATED_TYPE_UNKOWN
 
         if (isTemplate()) {
-            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+            result = CALCULATED_TYPE_TEMPLATE
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
-            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+            result = CALCULATED_TYPE_CONSORTIAL
         }
         else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
             // current and deleted member subscriptions
-            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+            result = CALCULATED_TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
-            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+            result = CALCULATED_TYPE_LOCAL
         }
         result
     }
@@ -322,7 +346,7 @@ class Subscription
   def getAllSubscribers() {
     def result = [];
     orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] )
+      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] )
         result.add(or.org)
     }
     result
@@ -714,7 +738,10 @@ class Subscription
            }
            //log.debug(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id))
            if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
-               additionalInfo = orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id) ? orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname : ''
+               if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
+                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id).sortname
+               else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
+                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id).sortname
            }else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
