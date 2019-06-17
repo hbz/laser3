@@ -720,9 +720,9 @@ class AjaxController {
   @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
   @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
   def verifyUserInput() {
-      Map result = [result:true]
+      Map result = [result:false]
       if(params.input) {
-          List<User> checkList = User.executeQuery("select u from User u where u.username like lower(:searchTerm)",[searchTerm:"%${params.input}%"])
+          List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)",[searchTerm:params.input])
           result.result = checkList.size() > 0
       }
       render result as JSON
