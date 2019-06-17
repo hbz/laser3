@@ -459,7 +459,6 @@ ${orgInstance.name}
                                 </g:each>
                             <%-- </div> --%>
                                 <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-
                                     <div class="ui list">
                                         <div class="item">
 
