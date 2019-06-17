@@ -354,12 +354,12 @@ ${orgInstance.name}
                                             <g:render template="/address/formModal"
                                                       model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
 
-                                            <input class="ui button" size="35"
+                                            %{--<input class="ui button" size="35"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
                                                    data-semui="modal"
                                                    data-href="#addressFormModal"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
                                         </div>
                                     </div>
 
@@ -462,6 +462,19 @@ ${orgInstance.name}
                                                                   'hideFunctionTypeAndPositionAndOrg': true]"/>
 
                                                 <input class="ui button" size="35"
+                                                       value="${message(code: 'personFormModalTechnichalSupport')}"
+                                                       data-semui="modal"
+                                                       data-href="#personFormModalTechnichalSupport"/>
+
+                                                <g:render template="/person/formModal"
+                                                          model="['tenant'                           : contextOrg,
+                                                                  'org'                              : orgInstance,
+                                                                  'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                                  'presetFunctionType'               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
+                                                                  'modalId'                          : 'personFormModalTechnichalSupport',
+                                                                  'hideFunctionTypeAndPositionAndOrg': true]"/>
+
+                                                %{--<input class="ui button" size="35"
                                                        value="${message(code: 'personFormModalOtherContact')}"
                                                        data-semui="modal"
                                                        data-href="#personFormModal"/>
@@ -470,7 +483,7 @@ ${orgInstance.name}
                                                           model="['tenant'            : contextOrg,
                                                                   'org'               : orgInstance,
                                                                   'isPublic'          : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                                  'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
+                                                                  'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>--}%
 
                                             </div>
                                         </div>
