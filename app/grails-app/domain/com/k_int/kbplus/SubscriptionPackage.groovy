@@ -45,7 +45,7 @@ class SubscriptionPackage {
 
     def result = []
 
-    this.subscription.issueEntitlements.findAll{it.status?.value != 'Deleted'}.each { iE ->
+    this.subscription.issueEntitlements.findAll{it.status?.value == 'Current'}.each { iE ->
 
       if(TitleInstancePackagePlatform.findByIdAndPkg(iE.tipp?.id, pkg))
       {
@@ -63,7 +63,7 @@ class SubscriptionPackage {
   }
   def getCurrentTippsofPkg()
   {
-    def result = this.pkg.tipps?.findAll{it?.status?.value != 'Deleted'}
+    def result = this.pkg.tipps?.findAll{it?.status?.value == 'Current'}
 
     result
 

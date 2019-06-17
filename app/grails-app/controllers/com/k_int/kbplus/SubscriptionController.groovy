@@ -72,6 +72,15 @@ class SubscriptionController extends AbstractDebugController {
     def deletionService
     def auditService
 
+    public static final String COPY = "COPY"
+    public static final String REPLACE = "REPLACE"
+    public static final String DO_NOTHING = "DO_NOTHING"
+
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
@@ -188,8 +197,8 @@ class SubscriptionController extends AbstractDebugController {
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
                 base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
             base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
@@ -200,8 +209,8 @@ class SubscriptionController extends AbstractDebugController {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
                 base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
         }
 
@@ -807,13 +816,13 @@ class SubscriptionController extends AbstractDebugController {
                     serial = tipp?.title?.getIdentifierValue('ISSN')
                     electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                 }
-                if(result.identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
                     checked = "checked"
                 }
-                else if(result.identifiers.onlineIds.indexOf(electronicSerial) > -1) {
+                else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
                     checked = "checked"
                 }
-                else if(result.identifiers.printIds.indexOf(serial) > -1) {
+                else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
                     checked = "checked"
                 }
                 result.checked[t] = checked
@@ -1787,6 +1796,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def role_sub = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         def role_lic = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
@@ -1853,6 +1863,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
+                                administrative: result.subscriptionInstance.administrative,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1875,7 +1886,10 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
+                            if(cons_sub.administrative)
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
+                            else
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)

@@ -38,12 +38,13 @@ class ControlledListService {
         LinkedHashMap result = [results:[]]
         Org org = contextService.getOrg()
         if(params.forFinanceView) {
+            //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
             List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
             Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
             String filterString = " "
             if(params.query && params.query.length() > 0) {
                 filter.put("query",'%'+params.query+'%')
-                filterString += "and lower(oo.name) like lower(:query) "
+                filterString += "and lower(oo.org.name) like lower(:query) "
             }
             List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
             providers.each { p ->

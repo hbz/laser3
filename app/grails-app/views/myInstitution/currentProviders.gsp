@@ -42,6 +42,12 @@
                     </semui:exportDropdownItem>
                 </g:else>
             </semui:exportDropdown>
+            <semui:actionsDropdown>
+
+                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+
+            </semui:actionsDropdown>
+
         </semui:controlButtons>
 
 
@@ -68,6 +74,9 @@
                       tmplShowCheckbox: false,
                       tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
               ]"/>
+
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: orgList]"/>
+
     <semui:paginate total="${orgListTotal}" params="${params}" />
   </body>
 </html>

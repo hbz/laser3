@@ -409,6 +409,12 @@ class SemanticUiTagLib {
         out << body()
         out << '</div>'
     }
+    def filterTemp = { attrs, body ->
+
+        out << '<div class="ui la-filter-temp segment">'
+        out << body()
+        out << '</div>'
+    }
 
 
     def searchSegment = { attrs, body ->
