@@ -159,10 +159,10 @@ class FinanceController extends AbstractDebugController {
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
+            SXSSFWorkbook workbook = processFinancialXLSX(result)
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
@@ -326,7 +326,12 @@ class FinanceController extends AbstractDebugController {
                                     sumCurrencyAfterTaxCell = cellnum
                                     //tax rate
                                     cellnum++
-                                    row.add("${ci.taxRate ?: 0} %")
+                                    String taxString
+                                    if(ci.taxKey) {
+                                        taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                                    }
+                                    else taxString = message(code:'financials.taxRate.notSet')
+                                    row.add(taxString)
                                 }
                                 if(["own","cons"].indexOf(viewMode) < 0)
                                     sumCurrencyAfterTaxCell = cellnum
@@ -629,7 +634,12 @@ class FinanceController extends AbstractDebugController {
                         }
                         //tax rate
                         cell = row.createCell(cellnum++)
-                        cell.setCellValue("${ci.taxRate ?: 0} %")
+                        String taxString
+                        if(ci.taxKey) {
+                            taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                        }
+                        else taxString = message(code:'financials.taxRate.notSet')
+                        cell.setCellValue(taxString)
                     }
                     //billing currency and value
                     cell = row.createCell(cellnum++)
