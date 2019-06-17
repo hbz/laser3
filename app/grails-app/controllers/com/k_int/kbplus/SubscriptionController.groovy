@@ -3667,7 +3667,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId){
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    //redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
