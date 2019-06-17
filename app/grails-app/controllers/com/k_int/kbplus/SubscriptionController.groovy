@@ -72,6 +72,15 @@ class SubscriptionController extends AbstractDebugController {
     def deletionService
     def auditService
 
+    public static final String COPY = "COPY"
+    public static final String REPLACE = "REPLACE"
+    public static final String DO_NOTHING = "DO_NOTHING"
+
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'

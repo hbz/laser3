@@ -1,3 +1,11 @@
+0.17.5
+
+- fixed: further tipp display correction
+- fixed: org data can now be edited by INST_EDITOR
+- fixed: costItems translation
+- improvement on survey function
+- fixed: survey function bugs
+
 0.17.4
 
 - fixed: commands in comment (various view changes)

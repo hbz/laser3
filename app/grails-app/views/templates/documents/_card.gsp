@@ -33,11 +33,14 @@
                 boolean visible = false
                 if(docctx.org) {
                     boolean inOwnerOrg = false
+
                     boolean inTargetOrg = false
+                    
                     boolean isCreator = false
 
                     if(docctx.owner.owner?.id == contextService.org.id)
                         inOwnerOrg = true
+
                     else if(contextService.org.id == docctx.org?.id)
                         inTargetOrg = true
 

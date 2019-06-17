@@ -106,7 +106,9 @@ class DocWidgetController extends AbstractDebugController {
                             doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
                     )
                     doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
+
                     doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
+
                     doc_context.save(flush: true)
 
                     //docForAllSurveyConfigs
