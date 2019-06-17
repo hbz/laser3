@@ -9,14 +9,14 @@
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked="${true}" />
+                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
@@ -123,23 +123,16 @@
             </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
 
 <r:script>
-    function toggleAllCheckboxes(source) {
-        var action = $(source).attr("data-action")
-        var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i] != source){
-                checkboxes[i].checked = source.checked;
-            }
-        }
-    }
-
     $('input[name="subscription.takePackageIds"]').change( function(event) {
         var pkgoid = this.value
         if (this.checked) {

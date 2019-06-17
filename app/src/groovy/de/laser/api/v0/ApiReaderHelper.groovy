@@ -33,25 +33,25 @@ class ApiReaderHelper {
     // ################### HELPER ###################
 
     /**
-     * Resolving list<type> of items to stubs. Delegate context to gain access
+     * Resolving collection of items to stubs. Delegate context to gain access
      *
-     * @param list
+     * @param Collection<Object> list
      * @param type
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Collection<Object>
      */
-    static Collection resolveStubs(Collection list, def type, Org context) {
+    static Collection<Object> retrieveStubCollection(Collection<Object> list, def type, Org context) {
         def result = []
 
         list?.each { it ->
             if(LICENSE_STUB == type) {
-                result << resolveLicenseStub(it, context)
+                result << requestLicenseStub(it, context)
             }
             else if(PACKAGE_STUB == type) {
-                result << resolvePackageStub(it, context)
+                result << retrievePackageStubMap(it, context)
             }
             else if(SUBSCRIPTION_STUB == type) {
-                result << resolveSubscriptionStub(it, context)
+                result << requestSubscriptionStub(it, context)
             }
         }
 
@@ -61,7 +61,7 @@ class ApiReaderHelper {
     // ################### STUBS ###################
 
     @Deprecated
-    static resolveClusterStub(Cluster cluster) {
+    static Map<String, Object> retrieveClusterStubMap(Cluster cluster) {
         def result = [:]
         if (cluster) {
             result.id           = cluster.id
@@ -70,11 +70,11 @@ class ApiReaderHelper {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolveLicenseStub(License lic, Org context) {
-        resolveLicenseStub(lic, context, false)
+    static requestLicenseStub(License lic, Org context) {
+        requestLicenseStub(lic, context, false)
     }
 
-    static resolveLicenseStub(License lic, Org context, boolean hasAccess) {
+    static requestLicenseStub(License lic, Org context, boolean hasAccess) {
         def result = [:]
 
         if (!lic) {
@@ -94,7 +94,7 @@ class ApiReaderHelper {
             result.calculatedType   = lic.getCalculatedType()
 
             // References
-            result.identifiers = resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -103,9 +103,9 @@ class ApiReaderHelper {
     }
 
     /**
-     * @return MAP
+     * @return Map<String, Object>
      */
-    static resolveOrganisationStub(Org org, Org context) {
+    static Map<String, Object> retrieveOrganisationStubMap(Org org, Org context) {
         if (!org) {
             return null
         }
@@ -116,17 +116,15 @@ class ApiReaderHelper {
         result.name         = org.name
 
         // References
-        result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        result = ApiToolkit.cleanUp(result, true, true)
-
-        result
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
     /**
-     * @return MAP
+     * @return Map<String, Object>
      */
-    static resolvePackageStub(Package pkg, Org context) {
+    static Map<String, Object> retrievePackageStubMap(Package pkg, Org context) {
         if (!pkg) {
             return null
         }
@@ -139,14 +137,15 @@ class ApiReaderHelper {
         result.gokbId       = pkg.gokbId
 
         // References
-        result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-        result = ApiToolkit.cleanUp(result, true, true)
-
-        return result
+        return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolvePlatformStub(Platform pform) {
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrievePlatformStubMap(Platform pform) {
         def result = [:]
         if (pform) {
             result.globalUID    = pform.globalUID
@@ -162,11 +161,11 @@ class ApiReaderHelper {
     /**
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
-    static resolveSubscriptionStub(Subscription sub, Org context) {
-        resolveSubscriptionStub(sub, context, false)
+    static requestSubscriptionStub(Subscription sub, Org context) {
+        requestSubscriptionStub(sub, context, false)
     }
 
-    static resolveSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
+    static requestSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
         def result = [:]
 
         if (!sub) {
@@ -186,7 +185,7 @@ class ApiReaderHelper {
             result.calculatedType = sub.getCalculatedType()
 
             // References
-            result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+            result.identifiers = retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -194,31 +193,31 @@ class ApiReaderHelper {
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
-    static resolveSubscriptionPackageStub(SubscriptionPackage subpkg, ignoreRelation, Org context) {
+    static retrieveSubscriptionPackageStubMixed(SubscriptionPackage subpkg, ignoreRelation, Org context) {
         if (subpkg) {
             if (IGNORE_SUBSCRIPTION == ignoreRelation) {
-                return resolvePackageStub(subpkg.pkg, context)
+                return retrievePackageStubMap(subpkg.pkg, context)
             }
             else if (IGNORE_PACKAGE == ignoreRelation) {
-                return resolveSubscriptionStub(subpkg.subscription, context)
+                return requestSubscriptionStub(subpkg.subscription, context)
             }
         }
         return null
     }
 
-    static resolveSubscriptionPackageStubs(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
+    static Collection<Object> retrieveSubscriptionPackageStubCollection(Collection<SubscriptionPackage> list, def ignoreRelation, Org context) {
         def result = []
         if (! list) {
             return null
         }
 
         list?.each { it -> // com.k_int.kbplus.SubscriptionPackage
-            result << resolveSubscriptionPackageStub(it, ignoreRelation, context)
+            result << retrieveSubscriptionPackageStubMixed(it, ignoreRelation, context)
         }
         result
     }
 
-    static resolveTitleStub(TitleInstance title) {
+    static Map<String, Object> retrieveTitleStubMap(TitleInstance title) {
         def result = [:]
 
         result.globalUID    = title.globalUID
@@ -229,14 +228,14 @@ class ApiReaderHelper {
         result.type         = title.type?.value
 
         // References
-        result.identifiers = resolveIdentifiers(title.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.identifiers = retrieveIdentifierCollection(title.ids) // com.k_int.kbplus.IdentifierOccurrence
 
         return ApiToolkit.cleanUp(result, true, true)
     }
 
     // ################### FULL OBJECTS ###################
 
-    static resolveAddresses(Collection<Address> list, allowedTypes) {
+    static Collection<Object> retrieveAddressCollection(Collection<Address> list, allowedTypes) {
         def result = []
 
         list?.each { it ->   // com.k_int.kbplus.Address
@@ -266,7 +265,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveContacts(Collection<Contact> list, allowedTypes) {
+    static Collection<Object> retrieveContactCollection(Collection<Contact> list, allowedTypes) {
         def result = []
 
         list?.each { it ->       // com.k_int.kbplus.Contact
@@ -287,7 +286,7 @@ class ApiReaderHelper {
     }
 
     @Deprecated
-    static resolveCostItems(Collection<CostItem> list) {  // TODO
+    static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {  // TODO
         def result = []
 
         list?.each { it ->               // com.k_int.kbplus.CostItem
@@ -314,12 +313,12 @@ class ApiReaderHelper {
 
             // References
             def context = null // TODO: use context
-            tmp.invoice             = resolveInvoice(it.invoice) // com.k_int.kbplus.Invoice
-            tmp.issueEntitlement    = resolveIssueEntitlement(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-            tmp.order               = resolveOrder(it.order) // com.k_int.kbplus.Order
-            tmp.owner               = resolveOrganisationStub(it.owner, context) // com.k_int.kbplus.Org
-            tmp.sub                 = resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            tmp.package             = resolveSubscriptionPackageStub(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            tmp.invoice             = retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
+            tmp.issueEntitlement    = retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+            tmp.order               = retrieveOrderMap(it.order) // com.k_int.kbplus.Order
+            tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
+            tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+            tmp.package             = retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
             result << tmp
         }
 
@@ -330,7 +329,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(Collection list, def generic, Org context) {
+    static Collection<Object> retrieveCustomPropertyCollection(Collection<Object> list, def generic, Org context) {
         def result = []
 
         if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
@@ -387,9 +386,9 @@ class ApiReaderHelper {
      * Access rights due wrapping resource
      *
      * @param com.k_int.kbplus.Doc doc
-     * @return Map
+     * @return Map<String, Object>
      */
-    static resolveDocument(Doc doc) {
+    static Map<String, Object> retrieveDocumentMap(Doc doc) {
         def result = [:]
 
         if (doc) {
@@ -406,15 +405,15 @@ class ApiReaderHelper {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolveDocuments(Collection<DocContext> list) {
+    static Collection<Object> retrieveDocumentCollection(Collection<DocContext> list) {
         def result = []
         list?.each { it -> // com.k_int.kbplus.DocContext
-            result << resolveDocument(it.owner)
+            result << retrieveDocumentMap(it.owner)
         }
         result
     }
 
-    static resolveIdentifiers(Collection<IdentifierOccurrence> list) {
+    static Collection<Object> retrieveIdentifierCollection(Collection<IdentifierOccurrence> list) {
         def result = []
         list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
             def tmp = [:]
@@ -427,7 +426,7 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveInvoice(Invoice invoice) {
+    static Map<String, Object> retrieveInvoiceMap(Invoice invoice) {
         def result = [:]
         if(! invoice) {
             return null
@@ -442,7 +441,7 @@ class ApiReaderHelper {
 
         // References
         def context = null // TODO: use context
-        result.owner               = resolveOrganisationStub(invoice.owner, context) // com.k_int.kbplus.Org
+        result.owner               = retrieveOrganisationStubMap(invoice.owner, context) // com.k_int.kbplus.Org
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -453,9 +452,9 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.IssueEntitlement ie
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Map<String, Object>
      */
-    static resolveIssueEntitlement(IssueEntitlement ie, def ignoreRelation, Org context) {
+    static Map<String, Object> retrieveIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
         def result = [:]
         if (! ie) {
             return null
@@ -485,15 +484,15 @@ class ApiReaderHelper {
         // References
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation == IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = resolveTipp(ie.tipp, IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+                result.tipp = retrieveTippMap(ie.tipp, IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != IGNORE_TIPP) {
-                    result.tipp = resolveTipp(ie.tipp, IGNORE_NONE, context)
+                    result.tipp = retrieveTippMap(ie.tipp, IGNORE_NONE, context)
                     // com.k_int.kbplus.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != IGNORE_SUBSCRIPTION) {
-                    result.subscription = resolveSubscriptionStub(ie.subscription, context)
+                    result.subscription = requestSubscriptionStub(ie.subscription, context)
                     // com.k_int.kbplus.Subscription
                 }
             }
@@ -522,17 +521,17 @@ class ApiReaderHelper {
      *
      * @param list
      * @param com.k_int.kbplus.Org context
-     * @return
+     * @return Collection<Object>
     */
-    static resolvePackagesWithIssueEntitlements(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
+    static Collection<Object> retrievePackageWithIssueEntitlementsCollection(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
         def result = []
 
         list?.each { subPkg ->
-            def pkg = resolvePackageStub(subPkg.pkg, context) // com.k_int.kbplus.Package
+            def pkg = retrievePackageStubMap(subPkg.pkg, context) // com.k_int.kbplus.Package
             result << pkg
 
             if (pkg != Constants.HTTP_FORBIDDEN) {
-                pkg.issueEntitlements = ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
+                pkg.issueEntitlements = ApiReader.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
             }
         }
 
@@ -547,12 +546,12 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    static resolveLicense(License lic, def ignoreRelation, Org context) {
+    static requestLicense(License lic, def ignoreRelation, Org context) {
         if (!lic) {
             return null
         }
 
-        return ApiReader.exportLicense(lic, ignoreRelation, context)
+        return ApiReader.retrieveLicenseMap(lic, ignoreRelation, context)
     }
 
     /* not used
@@ -596,7 +595,7 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Org context
      * @return Map | Constants.HTTP_FORBIDDEN
      */
-    static resolveOnixplLicense(OnixplLicense opl, License lic, Org context) {
+    static requestOnixplLicense(OnixplLicense opl, License lic, Org context) {
         def result = [:]
         def hasAccess = false
 
@@ -619,7 +618,7 @@ class ApiReaderHelper {
             result.title    = opl.title
 
             // References
-            result.document = resolveDocument(opl.doc) // com.k_int.kbplus.Doc
+            result.document = retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
             //result.licenses = resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
             result = ApiToolkit.cleanUp(result, true, true)
@@ -628,7 +627,7 @@ class ApiReaderHelper {
         return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 
-    static resolveOrder(Order order) {
+    static Map<String, Object> retrieveOrderMap(Order order) {
         def result = [:]
         if (!order) {
             return null
@@ -638,12 +637,12 @@ class ApiReaderHelper {
 
         // References
         def context = null // TODO: use context
-        result.owner        = resolveOrganisationStub(order.owner, context) // com.k_int.kbplus.Org
+        result.owner        = retrieveOrganisationStubMap(order.owner, context) // com.k_int.kbplus.Org
 
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolveOrgLinks(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
+    static Collection<Object> retrieveOrgLinkCollection(Collection<OrgRole> list, ignoreRelationType, Org context) { // TODO
         def result = []
 
         list?.each { it ->   // com.k_int.kbplus.OrgRole
@@ -656,22 +655,22 @@ class ApiReaderHelper {
 
             // References
             if (it.org && (IGNORE_ORGANISATION != ignoreRelationType)) {
-                tmp.organisation = resolveOrganisationStub(it.org, context) // com.k_int.kbplus.Org
+                tmp.organisation = retrieveOrganisationStubMap(it.org, context) // com.k_int.kbplus.Org
             }
             if (it.cluster && (IGNORE_CLUSTER != ignoreRelationType)) {
-                tmp.cluster = resolveClusterStub(it.cluster) // com.k_int.kbplus.Cluster
+                tmp.cluster = retrieveClusterStubMap(it.cluster) // com.k_int.kbplus.Cluster
             }
             if (it.lic && (IGNORE_LICENSE != ignoreRelationType)) {
-                tmp.license = resolveLicenseStub(it.lic, context) // com.k_int.kbplus.License
+                tmp.license = requestLicenseStub(it.lic, context) // com.k_int.kbplus.License
             }
             if (it.pkg && (IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = resolvePackageStub(it.pkg, context) // com.k_int.kbplus.Package
+                tmp.package = retrievePackageStubMap(it.pkg, context) // com.k_int.kbplus.Package
             }
             if (it.sub && (IGNORE_SUBSCRIPTION != ignoreRelationType)) {
-                tmp.subscription = resolveSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
+                tmp.subscription = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
             if (it.title && (IGNORE_TITLE != ignoreRelationType)) {
-                tmp.title = resolveTitleStub(it.title) // com.k_int.kbplus.TitleInstance
+                tmp.title = resolveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -679,8 +678,8 @@ class ApiReaderHelper {
         result
     }
 
-    static resolvePerson(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
-        def result             = [:]
+    static Map<String, Object> retrievePersonMap(Person prs, allowedContactTypes, allowedAddressTypes, Org context) {
+        def result = [:]
 
         if(prs) {
             result.globalUID       = prs.globalUID
@@ -696,9 +695,9 @@ class ApiReaderHelper {
             result.roleType        = prs.roleType?.value
 
             // References
-            result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
-            result.addresses    = resolveAddresses(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
-            result.properties   = resolvePrivateProperties(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
+            result.contacts     = retrieveContactCollection(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
+            result.addresses    = retrieveAddressCollection(prs.addresses, allowedAddressTypes) // com.k_int.kbplus.Address
+            result.properties   = retrievePrivatePropertyCollection(prs.privateProperties, context) // com.k_int.kbplus.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -709,7 +708,7 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.Platform pform
      * @return
      */
-    static resolvePlatform(Platform pform) {
+    static Map<String, Object> retrievePlatformMap(Platform pform) {
         def result = [:]
 
         if (pform) {
@@ -738,7 +737,7 @@ class ApiReaderHelper {
     /**
      * Access rights due wrapping object
      */
-    static resolvePlatformTipps(Collection<PlatformTIPP> list) {
+    static Collection<Object> retrievePlatformTippCollection(Collection<PlatformTIPP> list) {
         def result = []
 
         list?.each { it -> // com.k_int.kbplus.PlatformTIPP
@@ -752,7 +751,7 @@ class ApiReaderHelper {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static resolvePrivateProperties(Collection list, Org context) {
+    static Collection<Object> retrievePrivatePropertyCollection(Collection list, Org context) {
         def result = []
 
         list?.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
@@ -776,15 +775,15 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveProperties(Object generic, Org context) {
-        def cp = resolveCustomProperties(generic.customProperties, generic, context)
-        def pp = resolvePrivateProperties(generic.privateProperties, context)
+    static retrievePropertyCollection(Object generic, Org context) {
+        def cp = retrieveCustomPropertyCollection(generic.customProperties, generic, context)
+        def pp = retrievePrivatePropertyCollection(generic.privateProperties, context)
 
         pp.each { cp << it }
         cp
     }
 
-    static resolvePrsLinks(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
+    static Collection<Object> retrievePrsLinkCollection(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         def result = []
         def tmp = []
 
@@ -796,7 +795,7 @@ class ApiReaderHelper {
                 def person = result.find {it.id == x}
 
                 if(!person) {
-                    person = resolvePerson(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
+                    person = retrievePersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // com.k_int.kbplus.Person
 
                     // export public
                     if("No" != person.isPublic?.value?.toString()) {
@@ -868,9 +867,9 @@ class ApiReaderHelper {
      * @param com.k_int.kbplus.TitleInstancePackagePlatform tipp
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return Map
+     * @return Map<String, Object>
      */
-    static resolveTipp(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
+    static Map<String, Object> retrieveTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
         def result = [:]
         if (!tipp) {
             return null
@@ -904,17 +903,17 @@ class ApiReaderHelper {
         result.payment          = tipp.payment?.value
 
         // References
-        result.additionalPlatforms  = resolvePlatformTipps(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
-        result.identifiers          = resolveIdentifiers(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
-        result.platform             = resolvePlatformStub(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = resolveTitleStub(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.additionalPlatforms  = retrievePlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
+        result.identifiers          = retrieveIdentifierCollection(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
+        result.platform             = retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
+        result.title                = resolveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
 
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation != IGNORE_PACKAGE) {
-                result.package = resolvePackageStub(tipp.pkg, context) // com.k_int.kbplus.Package
+                result.package = retrievePackageStubMap(tipp.pkg, context) // com.k_int.kbplus.Package
             }
             if (ignoreRelation != IGNORE_SUBSCRIPTION) {
-                result.subscription = resolveSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
+                result.subscription = requestSubscriptionStub(tipp.sub, context) // com.k_int.kbplus.Subscription
             }
         }
         //result.derivedFrom      = resolveTippStub(tipp.derivedFrom)  // com.k_int.kbplus.TitleInstancePackagePlatform
@@ -929,13 +928,13 @@ class ApiReaderHelper {
      * @param list
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return Map
+     * @return Collection<Object>
      */
-    static resolveTipps(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
+    static Collection<Object> retrieveTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         def result = []
 
         list?.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
-            result << resolveTipp(it, ignoreRelation, context)
+            result << retrieveTippMap(it, ignoreRelation, context)
         }
 
         result

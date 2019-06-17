@@ -106,6 +106,9 @@ class DocWidgetController extends AbstractDebugController {
                             doctype: RefdataCategory.lookupOrCreate('Document Type', params.doctype)
                     )
                     doc_context.shareConf = genericOIDService.resolveOID(params.shareConf) ?: null
+
+                    doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
+
                     doc_context.save(flush: true)
 
                     //docForAllSurveyConfigs
@@ -183,6 +186,8 @@ class DocWidgetController extends AbstractDebugController {
                 doc_content.owner = contextService.org
                 doc_content.save()
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, 'Document Type')
+                if(params.targetOrg)
+                    doc_context.targetOrg = Org.get(params.targetOrg)
                 doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
                 doc_context.save(flush: true)
                 log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}");

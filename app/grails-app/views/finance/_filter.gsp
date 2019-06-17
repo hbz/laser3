@@ -2,7 +2,9 @@
 <%@ page import="java.text.SimpleDateFormat; de.laser.helper.RDStore;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
-    <semui:filter>
+
+    <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
+    <semui:filterTemp>
         <%
             def formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
@@ -249,36 +251,48 @@
 
             <g:hiddenField name="orgId" value="${contextService.getOrg()?.id}"/>
         </g:form>
-    </semui:filter>
+    </semui:filterTemp>
 
 <!-- _filter.gsp -->
 
 <r:script>
-        function setupDropdowns() {
+        $.fn.dropdown.settings.message = {
+            noResults: "<g:message code="select2.noMatchesFound" />"
+        };
+    function setupDropdowns() {
+        if($("#filterSubStatus").length > 0) {
             var subStatus = $("#filterSubStatus").val();
             if(subStatus.length === 0) {
                 subStatus = "FETCH_ALL";
             }
-            var links = {
-                "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
-                "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-                "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+"&query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
-                "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
-                "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
-                "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",
-                "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
-            };
-            $(".newFilter").each(function(k,v){
-                $(this).dropdown({
-                    apiSettings: {
-                        url: links[$(this).attr("id")],
-                        cache: false
-                    },
-                    clearable: true,
-                    minCharacters: 0
-                });
-            });
         }
+        else {
+            subStatus = "FETCH_ALL";
+        }
+        var links = {
+            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
+            "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
+            "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?status="+subStatus+"&query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
+            "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
+            "filterCIInvoiceNumber": "${createLink([controller:"ajax",action:"lookupInvoiceNumbers"])}?query={query}",
+            "filterCIOrderNumber": "${createLink([controller:"ajax",action:"lookupOrderNumbers"])}?query={query}",
+            "filterCIReference": "${createLink([controller:"ajax",action:"lookupReferences"])}?query={query}"
+        };
+        $(".newFilter").each(function(k,v){
+            $(this).dropdown({
+                apiSettings: {
+                    url: links[$(this).attr("id")],
+                    cache: false
+                },
+                clearable: true,
+                minCharacters: 0
+            });
+        });
+        $(".newFilter").keypress(function(e){
+            if(e.keyCode == 8)
+                console.log("backspace event!");
+        });
+    }
     $(document).ready(function(){
         setupDropdowns();
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({

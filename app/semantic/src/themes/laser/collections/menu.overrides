@@ -84,3 +84,14 @@
 .ui.pagination.menu {
   flex-wrap: wrap;
 }
+
+
+/* Title */
+.ui.secondary.menu .title {
+  font-size: @titleFontSize;
+  font-weight: @titleFontWeight;
+}
+/* Description */
+.ui.secondary.menu .title ~ .description {
+   margin-top: @descriptionDistance;
+ }
