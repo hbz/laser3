@@ -203,9 +203,9 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations roleMC ' +
                 'join sub.orgRelations orgRoles ' +
-                'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType = :subscrType and subC.status != :statusC and sub.status != :statusM and ci.surveyOrg = null' +
+                'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType) and subC.status != :statusC and sub.status != :statusM and ci.surveyOrg = null' +
                 filterQueryCons[0] + consSort,
-                [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS,statusC:RDStore.SUBSCRIPTION_DELETED,statusM:RDStore.SUBSCRIPTION_DELETED]+filterQueryCons[1])
+                [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],statusC:RDStore.SUBSCRIPTION_DELETED,statusM:RDStore.SUBSCRIPTION_DELETED]+filterQueryCons[1])
         result.cons.costItems = []
         limit = consOffset+max
         if(limit > consortialSubscriptionCostItems.size())
@@ -304,7 +304,7 @@ class FinanceService {
         //cost item filter settings
         //cost item title
         if(params.filterCITitle) {
-            filterQuery += " and ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase "
+            filterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
             queryParams.filterCITitle = "%${params.filterCITitle}%"
             queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
             log.info(queryParams.filterCITitle)

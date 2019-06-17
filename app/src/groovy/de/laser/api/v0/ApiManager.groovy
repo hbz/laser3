@@ -18,41 +18,8 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.52'
+    static final VERSION = '0.54'
     static final NOT_SUPPORTED = false
-
-    static final API_LEVEL_READ         = 'API_LEVEL_READ'
-    static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
-    static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
-
-    static List getAllApiLevels() {
-        [API_LEVEL_READ, API_LEVEL_WRITE, API_LEVEL_DATAMANAGER]
-    }
-
-    static void setApiLevel(Org org, String apiLevel) {
-
-        if (! getAllApiLevels().contains(apiLevel)) {
-            return
-        }
-
-        def oss = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
-        if (oss != OrgSettings.SETTING_NOT_FOUND) {
-            oss.strValue = apiLevel
-            oss.save(flush:true)
-        }
-        else {
-            OrgSettings.add(org, OrgSettings.KEYS.API_LEVEL, apiLevel)
-            OrgSettings.add(org, OrgSettings.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
-            OrgSettings.add(org, OrgSettings.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
-        }
-    }
-
-    static void removeApiLevel(Org org) {
-
-        OrgSettings.delete(org, OrgSettings.KEYS.API_LEVEL)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_KEY)
-        OrgSettings.delete(org, OrgSettings.KEYS.API_PASSWORD)
-    }
 
     /**
      * @return Object
@@ -83,31 +50,18 @@ class ApiManager {
         else if ('costItemList'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
 
-                def queries = query.split(",")
-                def values  = value.split(",")
-                def identifiers = [:]
-                def timestamp = [:]
-                if (queries.size() == 2 && values.size() == 2) {
-                    identifiers.key = queries[0].trim()
-                    identifiers.value = values[0].trim()
-
-                    timestamp.key = queries[1].trim()
-                    timestamp.value = values[1].trim()
-
-                }else if (queries.size() == 1 && values.size() == 1) {
-                    identifiers.key = queries[0].trim()
-                    identifiers.value = values[0].trim()
-
-                }else {
+                def identifierAndTimestamp = ApiToolkit.parseTimeLimitedQuery( query, value )
+                if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
                     return Constants.HTTP_BAD_REQUEST
                 }
 
-                result = ApiOrg.findOrganisationBy(identifiers.key, identifiers.value) // use of http status code
+                result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
                 if (result && !(result in failureCodes)) {
 
-                    if(timestamp && timestamp.key == 'timestamp'){
-                        result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, timestamp.value)
-                    }else {
+                    if(identifierAndTimestamp[1].key == 'timestamp'){
+                        result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, identifierAndTimestamp[1].value)
+                    }
+                    else {
                         result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
                     }
                 }
@@ -349,7 +303,7 @@ class ApiManager {
         result
     }
 
-    static buildResponse(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
+    static buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
         def response = []
 

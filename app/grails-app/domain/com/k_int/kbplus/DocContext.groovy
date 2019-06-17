@@ -29,6 +29,7 @@ class DocContext implements ShareableTrait {
     RefdataValue doctype
     @RefdataAnnotation(cat = 'Share Configuration')
     RefdataValue shareConf
+    Org targetOrg
 
     Boolean globannounce = false
     DocContext sharedFrom
@@ -52,6 +53,7 @@ class DocContext implements ShareableTrait {
        sharedFrom column:'dc_shared_from_fk'
          isShared column:'dc_is_shared'
         shareConf column:'dc_share_conf_fk'
+        targetOrg column:'dc_target_org_fk'
      surveyConfig column: 'dc_survey_config_fk'
   }
 
@@ -68,6 +70,7 @@ class DocContext implements ShareableTrait {
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)
       shareConf(nullable: true,blank: false)
+      targetOrg(nullable: true, blank: false)
       surveyConfig (nullable: true,blank: false)
   }
 

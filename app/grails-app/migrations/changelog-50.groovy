@@ -43,7 +43,7 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1556107615066-8") {
 		addColumn(schemaName: "public", tableName: "survey_config") {
-			column(name: "surconf_pickAndChoose", type: "bool") {
+			column(name: "surconf_pickandchoose", type: "bool") {
 				constraints(nullable: "false")
 			}
 		}
