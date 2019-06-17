@@ -1,3 +1,4 @@
+import com.k_int.kbplus.auth.User
 import grails.converters.JSON
 import org.springframework.security.access.annotation.Secured
 
@@ -30,6 +31,8 @@ class LoginController {
    * Dependency injection for the springSecurityService.
    */
   def springSecurityService
+
+  def instAdmService
 
   /**
    * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
@@ -184,5 +187,29 @@ class LoginController {
    */
   def ajaxDenied = {
     render([error: 'access denied'] as JSON)
+  }
+
+  /**
+   * Resets for a given username the password. Has to be corrected later.
+   */
+  def resetForgottenPassword() {
+    if(!params.forgotten_username) {
+      flash.error = g.message(code:'menu.user.forgottenPassword.userMissing')
+    }
+    else {
+      User user = User.findByUsername(params.forgotten_username)
+      if (user) {
+        String newPassword = User.generateRandomPassword()
+        user.password = newPassword
+        if (user.save(flush: true)) {
+          flash.message = message(code: 'user.newPassword.successNoOutput')
+
+          instAdmService.sendMail(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
+        }
+      }
+      else flash.error = g.message(code:'menu.user.forgottenPassword.userError')
+    }
+    redirect action: 'auth'
+
   }
 }
