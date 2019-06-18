@@ -1,5 +1,6 @@
 0.17.6
 
+- improvement org profil
 - fixed: financial export now gives tax data properly
 - fixed: filter functionality corrected 
 
