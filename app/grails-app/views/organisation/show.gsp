@@ -345,7 +345,7 @@ ${orgInstance.name}
                             <dt><g:message code="org.addresses.label" default="Addresses"/>
 
                                 <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'personFormModal.info')}">
+                                      data-tooltip="${message(code: 'adressFormModal.info')}">
                                     <i class="question circle icon"></i>
                                 </span>
 
@@ -393,12 +393,12 @@ ${orgInstance.name}
                                             <g:render template="/address/formModal"
                                                       model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
 
-                                            <input class="ui button" size="35"
+                                           %{-- <input class="ui button" size="35"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
                                                    data-semui="modal"
                                                    data-href="#addressFormModal"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
                                         </div>
                                     </div>
 
@@ -459,7 +459,6 @@ ${orgInstance.name}
                                 </g:each>
                             <%-- </div> --%>
                                 <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-
                                     <div class="ui list">
                                         <div class="item">
 

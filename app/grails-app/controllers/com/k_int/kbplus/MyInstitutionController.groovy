@@ -4144,8 +4144,8 @@ AND EXISTS (
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
 
@@ -4158,8 +4158,8 @@ AND EXISTS (
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.toalMembers     = totalMembers.clone()
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.totalMembers    = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
