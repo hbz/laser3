@@ -3650,7 +3650,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.isRenewSub = params.isRenewSub
+        result.isRenewSub = params.isRenewSub ?: null
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
@@ -3667,7 +3667,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId){
-                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    //redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
@@ -3704,7 +3704,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.isRenewSub = params?.isRenewSub
+        result.isRenewSub = params?.isRenewSub ?: null
         result
     }
 
