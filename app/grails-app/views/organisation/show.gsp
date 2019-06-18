@@ -393,12 +393,12 @@ ${orgInstance.name}
                                             <g:render template="/address/formModal"
                                                       model="['orgId': orgInstance?.id, 'redirect': '.', modalId: 'addressFormModalLegalPatronAddress', hideType: true]"/>
 
-                                            <input class="ui button" size="35"
+                                           %{-- <input class="ui button" size="35"
                                                    value="${message(code: 'default.add.label', args: [message(code: 'address.otherAddress')])}"
                                                    data-semui="modal"
                                                    data-href="#addressFormModal"/>
                                             <g:render template="/address/formModal"
-                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>
+                                                      model="['orgId': orgInstance?.id, 'redirect': '.']"/>--}%
                                         </div>
                                     </div>
 
