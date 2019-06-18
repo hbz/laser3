@@ -1,3 +1,8 @@
+0.17.6
+
+- fixed: financial export now gives tax data properly
+- fixed: filter functionality corrected 
+
 0.17.5
 
 - fixed: further tipp display correction
