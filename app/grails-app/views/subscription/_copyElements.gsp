@@ -22,7 +22,6 @@
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
                             <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
@@ -43,8 +42,9 @@
                     %{--AKTIONEN:--}%
                     <td class="center aligned">
                         <g:if test="${sourceSubscription?.startDate || sourceSubscription?.endDate}">
-                            <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
-                            <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeDates" data-action="copy" checked="${true}" />
+                            </div>
                         </g:if>
                     </td>
 
@@ -58,7 +58,9 @@
 
                     <td>
                         <g:if test="${targetSubscription?.startDate || targetSubscription?.endDate}">
-                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteDates" data-action="delete" />
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteDates" data-action="delete" />
+                            </div>
                         </g:if>
                     </td>
                 </tr>
@@ -79,8 +81,9 @@
                 %{--AKTIONEN:--}%
                 <td class="center aligned">
                     <g:if test="${sourceSubscription?.owner}">
-                        <i class="ui icon angle double right" title="${message(code:'default.replace.label')}"></i>
-                        <g:checkBox name="subscription.takeOwner" data-action="copy" checked="${true}" />
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="subscription.takeOwner" data-action="copy" checked="${true}" />
+                        </div>
                     </g:if>
                 </td>
 
@@ -97,7 +100,9 @@
 
                 <td>
                     <g:if test="${targetSubscription?.owner}">
-                        <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOwner" data-action="delete" />
+                        <div class="ui checkbox la-toggle-radio la-noChange">
+                            <g:checkBox name="subscription.deleteOwner" data-action="delete" />
+                        </div>
                     </g:if>
                 </td>
             </tr>
@@ -124,8 +129,9 @@
                 <td class="center aligned">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
-                            <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                            <g:checkBox name="subscription.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}" />
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeOrgRelations" data-action="copy" value="${genericOIDService.getOID(source_role)}" checked="${true}" />
+                            </div>
                         </g:if>
                     </g:each>
                 </td>
@@ -151,7 +157,9 @@
                 <td>
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
-                            <i class="ui icon trash alternate outline"></i><g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteOrgRelations" data-action="delete" value="${genericOIDService.getOID(target_role)}" checked="${false}"/>
+                            </div>
                             <br/>
                         </g:if>
                     </g:each>

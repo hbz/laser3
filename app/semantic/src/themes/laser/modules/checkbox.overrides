@@ -89,13 +89,13 @@
 }
 /* REPLACE */
 .ui.checkbox.la-toggle-radio.la-replace label:before {
-  font-family: icomoon;
-  content: "\e90d";
+  font-family: Icons;
+  content: "\f061";
 }
-/* NO CHANGE */
+/* TRASH*/
 .ui.checkbox.la-toggle-radio.la-noChange label:before {
   font-family: Icons;
-  content: "\f05e";
+  content: "\f2ed";
 }
 /* COPY LICENCE WITH PACKAGES, TITELS ETC */
  table tr td div.willStay {
