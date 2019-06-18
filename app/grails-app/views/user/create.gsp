@@ -15,7 +15,7 @@
         <semui:messages data="${flash}" />
 
         <g:if test="${editable}">
-            <g:form class="ui form" action="create" method="post">
+            <g:form name="newUser" class="ui form" action="create" method="post">
                 <fieldset>
                     <div class="field required">
                         <label for="username">${message(code:'user.username.label')}</label>
@@ -23,15 +23,15 @@
                     </div>
                     <div class="field required">
                         <label for="displayName">${message(code:'user.displayName.label')}</label>
-                        <input type="text" id="displayName" name="display" value="${params.display}"/>
+                        <input class="validateNotEmpty" type="text" id="displayName" name="display" value="${params.display}"/>
                     </div>
                     <div class="field required">
                         <label for="password">${message(code:'user.password.label')}</label>
-                        <input type="text" id="password" name="password" value="${params.password}"/>
+                        <input class="validateNotEmpty" type="text" id="password" name="password" value="${params.password}"/>
                     </div>
                     <div class="field required">
                         <label for="email">${message(code:'user.email')}</label>
-                        <input type="text" id="email" name="email" value="${params.email}"/>
+                        <input class="validateNotEmpty" type="text" id="email" name="email" value="${params.email}"/>
                     </div>
 
                     <g:if test="${availableComboOrgs}">
@@ -81,7 +81,7 @@
                     </g:else>
 
                     <div class="field">
-                        <input type="submit" value="${message(code:'user.create_new.label')}" class="ui button"/>
+                        <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
                     </div>
 
                 </fieldset>
@@ -89,3 +89,64 @@
         </g:if>
     </body>
 </html>
+<r:script>
+    $(document).ready(function() {
+        $("#username").keyup(function() {
+            checkUsername();
+        });
+
+        $(".validateNotEmpty").keyup(function(){
+            if($(this).val().length === 0) {
+                addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+            }
+            else {
+                removeError($(this),$("#"+$(this).attr("id")+"Error"));
+            }
+        });
+
+        $("#newUser").submit(function(e){
+            console.log("eee");
+            e.preventDefault();
+            $(".validateNotEmpty").each(function(k) {
+                if($(this).val().length === 0) {
+                    addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
+                }
+            });
+            checkUsername();
+            if($(".error").length === 0)
+                $(this).unbind('submit').submit();
+        });
+
+        function checkUsername() {
+            $.ajax({
+                url: "<g:createLink controller="ajax" action="verifyUserInput" />",
+                data: {input: $("#username").val()},
+                method: 'POST'
+            }).done(function(response){
+                if(response.result) {
+                    addError($("#username"),'<span id="usernameError"><g:message code="user.not.created.message"/></span>');
+                }
+                else if($("#username").val().length > 0) {
+                    removeError($("#username"),$("#usernameError"));
+                }
+            }).fail(function(request,status,error){
+                console.log("Error occurred, verify logs: "+status+", error: "+error);
+            });
+        }
+
+        function addError(element,errorMessage) {
+            if($("#"+element.attr("id")+"Error").length === 0) {
+                element.after(errorMessage);
+                element.parent("div").addClass("error");
+                $("#userSubmit").attr("disabled",true);
+            }
+        }
+
+        function removeError(element,errorSpan) {
+            errorSpan.remove();
+            element.parent("div").removeClass("error");
+            if($(".error").length === 0)
+                $("#userSubmit").removeAttr("disabled");
+        }
+    });
+</r:script>
