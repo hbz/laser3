@@ -1,3 +1,7 @@
+0.17.7
+
+- fixed: translation by org profil
+
 0.17.6
 
 - improvement org profil
