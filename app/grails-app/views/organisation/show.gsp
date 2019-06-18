@@ -345,7 +345,7 @@ ${orgInstance.name}
                             <dt><g:message code="org.addresses.label" default="Addresses"/>
 
                                 <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'personFormModal.info')}">
+                                      data-tooltip="${message(code: 'adressFormModal.info')}">
                                     <i class="question circle icon"></i>
                                 </span>
 
