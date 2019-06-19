@@ -214,7 +214,7 @@ class MyInstitutionController extends AbstractDebugController {
         */
 
         String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                "TitleInstancePackagePlatform tipp join tipp.platform p " +
+                "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
                 "where tipp.pkg = pkg and s.id in (:currentSubIds) "
 
         qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
@@ -232,9 +232,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         if ( params.q?.length() > 0 ) {
             qry3 += "and ("
-            qry3 += "  ( p.normname like :query ) or "
-            qry3 += "  ( p.primaryUrl like :query ) or"
-            qry3 += "  ( lower(p.org.name) like :query or lower(p.org.sortname) like :query or lower(p.org.shortname) like :query ) "
+            qry3 += "   p.normname like :query"
+            qry3 += "   or p.primaryUrl like :query"
+            qry3 += "   or lower(o.name) like :query or lower(o.sortname) like :query or lower(o.shortname) like :query "
             qry3 += ")"
             qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
         }
