@@ -134,4 +134,11 @@ table tr td div.willBeReplacedStrong {
   display: flex;
   justify-content: center;
 }
+.la-copyPack-container {
+  display: flex;
+  justify-content:space-between;
+}
+.la-copyPack-item{
+  flex-grow: 1;
+}
 

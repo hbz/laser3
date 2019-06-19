@@ -33555,6 +33555,21 @@ table tr td div.willBeReplacedStrong {
   -ms-flex-pack: center;
   justify-content: center;
 }
+
+.la-copyPack-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.la-copyPack-item {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
 /*!
  * # Semantic UI 2.3.1 - Dimmer
  * http://github.com/semantic-org/semantic-ui/
