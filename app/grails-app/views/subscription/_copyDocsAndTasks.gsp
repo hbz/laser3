@@ -57,8 +57,6 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                        <br>
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div class="ui checkbox">--}%

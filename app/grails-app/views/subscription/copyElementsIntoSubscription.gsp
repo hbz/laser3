@@ -162,6 +162,61 @@
                 }
             }
         }
+
+        var takeProperty = $('input[name="subscription.takeProperty"]');
+        var deleteProperty = $('input[name="subscription.deleteProperty"]');
+
+        function selectAllTake(source) {
+            var table = $(source).closest('table');
+            var thisBulkcheck = $(table).find(takeProperty);
+            $( thisBulkcheck ).each(function( index, elem ) {
+                elem.checked = source.checked;
+                markAffectedTake($(this));
+            })
+        }
+        function selectAllDelete(source) {
+            var table = $(source).closest('table');
+            var thisBulkcheck = $(table).find(deleteProperty);
+            $( thisBulkcheck ).each(function( index, elem ) {
+                elem.checked = source.checked;
+                markAffectedDelete($(this));
+            })
+        }
+
+        $(takeProperty).change( function() {
+            //der index der geklickten Checkbox im übergeordneten td
+            //console.log($(this).closest ('.la-flex-cell').index()) ;
+            markAffectedTake($(this));
+        });
+        $(deleteProperty).change( function() {
+            markAffectedDelete($(this));
+        });
+
+        markAffectedTake = function (that) {
+            var multiPropertyIndex = ($(that).closest ('.la-flex-cell').index()) ;
+
+            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
+                    $(that).parents('td').next('td').children('.la-flex-cell:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+                }
+                else {
+                    $(that).parents('td').next('td').children('.la-flex-cell:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+                }
+        }
+        markAffectedDelete = function (that) {
+            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                $(that).parents('.la-noChange').parents('.la-flex-cell').addClass('willBeReplaced');
+            }
+            else {
+                $(that).parents('.la-noChange').parents('.la-flex-cell').removeClass('willBeReplaced');
+            }
+        }
+
+        $(takeProperty).each(function( index, elem ) {
+            if (elem.checked){
+                markAffectedTake(elem)
+            }
+        });
+
     </r:script>
 </body>
 </html>
