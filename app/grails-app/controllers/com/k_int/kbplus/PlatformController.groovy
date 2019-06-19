@@ -31,7 +31,7 @@ class PlatformController extends AbstractDebugController {
         def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
         def qry_params = [delStatus: deleted_platform_status]
 
-        def base_qry = " from Platform as p where ((p.status is null) OR (p.status = :delStatus)) "
+        def base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "
 
         if ( params.q?.length() > 0 ) {
             //base_qry += "and p.normname like ?"
@@ -40,7 +40,7 @@ class PlatformController extends AbstractDebugController {
             base_qry += "and ("
             base_qry += "  ( p.normname like :query ) or "
             base_qry += "  ( p.primaryUrl like :query ) or "
-            base_qry += "  ( lower(p.org.name) like :query or lower(p.org.sortname) like :query or lower(p.org.shortname) like :query ) "
+            base_qry += "  ( lower(o.name) like :query or lower(o.sortname) like :query or lower(o.shortname) like :query ) "
             base_qry += ")"
 
             qry_params.put('query', "%${params.q.trim().toLowerCase()}%")

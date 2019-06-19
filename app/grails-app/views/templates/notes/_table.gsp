@@ -1,4 +1,4 @@
-
+<laser:serviceInjection/>
 <g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
 
     <table class="ui celled la-table table license-documents">
@@ -54,7 +54,7 @@
                             </g:else>
                         </g:if>
 
-                        <g:if test="${editable && ! docctx.sharedFrom}">
+                        <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR') && ! docctx.sharedFrom}">
                             <a onclick="noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>
