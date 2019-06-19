@@ -5,7 +5,9 @@ import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
 import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.syntax.Numbers
 
@@ -14,6 +16,7 @@ class AddressbookService {
     def springSecurityService
     def contextService
     def accessService
+    def propertyService
 
     List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
         def orgList = []
@@ -79,4 +82,42 @@ class AddressbookService {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         //true // TODO: Rechte nochmal überprüfen
     }
+
+    List getVisiblePersons(String fromSite,max,offset,params) {
+        def qParts = [
+                'p.tenant = :tenant',
+                'p.isPublic = :public'
+        ]
+        def qParams = [
+                tenant: contextService.org,
+
+        ]
+        switch(fromSite) {
+            case "addressbook": qParams.public = RDStore.YN_NO
+                break
+            case "myPublicContacts": qParams.public = RDStore.YN_YES
+                break
+        }
+
+        if (params.prs) {
+            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
+            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
+        }
+        if (params.org) {
+            qParts << """(EXISTS (SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)))"""
+            qParams << [orgName: "%${params.org.toLowerCase()}%"]
+        }
+
+        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
+
+        if (params.filterPropDef) {
+            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
+            query = psq.query
+            qParams = psq.queryParams
+        }
+
+        List result = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:max, offset:offset])
+        result
+    }
+
 }
