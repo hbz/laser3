@@ -55,6 +55,7 @@ class MyInstitutionController extends AbstractDebugController {
     def transformerService
     def institutionsService
     def docstoreService
+    def addressbookService
     def accessService
     def contextService
     def taskService
@@ -3887,38 +3888,10 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        def qParts = [
-                'p.tenant = :tenant',
-                'p.isPublic = :public'
-        ]
-        def qParams = [
-                tenant: result.institution,
-                public: RefdataValue.getByValueAndCategory('No', 'YN')
-        ]
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        if (params.prs) {
-            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
-            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
-        }
-        if (params.org) {
-            qParts << """(EXISTS (
-SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)
-))
-"""
-            qParams << [orgName: "%${params.org.toLowerCase()}%"]
-        }
-
-        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
-
-        if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
-            query = psq.query
-            qParams = psq.queryParams
-        }
-
-        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
+        result.visiblePersons = addressbookService.getVisiblePersons("addressbook",result.max,result.offset,params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3928,7 +3901,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         tenant: contextService.getOrg() // private properties
                 )
 
-        result.num_visiblePersons = Person.executeQuery(query, qParams).size()
+        result.num_visiblePersons = result.visiblePersons.size()
+
+        result
+      }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def myPublicContacts() {
+
+        def result = setResultGenerics()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+        result.num_visiblePersons = result.visiblePersons.size()
 
         result
       }
@@ -4155,8 +4154,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
 
@@ -4169,8 +4168,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.toalMembers     = totalMembers.clone()
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.totalMembers    = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header

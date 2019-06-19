@@ -213,5 +213,10 @@
         </div>
     </div>
 </section>
+<br><br>
+<g:checkBox name="test" checked="${true}" value="test" data-action="delete"/><br><br>
+<div class="ui checkbox la-toggle-radio la-replace">
+    <g:checkBox name="test2" class="bulkcheck" data-action="copy"  value="" checked="${true}" />
+</div>
 </body>
 </html>

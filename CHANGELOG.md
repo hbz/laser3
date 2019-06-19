@@ -1,3 +1,13 @@
+0.17.7
+
+- fixed: translation by org profil
+
+0.17.6
+
+- improvement org profil
+- fixed: financial export now gives tax data properly
+- fixed: filter functionality corrected 
+
 0.17.5
 
 - fixed: further tipp display correction

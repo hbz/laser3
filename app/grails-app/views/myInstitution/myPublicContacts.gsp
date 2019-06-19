@@ -1,5 +1,5 @@
 <%@ page
-import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
+import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
 
 <!doctype html>
@@ -8,13 +8,13 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.publicContacts')}</title>
     </head>
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.addressbook" class="active"/>
+            <semui:crumb message="menu.institutions.publicContacts" class="active"/>
         </semui:breadcrumbs>
 
         <semui:controlButtons>
@@ -22,11 +22,9 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.publicContacts')}</h1>
 
         <semui:messages data="${flash}" />
-
-        <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
         <g:if test="${editable}">
             <input class="ui button"
@@ -36,7 +34,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         </g:if>
 
         <g:render template="/person/formModal" model="['org': institution,
-                                                       'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
+                                                       'isPublic': RDStore.YN_YES,
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
         ]"/>
 
@@ -50,13 +48,6 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                             <div class="ui input">
                                 <input type="text" id="prs" name="prs" value="${params.prs}"
                                        placeholder="${message(code: 'person.filter.name')}" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label for="org">${message(code: 'person.filter.org')}</label>
-                            <div class="ui input">
-                                <input type="text" id="org" name="org" value="${params.org}"
-                                       placeholder="${message(code: 'person.filter.org')}" />
                             </div>
                         </div>
                         <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>

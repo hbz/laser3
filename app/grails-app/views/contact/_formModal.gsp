@@ -3,13 +3,13 @@
 <semui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
 
-    <g:form class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
+    <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">
             <div class="three fields">
 
-                <div class="field eight wide ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
+                <div class="field eight wide required">
                     <label for="contentType">
                         <g:message code="contact.contentType.label" default="ContentType" />
                     </label>
@@ -17,11 +17,10 @@
                         from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactContentType')}"
                         optionKey="id"
                         optionValue="value"
-                        value="${contactInstance?.contentType?.id}"
-                        required=""/>
+                        value="${contactInstance?.contentType?.id}"/>
                 </div>
 
-                <div class="field eight wide ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
+                <div class="field eight wide required">
                     <label for="type">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
                     </label>
@@ -29,13 +28,12 @@
                                   from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${contactInstance?.type?.id}"
-                                  required=""/>
+                                  value="${contactInstance?.type?.id}"/>
                 </div>
             </div>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
+        <div class="field fieldcontain required">
             <label for="content">
                 <g:message code="contact.content.label" default="Content" />
             </label>
@@ -43,7 +41,7 @@
         </div>
 
         <g:if test="${!orgId}">
-            <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">
+            <div class="field fieldcontain">
                 <label for="prs">
                     <g:message code="contact.prs.label" default="Prs" />
                 </label>
@@ -58,7 +56,7 @@
         </g:if>
 
         <g:if test="${!prsId}">
-            <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'org', 'error')} ">
+            <div class="field fieldcontain">
                 <label for="org">
                     <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>
@@ -74,3 +72,22 @@
 
     </g:form>
 </semui:modal>
+<r:script>
+    $(document).ready(function(){
+        $("#newContact").form({
+            on: 'blur',
+            inline: true,
+            fields: {
+                content: {
+                    identifier: 'content',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                    ]
+                }
+            }
+        });
+    });
+</r:script>
