@@ -30,6 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -39,6 +40,8 @@ import java.text.RuleBasedCollator
 
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+
+import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -52,7 +55,7 @@ class MyInstitutionController extends AbstractDebugController {
     def transformerService
     def institutionsService
     def docstoreService
-    def tsvSuperlifterService
+    def addressbookService
     def accessService
     def contextService
     def taskService
@@ -988,6 +991,112 @@ from License as l where (
         }
     }
 
+    private def exportSurveyInfo(List<SurveyResult> results, String format, Org org) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        List titles = [g.message(code: 'surveyInfo.owner.label'),
+
+                       g.message(code: 'surveyConfigsInfo.comment'),
+
+                       g.message(code: 'surveyProperty.subName'),
+                       g.message(code: 'surveyProperty.subProvider'),
+                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'subscription.packages.label'),
+                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'subscription.form.label'),
+                       g.message(code: 'subscription.resource.label'),
+
+                       g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
+
+                       g.message(code: 'surveyProperty.label'),
+                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'surveyResult.result'),
+                       g.message(code: 'surveyResult.comment'),
+                        g.message(code: 'surveyResult.finishDate')]
+
+        List surveyData = []
+        results.findAll{it.surveyConfig.type == 'Subscription'}.each { result ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+
+                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
+
+                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org))
+
+                    row.add([field: result?.owner?.name ?: '', style: null])
+                    row.add([field: result?.surveyConfig?.comment ?: '', style: null])
+                    row.add([field: sub?.name ?: "", style: null])
+
+                    List providersAndAgencies = sub?.providers + sub?.agencies
+                    row.add([field: providersAndAgencies ? providersAndAgencies.join(", ") : '', style: null])
+
+                    List ownerReferences = sub.owner?.collect {
+                        it.reference
+                    }
+                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
+                    List packageNames = sub.packages?.collect {
+                        it.pkg.name
+                    }
+                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+                    row.add([field: sub.status?.getI10n("value"), style: null])
+                    row.add([field: sub.type?.getI10n("value"), style: null])
+                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+
+                    row.add([field: surveyCostItem ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
+
+                    row.add([field: surveyCostItem ? surveyCostItem?.costDescription : '', style: null])
+
+                    row.add([field: result.type?.getI10n('name') ?: '', style: null])
+                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+
+                    def value
+
+                    if(result?.type?.type == Integer.toString())
+                    {
+                        value = result?.intValue ? result?.intValue.toString() : ""
+                    }
+                    else if (result?.type?.type == String.toString())
+                    {
+                        value = result?.stringValue ?: ""
+                    }
+                    else if (result?.type?.type ==  BigDecimal.toString())
+                    {
+                        value = result?.decValue ? result?.decValue.toString() : ""
+                    }
+                    else if (result?.type?.type == Date.toString())
+                    {
+                        value = result?.dateValue ? sdf.format(result?.dateValue) : ""
+                    }
+                    else if (result?.type?.type == URL.toString())
+                    {
+                        value = result?.urlValue ? result?.urlValue.toString() : ""
+                    }
+                    else if (result?.type?.type == RefdataValue.toString())
+                    {
+                        value = result?.refValue ? result?.refValue.getI10n('value') : ""
+                    }
+
+                    row.add([field: value ?: '', style: null])
+                    row.add([field: result.comment ?: '', style: null])
+                    row.add([field: result.finishDate ? sdf.format(result.finishDate) : '', style: null])
+
+                    surveyData.add(row)
+                    break
+            }
+        }
+        switch(format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
+                return exportService.generateXLSXWorkbook(sheetData)
+        }
+    }
+
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1454,7 +1563,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
 
@@ -3453,24 +3561,32 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-      def result = setResultGenerics()
+        def result = setResultGenerics()
+        result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
+                              "currency","exchangeRate","taxType","taxRate","value","subscription","package",
+                              "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
+                              "description","invoiceNumber","orderNumber","institution"]
+        result
+    }
 
-      if (! accessService.checkUserIsMember(result.user, result.institution)) {
-          flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
-          response.sendError(401)
-          return;
-      }
-
-      def defaults = [ 'owner':result.institution];
-
-      if (request.method == 'POST'){
-        def input_stream = request.getFile("tsvfile")?.inputStream
-        result.loaderResult = tsvSuperlifterService.load(input_stream,
-                                                         grailsApplication.config.financialImportTSVLoaderMappings,
-                                                         params.dryRun=='Y'?true:false,
-                                                         defaults)
-      }
-      result
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processFinanceImport() {
+        def result = setResultGenerics()
+        CommonsMultipartFile tsvFile = params.tsvFile
+        if(tsvFile && tsvFile.size > 0) {
+            result.filename = tsvFile.originalFilename
+            Map<String,Map> financialData = financeService.financeImport(tsvFile)
+            result.candidates = financialData.candidates
+            result.costItemGroups = financialData.costItemGroups
+            render view: 'postProcessingFinanceImport', model: result
+        }
+        else {
+            flash.error = message(code:'myinst.financeImport.error.noFileProvided')
+            redirect(url: request.getHeader('referer'))
+        }
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_ADM", specRole="ROLE_ADMIN")
@@ -3515,14 +3631,35 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
-        result.editable = result.surveyResults?.finishDate?.contains(null) ? true : false
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.editable = surveyResults?.finishDate?.contains(null) ? true : false
 
-        result.surveyResults = result.surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
         result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
 
-        result
+        if ( params.exportXLS ) {
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            withFormat {
+                html {
+                    result
+                }
+            }
+        }
+
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
@@ -3550,6 +3687,19 @@ AND EXISTS (
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
 
         result.ownerId = result.surveyResults[0]?.owner?.id
+
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
 
         result.editable = result.surveyResults.finishDate.contains(null) ? true : false
         result.consCostTransfer = true
@@ -3738,38 +3888,10 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        def qParts = [
-                'p.tenant = :tenant',
-                'p.isPublic = :public'
-        ]
-        def qParams = [
-                tenant: result.institution,
-                public: RefdataValue.getByValueAndCategory('No', 'YN')
-        ]
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        if (params.prs) {
-            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
-            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
-        }
-        if (params.org) {
-            qParts << """(EXISTS (
-SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)
-))
-"""
-            qParams << [orgName: "%${params.org.toLowerCase()}%"]
-        }
-
-        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
-
-        if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
-            query = psq.query
-            qParams = psq.queryParams
-        }
-
-        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
+        result.visiblePersons = addressbookService.getVisiblePersons("addressbook",result.max,result.offset,params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3779,7 +3901,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         tenant: contextService.getOrg() // private properties
                 )
 
-        result.num_visiblePersons = Person.executeQuery(query, qParams).size()
+        result.num_visiblePersons = result.visiblePersons.size()
+
+        result
+      }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def myPublicContacts() {
+
+        def result = setResultGenerics()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+        result.num_visiblePersons = result.visiblePersons.size()
 
         result
       }
@@ -4006,8 +4154,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
 
@@ -4020,8 +4168,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.toalMembers     = totalMembers.clone()
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.totalMembers    = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header

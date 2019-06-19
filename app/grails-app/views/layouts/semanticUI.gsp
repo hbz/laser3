@@ -207,6 +207,7 @@
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
@@ -398,7 +399,7 @@
                                     <g:link class="item" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link class="item" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link class="item" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
-                                    <g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>
+                                    <%--<g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>--%>
                                 </div>
                             </div>
                             <div class="divider"></div>

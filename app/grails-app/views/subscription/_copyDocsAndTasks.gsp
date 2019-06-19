@@ -8,7 +8,7 @@
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
             %{--DOCUMENTS:--}%
@@ -17,14 +17,12 @@
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <i class="ui icon angle double right"></i>
                         <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
                     </th>
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
                             <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
                         </g:if>
@@ -59,13 +57,12 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                        <br>
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div class="ui checkbox">--}%
+                                <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="subscription.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
-                                <br>
+                                </div>
                                 %{--</div>--}%
                             </g:if>
                         </g:each>
@@ -98,13 +95,12 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
-                        <i class="ui icon trash alternate outline"></i>
-                        <br>
                         <g:each in="${targetSubscription?.documents?.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div class="ui checkbox">--}%
+                                <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="subscription.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
-                                <br>
+                                </div>
                                 %{--</div>--}%
                             </g:if>
                         </g:each>
@@ -136,14 +132,13 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                        <br>
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
+                                <div class="ui checkbox la-toggle-radio la-replace">
                                         <g:checkBox name="subscription.takeAnnouncementIds" value="${docctx.id}" data-action="copy" checked="${true}" />
-                                <br>
+                                </div>
                                     %{--</div>--}%
                                 %{--</div>--}%
                             </g:if>
@@ -174,15 +169,14 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
-                        <i class="ui icon trash alternate outline"></i>
-                        <br>
                         <div>
                             <g:if test="${targetSubscription}">
                                 <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                         %{--<div class="ui checkbox">--}%
+                                        <div class="ui checkbox la-toggle-radio la-noChange">
                                             <g:checkBox name="subscription.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
-                                        <br>
+                                        </div>
                                         %{--</div>--}%
                                     </g:if>
                                 </g:each>
@@ -206,13 +200,12 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                        <br>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 %{--<div class="ui checkbox">--}%
-                                    <g:checkBox name="subscription.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
-                                <br>
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                        <g:checkBox name="subscription.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
+                                </div>
                                 %{--</div>--}%
                             </div>
                         </g:each>
@@ -228,13 +221,12 @@
                     </td>
                     %{--DELETE:--}%
                     <td>
-                        <i class="ui icon trash alternate outline"></i>
-                        <br>
                         <g:each in="${targetTasks}" var="tsk">
                             <g:if test="${tsk.creator.id == userId || isInstAdm}">
                                 %{--<div class="ui checkbox">--}%
+                                <div class="ui checkbox la-toggle-radio la-noChange">
                                     <g:checkBox name="subscription.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
-                                <br>
+                                </div>
                                 %{--</div>--}%
                             </g:if>
                             <g:else><br></g:else>
@@ -243,8 +235,11 @@
                 </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" onclick="return jsConfirmation() "/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation() "/>
         </div>
     </g:form>
 </semui:form>

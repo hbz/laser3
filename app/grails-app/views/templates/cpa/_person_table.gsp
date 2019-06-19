@@ -17,7 +17,7 @@
                 ${message(code:'person.name.label')}
             </th>
             <th>
-                <g:if test="${controllerName == 'myInstitution'}">
+                <g:if test="${controllerName == 'myInstitution' && actionName == 'addressbook'}">
                     ${message(code:'person.organisation.label')}
                 </g:if>
                 <g:else>
@@ -59,7 +59,7 @@
                     %>
 
 					<g:each in="${pRolesSorted}" var="role">
-                        <g:if test="${controllerName == 'myInstitution'}">
+                        <g:if test="${controllerName == 'myInstitution' && actionName == 'addressbook'}">
                             <div class="la-flexbox">
                                 <i class="icon university la-list-icon"></i>
                                 <g:link controller="organisation" action="addressbook" id="${role.org?.id}">${role.org}</g:link>

@@ -31,7 +31,7 @@
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps">
-            <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >
                         <div class="title">Rahmendaten</div>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == 2 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
                     <div class="title">Bestand</div>
                     <div class="description">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == 3 ? 'active' : 'disabled'} step">
+            <div class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">Anhänge</div>
                     <div class="description">
@@ -62,16 +62,14 @@
                     </div>
                 </div>
             </div>
-            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_YODA">
-                <div class="${workFlowPart == 4 ? 'active' : 'disabled'} step">
-                    <div class="content">
-                        <div class="title">${message(code: 'properties')}</div>
-                        <div class="description">
-                            <i class="tags icon"></i>${message(code: 'properties')}
-                        </div>
+            <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
+                <div class="content">
+                    <div class="title">${message(code: 'properties')}</div>
+                    <div class="description">
+                        <i class="tags icon"></i>${message(code: 'properties')}
                     </div>
                 </div>
-            </sec:ifAnyGranted>
+            </div>
         </div>
     </g:if>
     <g:else>
@@ -164,6 +162,59 @@
                 }
             }
         }
+
+        var takeProperty = $('input[name="subscription.takeProperty"]');
+        var deleteProperty = $('input[name="subscription.deleteProperty"]');
+
+        function selectAllTake(source) {
+            var table = $(source).closest('table');
+            var thisBulkcheck = $(table).find(takeProperty);
+            $( thisBulkcheck ).each(function( index, elem ) {
+                elem.checked = source.checked;
+                markAffectedTake($(this));
+            })
+        }
+        function selectAllDelete(source) {
+            var table = $(source).closest('table');
+            var thisBulkcheck = $(table).find(deleteProperty);
+            $( thisBulkcheck ).each(function( index, elem ) {
+                elem.checked = source.checked;
+                markAffectedDelete($(this));
+            })
+        }
+
+        $(takeProperty).change( function() {
+            markAffectedTake($(this));
+        });
+        $(deleteProperty).change( function() {
+            markAffectedDelete($(this));
+        });
+
+        markAffectedTake = function (that) {
+            var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
+
+            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
+                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+                }
+                else {
+                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+                }
+        }
+        markAffectedDelete = function (that) {
+            if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
+            }
+            else {
+                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').removeClass('willBeReplaced');
+            }
+        }
+
+        $(takeProperty).each(function( index, elem ) {
+            if (elem.checked){
+                markAffectedTake(elem)
+            }
+        });
+
     </r:script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
@@ -716,6 +717,17 @@ class AjaxController {
       render result as JSON
   }
 
+  @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+  def verifyUserInput() {
+      Map result = [result:false]
+      if(params.input) {
+          List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)",[searchTerm:params.input])
+          result.result = checkList.size() > 0
+      }
+      render result as JSON
+  }
+
   /**
    * connects the context subscription with the given pair.
    *
@@ -745,27 +757,27 @@ class AjaxController {
       //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
       //perspectiveIndex 0: source -> dest, 1: dest -> source
       if(params.link) {
-        if(params["linkType_${link.id}"]) {
-            link = genericOIDService.resolveOID(params.link)
-            Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
-            String linkTypeString = params["linkType_${link.id}"].split("§")[0]
-            int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
-            RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-            commentContent = params["linkComment_${link.id}"].trim()
-            if(perspectiveIndex == 0) {
-                link.source = context.id
-                link.destination = pair.id
-            }
-            else if(perspectiveIndex == 1) {
-                link.source = pair.id
-                link.destination = context.id
-            }
-            link.linkType = linkType
-            log.debug(linkType)
-        }
-        else if(!params["linkType_${link.id}"]) {
-            flash.error = message(code:'subscription.linking.linkTypeError')
-        }
+          link = genericOIDService.resolveOID(params.link)
+          if(params["linkType_${link.id}"]) {
+              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+              String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+              int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+              RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+              commentContent = params["linkComment_${link.id}"].trim()
+              if(perspectiveIndex == 0) {
+                  link.source = context.id
+                  link.destination = pair.id
+              }
+              else if(perspectiveIndex == 1) {
+                  link.source = pair.id
+                  link.destination = context.id
+              }
+              link.linkType = linkType
+              log.debug(linkType)
+          }
+          else if(!params["linkType_${link.id}"]) {
+              flash.error = message(code:'subscription.linking.linkTypeError')
+          }
       }
       else {
         if(params["linkType_new"]) {

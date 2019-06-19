@@ -24,3 +24,9 @@
 -- ERMS-1103/ERMS-1181
 -- 2019-06-13
 alter table subscription add column sub_is_administrative bool not null default false;
+
+-- Drop column createdBy/lastUpdatedBy
+-- ERMS-1412
+-- 2019-06-13
+alter table cost_item drop column last_updated_by_id;
+alter table cost_item drop column created_by_id;

@@ -137,7 +137,7 @@
                                 </div>
 
                                 <div class="field">
-                                    <g:if test="${institution}">
+                                    <g:if test="${institution && actionName != 'myPublicContacts'}">
                                         <label for="functionOrg">
                                             <g:message code="contact.belongesTo.label"/>
                                         </label>
@@ -176,7 +176,7 @@
                             </div>
 
                             <div class="field">
-                                <g:if test="${institution}">
+                                <g:if test="${institution && actionName != 'myPublicContacts'}">
                                     <label for="positionOrg">
                                         <g:message code="contact.belongesTo.label"/>
                                     </label>

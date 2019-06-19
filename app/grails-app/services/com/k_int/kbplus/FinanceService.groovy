@@ -1,10 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -20,6 +22,16 @@ class FinanceService {
     def contextService
     def genericOIDService
     def messageSource
+    def accessService
+
+    List possible_date_formats = [
+            new SimpleDateFormat('yyyy/MM/dd'),
+            new SimpleDateFormat('dd.MM.yyyy'),
+            new SimpleDateFormat('dd/MM/yyyy'),
+            new SimpleDateFormat('dd/MM/yy'),
+            new SimpleDateFormat('yyyy/MM'),
+            new SimpleDateFormat('yyyy')
+    ]
 
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
@@ -304,7 +316,7 @@ class FinanceService {
         //cost item filter settings
         //cost item title
         if(params.filterCITitle) {
-            filterQuery += " and ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase "
+            filterQuery += " and (ci.costTitle like :filterCITitle or ci.costTitle like :ciTitleLowerCase) "
             queryParams.filterCITitle = "%${params.filterCITitle}%"
             queryParams.ciTitleLowerCase = "%${params.filterCITitle.toLowerCase()}%"
             log.info(queryParams.filterCITitle)
@@ -524,6 +536,13 @@ class FinanceService {
         return [billingSums:billingSums,localSums:localSums]
     }
 
+    /**
+     * Finds the given currency in the given list of entries, returns -1 if the corrency is not found in the list.
+     *
+     * @param entryList - the list of currency entries
+     * @param currency - the currency to be retrieved
+     * @return the position index
+     */
     int getCurrencyIndexInList(List entryList,String currency) {
         int ret = -1
         entryList.eachWithIndex { negEntry, int i ->
@@ -532,6 +551,503 @@ class FinanceService {
             }
         }
         return ret
+    }
+
+
+    Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
+        Org contextOrg = contextService.org
+        Map<String,Map> result = [:]
+        Map<CostItem,Map> candidates = [:]
+        Map<CostItem,CostItemGroup> costItemGroups = [:]
+        InputStream stream = tsvFile.getInputStream()
+        List<String> rows = stream.text.split('\n')
+        Map<String,Integer> colMap = [:]
+        rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+            switch(headerCol.toLowerCase().trim()) {
+                case "bezeichnung":
+                case "title": colMap.title = c
+                    break
+                case "element": colMap.element = c
+                    break
+                case "kostenvorzeichen":
+                case "cost item sign": colMap.costItemSign = c
+                    break
+                case "budgetcode": colMap.budgetCode = c
+                    break
+                case "referenz/codes":
+                case "reference/codes": colMap.reference = c
+                    break
+                case "status": colMap.status = c
+                    break
+                case "rechnungssumme":
+                case "invoice total": colMap.invoiceTotal = c
+                    break
+                case "währung":
+                case "waehrung":
+                case "currency": colMap.currency = c
+                    break
+                case "umrechnungsfaktor":
+                case "exchange rate": colMap.currencyRate = c
+                    break
+                case "steuerbar":
+                case "tax type": colMap.taxType = c
+                    break
+                case "steuersatz":
+                case "tax rate": colMap.taxRate = c
+                    break
+                case "wert":
+                case "wert (in eur)":
+                case "value":
+                case "value (in euro)": colMap.value = c
+                    break
+                case "lizenz":
+                case "subscription": colMap.sub = c
+                    break
+                case "teilnehmer":
+                case "member": colMap.member = c
+                    break
+                case "paket":
+                case "package": colMap.subPkg = c
+                    break
+                case "einzeltitel":
+                case "single title": colMap.ie = c
+                    break
+                case "gezahlt am":
+                case "date paid": colMap.dateFrom = c
+                    break
+                case "haushaltsjahr":
+                case "financial year": colMap.financialYear = c
+                    break
+                case "datum von":
+                case "date from": colMap.dateFrom = c
+                    break
+                case "datum bis":
+                case "date to": colMap.dateTo = c
+                    break
+                case "rechnungsdatum":
+                case "invoice date": colMap.invoiceDate = c
+                    break
+                case "anmerkung":
+                case "description": colMap.description = c
+                    break
+                case "rechnungsnummer":
+                case "invoice number": colMap.invoiceNumber = c
+                    break
+                case "auftragsnummer":
+                case "order number": colMap.orderNumber = c
+                    break
+                case "einrichtung":
+                case "organisation": colMap.institution = c
+                    break
+                default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
+                    break
+            }
+        }
+        rows.remove(0)
+        Map<String,IdentifierNamespace> namespaces = [
+                'wibid':IdentifierNamespace.findByNs('wibid'),
+                'isil':IdentifierNamespace.findByNs('ISIL'),
+                'doi':IdentifierNamespace.findByNs('doi'),
+                'zdb':IdentifierNamespace.findByNs('zdb'),
+                'issn':IdentifierNamespace.findByNs('issn'),
+                'eissn':IdentifierNamespace.findByNs('eissn')
+        ]
+        rows.each { row ->
+            Map mappingErrorBag = [:]
+            List<String> cols = row.split('\t')
+            //check if we have some mandatory properties ...
+            //owner(nullable: false, blank: false) -> to institution, defaults to context org
+            Org owner
+            String orgIdentifier = cols[colMap.institution]
+            if(!orgIdentifier)
+                owner = contextOrg
+            else {
+                //fetch possible identifier namespaces
+                List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
+                if(!orgMatches) {
+                    PropertyDefinition egpNr = PropertyDefinition.findByName("EGP Nr.") //URGENT! In this case, the property MUST become custom property!
+                    List<Org> egpMatches = Org.executeQuery("select opp.owner from OrgPrivateProperty opp where cast(opp.intValue as string) = :idCandidate and opp.type = :egp",[idCandidate: orgIdentifier,egp: egpNr])
+                    if(!egpMatches)
+                        owner = (Org) contextOrg
+                    else if(egpMatches.size() > 1)
+                        mappingErrorBag.multipleOrgError = egpMatches.collect { org -> org.sortname }
+                    else if(egpMatches.size() == 1)
+                        owner = egpMatches[0]
+                }
+                else if(orgMatches.size() > 1)
+                    mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname }
+                else if(orgMatches.size() == 1) {
+                    if(!accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
+                        mappingErrorBag.ownerMismatchError = orgMatches[0]
+                    }
+                    else {
+                        owner = orgMatches[0]
+                    }
+                }
+            }
+            CostItem costItem = new CostItem(owner: owner)
+            //sub(nullable: true, blank: false) -> to subscription
+            Subscription subscription
+            if(colMap.sub != null) {
+                String subIdentifier = cols[colMap.sub]
+                if(subIdentifier) {
+                    //fetch possible identifier namespaces
+                    List<Subscription> subMatches
+                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                    else if(accessService.checkPerm("ORG_INST"))
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+                    if(!subMatches)
+                        mappingErrorBag.noValidSubscription = subIdentifier
+                    else if(subMatches.size() > 1)
+                        mappingErrorBag.multipleSubError = subMatches.collect { sub -> sub.dropdownNamingConvention(contextOrg) }
+                    else if(subMatches.size() == 1) {
+                        subscription = subMatches[0]
+                        costItem.sub = subscription
+                    }
+                }
+            }
+            /*
+            subPkg(nullable: true, blank: false, validator: { val, obj ->
+                if (obj.subPkg) {
+                    if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
+                }
+            }) -> to package
+            */
+            SubscriptionPackage subPkg
+            if(colMap.subPkg != null) {
+                String subPkgIdentifier = cols[colMap.subPkg]
+                if(subPkgIdentifier) {
+                    if(subscription == null)
+                        mappingErrorBag.packageWithoutSubscription = true
+                    else {
+                        List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
+                        if(!pkgMatches)
+                            mappingErrorBag.noValidPackage = subPkgIdentifier
+                        else if(pkgMatches.size() > 1)
+                            mappingErrorBag.multipleSubPkgError = pkgMatches.collect { pkg -> pkg.name }
+                        else if(pkgMatches.size() == 1) {
+                            subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription,pkgMatches[0])
+                            if(subPkg)
+                                costItem.subPkg = subPkg
+                            else if(!subPkg)
+                                mappingErrorBag.packageNotInSubscription = subPkgIdentifier
+                        }
+                    }
+                }
+            }
+            /*
+            issueEntitlement(nullable: true, blank: false, validator: { val, obj ->
+                if (obj.issueEntitlement) {
+                    if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+                }
+            }) -> to issue entitlement
+            */
+            IssueEntitlement ie
+            if(colMap.ie != null) {
+                String ieIdentifier = cols[colMap.ie]
+                if(ieIdentifier) {
+                    if(subscription == null || subPkg == null)
+                        mappingErrorBag.entitlementWithoutPackageOrSubscription = true
+                    else {
+                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        if(!titleMatches)
+                            mappingErrorBag.noValidTitle = ieIdentifier
+                        else if(titleMatches.size() > 1)
+                            mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
+                        else if(titleMatches.size() == 1) {
+                            TitleInstance tiMatch = titleMatches[0]
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:RDStore.IE_DELETED])
+                            if(!ieMatches)
+                                mappingErrorBag.noValidEntitlement = ieIdentifier
+                            else if(ieMatches.size() > 1)
+                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.title.title}" }
+                            else if(ieMatches.size() == 1) {
+                                ie = ieMatches[0]
+                                if(ie.tipp.pkg.gokbId != subPkg.pkg.gokbId)
+                                    mappingErrorBag.entitlementNotInSubscriptionPackage = ieIdentifier
+                                else
+                                    costItem.issueEntitlement = ie
+                            }
+                        }
+                    }
+                }
+            }
+            //order(nullable: true, blank: false) -> to order number
+            if(colMap.orderNumber != null) {
+                String orderNumber = cols[colMap.orderNumber]
+                if(orderNumber) {
+                    List<Order> orderMatches = Order.findAllByOrderNumberAndOwner(orderNumber,contextOrg)
+                    if(orderMatches.size() > 1)
+                        mappingErrorBag.multipleOrderError = orderNumber
+                    else if(orderMatches.size() == 1)
+                        costItem.order = orderMatches[0]
+                    else if(!orderMatches)
+                        costItem.order = new Order(orderNumber: orderNumber, owner: contextOrg)
+                }
+            }
+            //invoice(nullable: true, blank: false) -> to invoice number
+            if(colMap.invoiceNumber != null) {
+                String invoiceNumber = cols[colMap.invoiceNumber]
+                if(invoiceNumber) {
+                    List<Invoice> invoiceMatches = Invoice.findAllByInvoiceNumberAndOwner(invoiceNumber,contextOrg)
+                    if(invoiceMatches.size() > 1)
+                        mappingErrorBag.multipleInvoiceError = invoiceNumber
+                    else if(invoiceMatches.size() == 1)
+                        costItem.invoice = invoiceMatches[0]
+                    else if(!invoiceMatches)
+                        costItem.invoice = new Invoice(invoiceNumber: invoiceNumber, owner: contextOrg)
+                }
+            }
+            //billingCurrency(nullable: true, blank: false) -> to currency
+            if(colMap.currency != null) {
+                String currencyKey = cols[colMap.currency]
+                if(!currencyKey)
+                    mappingErrorBag.noCurrencyError = true
+                else {
+                    RefdataValue currency = RefdataValue.getByValueAndCategory(currencyKey,"Currency")
+                    if(!currency)
+                        mappingErrorBag.invalidCurrencyError = true
+                    else {
+                        costItem.billingCurrency = currency
+                    }
+                }
+            }
+            //costDescription(nullable: true, blank: false) -> to description
+            if(colMap.description != null) {
+                costItem.costDescription = cols[colMap.description]
+            }
+            //costTitle(nullable: true, blank: false) -> to title
+            if(colMap.title != null) {
+                costItem.costTitle = cols[colMap.title]
+            }
+            //costInBillingCurrency(nullable: true, blank: false) -> to invoice total
+            if(colMap.invoiceTotal != null) {
+                try {
+                    Double costInBillingCurrency = Double.parseDouble(cols[colMap.invoiceTotal])
+                    costItem.costInBillingCurrency = BigDecimal.valueOf(costInBillingCurrency)
+                }
+                catch (NumberFormatException e) {
+                    mappingErrorBag.invoiceTotalInvalid = true
+                }
+                catch (NullPointerException e) {
+                    mappingErrorBag.invoiceTotalMissing = true
+                }
+            }
+            //datePaid(nullable: true, blank: false) -> to date paid
+            if(colMap.datePaid != null) {
+                Date datePaid = parseDate(cols[colMap.datePaid])
+                if(datePaid)
+                    costItem.datePaid = datePaid
+            }
+            //costInLocalCurrency(nullable: true, blank: false) -> to value
+            if(colMap.value != null) {
+                try {
+                    Double costInLocalCurrency = Double.parseDouble(cols[colMap.value])
+                    costItem.costInLocalCurrency = BigDecimal.valueOf(costInLocalCurrency)
+                }
+                catch (NumberFormatException e) {
+                    mappingErrorBag.valueInvalid = true
+                }
+                catch (NullPointerException e) {
+                    mappingErrorBag.valueMissing = true
+                }
+            }
+            //currencyRate(nullable: true, blank: false) -> to exchange rate
+            if(colMap.currencyRate != null) {
+                try {
+                    Double currencyRate = Double.parseDouble(cols[colMap.currencyRate])
+                    costItem.currencyRate = BigDecimal.valueOf(currencyRate)
+                }
+                catch (NumberFormatException e) {
+                    mappingErrorBag.exchangeRateInvalid = true
+                }
+                catch (NullPointerException e) {
+                    mappingErrorBag.exchangeRateMissing = true
+                }
+            }
+            //substitute missing values in case of
+            if(costItem.costInBillingCurrency) {
+                if(!costItem.currencyRate && costItem.costInLocalCurrency) {
+                    costItem.currencyRate = costItem.costInLocalCurrency / costItem.costInBillingCurrency
+                    mappingErrorBag.keySet().removeAll(['exchangeRateMissing','exchangeRateInvalid'])
+                    mappingErrorBag.exchangeRateCalculated = true
+                }
+                else if(!costItem.costInLocalCurrency && costItem.currencyRate) {
+                    costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
+                    mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
+                    mappingErrorBag.valueCalculated = true
+                }
+            }
+            if(costItem.costInLocalCurrency) {
+                if(!costItem.currencyRate && costItem.costInBillingCurrency) {
+                    costItem.currencyRate = costItem.costInLocalCurrency / costItem.costInBillingCurrency
+                    mappingErrorBag.keySet().removeAll(['exchangeRateMissing','exchangeRateInvalid'])
+                    mappingErrorBag.exchangeRateCalculated = true
+                }
+                else if(!costItem.costInBillingCurrency && costItem.currencyRate) {
+                    costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
+                    mappingErrorBag.keySet().removeAll(['invoiceTotalMissing','invoiceTotalInvalid'])
+                    mappingErrorBag.invoiceTotalCalculated = true
+                }
+            }
+            if(costItem.currencyRate) {
+                if(!costItem.costInLocalCurrency && costItem.costInBillingCurrency) {
+                    costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
+                    mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
+                    mappingErrorBag.valueCalculated = true
+                }
+                else if(!costItem.costInBillingCurrency && costItem.costInLocalCurrency) {
+                    costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
+                    mappingErrorBag.keySet().removeAll(['invoiceTotalMissing','invoiceTotalInvalid'])
+                    mappingErrorBag.invoiceTotalCalculated = true
+                }
+            }
+            /*
+            taxCode(nullable: true, blank: false) ---v
+            taxRate(nullable: true, blank: false) ---v
+            taxKey(nullable: true, blank: false) -> to combination of tax type and tax rate
+             */
+            if(colMap.taxType != null && colMap.taxRate != null) {
+                String taxTypeKey = cols[colMap.taxType]
+                int taxRate
+                try {
+                    taxRate = Integer.parseInt(cols[colMap.taxRate])
+                }
+                catch (Exception e) {
+                    log.error(e.toString())
+                    taxRate = -1
+                }
+                if(!taxTypeKey || taxRate == -1)
+                    mappingErrorBag.invalidTaxType = true
+                else {
+                    CostItem.TAX_TYPES taxKey
+                    if(taxRate == 7)
+                        taxKey = CostItem.TAX_TYPES.TAXABLE_7
+                    else if(taxRate == 19)
+                        taxKey = CostItem.TAX_TYPES.TAXABLE_19
+                    else if(taxRate == 0) {
+                        RefdataValue taxType = RefdataValue.getByValueAndCategory(taxTypeKey,'TaxType')
+                        if(!taxType)
+                            taxType = RefdataValue.getByCategoryDescAndI10nValueDe('TaxType',taxTypeKey)
+                        switch(taxType) {
+                            case RefdataValue.getByValueAndCategory('not taxable','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                                break
+                            case RefdataValue.getByValueAndCategory('not applicable','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                                break
+                            case RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                                break
+                            default: mappingErrorBag.invalidTaxType = true
+                                break
+                        }
+                    }
+                    if(taxKey)
+                        costItem.taxKey = taxKey
+                    else
+                        mappingErrorBag.invalidTaxType = true
+                }
+            }
+            //invoiceDate(nullable: true, blank: false) -> to invoice date
+            if(colMap.invoiceDate != null) {
+                Date invoiceDate = parseDate(cols[colMap.invoiceDate])
+                if(invoiceDate)
+                    costItem.invoiceDate = invoiceDate
+            }
+            //financialYear(nullable: true, blank: false) -> to financial year
+            if(colMap.financialYear != null) {
+                try {
+                    Year financialYear = Year.parse(cols[colMap.financialYear])
+                    costItem.financialYear = financialYear
+                }
+                catch(Exception e) {
+                    mappingErrorBag.invalidYearFormat = true
+                }
+            }
+            //costItemStatus(nullable: true, blank: false) -> to status
+            if(colMap.status != null) {
+                String statusKey = cols[colMap.status]
+                if(statusKey) {
+                    RefdataValue status = RefdataValue.getByValueAndCategory(statusKey,'CostItemStatus')
+                    if(!status)
+                        status = RefdataValue.getByCategoryDescAndI10nValueDe('CostItemStatus',statusKey)
+                    if(!status)
+                        mappingErrorBag.noValidStatus = statusKey
+                    costItem.costItemStatus = status
+                }
+            }
+            //costItemElement(nullable: true, blank: false) -> to element
+            if(colMap.element != null) {
+                String elementKey = cols[colMap.element]
+                if(elementKey) {
+                    RefdataValue element = RefdataValue.getByValueAndCategory(elementKey, 'CostItemElement')
+                    if(!element)
+                        element = RefdataValue.getByCategoryDescAndI10nValueDe('CostItemElement',elementKey)
+                    if(!element)
+                        mappingErrorBag.noValidElement = elementKey
+                    costItem.costItemElement = element
+                }
+            }
+            //costItemElementConfiguration(nullable: true, blank: false) -> to cost item sign
+            if(colMap.costItemSign != null) {
+                String elementSign = cols[colMap.costItemSign]
+                if(elementSign) {
+                    RefdataValue ciec = RefdataValue.getByValueAndCategory(elementSign, 'Cost configuration')
+                    if(!ciec)
+                        ciec = RefdataValue.getByCategoryDescAndI10nValueDe('Cost configuration',elementSign)
+                    if(!ciec)
+                        mappingErrorBag.noValidSign = elementSign
+                    costItem.costItemElementConfiguration = ciec
+                }
+            }
+            //reference(nullable: true, blank: false) -> to reference/codes
+            if(colMap.reference != null)
+                costItem.reference = cols[colMap.reference]
+            //budgetCode -> to budget code
+            if(colMap.budgetCode != null) {
+                String[] budgetCodeKeys = cols[colMap.budgetCode].matches('[,;]') ? cols[colMap.budgetCode].split('[,;]') : [cols[colMap.budgetCode]]
+                budgetCodeKeys.each { bck ->
+                    BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                    if(!bc) {
+                        bc = new BudgetCode(owner: contextOrg, value: bck)
+                    }
+                    CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                    costItemGroups.put(costItem,cig)
+                }
+            }
+            //startDate(nullable: true, blank: false) -> to date from
+            if(colMap.dateFrom != null) {
+                Date startDate = parseDate(cols[colMap.dateFrom])
+                if(startDate)
+                    costItem.startDate = startDate
+            }
+            //endDate(nullable: true, blank: false) -> to date to
+            if(colMap.dateTo != null) {
+                Date endDate = parseDate(cols[colMap.dateTo])
+                if(endDate)
+                    costItem.endDate = endDate
+            }
+            //isVisibleForSubscriber(nullable: true, blank: false) -> in second configuration step, see ticket #1204
+            //costItem.save() MUST NOT be executed here, ONLY AFTER postprocessing!
+            candidates.put(costItem,mappingErrorBag)
+        }
+        result.candidates = candidates
+        result.costItemGroups = costItemGroups
+        result
+    }
+
+    def parseDate(datestr) {
+        def parsed_date = null;
+        if (datestr && (datestr.toString().trim().length() > 0)) {
+            for (Iterator<SimpleDateFormat> i = possible_date_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                try {
+                    parsed_date = i.next().parse(datestr.toString())
+                }
+                catch (Exception e) {
+                    log.error("Invalid date provided!")
+                }
+            }
+        }
+        parsed_date
     }
 
 }

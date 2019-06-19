@@ -72,11 +72,21 @@ class SubscriptionController extends AbstractDebugController {
     def deletionService
     def auditService
 
+    public static final String COPY = "COPY"
+    public static final String REPLACE = "REPLACE"
+    public static final String DO_NOTHING = "DO_NOTHING"
+
+    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
     public static final String WORKFLOW_SUBSCRIBER = '3'
     public static final String WORKFLOW_PROPERTIES = '4'
+    public static final String WORKFLOW_END = '6'
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -186,8 +196,7 @@ class SubscriptionController extends AbstractDebugController {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += " and ie.tipp.status = ? and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                qry_params.add(RefdataValue.getByValueAndCategory('Current','TIPP Status'))
+                base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 qry_params.add(date_filter)
                 qry_params.add(date_filter)
             }
@@ -199,8 +208,7 @@ class SubscriptionController extends AbstractDebugController {
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and ie.tipp.status = ? and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                qry_params.add(RefdataValue.getByValueAndCategory('Current','TIPP Status'))
+                base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
                 qry_params.add(date_filter)
                 qry_params.add(date_filter)
             }
@@ -1788,6 +1796,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def role_sub = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         def role_lic = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
@@ -1854,6 +1863,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
+                                administrative: result.subscriptionInstance.administrative,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1876,7 +1886,10 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
+                            if(cons_sub.administrative)
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
+                            else
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)
@@ -3025,10 +3038,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def newStartDate
         def newEndDate
         use(TimeCategory) {
-            newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
 
+        result.isRenewSub = true
         result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
@@ -3545,6 +3559,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
                     if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                    result.isRenewSub = true
                     redirect controller: 'subscription',
                              action: 'copyElementsIntoSubscription',
                              id: old_subOID,
@@ -3572,10 +3587,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             def newStartDate
             def newEndDate
             use(TimeCategory) {
-                newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+                newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
                 newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
             }
 
+            result.isRenewSub = true
             result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
                                      sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
                                      sub_name     : subscription.name,
@@ -3634,11 +3650,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.isRenewSub = params.isRenewSub
+        result.isRenewSub = params.isRenewSub ?: null
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
+            case WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copySubElements_DatesOwnerRelations();
+                break;
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 break;
@@ -3647,12 +3666,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
+                if (params?.targetSubscriptionId){
+                    //redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 break;
             default:
-                result << copySubElements_DatesOwnerRelations();
+                result << loadDataFor_DatesOwnerRelations()
                 break;
         }
 
@@ -3677,13 +3699,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-//        result.targetSubscription?.refresh()
         if (params?.targetSubscriptionId) {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.isRenewSub = params?.isRenewSub ?: null
         result
     }
 
@@ -3722,6 +3743,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         if (isTargetSubChanged) {
             newSub.refresh()
+            params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+            params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        }else {
+            params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
+            params?.workFlowPartNext = WORKFLOW_PACKAGES_ENTITLEMENTS
         }
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
@@ -3731,11 +3757,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
-        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
+        result
+    }
+    private loadDataFor_DatesOwnerRelations(){
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+
+        // restrict visible for templates/links/orgLinksAsList
+        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
+        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result
     }
 
@@ -3746,49 +3785,65 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
+        boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteDocs = []
             params.list('subscription.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
             subscriptionService.deleteDocs(toDeleteDocs, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyDocs = []
             params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
             subscriptionService.copyDocs(baseSub, toCopyDocs, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteAnnouncements = []
             params.list('subscription.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
             subscriptionService.deleteAnnouncements(toDeleteAnnouncements, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyAnnouncements = []
             params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
             subscriptionService.copyAnnouncements(baseSub, toCopyAnnouncements, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteTasks =  []
             params.list('subscription.deleteTaskIds').each{ tsk -> toDeleteTasks << Long.valueOf(tsk) }
             subscriptionService.deleteTasks(toDeleteTasks, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyTasks =  []
             params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
             subscriptionService.copyTasks(baseSub, toCopyTasks, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if (isTargetSubChanged) {
+            newSub.refresh()
+            params.workFlowPart = WORKFLOW_PROPERTIES
+            params.workFlowPartNext = WORKFLOW_END
+        }else {
+            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+           params.workFlowPartNext = WORKFLOW_PROPERTIES
         }
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
+//        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
+
         result
     }
 
@@ -3957,31 +4012,45 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
+        boolean isTargetSubChanged = false
         if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
+            isTargetSubChanged = true
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
+            isTargetSubChanged = true
         }
         if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyEntitlements(entitlementsToTake, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        if (newSub) {
+//        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+//        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        //params?.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        //params?.workFlowPartNext = WORKFLOW_PROPERTIES
+        /*if (newSub) {
             newSub.refresh()
+        }*/
+
+        if (isTargetSubChanged && newSub) {
+            newSub.refresh()
+            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+            params.workFlowPartNext = WORKFLOW_PROPERTIES
+        }else {
+            params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+            params.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         }
-//        result.sourceIEs = baseSub.getIssueEntitlements()
-//        result.targetIEs = newSub.getIssueEntitlements()
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)

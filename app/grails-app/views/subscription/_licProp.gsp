@@ -10,7 +10,7 @@
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
 
         <!-- global -->
-        <g:render template="licPropGroupWrapper" model="${[
+        <g:render template="/subscription/licPropGroupWrapper" model="${[
                 propDefGroup: propDefGroup,
                 propDefGroupBinding: null,
                 ownObj: license
@@ -23,7 +23,7 @@
     <g:if test="${propDefGroup[1]?.visible?.value == 'Yes'}">
 
         <!-- local -->
-        <g:render template="licPropGroupWrapper" model="${[
+        <g:render template="/subscription/licPropGroupWrapper" model="${[
                 propDefGroup: propDefGroup[0],
                 propDefGroupBinding: propDefGroup[1],
                 ownObj: license
@@ -38,7 +38,7 @@
         <g:if test="${propDefGroup[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
 
             <!-- member -->
-            <g:render template="licPropGroupWrapper" model="${[
+            <g:render template="/subscription/licPropGroupWrapper" model="${[
                     propDefGroup: propDefGroup[0],
                     propDefGroupBinding: propDefGroup[1],
                     ownObj: license
@@ -56,7 +56,7 @@
             <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
         </h5>
 
-        <g:render template="licPropGroup" model="${[
+        <g:render template="/subscription/licPropGroup" model="${[
                 propList: license.customProperties,
                 ownObj: license
         ]}"/>

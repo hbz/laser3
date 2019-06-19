@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <table class="ui three column la-selectable table">
-    <g:each in="${roleLinks.sort{it?.roleType?.getI10n("value")}}" var="role">
+    <g:each in="${roleLinks?.sort{it?.roleType?.getI10n("value")}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 

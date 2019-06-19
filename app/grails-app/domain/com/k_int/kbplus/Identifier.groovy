@@ -160,6 +160,11 @@ class Identifier {
                 this.value = ''
                 this.save()
             }
+            else if(!(this.value =~ /^DE-/ ) && this.value != '')
+            {
+                this.value = 'DE-'+this.value.trim()
+            }
+
         }
     }
 

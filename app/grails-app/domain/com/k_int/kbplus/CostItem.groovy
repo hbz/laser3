@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
@@ -62,9 +61,9 @@ class CostItem
 
     Boolean includeInSubscription //include in sub details page
 
-    Double costInBillingCurrency   //The actual amount - new cost ex tax
-    Double costInLocalCurrency     //local amount entered
-    Double currencyRate
+    BigDecimal costInBillingCurrency   //The actual amount - new cost ex tax
+    BigDecimal costInLocalCurrency     //local amount entered
+    BigDecimal currencyRate
 
     //legacy, to be replaced by ...
     Integer taxRate
@@ -74,9 +73,9 @@ class CostItem
     Boolean finalCostRounding
 
     @Transient
-    Double costInLocalCurrencyAfterTax
+    BigDecimal costInLocalCurrencyAfterTax
     @Transient
-    Double costInBillingCurrencyAfterTax
+    BigDecimal costInBillingCurrencyAfterTax
 
     Date invoiceDate
     Year financialYear
@@ -91,9 +90,9 @@ class CostItem
 
     //Edits...
     Date lastUpdated
-    User lastUpdatedBy
+    //User lastUpdatedBy
     Date dateCreated
-    User createdBy
+    //User createdBy
 
     //@Transient
     //def budgetcodes //Binds getBudgetcodes
@@ -165,7 +164,7 @@ class CostItem
         costInBillingCurrency(nullable: true, blank: false)
         datePaid(nullable: true, blank: false)
         costInLocalCurrency(nullable: true, blank: false)
-        currencyRate(nullable: true, blank: false, scale: 9)
+        currencyRate(nullable: true, blank: false)
         finalCostRounding(nullable: true, blank: false)
         taxCode(nullable: true, blank: false)
         taxRate(nullable: true, blank: false)
@@ -182,8 +181,8 @@ class CostItem
         startDate(nullable: true, blank: false)
         endDate(nullable: true, blank: false)
         copyBase(nullable: true)
-        lastUpdatedBy(nullable: true)
-        createdBy(nullable: true)
+        //lastUpdatedBy(nullable: true)
+        //createdBy(nullable: true)
     }
 
     @Override
@@ -193,23 +192,10 @@ class CostItem
 
     def beforeInsert() {
         super.beforeInsert()
-
-        def user = springSecurityService.getCurrentUser()
-        if (user) {
-            createdBy     = user
-            lastUpdatedBy = user
-        } else
-            return false
     }
 
     def beforeUpdate() {
         super.beforeUpdate()
-
-        def user = springSecurityService.getCurrentUser()
-        if (user)
-            lastUpdatedBy = user
-        else
-            return false
     }
 
     @Deprecated

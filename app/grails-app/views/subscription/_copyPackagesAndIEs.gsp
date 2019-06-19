@@ -9,22 +9,20 @@
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned"><i class="ui icon angle double right"></i><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+                    <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
                     <th class="six wide">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="one wide center aligned">
-                        <i class="ui icon trash alternate outline"></i>
                         <g:if test="${targetSubscription}">
                             <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
-                            <br />
                         </g:if>
                     </th>
                 </tr>
@@ -46,10 +44,11 @@
                 </td>
                 %{--COPY:--}%
                 <td class="center aligned">
-                    <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                            </div>
                             <br />
                         </div>
                     </g:each>
@@ -70,11 +69,11 @@
                 </td>
                 %{--DELETE--}%
                 <td class="center aligned">
-                    <i class="ui icon trash alternate outline"></i>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
-                            <br />
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
+                            </div>
                         </div>
                     </g:each>
                 </td>
@@ -94,11 +93,10 @@
                 </td>
                 %{--COPY:--}%
                 <td class="center aligned">
-                    <i class="ui icon angle double right" title="${message(code:'default.copy.label')}"></i>
-                    <br />
                     <g:each in="${sourceIEs}" var="ie">
-                        <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="copy" checked="${true}"/>
-                        <br />
+                        <div class="ui checkbox la-toggle-radio la-replace">
+                            <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="copy" checked="${true}"/>
+                        </div>
                     </g:each>
                 </td>
                 <td name="subscription.takeEntitlements.target">
@@ -113,18 +111,20 @@
                 </td>
                 %{--DELETE--}%
                 <td class="center aligned">
-                    <i class="ui icon trash alternate outline"></i>
-                    <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <g:checkBox name="subscription.deleteEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="delete" checked="${false}"/>
-                        <br />
+                        <div class="ui checkbox la-toggle-radio la-noChange">
+                            <g:checkBox name="subscription.deleteEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="delete" checked="${false}"/>
+                        </div>
                     </g:each>
                 </td>
             </tr>
             </tbody>
         </table>
+        <g:set var="submitButtonText" value="${isRenewSub?
+                message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
+                message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copyPackagesAndIEs.button')}" onclick="return jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
