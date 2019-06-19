@@ -30,6 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -39,6 +40,8 @@ import java.text.RuleBasedCollator
 
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+
+import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -52,7 +55,6 @@ class MyInstitutionController extends AbstractDebugController {
     def transformerService
     def institutionsService
     def docstoreService
-    def tsvSuperlifterService
     def addressbookService
     def accessService
     def contextService
@@ -3559,24 +3561,32 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-      def result = setResultGenerics()
+        def result = setResultGenerics()
+        result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
+                              "currency","exchangeRate","taxType","taxRate","value","subscription","package",
+                              "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
+                              "description","invoiceNumber","orderNumber","institution"]
+        result
+    }
 
-      if (! accessService.checkUserIsMember(result.user, result.institution)) {
-          flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
-          response.sendError(401)
-          return;
-      }
-
-      def defaults = [ 'owner':result.institution];
-
-      if (request.method == 'POST'){
-        def input_stream = request.getFile("tsvfile")?.inputStream
-        result.loaderResult = tsvSuperlifterService.load(input_stream,
-                                                         grailsApplication.config.financialImportTSVLoaderMappings,
-                                                         params.dryRun=='Y'?true:false,
-                                                         defaults)
-      }
-      result
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processFinanceImport() {
+        def result = setResultGenerics()
+        CommonsMultipartFile tsvFile = params.tsvFile
+        if(tsvFile && tsvFile.size > 0) {
+            result.filename = tsvFile.originalFilename
+            Map<String,Map> financialData = financeService.financeImport(tsvFile)
+            result.candidates = financialData.candidates
+            result.costItemGroups = financialData.costItemGroups
+            render view: 'postProcessingFinanceImport', model: result
+        }
+        else {
+            flash.error = message(code:'myinst.financeImport.error.noFileProvided')
+            redirect(url: request.getHeader('referer'))
+        }
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_ADM", specRole="ROLE_ADMIN")
