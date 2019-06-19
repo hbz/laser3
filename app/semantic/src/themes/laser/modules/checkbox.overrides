@@ -113,18 +113,25 @@ table tr td div.willBeReplacedStrong {
     padding-left: 0;
   }
 }
-.la-flex-cell{
+.la-copyElements-flex-container{
   display: flex;
   align-items:center;
   justify-content:space-evenly;
 }
-.la-affected {
+.la-copyElements-flex-item {
   flex-grow: 1;
   display: flex;
   justify-content: center;
 }
-.la-source {
-   flex-grow: 1;
-   display: flex;
-   justify-content: center;
- }
+
+.la-copyElements-th-flex-container{
+  display: flex;
+  align-items:center;
+  justify-content:space-evenly;
+}
+.la-copyElements-th-flex-item {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+

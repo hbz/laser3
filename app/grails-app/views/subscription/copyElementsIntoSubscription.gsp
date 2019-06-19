@@ -184,8 +184,6 @@
         }
 
         $(takeProperty).change( function() {
-            //der index der geklickten Checkbox im übergeordneten td
-            //console.log($(this).closest ('.la-flex-cell').index()) ;
             markAffectedTake($(this));
         });
         $(deleteProperty).change( function() {
@@ -193,21 +191,21 @@
         });
 
         markAffectedTake = function (that) {
-            var multiPropertyIndex = ($(that).closest ('.la-flex-cell').index()) ;
+            var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
 
             if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
-                    $(that).parents('td').next('td').children('.la-flex-cell:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
+                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
                 }
                 else {
-                    $(that).parents('td').next('td').children('.la-flex-cell:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
                 }
         }
         markAffectedDelete = function (that) {
             if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
-                $(that).parents('.la-noChange').parents('.la-flex-cell').addClass('willBeReplaced');
+                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
             }
             else {
-                $(that).parents('.la-noChange').parents('.la-flex-cell').removeClass('willBeReplaced');
+                $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').removeClass('willBeReplaced');
             }
         }
 

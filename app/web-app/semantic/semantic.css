@@ -33508,7 +33508,7 @@ table tr td div.willBeReplacedStrong {
   padding-left: 0;
 }
 
-.la-flex-cell {
+.la-copyElements-flex-container {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -33520,7 +33520,7 @@ table tr td div.willBeReplacedStrong {
   justify-content: space-evenly;
 }
 
-.la-affected {
+.la-copyElements-flex-item {
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
@@ -33532,7 +33532,19 @@ table tr td div.willBeReplacedStrong {
   justify-content: center;
 }
 
-.la-source {
+.la-copyElements-th-flex-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+}
+
+.la-copyElements-th-flex-item {
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
