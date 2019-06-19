@@ -18,12 +18,14 @@
     <body>
         <h2>Zur Zeit nur Test</h2>
         <h3>Es wurden Daten ausgelesen. Ausgabe der Daten samt Fehler:</h3>
-        <g:form name="costItemParameter" action="addCostItems" controller="finance" params="[candidates:candidates.keySet() as JSON, costItemGroups:costItemGroups as JSON]" method="post">
+        <g:form name="costItemParameter" action="addCostItems" controller="finance" method="post">
+            <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
+            <g:hiddenField name="costItemGroups" value="${costItemGroups as JSON}"/>
             <table>
                 <tr>
                     <th>Kostenposten</th>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                        Für Teilnehmer sichtbar machen?
+                        <th>Für Teilnehmer sichtbar machen?</th>
                     </g:if>
                     <th>Posten übernehmen?</th>
                 </tr>
@@ -47,7 +49,7 @@
                                 <li><g:message code="myinst.financeImport.value"/>: ${ci.costInLocalCurrency}</li>
                                 <li><g:message code="myinst.financeImport.exchangeRate"/>: ${ci.currencyRate}</li>
                                 <li><g:message code="myinst.financeImport.invoiceDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.invoiceDate}"/></li>
-                                <li><g:hiddenField name="financialYear${r}" value="${ci.financialYear}"/><g:message code="myinst.financeImport.financialYear"/>: ${ci.financialYear}</li>
+                                <li><g:message code="myinst.financeImport.financialYear"/>: ${ci.financialYear}</li>
                                 <li><g:message code="myinst.financeImport.title"/>: ${ci.costTitle}</li>
                                 <li><g:message code="myinst.financeImport.description"/>: ${ci.costDescription}</li>
                                 <li><g:message code="myinst.financeImport.referenceCodes"/>: ${ci.reference}</li>
@@ -70,6 +72,7 @@
                                             <g:if test="${error.getKey() == 'packageWithoutSubscription'}"><li>Ohne Lizenz kann kein Posten zu einem Paket zugeordnet werden</li></g:if>
                                             <g:if test="${error.getKey() == 'noValidPackage'}"><li>Zum Identifikator ${error.getValue()} wurde kein passendes Paket gefunden</li></g:if>
                                             <g:if test="${error.getKey() == 'multipleSubPkgError'}"><li>Mehrere Pakete zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
+                                            <g:if test="${error.getKey() == 'packageNotInSubscription'}"><li>Das Paket ${error.getValue()} ist nicht mit der gegebenen Lizenz verknüpft</li></g:if>
                                             <g:if test="${error.getKey() == 'entitlementWithoutPackageOrSubscription'}"><li>Ohne Lizenz und Paket kann kein Posten zu einem Einzeltitel zugeordnet werden</li></g:if>
                                             <g:if test="${error.getKey() == 'noValidTitle'}"><li>Zum Identifikator ${error.getValue()} wurde keine passende Titelinstanz gefunden</li></g:if>
                                             <g:if test="${error.getKey() == 'multipleTitleError'}"><li>Mehrere Titelinstanzen zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
@@ -101,13 +104,13 @@
                         </td>
                         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                             <td>
-                                <g:if test="${OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType in :roleType',[org: ci.owner,sub: ci.sub,roleType: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}">
+                                <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
                                     sichtbar <input name="visibleForSubscriber${r}" type="radio" value="true"><br>nicht sichtbar <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
                                 </g:if>
                             </td>
                         </g:if>
                         <td>
-
+                            <input name="take${r}" type="checkbox">
                         </td>
                     </tr>
                 </g:each>

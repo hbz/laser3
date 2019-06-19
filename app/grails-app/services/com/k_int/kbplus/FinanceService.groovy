@@ -692,7 +692,11 @@ class FinanceService {
                 String subIdentifier = cols[colMap.sub]
                 if(subIdentifier) {
                     //fetch possible identifier namespaces
-                    List<Subscription> subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and (oo.org = :org)",[idCandidate:subIdentifier,org:owner])
+                    List<Subscription> subMatches
+                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                    else if(accessService.checkPerm("ORG_INST"))
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
@@ -717,7 +721,7 @@ class FinanceService {
                     if(subscription == null)
                         mappingErrorBag.packageWithoutSubscription = true
                     else {
-                        List<Package> pkgMatches = Package.executeQuery("select idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
+                        List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
                         if(!pkgMatches)
                             mappingErrorBag.noValidPackage = subPkgIdentifier
                         else if(pkgMatches.size() > 1)
@@ -726,6 +730,8 @@ class FinanceService {
                             subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription,pkgMatches[0])
                             if(subPkg)
                                 costItem.subPkg = subPkg
+                            else if(!subPkg)
+                                mappingErrorBag.packageNotInSubscription = subPkgIdentifier
                         }
                     }
                 }
@@ -744,14 +750,14 @@ class FinanceService {
                     if(subscription == null || subPkg == null)
                         mappingErrorBag.entitlementWithoutPackageOrSubscription = true
                     else {
-                        List<TitleInstancePackagePlatform> TIPPMatches = TitleInstancePackagePlatform.executeQuery("select idOcc.tipp from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
-                        if(!TIPPMatches)
+                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier
-                        else if(TIPPMatches.size() > 1)
-                            mappingErrorBag.multipleTitleError = TIPPMatches.collect { tipp -> tipp.title.title }
-                        else if(TIPPMatches.size() == 1) {
-                            TitleInstancePackagePlatform tippMatch = TIPPMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.findAllBySubscriptionAndTipp(subscription,tippMatch)
+                        else if(titleMatches.size() > 1)
+                            mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
+                        else if(titleMatches.size() == 1) {
+                            TitleInstance tiMatch = titleMatches[0]
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:RDStore.IE_DELETED])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)

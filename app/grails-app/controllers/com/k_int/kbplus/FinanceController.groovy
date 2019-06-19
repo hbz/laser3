@@ -16,6 +16,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.grails.datastore.mapping.query.Query
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
@@ -1108,16 +1109,47 @@ class FinanceController extends AbstractDebugController {
     })
     def addCostItems() {
         boolean withErrors = false
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         flash.error = ""
         def candidates = JSON.parse(params.candidates)
+        def costItemGroups = JSON.parse(params.costItemGroups)
         candidates.eachWithIndex { ci, int c ->
-            CostItem costItem = (CostItem) ci
-            costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
-            log.debug(params["financialYear${c}"])
-            costItem.financialYear = params["financialYear${c}"] ? Year.parse(params["financialYear${c}"]) : null
-            if(!costItem.save()) {
-                withErrors = true
-                flash.error += costItem.getErrors()
+            if(params["take${c}"]) {
+                //a single cast did not work because of financialYear type mismatch
+                CostItem costItem = new CostItem(owner: Org.get(ci.owner.id))
+                costItem.sub = Subscription.get(ci.sub.id) ?: null
+                costItem.subPkg = SubscriptionPackage.get(ci.subPkg?.id) ?: null
+                costItem.issueEntitlement = IssueEntitlement.get(ci.issueEntitlement?.id) ?: null
+                costItem.order = Order.get(ci.order?.id) ?: null
+                costItem.invoice = Invoice.get(ci.invoice?.id) ?: null
+                costItem.billingCurrency = RefdataValue.get(ci.billingCurrency?.id) ?: null
+                costItem.costItemElement = RefdataValue.get(ci.costItemElement?.id) ?: null
+                costItem.costItemElementConfiguration = RefdataValue.get(ci.costItemElementConfiguration?.id) ?: null
+                costItem.taxKey = CostItem.TAX_TYPES.valueOf(ci.taxKey?.name) ?: null
+                costItem.costInBillingCurrency = ci.costInBillingCurrency ?: 0.0
+                costItem.costInLocalCurrency = ci.costInLocalCurrency ?: 0.0
+                costItem.currencyRate = ci.currencyRate ?: 0.0
+                costItem.invoiceDate = ci.invoiceDate ? sdf.parse(ci.invoiceDate) : null
+                costItem.financialYear = Year.parse(ci.financialYear?.value?.toString()) ?: null
+                costItem.costTitle = ci.costTitle ?: null
+                costItem.costDescription = ci.costDescription ?: null
+                costItem.reference = ci.reference ?: null
+                costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
+                costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
+                costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
+                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+                if(!costItem.save()) {
+                    withErrors = true
+                    flash.error += costItem.getErrors()
+                }
+                else {
+                    List budgetCodes = costItemGroups.get(ci)
+                    budgetCodes.each { obj ->
+                        BudgetCode bc = (BudgetCode) JSON.parse(obj)
+                        bc.save()
+                        new CostItemGroup(budgetCode: bc, costItem: costItem).save()
+                    }
+                }
             }
         }
         if(!withErrors)
