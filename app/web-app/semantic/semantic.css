@@ -33470,13 +33470,6 @@ a.ui.card:hover,
   */
 }
 
-/* APPEND */
-
-.ui.checkbox.la-toggle-radio.la-append label:before {
-  font-family: icomoon;
-  content: "\e90c";
-}
-
 /* REPLACE */
 
 .ui.checkbox.la-toggle-radio.la-replace label:before {
@@ -33513,6 +33506,42 @@ table tr td div.willBeReplacedStrong {
 
 .la-element .checkbox {
   padding-left: 0;
+}
+
+.la-flex-cell {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+}
+
+.la-affected {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.la-source {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
 }
 /*!
  * # Semantic UI 2.3.1 - Dimmer
