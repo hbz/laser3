@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
 <html>
   <head>
@@ -34,16 +35,31 @@
             </thead>
             <tbody>
               <g:each in="${mappingCols}" var="mpg">
+                <%
+                    List args = []
+                    switch(mpg) {
+                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues('CostItemStatus').collect { it -> it.getI10n('value') })
+                            break
+                        case 'element': args.addAll(RefdataCategory.getAllRefdataValues('CostItemElement').collect { it -> it.getI10n('value') })
+                            break
+                        case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues('Cost configuration').collect { it -> it.getI10n('value') })
+                            break
+                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues('TaxType').collect { it -> it.getI10n('value') })
+                            break
+                        case 'taxRate': args.addAll([0,7,19])
+                            break
+                    }
+                %>
                 <tr>
-                  <td>${message(code:"myinst.financeImport.${mpg}")}</td>
-                  <td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>
-                  <td>${message(code:"myinst.financeImport.format.${mpg}") ?: ''}</td>
+                    <td>${message(code:"myinst.financeImport.${mpg}")}</td>
+                    <td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>
+                    <td>${message(code:"myinst.financeImport.format.${mpg}",args:[raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
                 </tr>
               </g:each>
             </tbody>
           </table>
 
-          <g:form action="processFinanceImport" method="post" enctype="multipart/form-data" params="${[shortcode:params.shortcode]}">
+          <g:form action="processFinanceImport" method="post" enctype="multipart/form-data">
             <dl>
               <div class="field">
                 <dt>${message(code:'myinst.financeImport.upload', default:'Upload TSV File')}</dt>
@@ -51,13 +67,13 @@
                   <input type="file" name="tsvFile" />
                 </dd>
               </div>
-              <div class="field">
-                <%-- <dt>Dry Run</dt> --%>
+              <%-- <div class="field">
+                <dt>Dry Run</dt>
                 <dt>${message(code:'myinst.financeImport.dryrun', default:'Dry Run')}</dt>
                 <dd>
                   <input class="ui button" type="checkbox" name="dryRun" checked value="true" />
                 </dd>
-              </div>
+              </div> --%>
               <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.financeImport.upload", default:'Upload...')}</button>
             </dl>
           </g:form>

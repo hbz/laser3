@@ -1102,6 +1102,28 @@ class FinanceController extends AbstractDebugController {
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addCostItems() {
+        boolean withErrors = false
+        flash.error = ""
+        def candidates = JSON.parse(params.candidates)
+        candidates.eachWithIndex { ci, int c ->
+            CostItem costItem = (CostItem) ci
+            costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+            log.debug(params["financialYear${c}"])
+            costItem.financialYear = params["financialYear${c}"] ? Year.parse(params["financialYear${c}"]) : null
+            if(!costItem.save()) {
+                withErrors = true
+                flash.error += costItem.getErrors()
+            }
+        }
+        if(!withErrors)
+            redirect action: 'index'
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def acknowledgeChange() {
