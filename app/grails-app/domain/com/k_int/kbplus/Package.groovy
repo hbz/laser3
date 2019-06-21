@@ -516,7 +516,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing identifier ${value}"
     this.ids.each {
         println "processing identifier occurrence ${it}"
-      if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+      if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
           println "occurrence found"
         found = true
       }

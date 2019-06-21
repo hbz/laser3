@@ -25,7 +25,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="currentSurveys" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="currentSurveys" controller="myInstitution" method="get" class="form-inline ui small form">
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}

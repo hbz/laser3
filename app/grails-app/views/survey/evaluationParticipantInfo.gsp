@@ -50,10 +50,12 @@
             </td>
             <td>
                 <g:if test="${choosenOrgCPAs}">
+                    <g:set var="oldEditable" value="${editable}" />
+                    <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
                         <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
                     </g:each>
-                </g:if>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
             </td>
         </tr>
         </tbody>

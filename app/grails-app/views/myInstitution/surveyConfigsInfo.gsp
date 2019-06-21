@@ -13,6 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <semui:crumb controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     <semui:crumb message="survey.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -26,6 +27,29 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 <g:formatDate formatName="default.date.format.notime"
               date="${surveyInfo.endDate}"/>)
 </h1>
+
+
+<g:if test="${navigation}">
+    <div class="ui center aligned grid">
+        <div class='ui big label la-annual-rings'>
+
+            <g:if test="${navigation?.prev}">
+                <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                        params="[surveyConfigID: navigation?.prev?.id]" class="item" title="${message(code: 'surveyConfigsInfo.prevSurveyConfig')}">
+                    <i class='arrow left icon'></i>
+                </g:link>
+            </g:if>
+            <g:message code="surveyConfigsInfo.totalSurveyConfig" args="[surveyConfig?.configOrder, navigation?.total]"/>
+            <g:if test="${navigation?.next}">
+                <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                        params="[surveyConfigID: navigation?.next?.id]" class="item" title="${message(code: 'surveyConfigsInfo.nextSurveyConfig')}">
+                    <i class='arrow right icon'></i>
+                </g:link>
+            </g:if>
+        </div>
+    </div>
+</g:if>
+
 <br>
 
 <semui:messages data="${flash}"/>
@@ -49,10 +73,13 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
+                        <g:set var="oldEditable" value="${editable}" />
+                        <g:set var="editable" value="${false}" scope="request"/>
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
-                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
                         </g:each>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+
                     </g:if>
                 </td>
             </tr>
@@ -90,7 +117,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
-                            <dd>${subscriptionInstance.type?.getI10n('value')}</dd>
+                            <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
                             <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>
                         <dl>
@@ -103,12 +130,12 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                             <dd>${subscriptionInstance?.resource?.getI10n('value')}</dd>
                             <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                         </dl>
-                        <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+                        <g:if test="${subscriptionInstance?.instanceOf && (contextOrg?.id == subscriptionInstance?.getConsortia()?.id)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
                                     <g:link controller="subscription" action="show"
-                                            id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                                            id="${subscriptionInstance?.instanceOf.id}">${subscriptionInstance?.instanceOf}</g:link>
                                 </dd>
                             </dl>
 
@@ -126,7 +153,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                 <g:message code="default.identifiers.label"/>
                             </dt>
                             <dd>
-                                <g:each in="${subscriptionInstance?.ids.sort { it.identifier.ns.ns }}"
+                                <g:each in="${subscriptionInstance?.ids?.sort { it?.identifier?.ns?.ns }}"
                                         var="id">
                                     <span class="ui small teal image label">
                                         ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
@@ -300,14 +327,14 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                     <td>
                                         <g:each in="${costItemsSub}" var="costItemSub">
                                             ${costItemSub?.costItemElement?.getI10n('value')}
-                                            <g:formatNumber
+                                            <b><g:formatNumber
                                                     number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
-                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
                                             ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
 
                                             <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                                (${formatDate(date:costItemSub?.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                                (${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
                                             </g:if>
 
                                         </g:each>
@@ -315,11 +342,11 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                     <td>
                                         <g:if test="${costItem}">
                                             ${costItem?.costItemElement?.getI10n('value')}
-                                            <g:formatNumber
+                                            <b><g:formatNumber
                                                     number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
-                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/>
+                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                                            <br>${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
                                             <g:if test="${costItem?.costDescription}">
                                                 <br>

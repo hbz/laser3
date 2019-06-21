@@ -11,6 +11,7 @@ import de.laser.helper.SortUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.time.TimeCategory
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import com.k_int.properties.*
@@ -69,6 +70,7 @@ class MyInstitutionController extends AbstractDebugController {
     def organisationService
     def titleStreamService
     def financeService
+    def surveyService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -999,6 +1001,7 @@ from License as l where (
 
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyProperty.subProvider'),
+                       g.message(code: 'surveyProperty.subAgency'),
                        g.message(code: 'subscription.owner.label'),
                        g.message(code: 'subscription.packages.label'),
                        g.message(code: 'subscription.details.status'),
@@ -1030,30 +1033,28 @@ from License as l where (
                     row.add([field: result?.surveyConfig?.comment ?: '', style: null])
                     row.add([field: sub?.name ?: "", style: null])
 
-                    List providersAndAgencies = sub?.providers + sub?.agencies
-                    row.add([field: providersAndAgencies ? providersAndAgencies.join(", ") : '', style: null])
 
-                    List ownerReferences = sub.owner?.collect {
-                        it.reference
-                    }
-                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '', style: null])
-                    List packageNames = sub.packages?.collect {
+                    row.add([field: sub?.providers ? sub?.providers?.join(", "): '', style: null])
+                    row.add([field: sub?.agencies ? sub?.agencies?.join(", "): '', style: null])
+
+                    row.add([field: sub?.owner?.reference ?: '', style: null])
+                    List packageNames = sub?.packages?.collect {
                         it.pkg.name
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.status?.getI10n("value"), style: null])
-                    row.add([field: sub.type?.getI10n("value"), style: null])
-                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.status?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
 
-                    row.add([field: surveyCostItem ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
 
-                    row.add([field: surveyCostItem ? surveyCostItem?.costDescription : '', style: null])
+                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
                     row.add([field: result.type?.getI10n('name') ?: '', style: null])
                     row.add([field: result.type?.getLocalizedType() ?: '', style: null])
 
-                    def value
+                    def value = ""
 
                     if(result?.type?.type == Integer.toString())
                     {
@@ -1082,7 +1083,7 @@ from License as l where (
 
                     row.add([field: value ?: '', style: null])
                     row.add([field: result.comment ?: '', style: null])
-                    row.add([field: result.finishDate ? sdf.format(result.finishDate) : '', style: null])
+                    row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
 
                     surveyData.add(row)
                     break
@@ -3353,17 +3354,9 @@ AND EXISTS (
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
 
+        def currentDate = new Date(System.currentTimeMillis())
 
-        result.surveys = SurveyResult.findAll("from SurveyResult where " +
-                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status " +
-                " and ((startDate >= :startDate and endDate <= :endDate)" +
-                " or (startDate <= :startDate and endDate is null) " +
-                " or (startDate is null and endDate is null))",
-                [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
-                 startDate: new Date(System.currentTimeMillis()),
-                 endDate: new Date(System.currentTimeMillis())])
-
+        params.currentDate = currentDate
 
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
 
@@ -3632,7 +3625,7 @@ AND EXISTS (
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
-        result.editable = surveyResults?.finishDate?.contains(null) ? true : false
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
         result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
@@ -3688,6 +3681,8 @@ AND EXISTS (
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
+        result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
+
         if(result.surveyConfig?.type == 'Subscription') {
             result.authorizedOrgs = result.user?.authorizedOrgs
             result.contextOrg = contextService.getOrg()
@@ -3701,7 +3696,7 @@ AND EXISTS (
             result.visibleOrgRelations.sort { it.org.sortname }
         }
 
-        result.editable = result.surveyResults.finishDate.contains(null) ? true : false
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
         result.consCostTransfer = true
 
         result

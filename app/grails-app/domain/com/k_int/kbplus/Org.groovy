@@ -574,7 +574,7 @@ class Org
     def addOnlySpecialIdentifiers(ns,value) {
         boolean found = false
         this.ids.each {
-            if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+            if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
                 found = true
             }
         }

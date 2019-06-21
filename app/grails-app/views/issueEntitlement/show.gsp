@@ -58,7 +58,7 @@
                 <g:if test="${issueEntitlementInstance?.tipp.title?.ids}">
                     <dt>${message(code:'title.identifiers.label', default:'Title Identifiers')}</dt>
                     <dd><ul>
-                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids.sort{it.identifier.ns.ns}}" var="i">
+                      <g:each in="${issueEntitlementInstance?.tipp.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="i">
                           <li>${i.identifier.ns.ns}: <g:if test="${i.identifier.ns.ns == 'originediturl'}"><a href="${i.identifier.value}">${i.identifier.value}</a></g:if><g:else>${i.identifier.value}</g:else>
 <!--                            <g:if test="${i.identifier.ns.ns.equalsIgnoreCase('issn')}">
                               (<a href="http://suncat.edina.ac.uk/F?func=find-c&ccl_term=022=${i.identifier.value}">search on SUNCAT</a>)

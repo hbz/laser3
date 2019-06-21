@@ -328,9 +328,10 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <g:if test="${grailsApplication.config.featureSurvey}">
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
-                <div>
-                    <g:render template="surveys"/>
+                <div class="pull-right">
+                    <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
+                    <g:render template="surveys"/>
             </div>
             </g:if>
         </g:if>

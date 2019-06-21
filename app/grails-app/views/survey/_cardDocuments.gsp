@@ -17,7 +17,7 @@
 %>
 
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">
-    <semui:card message="license.documents" class="documents la-js-hideable ${css_class}">
+    <semui:card message="license.documents" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
            <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
@@ -81,6 +81,11 @@
             </g:if>
         </g:each>
     </semui:card>
+</g:if>
+
+<g:if test="${editable}">
+    <g:render template="/templates/documents/modal"
+              model="${[ownobj: ownobj , owntp: 'surveyConfig']}"/>
 </g:if>
 
 <script>

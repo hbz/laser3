@@ -53,7 +53,7 @@
 											<g:if test="${providerInstance.impId}">
 												<li><g:message code="org.impId.label" default="Import ID" />: <g:fieldValue bean="${providerInstance}" field="impId"/></li>
 											</g:if>
-											<g:each in="${providerInstance.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
+											<g:each in="${providerInstance.ids?.sort{it?.identifier?.ns?.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
 									</ul></td>
 									<td>${providerInstance.shortname}</td>
 									<td>${providerInstance.country}</td>

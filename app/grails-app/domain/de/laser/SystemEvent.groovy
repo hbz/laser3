@@ -54,6 +54,9 @@ class SystemEvent {
             'SUB_UPDATE_JOB_START'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SURVEY_UPDATE_JOB_START'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SURVEY_UPDATE_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SURVEY_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
