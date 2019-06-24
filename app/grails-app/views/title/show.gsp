@@ -343,7 +343,7 @@
                       <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
                   </g:if>
 
-                  <g:each in="${t?.title?.ids?.sort{it.identifier.ns.ns}}" var="id">
+                  <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                       <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                           <span class="ui small teal image label">
                               ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>

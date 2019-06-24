@@ -100,7 +100,7 @@
                     </td>
 
                     <td>
-                        <g:each in="${tipp.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
+                        <g:each in="${tipp.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="title_id">
                             <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                                 ${title_id.identifier.ns.ns}: <strong>${title_id.identifier.value}</strong>
                                 <br />
@@ -172,7 +172,7 @@
             </td>
 
             <td>
-                <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
+                <g:each in="${ie?.tipp?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                         ${title_id.identifier.ns.ns}: <strong>${title_id.identifier.value}</strong>
                         <br />

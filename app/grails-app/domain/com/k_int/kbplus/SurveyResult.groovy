@@ -31,9 +31,8 @@ class SurveyResult extends AbstractProperty {
         resultValues (nullable:true, blank:false)
         startDate  (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
-
-
     }
+
     static mapping = {
         includes AbstractProperty.mapping
 

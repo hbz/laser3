@@ -249,7 +249,7 @@
                                            target="_blank"><i class="share square icon"></i></a>
                                     </g:if>
 
-                                    <g:each in="${ie?.tipp?.title?.ids.sort { it.identifier.ns.ns }}" var="title_id">
+                                    <g:each in="${ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="title_id">
                                         <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                                             <span class="ui small teal image label">
                                                 ${title_id.identifier.ns.ns}: <div

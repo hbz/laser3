@@ -49,7 +49,7 @@
                     ${message(code: 'surveyConfig.configOrder.label')}
                 </th>
                 <th>${message(code: 'surveyProperty.subName')}</th>
-                <th>${message(code: 'surveyProperty.subProvider')}</th>
+                <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
                 <th>${message(code: 'surveyProperty.subStatus')}</th>
 
                 <th>${message(code: 'surveyProperty.plural.label')}</th>
@@ -60,12 +60,22 @@
             </tr>
 
             </thead>
-
-            <g:each in="${surveyConfigs}" var="config" status="i">
-                <g:if test="${config?.type == 'Subscription'}">
+        <g:set var="surveySubConfigs" value="${surveyConfigs.findAll{it?.type == 'Subscription'}}"/>
+            <g:each in="${surveySubConfigs}" var="config" status="i">
                     <tr>
                         <td class="center aligned">
-                            <semui:xEditable owner="${config}" field="configOrder"/>
+                            <div class="ui label large la-annual-rings">
+                                <g:if test="${config?.configOrder > 1}">
+                                <g:link action="changeConfigOrder" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
+                                </g:if>
+                                <br>
+                                ${config?.configOrder}<br>
+                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                <g:link action="changeConfigOrder" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
+                                </g:if>
+                            </div>
                         </td>
                         <td>
                             <g:link controller="subscription" action="show"
@@ -135,7 +145,6 @@
                             </g:elseif>
                         </td>
                     </tr>
-                </g:if>
             </g:each>
         </table>
     </semui:form>
@@ -165,11 +174,22 @@
 
             </thead>
 
-            <g:each in="${surveyConfigs}" var="config" status="i">
-                <g:if test="${config?.type == 'SurveyProperty'}">
+            <g:set var="surveyPropertyConfigs" value="${surveyConfigs.findAll{it?.type == 'SurveyProperty'}}"/>
+            <g:each in="${surveyPropertyConfigs}" var="config" status="i">
                     <tr>
                         <td class="center aligned">
-                            <semui:xEditable owner="${config}" field="configOrder"/>
+                            <div class="ui label large la-annual-rings">
+                                <g:if test="${config?.configOrder-surveySubConfigs.size() > 1}">
+                                    <g:link action="changeConfigOrder" id="${surveyInfo.id}"
+                                            params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
+                                </g:if>
+                                <br>
+                                ${config?.configOrder}<br>
+                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                    <g:link action="changeConfigOrder" id="${surveyInfo.id}"
+                                            params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
+                                </g:if>
+                            </div>
                         </td>
                         <td>
 
@@ -232,7 +252,6 @@
                             </g:elseif>
                         </td>
                     </tr>
-                </g:if>
             </g:each>
         </table>
     </semui:form>

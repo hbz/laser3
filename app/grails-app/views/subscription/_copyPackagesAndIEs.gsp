@@ -14,16 +14,25 @@
             <thead>
                 <tr>
                     <th class="six wide">
-                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+                        <div class="la-copyElements-th-flex-container">
+                            <div class="la-copyElements-th-flex-item">
+                                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+                            </div>
+                        </div>
                     </th>
-                    <th class="one wide center aligned"><input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
+
                     <th class="six wide">
-                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
-                    </th>
-                    <th class="one wide center aligned">
-                        <g:if test="${targetSubscription}">
-                            <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
-                        </g:if>
+                        <div class="la-copyElements-th-flex-container">
+                            <div class="la-copyElements-th-flex-item">
+                                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+                            </div>
+                            <div>
+                                <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
+                            </div>
+                        </div>
                     </th>
                 </tr>
             </thead>
@@ -32,88 +41,87 @@
                 <td name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                                <label>
-                                    <i class="gift icon"></i>
-                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
-                                    <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
-                                    <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
-                                </label>
-                        </div>
-                    </g:each>
-                </td>
-                %{--COPY:--}%
-                <td class="center aligned">
-                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                        <div class="la-copyPack-container la-element">
+                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
+                                    <label>
+                                        <i class="gift icon"></i>
+                                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
+                                        <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
+                                        <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                    </label>
                             </div>
-                            <br />
+
+                            %{--COPY:--}%
+
+                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}">
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                    <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgid="${sp.pkg?.id}" data-action="copy" checked="${true}"/>
+                                </div>
+                                <br />
+                            </div>
                         </div>
                     </g:each>
                 </td>
+
+
+
                 <td name="subscription.takePackages.target">
                     <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
-                    <div>
-                        <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
+
+                    <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                        <div class="la-copyPack-container la-element">
+                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-copyPack-item">
                                 <i class="gift icon"></i>
                                 <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
                                 <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
                                 <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                                 <br>
                             </div>
-                        </g:each>
-                    </div>
-                </td>
-                %{--DELETE--}%
-                <td class="center aligned">
-                    <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
-                            <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
+
+                            %{--DELETE--}%
+                            <div data-pkgoid="${genericOIDService.getOID(sp.pkg)}">
+                                <div class="ui checkbox la-toggle-radio la-noChange">
+                                    <g:checkBox name="subscription.deletePackageIds" value="${genericOIDService.getOID(sp)}" data-pkgid="${genericOIDService.getOID(sp.pkg)}" data-action="delete" checked="${false}"/>
+                                </div>
                             </div>
                         </div>
-                    </g:each>
+                     </g:each>
                 </td>
             </tr>
             <tr>
                 <td name="subscription.takeEntitlements.source">
                     <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
-                        <div class="la-element" data-ieoid="${genericOIDService.getOID(ie)}">
-                                <label>
-                                    <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
-                                    <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                                </label>
-                        </div>
-                    </g:each>
-                </td>
-                %{--COPY:--}%
-                <td class="center aligned">
-                    <g:each in="${sourceIEs}" var="ie">
-                        <div class="ui checkbox la-toggle-radio la-replace">
-                            <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="copy" checked="${true}"/>
+                        <div class="la-copyPack-container la-element">
+                            <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">
+                                    <label>
+                                        <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
+                                        <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                    </label>
+                            </div>
+
+                            %{--COPY:--}%
+                            <div class="ui checkbox la-toggle-radio la-replace">
+                                <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="copy" checked="${true}"/>
+                            </div>
                         </div>
                     </g:each>
                 </td>
                 <td name="subscription.takeEntitlements.target">
                     <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <div class="la-element" data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}">
-                            <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
-                            <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                            <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                        </div>
-                    </g:each>
-                </td>
-                %{--DELETE--}%
-                <td class="center aligned">
-                    <g:each in="${targetIEs}" var="ie">
-                        <div class="ui checkbox la-toggle-radio la-noChange">
-                            <g:checkBox name="subscription.deleteEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="delete" checked="${false}"/>
+                        <div class="la-copyPack-container la-element">
+                            <div data-pkgoid="${genericOIDService.getOID(ie?.tipp?.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}" class=" la-copyPack-item">
+                                <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
+                                <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                            </div>
+
+                             %{--DELETE--}%
+                            <div class="ui checkbox la-toggle-radio la-noChange">
+                                <g:checkBox name="subscription.deleteEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="delete" checked="${false}"/>
+                            </div>
                         </div>
                     </g:each>
                 </td>

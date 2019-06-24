@@ -261,7 +261,7 @@
                                         </g:if>
                                 </g:each>
 
-                                <g:each in="${ti?.ids?.sort { it.identifier.ns.ns }}" var="id">
+                                <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
                                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                                         <span class="ui small teal image label">
                                             ${id.identifier.ns.ns}: <div class="detail"><a

@@ -19,9 +19,10 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <g:link class="item" controller="myInstitution" action="surveyInfos" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-            </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" controller="myInstitution" action="surveyInfos"
+                    params="${params + [exportXLS: true]}">${message(code: 'default.button.exports.xls')}</g:link>
+        </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
 
@@ -30,12 +31,13 @@
 <h1 class="ui left aligned icon header"><semui:headerIcon/>
 ${message(code: 'survey.label')} - ${surveyInfo.name}
 
-<g:if test="${surveyInfo.startDate || surveyInfo.endDate}"></g:if>
+%{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">
 (<g:formatDate formatName="default.date.format.notime"
                date="${surveyInfo.startDate}"/>
 -
 <g:formatDate formatName="default.date.format.notime"
               date="${surveyInfo.endDate}"/>)
+</g:if>--}%
 </h1>
 
 <br>
@@ -43,6 +45,45 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 <semui:messages data="${flash}"/>
 
 <br>
+
+<div class="ui icon info message">
+    <i class="info icon"></i>
+
+    <div class="content">
+        <div class="header">${surveyInfo.status?.getI10n('value')}!</div>
+
+        <p>
+            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey started', 'Survey Status')}">
+                <g:message code="surveyInfo.status.surveyStarted"
+                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate), (g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo?.endDate) ?: '')]"/>
+            </g:if>
+            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Survey completed', 'Survey Status')}">
+                <g:message code="surveyInfo.status.surveyCompleted"
+                           args="[g.formatDate(formatName: 'default.date.format.notime', date: surveyInfo.startDate)]"/>
+            </g:if>
+            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('In Evaluation', 'Survey Status')}">
+                <g:message code="surveyInfo.status.inEvaluation"/>
+            </g:if>
+            <g:if test="${surveyInfo.status == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Completed', 'Survey Status')}">
+                <g:message code="surveyInfo.status.surveyCompleted"/>
+            </g:if>
+        </p>
+    </div>
+</div>
+
+<g:if test="${!editable}">
+    <div class="ui icon positive message">
+        <i class="info icon"></i>
+
+        <div class="content">
+            <div class="header"></div>
+
+            <p>
+                <g:message code="surveyInfo.finishOrSurveyCompleted"/>
+            </p>
+        </div>
+    </div>
+</g:if>
 
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(ownerId)}"/>
@@ -61,10 +102,12 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
+                        <g:set var="oldEditable" value="${editable}" />
+                        <g:set var="editable" value="${false}" scope="request"/>
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
-                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
                         </g:each>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                     </g:if>
                 </td>
             </tr>
@@ -93,7 +136,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                 ${message(code: 'sidewide.number')}
             </th>
             <th>${message(code: 'surveyProperty.subName')}</th>
-            <th>${message(code: 'surveyProperty.subProvider')}</th>
+            <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>${message(code: 'surveyResult.finish')}</th>
             <th></th>
@@ -116,18 +159,18 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
                     </td>
                     <td>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).providers}"
+                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.providers}"
                                 var="org">
                             <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
                         </g:each>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution).agencies}"
+                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.agencies}"
                                 var="org">
                             <g:link controller="organisation" action="show"
                                     id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
                         </g:each>
 
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <g:link action="surveyConfigsInfo" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
@@ -139,13 +182,22 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <td class="center aligned">
                         <g:set var="finish" value="${surveyConfig.checkResultsFinishByOrg(institution)}"/>
                         <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
-                            <i class="circle green icon"></i>
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                                  data-tooltip="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
+                                <i class="circle green icon"></i>
+                            </span>
                         </g:if>
                         <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
-                            <i class="circle yellow icon"></i>
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                                  data-tooltip="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
+                                <i class="circle yellow icon"></i>
+                            </span>
                         </g:elseif>
                         <g:else>
-                            <i class="circle red icon"></i>
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
+                                  data-tooltip="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
+                                <i class="circle red icon"></i>
+                            </span>
                         </g:else>
                     </td>
 
@@ -257,10 +309,11 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
     </semui:form>
 
 </g:if>
-
-<g:link class="ui button" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}">
-    <g:message code="surveyResult.finish.info2"/>
-</g:link>
+<g:if test="${editable}">
+    <g:link class="ui button" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}">
+        <g:message code="surveyResult.finish.info2"/>
+    </g:link>
+</g:if>
 <br>
 <br>
 </body>

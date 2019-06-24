@@ -307,13 +307,37 @@ class FilterService {
             query << "surveyConfig.surveyInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
         }
-        if (params.startDate && sdFormat) {
-            query << "surveyConfig.surveyInfo.startDate >= :startDate"
-            queryParams << [startDate : sdFormat.parse(params.startDate)]
+
+        if (params.currentDate) {
+
+            params.currentDate = (params.currentDate instanceof Date) ? params.currentDate : sdFormat.parse(params.currentDate)
+
+            query << "surveyConfig.surveyInfo.startDate <= :startDate and (surveyConfig.surveyInfo.endDate >= :endDate or surveyConfig.surveyInfo.endDate is null)"
+
+            queryParams << [startDate : params.currentDate+2]
+            queryParams << [endDate : params.currentDate-7]
+
+            query << "surveyConfig.surveyInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+
+            query << "surveyConfig.surveyInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
+
         }
-        if (params.endDate && sdFormat) {
-            query << "surveyConfig.surveyInfo.endDate <= :endDate"
-            queryParams << [endDate : sdFormat.parse(params.endDate)]
+
+        if (params.startDate && sdFormat && !params.currentDate) {
+
+            params.startDate = (params.startDate instanceof Date) ? params.startDate : sdFormat.parse(params.startDate)
+
+            query << "surveyConfig.surveyInfo.startDate >= :startDate"
+            queryParams << [startDate : params.startDate]
+        }
+        if (params.endDate && sdFormat && !params.currentDate) {
+
+            params.endDate = params.endDate instanceof Date ? params.endDate : sdFormat.parse(params.endDate)
+
+            query << "(surveyConfig.surveyInfo.endDate <= :endDate or surveyConfig.surveyInfo.endDate is null)"
+            queryParams << [endDate : params.endDate]
         }
 
         def defaultOrder = " order by " + (params.sort ?: " LOWER(surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")

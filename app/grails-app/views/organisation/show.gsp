@@ -123,7 +123,7 @@ ${orgInstance.name}
                             <dt>ISIL</dt>
                             <dd>
                                 <g:set var="isils"
-                                       value="${orgInstance.ids.findAll { it.identifier.ns.ns == 'ISIL' }}"/>
+                                       value="${orgInstance.ids.findAll { it?.identifier?.ns?.ns == 'ISIL' }}"/>
                                 <g:if test="${isils}">
                                     <div class="ui divided middle aligned selection list la-flex-list">
                                         <g:each in="${isils}" var="isil">
@@ -159,7 +159,7 @@ ${orgInstance.name}
                         <dl>
                             <dt>WIB-ID</dt>
                             <dd>
-                                <g:set var="wibid" value="${orgInstance.ids.find { it.identifier.ns.ns == 'wibid' }}"/>
+                                <g:set var="wibid" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'wibid' }}"/>
                                 <g:if test="${wibid}">
                                     <semui:xEditable owner="${wibid.identifier}" field="value"/>
                                 </g:if>
@@ -168,7 +168,7 @@ ${orgInstance.name}
                         <dl>
                             <dt>EZB-ID</dt>
                             <dd>
-                                <g:set var="ezb" value="${orgInstance.ids.find { it.identifier.ns.ns == 'ezb' }}"/>
+                                <g:set var="ezb" value="${orgInstance.ids.find { it?.identifier?.ns?.ns == 'ezb' }}"/>
                                 <g:if test="${ezb}">
                                     <semui:xEditable owner="${ezb.identifier}" field="value"/>
                                 </g:if>

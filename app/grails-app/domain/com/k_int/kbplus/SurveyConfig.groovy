@@ -27,6 +27,9 @@ class SurveyConfig {
 
     SurveyInfo surveyInfo
 
+    Date scheduledStartDate
+    Date scheduledEndDate
+
     String type
     String header
     String comment
@@ -37,6 +40,7 @@ class SurveyConfig {
 
     boolean pickAndChoose
     boolean configFinish
+    boolean costItemsFinish
 
     static hasMany = [
             documents       : DocContext,
@@ -54,6 +58,9 @@ class SurveyConfig {
         documents(nullable: true, blank: false)
         orgs(nullable: true, blank: false)
         configFinish(nullable: true, blank: false)
+        costItemsFinish (nullable: true, blank: false)
+        scheduledStartDate (nullable: true, blank: false)
+        scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
     }
 
@@ -67,7 +74,10 @@ class SurveyConfig {
         internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
+        costItemsFinish column: 'surconf_costItems_finish', default: false
 
+        scheduledStartDate column: 'surconf_scheduled_startdate'
+        scheduledEndDate column: 'surconf_scheduled_enddate'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
@@ -171,6 +181,52 @@ class SurveyConfig {
         }
 
 
+    }
+
+    def nextConfig()
+    {
+        def next
+
+        for(int i = 0 ; i < this.surveyInfo?.surveyConfigs?.size() ; i++ ) {
+            def curr = this.surveyInfo.surveyConfigs[ i ]
+
+            if(curr?.id == this.id)
+            {
+                next = i < this.surveyInfo.surveyConfigs.size() - 1 ? this.surveyInfo.surveyConfigs[ i + 1 ] : this
+            }
+        }
+        return (next?.id == this?.id) ? null : next
+    }
+
+    def prevConfig()
+    {
+        def prev
+        this.surveyInfo.surveyConfigs.sort {it.configOrder}.reverse(true).each { config ->
+            if(prev)
+            {
+                prev = this
+            }
+
+            if(config.id == this.id)
+            {
+                prev = this
+            }
+        }
+        return (prev?.id == this?.id) ? null : prev
+    }
+
+    def getConfigNavigation(){
+
+        def result = [:]
+        result.prev = prevConfig()
+        result.next = nextConfig()
+        result.total = this.surveyInfo.surveyConfigs?.size() ?: null
+
+        if(!result.total && result.total < 1 && !result.prev && !result.next)
+        {
+            result = null
+        }
+        return result
     }
 
 

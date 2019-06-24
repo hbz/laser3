@@ -16,8 +16,8 @@
 
 </semui:modal>
 
-<div class="ui card la-dl-no-table la-js-hideable">
-
+<!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+<div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
 <g:set var="allPropDefGroups" value="${subscriptionInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
@@ -128,7 +128,8 @@
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">
-        <div class="ui card la-dl-no-table la-js-hideable">
+        <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+        <div class="ui card la-dl-no-table ">
             <div class="content">
 
                 <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>

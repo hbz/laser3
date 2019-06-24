@@ -86,7 +86,7 @@
                         ${fieldValue(bean: property, field: "name")}
                     </g:else>
 
-                    <g:if test="${property?.owner == institution}">
+                    <g:if test="${property?.owner?.id == institution?.id}">
                         <i class='shield alternate icon'></i>
                     </g:if>
                 </td>

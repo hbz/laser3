@@ -33,10 +33,34 @@
 
 <g:render template="nav"/>
 
-
 <semui:messages data="${flash}"/>
 
+<br>
+<g:if test="${navigation}">
+    <div class="ui center aligned grid">
+        <div class='ui big label la-annual-rings'>
 
+            <g:if test="${navigation?.prev}">
+                <g:link action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                        params="[surveyConfigID: navigation?.prev?.id]" class="item"
+                        title="${message(code: 'surveyConfigsInfo.prevSurveyConfig')}">
+                    <i class='arrow left icon'></i>
+                </g:link>
+            </g:if>
+            <g:message code="surveyConfigsInfo.totalSurveyConfig"
+                       args="[surveyConfig?.configOrder, navigation?.total]"/>
+            <g:if test="${navigation?.next}">
+                <g:link action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                        params="[surveyConfigID: navigation?.next?.id]" class="item"
+                        title="${message(code: 'surveyConfigsInfo.nextSurveyConfig')}">
+                    <i class='arrow right icon'></i>
+                </g:link>
+            </g:if>
+        </div>
+    </div>
+</g:if>
+
+<br>
 
 <g:if test="${surveyConfig?.type == 'Subscription'}">
     <h2 class="ui icon header"><semui:headerIcon/>
@@ -51,6 +75,7 @@
 <g:else>
     <h2><g:message code="surveyConfigsInfo.surveyConfig.info" args="[surveyConfig?.getConfigNameShort()]"/></h2>
 </g:else>
+
 
 <g:if test="${surveyConfig}">
     <div class="ui stackable grid">
@@ -103,7 +128,7 @@
                                     <g:message code="default.identifiers.label"/>
                                 </dt>
                                 <dd>
-                                    <g:each in="${surveyConfig?.subscription?.ids.sort { it.identifier.ns.ns }}"
+                                    <g:each in="${surveyConfig?.subscription?.ids?.sort { it?.identifier?.ns?.ns }}"
                                             var="id">
                                         <span class="ui small teal image label">
                                             ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
@@ -215,24 +240,67 @@
                         </div>
                     </g:if>
 
-
+                    <g:set var="oldEditable" value="${editable}"/>
                     <div id="subscription-properties" class="hidden" style="margin: 1em 0">
-                        <g:set var="editable" value="${false}" scope="page"/>
                         <g:set var="editable" value="${false}" scope="request"/>
+                        <g:set var="editable" value="${false}" scope="page"/>
                         <g:render template="/subscription/properties" model="${[
                                 subscriptionInstance: surveyConfig?.subscription,
                                 authorizedOrgs      : authorizedOrgs
                         ]}"/>
 
-
-                        <g:set var="editable" value="${true}" scope="page"/>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
+                        <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
 
                     </div>
 
                 </g:if>
 
+            <%-- FINANCE, to be reactivated as of ERMS-943 --%>
+            <%-- assemble data on server side --%>
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                                <g:render template="/subscription/financials" model="[data:costItemSums.ownCosts]"/>
+                            </g:if>
+                            <g:if test="${costItemSums.consCosts}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
+                                <g:render template="/subscription/financials" model="[data:costItemSums.consCosts]"/>
+                            </g:if>
+                            <g:elseif test="${costItemSums.subscrCosts}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
+                                <g:render template="/subscription/financials" model="[data:costItemSums.subscrCosts]"/>
+                            </g:elseif>
+                        </div>
+                    </div>
+                </g:if>
+
                 <div class="ui card ">
                     <div class="content">
+                        <g:if test="${surveyConfig?.type == 'Subscription'}">
+                            <dl>
+                                <dt class="control-label">
+                                    <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                        ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                        <i class="question small circular inverted icon"></i>
+                                    </div>
+                                </dt>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate"/></dd>
+
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                        ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                        <i class="question small circular inverted icon"></i>
+                                    </div>
+                                </dt>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate"/></dd>
+
+                            </dl>
+                        </g:if>
                         <dl>
                             <dt class="control-label">
                                 <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
@@ -274,7 +342,8 @@
 
         <aside class="four wide column la-sidekick">
             <div id="container-documents">
-                <g:render template="/survey/cardDocuments" model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                <g:render template="/survey/cardDocuments"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
         </aside><!-- .four -->
 
@@ -309,7 +378,7 @@
                         <td>
                             ${surveyProperty?.surveyProperty?.getI10n('name')}
 
-                            <g:if test="${surveyProperty?.surveyProperty?.owner == institution}">
+                            <g:if test="${surveyProperty?.surveyProperty?.owner?.id == institution?.id}">
                                 <i class='shield alternate icon'></i>
                             </g:if>
 
@@ -383,10 +452,25 @@
 
             </table>
 
+
+
         </semui:form>
     </div>
 
 </g:if>
+<br>
+<g:form action="surveyConfigFinish" method="post" class="ui form"
+        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+    <div class="ui right floated compact segment">
+        <div class="ui checkbox">
+            <input type="checkbox" onchange="this.form.submit()"
+                   name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
+            <label><g:message code="surveyConfig.configFinish.label"/></label>
+        </div>
+    </div>
+
+</g:form>
 
 <g:javascript>
     $(".la-popup").popup({});

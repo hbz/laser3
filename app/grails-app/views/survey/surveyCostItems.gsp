@@ -240,14 +240,14 @@
 
             </g:if>
 
-            <g:form action="surveyConfigFinish" method="post" class="ui form"
+            <g:form action="surveyCostItemsFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
                 <div class="ui right floated compact segment">
                     <div class="ui checkbox">
                         <input type="checkbox" onchange="this.form.submit()"
-                               name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyConfig.configFinish.label"/></label>
+                               name="costItemsFinish" ${surveyConfig?.costItemsFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
                     </div>
                 </div>
 

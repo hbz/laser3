@@ -71,8 +71,6 @@ class SurveyInfo {
             }
         }
 
-
-
         return check
     }
 }

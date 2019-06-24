@@ -1,6 +1,7 @@
 
-
 <h3><g:message code="surveys.active"/></h3>
+
+
 <div class="ui divided items">
     <g:each in="${surveys}" var="surveyInfo" status="i">
 
@@ -38,7 +39,9 @@
                 <div class="extra">
                     <div class="ui label">${surveyInfo?.status.getI10n('value')}</div>
 
-                    <div class="ui label survey-${surveyInfo?.type.value}">${surveyInfo?.type.getI10n('value')}</div>
+                    <div class="ui label survey-${surveyInfo?.type.value}">
+                    <g:link controller="myInstitution" action="surveyInfos"
+                            id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}</g:link></div>
                 </div>
             </div>
         </div>

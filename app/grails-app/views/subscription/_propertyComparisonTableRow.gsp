@@ -19,7 +19,7 @@
             </th>
         <th class="six wide center aligned">
             <div class="la-copyElements-th-flex-container">
-                <div class="la-copyElements-th-flex-item"
+                <div class="la-copyElements-th-flex-item">
                     <g:if test="${propBinding && propBinding.get(targetSubscription)?.visibleForConsortiaMembers}">
                         <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
                     </g:if>
@@ -99,7 +99,7 @@
                 </g:each>
             </g:if>
             <g:else>
-                <div>
+                <div class="la-copyElements-flex-item">
                     <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
                 </div>
             </g:else>
@@ -158,11 +158,11 @@
                 </g:each>
             </g:elseif>
             <g:else>
-                <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
+                <div class="la-copyElements-flex-item">
+                    <a class="ui circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
+                </div>
             </g:else>
         </td>
-
-
     </tr>
 </g:each>
 </tbody>

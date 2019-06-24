@@ -932,7 +932,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     static_logger.debug("Looking for identifier ${value} in title ids ${this.ids}");
 
     this.ids.each {
-      if ( it.identifier.ns.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
+      if ( it?.identifier?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
         found = true
       }
     }

@@ -163,6 +163,7 @@
             }
         }
 
+        // ONLY FOR PROPERIES
         var takeProperty = $('input[name="subscription.takeProperty"]');
         var deleteProperty = $('input[name="subscription.deleteProperty"]');
 

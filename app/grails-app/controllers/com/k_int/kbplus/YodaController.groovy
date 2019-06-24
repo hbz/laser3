@@ -42,6 +42,7 @@ class YodaController {
     def quartzScheduler
     def identifierService
     def deletionService
+    def surveyUpdateService
 
     static boolean ftupdate_running = false
 
@@ -595,6 +596,13 @@ class YodaController {
     def subscriptionCheck(){
         flash.message = "Lizenzen werden upgedatet"
         subscriptionUpdateService.subscriptionCheck()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def surveyCheck(){
+        flash.message = "Umfragen werden upgedatet"
+        surveyUpdateService.surveyCheck()
         redirect(url: request.getHeader('referer'))
     }
 

@@ -16,7 +16,7 @@
             ${message(code: 'surveyConfig.configOrder.label')}
         </th>
         <th>${message(code: 'surveyProperty.subName')}</th>
-        <th>${message(code: 'surveyProperty.subProvider')}</th>
+        <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
         <th>${message(code: 'surveyProperty.plural.label')}</th>
         <th>${message(code: 'surveyConfig.documents.label')}</th>
         <th>${message(code: 'surveyConfig.orgs.label')}</th>
