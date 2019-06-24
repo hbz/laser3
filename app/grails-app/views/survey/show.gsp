@@ -75,11 +75,11 @@
 
             <div class="ui card">
                 <div class="content">
-                   %{-- <div class="ui progress" data-percent="50">
-                        <div class="bar">
-                        </div>
-                        <div class="label">Abgeschlossen</div>
-                    </div>--}%
+                    %{-- <div class="ui progress" data-percent="50">
+                         <div class="bar">
+                         </div>
+                         <div class="label">Abgeschlossen</div>
+                     </div>--}%
                 </div>
             </div>
 
@@ -154,8 +154,8 @@
 
                                 </div>
 
-                                <div class="title"><i
-                                        class="dropdown icon"></i>${message(code: 'surveyConfig.orgs.label')}
+                                <div class="title" style="background-color: ${config?.configFinish ? 'lime': ''}"><i
+                                        class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                     <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                                 </div>
@@ -165,6 +165,27 @@
                                 </div>
 
                                 <g:if test="${config?.type == 'Subscription'}">
+
+                                    <g:set var="costItems" value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
+
+                                    <div class="title" style="background-color: ${config?.costItemsFinish ? 'lime': ''}"><i
+                                            class="dropdown icon"></i>${message(code: 'surveyCostItems.label')}
+
+                                        <div class="ui circular label">${costItems?.size() ?: 0}</div>
+                                    </div>
+
+                                    <div class="content compact">
+
+                                        <g:render template="/templates/filter/orgFilterTable"
+                                                  model="[orgList       : costItems?.surveyOrg?.org,
+                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                                          tableID       : 'costTable',
+                                                          surveyConfig: config,
+                                                          editable: false
+                                                  ]"/>
+                                    </div>
+
+
                                     <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
@@ -191,7 +212,9 @@
                                                             ${prop?.surveyProperty?.getI10n('name')}
 
                                                             <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
-                                                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                <span class="la-long-tooltip"
+                                                                      data-position="right center" data-variation="tiny"
+                                                                      data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
                                                                     <i class="question circle icon"></i>
                                                                 </span>
                                                             </g:if>

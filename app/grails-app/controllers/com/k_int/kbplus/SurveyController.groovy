@@ -405,7 +405,12 @@ class SurveyController {
         def surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         surveyConfig.configFinish = params.configFinish ?: false
-        surveyConfig.save(flush: true)
+        if (surveyConfig.save(flush: true))
+        {
+            flash.message = g.message(code: 'survey.change.successfull')
+        }else{
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 
@@ -430,7 +435,13 @@ class SurveyController {
         def surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         surveyConfig.costItemsFinish = params.costItemsFinish ?: false
-        surveyConfig.save(flush: true)
+
+        if (surveyConfig.save(flush: true))
+        {
+            flash.message = g.message(code: 'survey.change.successfull')
+        }else{
+            flash.error = g.message(code: 'survey.change.fail')
+        }
 
         redirect(url: request.getHeader('referer'))
 
@@ -656,9 +667,6 @@ class SurveyController {
             }
         }
 
-
-
-
         result
 
     }
@@ -693,7 +701,13 @@ class SurveyController {
                 secoundSurveyConfig.configOrder = surveyConfig.configOrder
                 secoundSurveyConfig.save(flush: true)
                 surveyConfig.configOrder = surveyConfig.configOrder-1
-                surveyConfig.save(flush: true)
+                if (surveyConfig.save(flush: true))
+                {
+                    flash.message = g.message(code: 'survey.change.successfull')
+                }else{
+                    flash.error = g.message(code: 'survey.change.fail')
+                }
+
             }
 
             if(params.change == 'down')
@@ -702,7 +716,13 @@ class SurveyController {
                 secoundSurveyConfig.configOrder = surveyConfig.configOrder
                 secoundSurveyConfig.save(flush: true)
                 surveyConfig.configOrder = surveyConfig.configOrder+1
-                surveyConfig.save(flush: true)
+
+                if (surveyConfig.save(flush: true))
+                {
+                    flash.message = g.message(code: 'survey.change.successfull')
+                }else{
+                    flash.error = g.message(code: 'survey.change.fail')
+                }
             }
 
         }
