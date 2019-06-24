@@ -85,11 +85,11 @@
 
         <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
+                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
         </g:if>
         <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Local"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsLocal.label"/>
+                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
         </g:if>
 
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
