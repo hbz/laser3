@@ -29,6 +29,24 @@
 
     <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
+    <g:set var="surveyParticipantsHasAccess"
+           value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+               it?.sortname
+           }}"/>
+
+    <div class="four wide column">
+        <button type="button" class="ui icon button right floated" data-semui="modal"
+                data-href="#copyEmailaddresses_selectedSubParticipantsHasAccess"><g:message
+                code="survey.copyEmailaddresses.participantsHasAccess"/></button>
+    </div>
+
+    <g:render template="../templates/copyEmailaddresses"
+              model="[orgList: surveyParticipantsHasAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasAccess']"/>
+
+    <br>
+    <br>
+
+
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : selectedSubParticipants.findAll { it?.hasAccessOrg() }.sort { it?.sortname },
                       tmplShowCheckbox: editable,
@@ -43,11 +61,11 @@
 
     <div class="four wide column">
         <button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#copyEmailaddresses_selectedSubParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+                data-href="#copyEmailaddresses_selectedSubParticipantsHasNoAccess"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
     </div>
 
     <g:render template="../templates/copyEmailaddresses"
-              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipants']"/>
+              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasNoAccess']"/>
 
     <br>
     <br>
