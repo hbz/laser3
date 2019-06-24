@@ -56,6 +56,7 @@
                         <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                </g:if>
             </td>
         </tr>
         </tbody>
