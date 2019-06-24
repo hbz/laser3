@@ -13,6 +13,15 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <g:if test="${surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportParticipantResult"
+                    params="${params + [exportXLS: true]}">${message(code: 'default.button.exports.xls')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+    </g:if>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 

@@ -13,6 +13,7 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -95,7 +96,7 @@
 
                     <g:each in="${surveyConfigs}" var="config" status="i">
 
-                        <div class="title active"><i class="dropdown icon"></i>
+                        <div class="title active" style="background-color: ${(config?.configFinish && config?.costItemsFinish)  ? 'lime': ''}"><i class="dropdown icon"></i>
 
                         ${config?.getConfigName()}
 
@@ -161,7 +162,7 @@
 
                                 </div>
 
-                                <div class="title" style="background-color: ${config?.configFinish ? 'lime': ''}"><i
+                                <div class="title"><i
                                         class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                     <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
@@ -193,7 +194,7 @@
                                     </div>
 
 
-                                    <div class="title"><i
+                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime': ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
                                         <div class="ui circular label">${config?.surveyProperties?.size() ?: 0}</div>

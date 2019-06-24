@@ -13,6 +13,12 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportSurCostItems" id="${surveyInfo?.id}"
+                    params="[exportXLS: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -222,7 +228,7 @@
 
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                           value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
                                it?.sortname
                            }}"/>
 

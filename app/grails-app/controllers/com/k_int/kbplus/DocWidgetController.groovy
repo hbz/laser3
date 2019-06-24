@@ -127,6 +127,8 @@ class DocWidgetController extends AbstractDebugController {
 
                                 doc_content2.save()
 
+                                log.debug(doc_content2)
+
                                 try {
                                     def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
                                     def fName = doc_content2.uuid
@@ -139,6 +141,7 @@ class DocWidgetController extends AbstractDebugController {
                                 }
                                 catch (Exception e) {
                                     // fallback
+                                    log.debug("Fallback": doc_content2)
                                     doc_content2.setBlobData(doc_content2.blobData, doc_content2.blobData?.size)
                                     doc_content2.save()
                                 }

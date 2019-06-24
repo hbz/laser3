@@ -69,12 +69,18 @@
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                                 <br>
                                 ${config?.configOrder}<br>
-                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                <g:if test="${config?.configOrder <= surveySubConfigs?.size()-1}">
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                             </div>
                         </td>
                         <td>
@@ -183,12 +189,18 @@
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                             params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                                 <br>
                                 ${config?.configOrder}<br>
-                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                <g:if test="${config?.configOrder <= surveySubConfigs?.size()-1}">
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                             params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                             </div>
                         </td>
                         <td>

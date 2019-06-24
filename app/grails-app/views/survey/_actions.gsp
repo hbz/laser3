@@ -1,5 +1,3 @@
-
-
 <semui:actionsDropdown>
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
         <g:if test="${actionName == 'currentSurveysConsortia'}">

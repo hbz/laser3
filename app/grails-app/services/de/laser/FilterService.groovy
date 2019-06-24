@@ -320,9 +320,6 @@ class FilterService {
             query << "surveyConfig.surveyInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
 
-            query << "surveyConfig.surveyInfo.status = :status"
-            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
-
         }
 
         if (params.startDate && sdFormat && !params.currentDate) {
