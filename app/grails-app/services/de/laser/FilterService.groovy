@@ -314,8 +314,8 @@ class FilterService {
 
             query << "surveyConfig.surveyInfo.startDate <= :startDate and (surveyConfig.surveyInfo.endDate >= :endDate or surveyConfig.surveyInfo.endDate is null)"
 
-            queryParams << [startDate : params.currentDate+2]
-            queryParams << [endDate : params.currentDate-7]
+            queryParams << [startDate : params.currentDate]
+            queryParams << [endDate : params.currentDate]
 
             query << "surveyConfig.surveyInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]

@@ -74,12 +74,19 @@
 
 
             <div class="ui card">
+
+            <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+            <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+
+                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish/total)*100 : 0}"/>
+
                 <div class="content">
-                    %{-- <div class="ui progress" data-percent="50">
+                    <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}" data-total="100">
                          <div class="bar">
+                             <div class="progress">${finishProcess}</div>
                          </div>
-                         <div class="label">Abgeschlossen</div>
-                     </div>--}%
+                         <div class="label">${finishProcess}% Abgeschlossen</div>
+                     </div>
                 </div>
             </div>
 
@@ -254,6 +261,11 @@
 
 
 <div id="magicArea"></div>
+<r:script>
+    $(document).ready(function () {
+        $('#finishProcess').progress();
+    });
+</r:script>
 
 </body>
 </html>
