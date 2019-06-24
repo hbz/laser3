@@ -127,7 +127,8 @@ class DocWidgetController extends AbstractDebugController {
 
                                 doc_content2.save()
 
-                                log.debug(doc_content2)
+                                def input_file2 = request.getFile("upload_file")
+                                def input_stream2 = input_file?.inputStream
 
                                 try {
                                     def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
@@ -137,12 +138,12 @@ class DocWidgetController extends AbstractDebugController {
                                     if (!folder.exists()) {
                                         folder.mkdirs()
                                     }
-                                    input_file.transferTo(new File("${fPath}/${fName}"))
+                                    input_file2.transferTo(new File("${fPath}/${fName}"))
                                 }
                                 catch (Exception e) {
                                     // fallback
                                     log.debug("Fallback": doc_content2)
-                                    doc_content2.setBlobData(doc_content2.blobData, doc_content2.blobData?.size)
+                                    doc_content2.setBlobData(input_stream2, input_file2.size)
                                     doc_content2.save()
                                 }
 
