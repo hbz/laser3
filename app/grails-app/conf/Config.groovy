@@ -37,6 +37,7 @@ isSendEmailsForDueDatesOfAllUsers = true
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
+grails.plugin.databasemigration.changelogLocation = "./migrations"
 
 System.out.println("\n")
 System.out.println("~ local config override: ${grails.config.locations}")

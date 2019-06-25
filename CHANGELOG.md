@@ -6,7 +6,7 @@
 
 - improvement org profil
 - fixed: financial export now gives tax data properly
-- fixed: filter functionality corrected 
+- fixed: filter functionality 
 
 0.17.5
 
@@ -22,7 +22,6 @@
 - improved legacy filter query 
 - display of shared docs for basic members reenabled
 - fixed: survey function bugs
-
 
 0.17.3
 
