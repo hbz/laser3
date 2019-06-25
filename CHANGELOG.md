@@ -1,27 +1,17 @@
-0.17.7
-
-- fixed: translation by org profil
-
-0.17.6
+0.17.4
 
 - improvement org profil
+- fixed: translation by org profil
 - fixed: financial export now gives tax data properly
-- fixed: filter functionality 
-
-0.17.5
-
+- fixed: filter functionality corrected 
 - fixed: further tipp display correction
 - fixed: org data can now be edited by INST_EDITOR
 - fixed: costItems translation
 - improvement on survey function
 - fixed: survey function bugs
-
-0.17.4
-
 - fixed: commands in comment (various view changes)
 - improved legacy filter query 
 - display of shared docs for basic members reenabled
-- fixed: survey function bugs
 
 0.17.3
 
