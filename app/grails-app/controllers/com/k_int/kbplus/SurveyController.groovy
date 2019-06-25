@@ -1649,7 +1649,7 @@ class SurveyController {
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
         def surveyResults = SurveyResult.findAllByOwnerAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort {
-            it?.surveyConfig?.configOrder
+            params.exportConfigs ? it?.surveyConfig?.configOrder : it?.participant.sortname
         }
 
         result.surveyResults = surveyResults.groupBy { it?.surveyConfig?.id }
@@ -1947,7 +1947,8 @@ class SurveyController {
         List titles = [g.message(code: 'surveyInfo.owner.label'),
 
                        g.message(code: 'surveyConfigsInfo.comment'),
-
+                       g.message(code: 'surveyParticipants.label'),
+                       g.message(code: 'org.shortname.label'),
                        g.message(code: 'surveyProperty.subName'),
                        g.message(code: 'surveyProperty.subProvider'),
                        g.message(code: 'surveyProperty.subAgency'),
@@ -1974,12 +1975,14 @@ class SurveyController {
                 case "xls":
                 case "xlsx":
 
-                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
+                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result?.participant)
 
-                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org))
+                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant))
 
                     row.add([field: result?.owner?.name ?: '', style: null])
                     row.add([field: result?.surveyConfig?.comment ?: '', style: null])
+                    row.add([field: result?.participant?.name ?: '', style: null])
+                    row.add([field: result?.participant?.shortname ?: '', style: null])
                     row.add([field: sub?.name ?: "", style: null])
 
 
