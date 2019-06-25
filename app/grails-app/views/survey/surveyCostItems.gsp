@@ -13,6 +13,12 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportSurCostItems" id="${surveyInfo?.id}"
+                    params="[exportXLS: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -118,13 +124,30 @@
 
                     <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                               it?.sortname
+                           }}"/>
+
+                    <div class="four wide column">
+                        <button type="button" class="ui icon button right floated" data-semui="modal"
+                                data-href="#copyEmailaddresses_selectedSubParticipantsHasAccess"><g:message
+                                code="survey.copyEmailaddresses.participantsHasAccess"/></button>
+                    </div>
+
+                    <g:render template="../templates/copyEmailaddresses"
+                              model="[orgList: surveyParticipantsHasAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasAccess']"/>
+
+                    <br>
+                    <br>
+
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                                  it?.sortname
-                              },
+                              model="[orgList       : surveyParticipantsHasAccess,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
                                       tableID       : 'costTable'
                               ]"/>
+
+
 
 
                     <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
@@ -134,12 +157,12 @@
 
                     <div class="four wide column">
                         <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
+                                data-href="#copyEmailaddresses_selectedSubParticipantsHasNotAccess"><g:message
                                 code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
                     </div>
 
                     <g:render template="../templates/copyEmailaddresses"
-                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
+                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasNotAccess']"/>
 
                     <br>
                     <br>
@@ -204,10 +227,26 @@
                     <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
 
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                               it?.sortname
+                           }}"/>
+
+                    <div class="four wide column">
+                        <button type="button" class="ui icon button right floated" data-semui="modal"
+                                data-href="#copyEmailaddresses_selectedParticipantsHasAccess"><g:message
+                                code="survey.copyEmailaddresses.participantsHasAccess"/></button>
+                    </div>
+
+                    <g:render template="../templates/copyEmailaddresses"
+                              model="[orgList: surveyParticipantsHasAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipantsHasAccess']"/>
+
+
+                    <br>
+                    <br>
+
                     <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                                  it?.sortname
-                              },
+                              model="[orgList       : surveyParticipantsHasAccess,
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
                                       tableID       : 'costTable'
                               ]"/>
@@ -220,12 +259,12 @@
 
                     <div class="four wide column">
                         <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
+                                data-href="#copyEmailaddresses_selectedParticipantsHasNotAccess"><g:message
                                 code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
                     </div>
 
                     <g:render template="../templates/copyEmailaddresses"
-                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
+                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipantsHasNotAccess']"/>
 
                     <br>
                     <br>

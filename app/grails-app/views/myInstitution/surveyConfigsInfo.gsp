@@ -39,6 +39,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <i class='arrow left icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
             <g:message code="surveyConfigsInfo.totalSurveyConfig" args="[surveyConfig?.configOrder, navigation?.total]"/>
             <g:if test="${navigation?.next}">
                 <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
@@ -46,6 +49,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <i class='arrow right icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
         </div>
     </div>
 </g:if>
@@ -256,22 +262,21 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </div>
                 </g:if>
 
-
+                <g:set var="oldEditable" value="${editable}"/>
                 <div id="subscription-properties" class="hidden" style="margin: 1em 0">
-                    <g:set var="editable" value="${false}" scope="page"/>
                     <g:set var="editable" value="${false}" scope="request"/>
+                    <g:set var="editable" value="${false}" scope="page"/>
                     <g:render template="/subscription/properties" model="${[
                             subscriptionInstance: subscriptionInstance,
                             authorizedOrgs      : authorizedOrgs
                     ]}"/>
 
-
-                    <g:set var="editable" value="${true}" scope="page"/>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
 
                 </div>
 
             </g:if>
-
 
             <div class="la-inline-lists">
                 <div class="ui stackable cards">
@@ -293,6 +298,30 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
             <div class="la-inline-lists">
                 <div class="ui stackable cards">
+
+                    <div class="ui card ">
+                        <div class="content">
+                            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledStartDate}"/></dd>
+                                </dl>
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledEndDate}"/></dd>
+                                </dl>
+                            </g:if>
+                        </div>
+                    </div>
+
                     <div class="ui card la-time-card">
 
                         <div class="content">

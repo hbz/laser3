@@ -3668,7 +3668,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId){
-                    //redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
@@ -3742,7 +3742,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             isTargetSubChanged = true
         }
 
-        if (isTargetSubChanged) {
+        if (isTargetSubChanged && params.isRenewSub) {
             newSub.refresh()
             params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
             params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
@@ -3829,7 +3829,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             isTargetSubChanged = true
         }
 
-        if (isTargetSubChanged) {
+        if (isTargetSubChanged && params.isRenewSub) {
             newSub.refresh()
             params.workFlowPart = WORKFLOW_PROPERTIES
             params.workFlowPartNext = WORKFLOW_END
@@ -4044,7 +4044,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             newSub.refresh()
         }*/
 
-        if (isTargetSubChanged && newSub) {
+        if (isTargetSubChanged && newSub && params.isRenewSub) {
             newSub.refresh()
             params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
             params.workFlowPartNext = WORKFLOW_PROPERTIES

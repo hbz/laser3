@@ -13,6 +13,7 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -74,12 +75,19 @@
 
 
             <div class="ui card">
+
+            <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+            <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+
+                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish/total)*100 : 0}"/>
+
                 <div class="content">
-                   %{-- <div class="ui progress" data-percent="50">
-                        <div class="bar">
-                        </div>
-                        <div class="label">Abgeschlossen</div>
-                    </div>--}%
+                    <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}" data-total="100">
+                         <div class="bar">
+                             <div class="progress">${finishProcess}</div>
+                         </div>
+                         <div class="label">${finishProcess}% Abgeschlossen</div>
+                     </div>
                 </div>
             </div>
 
@@ -88,7 +96,7 @@
 
                     <g:each in="${surveyConfigs}" var="config" status="i">
 
-                        <div class="title active"><i class="dropdown icon"></i>
+                        <div class="title active" style="background-color: ${(config?.configFinish && config?.costItemsFinish)  ? 'lime': ''}"><i class="dropdown icon"></i>
 
                         ${config?.getConfigName()}
 
@@ -155,7 +163,7 @@
                                 </div>
 
                                 <div class="title"><i
-                                        class="dropdown icon"></i>${message(code: 'surveyConfig.orgs.label')}
+                                        class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                     <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                                 </div>
@@ -165,7 +173,28 @@
                                 </div>
 
                                 <g:if test="${config?.type == 'Subscription'}">
-                                    <div class="title"><i
+
+                                    <g:set var="costItems" value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
+
+                                    <div class="title" style="background-color: ${config?.costItemsFinish ? 'lime': ''}"><i
+                                            class="dropdown icon"></i>${message(code: 'surveyCostItems.label')}
+
+                                        <div class="ui circular label">${costItems?.size() ?: 0}</div>
+                                    </div>
+
+                                    <div class="content compact">
+
+                                        <g:render template="/templates/filter/orgFilterTable"
+                                                  model="[orgList       : costItems?.surveyOrg?.org,
+                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                                          tableID       : 'costTable',
+                                                          surveyConfig: config,
+                                                          editable: false
+                                                  ]"/>
+                                    </div>
+
+
+                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime': ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
                                         <div class="ui circular label">${config?.surveyProperties?.size() ?: 0}</div>
@@ -191,7 +220,9 @@
                                                             ${prop?.surveyProperty?.getI10n('name')}
 
                                                             <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
-                                                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                <span class="la-long-tooltip"
+                                                                      data-position="right center" data-variation="tiny"
+                                                                      data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
                                                                     <i class="question circle icon"></i>
                                                                 </span>
                                                             </g:if>
@@ -231,6 +262,11 @@
 
 
 <div id="magicArea"></div>
+<r:script>
+    $(document).ready(function () {
+        $('#finishProcess').progress();
+    });
+</r:script>
 
 </body>
 </html>

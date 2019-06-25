@@ -47,6 +47,9 @@
                     <i class='arrow left icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
             <g:message code="surveyConfigsInfo.totalSurveyConfig"
                        args="[surveyConfig?.configOrder, navigation?.total]"/>
             <g:if test="${navigation?.next}">
@@ -56,6 +59,9 @@
                     <i class='arrow right icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
         </div>
     </div>
 </g:if>
@@ -287,7 +293,7 @@
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </dt>
-                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate"/></dd>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"/></dd>
 
                             </dl>
                             <dl>
@@ -297,7 +303,7 @@
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </dt>
-                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate"/></dd>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
 
                             </dl>
                         </g:if>
