@@ -451,6 +451,9 @@
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
                             <br>
+                        <g:if test="${costItem?.startDate || costItem?.endDate}">
+                            (${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notimeShort'))})
+                        </g:if>
 
                             <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})"
                                     class="ui icon button right floated trigger-modal">
