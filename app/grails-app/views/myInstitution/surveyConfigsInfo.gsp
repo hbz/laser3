@@ -18,18 +18,14 @@
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'survey.label')} - ${surveyInfo.name}
+${message(code: 'survey.label')} -
 
-<g:if test="${surveyInfo.startDate || surveyInfo.endDate}"></g:if>
-(<g:formatDate formatName="default.date.format.notime"
-               date="${surveyInfo.startDate}"/>
--
-<g:formatDate formatName="default.date.format.notime"
-              date="${surveyInfo.endDate}"/>)
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
+    <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
 <g:if test="${navigation}">
+    <br>
     <div class="ui center aligned grid">
         <div class='ui big label la-annual-rings'>
 
@@ -102,7 +98,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
         ${subscriptionInstance?.name}
     </g:link>
     </h2>
-    <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
+    <semui:auditInfo auditable="[subscriptionInstance, 'name']"/>
 
 </g:if>
 <g:else>
@@ -119,22 +115,22 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                             <dd>${subscriptionInstance?.status?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                             <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                             <dd>${subscriptionInstance?.form?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                             <dd>${subscriptionInstance?.resource?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'resource']"/></dd>
                         </dl>
                         <g:if test="${subscriptionInstance?.instanceOf && (contextOrg?.id == subscriptionInstance?.getConsortia()?.id)}">
                             <dl>
@@ -376,7 +372,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                                     number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
                                                     minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                            <br>${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
                                             <g:if test="${costItem?.startDate || costItem?.endDate}">
                                                 <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
