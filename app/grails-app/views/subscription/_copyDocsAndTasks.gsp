@@ -244,80 +244,112 @@
     </g:form>
 </semui:form>
 <r:script>
-    $('input[name="subscription.takeDocIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').addClass('willStay');
-            $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takeDocIds') < 1) {
-                $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay');
+
+    var subCopy789 = {
+
+        init: function (elem) {
+            $('input[name="subscription.takeDocIds"]').change( function(event) {
+                subCopy789.takeDocIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.deleteDocIds"]').change( function(event) {
+                subCopy789.deleteDocIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.takeAnnouncementIds"]').change( function(event) {
+                subCopy789.takeAnnouncementIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.deleteAnnouncementIds"]').change( function(event) {
+                subCopy789.deleteAnnouncementIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.takeTaskIds"]').change( function(event) {
+                subCopy789.takeTaskIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.deleteTaskIds"]').change( function(event) {
+                subCopy789.deleteTaskIds(this);
+            }).trigger('change')
+        },
+
+        takeDocIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willStay');
             }
-        }
-    })
-
-    $('input[name="subscription.deleteDocIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeDocs.target"] div[data-id="' + id + '"]').addClass('willBeReplaced');
-        } else {
-            $('.table tr td[name="subscription.takeDocs.target"] div[data-id="' + id + '"]').removeClass('willBeReplaced');
-        }
-    })
-
-    $('input[name="subscription.takeAnnouncementIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').addClass('willStay');
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takeAnnouncementIds') < 1) {
-                $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay');
+            else {
+                $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeDocIds') < 1) {
+                    $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay');
+                }
             }
-        }
-    })
+        },
 
-    $('input[name="subscription.deleteAnnouncementIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div[data-id="' + id + '"]').addClass('willBeReplaced');
-        } else {
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div[data-id="' + id + '"]').removeClass('willBeReplaced');
-        }
-    })
-
-    $('input[name="subscription.takeTaskIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').addClass('willStay');
-            $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takeTaskIds') < 1){
-                $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay');
+        deleteDocIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
             }
-        }
-    })
-
-    $('input[name="subscription.deleteTaskIds"]').change( function(event) {
-        var id = this.value;
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + id + '"]').addClass('willBeReplaced');
-        } else {
-            $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + id + '"]').removeClass('willBeReplaced');
-        }
-    })
-
-    function getNumberOfCheckedCheckboxes(inputElementName){
-        var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
-        var numberOfChecked = 0;
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                numberOfChecked++;
+            else {
+                $('.table tr td[name="subscription.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
             }
+        },
+
+        takeAnnouncementIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeAnnouncementIds') < 1) {
+                    $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay');
+                }
+            }
+        },
+
+        deleteAnnouncementIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+            }
+        },
+
+        takeTaskIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeTaskIds') < 1){
+                    $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay');
+                }
+            }
+        },
+
+        deleteTaskIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+            }
+        },
+
+        getNumberOfCheckedCheckboxes: function(inputElementName) {
+            var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
+            var numberOfChecked = 0;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    numberOfChecked++;
+                }
+            }
+            return numberOfChecked;
         }
-        return numberOfChecked;
     }
+
+    subCopy789.init()
 </r:script>

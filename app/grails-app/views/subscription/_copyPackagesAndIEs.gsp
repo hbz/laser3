@@ -138,63 +138,90 @@
 </semui:form>
 
 <r:script>
-    $('input[name="subscription.takePackageIds"]').change( function(event) {
-        var pkgoid = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + pkgoid + '"]').addClass('willStay');
-            $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + pkgoid + '"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
-                $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
+
+    var subCopy456 = {
+
+        init: function(elem) {
+            $('input[name="subscription.takePackageIds"]').change( function(event) {
+                subCopy456.takePackageIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.deletePackageIds"]').change( function(event) {
+                subCopy456.deletePackageIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
+                subCopy456.takeEntitlementIds(this);
+            }).trigger('change')
+
+            $('input[name="subscription.deleteEntitlementIds"]').change( function(event) {
+                subCopy456.deleteEntitlementIds(this);
+            }).trigger('change')
+        },
+
+        takePackageIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
             }
-        }
-    })
-
-    $('input[name="subscription.deletePackageIds"]').change( function(event) {
-        var subPkgOid = this.value;
-        var pkgOid = $(this).attr('data-pkgid');
-        if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
-        } else {
-            $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
-        }
-    })
-
-    $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
-        var ieoid = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + ieoid + '"]').addClass('willStay');
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + ieoid + '"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
-                $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
+            else {
+                $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy456.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
+                    $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
+                }
             }
-        }
-    })
+        },
 
-    $('input[name="subscription.deleteEntitlementIds"]').change( function(event) {
-        var ieoid = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').addClass('willBeReplacedStrong');
-        } else {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').removeClass('willBeReplacedStrong');
-        }
-    })
-
-    function getNumberOfCheckedCheckboxes(inputElementName){
-        var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
-        var numberOfChecked = 0;
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                numberOfChecked++;
+        deletePackageIds: function(elem) {
+            var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
+            //var pkgOid = $(elem).attr('data-pkgoid'); // dk
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
             }
+            else {
+                $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeEntitlementIds: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy456.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
+                }
+            }
+        },
+
+        deleteEntitlementIds: function(elem) {
+            var ieoid = elem.value // FEHLER dk !?
+            //var ieoid = $(elem).attr('data-ieoid'); // dk
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeEntitlements.target"] div[data-ieoid="' + ieoid + '"]').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        getNumberOfCheckedCheckboxes: function(inputElementName) {
+            var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
+            var numberOfChecked = 0;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    numberOfChecked++;
+                }
+            }
+            return numberOfChecked;
         }
-        return numberOfChecked;
     }
+
+    subCopy456.init()
 </r:script>
 
 
