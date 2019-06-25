@@ -30,3 +30,8 @@ alter table subscription add column sub_is_administrative bool not null default 
 -- 2019-06-13
 alter table cost_item drop column last_updated_by_id;
 alter table cost_item drop column created_by_id;
+
+-- Rename refdata value
+-- ERMS-1418
+-- 2019-06-25
+update refdata_value set rdv_value = 'Responsible Admin' where rdv_value = 'Responsible Contact';
