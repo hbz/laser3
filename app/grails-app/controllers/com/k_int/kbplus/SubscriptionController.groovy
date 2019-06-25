@@ -2457,6 +2457,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({
+                        Thread.currentThread().setName("PackageSync")
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
                         dataloadService.updateFTIndexes()

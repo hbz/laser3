@@ -1045,7 +1045,8 @@ class GlobalSourceSyncService {
         def cfg = rectypes[rectype]
         def olddate = sync_job.haveUpTo
 
-        Thread.currentThread().setName("GlobalDataSync");
+        Thread.currentThread().setName("GlobalDataSync")
+        def max_timestamp = 0
 
         try {
 
@@ -1064,7 +1065,6 @@ class GlobalSourceSyncService {
             log.debug("upto: ${date} uri:${sync_job.uri} prefix:${sync_job.fullPrefix}");
 
             def oai_client = new OaiClient(host: sync_job.uri)
-            def max_timestamp = 0
             def ctr = 0
 
             log.debug("Collect ${cfg.name} changes since ${date}");
@@ -1209,15 +1209,7 @@ class GlobalSourceSyncService {
                     log.debug("Max timestamp is now ${record_timestamp}");
                 }
 
-                log.debug("Updating sync job max timestamp");
-                syncObj.haveUpTo = new Date(max_timestamp)
-
-                if (rectype == 'Package') {
-                    sleep(3000);
-                    cleanUpGorm()
-                } else if (ctr++ % 200 == 0) {
-                    cleanUpGorm()
-                }
+                cleanUpGorm()
             }
         }
         catch (Exception e) {
@@ -1241,7 +1233,10 @@ class GlobalSourceSyncService {
             // TODO: remove due SystemEvent
             new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save(flush: true)
         }
-        sync_job.save(flush:true)
+        log.debug("Updating sync job max timestamp");
+        sync_job.haveUpTo = new Date(max_timestamp)
+        if(!sync_job.save(flush:true))
+            log.error("Error on updating timestamp: ${sync_job.errors}")
     }
 
     def parseDate(datestr, possible_formats) {

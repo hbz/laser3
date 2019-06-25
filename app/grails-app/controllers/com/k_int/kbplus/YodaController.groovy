@@ -393,6 +393,15 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def retriggerPendingChanges() {
+        log.debug("match IssueEntitlements to TIPPs ...")
+        flash.message = "Pakete werden nachgehalten ..."
+        subscriptionUpdateService.retriggerPendingChanges()
+        //continue here: very strange mapping of TIPP Status vs. Entitlement Issue Status
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
     def newESSource() {
         Map result=[:]
         log.debug("manageGlobalSources ..")
