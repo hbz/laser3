@@ -363,8 +363,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                             ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
 
                                             <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                                (${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                                <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
                                             </g:if>
+                                            <br>
 
                                         </g:each>
                                     </td>
@@ -376,6 +377,10 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                                     minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
                                             <br>${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                            <g:if test="${costItem?.startDate || costItem?.endDate}">
+                                                <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
+                                            </g:if>
 
                                             <g:if test="${costItem?.costDescription}">
                                                 <br>

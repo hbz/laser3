@@ -1693,6 +1693,18 @@ class SurveyController {
             }
 
 
+            Closure newDate = { param, format ->
+                Date date
+                try {
+                    date = dateFormat.parse(param)
+                } catch (Exception e) {
+                    log.debug("Unable to parse date : ${param} in format ${format}")
+                }
+                date
+            }
+
+            def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
+            def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
             def billing_currency = null
             if (params.long('newCostCurrency')) //GBP,etc
             {
@@ -1777,45 +1789,51 @@ class SurveyController {
             }
             surveyOrgsDo.each { surveyOrg ->
 
-                if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-                    newCostItem = genericOIDService.resolveOID(params.oldCostItem)
-                } else {
-                    newCostItem = new CostItem()
-                }
+                if(!surveyOrg?.checkPerennialTerm()) {
 
-                newCostItem.owner = result.institution
-                newCostItem.surveyOrg = newCostItem.surveyOrg ?: surveyOrg
-                newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
-                newCostItem.costItemCategory = cost_item_category
-                newCostItem.costItemElement = cost_item_element
-                newCostItem.costItemStatus = cost_item_status
-                newCostItem.billingCurrency = billing_currency //Not specified default to GDP
-                //newCostItem.taxCode = cost_tax_type -> to taxKey
-                newCostItem.costTitle = params.newCostTitle ?: null
-                newCostItem.costInBillingCurrency = cost_billing_currency as Double
-                newCostItem.costInLocalCurrency = cost_local_currency as Double
-
-                newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
-                newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-                newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
-                newCostItem.currencyRate = cost_currency_rate as Double
-                //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
-                newCostItem.taxKey = tax_key
-                newCostItem.costItemElementConfiguration = cost_item_element_configuration
-
-                newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
-
-                newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
-
-
-                if (!newCostItem.validate()) {
-                    result.error = newCostItem.errors.allErrors.collect {
-                        log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                        message(code: 'finance.addNew.error', args: [it.properties.field])
+                    if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
+                        newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+                    } else {
+                        newCostItem = new CostItem()
                     }
-                } else {
-                    if (newCostItem.save(flush: true)) {
-                        /* def newBcObjs = []
+
+                    newCostItem.owner = result.institution
+                    newCostItem.surveyOrg = newCostItem.surveyOrg ?: surveyOrg
+                    newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
+                    newCostItem.costItemCategory = cost_item_category
+                    newCostItem.costItemElement = cost_item_element
+                    newCostItem.costItemStatus = cost_item_status
+                    newCostItem.billingCurrency = billing_currency //Not specified default to GDP
+                    //newCostItem.taxCode = cost_tax_type -> to taxKey
+                    newCostItem.costTitle = params.newCostTitle ?: null
+                    newCostItem.costInBillingCurrency = cost_billing_currency as Double
+                    newCostItem.costInLocalCurrency = cost_local_currency as Double
+
+                    newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+                    newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+                    newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+                    newCostItem.currencyRate = cost_currency_rate as Double
+                    //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
+                    newCostItem.taxKey = tax_key
+                    newCostItem.costItemElementConfiguration = cost_item_element_configuration
+
+                    newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
+
+                    newCostItem.startDate = startDate ?: null
+                    newCostItem.endDate = endDate ?: null
+
+                    newCostItem.includeInSubscription = null
+                    //todo Discussion needed, nobody is quite sure of the functionality behind this...
+
+
+                    if (!newCostItem.validate()) {
+                        result.error = newCostItem.errors.allErrors.collect {
+                            log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                            message(code: 'finance.addNew.error', args: [it.properties.field])
+                        }
+                    } else {
+                        if (newCostItem.save(flush: true)) {
+                            /* def newBcObjs = []
 
                          params.list('newBudgetCodes')?.each { newbc ->
                              def bc = genericOIDService.resolveOID(newbc)
@@ -1836,8 +1854,9 @@ class SurveyController {
                              }
                          }*/
 
-                    } else {
-                        result.error = "Unable to save!"
+                        } else {
+                            result.error = "Unable to save!"
+                        }
                     }
                 }
             } // subsToDo.each

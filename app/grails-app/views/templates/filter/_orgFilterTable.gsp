@@ -450,25 +450,18 @@
                                         maxFractionDigits="2" type="number"/>
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                        <g:if test="${editable}">
                             <br>
 
                             <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})"
                                     class="ui icon button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
-                        </g:if>
-
                     </g:if>
                     <g:else>
-                        <g:if test="${editable}">
                         <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${null})"
                                 class="ui icon button right floated trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
-                        </g:if>
-
                     </g:else>
                 </g:if>
                 <g:else>
