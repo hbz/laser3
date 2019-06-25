@@ -141,7 +141,9 @@ class DocWidgetController extends AbstractDebugController {
                                     if (!folder.exists()) {
                                         folder.mkdirs()
                                     }
-                                    new_File.transferTo(new File("${fPath}/${fName}"))
+
+                                    def dst = new File("${fPath}/${fName}")
+                                    dst << new_File.text
                                 }
                                 catch (Exception e) {
                                     // fallback
