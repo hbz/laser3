@@ -163,8 +163,8 @@
 
         </div>
 
-        <div class="two fields">
-            <div class="field">
+        <div class="three fields">
+            <div class="ten wide field">
                 <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
 
                 <fieldset id="subscritionType">
@@ -189,53 +189,50 @@
                 </fieldset>
             </div>
 
-            <div class="field">
-                <div class="two fields">
 
+            <div class="six wide field">
+                <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+                <%--
+                <g:if test="${params.orgRole == 'Subscriber'}">
+                    <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
+                </g:if>
+                <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                    <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
+                </g:if>
+                --%>
 
-                        <div class="field">
-                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
-                            <%--
-                            <g:if test="${params.orgRole == 'Subscriber'}">
-                                <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
-                            </g:if>
-                            <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                                <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
-                            </g:if>
-                            --%>
+                <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
 
-                            <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
-
-                            <div class="inline fields la-filter-inline">
-                                <div class="field">
-                                    <div class="ui radio checkbox">
-                                        <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
-                                               <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
-                                            >
-                                        <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
-                                    </div>
-                                </div>
-
-                                <div class="field">
-                                    <div class="ui radio checkbox">
-                                        <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                               <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                                            >
-                                        <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                                    </div>
-                                </div>
-                            </div>
-                            </g:if>
+                <div class="inline fields la-filter-inline">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
+                                   <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
+                                >
+                            <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
                         </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
+                                   <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
+                                >
+                            <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                        </div>
+                    </div>
+                </div>
+                </g:if>
+            </div>
 
 
+        </div>
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                     </div>
-                </div>
-            </div>
-        </div>
+
+
     </g:form>
 </semui:filter>
 
