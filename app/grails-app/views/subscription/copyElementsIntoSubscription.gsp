@@ -195,14 +195,20 @@
             var multiPropertyIndex = ($(that).closest ('.la-copyElements-flex-container').index()) ;
 
             if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.deleteProperty"]').is(':checked')) {
+                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').addClass('willStay');
+                // Mehrfach zu vergebende Merkmale bekommen keine Löschmarkierung, da sie nicht überschreiben sondern kopiert werden
+                if ($(that).attr('data-multipleOccurrence') != 'true') {
                     $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').addClass('willBeReplaced');
                 }
-                else {
-                    $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
-                }
+            }
+            else {
+                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
+                $(that).parents('td').next('td').children('.la-copyElements-flex-container:nth-child(' + (multiPropertyIndex + 1) + ')').removeClass('willBeReplaced');
+            }
         }
         markAffectedDelete = function (that) {
             if ($(that).is(":checked") ||  $(that).parents('tr').find('input[name="subscription.takeProperty"]').is(':checked')) {
+                $(that).parents('.la-replace').parents('.la-copyElements-flex-container').removeClass('willStay');
                 $(that).parents('.la-noChange').parents('.la-copyElements-flex-container').addClass('willBeReplaced');
             }
             else {
@@ -210,11 +216,11 @@
             }
         }
 
-        $(takeProperty).each(function( index, elem ) {
-            if (elem.checked){
-                markAffectedTake(elem)
-            }
-        });
+        // $(takeProperty).each(function( index, elem ) {
+        //     if (elem.checked){
+        //         markAffectedTake(elem)
+        //     }
+        // });
 
     </r:script>
 </body>
