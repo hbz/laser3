@@ -5,7 +5,7 @@
         <th class="four wide  aligned">${key}</th>
         <th class="five wide center aligned">
             <div class="la-copyElements-th-flex-container">
-                <div class="la-copyElements-th-flex-item"
+                <div class="la-copyElements-th-flex-item">
                     <g:if test="${propBinding && propBinding.get(sourceSubscription)?.visibleForConsortiaMembers}">
                         <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if><span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span>
                     </g:if>
@@ -92,7 +92,7 @@
                         %{--COPY:--}%
                         <g:if test="${propValues.containsKey(sourceSubscription)}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy"  value="${genericOIDService.getOID(propValue)}" checked="${true}" />
+                                <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                             </div>
                         </g:if>
                     </div>
