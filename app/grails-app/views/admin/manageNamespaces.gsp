@@ -28,7 +28,7 @@
 							<th><g:message code="identifierNamespace.nsType.label"/></th>
                             <th><g:message code="identifierNamespace.validationRegex.label"/></th>
                                 <%--<th><g:message code="identifierNamespace.hide.label"/></th>--%>
-                            <th><g:message code="identifierNamespace.nonUnique.label"/></th>
+                            <th><g:message code="identifierNamespace.unique.label"/></th>
 							<th></th>
 						</tr>
 						</thead>
@@ -53,7 +53,7 @@
                                     </td>
                                         <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
                                     <td>
-                                        <semui:xEditableBoolean owner="${idNs}" field="nonUnique"/>
+                                        <semui:xEditableBoolean owner="${idNs}" field="unique"/>
                                     </td>
                                     <td>
                                         <g:link controller="admin" action="manageNamespaces"
@@ -71,7 +71,7 @@
                                     <td>${fieldValue(bean: idNs, field: "nsType")}</td>
                                     <td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
                                         <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
-                                    <td>${fieldValue(bean: idNs, field: "nonUnique")}</td>
+                                    <td>${idNs.unique}</td>
                                     <td></td>
                                 </g:else>
                             </tr>
@@ -90,14 +90,14 @@
 										<g:message code="identifierNamespace.ns.label" />
 										<span class="required-indicator">*</span>
 									</label>
-									<g:textField name="ns" value="${identifierNamespaceInstance?.ns}" required=""/>
+									<g:textField name="ns" required=""/>
 								</div>
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'family', 'error')} ">
 									<label for="family">
 										<g:message code="identifierNamespace.family.label" />
 									</label>
-									<g:textField name="family" value="${identifierNamespaceInstance?.family}"/>
+									<g:textField name="family"/>
 								</div>
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
@@ -106,31 +106,21 @@
 									</label>
 									<g:select id="nsType" name="nsType"
 									        from="${IdentifierNamespace.getAVAILABLE_NSTYPES()}"
-                                            value="${identifierNamespaceInstance.nsType}"
 									        noSelection="['': '']"/>
 								</div>
-
-                                <%--
-								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
-									<label for="hide">
-										<g:message code="identifierNamespace.hide.label" />
-									</label>
-									<g:checkBox name="hide" value="${identifierNamespaceInstance?.hide}" checked="${identifierNamespaceInstance?.hide}" />
-								</div>
-                                --%>
 
                                 <div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
                                     <label for="validationRegex">
                                         <g:message code="identifierNamespace.validationRegex.label" />
                                     </label>
-                                    <g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
+                                    <g:textField name="validationRegex"/>
                                 </div>
 
-								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nonUnique', 'error')} ">
-									<label for="nonUnique">
-										<g:message code="identifierNamespace.nonUnique.label" />
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'unique', 'error')} ">
+									<label for="unique">
+										<g:message code="identifierNamespace.unique.label" />
 									</label>
-									<g:checkBox name="nonUnique" value="${identifierNamespaceInstance?.nonUnique}" checked="${identifierNamespaceInstance?.nonUnique}" />
+									<g:checkBox name="unique" checked="true" />
 								</div>
 
 								<br />

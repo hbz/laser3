@@ -20,11 +20,13 @@
 --    OR (l_destination_fk not in (SELECT sub_id FROM subscription))
 --    );
 
+
 -- ERMS-1103/ERMS-1181
 -- 2019-06-13
 -- New column sub_is_administrative for public.subscription
 
 --alter table subscription add column sub_is_administrative bool not null default false;
+
 
 -- ERMS-1412
 -- 2019-06-13
@@ -33,7 +35,17 @@
 --alter table cost_item drop column last_updated_by_id;
 --alter table cost_item drop column created_by_id;
 
+
 -- Rename refdata value
 -- ERMS-1418
 -- 2019-06-25
 update refdata_value set rdv_value = 'Responsible Admin' where rdv_value = 'Responsible Contact';
+
+
+-- ERMS-1428
+-- 2019-06-26
+-- Rename idns_non_unique to idns_unique
+
+alter table identifier_namespace add idns_unique boolean; -- not null;
+update identifier_namespace set idns_unique = false where idns_non_unique = true;
+update identifier_namespace set idns_unique = true where (idns_non_unique = false or idns_non_unique is null);
