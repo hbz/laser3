@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 
@@ -36,7 +37,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                                      'coverageDepth',
                                      'coverageNote',
                                      'accessStartDate',
-                                     'accessEndDate' ]
+                                     'accessEndDate',
+                                     'platform'
+    ]
 
 
   Date accessStartDate
@@ -453,7 +456,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");
-      def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+      def deleted_ie = RDStore.TIPP_STATUS_DELETED
       // def deleted_sub = RefdataCategory.lookupOrCreate('Subscription Status','Deleted');
       IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
       TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])

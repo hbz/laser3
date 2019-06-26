@@ -231,11 +231,12 @@ public class GokbDiffEngine {
         oldpkg.tipps.each { tippold ->
             if(!(tippold?.tippUuid in newpkgTippsTippUuid))
             {
+                //was introduced to fight the duplicate TIPPs in Beck - may now be obsolete; it now causes problems elsewhere (Web of Science)
                 def db_tipp = ctx.tipps.find {it.gokbId == tippold.tippUuid && it.status?.value != 'Deleted'}
-                if(tippold.status.id != db_tipp.status.id) {
-                    deletedTippClosure(ctx, tippold, auto_accept)
+                //if(tippold.status.id != db_tipp.status.id) {
+                    deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
                     System.out.println("TIPP " + tippold + " Was removed from the package");
-                }
+                //}
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDStore
 import grails.converters.*
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
@@ -41,7 +42,7 @@ class PendingChangeService {
                         def tipp = genericOIDService.resolveOID(event.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
 
                             if( ie_to_update.save())
                             {

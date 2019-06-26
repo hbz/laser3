@@ -1685,7 +1685,7 @@ from License as l where (
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
         RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
-        RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        RefdataValue del_ie =  RDStore.TIPP_STATUS_DELETED
 
         RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
@@ -1882,7 +1882,7 @@ from License as l where (
     private setFiltersLists(result, date_restriction) {
         // Query the list of Subscriptions
         def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def del_ie =  RDStore.TIPP_STATUS_DELETED
 
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
@@ -3179,7 +3179,7 @@ AND EXISTS (
             }
 
             if (dbtipp) {
-                def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
+                def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
                 def is_core = false
 
                 def new_core_status = null;

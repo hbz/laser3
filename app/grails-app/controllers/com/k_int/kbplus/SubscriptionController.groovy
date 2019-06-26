@@ -173,7 +173,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def base_qry = null;
 
-        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def deleted_ie = RDStore.TIPP_STATUS_DELETED
         def qry_params = [result.subscriptionInstance]
 
         def date_filter
@@ -656,7 +656,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
-                    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                    def deleted_ie = RDStore.TIPP_STATUS_DELETED
                     ie.status = deleted_ie;
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -681,8 +681,8 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
-        def ie_deleted = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def tipp_deleted = RDStore.TIPP_STATUS_DELETED
+        def ie_deleted = RDStore.TIPP_STATUS_DELETED
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -2099,7 +2099,7 @@ class SubscriptionController extends AbstractDebugController {
                         log.error("Unable to tipp ${tipp_id}");
                         flash.error("Unable to tipp ${tipp_id}");
                     } else {
-                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
+                        def ie_current = RDStore.TIPP_STATUS_CURRENT
 
                         def new_ie = new IssueEntitlement(status: ie_current,
                                 subscription: result.subscriptionInstance,
@@ -2139,7 +2139,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def deleted_ie = RDStore.TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -3221,7 +3221,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -3417,7 +3417,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                    if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -4281,7 +4281,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 

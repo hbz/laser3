@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.ClassUtils
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -191,49 +192,53 @@ class SubscriptionUpdateService {
         Map<Subscription,Set<JSONElement>> currentPendingChanges = [:]
         List<PendingChange> list = PendingChange.findAllBySubscriptionIsNotNullAndStatus(RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus'))
         list.each { pc ->
-            if(pc.subscription.status != RDStore.SUBSCRIPTION_DELETED && pc.subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
-                Set currSubChanges = currentPendingChanges.get(pc.subscription) ?: []
+            Subscription subscription = ClassUtils.deproxy(pc.subscription)
+            if(subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
+                Set currSubChanges = currentPendingChanges.get(subscription) ?: []
                 currSubChanges.add(JSON.parse(pc.changeDoc).changeDoc)
-                currentPendingChanges.put(pc.subscription,currSubChanges)
+                currentPendingChanges.put(subscription,currSubChanges)
             }
         }
         //globalSourceSyncService.cleanUpGorm()
         log.debug("pending changes retrieved, go on with comparison ...")
         IssueEntitlement.findAll().eachWithIndex{ IssueEntitlement entry, int ctr ->
-            log.debug("now processing ${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}")
-            boolean equivalent = false
-            TitleInstancePackagePlatform underlyingTIPP = entry.tipp
-            TitleInstancePackagePlatform.controlledProperties.each { cp ->
-                //log.debug("checking property ${cp} of ${underlyingTIPP.title.title} in subscription ${entry.subscription.name} ...")
-                if(cp == 'status') {
-                    //temporary, I propose the merge of Entitlement Issue Status refdata category into TIPP Status
-                    if(entry.status.value == 'Live' && underlyingTIPP.status.value == 'Current') {
-                        equivalent = true
-                    }
-                }
-                if(underlyingTIPP[cp] != entry[cp] && (entry[cp] != null && underlyingTIPP[cp] != '') && !equivalent) {
-                    //log.debug("difference registered, check if pending change exists ...")
-                    //log.debug("setup change document")
-                    JSON changeDocument = [
-                            OID:"${underlyingTIPP.class.name}:${underlyingTIPP.id}",
-                            event:'TitleInstancePackagePlatform.updated',
-                            prop:cp,
-                            old:entry[cp],
-                            oldLabel:entry[cp].toString(),
-                            new:underlyingTIPP[cp],
-                            newLabel:underlyingTIPP.toString()
-                    ] as JSON
-                    if(currentPendingChanges.get(entry.subscription)) {
-                        Set registeredPC = currentPendingChanges.get(entry.subscription)
-                        if(registeredPC.contains(changeDocument))
-                            log.debug("pending change found for ${entry.subscription.name}'s ${cp} found , skipping ...")
-                        else {
-                            log.debug("pending change not found - old ${cp}: ${entry[cp]} vs. new ${cp}: ${underlyingTIPP[cp]}")
-                            //underlyingTIPP.notifyDependencies_trait(changeDocument)
+            if(entry.subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
+                //log.debug("now processing ${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}")
+                boolean equivalent = false
+                TitleInstancePackagePlatform underlyingTIPP = entry.tipp
+                TitleInstancePackagePlatform.controlledProperties.each { cp ->
+                    //log.debug("checking property ${cp} of ${underlyingTIPP.title.title} in subscription ${entry.subscription.name} ...")
+                    if(cp == 'status') {
+                        //temporary, I propose the merge of Entitlement Issue Status refdata category into TIPP Status
+                        if(entry.status.value == 'Live' && underlyingTIPP.status.value == 'Current') {
+                            equivalent = true
                         }
                     }
-                    else {
-                        log.debug("pending change not found, subscription has no pending changes - old ${cp}: ${entry[cp]} vs. new ${cp}: ${underlyingTIPP[cp]}")
+                    if(underlyingTIPP[cp] != entry[cp] && (entry[cp] != null && underlyingTIPP[cp] != '') && !equivalent) {
+                        log.debug("difference registered at issue entitlement #${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}, check if pending change exists ...")
+                        //log.debug("setup change document")
+                        Map changeDocument = [
+                                OID:"${underlyingTIPP.class.name}:${underlyingTIPP.id}",
+                                event:'TitleInstancePackagePlatform.updated',
+                                prop:cp,
+                                old:entry[cp],
+                                oldLabel:entry[cp].toString(),
+                                new:underlyingTIPP[cp],
+                                newLabel:underlyingTIPP[cp].toString()
+                        ]
+                        if(currentPendingChanges.get(entry.subscription)) {
+                            Set registeredPC = currentPendingChanges.get(entry.subscription)
+                            if(registeredPC.contains(changeDocument as JSONElement))
+                                log.debug("pending change found for ${entry.subscription.name}/${entry.tipp.title.title}'s ${cp} found , skipping ...")
+                            else {
+                                log.debug("pending change not found - old ${cp}: ${entry[cp]} (${cp == 'status' ? entry[cp].owner.desc : ''}) vs. new ${cp}: ${underlyingTIPP[cp]} (${cp == 'status' ? underlyingTIPP[cp].owner.desc : ''})")
+                                underlyingTIPP.notifyDependencies_trait(changeDocument)
+                            }
+                        }
+                        else {
+                            log.debug("pending change not found, subscription has no pending changes - old ${cp}: ${entry[cp]} (${cp == 'status' ? entry[cp].owner.desc : ''}) vs. new ${cp}: ${underlyingTIPP[cp]} (${cp == 'status' ? underlyingTIPP[cp].owner.desc : ''})")
+                            underlyingTIPP.notifyDependencies_trait(changeDocument)
+                        }
                     }
                 }
             }

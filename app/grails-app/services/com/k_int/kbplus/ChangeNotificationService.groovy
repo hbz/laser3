@@ -268,7 +268,7 @@ class ChangeNotificationService {
             def jsonMsgParams = msgParams as JSON
             new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
 
-            if (new_pending_change.save(flush: true)) {
+            if (new_pending_change.save(failOnError: true)) {
                 return new_pending_change
             } else {
                 log.error("Problem saving pending change: ${new_pending_change.errors}")

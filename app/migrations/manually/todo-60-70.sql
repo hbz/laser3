@@ -32,3 +32,11 @@
 
 --alter table cost_item drop column last_updated_by_id;
 --alter table cost_item drop column created_by_id;
+
+-- ERMS-1298
+-- 2019-06-25
+-- merge refdata categories Entitlement Issue Status into TIPP Status
+update issue_entitlement set ie_status_rv_fk = 367 where ie_status_rv_fk = 295 or ie_status_rv_fk = 808;
+update issue_entitlement set ie_status_rv_fk = 369 where ie_status_rv_fk = 296;
+delete from refdata_value where rdv_owner = 54;
+delete from refdata_category where rdc_id = 54;
