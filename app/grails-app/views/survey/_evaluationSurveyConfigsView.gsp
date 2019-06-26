@@ -30,7 +30,7 @@
         <g:if test="${config?.type == 'Subscription'}">
             <tr>
                 <td class="center aligned">
-                    <semui:xEditable owner="${config}" field="configOrder"/>
+                    ${config?.configOrder}
                 </td>
                 <td>
                     <g:link controller="subscription" action="show"

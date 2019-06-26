@@ -1716,6 +1716,17 @@ class SurveyController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def copyEmailaddresses() {
+        def result = [:]
+
+        result.orgList = Org.findAllByIdInList(params.list("orgListIDs"))
+
+        render(template: "/templates/copyEmailaddresses", model: result)
+    }
+
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newSurveyCostItem() {
 
         def dateFormat = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
