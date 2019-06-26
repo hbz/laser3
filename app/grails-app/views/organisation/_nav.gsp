@@ -22,14 +22,8 @@
     </g:if>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
-        <g:if test="${instAdmService.hasInstAdmPivileges(contextService.getUser(), orgInstance)}">
-            <semui:subNavItem controller="organisation" action="users" params="${[id: params.id]}"
-                            message="org.nav.users" affiliation="INST_USER" affiliationOrg="${orgInstance}"/>
-        </g:if>
-        <g:else>
-            <semui:securedSubNavItem controller="organisation" action="users" params="${[id: params.id]}"
+        <semui:securedSubNavItem controller="organisation" action="users" params="${[id: params.id]}"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
-        </g:else>
     </g:if>
 
     <%-- TODO: check ctx != foreign org --%>
@@ -42,9 +36,14 @@
                              affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
                              message="menu.my.documents" />
 
-    <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
-                             affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
-                             message="menu.institutions.myAddressbook"/>
+    <g:if test="${orgInstance.id != contextService.org.id}">
+        <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: params.id]}"
+                                 affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
+                                 message="menu.institutions.myAddressbook"/>
+    </g:if>
+    <g:else>
+        <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+    </g:else>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
 
