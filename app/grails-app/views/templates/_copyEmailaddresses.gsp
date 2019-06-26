@@ -13,6 +13,7 @@
         <label><g:message code="person.function.label" default="Function"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsFunctionMultiSelect"
+                      id="${'prsFunctionMultiSelect'+modalID}"
                       multiple=""
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
@@ -24,6 +25,7 @@
         <label><g:message code="person.position.label" default="Position"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsPositionMultiSelect"
+                      id="${"prsPositionMultiSelect"+modalID}"
                       multiple=""
                       from="${rdvAllPersonPositions}"
                       optionKey="id"
@@ -76,7 +78,7 @@
     </g:each>
     <div class="ui form">
         <div class="field">
-            <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
+            <g:textArea id="emailAddressesTextArea${modalID}" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
         </div>
         <button class="ui icon button right floated" onclick="copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
@@ -114,21 +116,22 @@
         var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
         var jsonAllEmailSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsSet)%>;
 
-        $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
-        $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
+        $("${'#prsFunctionMultiSelect'+modalID}").change(function() { updateTextArea(); });
+        $("${"#prsPositionMultiSelect"+modalID}").change(function() { updateTextArea(); });
 
         function copyToEmailProgram() {
-            var emailAdresses = $('#emailAddressesTextArea').val();
+            var emailAdresses = $("${'#emailAddressesTextArea'+modalID}").val();
             window.location.href = "mailto:"+emailAdresses;
         }
 
         function copyToClipboard() {
-            $('#emailAddressesTextArea').select();
+            $("${'#emailAddressesTextArea'+modalID}").select();
             document.execCommand("copy");
         }
 
         function updateTextArea() {
-            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
+            $("${'#emailAddressesTextArea'+modalID}").val("")
+            var selectedRoleTypIds = $("${'#prsFunctionMultiSelect'+modalID}").val().concat( $("${"#prsPositionMultiSelect"+modalID}").val() );
             var emailsForSelectedRoleTypes = new Array();
             if (selectedRoleTypIds.length == 0) {
                 emailsForSelectedRoleTypes = jsonAllEmailSet;
@@ -149,7 +152,7 @@
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
             emailsAsString = emailsAsString.join('; ');
-            $('#emailAddressesTextArea').val(emailsAsString);
+            $("${'#emailAddressesTextArea'+modalID}").val(emailsAsString);
         }
     </g:javascript>
 

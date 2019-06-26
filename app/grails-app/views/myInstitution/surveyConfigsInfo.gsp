@@ -18,18 +18,14 @@
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'survey.label')} - ${surveyInfo.name}
+${message(code: 'survey.label')} -
 
-<g:if test="${surveyInfo.startDate || surveyInfo.endDate}"></g:if>
-(<g:formatDate formatName="default.date.format.notime"
-               date="${surveyInfo.startDate}"/>
--
-<g:formatDate formatName="default.date.format.notime"
-              date="${surveyInfo.endDate}"/>)
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
+    <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
 <g:if test="${navigation}">
+    <br>
     <div class="ui center aligned grid">
         <div class='ui big label la-annual-rings'>
 
@@ -39,6 +35,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <i class='arrow left icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
             <g:message code="surveyConfigsInfo.totalSurveyConfig" args="[surveyConfig?.configOrder, navigation?.total]"/>
             <g:if test="${navigation?.next}">
                 <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
@@ -46,6 +45,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <i class='arrow right icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
         </div>
     </div>
 </g:if>
@@ -96,7 +98,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
         ${subscriptionInstance?.name}
     </g:link>
     </h2>
-    <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
+    <semui:auditInfo auditable="[subscriptionInstance, 'name']"/>
 
 </g:if>
 <g:else>
@@ -113,22 +115,22 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                             <dd>${subscriptionInstance?.status?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'status']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                             <dd>${subscriptionInstance?.type?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'type']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                             <dd>${subscriptionInstance?.form?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'form']"/></dd>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                             <dd>${subscriptionInstance?.resource?.getI10n('value')}</dd>
-                            <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                            <dd><semui:auditInfo auditable="[subscriptionInstance, 'resource']"/></dd>
                         </dl>
                         <g:if test="${subscriptionInstance?.instanceOf && (contextOrg?.id == subscriptionInstance?.getConsortia()?.id)}">
                             <dl>
@@ -256,22 +258,21 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </div>
                 </g:if>
 
-
+                <g:set var="oldEditable" value="${editable}"/>
                 <div id="subscription-properties" class="hidden" style="margin: 1em 0">
-                    <g:set var="editable" value="${false}" scope="page"/>
                     <g:set var="editable" value="${false}" scope="request"/>
+                    <g:set var="editable" value="${false}" scope="page"/>
                     <g:render template="/subscription/properties" model="${[
                             subscriptionInstance: subscriptionInstance,
                             authorizedOrgs      : authorizedOrgs
                     ]}"/>
 
-
-                    <g:set var="editable" value="${true}" scope="page"/>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="page"/>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
 
                 </div>
 
             </g:if>
-
 
             <div class="la-inline-lists">
                 <div class="ui stackable cards">
@@ -293,6 +294,30 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
             <div class="la-inline-lists">
                 <div class="ui stackable cards">
+
+                    <div class="ui card ">
+                        <div class="content">
+                            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledStartDate}"/></dd>
+                                </dl>
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledEndDate}"/></dd>
+                                </dl>
+                            </g:if>
+                        </div>
+                    </div>
+
                     <div class="ui card la-time-card">
 
                         <div class="content">
@@ -334,8 +359,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                             ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
 
                                             <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                                (${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                                <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
                                             </g:if>
+                                            <br>
 
                                         </g:each>
                                     </td>
@@ -346,7 +372,11 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                                     number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
                                                     minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                            <br>${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                            <g:if test="${costItem?.startDate || costItem?.endDate}">
+                                                <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
+                                            </g:if>
 
                                             <g:if test="${costItem?.costDescription}">
                                                 <br>

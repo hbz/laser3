@@ -13,11 +13,13 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -72,30 +74,44 @@
                 </div>
             </div>
 
+            <g:set var="finish"
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+            <g:set var="total"
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
 
-            <div class="ui card">
-                <div class="content">
-                    %{-- <div class="ui progress" data-percent="50">
-                         <div class="bar">
-                         </div>
-                         <div class="label">Abgeschlossen</div>
-                     </div>--}%
+            <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+            <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <div class="ui card">
+
+                    <div class="content">
+                        <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
+                             data-total="100">
+                            <div class="bar">
+                                <div class="progress">${finishProcess}</div>
+                            </div>
+
+                            <div class="label"
+                                 style="background-color: transparent">${finishProcess}% <g:message code="surveyInfo.finish"/></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </g:if>
+            <br>
 
             <g:if test="${surveyConfigs}">
                 <div class="ui styled fluid accordion">
 
                     <g:each in="${surveyConfigs}" var="config" status="i">
 
-                        <div class="title active"><i class="dropdown icon"></i>
+                        <div class="title active" style="background-color: ${(config?.configFinish && config?.costItemsFinish) ? 'lime' : ''}"><i
+                            class="dropdown icon"></i>
 
                         ${config?.getConfigName()}
 
                         <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
 
                         <g:if test="${config?.type != 'Subscription'}">
-                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
+                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
 
                         </g:if>
 
@@ -154,7 +170,7 @@
 
                                 </div>
 
-                                <div class="title" style="background-color: ${config?.configFinish ? 'lime': ''}"><i
+                                <div class="title"><i
                                         class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                     <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
@@ -166,9 +182,11 @@
 
                                 <g:if test="${config?.type == 'Subscription'}">
 
-                                    <g:set var="costItems" value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
+                                    <g:set var="costItems"
+                                           value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
 
-                                    <div class="title" style="background-color: ${config?.costItemsFinish ? 'lime': ''}"><i
+                                    <div class="title"
+                                         style="background-color: ${config?.costItemsFinish ? 'lime' : ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyCostItems.label')}
 
                                         <div class="ui circular label">${costItems?.size() ?: 0}</div>
@@ -180,13 +198,14 @@
                                                   model="[orgList       : costItems?.surveyOrg?.org,
                                                           tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
                                                           tableID       : 'costTable',
-                                                          surveyConfig: config,
-                                                          editable: false
+                                                          surveyConfig  : config,
+                                                          editable      : false
                                                   ]"/>
                                     </div>
 
 
-                                    <div class="title"><i
+                                    <div class="title"
+                                         style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
                                         <div class="ui circular label">${config?.surveyProperties?.size() ?: 0}</div>
@@ -254,6 +273,11 @@
 
 
 <div id="magicArea"></div>
+<r:script>
+    $(document).ready(function () {
+        $('#finishProcess').progress();
+    });
+</r:script>
 
 </body>
 </html>

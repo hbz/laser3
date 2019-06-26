@@ -177,70 +177,109 @@
 </semui:form>
 
 <r:script>
-    $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced');
-        } else {
-            $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced');
-        }
-    })
-    $('input:checkbox[name="subscription.deleteDates"]').change( function(event) {
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplacedStrong');
-        } else {
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplacedStrong');
-        }
-    })
-    $('input:checkbox[name="subscription.takeOwner"]').change( function(event) {
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced');
-        } else {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
-        }
-    })
-    $('input:checkbox[name="subscription.deleteOwner"]').change( function(event) {
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplacedStrong');
-        } else {
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplacedStrong');
-        }
-    })
-    $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
-        var generic_OrgRole_id = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').addClass('willStay');
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
-        } else {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willStay');
-            if (getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
-                $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
-            }
-        }
-    })
-    $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
-        var generic_OrgRole_id = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').addClass('willBeReplacedStrong');
-        } else {
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="'+generic_OrgRole_id+'"]').removeClass('willBeReplacedStrong');
-        }
-    })
 
-    function getNumberOfCheckedCheckboxes(inputElementName){
-        var checkboxes = document.querySelectorAll('input[name="'+inputElementName+'"]');
-        var numberOfChecked = 0;
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                numberOfChecked++;
+    var subCopy123 = {
+
+        init: function() {
+            $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
+                subCopy123.takeDates(this);
+            }).trigger('change')
+
+            $('input:checkbox[name="subscription.deleteDates"]').change( function(event) {
+                subCopy123.deleteDates(this);
+            }).trigger('change')
+
+            $('input:checkbox[name="subscription.takeOwner"]').change( function(event) {
+                subCopy123.takeOwner(this);
+            }).trigger('change')
+
+            $('input:checkbox[name="subscription.deleteOwner"]').change( function(event) {
+                subCopy123.deleteOwner(this);
+            }).trigger('change')
+
+            $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
+                subCopy123.takeOrgRelations(this);
+            }).trigger('change')
+
+            $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
+                subCopy123.deleteOrgRelations(this);
+            }).trigger('change')
+        },
+
+        takeDates: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced');
             }
+            else {
+                $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteDates: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeOwner: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
+                $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced');
+            }
+            else {
+                $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
+                $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
+            }
+        },
+
+        deleteOwner: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplacedStrong');
+            }
+            else {
+                $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        takeOrgRelations: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="' + elem.value + '"]').addClass('willStay');
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div').addClass('willStay');
+            }
+            else {
+                $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="' + elem.value + '"]').removeClass('willStay');
+                if (subCopy123.getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
+                    $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
+                }
+            }
+        },
+
+        deleteOrgRelations: function(elem) {
+            if (elem.checked) {
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="' + elem.value + '"]').addClass('willBeReplacedStrong');
+            } else {
+                $('.table tr td[name="subscription.takeOrgRelations.target"] div div[value="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+            }
+        },
+
+        getNumberOfCheckedCheckboxes: function(inputElementName) {
+            var checkboxes = document.querySelectorAll('input[name="' + inputElementName + '"]');
+            var numberOfChecked = 0;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    numberOfChecked++;
+                }
+            }
+            return numberOfChecked;
         }
-        return numberOfChecked;
     }
 
+    subCopy123.init()
 </r:script>
 
 

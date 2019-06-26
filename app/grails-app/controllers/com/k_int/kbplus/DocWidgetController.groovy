@@ -84,6 +84,7 @@ class DocWidgetController extends AbstractDebugController {
                     //doc_content.setBlobData(input_stream, input_file.size)
                     doc_content.save()
 
+                    File new_File
                     try {
                         def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
                         def fName = doc_content.uuid
@@ -92,7 +93,10 @@ class DocWidgetController extends AbstractDebugController {
                         if (!folder.exists()) {
                             folder.mkdirs()
                         }
-                        input_file.transferTo(new File("${fPath}/${fName}"))
+
+                        new_File = new File("${fPath}/${fName}")
+
+                        input_file.transferTo(new_File)
                     }
                     catch (Exception e) {
                         // fallback
@@ -127,6 +131,8 @@ class DocWidgetController extends AbstractDebugController {
 
                                 doc_content2.save()
 
+                                log.debug(doc_content2)
+
                                 try {
                                     def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
                                     def fName = doc_content2.uuid
@@ -135,11 +141,14 @@ class DocWidgetController extends AbstractDebugController {
                                     if (!folder.exists()) {
                                         folder.mkdirs()
                                     }
-                                    input_file.transferTo(new File("${fPath}/${fName}"))
+
+                                    def dst = new File("${fPath}/${fName}")
+                                    dst << new_File.text
                                 }
                                 catch (Exception e) {
                                     // fallback
-                                    doc_content2.setBlobData(doc_content2.blobData, doc_content2.blobData?.size)
+                                    log.debug("Fallback:"+ doc_content2)
+                                    doc_content2.setBlobData(new_File.newInputStream(), new_File?.size())
                                     doc_content2.save()
                                 }
 

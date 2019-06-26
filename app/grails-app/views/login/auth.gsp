@@ -44,7 +44,7 @@
             <g:form name="forgottenPassword" id="forgottenPassword" action="resetForgottenPassword" method="post">
                 <input type="hidden" id="forgotten_username" name="forgotten_username">
                 <div class="field">
-                    <input type="button" id="forgotten" class="ui blue button" value="${message(code:'menu.user.forgottenPassword')}">
+                    <a id="forgotten" href="#">${message(code:'menu.user.forgottenPassword')}</a>
                 </div>
             </g:form>
         </div>
@@ -56,7 +56,8 @@
         document.forms['loginForm'].elements['j_username'].focus();
     })();
 
-    $("#forgotten").click(function(){
+    $("#forgotten").click(function(e){
+        e.preventDefault();
         var username = prompt("<g:message code="menu.user.forgottenPassword.username"/>");
         console.log(username);
         if(username){

@@ -29,6 +29,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 <g:render template="nav"/>
@@ -37,6 +38,7 @@
 
 <br>
 <g:if test="${navigation}">
+    <br>
     <div class="ui center aligned grid">
         <div class='ui big label la-annual-rings'>
 
@@ -47,6 +49,9 @@
                     <i class='arrow left icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
             <g:message code="surveyConfigsInfo.totalSurveyConfig"
                        args="[surveyConfig?.configOrder, navigation?.total]"/>
             <g:if test="${navigation?.next}">
@@ -56,6 +61,9 @@
                     <i class='arrow right icon'></i>
                 </g:link>
             </g:if>
+            <g:else>
+                <i class=' icon'></i>
+            </g:else>
         </div>
     </div>
 </g:if>
@@ -68,7 +76,7 @@
         ${surveyConfig?.subscription?.name}
     </g:link>
     </h2>
-    <semui:auditButton auditable="[surveyConfig?.subscription, 'name']"/>
+    <semui:auditInfo auditable="[surveyConfig?.subscription, 'name']"/>
     <semui:anualRings object="${surveyConfig?.subscription}" controller="subscription" action="show"
                       navNext="${null}" navPrev="${null}"/>
 </g:if>
@@ -88,22 +96,22 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                                 <dd>${surveyConfig?.subscription?.status?.getI10n('value')}</dd>
-                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'status']"/></dd>
+                                <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'status']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>${surveyConfig?.subscription.type?.getI10n('value')}</dd>
-                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'type']"/></dd>
+                                <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'type']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd>${surveyConfig?.subscription?.form?.getI10n('value')}</dd>
-                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'form']"/></dd>
+                                <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'form']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd>${surveyConfig?.subscription?.resource?.getI10n('value')}</dd>
-                                <dd><semui:auditButton auditable="[surveyConfig?.subscription, 'resource']"/></dd>
+                                <dd><semui:auditInfo auditable="[surveyConfig?.subscription, 'resource']"/></dd>
                             </dl>
                             <g:if test="${surveyConfig?.subscription.instanceOf && (contextOrg?.id == surveyConfig?.subscription.getConsortia()?.id)}">
                                 <dl>
@@ -287,7 +295,7 @@
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </dt>
-                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate"/></dd>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"/></dd>
 
                             </dl>
                             <dl>
@@ -297,7 +305,7 @@
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </dt>
-                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate"/></dd>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"/></dd>
 
                             </dl>
                         </g:if>

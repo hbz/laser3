@@ -18,6 +18,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -62,19 +63,25 @@
             </thead>
         <g:set var="surveySubConfigs" value="${surveyConfigs.findAll{it?.type == 'Subscription'}}"/>
             <g:each in="${surveySubConfigs}" var="config" status="i">
-                    <tr>
-                        <td class="center aligned">
+                    <tr style="${config?.configFinish ? 'background-color: Lime' : ''}">
+                        <td class="center aligned" >
                             <div class="ui label large la-annual-rings">
                                 <g:if test="${config?.configOrder > 1}">
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                                 <br>
                                 ${config?.configOrder}<br>
-                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                <g:if test="${config?.configOrder <= surveySubConfigs?.size()-1}">
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                             </div>
                         </td>
                         <td>
@@ -183,12 +190,18 @@
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                             params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                                 <br>
                                 ${config?.configOrder}<br>
-                                <g:if test="${config?.configOrder < surveySubConfigs?.size()-1}">
+                                <g:if test="${config?.configOrder <= surveySubConfigs?.size()-1}">
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                             params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
                                 </g:if>
+                                <g:else>
+                                    <i class="icon"></i>
+                                </g:else>
                             </div>
                         </td>
                         <td>
