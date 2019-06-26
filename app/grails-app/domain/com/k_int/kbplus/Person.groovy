@@ -5,6 +5,8 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.*
 
+import javax.persistence.Transient
+
 @Log4j
 class Person extends AbstractBaseDomain {
 
@@ -130,7 +132,7 @@ class Person extends AbstractBaseDomain {
         result
     }
 
-    static Map getPublicAndPrivateEmailByFunc(String func) {
+    static Map getPublicAndPrivateEmailByFunc(String func,Org contextOrg) {
         List allPersons = executeQuery('select p,pr from Person as p join p.roleLinks pr join p.contacts c where pr.functionType.value = :functionType',[functionType: func])
         Map publicContactMap = [:], privateContactMap = [:]
         allPersons.each { row ->
@@ -150,7 +152,7 @@ class Person extends AbstractBaseDomain {
             }
             else if(p.isPublic == RDStore.YN_NO) {
                 p.contacts.each { c ->
-                    if(c.contentType == RDStore.CCT_EMAIL) {
+                    if(c.contentType == RDStore.CCT_EMAIL && p.tenant == contextOrg) {
                         if(privateContactMap[pr.org])
                             privateContactMap[pr.org].add(c.content)
                         else {

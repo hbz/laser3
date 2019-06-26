@@ -902,7 +902,7 @@ class SubscriptionController extends AbstractDebugController {
         def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
         if (params.exportXLS || params.format) {
-            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
+            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
             Map publicContacts = allContacts.publicContacts
             Map privateContacts = allContacts.privateContacts
             result.filteredSubChilds.each { row ->
@@ -922,12 +922,12 @@ class SubscriptionController extends AbstractDebugController {
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
-                    String generalContacts = ""
+                    Set generalContacts = []
                     if (publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join("; ") + "; "
+                        generalContacts.addAll(publicContacts.get(subscr))
                     if (privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join("; ")
-                    org.generalContacts = generalContacts
+                        generalContacts.addAll(privateContacts.get(subscr))
+                    org.generalContacts = generalContacts.join("; ")
                     orgs << org
                 }
             }
