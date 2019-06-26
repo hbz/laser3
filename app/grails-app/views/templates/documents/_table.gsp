@@ -99,7 +99,7 @@
                                             <i class="green alternate share icon"></i>
                                         </span>
                                     </g:if>
-                                    <g:if test="${instance.showUIShareButton()}">
+                                    <g:if test="${instance?.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
                                             <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button green"
