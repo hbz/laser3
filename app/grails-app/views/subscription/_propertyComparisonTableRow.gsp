@@ -16,7 +16,8 @@
                 <div>
                     <input type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />
                 </div>
-            </th>
+            </div>
+        </th>
         <th class="six wide center aligned">
             <div class="la-copyElements-th-flex-container">
                 <div class="la-copyElements-th-flex-item">
