@@ -16,8 +16,10 @@
     <g:if test="${surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="exportParticipantResult"
-                    params="${params + [exportXLS: true]}">${message(code: 'default.button.exports.xls')}</g:link>
+            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                    params="[exportXLS: true, exportConfigs: true]">${message(code: 'survey.exportResultsConfigs')}</g:link>
+            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                    params="[exportXLS: true]">${message(code: 'survey.exportResultsOrgs')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     </g:if>
