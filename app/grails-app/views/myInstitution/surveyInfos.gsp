@@ -21,7 +21,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
-                    params="${params + [exportXLS: true]}">${message(code: 'default.button.exports.xls')}</g:link>
+                    params="${params + [exportXLS: true]}">${message(code: 'survey.exportSurvey')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>

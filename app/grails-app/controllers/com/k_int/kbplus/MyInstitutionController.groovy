@@ -3702,16 +3702,16 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyFinishConfig() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3754,16 +3754,16 @@ AND EXISTS (
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3804,16 +3804,16 @@ AND EXISTS (
     }
 
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -4220,8 +4220,8 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
@@ -4665,8 +4665,8 @@ AND EXISTS (
             }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageConsortiaSurveys() {
         def result = setResultGenerics()
 
@@ -4996,16 +4996,16 @@ AND EXISTS (
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyParticipantConsortia() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
