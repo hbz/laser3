@@ -79,6 +79,7 @@ class ApiReader {
         result.issueEntitlement = ApiReaderHelper.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiReaderHelper.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.retrieveInvoiceMap(costItem.invoice)
+        result.surveyOrg = costItem?.surveyOrg ?: null
 
         return ApiToolkit.cleanUp(result, true, true)
     }

@@ -218,6 +218,14 @@
 
         </div><!-- three fields -->
 
+
+        <div class="two fields">
+            <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
+
+            <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+        </div>
+
+
         <div class="one fields">
             <fieldset class="sixteen wide field la-modal-fieldset-no-margin">
                 <div class="field">

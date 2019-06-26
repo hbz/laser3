@@ -94,7 +94,7 @@
     </g:form>
 </semui:filter>
 
-<div>
+<semui:form>
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
@@ -183,7 +183,7 @@
 
         </g:each>
     </table>
-</div>
+</semui:form>
 
 <g:if test="${surveys}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"

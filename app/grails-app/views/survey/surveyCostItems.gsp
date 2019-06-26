@@ -24,6 +24,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -43,7 +44,7 @@
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            style="${config?.configFinish ? 'background-color: Lime' : ''}"
+                            style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
                             controller="survey" action="surveyCostItems"
                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
@@ -146,8 +147,6 @@
                                       tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
                                       tableID       : 'costTable'
                               ]"/>
-
-
 
 
                     <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
