@@ -3666,7 +3666,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
-                if (params?.targetSubscriptionId){
+                if (params?.targetSubscriptionId && params.isRenewSub){
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
@@ -3741,8 +3741,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             isTargetSubChanged = true
         }
 
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
+        }
         if (isTargetSubChanged && params.isRenewSub) {
-            newSub.refresh()
             params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
             params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         }else {
@@ -3750,8 +3752,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             params?.workFlowPartNext = WORKFLOW_PACKAGES_ENTITLEMENTS
         }
 
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+//        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+//        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -3767,8 +3769,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+//        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+//        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -3828,8 +3830,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             isTargetSubChanged = true
         }
 
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
+        }
         if (isTargetSubChanged && params.isRenewSub) {
-            newSub.refresh()
             params.workFlowPart = WORKFLOW_PROPERTIES
             params.workFlowPartNext = WORKFLOW_END
         }else {
@@ -3838,7 +3842,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
 
         result.sourceSubscription = baseSub
-        result.targetSubscription = newSub?.refresh()
+        result.targetSubscription = newSub
+//        result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
 //        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
@@ -4035,16 +4040,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             isTargetSubChanged = true
         }
 
-//        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-//        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        //params?.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        //params?.workFlowPartNext = WORKFLOW_PROPERTIES
-        /*if (newSub) {
-            newSub.refresh()
-        }*/
-
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
+        }
         if (isTargetSubChanged && newSub && params.isRenewSub) {
-            newSub.refresh()
             params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
             params.workFlowPartNext = WORKFLOW_PROPERTIES
         }else {
