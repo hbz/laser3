@@ -229,5 +229,9 @@ class SurveyConfig {
         return result
     }
 
+    public String toString() {
+        subscription ? "${subscription?.name}" : "Survey Element ${id}"
+    }
+
 
 }

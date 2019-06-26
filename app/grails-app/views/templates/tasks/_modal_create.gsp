@@ -5,7 +5,7 @@
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution'}">
-            <g:hiddenField name="${owntp}" value="${params.id}"/>
+            <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
