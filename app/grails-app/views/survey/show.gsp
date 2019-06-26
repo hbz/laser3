@@ -91,7 +91,8 @@
                             </div>
 
                             <div class="label"
-                                 style="background-color: transparent">${finishProcess}% <g:message code="surveyInfo.finish"/></div>
+                                 style="background-color: transparent">${finishProcess}% <g:message
+                                    code="surveyInfo.finish"/></div>
                         </div>
                     </div>
                 </div>
@@ -169,16 +170,17 @@
                                     </g:if>
 
                                 </div>
+                                <g:if test="${config?.type == 'SurveyProperty'}">
+                                    <div class="title"><i
+                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
-                                <div class="title"><i
-                                        class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
+                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                    </div>
 
-                                    <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
-                                </div>
-
-                                <div class="content">
-                                    <g:render template="allParticipants" model="[surveyConfig: config]"/>
-                                </div>
+                                    <div class="content">
+                                        <g:render template="allParticipants" model="[surveyConfig: config]"/>
+                                    </div>
+                                </g:if>
 
                                 <g:if test="${config?.type == 'Subscription'}">
 
@@ -187,15 +189,15 @@
 
                                     <div class="title"
                                          style="background-color: ${config?.costItemsFinish ? 'lime' : ''}"><i
-                                            class="dropdown icon"></i>${message(code: 'surveyCostItems.label')}
+                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
-                                        <div class="ui circular label">${costItems?.size() ?: 0}</div>
+                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
                                     </div>
 
                                     <div class="content compact">
 
                                         <g:render template="/templates/filter/orgFilterTable"
-                                                  model="[orgList       : costItems?.surveyOrg?.org,
+                                                  model="[orgList       : config?.orgs.org,
                                                           tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
                                                           tableID       : 'costTable',
                                                           surveyConfig  : config,
