@@ -21,27 +21,31 @@
 ${message(code: 'survey.label')} -
 
 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
-    <semui:surveyStatus object="${surveyInfo}"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 <g:if test="${navigation}">
     <br>
+
     <div class="ui center aligned grid">
         <div class='ui big label la-annual-rings'>
 
             <g:if test="${navigation?.prev}">
                 <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                        params="[surveyConfigID: navigation?.prev?.id]" class="item" title="${message(code: 'surveyConfigsInfo.prevSurveyConfig')}">
+                        params="[surveyConfigID: navigation?.prev?.id]" class="item"
+                        title="${message(code: 'surveyConfigsInfo.prevSurveyConfig')}">
                     <i class='arrow left icon'></i>
                 </g:link>
             </g:if>
             <g:else>
                 <i class=' icon'></i>
             </g:else>
-            <g:message code="surveyConfigsInfo.totalSurveyConfig" args="[surveyConfig?.configOrder, navigation?.total]"/>
+            <g:message code="surveyConfigsInfo.totalSurveyConfig"
+                       args="[surveyConfig?.configOrder, navigation?.total]"/>
             <g:if test="${navigation?.next}">
                 <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                        params="[surveyConfigID: navigation?.next?.id]" class="item" title="${message(code: 'surveyConfigsInfo.nextSurveyConfig')}">
+                        params="[surveyConfigID: navigation?.next?.id]" class="item"
+                        title="${message(code: 'surveyConfigsInfo.nextSurveyConfig')}">
                     <i class='arrow right icon'></i>
                 </g:link>
             </g:if>
@@ -75,10 +79,11 @@ ${message(code: 'survey.label')} -
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
-                        <g:set var="oldEditable" value="${editable}" />
+                        <g:set var="oldEditable" value="${editable}"/>
                         <g:set var="editable" value="${false}" scope="request"/>
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                            <g:render template="/templates/cpa/person_details"
+                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
                         <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
 
@@ -276,6 +281,34 @@ ${message(code: 'survey.label')} -
 
             <div class="la-inline-lists">
                 <div class="ui stackable cards">
+
+                    <div class="ui card ">
+                        <div class="content">
+                            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon"
+                                             data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${surveyConfig?.scheduledStartDate}"/></dd>
+                                </dl>
+                                <dl>
+                                    <dt class="control-label">
+                                        <div class="ui icon"
+                                             data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                        </div>
+                                    </dt>
+                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${surveyConfig?.scheduledEndDate}"/></dd>
+                                </dl>
+                            </g:if>
+                        </div>
+                    </div>
+
                     <div class="ui card la-time-card">
                         <div class="content">
                             <div class="header"><g:message code="surveyConfigsInfo.comment"/></div>
@@ -289,34 +322,7 @@ ${message(code: 'survey.label')} -
                             </g:else>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="la-inline-lists">
-                <div class="ui stackable cards">
-
-                    <div class="ui card ">
-                        <div class="content">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledStartDate}"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}" date="${surveyConfig?.scheduledEndDate}"/></dd>
-                                </dl>
-                            </g:if>
-                        </div>
-                    </div>
 
                     <div class="ui card la-time-card">
 
@@ -408,8 +414,6 @@ ${message(code: 'survey.label')} -
     </aside><!-- .four -->
 
 </div><!-- .grid -->
-
-
 
 
 <semui:form>
