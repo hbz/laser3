@@ -273,8 +273,9 @@ class UserController extends AbstractDebugController {
                     Role formalRole = Role.get(params.formalRole)
                     if (org && formalRole) {
                         instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
-                        UserSettings uss = user.getSetting(UserSettings.KEYS.DASHBOARD, org)
-                        log.debug("default dashboard: " + uss.getValue())
+                        user.getSetting(UserSettings.KEYS.DASHBOARD, org)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD_TAB,
+                                RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
                     }
                 }
                 if (params.comboOrg && params.comboFormalRole) {
@@ -282,8 +283,9 @@ class UserController extends AbstractDebugController {
                     Role formalRole2 = Role.get(params.comboFormalRole)
                     if (org2 && formalRole2) {
                         instAdmService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
-                        UserSettings uss = user.getSetting(UserSettings.KEYS.DASHBOARD, org2)
-                        log.debug("default dashboard: " + uss.getValue())
+                        user.getSetting(UserSettings.KEYS.DASHBOARD, org2)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD_TAB,
+                                RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
                     }
                 }
 
