@@ -102,10 +102,11 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
-                        <g:set var="oldEditable" value="${editable}" />
+                        <g:set var="oldEditable" value="${editable}"/>
                         <g:set var="editable" value="${false}" scope="request"/>
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                            <g:render template="/templates/cpa/person_details"
+                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
                         <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                     </g:if>
@@ -148,26 +149,49 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
         <g:each in="${surveyResults}" var="config" status="i">
 
             <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.get(config.key)}"/>
+
             <g:if test="${surveyConfig?.type == 'Subscription'}">
+
+                <g:set var="participantSubscription"
+                       value="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)}"/>
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
-                        <g:link controller="subscription" action="show"
-                                id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}">${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.name}</g:link>
-
+                        <g:if test="${participantSubscription}">
+                            <g:link controller="subscription" action="show"
+                                    id="${participantSubscription?.id}">${participantSubscription?.name}</g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
+                                ${surveyConfig?.subscription?.name}
+                            </g:link>
+                        </g:else>
                     </td>
                     <td>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.providers}"
-                                var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
-                        </g:each>
-                        <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.agencies}"
-                                var="org">
-                            <g:link controller="organisation" action="show"
-                                    id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
-                        </g:each>
+                        <g:if test="${participantSubscription}">
+                            <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.providers}"
+                                    var="org">
+                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
+                            </g:each>
+                            <g:each in="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.agencies}"
+                                    var="org">
+                                <g:link controller="organisation" action="show"
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                            </g:each>
+                        </g:if>
+                        <g:else>
+                            <g:each in="${surveyConfig?.subscription?.providers}"
+                                    var="org">
+                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br/>
+                            </g:each>
+                            <g:each in="${surveyConfig?.subscription?.agencies}"
+                                    var="org">
+                                <g:link controller="organisation" action="show"
+                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br/>
+                            </g:each>
+                        </g:else>
 
                     </td>
                     <td class="center aligned">

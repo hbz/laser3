@@ -57,8 +57,8 @@
                         ${fieldValue(bean: participant, field: "name")}
                     </g:link>
                 </td>
-                <td class="center aligned">
-                    %{--<g:set var="finish" value="${surveyInfo?.checkSurveyInfoFinishByOrg(participant)}"/>
+               %{-- <td class="center aligned">
+                    <g:set var="finish" value="${surveyInfo?.checkSurveyInfoFinishByOrg(participant)}"/>
                     <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
                         <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
                               data-tooltip="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
@@ -76,8 +76,8 @@
                               data-tooltip="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
                             <i class="circle red icon"></i>
                         </span>
-                    </g:else>--}%
-                </td>
+                    </g:else>
+                </td>--}%
                 <td>
 
                     <g:link controller="survey" action="evaluationParticipantInfo" id="${surveyInfo.id}"
