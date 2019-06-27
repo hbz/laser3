@@ -14,14 +14,14 @@
 
 <semui:controlButtons>
     <g:if test="${surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
-                    params="[exportXLS: true, exportConfigs: true]">${message(code: 'survey.exportResultsConfigs')}</g:link>
-            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
-                    params="[exportXLS: true]">${message(code: 'survey.exportResultsOrgs')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                        params="[exportXLS: true, exportConfigs: true]">${message(code: 'survey.exportResultsConfigs')}</g:link>
+                <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                        params="[exportXLS: true]">${message(code: 'survey.exportResultsOrgs')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
     </g:if>
 
     <g:render template="actions"/>
@@ -46,42 +46,42 @@
     <b>${message(code: 'surveyEvaluation.notOpenSurvey')}</b>
 </g:if>
 <g:else>
-        <div class="ui grid">
+    <div class="ui grid">
 
-            <div class="sixteen wide stretched column">
-                <div class="ui top attached tabular menu">
-                    <a class="item ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
-                       data-tab="surveyConfigsView">${message(code: 'surveyEvaluation.surveyConfigsView')}
-                        <div class="ui floating circular label">${surveyConfigs?.size() ?: 0}</div>
-                    </a>
+        <div class="sixteen wide stretched column">
+            <div class="ui top attached tabular menu">
 
-                    <a class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-                       data-tab="participantsView">${message(code: 'surveyEvaluation.participantsView')}
-                        <div class="ui floating circular label">${participants?.size() ?: 0}</div></a>
+                <g:link class="item ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
+                        controller="survey" action="surveyEvaluation"
+                        id="${surveyInfo?.id}"
+                        params="[tab: 'surveyConfigsView']">
+                    ${message(code: 'surveyEvaluation.surveyConfigsView')}
+                    <div class="ui floating circular label">${surveyConfigs?.size() ?: 0}</div>
+                </g:link>
 
-                </div>
-
-                <div class="ui bottom attached tab segment ${params.tab == 'surveyConfigsView' ? 'active' : ''}"
-                     data-tab="surveyConfigsView">
-
-                    <div>
-                        <g:render template="evaluationSurveyConfigsView"/>
-                    </div>
-
-                </div>
-
-
-                <div class="ui bottom attached tab segment ${params.tab == 'participantsView' ? 'active' : ''}"
-                     data-tab="participantsView">
-
-                    <div>
-                        <g:render template="evaluationParticipantsView"/>
-                    </div>
-
-                </div>
+                <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
+                        controller="survey" action="surveyEvaluation"
+                        id="${surveyInfo?.id}"
+                        params="[tab: 'participantsView']">
+                    ${message(code: 'surveyEvaluation.participantsView')}
+                    <div class="ui floating circular label">${participants?.size() ?: 0}</div>
+                </g:link>
 
             </div>
+
+            <g:if test="${params.tab == 'surveyConfigsView'}">
+                <div class="ui bottom attached tab segment active">
+                    <g:render template="evaluationSurveyConfigsView"/>
+                </div>
+            </g:if>
+
+            <g:if test="${params.tab == 'participantsView'}">
+                <div class="ui bottom attached tab segment active">
+                    <g:render template="evaluationParticipantsView"/>
+                </div>
+            </g:if>
         </div>
+    </div>
 
 </g:else>
 

@@ -93,7 +93,7 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                                <g:if test="${instance.respondsTo('showUIShareButton')}">
+                                <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span data-tooltip="${message(code:'property.share.tooltip.on')}">
                                             <i class="green alternate share icon"></i>

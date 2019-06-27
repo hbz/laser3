@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.TemplateSupport
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -231,6 +232,11 @@ class SurveyConfig {
 
     public String toString() {
         subscription ? "${subscription?.name}" : "Survey Element ${id}"
+    }
+
+
+    boolean showUIShareButton() {
+        return false
     }
 
 
