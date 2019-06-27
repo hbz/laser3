@@ -161,7 +161,7 @@ function copyEmailAdresses(orgListIDs) {
             $.ajax({
                 url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
                                 data: {
-                                    orgListIDs: orgListIDs,
+                                    orgListIDs: orgListIDs.join(' '),
                                 }
             }).done( function(data) {
                 $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
