@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
 import de.laser.helper.RefdataAnnotation
+import de.laser.interfaces.TemplateSupport
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -146,9 +147,9 @@ class SurveyConfig {
     def getSurveyOrgsIDs() {
         def result = [:]
 
-        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+        result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedSubscribers()?.id) ?: null
 
-        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs) ?: null
 
         return result
     }
@@ -164,19 +165,23 @@ class SurveyConfig {
 
             def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
-            surveyResult.each {
-                if (it.getFinish()) {
-                    countFinish++
-                } else {
-                    countNotFinish++
+            if(surveyResult) {
+                surveyResult.each {
+                    if (it.getFinish()) {
+                        countFinish++
+                    } else {
+                        countNotFinish++
+                    }
                 }
-            }
-            if (countFinish > 0 && countNotFinish == 0) {
+                if (countFinish > 0 && countNotFinish == 0) {
+                    return ALL_RESULTS_FINISH_BY_ORG
+                } else if (countFinish > 0 && countNotFinish > 0) {
+                    return ALL_RESULTS_HALF_FINISH_BY_ORG
+                } else {
+                    return ALL_RESULTS_NOT_FINISH_BY_ORG
+                }
+            }else {
                 return ALL_RESULTS_FINISH_BY_ORG
-            } else if (countFinish > 0 && countNotFinish > 0) {
-                return ALL_RESULTS_HALF_FINISH_BY_ORG
-            } else {
-                return ALL_RESULTS_NOT_FINISH_BY_ORG
             }
         }
 
@@ -227,6 +232,15 @@ class SurveyConfig {
             result = null
         }
         return result
+    }
+
+    public String toString() {
+        subscription ? "${subscription?.name}" : "Survey Element ${id}"
+    }
+
+
+    boolean showUIShareButton() {
+        return false
     }
 
 

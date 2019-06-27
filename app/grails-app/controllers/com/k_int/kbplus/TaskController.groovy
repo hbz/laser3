@@ -69,6 +69,9 @@ class TaskController extends AbstractDebugController {
 				else if (params.linkto == "org" && params.org) {
 					taskInstance.org = Org.get(params.org) ?: null
 				}
+				else if (params.linkto == "surveyConfig" && params.surveyConfig) {
+					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
+				}
 
 				if (!taskInstance.save(flush: true)) {
 					/*result.taskInstance = taskInstance

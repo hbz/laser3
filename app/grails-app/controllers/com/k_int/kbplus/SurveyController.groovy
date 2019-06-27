@@ -32,6 +32,7 @@ class SurveyController {
     def surveyService
     def financeService
     def exportService
+    def taskService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -476,6 +477,9 @@ class SurveyController {
         def orgs = result.surveyConfigs?.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
+        result.participantsNotFinish = SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNull(result.surveyConfigs)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }.sort { it.sortname }
+        result.participantsFinish = SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(result.surveyConfigs)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }.sort { it.sortname }
+
         result
 
     }
@@ -675,6 +679,11 @@ class SurveyController {
                 result.properties << it
             }
         }
+
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.surveyConfig)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
 
         result
 
@@ -1721,7 +1730,7 @@ class SurveyController {
 
         result.orgList = Org.findAllByIdInList(params.list("orgListIDs"))
 
-        render(template: "/templates/copyEmailaddresses", model: result)
+        render(template: "/survey/copyEmailaddresses", model: result)
     }
 
 

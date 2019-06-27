@@ -283,11 +283,17 @@ class Subscription
             result = CALCULATED_TYPE_TEMPLATE
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
-            result = CALCULATED_TYPE_CONSORTIAL
+            if(administrative)
+                result = CALCULATED_TYPE_ADMINISTRATIVE
+            else
+                result = CALCULATED_TYPE_CONSORTIAL
         }
         else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
             // current and deleted member subscriptions
-            result = CALCULATED_TYPE_PARTICIPATION
+            if(administrative)
+                result = CALCULATED_TYPE_ADMINISTRATIVE
+            else
+                result = CALCULATED_TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
             result = CALCULATED_TYPE_LOCAL

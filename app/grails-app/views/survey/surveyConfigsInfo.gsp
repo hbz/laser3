@@ -39,6 +39,7 @@
 <br>
 <g:if test="${navigation}">
     <br>
+
     <div class="ui center aligned grid">
         <div class='ui big label la-annual-rings'>
 
@@ -262,27 +263,32 @@
 
                     </div>
 
-                </g:if>
 
-            <%-- FINANCE, to be reactivated as of ERMS-943 --%>
-            <%-- assemble data on server side --%>
-                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-                            <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
-                                <g:render template="/subscription/financials" model="[data:costItemSums.ownCosts]"/>
-                            </g:if>
-                            <g:if test="${costItemSums.consCosts}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
-                                <g:render template="/subscription/financials" model="[data:costItemSums.consCosts]"/>
-                            </g:if>
-                            <g:elseif test="${costItemSums.subscrCosts}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
-                                <g:render template="/subscription/financials" model="[data:costItemSums.subscrCosts]"/>
-                            </g:elseif>
+
+                <%-- FINANCE, to be reactivated as of ERMS-943 --%>
+                <%-- assemble data on server side --%>
+                    <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                        <div class="ui card la-dl-no-table">
+                            <div class="content">
+                                <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
+                                    <h5 class="ui header">${message(code: 'financials.label', default: 'Financials')} : ${message(code: 'financials.tab.ownCosts')}</h5>
+                                    <g:render template="/subscription/financials"
+                                              model="[data: costItemSums.ownCosts]"/>
+                                </g:if>
+                                <g:if test="${costItemSums.consCosts}">
+                                    <h5 class="ui header">${message(code: 'financials.label', default: 'Financials')} : ${message(code: 'financials.tab.consCosts')}</h5>
+                                    <g:render template="/subscription/financials"
+                                              model="[data: costItemSums.consCosts]"/>
+                                </g:if>
+                                <g:elseif test="${costItemSums.subscrCosts}">
+                                    <h5 class="ui header">${message(code: 'financials.label', default: 'Financials')} : ${message(code: 'financials.tab.subscrCosts')}</h5>
+                                    <g:render template="/subscription/financials"
+                                              model="[data: costItemSums.subscrCosts]"/>
+                                </g:elseif>
+                            </div>
                         </div>
-                    </div>
+                    </g:if>
+
                 </g:if>
 
                 <div class="ui card ">
@@ -290,17 +296,20 @@
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                    <div class="ui icon"
+                                         data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </dt>
-                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"/></dd>
+                                <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate"
+                                                     type="date"/></dd>
 
                             </dl>
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon" data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                    <div class="ui icon"
+                                         data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
@@ -349,10 +358,31 @@
         </div>
 
         <aside class="four wide column la-sidekick">
+
+            <g:render template="/templates/tasks/card"
+                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+
             <div id="container-documents">
                 <g:render template="/survey/cardDocuments"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
+
+            <div id="container-notes">
+                <g:render template="/templates/notes/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')]}"/>
+            </div>
+
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+
+                <g:render template="/templates/tasks/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+            </g:if>
+            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_SURVEY', 'INST_EDITOR')}">
+                <g:render template="/templates/notes/modal_create"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+            </g:if>
+
         </aside><!-- .four -->
 
     </div><!-- .grid -->
@@ -459,8 +489,6 @@
                 </tfoot>
 
             </table>
-
-
 
         </semui:form>
     </div>

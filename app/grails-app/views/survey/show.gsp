@@ -155,6 +155,10 @@
                                                     </td>
 
                                                     <td class="x">
+                                                        %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
+                                                        <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                                            <i class="green alternate share icon"></i>
+                                                        </span>
                                                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
                                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
@@ -171,7 +175,7 @@
 
                                 </div>
                                 <g:if test="${config?.type == 'SurveyProperty'}">
-                                    <div class="title"><i
+                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                         <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>

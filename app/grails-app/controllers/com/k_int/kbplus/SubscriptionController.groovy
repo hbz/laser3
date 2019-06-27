@@ -76,11 +76,11 @@ class SubscriptionController extends AbstractDebugController {
     public static final String REPLACE = "REPLACE"
     public static final String DO_NOTHING = "DO_NOTHING"
 
-    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
-    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
-    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
-    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
-    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
+//    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
+//    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
+//    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
+//    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
+//    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
@@ -916,7 +916,7 @@ class SubscriptionController extends AbstractDebugController {
         def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
         if (params.exportXLS || params.format) {
-            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
+            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
             Map publicContacts = allContacts.publicContacts
             Map privateContacts = allContacts.privateContacts
             result.filteredSubChilds.each { row ->
@@ -936,12 +936,12 @@ class SubscriptionController extends AbstractDebugController {
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
-                    String generalContacts = ""
+                    Set generalContacts = []
                     if (publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join("; ") + "; "
+                        generalContacts.addAll(publicContacts.get(subscr))
                     if (privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join("; ")
-                    org.generalContacts = generalContacts
+                        generalContacts.addAll(privateContacts.get(subscr))
+                    org.generalContacts = generalContacts.join("; ")
                     orgs << org
                 }
             }
@@ -1863,7 +1863,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
-                                administrative: result.subscriptionInstance.administrative,
+                                administrative: result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1886,7 +1886,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            if(cons_sub.administrative)
+                            if(cons_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
                             else
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
@@ -3658,21 +3658,33 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
-                break;
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
+                if (params.isRenewSub){
+                    result << loadDataFor_PackagesEntitlements()
+                }
                 break;
             case WORKFLOW_SUBSCRIBER:
                 result << copySubElements_Subscriber();
+//                if (params.isRenewSub) {
+//                    result << loadDataFor_Subscriber()
+//                }
+                break;
+            case WORKFLOW_PACKAGES_ENTITLEMENTS:
+                result << copySubElements_PackagesEntitlements();
+                if (params.isRenewSub){
+                    result << loadDataFor_DocsAnnouncementsTasks()
+                }
+                break;
+            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copySubElements_DocsAnnouncementsTasks();
+                if (params.isRenewSub){
+                    result << loadDataFor_Properties()
+                }
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId && params.isRenewSub){
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
-                break;
-            case WORKFLOW_PACKAGES_ENTITLEMENTS:
-                result << copySubElements_PackagesEntitlements();
                 break;
             default:
                 result << loadDataFor_DatesOwnerRelations()
@@ -3745,16 +3757,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (isTargetSubChanged && params.isRenewSub) {
+        if (params.isRenewSub) {
             params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
             params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         }else {
             params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
             params?.workFlowPartNext = WORKFLOW_PACKAGES_ENTITLEMENTS
         }
-
-//        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-//        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -3770,8 +3779,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-//        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-//        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
@@ -3834,22 +3841,43 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (isTargetSubChanged && params.isRenewSub) {
+        if (params.isRenewSub) {
             params.workFlowPart = WORKFLOW_PROPERTIES
             params.workFlowPartNext = WORKFLOW_END
         }else {
             params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-           params.workFlowPartNext = WORKFLOW_PROPERTIES
+            params.workFlowPartNext = WORKFLOW_PROPERTIES
         }
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
-//        result.targetSubscription = newSub?.refresh()
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-//        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-//        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
+        result
+    }
+    private loadDataFor_DocsAnnouncementsTasks() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+//
+//        if (isTargetSubChanged) {
+//            newSub = newSub.refresh()
+//        }
+//        if (params.isRenewSub) {
+//            params.workFlowPart = WORKFLOW_PROPERTIES
+//            params.workFlowPartNext = WORKFLOW_END
+//        }else {
+//            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//            params.workFlowPartNext = WORKFLOW_PROPERTIES
+//        }
 
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
+        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
         result
     }
 
@@ -4011,8 +4039,29 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         result
     }
+    private loadDataFor_Properties() {
+        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
+        List<Subscription> subsToCompare = [baseSub]
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(params.targetSubscriptionId)
+            subsToCompare.add(newSub)
+        }
 
-
+        if (newSub) {
+            result.newSub = newSub.refresh()
+        }
+        subsToCompare.each{ sub ->
+            TreeMap customProperties = result.customProperties
+            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
+            result.customProperties = customProperties
+            TreeMap privateProperties = result.privateProperties
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            result.privateProperties = privateProperties
+        }
+        result
+    }
     private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
@@ -4044,13 +4093,35 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (isTargetSubChanged && newSub && params.isRenewSub) {
+        if (newSub && params.isRenewSub) {
             params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
             params.workFlowPartNext = WORKFLOW_PROPERTIES
         }else {
             params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
             params.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         }
+
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+        result.newSub = newSub
+        result.subscription = baseSub
+        result
+    }
+    private loadDataFor_PackagesEntitlements() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+
+//        if (isTargetSubChanged) {
+//            newSub = newSub.refresh()
+//        }
+//        if (newSub && params.isRenewSub) {
+//            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//            params.workFlowPartNext = WORKFLOW_PROPERTIES
+//        }else {
+//            params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+//            params.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+//        }
 
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
