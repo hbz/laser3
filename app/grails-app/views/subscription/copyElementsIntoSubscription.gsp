@@ -34,7 +34,11 @@
             <div class="${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''} step">
                 <div class="content">
                     <div class="content" >
-                        <div class="title">Rahmendaten</div>
+                        <div class="title">
+                            <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: null]}">
+                                Rahmendaten
+                            </g:link>
+                        </div>
                         <div class="description">
                             <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                             <i class="balance scale icon"></i>${message(code: 'license')}
@@ -45,7 +49,11 @@
             </div>
             <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
-                    <div class="title">Bestand</div>
+                    <div class="title">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}">
+                            Bestand
+                        </g:link>
+                    </div>
                     <div class="description">
                         <i class="gift icon"></i>${message(code: 'package')}
                         <i class="book icon"></i>${message(code: 'title')}
@@ -54,7 +62,11 @@
             </div>
             <div class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
                 <div class="content">
-                    <div class="title">Anhänge</div>
+                    <div class="title">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}">
+                            Anhänge
+                        </g:link>
+                    </div>
                     <div class="description">
                         <i class="file outline icon"></i>${message(code: 'default.documents.label')}
                         <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
@@ -64,7 +76,11 @@
             </div>
             <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
                 <div class="content">
-                    <div class="title">${message(code: 'properties')}</div>
+                    <div class="title">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}">
+                            ${message(code: 'properties')}
+                        </g:link>
+                    </div>
                     <div class="description">
                         <i class="tags icon"></i>${message(code: 'properties')}
                     </div>
