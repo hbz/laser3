@@ -196,7 +196,10 @@ class DeletionService {
         List pRoles         = new ArrayList(sub.prsLinks)
         List subPkgs        = new ArrayList(sub.packages)
         List pendingChanges = new ArrayList(sub.pendingChanges)
-        List ies            = new ArrayList(sub.issueEntitlements)
+
+        List ies            = IssueEntitlement.where { subscription == sub }.findAll()
+                            // = new ArrayList(sub.issueEntitlements)
+
         List costs          = new ArrayList(sub.costItems)
         List oapl           = new ArrayList(sub.oapl)
         List privateProps   = new ArrayList(sub.privateProperties)
@@ -309,7 +312,7 @@ class DeletionService {
                     pendingChanges.each { tmp -> tmp.delete() }
 
                     // issue entitlements
-                    sub.issueEntitlements.clear()
+                    // sub.issueEntitlements.clear()
                     ies.each { tmp -> tmp.delete() }
 
                     // org access point link
