@@ -175,7 +175,7 @@
 
                                 </div>
                                 <g:if test="${config?.type == 'SurveyProperty'}">
-                                    <div class="title"><i
+                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
                                         <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
