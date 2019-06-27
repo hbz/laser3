@@ -96,6 +96,28 @@
                     <g:hiddenField name="ipv4Format" value="${ipv4Format}" />
                     <g:hiddenField name="ipv6Format" value="${ipv6Format}" />
 
+                    <div class="la-inline-lists">
+                        <div class="ui card yellow message">
+                            <div class="content">
+                                Bitte tragen Sie hier Ihre IP-Bereiche ein:
+
+                                <ul>
+                                    <li>Geben Sie immer alle vier Blöcke der IP-Notation an (z.B. 141.2.. statt 141.2. )</li>
+                                    <li>Benutzen Sie für jeden einzelnen Bereich eine eigene Zeile, die Sie mit "Neu" bestätigen.</li>
+                                </ul>
+
+                                Korrekte Beispiele:
+
+                                <ul>
+                                    <li>141.2.1-21.*</li>
+                                    <li>141.2.42.142-255</li>
+                                    <li>141.2.22.0/24</li>
+                                    <li>141.2.22.1-141.2.22.10</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                     <table  class="ui celled la-table table">
                         <thead>
                         <tr>
