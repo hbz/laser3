@@ -366,8 +366,8 @@ class DeletionService {
         List userSettings   = UserSettings.findAllWhere(user: user)
         List userTransforms = UserTransforms.findAllWhere(user: user)
 
-        List costItems = CostItem.executeQuery(
-                'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+        //List costItems = CostItem.executeQuery(
+        //        'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
         List ciecs = CostItemElementConfiguration.executeQuery(
                 'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
@@ -398,7 +398,7 @@ class DeletionService {
             result.info << ['Einstellungen', userSettings]
             result.info << ['Transforms', userTransforms]
 
-            result.info << ['Kosten', costItems, 'blue']
+            //result.info << ['Kosten', costItems, 'blue']
             result.info << ['Kostenkonfigurationen', ciecs, 'blue']
             result.info << ['DashboardDueDate', ddds]
             result.info << ['Dokumente', docs, 'teal']
