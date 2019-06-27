@@ -50,7 +50,7 @@
             <div class="${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''} step">
                 <div class="content" >
                     <div class="title">
-                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
                             Bestand
                         </g:link>
                     </div>
@@ -63,7 +63,7 @@
             <div class="${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">
-                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}">
                             Anhänge
                         </g:link>
                     </div>
@@ -77,7 +77,7 @@
             <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">
-                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
                             ${message(code: 'properties')}
                         </g:link>
                     </div>
@@ -90,7 +90,7 @@
     </g:if>
     <g:else>
         <semui:subNav>
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}" workFlowPart="${WORKFLOW_DATES_OWNER_RELATIONS}" >
                 <div class="content" >
                     <div class="title">Rahmendaten</div>
                     <div class="description">
@@ -101,7 +101,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}" workFlowPart="5" >
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" workFlowPart="${WORKFLOW_PACKAGES_ENTITLEMENTS}" >
                 <div class="content" >
                     <div class="title">Bestand</div>
                     <div class="description">
@@ -111,7 +111,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}"  workFlowPart="${WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
                 <div class="content">
                     <div class="title">Anhänge</div>
                     <div class="description">
@@ -123,7 +123,7 @@
             </semui:complexSubNavItem>
 
             %{--TODO: Teilnehmer ist noch nicht fertig implementiert, wird später als wieder eingeblendet--}%
-            %{--<semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">--}%
+            %{--<semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}"  workFlowPart="${WORKFLOW_SUBSCRIBER}">--}%
                 %{--<i class="university icon"></i>--}%
                 %{--<div class="content">--}%
                     %{--<div class="title">--}%
@@ -132,17 +132,15 @@
                 %{--</div>--}%
             %{--</semui:complexSubNavItem>--}%
 
-            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_YODA">
-                <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
-                    <div class="content">
-                        <div class="title">${message(code: 'properties')}</div>
-                        <div class="description">
-                            <i class="tags icon"></i>${message(code: 'properties')}
-                        </div>
-
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}"  workFlowPart="${WORKFLOW_PROPERTIES}">
+                <div class="content">
+                    <div class="title">${message(code: 'properties')}</div>
+                    <div class="description">
+                        <i class="tags icon"></i>${message(code: 'properties')}
                     </div>
-                </semui:complexSubNavItem>
-            </sec:ifAnyGranted>
+
+                </div>
+            </semui:complexSubNavItem>
         </semui:subNav>
     </g:else>
     <br>
