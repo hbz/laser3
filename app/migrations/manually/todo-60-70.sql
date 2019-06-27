@@ -52,7 +52,7 @@ update identifier_namespace set idns_unique = true where (idns_non_unique = fals
 -- ERMS-884
 -- 2019-06-27
 -- Change data type of sums from double precision to numeric
-
-alter table cost_item alter column ci_cost_in_local_currency type numeric;
-alter table cost_item alter column ci_cost_in_billing_currency type numeric;
-alter table cost_item alter column ci_currency_rate type numeric;
+-- suspended UFN
+--alter table cost_item alter column ci_cost_in_local_currency type numeric;
+--alter table cost_item alter column ci_cost_in_billing_currency type numeric;
+--alter table cost_item alter column ci_currency_rate type numeric;
