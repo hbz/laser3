@@ -1130,6 +1130,7 @@ class GlobalSourceSyncService {
                     out.writeObject(new_record_info)
                     out.close()
                     existing_record_info.record = baos.toByteArray();
+                    existing_record_info.name = parsed_rec.title
                     existing_record_info.desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
 
 
