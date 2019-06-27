@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
@@ -1004,7 +1005,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.order = order
               newCostItem.invoice = invoice
               //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
-              newCostItem.isVisibleForSubscriber = sub.administrative ? false : cost_item_isVisibleForSubscriber
+              newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
               newCostItem.costItemCategory = cost_item_category
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status

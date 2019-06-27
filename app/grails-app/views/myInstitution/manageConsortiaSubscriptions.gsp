@@ -183,7 +183,7 @@
                 <td>
                     <g:if test="${choosenOrgCPAs}">
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                            <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true, overwriteEditable: false]}" />
                         </g:each>
                     </g:if>
                 </td>

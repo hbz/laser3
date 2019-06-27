@@ -17,7 +17,7 @@
 
             <g:each in="${person?.contacts?.toSorted()}" var="contact">
                 <g:render template="/templates/cpa/contact"
-                          model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
+                          model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
 
         </g:if>
