@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
 <g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
@@ -61,7 +61,7 @@
                 <%
                     OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id}
                 %>
-                <g:if test="${consortialRole && !sub.administrative}">
+                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -616,7 +616,8 @@
             }
 
             function checkValues() {
-                if ( convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val() !== convertDouble($("#newCostInLocalCurrency").val()) ) {
+                if ( (convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2) !== convertDouble($("#newCostInLocalCurrency").val()).toFixed(2) ) {
+                    console.log("inserted values are: "+convertDouble($("#newCostInBillingCurrency").val())+" * "+$("#newCostCurrencyRate").val()+" = "+convertDouble($("#newCostInLocalCurrency").val()).toFixed(2)+", correct would be: "+(convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
                     costElems.parent('.field').addClass('error');
                     return false;
                 }

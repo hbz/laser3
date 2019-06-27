@@ -32,6 +32,7 @@ class SurveyController {
     def surveyService
     def financeService
     def exportService
+    def taskService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -675,6 +676,11 @@ class SurveyController {
                 result.properties << it
             }
         }
+
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.surveyConfig)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
 
         result
 

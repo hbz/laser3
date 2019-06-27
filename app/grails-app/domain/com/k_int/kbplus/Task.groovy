@@ -9,7 +9,7 @@ class Task {
     Org             org
     Package         pkg
     Subscription    subscription
-    SurveyInfo      surveyInfo
+    SurveyConfig    surveyConfig
 
     String          title
     String          description
@@ -29,7 +29,7 @@ class Task {
         org             (nullable:true, blank:false)
         pkg             (nullable:true, blank:false)
         subscription    (nullable:true, blank:false)
-        surveyInfo      (nullable:true, blank:false)
+        surveyConfig      (nullable:true, blank:false)
         title           (nullable:false, blank:false)
         description     (nullable:true, blank:true)
         status          (nullable:false, blank:false)
@@ -48,7 +48,7 @@ class Task {
         org             column:'tsk_org_fk'
         pkg             column:'tsk_pkg_fk'
         subscription    column:'tsk_sub_fk'
-        surveyInfo      column:'tsk_surInfo_fk'
+        surveyConfig      column:'tsk_sur_config_fk'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
@@ -73,8 +73,8 @@ class Task {
             result << [controller: 'package', object: pkg]
         if (subscription)
             result << [controller: 'subscription', object: subscription]
-        if (surveyInfo)
-            result << [controller: 'surveyInfo', object: surveyInfo]
+        if (surveyConfig)
+            result << [controller: 'surveyConfig', object: surveyConfig]
 
         result
     }

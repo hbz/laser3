@@ -1863,7 +1863,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
-                                administrative: result.subscriptionInstance.administrative,
+                                administrative: result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1886,7 +1886,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            if(cons_sub.administrative)
+                            if(cons_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
                             else
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
