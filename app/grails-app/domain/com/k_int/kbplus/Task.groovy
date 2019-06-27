@@ -74,7 +74,7 @@ class Task {
         if (subscription)
             result << [controller: 'subscription', object: subscription]
         if (surveyConfig)
-            result << [controller: 'surveyConfig', object: surveyConfig]
+            result << [controller: 'survey', object: surveyConfig]
 
         result
     }

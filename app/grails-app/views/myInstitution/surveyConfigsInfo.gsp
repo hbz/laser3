@@ -98,12 +98,24 @@ ${message(code: 'survey.label')} -
 <br>
 
 <g:if test="${surveyConfig?.type == 'Subscription'}">
-    <h2 class="ui icon header"><semui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${subscriptionInstance?.id}">
-        ${subscriptionInstance?.name}
-    </g:link>
-    </h2>
-    <semui:auditInfo auditable="[subscriptionInstance, 'name']"/>
+
+    <g:if test="${!subscriptionInstance}">
+        <g:set var="gascoView" value="true"/>
+        <h2 class="ui icon header"><semui:headerIcon/>
+        <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
+            ${surveyConfig?.subscription?.name}
+        </g:link>
+        </h2>
+    </g:if>
+    <g:else>
+
+        <h2 class="ui icon header"><semui:headerIcon/>
+        <g:link controller="subscription" action="show" id="${subscriptionInstance?.id}">
+            ${subscriptionInstance?.name}
+        </g:link>
+        </h2>
+        <semui:auditInfo auditable="[subscriptionInstance, 'name']"/>
+    </g:else>
 
 </g:if>
 <g:else>
@@ -113,10 +125,9 @@ ${message(code: 'survey.label')} -
 <div class="ui stackable grid">
     <div class="twelve wide column">
         <div class="la-inline-lists">
-
-            <div class="ui card">
-                <div class="content">
-                    <g:if test="${surveyConfig?.type == 'Subscription'}">
+            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+                <div class="ui card">
+                    <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                             <dd>${subscriptionInstance?.status?.getI10n('value')}</dd>
@@ -168,10 +179,9 @@ ${message(code: 'survey.label')} -
                                 </g:each>
                             </dd>
                         </dl>
-                    </g:if>
+
+                    </div>
                 </div>
-            </div>
-            <g:if test="${surveyConfig?.type == 'Subscription'}">
 
                 <g:if test="${subscriptionInstance?.packages}">
                     <div class="ui card la-js-hideable">
@@ -279,130 +289,129 @@ ${message(code: 'survey.label')} -
 
             </g:if>
 
-            <div class="la-inline-lists">
-                <div class="ui stackable cards">
 
-                    <div class="ui card ">
-                        <div class="content">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon"
-                                             data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledStartDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${surveyConfig?.scheduledStartDate}"/></dd>
-                                </dl>
-                                <dl>
-                                    <dt class="control-label">
-                                        <div class="ui icon"
-                                             data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
-                                            ${message(code: 'surveyConfig.scheduledEndDate.label')}
-                                        </div>
-                                    </dt>
-                                    <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${surveyConfig?.scheduledEndDate}"/></dd>
-                                </dl>
-                            </g:if>
-                        </div>
+
+            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+                <div class="ui card ">
+                    <div class="content">
+
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                    ${message(code: 'surveyConfig.scheduledStartDate.label')}
+                                </div>
+                            </dt>
+                            <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                              date="${surveyConfig?.scheduledStartDate}"/></dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <div class="ui icon"
+                                     data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                    ${message(code: 'surveyConfig.scheduledEndDate.label')}
+                                </div>
+                            </dt>
+                            <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                              date="${surveyConfig?.scheduledEndDate}"/></dd>
+                        </dl>
+
                     </div>
+                </div>
+            </g:if>
 
-                    <div class="ui card la-time-card">
-                        <div class="content">
-                            <div class="header"><g:message code="surveyConfigsInfo.comment"/></div>
-                        </div>
+            <div class="ui card la-time-card">
+                <div class="content">
+                    <div class="header"><g:message code="surveyConfigsInfo.comment"/></div>
+                </div>
 
-                        <div class="content">
-                            <g:if test="${surveyConfig?.comment}">
-                                ${surveyConfig?.comment}
-                            </g:if><g:else>
-                                <g:message code="surveyConfigsInfo.comment.noComment"/>
-                            </g:else>
-                        </div>
-                    </div>
-
-
-                    <div class="ui card la-time-card">
-
-                        <div class="content">
-                            <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
-                        </div>
-
-                        <div class="content">
-
-                            <g:set var="surveyOrg"
-                                   value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
-                            <g:set var="costItem"
-                                   value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
-                            <g:set var="costItemsSub"
-                                   value="${subscriptionInstance?.costItems.findAll {
-                                       it?.costItemElement?.id == costItem?.costItemElement?.id
-                                   }}"/>
-
-
-                            <table class="ui celled la-table-small la-table-inCard table">
-                                <thead>
-                                <tr>
-                                    <th>
-                                        <g:message code="surveyConfigsInfo.oldPrice"/>
-                                    </th>
-                                    <th>
-                                        <g:message code="surveyConfigsInfo.newPrice"/>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody class="top aligned">
-                                <tr>
-                                    <td>
-                                        <g:each in="${costItemsSub}" var="costItemSub">
-                                            ${costItemSub?.costItemElement?.getI10n('value')}
-                                            <b><g:formatNumber
-                                                    number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
-                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
-
-                                            ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                            <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                                <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
-                                            </g:if>
-                                            <br>
-
-                                        </g:each>
-                                    </td>
-                                    <td>
-                                        <g:if test="${costItem}">
-                                            ${costItem?.costItemElement?.getI10n('value')}
-                                            <b><g:formatNumber
-                                                    number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
-                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
-
-                                            ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
-
-                                            <g:if test="${costItem?.startDate || costItem?.endDate}">
-                                                <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
-                                            </g:if>
-
-                                            <g:if test="${costItem?.costDescription}">
-                                                <br>
-
-                                                <div class="ui icon" data-position="right center" data-variation="tiny"
-                                                     data-tooltip="${costItem?.costDescription}">
-                                                    <i class="question small circular inverted icon"></i>
-                                                </div>
-                                            </g:if>
-
-                                        </g:if>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="content">
+                    <g:if test="${surveyConfig?.comment}">
+                        ${surveyConfig?.comment}
+                    </g:if><g:else>
+                        <g:message code="surveyConfigsInfo.comment.noComment"/>
+                    </g:else>
                 </div>
             </div>
 
+            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+                <div class="ui card la-time-card">
+
+                    <div class="content">
+                        <div class="header"><g:message code="surveyConfigsInfo.costItems"/></div>
+                    </div>
+
+                    <div class="content">
+
+                        <g:set var="surveyOrg"
+                               value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+                        <g:set var="costItem"
+                               value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
+                        <g:set var="costItemsSub"
+                               value="${subscriptionInstance?.costItems.findAll {
+                                   it?.costItemElement?.id == costItem?.costItemElement?.id
+                               }}"/>
+
+
+                        <table class="ui celled la-table-small la-table-inCard table">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <g:message code="surveyConfigsInfo.oldPrice"/>
+                                </th>
+                                <th>
+                                    <g:message code="surveyConfigsInfo.newPrice"/>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="top aligned">
+                            <tr>
+                                <td>
+                                    <g:each in="${costItemsSub}" var="costItemSub">
+                                        ${costItemSub?.costItemElement?.getI10n('value')}
+                                        <b><g:formatNumber
+                                                number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
+                                                minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
+
+                                        ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                        <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
+                                            <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                        </g:if>
+                                        <br>
+
+                                    </g:each>
+                                </td>
+                                <td>
+                                    <g:if test="${costItem}">
+                                        ${costItem?.costItemElement?.getI10n('value')}
+                                        <b><g:formatNumber
+                                                number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
+                                                minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
+
+                                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                                        <g:if test="${costItem?.startDate || costItem?.endDate}">
+                                            <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
+                                        </g:if>
+
+                                        <g:if test="${costItem?.costDescription}">
+                                            <br>
+
+                                            <div class="ui icon" data-position="right center" data-variation="tiny"
+                                                 data-tooltip="${costItem?.costDescription}">
+                                                <i class="question small circular inverted icon"></i>
+                                            </div>
+                                        </g:if>
+
+                                    </g:if>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </g:if>
         </div>
     </div>
 

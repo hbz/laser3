@@ -308,8 +308,16 @@
                                             <g:if test="${tskObj.controller.contains('license')}">
                                                 <i class="book icon"></i>
                                             </g:if>
+                                            <g:if test="${tskObj.controller.contains('survey')}">
+                                                <i class="chart bar icon"></i>
+                                            </g:if>
                                         </span>
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    <g:if test="${tskObj.controller.contains('survey')}">
+                                        <g:link controller="${tskObj.controller}" action="surveyConfigsInfo" params="${[id: tskObj.object?.surveyInfo?.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    </g:if>
+                                        <g:else>
+                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                        </g:else>
                                     </div>
                                 </g:each>
                             </g:if>

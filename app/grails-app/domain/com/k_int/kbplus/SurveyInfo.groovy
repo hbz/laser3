@@ -77,11 +77,13 @@ class SurveyInfo {
     def checkSurveyInfoFinishByOrg(Org org) {
         def result = [:]
 
-        def count = 1
+        def count = 0
         surveyConfigs.each {
-            if(result."${it.checkResultsFinishByOrg(org)}"){
 
-                result."${it.checkResultsFinishByOrg(org)}" = result."${it.checkResultsFinishByOrg(org)}"+1
+            def checkResultsFinishByOrg = result."${it.checkResultsFinishByOrg(org)}"
+            if(checkResultsFinishByOrg){
+
+                result."${it.checkResultsFinishByOrg(org)}" = checkResultsFinishByOrg+1
 
 
             }else {
@@ -93,13 +95,19 @@ class SurveyInfo {
         result.sort{it.value}
 
         print(result)
-        println(result[0])
-        println(result[0]?.getValue())
+        print(count)
 
-        result = (count == result[0]?.getAt(result[0]?.getKey()))  ? result[0]?.getKey() : null
 
-        println(result)
-        result
+        result = result?.find{it.value == count} ? result?.find{it.value == count}.key : null
+
+        if(result)
+        {
+            println(result)
+            return result
+        }else {
+            return null
+        }
+
 
     }
 }
