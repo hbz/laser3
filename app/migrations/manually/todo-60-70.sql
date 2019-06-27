@@ -39,15 +39,18 @@
 -- Rename refdata value
 -- ERMS-1418
 -- 2019-06-25
--- update refdata_value set rdv_value = 'Responsible Admin' where rdv_value = 'Responsible Contact';
+
+--update refdata_value set rdv_value = 'Responsible Admin' where rdv_value = 'Responsible Contact';
+
 
 -- ERMS-1428
 -- 2019-06-26
 -- Rename idns_non_unique to idns_unique
 
-alter table identifier_namespace add idns_unique boolean; -- not null;
-update identifier_namespace set idns_unique = false where idns_non_unique = true;
-update identifier_namespace set idns_unique = true where (idns_non_unique = false or idns_non_unique is null);
+--alter table identifier_namespace add idns_unique boolean; -- not null;
+--update identifier_namespace set idns_unique = false where idns_non_unique = true;
+--update identifier_namespace set idns_unique = true where (idns_non_unique = false or idns_non_unique is null);
+
 
 -- ERMS-884
 -- 2019-06-27
