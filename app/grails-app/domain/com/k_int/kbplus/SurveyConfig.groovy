@@ -110,7 +110,7 @@ class SurveyConfig {
 
     def getCurrentDocs() {
 
-        return documents.findAll { it.status?.value != 'Deleted' }
+        return documents.findAll { (it.status?.value != 'Deleted' && ((it.owner?.contentType == 1) || (it.owner?.contentType == 3)))}
     }
 
     def getConfigNameShort() {
@@ -157,6 +157,7 @@ class SurveyConfig {
     def checkResultsFinishByOrg(Org org) {
 
         if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
+            println("Test")
             return ALL_RESULTS_FINISH_BY_ORG
         } else {
 
@@ -165,7 +166,6 @@ class SurveyConfig {
 
             def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
-            if(surveyResult) {
                 surveyResult.each {
                     if (it.getFinish()) {
                         countFinish++
@@ -180,9 +180,6 @@ class SurveyConfig {
                 } else {
                     return ALL_RESULTS_NOT_FINISH_BY_ORG
                 }
-            }else {
-                return ALL_RESULTS_FINISH_BY_ORG
-            }
         }
 
 
