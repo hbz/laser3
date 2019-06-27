@@ -3,7 +3,7 @@
 		<semui:contactIcon type="${contact?.contentType.('value')}" />
 
         <div class="content la-space-right">
-            <semui:xEditable owner="${contact}" field="content" />
+            <semui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
         </div>
 
         <div class="content">
