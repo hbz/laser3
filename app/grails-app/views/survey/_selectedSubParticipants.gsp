@@ -35,14 +35,12 @@
            }}"/>
 
     <div class="four wide column">
-        <button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#copyEmailaddresses_selectedSubParticipantsHasAccess"><g:message
-                code="survey.copyEmailaddresses.participantsHasAccess"/></button>
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasAccess"/>
+        </g:link>
     </div>
-
-    <g:render template="../templates/copyEmailaddresses"
-              model="[orgList: surveyParticipantsHasAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasAccess']"/>
-
     <br>
     <br>
 
@@ -60,12 +58,12 @@
     <g:set var="surveyParticipantsHasNotAccess" value="${selectedSubParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
     <div class="four wide column">
-        <button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#copyEmailaddresses_selectedSubParticipantsHasNoAccess"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+        </g:link>
     </div>
-
-    <g:render template="../templates/copyEmailaddresses"
-              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedSubParticipantsHasNoAccess']"/>
 
     <br>
     <br>
@@ -83,3 +81,38 @@
     </g:if>
 
 </g:form>
+
+<g:javascript>
+
+var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(' '),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+</g:javascript>

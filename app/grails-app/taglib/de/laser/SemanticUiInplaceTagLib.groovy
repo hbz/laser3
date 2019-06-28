@@ -10,13 +10,14 @@ class SemanticUiInplaceTagLib {
     static namespace = "semui"
 
     /**
-    * Attributes:
-    *   owner - Object
-    *   field - property
-    *   type - type of input
-     *  validation - trigger js validation
-    *   id [optional] -
-    *   class [optional] - additional classes
+     *   Attributes:
+     *   owner - Object
+     *   field - property
+     *   type - type of input
+     *   validation - trigger js validation
+     *   id [optional] -
+     *   class [optional] - additional classes
+     *   overwriteEditable - if existing, value overwrites global editable
     */
     def xEditable = { attrs, body ->
 
@@ -120,6 +121,11 @@ class SemanticUiInplaceTagLib {
         }
     }
 
+
+    /**
+     *   Attributes:
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
     def xEditableRefData = { attrs, body ->
         try {
             boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
@@ -178,6 +184,10 @@ class SemanticUiInplaceTagLib {
         }
     }
 
+    /**
+     *   Attributes:
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
     def xEditableBoolean = { attrs, body ->
         try {
             boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
