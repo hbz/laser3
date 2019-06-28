@@ -8,6 +8,7 @@ import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
 import de.laser.helper.SortUtil
+import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -1291,7 +1292,7 @@ from License as l where (
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                        if(new_sub.administrative) {
+                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
                             new OrgRole(org: cm,
                                     sub: cons_sub,
                                     roleType: role_sub_cons_hidden).save()
@@ -1308,7 +1309,7 @@ from License as l where (
                             roleType: role_cons).save()
                     }
                     else {
-                        if(new_sub.administrative) {
+                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
                             new OrgRole(org: cm,
                                     sub: new_sub,
                                     roleType: role_sub_cons_hidden).save()

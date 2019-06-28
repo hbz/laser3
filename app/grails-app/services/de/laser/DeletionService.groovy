@@ -196,7 +196,10 @@ class DeletionService {
         List pRoles         = new ArrayList(sub.prsLinks)
         List subPkgs        = new ArrayList(sub.packages)
         List pendingChanges = new ArrayList(sub.pendingChanges)
-        List ies            = new ArrayList(sub.issueEntitlements)
+
+        List ies            = IssueEntitlement.where { subscription == sub }.findAll()
+                            // = new ArrayList(sub.issueEntitlements)
+
         List costs          = new ArrayList(sub.costItems)
         List oapl           = new ArrayList(sub.oapl)
         List privateProps   = new ArrayList(sub.privateProperties)
@@ -309,7 +312,7 @@ class DeletionService {
                     pendingChanges.each { tmp -> tmp.delete() }
 
                     // issue entitlements
-                    sub.issueEntitlements.clear()
+                    // sub.issueEntitlements.clear()
                     ies.each { tmp -> tmp.delete() }
 
                     // org access point link
@@ -366,8 +369,8 @@ class DeletionService {
         List userSettings   = UserSettings.findAllWhere(user: user)
         List userTransforms = UserTransforms.findAllWhere(user: user)
 
-        List costItems = CostItem.executeQuery(
-                'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
+        //List costItems = CostItem.executeQuery(
+        //        'select x from CostItem x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
         List ciecs = CostItemElementConfiguration.executeQuery(
                 'select x from CostItemElementConfiguration x where x.createdBy = :user or x.lastUpdatedBy = :user', [user: user])
 
@@ -398,7 +401,7 @@ class DeletionService {
             result.info << ['Einstellungen', userSettings]
             result.info << ['Transforms', userTransforms]
 
-            result.info << ['Kosten', costItems, 'blue']
+            //result.info << ['Kosten', costItems, 'blue']
             result.info << ['Kostenkonfigurationen', ciecs, 'blue']
             result.info << ['DashboardDueDate', ddds]
             result.info << ['Dokumente', docs, 'teal']

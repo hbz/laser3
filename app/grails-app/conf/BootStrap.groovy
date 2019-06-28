@@ -1406,11 +1406,11 @@ class BootStrap {
 
     def createSurveyProperties() {
 
-        def requiredProps = [
+        /*def requiredProps = [
                 [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
                 [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
         ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)
+        createSurveyPropertiesWithI10nTranslations(requiredProps)*/
     }
 
     def createPrivateProperties() {
