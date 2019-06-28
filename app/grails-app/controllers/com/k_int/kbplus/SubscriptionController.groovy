@@ -8,6 +8,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
@@ -678,7 +679,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
@@ -688,6 +689,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List errorList = []
         if (result.subscriptionInstance) {
+            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
             def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
@@ -730,8 +732,9 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("Query ${basequery} ${qry_params}");
 
-            result.num_tipp_rows = IssueEntitlement.executeQuery("select tipp.id " + basequery, qry_params).size()
-            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
+            result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + basequery, qry_params).size()
+            List tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            result.tipps = tipps.drop(result.offset).take(result.max)
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
             if(params.kbartPreselect && !params.pagination) {
@@ -800,44 +803,47 @@ class SubscriptionController extends AbstractDebugController {
                 result.identifiers = identifiers
                 params.remove("kbartPreselct")
             }
-            else if(params.identifiers) {
-                result.identifiers = JSON.parse(params.identifiers)
+            if(!params.pagination) {
+                result.checked = [:]
+                tipps.each { tipp ->
+                    String serial
+                    String electronicSerial
+                    String checked = ""
+                    if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                        serial = tipp.title.getIdentifierValue('pISBN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
+                    }
+                    else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                        serial = tipp?.title?.getIdentifierValue('ISSN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                    }
+                    if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
+                        checked = "checked"
+                    }
+                    result.checked[tipp.gokbId] = checked
+                }
+                if(result.identifiers && result.identifiers.unidentified.size() > 0) {
+                    String unidentifiedTitles = result.identifiers.unidentified.join(", ")
+                    String escapedFileName
+                    try {
+                        escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                    }
+                    catch (Exception | Error e) {
+                        log.error(e.printStackTrace())
+                        escapedFileName = result.identifiers.filename
+                    }
+                    errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+                }
+                checkedCache.put('checked',result.checked)
             }
-            result.checked = []
-            result.tipps.eachWithIndex { tipp, int t ->
-                String serial
-                String electronicSerial
-                String checked = ""
-                if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                    serial = tipp.title.getIdentifierValue('pISBN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
-                }
-                else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
-                    serial = tipp?.title?.getIdentifierValue('ISSN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
-                }
-                if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                    checked = "checked"
-                }
-                else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
-                    checked = "checked"
-                }
-                else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
-                    checked = "checked"
-                }
-                result.checked[t] = checked
-            }
-            if(result.identifiers && result.identifiers.unidentified.size() > 0) {
-                String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                String escapedFileName
-                try {
-                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                }
-                catch (Exception | Error e) {
-                    log.error(e.printStackTrace())
-                    escapedFileName = result.identifiers.filename
-                }
-                errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+            else {
+                result.checked = checkedCache.get('checked')
             }
         } else {
             result.num_sub_rows = 0;
@@ -2077,7 +2083,6 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        params.id = params.siid // TODO refactoring frontend siid -> id
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2089,43 +2094,45 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
-            params.each { p ->
-                if (p.key.startsWith('_bulkflag.')) {
-                    def tipp_id = p.key.substring(10);
-                    // def ie = IssueEntitlement.get(ie_to_edit)
-                    def tipp = TitleInstancePackagePlatform.get(tipp_id)
-
-                    if (tipp == null) {
-                        log.error("Unable to tipp ${tipp_id}");
-                        flash.error("Unable to tipp ${tipp_id}");
-                    } else {
-                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
-
-                        def new_ie = new IssueEntitlement(status: ie_current,
-                                subscription: result.subscriptionInstance,
-                                tipp: tipp,
-                                accessStartDate: tipp.accessStartDate,
-                                accessEndDate: tipp.accessEndDate,
-                                startDate: tipp.startDate,
-                                startVolume: tipp.startVolume,
-                                startIssue: tipp.startIssue,
-                                endDate: tipp.endDate,
-                                endVolume: tipp.endVolume,
-                                endIssue: tipp.endIssue,
-                                embargo: tipp.embargo,
-                                coverageDepth: tipp.coverageDepth,
-                                coverageNote: tipp.coverageNote,
-                                ieReason: 'Manually Added by User')
-                        if (new_ie.save(flush: true)) {
-                            log.debug("Added tipp ${tipp_id} to sub ${params.siid}");
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            if(cache.get('checked')) {
+                Map checked = cache.get('checked')
+                checked.each { k,v ->
+                    if(v == 'checked') {
+                        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(k)
+                        if (tipp == null) {
+                            log.error("Unable to tipp ${k}");
+                            flash.error("Unable to tipp ${k}");
                         } else {
-                            new_ie.errors.each { e ->
-                                log.error(e);
+                            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+                                    subscription: result.subscriptionInstance,
+                                    tipp: tipp,
+                                    accessStartDate: tipp.accessStartDate,
+                                    accessEndDate: tipp.accessEndDate,
+                                    startDate: tipp.startDate,
+                                    startVolume: tipp.startVolume,
+                                    startIssue: tipp.startIssue,
+                                    endDate: tipp.endDate,
+                                    endVolume: tipp.endVolume,
+                                    endIssue: tipp.endIssue,
+                                    embargo: tipp.embargo,
+                                    coverageDepth: tipp.coverageDepth,
+                                    coverageNote: tipp.coverageNote,
+                                    ieReason: 'Manually Added by User')
+                            if (new_ie.save()) {
+                                log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}");
+                            } else {
+                                new_ie.errors.each { e ->
+                                    log.error(e);
+                                }
+                                flash.error = new_ie.errors
                             }
-                            flash.error = new_ie.errors
                         }
                     }
                 }
+            }
+            else {
+                log.error('cache error or no titles selected')
             }
         } else {
             log.error("Unable to locate subscription instance");
