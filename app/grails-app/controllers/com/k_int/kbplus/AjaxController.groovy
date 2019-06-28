@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
@@ -726,6 +727,19 @@ class AjaxController {
           result.result = checkList.size() > 0
       }
       render result as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def updateChecked() {
+      EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${params.sub}")
+      Map checked = cache.get('checked')
+      if(params.index == 'all') {
+          checked.eachWithIndex { e, int idx ->
+              checked[idx] = params.checked == 'true' ? 'checked' : null
+          }
+      }
+      else checked[params.index] = params.checked == 'true' ? 'checked' : null
+      cache.put('checked',checked)
   }
 
   /**

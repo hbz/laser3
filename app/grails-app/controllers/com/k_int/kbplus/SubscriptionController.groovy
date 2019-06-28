@@ -8,6 +8,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
@@ -72,15 +73,6 @@ class SubscriptionController extends AbstractDebugController {
     def deletionService
     def auditService
 
-    public static final String COPY = "COPY"
-    public static final String REPLACE = "REPLACE"
-    public static final String DO_NOTHING = "DO_NOTHING"
-
-//    public static final String WORKFLOW_NEXT_DATES_OWNER_RELATIONS = "WORKFLOW_NEXT_DATES_OWNER_RELATIONS"//1
-//    public static final String WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS = "WORKFLOW_NEXT_PACKAGES_ENTITLEMENTS"//5
-//    public static final String WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS = "WORKFLOW_NEXT_DOCS_ANNOUNCEMENT_TASKS"//2
-//    public static final String WORKFLOW_NEXT_3 = "WORKFLOW_NEXT_3"//3
-//    public static final String WORKFLOW_NEXT_PROPERTIES = "WORKFLOW_NEXT_PROPERTIES"//4
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
@@ -678,7 +670,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
@@ -688,6 +680,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List errorList = []
         if (result.subscriptionInstance) {
+            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
             def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
@@ -730,8 +723,9 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("Query ${basequery} ${qry_params}");
 
-            result.num_tipp_rows = IssueEntitlement.executeQuery("select tipp.id " + basequery, qry_params).size()
-            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
+            result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + basequery, qry_params).size()
+            List tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            result.tipps = tipps.drop(result.offset).take(result.max)
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
             if(params.kbartPreselect && !params.pagination) {
@@ -800,44 +794,47 @@ class SubscriptionController extends AbstractDebugController {
                 result.identifiers = identifiers
                 params.remove("kbartPreselct")
             }
-            else if(params.identifiers) {
-                result.identifiers = JSON.parse(params.identifiers)
+            if(!params.pagination) {
+                result.checked = [:]
+                tipps.each { tipp ->
+                    String serial
+                    String electronicSerial
+                    String checked = ""
+                    if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                        serial = tipp.title.getIdentifierValue('pISBN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
+                    }
+                    else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                        serial = tipp?.title?.getIdentifierValue('ISSN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                    }
+                    if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
+                        checked = "checked"
+                    }
+                    result.checked[tipp.gokbId] = checked
+                }
+                if(result.identifiers && result.identifiers.unidentified.size() > 0) {
+                    String unidentifiedTitles = result.identifiers.unidentified.join(", ")
+                    String escapedFileName
+                    try {
+                        escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                    }
+                    catch (Exception | Error e) {
+                        log.error(e.printStackTrace())
+                        escapedFileName = result.identifiers.filename
+                    }
+                    errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+                }
+                checkedCache.put('checked',result.checked)
             }
-            result.checked = []
-            result.tipps.eachWithIndex { tipp, int t ->
-                String serial
-                String electronicSerial
-                String checked = ""
-                if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                    serial = tipp.title.getIdentifierValue('pISBN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
-                }
-                else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
-                    serial = tipp?.title?.getIdentifierValue('ISSN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
-                }
-                if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                    checked = "checked"
-                }
-                else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
-                    checked = "checked"
-                }
-                else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
-                    checked = "checked"
-                }
-                result.checked[t] = checked
-            }
-            if(result.identifiers && result.identifiers.unidentified.size() > 0) {
-                String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                String escapedFileName
-                try {
-                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                }
-                catch (Exception | Error e) {
-                    log.error(e.printStackTrace())
-                    escapedFileName = result.identifiers.filename
-                }
-                errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+            else {
+                result.checked = checkedCache.get('checked')
             }
         } else {
             result.num_sub_rows = 0;
@@ -2077,7 +2074,6 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        params.id = params.siid // TODO refactoring frontend siid -> id
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2089,43 +2085,45 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
-            params.each { p ->
-                if (p.key.startsWith('_bulkflag.')) {
-                    def tipp_id = p.key.substring(10);
-                    // def ie = IssueEntitlement.get(ie_to_edit)
-                    def tipp = TitleInstancePackagePlatform.get(tipp_id)
-
-                    if (tipp == null) {
-                        log.error("Unable to tipp ${tipp_id}");
-                        flash.error("Unable to tipp ${tipp_id}");
-                    } else {
-                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
-
-                        def new_ie = new IssueEntitlement(status: ie_current,
-                                subscription: result.subscriptionInstance,
-                                tipp: tipp,
-                                accessStartDate: tipp.accessStartDate,
-                                accessEndDate: tipp.accessEndDate,
-                                startDate: tipp.startDate,
-                                startVolume: tipp.startVolume,
-                                startIssue: tipp.startIssue,
-                                endDate: tipp.endDate,
-                                endVolume: tipp.endVolume,
-                                endIssue: tipp.endIssue,
-                                embargo: tipp.embargo,
-                                coverageDepth: tipp.coverageDepth,
-                                coverageNote: tipp.coverageNote,
-                                ieReason: 'Manually Added by User')
-                        if (new_ie.save(flush: true)) {
-                            log.debug("Added tipp ${tipp_id} to sub ${params.siid}");
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            if(cache.get('checked')) {
+                Map checked = cache.get('checked')
+                checked.each { k,v ->
+                    if(v == 'checked') {
+                        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(k)
+                        if (tipp == null) {
+                            log.error("Unable to tipp ${k}");
+                            flash.error("Unable to tipp ${k}");
                         } else {
-                            new_ie.errors.each { e ->
-                                log.error(e);
+                            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+                                    subscription: result.subscriptionInstance,
+                                    tipp: tipp,
+                                    accessStartDate: tipp.accessStartDate,
+                                    accessEndDate: tipp.accessEndDate,
+                                    startDate: tipp.startDate,
+                                    startVolume: tipp.startVolume,
+                                    startIssue: tipp.startIssue,
+                                    endDate: tipp.endDate,
+                                    endVolume: tipp.endVolume,
+                                    endIssue: tipp.endIssue,
+                                    embargo: tipp.embargo,
+                                    coverageDepth: tipp.coverageDepth,
+                                    coverageNote: tipp.coverageNote,
+                                    ieReason: 'Manually Added by User')
+                            if (new_ie.save()) {
+                                log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}");
+                            } else {
+                                new_ie.errors.each { e ->
+                                    log.error(e);
+                                }
+                                flash.error = new_ie.errors
                             }
-                            flash.error = new_ie.errors
                         }
                     }
                 }
+            }
+            else {
+                log.error('cache error or no titles selected')
             }
         } else {
             log.error("Unable to locate subscription instance");
@@ -3658,31 +3656,45 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copySubElements_DatesOwnerRelations();
                 if (params.isRenewSub){
+                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
                     result << loadDataFor_PackagesEntitlements()
+                } else {
+                    result << loadDataFor_DatesOwnerRelations()
                 }
                 break;
             case WORKFLOW_SUBSCRIBER:
                 result << copySubElements_Subscriber();
 //                if (params.isRenewSub) {
+//                params?.workFlowPart = WORKFLOW_???
+//                    result << loadDataFor_???
+//                } else {
 //                    result << loadDataFor_Subscriber()
 //                }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
                 if (params.isRenewSub){
+                    params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     result << loadDataFor_DocsAnnouncementsTasks()
+                } else {
+                    result << loadDataFor_PackagesEntitlements()
                 }
                 break;
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 if (params.isRenewSub){
+                    params.workFlowPart = WORKFLOW_PROPERTIES
                     result << loadDataFor_Properties()
+                } else {
+                    result << loadDataFor_DocsAnnouncementsTasks()
                 }
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
                 if (params?.targetSubscriptionId && params.isRenewSub){
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                } else {
+                    result << loadDataFor_Properties()
                 }
                 break;
             default:
@@ -3690,27 +3702,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 break;
         }
 
-//        TODO: Unuseded Entf?
-//        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
-//        result.navPrevSubscription = links.prevLink
-//        result.navNextSubscription = links.nextLink
-//        result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
-//        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-//        result.visiblePrsLinks = []
-//        result.subscriptionInstance.prsLinks.each { pl ->
-//            if (!result.visiblePrsLinks.contains(pl.prs)) {
-//                if (pl.prs.isPublic?.value != 'No') {
-//                    result.visiblePrsLinks << pl
-//                } else {
-//                    // nasty lazy loading fix
-//                    result.user.authorizedOrgs.each { ao ->
-//                        if (ao.getId() == pl.prs.tenant.getId()) {
-//                            result.visiblePrsLinks << pl
-//                        }
-//                    }
-//                }
-//            }
-//        }
         if (params?.targetSubscriptionId) {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
@@ -3756,19 +3747,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (params.isRenewSub) {
-            params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-            params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        }else {
-            params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
-            params?.workFlowPartNext = WORKFLOW_PACKAGES_ENTITLEMENTS
-        }
-
-        // restrict visible for templates/links/orgLinksAsList
-        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
-        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
-
-
         result.subscription = baseSub
         result.newSub = newSub
         result.targetSubscription = newSub
@@ -3782,8 +3760,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
-        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         result
     }
 
@@ -3840,18 +3816,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (params.isRenewSub) {
-            params.workFlowPart = WORKFLOW_PROPERTIES
-            params.workFlowPartNext = WORKFLOW_END
-        }else {
-            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-            params.workFlowPartNext = WORKFLOW_PROPERTIES
-        }
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
         result
     }
     private loadDataFor_DocsAnnouncementsTasks() {
@@ -3861,17 +3828,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-//
-//        if (isTargetSubChanged) {
-//            newSub = newSub.refresh()
-//        }
-//        if (params.isRenewSub) {
-//            params.workFlowPart = WORKFLOW_PROPERTIES
-//            params.workFlowPartNext = WORKFLOW_END
-//        }else {
-//            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-//            params.workFlowPartNext = WORKFLOW_PROPERTIES
-//        }
 
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
@@ -4028,16 +3984,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (newSub) {
             result.newSub = newSub.refresh()
         }
-        subsToCompare.each{ sub ->
-            TreeMap customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties,sub,sub.customProperties)
-            result.customProperties = customProperties
-            TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
-            result.privateProperties = privateProperties
-        }
         result
     }
+
     private loadDataFor_Properties() {
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
@@ -4061,6 +4010,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         result
     }
+
     private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
@@ -4092,43 +4042,21 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (isTargetSubChanged) {
             newSub = newSub.refresh()
         }
-        if (newSub && params.isRenewSub) {
-            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-            params.workFlowPartNext = WORKFLOW_PROPERTIES
-        }else {
-            params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-            params.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        }
-
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
         result.subscription = baseSub
         result
     }
+
     private loadDataFor_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-
-//        if (isTargetSubChanged) {
-//            newSub = newSub.refresh()
-//        }
-//        if (newSub && params.isRenewSub) {
-//            params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-//            params.workFlowPartNext = WORKFLOW_PROPERTIES
-//        }else {
-//            params.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-//            params.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-//        }
-
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
         result.subscription = baseSub
         result
     }
-
 
     private boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
         if (! baseSub || !newSub) {

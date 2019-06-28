@@ -86,7 +86,7 @@
         <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds())}">
             <g:if test ="${previousSubscriptions}">
                 <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
-                                                   params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+                                                   params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
             </g:if>
             <g:else>
                 <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
