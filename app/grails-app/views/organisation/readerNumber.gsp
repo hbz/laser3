@@ -28,7 +28,7 @@
 ${orgInstance.name}
 </h1>
 
-<g:render template="nav"/>
+<g:render template="nav" model="${[orgInstance: orgInstance]}"/>
 
 <semui:messages data="${flash}"/>
 
