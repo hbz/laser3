@@ -1,3 +1,7 @@
+0.17.6
+
+- fixed: org navigation to addressbook and access points 
+
 0.17.5
 
 - fixed: tenant check for private contacts
