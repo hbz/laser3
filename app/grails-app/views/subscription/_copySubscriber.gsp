@@ -37,9 +37,9 @@
 											<th>
 												<g:if test="${outerLoop}">
 													%{--<g:checkBox name="subListToggler" id="subListToggler" checked="false"/>--}%
-												%{--</g:if>--}%
-												%{--<g:if test="${targetSubscription}">--}%
-													<input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
+                                                    %{--</g:if>--}%
+                                                    %{--<g:if test="${targetSubscription}">--}%
+                                                    <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
 												</g:if>
 											</th>
 										</tr>
@@ -53,8 +53,10 @@
 													<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
 													<td>${sub.status.getI10n('value')}</td>
 													<td>
-														%{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
-														<g:checkBox name="subscription.copySubscriber" value="${genericOIDService.getOID(target_role)}" data-action="copy" checked="${true}" />
+														<div class="ui checkbox la-toggle-radio la-replace">
+															%{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
+															<g:checkBox name="subscription.copySubscriber" value="${genericOIDService.getOID(subscriberOrg)}" data-action="copy" checked="${true}" />
+														</div>
 													</td>
 												</g:each>
 											</tr>
@@ -88,14 +90,16 @@
 										<tbody>
 										<g:each in="${outerLoop}" status="j" var="sub">
 											<tr>
-												<g:each in="${sub.getAllSubscribers()}" var="subscr">
+												<g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
 													<td>${subscriberOrg.sortname}</td>
 													<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
 													<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
 													<td>${sub.status.getI10n('value')}</td>
 													<td>
-														%{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
-														<g:checkBox name="subscription.deleteSubscriber" value="${genericOIDService.getOID(target_role)}" data-action="copy" checked="${false}" />
+														<div class="ui checkbox la-toggle-radio la-noChange">
+                                                            %{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
+                                                            <g:checkBox name="subscription.deleteSubscriber" value="${genericOIDService.getOID(subscriberOrg)}" data-action="delete" checked="${false}" />
+														</div>
 													</td>
 												</g:each>
 											</tr>
