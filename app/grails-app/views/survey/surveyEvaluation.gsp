@@ -59,6 +59,22 @@
                     <div class="ui floating circular label">${surveyConfigs?.size() ?: 0}</div>
                 </g:link>
 
+                <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
+                        controller="survey" action="surveyEvaluation"
+                        id="${surveyInfo?.id}"
+                        params="[tab: 'participantsViewAllFinish']">
+                    ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
+                    <div class="ui floating circular label">${participantsFinish?.size() ?: 0}</div>
+                </g:link>
+
+                <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
+                        controller="survey" action="surveyEvaluation"
+                        id="${surveyInfo?.id}"
+                        params="[tab: 'participantsViewAllNotFinish']">
+                    ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
+                    <div class="ui floating circular label">${participantsNotFinish?.size() ?: 0}</div>
+                </g:link>
+
                 <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
                         controller="survey" action="surveyEvaluation"
                         id="${surveyInfo?.id}"
@@ -80,6 +96,19 @@
                     <g:render template="evaluationParticipantsView"/>
                 </div>
             </g:if>
+
+            <g:if test="${params.tab == 'participantsViewAllFinish'}">
+                <div class="ui bottom attached tab segment active">
+                    <g:render template="evaluationParticipantsView"/>
+                </div>
+            </g:if>
+
+            <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
+                <div class="ui bottom attached tab segment active">
+                    <g:render template="evaluationParticipantsView"/>
+                </div>
+            </g:if>
+
         </div>
     </div>
 

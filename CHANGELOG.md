@@ -1,3 +1,13 @@
+0.17.6
+
+- fixed: org navigation to addressbook and access points 
+
+0.17.5
+
+- fixed: tenant check for private contacts
+- fixed: default dashboard and dashboard tab for new users
+- added information for ip-ranges
+
 0.17.4
 
 - improvement org profil
