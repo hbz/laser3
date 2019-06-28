@@ -11,6 +11,7 @@ class YodaService {
 
     GrailsApplication grailsApplication
     def sessionRegistry = Holders.grailsApplication.mainContext.getBean('sessionRegistry')
+    def contextService = Holders.grailsApplication.mainContext.getBean('contextService')
 
     // gsp:
     // grailsApplication.mainContext.getBean("yodaService")
@@ -22,6 +23,21 @@ class YodaService {
     }
 
     int getNumberOfActiveUsers() {
-        (sessionRegistry.getAllPrincipals()).size()
+        int count = 0
+
+        sessionRegistry.getAllPrincipals().each { user ->
+            List lastAccessTimes = []
+
+            sessionRegistry.getAllSessions(user, false).each { userSession ->
+                if (user.username == contextService.getUser()?.username) {
+                    userSession.refreshLastRequest()
+                }
+                lastAccessTimes << userSession.getLastRequest().getTime()
+            }
+            if (lastAccessTimes.max() > System.currentTimeMillis() - (1000 * 600)) { // 10 minutes
+                count++
+            }
+        }
+        count
     }
 }
