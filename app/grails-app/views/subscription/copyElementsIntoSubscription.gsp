@@ -171,8 +171,11 @@
             var action = $(source).attr("data-action")
             var checkboxes = document.querySelectorAll('input[data-action="'+action+'"]');
             for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i] != source){
-                    checkboxes[i].checked = source.checked;
+                if (source.checked && ! checkboxes[i].checked) {
+                    $(checkboxes[i]).trigger('click')
+                }
+                else if (! source.checked && checkboxes[i].checked) {
+                    $(checkboxes[i]).trigger('click')
                 }
             }
         }

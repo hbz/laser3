@@ -243,7 +243,7 @@
             <th scope="col" rowspan="2" class="center aligned">
                 ${message(code:'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" scope="col" />
+            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'subscription.slash.name')}" rowspan="2" scope="col" />
             <th rowspan="2" scope="col">
                 ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>

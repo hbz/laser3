@@ -21,7 +21,7 @@
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-        <g:render template="nav" />
+        <g:render template="nav" model="${[orgInstance: orgInstance]}"/>
 
         <semui:messages data="${flash}" />
 
