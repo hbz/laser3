@@ -43,6 +43,14 @@ components:
       required: true
       description: Value for this query
 
+    timestamp:
+      name: timestamp
+      in: query
+      schema:
+        type: integer
+      required: false
+      description: Timestamp from which changes should be considered
+
     context:
       name: context
       in: query
