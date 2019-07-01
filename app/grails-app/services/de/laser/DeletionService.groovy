@@ -507,4 +507,35 @@ class DeletionService {
 
         result
     }
+
+    static boolean deletePackage(Package pkg) {
+        Package.withTransaction { status ->
+            try {
+                //to be absolutely sure ...
+                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg',[pkg:pkg])
+                if(subsConcerned) {
+                    println 'issue entitlements detected on package to be deleted .. rollback'
+                    status.setRollbackOnly()
+                    return false
+                }
+                //deleting tipps
+                TitleInstancePackagePlatform.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting pending changes
+                PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting orgRoles
+                OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting (empty) subscription packages
+                SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                pkg.delete()
+                status.flush()
+                return true
+            }
+            catch(Exception e) {
+                println 'error while deleting package ' + pkg.id + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
 }

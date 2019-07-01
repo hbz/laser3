@@ -1,14 +1,19 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
+import de.laser.oai.OaiClientLaser
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.hssf.usermodel.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController extends AbstractDebugController {
@@ -26,7 +31,10 @@ class PackageController extends AbstractDebugController {
     def addressbookService
     def docstoreService
     def GOKbService
+    def globalSourceSyncService
+    def dataloadService
     def escapeService
+    def deletionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -464,6 +472,7 @@ class PackageController extends AbstractDebugController {
 
         result.transforms = grailsApplication.config.packageTransforms
 
+        //ask Daniel: downgrade to ROLE_DATAMANAGER?
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_PACKAGE_EDITOR')) {
             result.editable = true
             showDeletedTipps = true
@@ -505,7 +514,8 @@ class PackageController extends AbstractDebugController {
         result.subscriptionList = []
         // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
         // and subscription that does not already link this package
-        def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        // No, we do not. Only the context institution is important.
+        /*def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         result.user?.getAuthorizedAffiliations().each { ua ->
             if (ua.formalRole.authority == 'INST_ADM') {
                 def qry_params = [ua.org, sub_status, packageInstance, new Date()]
@@ -523,7 +533,9 @@ select s from Subscription as s where
                     }
                 }
             }
-        }
+        }*/
+        result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub)',
+                [contextOrg: contextService.org, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], current: RDStore.SUBSCRIPTION_CURRENT])
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         params.max = result.max
@@ -556,11 +568,11 @@ select s from Subscription as s where
 
         def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
 
-      // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-      result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
-      result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
-              "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
+        // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
+        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits);
+        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
+        result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
+                "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -928,16 +940,28 @@ select s from Subscription as s where
         }
     }
 
-
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addToSub() {
         def pkg = Package.get(params.id)
         def sub = Subscription.get(params.subid)
-
-        def add_entitlements = (params.addEntitlements == 'true' ? true : false)
-        pkg.addToSubscription(sub, add_entitlements)
-
-        redirect(action: 'show', id: params.id);
+        boolean add_entitlements = params.addEntitlements == 'true'
+        GlobalRecordInfo gri = GlobalRecordInfo.findByUuid(pkg.gokbId)
+        GlobalRecordTracker grt = GlobalRecordTracker.findByOwner(gri)
+        executorWrapperService.processClosure({
+            globalSourceSyncService.initialiseTracker(grt)
+            dataloadService.updateFTIndexes()
+            println "Sync done, adding package to subscription ${sub}, with entitlements?: ${add_entitlements}"
+            pkg.addToSubscription(sub, add_entitlements)
+        },pkg)
+        if(add_entitlements) {
+            flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+            redirect controller: 'subscription', action: 'index', id: params.subid
+        }
+        else {
+            flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+            redirect controller: 'subscription', action: 'addEntitlements', id: params.subid
+        }
     }
 
 
@@ -1187,5 +1211,38 @@ select s from Subscription as s where
         }
 
         result
+    }
+
+    //for that no accidental call may occur ... ROLE_YODA is correct!
+    @Secured(['ROLE_YODA'])
+    Map getDuplicatePackages() {
+        List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
+        if(pkgDuplicates) {
+            List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
+            List<Package> pkgDupsWithoutTipps = []
+            pkgDuplicates.each { pkg ->
+                if(!pkgDupsWithTipps.contains(pkg))
+                    pkgDupsWithoutTipps << pkg
+            }
+            result.pkgDupsWithTipps = pkgDupsWithTipps
+            result.pkgDupsWithoutTipps = pkgDupsWithoutTipps
+        }
+        return [pkgDuplicates: pkgDuplicates]
+    }
+
+    @Secured(['ROLE_YODA'])
+    def purgeDuplicatePackages() {
+        List<Long> toDelete = (List<Long>) JSON.parse(params.toDelete)
+        if(params.doIt == "true") {
+            toDelete.each { pkgId ->
+                Package pkg = Package.get(pkgId)
+                DeletionService.deletePackage(pkg)
+            }
+            redirect action: 'index'
+        }
+        else {
+            flash.message = "Betroffene Paket-IDs wären gelöscht worden: ${toDelete.join(", ")}"
+            redirect action: 'getDuplicatePackages'
+        }
     }
 }

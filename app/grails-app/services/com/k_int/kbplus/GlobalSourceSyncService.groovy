@@ -58,7 +58,7 @@ class GlobalSourceSyncService {
             log.debug("Checking title has ${it.namespace}:${it.value}");
             title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
         }
-        title_instance.save(flush: true);
+        title_instance.save();
 
         if (newtitle.publishers != null) {
             newtitle.publishers.each { pub ->
@@ -134,12 +134,12 @@ class GlobalSourceSyncService {
 
             if (existing_title_history_event.size() == 0) {
                 log.debug("Create new history event");
-                def he = new TitleHistoryEvent(eventDate: query_params[0]).save(flush: true)
+                def he = new TitleHistoryEvent(eventDate: query_params[0]).save()
                 fromset.each {
-                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save(flush: true)
+                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
                 }
                 toset.each {
-                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save(flush: true)
+                    new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save()
                 }
             }
         }
@@ -388,7 +388,7 @@ class GlobalSourceSyncService {
                     (title_instance.gokbId !=  tipp.title.gokbId || !title_instance.gokbId)) {
               title_instance.impId = tipp.title.gokbId
               title_instance.gokbId = tipp.title.gokbId
-              title_instance.save(flush: true)
+              title_instance.save()
             }*/
 
             println "before tipp title identifiers, GSSC line 392"
@@ -433,13 +433,13 @@ class GlobalSourceSyncService {
                 // }
                 new_tipp.hostPlatformURL = tipp.url;
 
-                new_tipp.save(flush: true, failOnError: true);
+                new_tipp.save(failOnError: true);
 
                 if (tipp.tippId) {
                     def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
 
                     if (tipp_id) {
-                        def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: new_tipp).save(flush: true)
+                        def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: new_tipp).save()
                     } else {
                         log.error("Error creating identifier instance for new TIPP!")
                     }
@@ -452,10 +452,10 @@ class GlobalSourceSyncService {
                         def ies = IssueEntitlement.findAllByTipp(oldtipp)
                         ies?.each { ie ->
                             ie.tipp = new_tipp
-                            ie.save(flush: true)
+                            ie.save()
                         }
                         oldtipp.status = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
-                        oldtipp.save(flush: true)
+                        oldtipp.save()
                     }
                 }
 
@@ -522,7 +522,7 @@ class GlobalSourceSyncService {
             {
               title_of_tipp_to_update.impId = tipp.title.gokbId
               title_of_tipp_to_update.gokbId = tipp.title.gokbId
-              title_of_tipp_to_update.save(flush: true)
+              title_of_tipp_to_update.save()
             }*/
 
 
@@ -602,7 +602,7 @@ class GlobalSourceSyncService {
                             changeTitle = true
                             announcement_content_changeTitle += "<li>${messageSource.getMessage("announcement.title.TitleChange", [chg.oldValue, chg.newValue] as Object[], "Title was change from {0} to {1}.", locale)}</li>"
                             title_of_tipp_to_update.title = tipp?.title?.name
-                            title_of_tipp_to_update.save(flush: true)
+                            title_of_tipp_to_update.save()
                         }
 
                     }
@@ -613,7 +613,7 @@ class GlobalSourceSyncService {
                                 type: announcement_type,
                                 content: announcement_content_changeTitle + "</ul></p>",
                                 dateCreated: new Date(),
-                                user: User.findByUsername('admin')).save(flush: true);
+                                user: User.findByUsername('admin')).save();
                     }
 
                     if (change_doc) {
@@ -662,13 +662,13 @@ class GlobalSourceSyncService {
                     // }
                     currTIPP.hostPlatformURL = tipp.url
 
-                    currTIPP.save(flush: true, failOnError: true)
+                    currTIPP.save(failOnError: true)
 
                     if (tipp.tippId) {
                         def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
 
                         if (tipp_id) {
-                            def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save(flush: true)
+                            def tipp_io = new IdentifierOccurrence(identifier: tipp_id, tipp: currTIPP).save()
                         } else {
                             log.error("Error creating identifier instance for new TIPP!")
                         }
@@ -695,7 +695,7 @@ class GlobalSourceSyncService {
                     (title_of_tipp_to_update?.gokbId !=  tipp.title.gokbId || !title_of_tipp_to_update?.gokbId)) {
               title_of_tipp_to_update.impId = tipp.title.gokbId
               title_of_tipp_to_update.gokbId = tipp.title.gokbId
-              title_of_tipp_to_update.save(flush: true)
+              title_of_tipp_to_update.save()
             }*/
 
             def tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
@@ -737,7 +737,7 @@ class GlobalSourceSyncService {
                 }
                 else {
                     db_tipp.status = tippStatus
-                    db_tipp.save(flush: true)
+                    db_tipp.save()
                     log.debug("deleted tipp w/o pending change")
                 }
             }
@@ -763,14 +763,14 @@ class GlobalSourceSyncService {
             }
 
             if (auto_accept) {
-                ctx.save(flush: true)
+                ctx.save()
 
                 def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
                 def newAnnouncement = new Doc(title: 'Automated Announcement',
                         type: announcement_type,
                         content: announcement_content,
                         dateCreated: new Date(),
-                        user: User.findByUsername('admin')).save(flush: true);
+                        user: User.findByUsername('admin')).save()
             }
 
         }
@@ -954,7 +954,7 @@ class GlobalSourceSyncService {
                 log.debug("Checking title has ${it.namespace}:${it.value}");
                 title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
             }
-            title_instance.save(flush: true)
+            title_instance.save()
 
 
             log.debug("Creating new global record tracker... for title ${title_instance}");
@@ -965,7 +965,7 @@ class GlobalSourceSyncService {
                     localOid: title_instance.class.name + ':' + title_instance.id,
                     identifier: java.util.UUID.randomUUID().toString(),
                     name: newtitle.title
-            ).save(flush: true)
+            ).save()
 
             log.debug("call title reconcile");
             titleReconcile(grt, null, newtitle)
@@ -1036,7 +1036,7 @@ class GlobalSourceSyncService {
         log.debug("internalOAI processing ${sync_job_id}");
 
         // TODO: remove due SystemEvent
-        new EventLog(event: 'kbplus.doOAISync', message: "internalOAI processing ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save(flush: true)
+        new EventLog(event: 'kbplus.doOAISync', message: "internalOAI processing ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
 
         SystemEvent.createEvent('GSSS_OAI_START', ['jobId': sync_job_id])
 
@@ -1186,7 +1186,7 @@ class GlobalSourceSyncService {
                             kbplusCompliant: kbplus_compliant,
                             globalRecordInfoStatus: status)
 
-                    if (existing_record_info.save(flush: true)) {
+                    if (existing_record_info.save()) {
                         log.debug("existing_record_info created ok");
                     } else {
                         log.error("Problem saving record info: ${existing_record_info.errors}");
@@ -1217,14 +1217,14 @@ class GlobalSourceSyncService {
             log.error("Problem", e);
             log.error("Problem running job ${sync_job_id}, conf=${cfg}", e);
             // TODO: remove due SystemEvent
-            new EventLog(event: 'kbplus.doOAISync', message: "Problem running job ${sync_job_id}, conf=${cfg}", tstp: new Date(System.currentTimeMillis())).save(flush: true)
+            new EventLog(event: 'kbplus.doOAISync', message: "Problem running job ${sync_job_id}, conf=${cfg}", tstp: new Date(System.currentTimeMillis())).save()
 
-            SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id, 'conf': cfg])?.save(flush: true)
+            SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id, 'conf': cfg])?.save()
 
             log.debug("Reset sync job haveUpTo");
             def sync_object = GlobalRecordSource.get(sync_job_id)
             sync_object.haveUpTo = olddate
-            sync_object.save(flush: true)
+            sync_object.save()
         }
         finally {
             log.debug("internalOAISync completed for job ${sync_job_id}");
@@ -1232,11 +1232,11 @@ class GlobalSourceSyncService {
             SystemEvent.createEvent('GSSS_OAI_COMPLETE', ['jobId': sync_job_id])
 
             // TODO: remove due SystemEvent
-            new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save(flush: true)
+            new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
         }
         log.debug("Updating sync job max timestamp");
         sync_job.haveUpTo = new Date(max_timestamp)
-        if(!sync_job.save(flush:true))
+        if(!sync_job.save())
             log.error("Error on updating timestamp: ${sync_job.errors}")
     }
 
@@ -1407,7 +1407,7 @@ class GlobalSourceSyncService {
                 log.debug("Checking title has ${it.namespace}:${it.value}");
                 title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
             }
-            title_instance.save(flush: true);
+            title_instance.save();
 
             if (titleinfo.publishers != null) {
                 titleinfo.publishers.each { pub ->
@@ -1477,12 +1477,12 @@ class GlobalSourceSyncService {
 
                     if (existing_title_history_event.size() == 0) {
                         log.debug("Create new history event");
-                        def he = new TitleHistoryEvent(eventDate: query_params[0]).save(flush: true)
+                        def he = new TitleHistoryEvent(eventDate: query_params[0]).save()
                         fromset.each {
-                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save(flush: true)
+                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'from').save()
                         }
                         toset.each {
-                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save(flush: true)
+                            new TitleHistoryEventParticipant(event: he, participant: it, participantRole: 'to').save()
                         }
                     }
                 }
@@ -1582,7 +1582,7 @@ class GlobalSourceSyncService {
 
                     if (plat_instance && plat_instance.org != provider) {
                         plat_instance.org = provider
-                        plat_instance.save(flush: true)
+                        plat_instance.save()
                     }
                 }
 

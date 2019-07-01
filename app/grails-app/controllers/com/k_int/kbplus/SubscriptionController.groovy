@@ -2369,8 +2369,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         render result as JSON
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
         log.debug("Link package, params: ${params} ");
 
@@ -2400,7 +2400,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
-        //to be deployed in prallel thread - let's make a test!
+        //to be deployed in parallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null

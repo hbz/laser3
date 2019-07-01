@@ -453,10 +453,6 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
-
-                            <div class="divider"></div>
-
                             <div class="ui dropdown item">
                                 Fällige Termine
                                 <i class="dropdown icon"></i>
@@ -468,9 +464,17 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
-                            <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
-                            <g:link class="item" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
+                            <div class="ui dropdown item">
+                                ${message(code:'menu.admin.syncManagement')}
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
+                                    <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
+                                    <g:link class="item" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
+                                    <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
+                                    <g:link class="item" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
