@@ -26,6 +26,8 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 
         <semui:messages data="${flash}" />
 
+        <g:render template="/organisation/nav" model="${[orgInstance: institution]}"/>
+
         <g:if test="${editable}">
             <input class="ui button"
                    value="${message(code: 'person.create_new.contactPerson.label')}"
