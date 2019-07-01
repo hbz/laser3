@@ -19,16 +19,74 @@ class AccessPointController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
+    def addIpRange() {
+        def orgAccessPoint = OrgAccessPoint.get(params.id)
+        def org = orgAccessPoint.org;
+        def orgId = org.id;
+
+        def validRanges = []
+        def invalidRanges = []
+        // allow multiple ip ranges as input (must be separated by whitespaces)
+        def ipCol = params.ip.replaceAll("\\s+", " ").split(" ");
+        for (range in  ipCol) {
+            try {
+                // check if given input string is a valid ip range
+                def ipRange = IpRange.parseIpRange(range)
+                def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
+
+                // so far we know that the input string represents a valid ip range
+                // check if the input string is already saved
+                def isDuplicate = false;
+                for (accessPointData in accessPointDataList) {
+                    if (accessPointData.getInputStr() == ipRange.toInputString()) {
+                        isDuplicate = true
+                    }
+                }
+                if (! isDuplicate) {
+                    validRanges << ipRange
+                }
+            } catch (InvalidRangeException) {
+                invalidRanges << range
+            }
+        }
+
+        // persist all valid ranges
+        for (ipRange in validRanges) {
+            def jsonData = JsonOutput.toJson([
+                    inputStr : ipRange.toInputString(),
+                    startValue: ipRange.lowerLimit.toHexString(),
+                    endValue: ipRange.upperLimit.toHexString()]
+            )
+
+            def accessPointData = new AccessPointData(params)
+            accessPointData.orgAccessPoint = orgAccessPoint
+            accessPointData.datatype= 'ip' + ipRange.getIpVersion()
+            accessPointData.data = jsonData
+            accessPointData.save(flush: true)
+
+            orgAccessPoint.lastUpdated = new Date()
+            orgAccessPoint.save(flush: true)
+        }
+
+        if (invalidRanges) {
+            // return only those input strings to UI which represent a invalid ip range
+            flash.error = message(code: 'accessPoint.invalid.ip', args: [invalidRanges.join(' ')])
+            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ip: invalidRanges.join(' '), ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format]
+        } else {
+            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format, autofocus: true]
+        }
+    }
+
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def list() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
-    
+
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        
+
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
@@ -59,14 +117,14 @@ class AccessPointController extends AbstractDebugController {
         }
 
     }
-    
+
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
          def accessPoint = OrgAccessPoint.get(params.id)
-        
+
         def org = accessPoint.org;
         def orgId = org.id;
-        
+
         if (!accessPoint) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
             redirect action: 'list'
@@ -129,37 +187,6 @@ class AccessPointController extends AbstractDebugController {
 
                 redirect controller: 'organisation', action: 'accessPoints', orgId: orgId
                 break
-        }
-    }
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def addIpRange() {
-        try {
-            def ipRange = IpRange.parseIpRange(params.ip)
-            def orgAccessPoint = OrgAccessPoint.get(params.id)
-            def org = orgAccessPoint.org;
-            def orgId = org.id;
-
-            def jsonData = JsonOutput.toJson([
-                    inputStr : params.ip,
-                    startValue: ipRange.lowerLimit.toHexString(),
-                    endValue: ipRange.upperLimit.toHexString()]
-            )
-
-            def accessPointData = new AccessPointData(params)
-            accessPointData.orgAccessPoint = orgAccessPoint
-            accessPointData.datatype= 'ip' + ipRange.getIpVersion()
-            accessPointData.data = jsonData
-            accessPointData.save(flush: true)
-
-            orgAccessPoint.lastUpdated = new Date()
-            orgAccessPoint.save(flush: true)
-
-            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format, autofocus: true]
-        } catch (InvalidRangeException) {
-            flash.error = message(code: 'accessPoint.invalid.ip', args: [params.ip])
-
-            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ip: params.ip, ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format]
         }
     }
 
