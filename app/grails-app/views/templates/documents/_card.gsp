@@ -121,7 +121,7 @@
         </g:if>
     </g:each>
 </semui:card>
-
+</g:if>
 <g:if test="${sharedItems}">
     <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
