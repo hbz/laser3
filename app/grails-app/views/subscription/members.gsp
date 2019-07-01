@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -162,7 +162,7 @@
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">
-                            <g:if test="${sub.administrative}">
+                            <g:if test="${sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                     <span data-tooltip="${message(code:'subscription.details.hiddenForSubscriber')}">
                                         <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">

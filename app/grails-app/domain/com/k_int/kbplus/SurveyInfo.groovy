@@ -73,4 +73,41 @@ class SurveyInfo {
 
         return check
     }
+
+    def checkSurveyInfoFinishByOrg(Org org) {
+        def result = [:]
+
+        def count = 0
+        surveyConfigs.each {
+
+            def checkResultsFinishByOrg = result."${it.checkResultsFinishByOrg(org)}"
+            if(checkResultsFinishByOrg){
+
+                result."${it.checkResultsFinishByOrg(org)}" = checkResultsFinishByOrg+1
+
+
+            }else {
+                result."${it.checkResultsFinishByOrg(org)}" = 1
+            }
+            count++
+        }
+
+        result.sort{it.value}
+
+        print(result)
+        print(count)
+
+
+        result = result?.find{it.value == count} ? result?.find{it.value == count}.key : null
+
+        if(result)
+        {
+            println(result)
+            return result
+        }else {
+            return null
+        }
+
+
+    }
 }

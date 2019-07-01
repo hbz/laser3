@@ -1,5 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -73,21 +72,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
     </g:form>
 </semui:filter>
-<%
-    List zdbIds = []
-    List onlineIds = []
-    List printIds = []
-    if (identifiers) {
-        zdbIds = identifiers.zdbIds
-        onlineIds = identifiers.onlineIds
-        printIds = identifiers.printIds
-    }
-%>
 <g:if test="${flash.error}">
     <semui:messages data="${flash}"/>
 </g:if>
 <g:form class="ui form" controller="subscription" action="addEntitlements"
-        params="${[identifiers: identifiers, sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
+        params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
         method="post" enctype="multipart/form-data">
     <div class="two fields">
         <div class="field">
@@ -121,7 +110,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
     });
 </r:script>
 <g:form action="processAddEntitlements" class="ui form">
-    <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
+    <input type="hidden" name="id" value="${subscriptionInstance.id}"/>
 
     <div class="two fields">
         <div class="field"></div>
@@ -136,7 +125,14 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         <thead>
         <tr>
             <th rowspan="3" style="vertical-align:middle;">
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall"
+                <%
+                    String allChecked = "checked"
+                    checked.each { e ->
+                        if(e != "checked")
+                            allChecked = ""
+                    }
+                %>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}
                                                 onClick="javascript:selectAll();"/></g:if>
             </th>
             <th rowspan="3">${message(code: 'sidewide.number')}</th>
@@ -164,9 +160,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         </thead>
 
         <tbody>
-        <g:each in="${tipps}" var="tipp" status="t">
+        <g:each in="${tipps}" var="tipp">
             <tr>
-                <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked[t]}/></td>
+                <td><input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck" ${checked[tipp.gokbId]}></td>
             <td>${counter++}</td>
 
             <td>
@@ -346,7 +342,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         %>
         <semui:paginate controller="subscription"
                         action="addEntitlements"
-                        params="${params + [identifiers: identifiers, pagination: true]}"
+                        params="${params + [pagination: true]}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
                         max="${max}"
@@ -370,6 +366,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
     */ %>
     function selectAll() {
       $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+      updateCache("all",$('#select-all').prop('checked'));
     }
 
     $("simpleHiddenRefdata").editable({
@@ -379,6 +376,25 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
           // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
         }
       });
+
+    $(".bulkcheck").change(function() {
+        updateCache($(this).attr("data-index"),$(this).prop('checked'));
+    });
+
+    function updateCache(index,checked) {
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="updateChecked" />",
+            data: {
+                sub: ${subscriptionInstance.id},
+                index: index,
+                checked: checked
+            }
+        }).done(function(result){
+
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    }
 </r:script>
 
 </body>

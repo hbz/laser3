@@ -554,9 +554,13 @@
 
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
                                 <div class="divider"></div>
+
                                 <g:if test="${grailsApplication.metadata['app.version']}">
                                     <div class="header">Version: ${grailsApplication.metadata['app.version']} – ${grailsApplication.metadata['app.buildDate']}</div>
                                 </g:if>
+                                <div class="header">
+                                    ${yodaService.getNumberOfActiveUsers()} Benutzer online
+                                </div>
                             </div>
                         </div>
                     </g:if>

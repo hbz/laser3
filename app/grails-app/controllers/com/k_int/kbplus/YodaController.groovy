@@ -28,6 +28,7 @@ class YodaController {
 
     SessionFactory sessionFactory
 
+    def yodaService
     def cacheService
     def springSecurityService
     def statsSyncService
@@ -82,6 +83,8 @@ class YodaController {
 
         //result.q5 = User.executeQuery('select u from User u where u.accountLocked is null and u.id < 4')
         result.q6 = User.executeQuery('select u from User u where u.accountLocked is not null and u.id < 4')
+
+        result.numberOfActiveUsers = yodaService.getNumberOfActiveUsers()
 
         result
     }

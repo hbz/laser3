@@ -139,23 +139,32 @@
 
 <r:script>
 
-    var subCopy456 = {
+    var subCopyController = {
+
+        checkboxes : {
+            $takePackageIds: $('input[name="subscription.takePackageIds"]'),
+            $deletePackageIds:  $('input[name="subscription.deletePackageIds"]'),
+            $takeEntitlementIds: $('input[name="subscription.takeEntitlementIds"]'),
+            $deleteEntitlementIds: $('input[name="subscription.deleteEntitlementIds"]')
+        },
 
         init: function(elem) {
-            $('input[name="subscription.takePackageIds"]').change( function(event) {
-                subCopy456.takePackageIds(this);
+            var ref = subCopyController.checkboxes
+
+            ref.$takePackageIds.change( function(event) {
+                subCopyController.takePackageIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.deletePackageIds"]').change( function(event) {
-                subCopy456.deletePackageIds(this);
+            ref.$deletePackageIds.change( function(event) {
+                subCopyController.deletePackageIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
-                subCopy456.takeEntitlementIds(this);
+            ref.$takeEntitlementIds.change( function(event) {
+                subCopyController.takeEntitlementIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.deleteEntitlementIds"]').change( function(event) {
-                subCopy456.deleteEntitlementIds(this);
+            ref.$deleteEntitlementIds.change( function(event) {
+                subCopyController.deleteEntitlementIds(this);
             }).trigger('change')
         },
 
@@ -166,7 +175,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy456.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1){
                     $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
                 }
             }
@@ -192,7 +201,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy456.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1){
                     $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay');
                 }
             }
@@ -221,7 +230,7 @@
         }
     }
 
-    subCopy456.init()
+    subCopyController.init()
 </r:script>
 
 

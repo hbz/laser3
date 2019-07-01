@@ -132,7 +132,7 @@
 
         <div class="four wide column">
 
-        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})" data-semui="modal"
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
                 class="ui icon button right floated trigger-modal">
             <g:message
                     code="survey.copyEmailaddresses.participantsHasAccess"/>
@@ -155,7 +155,7 @@
 
         <div class="four wide column">
 
-            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})" data-semui="modal"
+            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
                     class="ui icon button right floated trigger-modal">
                 <g:message
                         code="survey.copyEmailaddresses.participantsHasNoAccess"/>
@@ -192,7 +192,7 @@
 
             <div class="four wide column">
 
-            %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+            %{--<button type="button" class="ui icon button right floated"
                     data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
@@ -231,7 +231,7 @@
 
             <div class="four wide column">
 
-                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})" data-semui="modal"
+                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
                         class="ui icon button right floated trigger-modal">
                     <g:message
                             code="survey.copyEmailaddresses.participantsHasAccess"/>
@@ -263,7 +263,7 @@
                    value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
             <div class="four wide column">
-                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})" data-semui="modal"
+                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
                         class="ui icon button right floated trigger-modal">
                     <g:message
                             code="survey.copyEmailaddresses.participantsHasNoAccess"/>

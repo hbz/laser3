@@ -75,7 +75,7 @@ class SurveyConfig {
         internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
-        costItemsFinish column: 'surconf_costItems_finish', default: false
+        costItemsFinish column: 'surconf_costitems_finish', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -86,7 +86,6 @@ class SurveyConfig {
         surveyInfo column: 'surconf_surinfo_fk'
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
-
 
         configOrder column: 'surconf_config_order'
     }
@@ -110,7 +109,7 @@ class SurveyConfig {
 
     def getCurrentDocs() {
 
-        return documents.findAll { it.status?.value != 'Deleted' }
+        return documents.findAll { (it.status?.value != 'Deleted' && ((it.owner?.contentType == 1) || (it.owner?.contentType == 3)))}
     }
 
     def getConfigNameShort() {
@@ -147,9 +146,9 @@ class SurveyConfig {
     def getSurveyOrgsIDs() {
         def result = [:]
 
-        result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedSubscribers().id)
+        result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedSubscribers()?.id) ?: null
 
-        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs) ?: null
 
         return result
     }
@@ -157,6 +156,7 @@ class SurveyConfig {
     def checkResultsFinishByOrg(Org org) {
 
         if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
+            println("Test")
             return ALL_RESULTS_FINISH_BY_ORG
         } else {
 
@@ -165,20 +165,20 @@ class SurveyConfig {
 
             def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
-            surveyResult.each {
-                if (it.getFinish()) {
-                    countFinish++
-                } else {
-                    countNotFinish++
+                surveyResult.each {
+                    if (it.getFinish()) {
+                        countFinish++
+                    } else {
+                        countNotFinish++
+                    }
                 }
-            }
-            if (countFinish > 0 && countNotFinish == 0) {
-                return ALL_RESULTS_FINISH_BY_ORG
-            } else if (countFinish > 0 && countNotFinish > 0) {
-                return ALL_RESULTS_HALF_FINISH_BY_ORG
-            } else {
-                return ALL_RESULTS_NOT_FINISH_BY_ORG
-            }
+                if (countFinish > 0 && countNotFinish == 0) {
+                    return ALL_RESULTS_FINISH_BY_ORG
+                } else if (countFinish > 0 && countNotFinish > 0) {
+                    return ALL_RESULTS_HALF_FINISH_BY_ORG
+                } else {
+                    return ALL_RESULTS_NOT_FINISH_BY_ORG
+                }
         }
 
 

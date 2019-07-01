@@ -178,31 +178,42 @@
 
 <r:script>
 
-    var subCopy123 = {
+    var subCopyController = {
+
+        checkboxes : {
+            $takeDates: $('input:checkbox[name="subscription.takeDates"]'),
+            $deleteDates: $('input:checkbox[name="subscription.deleteDates"]'),
+            $takeOwner: $('input:checkbox[name="subscription.takeOwner"]'),
+            $deleteOwner: $('input:checkbox[name="subscription.deleteOwner"]'),
+            $takeOrgRelations: $('input:checkbox[name="subscription.takeOrgRelations"]'),
+            $deleteOrgRelations: $('input:checkbox[name="subscription.deleteOrgRelations"]')
+        },
 
         init: function() {
-            $('input:checkbox[name="subscription.takeDates"]').change( function(event) {
-                subCopy123.takeDates(this);
+            var ref = subCopyController.checkboxes
+
+            ref.$takeDates.change( function(event) {
+                subCopyController.takeDates(this);
             }).trigger('change')
 
-            $('input:checkbox[name="subscription.deleteDates"]').change( function(event) {
-                subCopy123.deleteDates(this);
+            ref.$deleteDates.change( function(event) {
+                subCopyController.deleteDates(this);
             }).trigger('change')
 
-            $('input:checkbox[name="subscription.takeOwner"]').change( function(event) {
-                subCopy123.takeOwner(this);
+            ref.$takeOwner.change( function(event) {
+                subCopyController.takeOwner(this);
             }).trigger('change')
 
-            $('input:checkbox[name="subscription.deleteOwner"]').change( function(event) {
-                subCopy123.deleteOwner(this);
+            ref.$deleteOwner.change( function(event) {
+                subCopyController.deleteOwner(this);
             }).trigger('change')
 
-            $('input:checkbox[name="subscription.takeOrgRelations"]').change( function(event) {
-                subCopy123.takeOrgRelations(this);
+            ref.$takeOrgRelations.change( function(event) {
+                subCopyController.takeOrgRelations(this);
             }).trigger('change')
 
-            $('input:checkbox[name="subscription.deleteOrgRelations"]').change( function(event) {
-                subCopy123.deleteOrgRelations(this);
+            ref.$deleteOrgRelations.change( function(event) {
+                subCopyController.deleteOrgRelations(this);
             }).trigger('change')
         },
 
@@ -253,7 +264,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takeOrgRelations.source"] div div[value="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy123.getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeOrgRelations') < 1) {
                     $('.table tr td[name="subscription.takeOrgRelations.target"] div div').removeClass('willStay');
                 }
             }
@@ -279,7 +290,7 @@
         }
     }
 
-    subCopy123.init()
+    subCopyController.init()
 </r:script>
 
 

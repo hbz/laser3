@@ -245,31 +245,42 @@
 </semui:form>
 <r:script>
 
-    var subCopy789 = {
+    var subCopyController = {
+
+        checkboxes : {
+            $takeDocIds: $('input[name="subscription.takeDocIds"]'),
+            $deleteDocIds: $('input[name="subscription.deleteDocIds"]'),
+            $takeAnnouncementIds: $('input[name="subscription.takeAnnouncementIds"]'),
+            $deleteAnnouncementIds: $('input[name="subscription.deleteAnnouncementIds"]'),
+            $takeTaskIds: $('input[name="subscription.takeTaskIds"]'),
+            $deleteTaskIds: $('input[name="subscription.deleteTaskIds"]')
+        },
 
         init: function (elem) {
-            $('input[name="subscription.takeDocIds"]').change( function(event) {
-                subCopy789.takeDocIds(this);
+            var ref = subCopyController.checkboxes
+
+            ref.$takeDocIds.change( function(event) {
+                subCopyController.takeDocIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.deleteDocIds"]').change( function(event) {
-                subCopy789.deleteDocIds(this);
+            ref.$deleteDocIds.change( function(event) {
+                subCopyController.deleteDocIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.takeAnnouncementIds"]').change( function(event) {
-                subCopy789.takeAnnouncementIds(this);
+            ref.$takeAnnouncementIds.change( function(event) {
+                subCopyController.takeAnnouncementIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.deleteAnnouncementIds"]').change( function(event) {
-                subCopy789.deleteAnnouncementIds(this);
+            ref.$deleteAnnouncementIds.change( function(event) {
+                subCopyController.deleteAnnouncementIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.takeTaskIds"]').change( function(event) {
-                subCopy789.takeTaskIds(this);
+            ref.$takeTaskIds.change( function(event) {
+                subCopyController.takeTaskIds(this);
             }).trigger('change')
 
-            $('input[name="subscription.deleteTaskIds"]').change( function(event) {
-                subCopy789.deleteTaskIds(this);
+            ref.$deleteTaskIds.change( function(event) {
+                subCopyController.deleteTaskIds(this);
             }).trigger('change')
         },
 
@@ -280,7 +291,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeDocIds') < 1) {
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeDocIds') < 1) {
                     $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay');
                 }
             }
@@ -302,7 +313,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeAnnouncementIds') < 1) {
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeAnnouncementIds') < 1) {
                     $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay');
                 }
             }
@@ -324,7 +335,7 @@
             }
             else {
                 $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
-                if (subCopy789.getNumberOfCheckedCheckboxes('subscription.takeTaskIds') < 1){
+                if (subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTaskIds') < 1){
                     $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay');
                 }
             }
@@ -351,5 +362,5 @@
         }
     }
 
-    subCopy789.init()
+    subCopyController.init()
 </r:script>
