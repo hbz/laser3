@@ -197,9 +197,6 @@ from Subscription as s where (
                 filterSet = true
             }
         }
-        else {
-            base_qry += " AND ( s.status.value != 'Deleted' ) "
-        }
 
         if (params.form) {
             base_qry += "and s.form.id = :form "

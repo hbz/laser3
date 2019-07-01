@@ -62,7 +62,6 @@ class ReminderService implements ApplicationContextAware{
         def base_qry = """
 select s from Subscription as s where 
   ( ( exists ( select o from s.orgRelations as o where ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) and o.org = ? ) ) ) 
-  AND ( s.status.value != 'Deleted' ) 
   AND s.manualRenewalDate < ? order by s.manualRenewalDate asc 
 """
         def results = Subscription.executeQuery(base_qry, qry_params);

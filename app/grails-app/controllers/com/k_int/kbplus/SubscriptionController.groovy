@@ -989,17 +989,15 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         def childLicenses = License.where {
-            (instanceOf == result.parentLicense) && (status.value != 'Deleted')
+            instanceOf == result.parentLicense
         }
 
         childLicenses?.each {
             result.validLicenses << it
         }
 
-
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+        def validSubChilds = Subscription.findAllByInstanceOf(
+                result.parentSub
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1987,9 +1985,8 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def validSubChilds = Subscription.findAllByInstanceOf(
+                result.subscriptionInstance
         )
 
         validSubChilds = validSubChilds.sort { a, b ->
@@ -2343,13 +2340,13 @@ class SubscriptionController extends AbstractDebugController {
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is not null) order by LOWER(l.reference)
+AND (l.instanceOf is not null) order by LOWER(l.reference)
 """
             } else {
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' order by LOWER(l.reference)
+AND order by LOWER(l.reference)
 """
             }
             if (subscriber == consortia) {
@@ -2357,7 +2354,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.reference)
+AND (l.instanceOf is null) order by LOWER(l.reference)
 """
             }
 
@@ -2651,7 +2648,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats)"
+        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
         def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
@@ -3331,10 +3328,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 params.workFlowPartNext = 4
                 result.newSub = newSub2
 
-                def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                        baseSub,
-                        RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-                )
+                def validSubChilds = Subscription.findAllByInstanceOf(baseSub)
 
                 result.validSubChilds = validSubChilds.sort { a, b ->
                     def sa = a.getSubscriber()
