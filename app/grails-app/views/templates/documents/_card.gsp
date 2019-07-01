@@ -73,7 +73,7 @@
                                     ${docctx.owner.title}
                                 </g:if>
                                 <g:elseif test="${docctx.owner?.filename}">
-                                    ${docctx.owner.filename}
+                                    ${docctx.owner?.filename}
                                 </g:elseif>
                                 <g:else>
                                     ${message(code:'template.documents.missing', default: 'Missing title and filename')}

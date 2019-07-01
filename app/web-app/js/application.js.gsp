@@ -658,6 +658,7 @@ deckSaver = {
             inline     : true,
             lastResort: true,
             onShow: function() {
+                console.log ("hoi")
                 // generate a random ID
                 var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
                 // add aria-label to container-span
@@ -760,7 +761,45 @@ deckSaver = {
         }
     }
 }
+tooltip = {
+    configs : {
+        tooltipTrigger: $('.la-js-popup'),
 
+    },
+    go : function() {
+        tooltip.initializePopup(tooltip.configs.tooltipTrigger);
+        tooltip.acccessViaKeys();
+    },
+    initializePopup: function(obj) {
+        $(obj).popup({
+            hoverable: true,
+            inline     : true,
+            lastResort: true,
+            onShow: function() {
+                // generate a random ID
+                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+                // add aria-label to container-span
+                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
+                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
+                $(this).children('.content').attr({role:'tooltip',id:id});
+            },
+        });
+    },
+    acccessViaKeys: function(){
+        // for click and focus
+        $(tooltip.configs.tooltipTrigger).on('click focus', function(){$(this).popup('show'); })
+
+        // for unfocus
+        $(tooltip.configs.tooltipTrigger).on('focusout', function(){$(this).popup('hide'); })
+
+        // for ESC
+        $(tooltip.configs.tooltipTrigger).on('keydown', function(){
+            if(event.keyCode==27){
+                $(this).popup('hide');
+            }
+        })
+    }
+}
 
 bb8 = {
 
@@ -828,6 +867,7 @@ $(document).ready(function() {
 
     r2d2.go();
     bb8.go();
+    tooltip.go();
 
 })
 
