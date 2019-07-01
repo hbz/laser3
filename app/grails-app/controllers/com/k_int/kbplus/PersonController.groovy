@@ -72,10 +72,15 @@ class PersonController extends AbstractDebugController {
             }
         }
 
+        boolean myPublicContact = false
+        if(personInstance.isPublic == RDStore.YN_YES && personInstance.tenant == contextService.org && !personInstance.roleLinks)
+            myPublicContact = true
+
         def result = [
                 personInstance: personInstance,
                 personOrg: Org.get(params.personOrgID) ?: null,
-                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
+                myPublicContact: myPublicContact
         ]
 
         result
