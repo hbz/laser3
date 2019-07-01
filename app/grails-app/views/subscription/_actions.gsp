@@ -56,10 +56,7 @@
         <div class="divider"></div>
 
         <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
-        %{--Todo Remove ifAnyGranted wenn Task erms-776 fertig ist!--}%
-        <sec:ifAnyGranted roles="INST_EDITOR, INST_ADM, ROLE_DATAMANAGER, ROLE_ADMIN, ROLE_YODA">
-            <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
-        </sec:ifAnyGranted>
+        <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
 
         <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
@@ -68,21 +65,43 @@
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
-        <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !previousSubscriptions}">
-            <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
-                                   params="${[id: params.id]}" message="subscription.details.renewals.label"/>
-            <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
-                                   message="menu.institutions.imp_renew"/>
-        </g:if>
+        %{--TODO: Die alten Sub-Verlängerungen entfernen mit samt Controller-Metoden--}%
+        <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
+            <div class="divider">OLD:</div>
+            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
+            <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !previousSubscriptions}">
+                <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
+                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+                <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
+                                       message="menu.institutions.imp_renew"/>
+            </g:if>
 
-        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
-            <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
+            <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
+                <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
+                                           params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
+            </g:if>
+            <div class="divider"></div>
+        </sec:ifAnyGranted>
+
+        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds())}">
+            <g:if test ="${previousSubscriptions}">
+                <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
+                                                   params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
+            </g:if>
+            <g:else>
+                <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Consortia"
+                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+            </g:else>
         </g:if>
-        <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && !previousSubscriptions}">
-            <semui:actionsDropdownItem controller="subscription" action="renewSubscription"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsLocal.label"/>
+        <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL}">
+            <g:if test ="${previousSubscriptions}">
+                <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Local"
+                                                   params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+            </g:if>
+            <g:else>
+                <semui:actionsDropdownItem controller="subscription" action="renewSubscription_Local"
+                                       params="${[id: params.id]}" message="subscription.details.renewals.label"/>
+            </g:else>
         </g:if>
 
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">

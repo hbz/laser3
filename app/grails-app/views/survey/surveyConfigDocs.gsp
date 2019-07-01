@@ -18,6 +18,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -105,6 +106,10 @@
                             </td>
 
                             <td class="x">
+                                %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
+                                <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                    <i class="green alternate share icon"></i>
+                                </span>
                                 <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
                                     <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i

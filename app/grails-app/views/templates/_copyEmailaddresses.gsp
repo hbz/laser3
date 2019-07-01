@@ -2,6 +2,8 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection />
 
+<g:set var="modalID"               value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
+
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
@@ -114,20 +116,21 @@
         var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
         var jsonAllEmailSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsSet)%>;
 
-        $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
-        $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
+        $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
+        $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
 
         function copyToEmailProgram() {
-            var emailAdresses = $('#emailAddressesTextArea').val();
+            var emailAdresses = $("#emailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;
         }
 
         function copyToClipboard() {
-            $('#emailAddressesTextArea').select();
+            $("#emailAddressesTextArea").select();
             document.execCommand("copy");
         }
 
         function updateTextArea() {
+            $("#emailAddressesTextArea").val("")
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
             if (selectedRoleTypIds.length == 0) {
@@ -149,7 +152,7 @@
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
             emailsAsString = emailsAsString.join('; ');
-            $('#emailAddressesTextArea').val(emailsAsString);
+            $("#emailAddressesTextArea").val(emailsAsString);
         }
     </g:javascript>
 

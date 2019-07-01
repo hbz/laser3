@@ -26,57 +26,64 @@
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
-<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
-    <g:each in="${baseItems}" var="docctx">
-        <%
-            boolean visible = false
-            if(docctx.org) {
-                boolean inOwnerOrg = false
-                boolean isCreator = false
+<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
+    <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
+        <g:each in="${baseItems}" var="docctx">
+            <%
+                boolean visible = false
+                if(docctx.org) {
+                    boolean inOwnerOrg = false
 
-                if(docctx.owner.owner?.id == contextService.org.id)
-                    inOwnerOrg = true
-                if(docctx.owner.creator?.id == user.id)
-                    isCreator = true
+                    boolean inTargetOrg = false
 
-                switch(docctx.shareConf) {
-                    case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                        break
-                    case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                        break
-                /*case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.org?.id) visible = true
-                    break*/
-                    case RDStore.SHARE_CONF_CONSORTIUM:
-                    case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                        break
-                    default:
-                        if(docctx.shareConf) log.debug(docctx.shareConf)
-                        else visible = true
-                        break
+                    boolean isCreator = false
+
+                    if(docctx.owner.owner?.id == contextService.org.id)
+                        inOwnerOrg = true
+
+                    else if(contextService.org.id == docctx.org?.id)
+                        inTargetOrg = true
+
+                    if(docctx.owner.creator?.id == user.id)
+                        isCreator = true
+
+                    switch(docctx.shareConf) {
+                        case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                            break
+                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                            break
+                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                            break
+                        case RDStore.SHARE_CONF_CONSORTIUM:
+                        case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                            break
+                        default:
+                            if (!docctx.shareConf) visible = true
+                            break
+                    }
                 }
-            }
-            else visible = true
-        %>
-        <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted') && visible)}">
-            <div class="ui small feed content la-js-dont-hide-this-card">
-                <div class="ui grid summary">
-                    <div class="twelve wide column">
-                        <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
-                            <g:if test="${docctx.owner?.title}">
-                                ${docctx.owner.title}
-                            </g:if>
-                            <g:elseif test="${docctx.owner?.filename}">
-                                ${docctx.owner.filename}
-                            </g:elseif>
-                            <g:else>
-                                ${message(code:'template.documents.missing', default: 'Missing title and filename')}
-                            </g:else>
+                else visible = true
+            %>
+            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted') && visible)}">
+                <div class="ui small feed content la-js-dont-hide-this-card">
+                    <div class="ui grid summary">
+                        <div class="twelve wide column">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                                <g:if test="${docctx.owner?.title}">
+                                    ${docctx.owner.title}
+                                </g:if>
+                                <g:elseif test="${docctx.owner?.filename}">
+                                    ${docctx.owner.filename}
+                                </g:elseif>
+                                <g:else>
+                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                </g:else>
 
                         </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
                     <div class="center aligned four wide column la-js-editmode-container">
-                        <g:if test="${!(ownobj instanceof Org) && ownobj.showUIShareButton()}">
-                            <g:if test="${docctx.isShared}">
+                        <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
+                            <g:if test="${docctx?.isShared}">
                                 <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                   controller="ajax"
                                                   action="toggleShare"

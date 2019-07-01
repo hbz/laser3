@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -44,8 +44,9 @@
             <g:if test="${surveyInfo?.type}">
                 <b>${surveyInfo?.type?.getI10n('value')}</b>
             </g:if><g:else>
+            %{--Erstmal erst nur Verlängerungsumfragen --}%
             <laser:select class="ui dropdown" name="type"
-                          from="${RefdataCategory.getAllRefdataValues('Survey Type')}"
+                          from="${com.k_int.kbplus.RefdataValue.getByValueAndCategory('renewal','Survey Type')}"
                           optionKey="id"
                           optionValue="value"
                           value="${surveyInfo?.type?.id}"

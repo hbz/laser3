@@ -17,6 +17,7 @@
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+        <semui:crumb controller="survey" action="surveyConfigs" id="${surveyInfo.id}" message="surveyConfigs.label"/>
     </g:if>
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
@@ -25,12 +26,10 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
-
 <g:render template="nav"/>
-
 
 <semui:messages data="${flash}"/>
 
@@ -42,7 +41,7 @@
 
 <br>
 
-<div>
+<semui:form>
 
     <g:form action="addSurveyConfigs" controller="survey" method="post" class="ui form">
         <g:hiddenField name="id" value="${surveyInfo?.id}"/>
@@ -59,6 +58,7 @@
             <semui:totalNumber total="${properties.size()}"/>
 
         </h4>
+
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
@@ -91,7 +91,7 @@
                     </td>
                     <td>
                         ${property?.getI10n('name')}
-                        <g:if test="${property?.owner == institution}">
+                        <g:if test="${property?.owner?.id == institution?.id}">
                             <i class='shield alternate icon'></i>
                         </g:if>
                     </td>
@@ -129,7 +129,7 @@
 
     </g:form>
 
-</div>
+</semui:form>
 
 <semui:modal id="addSurveyPropertyModal" message="surveyProperty.create_new.label">
     <div class=" content">

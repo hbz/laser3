@@ -55,9 +55,8 @@
                         </div>
                         <div class="center aligned four wide column la-js-editmode-container">
 
-                            <g:if test="${ownobj.showUIShareButton()}">
-                            <g:if test="${docctx.isShared}">
-
+                            <g:if test="${ownobj?.showUIShareButton()}">
+                            <g:if test="${docctx?.isShared}">
                                 <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                   controller="ajax"
                                                   action="toggleShare"

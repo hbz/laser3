@@ -111,7 +111,7 @@
                    </g:else>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
-                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
+                  <g:each in="${t.title.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                     ${id.identifier.ns.ns}: ${id.identifier.value}<br/>
                   </g:each>
                 </td>

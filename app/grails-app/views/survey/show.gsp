@@ -13,11 +13,13 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+
     <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -72,30 +74,45 @@
                 </div>
             </div>
 
+            <g:set var="finish"
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+            <g:set var="total"
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
 
-            <div class="ui card">
-                <div class="content">
-                   %{-- <div class="ui progress" data-percent="50">
-                        <div class="bar">
+            <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+            <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                <div class="ui card">
+
+                    <div class="content">
+                        <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
+                             data-total="100">
+                            <div class="bar">
+                                <div class="progress">${finishProcess}</div>
+                            </div>
+
+                            <div class="label"
+                                 style="background-color: transparent">${finishProcess}% <g:message
+                                    code="surveyInfo.finish"/></div>
                         </div>
-                        <div class="label">Abgeschlossen</div>
-                    </div>--}%
+                    </div>
                 </div>
-            </div>
+            </g:if>
+            <br>
 
             <g:if test="${surveyConfigs}">
                 <div class="ui styled fluid accordion">
 
                     <g:each in="${surveyConfigs}" var="config" status="i">
 
-                        <div class="title active"><i class="dropdown icon"></i>
+                        <div class="title active" style="background-color: ${(config?.configFinish && config?.costItemsFinish) ? 'lime' : ''}"><i
+                            class="dropdown icon"></i>
 
                         ${config?.getConfigName()}
 
                         <div class="ui label circular ${(config?.type == 'Subscription') ? 'black' : 'blue'}">${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}</div>
 
                         <g:if test="${config?.type != 'Subscription'}">
-                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</b>
+                            ${message(code: 'surveyProperty.type.label')}: ${config?.surveyProperty?.getLocalizedType()}</br>
 
                         </g:if>
 
@@ -138,6 +155,10 @@
                                                     </td>
 
                                                     <td class="x">
+                                                        %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
+                                                        <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                                            <i class="green alternate share icon"></i>
+                                                        </span>
                                                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
                                                             <g:link controller="docstore" id="${docctx.owner.uuid}"
@@ -153,19 +174,44 @@
                                     </g:if>
 
                                 </div>
+                                <g:if test="${config?.type == 'SurveyProperty'}">
+                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
+                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
-                                <div class="title"><i
-                                        class="dropdown icon"></i>${message(code: 'surveyConfig.orgs.label')}
+                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                    </div>
 
-                                    <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
-                                </div>
-
-                                <div class="content">
-                                    <g:render template="allParticipants" model="[surveyConfig: config]"/>
-                                </div>
+                                    <div class="content">
+                                        <g:render template="allParticipants" model="[surveyConfig: config]"/>
+                                    </div>
+                                </g:if>
 
                                 <g:if test="${config?.type == 'Subscription'}">
-                                    <div class="title"><i
+
+                                    <g:set var="costItems"
+                                           value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
+
+                                    <div class="title"
+                                         style="background-color: ${config?.costItemsFinish ? 'lime' : ''}"><i
+                                            class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
+
+                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                    </div>
+
+                                    <div class="content compact">
+
+                                        <g:render template="/templates/filter/orgFilterTable"
+                                                  model="[orgList       : config?.orgs.org,
+                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                                          tableID       : 'costTable',
+                                                          surveyConfig  : config,
+                                                          editable      : false
+                                                  ]"/>
+                                    </div>
+
+
+                                    <div class="title"
+                                         style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
                                         <div class="ui circular label">${config?.surveyProperties?.size() ?: 0}</div>
@@ -191,7 +237,9 @@
                                                             ${prop?.surveyProperty?.getI10n('name')}
 
                                                             <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
-                                                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                <span class="la-long-tooltip"
+                                                                      data-position="right center" data-variation="tiny"
+                                                                      data-tooltip="${prop?.surveyProperty?.getI10n('explain')}">
                                                                     <i class="question circle icon"></i>
                                                                 </span>
                                                             </g:if>
@@ -231,6 +279,11 @@
 
 
 <div id="magicArea"></div>
+<r:script>
+    $(document).ready(function () {
+        $('#finishProcess').progress();
+    });
+</r:script>
 
 </body>
 </html>

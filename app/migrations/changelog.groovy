@@ -4,8 +4,7 @@ databaseChangeLog = {
 		// TODO add changes and preconditions here
 	}
 
-    // postgresql migration
-	include file: 'changelog-0.groovy'
+	include file: 'changelog-0.groovy'		// migration to postgresql
 
 	include file: 'changelog-10.groovy'		// v0.12
 
@@ -25,4 +24,7 @@ databaseChangeLog = {
 
 	include file: 'changelog-60.groovy'		// v0.17
 	include file: 'changelog-65.groovy'
+
+	include file: 'changelog-70.groovy'		// v0.18
+	include file: 'changelog-75.groovy'
 }

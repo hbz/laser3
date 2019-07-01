@@ -286,7 +286,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       if ( createEntitlements ) {
         def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
         TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
-          if(tipp.status?.value != "Deleted"){
+          if(tipp.status?.value == "Current"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,
                                               subscription: subscription,
                                               tipp: tipp,
@@ -516,7 +516,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     println "processing identifier ${value}"
     this.ids.each {
         println "processing identifier occurrence ${it}"
-      if ( it.identifier.ns.ns == ns && it.identifier.value == value ) {
+      if ( it?.identifier?.ns?.ns == ns && it.identifier.value == value ) {
           println "occurrence found"
         found = true
       }

@@ -29,6 +29,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 <g:render template="nav"/>
@@ -50,9 +51,12 @@
             </td>
             <td>
                 <g:if test="${choosenOrgCPAs}">
+                    <g:set var="oldEditable" value="${editable}" />
+                    <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
                         <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
                     </g:each>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                 </g:if>
             </td>
         </tr>

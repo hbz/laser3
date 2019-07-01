@@ -76,7 +76,7 @@
                           </td>
                           <td>
                             <ul>
-                              <g:each in="${hit.ids.sort{it.identifier.ns.ns}}" var="id">
+                              <g:each in="${hit.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                                 <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                                   <li>${id.identifier.ns.ns}: <a href="${id.identifier.value}">GOKb-URL</a></li>
                                 </g:if>

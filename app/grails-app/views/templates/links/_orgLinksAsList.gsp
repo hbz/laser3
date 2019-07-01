@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <table class="ui three column table">
-    <g:each in="${roleLinks.sort{it?.roleType?.getI10n("value")}}" var="role">
+    <g:each in="${roleLinks?.sort{it?.roleType?.getI10n("value")}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
@@ -14,8 +14,8 @@
 
                 <td class="right aligned">
                     <g:if test="${editmode}">
-                        <g:if test="${roleObject.showUIShareButton()}">
-                            <g:if test="${role.isShared}">
+                        <g:if test="${roleObject?.showUIShareButton()}">
+                            <g:if test="${role?.isShared}">
                                 <div class="ui icon buttons">
                                     <g:link class="ui mini icon button green la-selectable-button"
                                             controller="ajax" action="toggleShare"

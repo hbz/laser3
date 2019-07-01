@@ -102,6 +102,9 @@ class TaskService {
                 case 'Subscription':
                     tasks = Task.findAllByResponsibleUserAndSubscription(user, obj, params)
                     break
+                case 'SurveyConfig':
+                    tasks = Task.findAllByResponsibleUserAndSurveyConfig(user, obj, params)
+                    break
             }
         }
         tasks
@@ -122,6 +125,9 @@ class TaskService {
                     break
                 case 'Subscription':
                     tasks = Task.findAllByResponsibleOrgAndSubscription(org, obj, params)
+                    break
+                case 'SurveyConfig':
+                    tasks = Task.findAllByResponsibleOrgAndSurveyConfig(org, obj, params)
                     break
             }
         }

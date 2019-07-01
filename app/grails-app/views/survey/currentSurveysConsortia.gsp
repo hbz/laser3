@@ -94,7 +94,7 @@
     </g:form>
 </semui:filter>
 
-<div>
+<semui:form>
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
@@ -146,16 +146,19 @@
                     <g:link controller="survey" action="surveyConfigs" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.size()}</g:link>
                 </td>
 
+                <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs)}"/>
                 <td class="center aligned">
-                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button">${s?.surveyConfigs?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}</g:link>
+                    <g:link controller="survey" action="surveyParticipants" id="${s.id}" class="ui icon button">
+                       ${finish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}/${s?.surveyConfigs?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}
+                    </g:link>
                 </td>
 
                 <td>
-                    <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
-                    <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+
+                    <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs)}"/>
                     <g:link controller="survey" action="surveyEvaluation" id="${s.id}" class="ui icon button">
-                        <g:if test="${finish != 0 && total != 0}">
-                            <g:formatNumber number="${(finish/total)*100}" minFractionDigits="2" maxFractionDigits="2"/>
+                        <g:if test="${finish && total }">
+                            <g:formatNumber number="${(finish.size()/total.size())*100}" minFractionDigits="2" maxFractionDigits="2"/>%
                         </g:if>
                         <g:else>
                             0%
@@ -183,7 +186,7 @@
 
         </g:each>
     </table>
-</div>
+</semui:form>
 
 <g:if test="${surveys}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"

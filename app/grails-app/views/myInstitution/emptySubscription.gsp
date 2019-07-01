@@ -1,6 +1,6 @@
 <laser:serviceInjection />
 
-<%@ page import="com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Combo;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -43,12 +43,12 @@
                     <%
                         def fakeList = []
                         fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
-                        fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+                        fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
+                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}" class="ui select dropdown"/>
                 </div>
 
-                <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+                <%--<g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
@@ -58,6 +58,12 @@
                             </g:each>
                         </select>
 
+                    </div>
+                </g:if>--%>
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                    <div class="field">
+                        <label>${message(code:'myinst.emptySubscription.create_as')}</label>
+                        <laser:select name="type" from="${RefdataCategory.getAllRefdataValues('Subscription Type')}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
 

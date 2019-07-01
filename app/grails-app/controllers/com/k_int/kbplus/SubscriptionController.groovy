@@ -8,6 +8,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
@@ -77,6 +78,7 @@ class SubscriptionController extends AbstractDebugController {
     public static final String WORKFLOW_DOCS_ANNOUNCEMENT_TASKS = '2'
     public static final String WORKFLOW_SUBSCRIBER = '3'
     public static final String WORKFLOW_PROPERTIES = '4'
+    public static final String WORKFLOW_END = '6'
 
     def possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
@@ -187,8 +189,8 @@ class SubscriptionController extends AbstractDebugController {
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
                 base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
             base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
             qry_params.add("%${params.filter.trim().toLowerCase()}%")
@@ -199,8 +201,8 @@ class SubscriptionController extends AbstractDebugController {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
                 base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                qry_params.add(date_filter);
-                qry_params.add(date_filter);
+                qry_params.add(date_filter)
+                qry_params.add(date_filter)
             }
         }
 
@@ -668,7 +670,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP();
+        result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
@@ -678,6 +680,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List errorList = []
         if (result.subscriptionInstance) {
+            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
             def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
@@ -720,8 +723,9 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("Query ${basequery} ${qry_params}");
 
-            result.num_tipp_rows = IssueEntitlement.executeQuery("select tipp.id " + basequery, qry_params).size()
-            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
+            result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + basequery, qry_params).size()
+            List tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            result.tipps = tipps.drop(result.offset).take(result.max)
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
             if(params.kbartPreselect && !params.pagination) {
@@ -790,44 +794,47 @@ class SubscriptionController extends AbstractDebugController {
                 result.identifiers = identifiers
                 params.remove("kbartPreselct")
             }
-            else if(params.identifiers) {
-                result.identifiers = JSON.parse(params.identifiers)
+            if(!params.pagination) {
+                result.checked = [:]
+                tipps.each { tipp ->
+                    String serial
+                    String electronicSerial
+                    String checked = ""
+                    if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                        serial = tipp.title.getIdentifierValue('pISBN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
+                    }
+                    else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                        serial = tipp?.title?.getIdentifierValue('ISSN')
+                        electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                    }
+                    if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
+                        checked = "checked"
+                    }
+                    else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
+                        checked = "checked"
+                    }
+                    result.checked[tipp.gokbId] = checked
+                }
+                if(result.identifiers && result.identifiers.unidentified.size() > 0) {
+                    String unidentifiedTitles = result.identifiers.unidentified.join(", ")
+                    String escapedFileName
+                    try {
+                        escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                    }
+                    catch (Exception | Error e) {
+                        log.error(e.printStackTrace())
+                        escapedFileName = result.identifiers.filename
+                    }
+                    errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+                }
+                checkedCache.put('checked',result.checked)
             }
-            result.checked = []
-            result.tipps.eachWithIndex { tipp, int t ->
-                String serial
-                String electronicSerial
-                String checked = ""
-                if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                    serial = tipp.title.getIdentifierValue('pISBN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
-                }
-                else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
-                    serial = tipp?.title?.getIdentifierValue('ISSN')
-                    electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
-                }
-                if(identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                    checked = "checked"
-                }
-                else if(identifiers.onlineIds.indexOf(electronicSerial) > -1) {
-                    checked = "checked"
-                }
-                else if(identifiers.printIds.indexOf(serial) > -1) {
-                    checked = "checked"
-                }
-                result.checked[t] = checked
-            }
-            if(result.identifiers && result.identifiers.unidentified.size() > 0) {
-                String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                String escapedFileName
-                try {
-                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                }
-                catch (Exception | Error e) {
-                    log.error(e.printStackTrace())
-                    escapedFileName = result.identifiers.filename
-                }
-                errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
+            else {
+                result.checked = checkedCache.get('checked')
             }
         } else {
             result.num_sub_rows = 0;
@@ -906,7 +913,7 @@ class SubscriptionController extends AbstractDebugController {
         def message = escapeService.escapeString(result.subscription.name) + "_" + g.message(code: 'subscriptionDetails.members.members') + "_" + datetoday
         def orgs = []
         if (params.exportXLS || params.format) {
-            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
+            Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person',result.institution)
             Map publicContacts = allContacts.publicContacts
             Map privateContacts = allContacts.privateContacts
             result.filteredSubChilds.each { row ->
@@ -926,12 +933,12 @@ class SubscriptionController extends AbstractDebugController {
                     org.status = subChild.status
                     org.customProperties = subscr.customProperties
                     org.privateProperties = subscr.privateProperties
-                    String generalContacts = ""
+                    Set generalContacts = []
                     if (publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join("; ") + "; "
+                        generalContacts.addAll(publicContacts.get(subscr))
                     if (privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join("; ")
-                    org.generalContacts = generalContacts
+                        generalContacts.addAll(privateContacts.get(subscr))
+                    org.generalContacts = generalContacts.join("; ")
                     orgs << org
                 }
             }
@@ -1786,6 +1793,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def role_sub = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
         def role_lic = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
@@ -1852,6 +1860,7 @@ class SubscriptionController extends AbstractDebugController {
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
+                                administrative: result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
@@ -1874,7 +1883,10 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
+                            if(cons_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
+                            else
+                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
 
                             synShareTargetList.add(cons_sub)
@@ -2062,7 +2074,6 @@ class SubscriptionController extends AbstractDebugController {
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
-        params.id = params.siid // TODO refactoring frontend siid -> id
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -2074,43 +2085,45 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
-            params.each { p ->
-                if (p.key.startsWith('_bulkflag.')) {
-                    def tipp_id = p.key.substring(10);
-                    // def ie = IssueEntitlement.get(ie_to_edit)
-                    def tipp = TitleInstancePackagePlatform.get(tipp_id)
-
-                    if (tipp == null) {
-                        log.error("Unable to tipp ${tipp_id}");
-                        flash.error("Unable to tipp ${tipp_id}");
-                    } else {
-                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
-
-                        def new_ie = new IssueEntitlement(status: ie_current,
-                                subscription: result.subscriptionInstance,
-                                tipp: tipp,
-                                accessStartDate: tipp.accessStartDate,
-                                accessEndDate: tipp.accessEndDate,
-                                startDate: tipp.startDate,
-                                startVolume: tipp.startVolume,
-                                startIssue: tipp.startIssue,
-                                endDate: tipp.endDate,
-                                endVolume: tipp.endVolume,
-                                endIssue: tipp.endIssue,
-                                embargo: tipp.embargo,
-                                coverageDepth: tipp.coverageDepth,
-                                coverageNote: tipp.coverageNote,
-                                ieReason: 'Manually Added by User')
-                        if (new_ie.save(flush: true)) {
-                            log.debug("Added tipp ${tipp_id} to sub ${params.siid}");
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            if(cache.get('checked')) {
+                Map checked = cache.get('checked')
+                checked.each { k,v ->
+                    if(v == 'checked') {
+                        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(k)
+                        if (tipp == null) {
+                            log.error("Unable to tipp ${k}");
+                            flash.error("Unable to tipp ${k}");
                         } else {
-                            new_ie.errors.each { e ->
-                                log.error(e);
+                            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+                                    subscription: result.subscriptionInstance,
+                                    tipp: tipp,
+                                    accessStartDate: tipp.accessStartDate,
+                                    accessEndDate: tipp.accessEndDate,
+                                    startDate: tipp.startDate,
+                                    startVolume: tipp.startVolume,
+                                    startIssue: tipp.startIssue,
+                                    endDate: tipp.endDate,
+                                    endVolume: tipp.endVolume,
+                                    endIssue: tipp.endIssue,
+                                    embargo: tipp.embargo,
+                                    coverageDepth: tipp.coverageDepth,
+                                    coverageNote: tipp.coverageNote,
+                                    ieReason: 'Manually Added by User')
+                            if (new_ie.save()) {
+                                log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}");
+                            } else {
+                                new_ie.errors.each { e ->
+                                    log.error(e);
+                                }
+                                flash.error = new_ie.errors
                             }
-                            flash.error = new_ie.errors
                         }
                     }
                 }
+            }
+            else {
+                log.error('cache error or no titles selected')
             }
         } else {
             log.error("Unable to locate subscription instance");
@@ -2180,8 +2193,8 @@ class SubscriptionController extends AbstractDebugController {
         render template: "/templates/documents/modal", model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST", "INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -2996,7 +3009,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewSubscription() {
+    def renewSubscription_Local() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
 
         if (!accessService.checkUserIsMember(result.user, result.institution)) {
@@ -3023,10 +3036,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def newStartDate
         def newEndDate
         use(TimeCategory) {
-            newStartDate = subscription.startDate ? (subscription.startDate + 1.year) : null
+            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
 
+        result.isRenewSub = true
         result.permissionInfo = [sub_startDate: newStartDate? sdf.format(newStartDate) : null,
                                  sub_endDate: newEndDate? sdf.format(newEndDate) : null,
                                  sub_name: subscription.name,
@@ -3039,7 +3053,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def processSimpleRenewal() {
+    def processSimpleRenewal_Local() {
         log.debug("-> renewalsUpload params: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -3062,7 +3076,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 identifier: java.util.UUID.randomUUID().toString(),
                 status: sub_status,
                 impId: java.util.UUID.randomUUID().toString(),
-                name: new_subname ?: "Unset: Generated by import",
+                name: new_subname,
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 type: Subscription.get(old_subOID)?.type ?: null,
@@ -3091,7 +3105,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         new_subscription.save(flush: true);
 
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-        redirect controller: 'subscription', action: 'copyElementsIntoSubscription', id: old_subOID, params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: new_subscription.id, isRenewSub: true]
+        redirect controller: 'subscription',
+                 action: 'copyElementsIntoSubscription',
+                 id: old_subOID,
+                 params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: new_subscription.id, isRenewSub: true]
     }
 
 
@@ -3490,6 +3507,99 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def processSimpleRenewal_Consortia() {
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!(result || (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+            response.sendError(401); return
+        }
+
+        if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+
+            ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
+            if (previousSubscriptions.size() > 0) {
+                flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+            } else {
+                def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+                def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
+                def sub_status = params.subStatus
+                def old_subOID = params.subscription.old_subid
+                def new_subname = params.subscription.name
+
+                def newSub = new Subscription(
+                        name: new_subname,
+                        startDate: sub_startDate,
+                        endDate: sub_endDate,
+                        identifier: java.util.UUID.randomUUID().toString(),
+                        isPublic: baseSub.isPublic,
+                        isSlaved: baseSub.isSlaved,
+                        type: Subscription.get(old_subOID)?.type ?: null,
+                        status: sub_status,
+                        resource: baseSub.resource ?: null,
+                        form: baseSub.form ?: null
+                )
+
+                if (!newSub.save(flush: true)) {
+                    log.error("Problem saving subscription ${newSub.errors}");
+                    return newSub
+                } else {
+                    log.debug("Save ok");
+                    //link to previous subscription
+                    Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                    if (!prevLink.save(flush: true)) {
+                        log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                    }
+                    result.newSub = newSub
+
+                    LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
+
+                    if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                    result.isRenewSub = true
+                    redirect controller: 'subscription',
+                             action: 'copyElementsIntoSubscription',
+                             id: old_subOID,
+                             params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
+                }
+            }
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def renewSubscription_Consortia() {
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!(result || (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+            response.sendError(401); return
+        }
+
+        if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            def subscription = Subscription.get(params.baseSubscription ?: params.id)
+
+            def sdf = new SimpleDateFormat('dd.MM.yyyy')
+
+            result.errors = []
+            def newStartDate
+            def newEndDate
+            use(TimeCategory) {
+                newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
+                newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
+            }
+
+            result.isRenewSub = true
+            result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
+                                     sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
+                                     sub_name     : subscription.name,
+                                     sub_id       : subscription.id,
+                                     sub_license  : subscription?.owner?.reference ?: '',
+                                     sub_status   : RDStore.SUBSCRIPTION_INTENDED]
+        }
+        result
+    }
+
     private getMySubscriptions_readRights(){
         def params = [:]
         List result
@@ -3538,56 +3648,66 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.isRenewSub = params.isRenewSub
+        result.isRenewSub = params.isRenewSub ?: null
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
-            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copySubElements_DocsAnnouncementsTasks();
+            case WORKFLOW_DATES_OWNER_RELATIONS:
+                result << copySubElements_DatesOwnerRelations();
+                if (params.isRenewSub){
+                    params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
+                    result << loadDataFor_PackagesEntitlements()
+                } else {
+                    result << loadDataFor_DatesOwnerRelations()
+                }
                 break;
             case WORKFLOW_SUBSCRIBER:
                 result << copySubElements_Subscriber();
-                break;
-            case WORKFLOW_PROPERTIES:
-                result << copySubElements_Properties();
+//                if (params.isRenewSub) {
+//                params?.workFlowPart = WORKFLOW_???
+//                    result << loadDataFor_???
+//                } else {
+//                    result << loadDataFor_Subscriber()
+//                }
                 break;
             case WORKFLOW_PACKAGES_ENTITLEMENTS:
                 result << copySubElements_PackagesEntitlements();
+                if (params.isRenewSub){
+                    params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                    result << loadDataFor_DocsAnnouncementsTasks()
+                } else {
+                    result << loadDataFor_PackagesEntitlements()
+                }
+                break;
+            case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                result << copySubElements_DocsAnnouncementsTasks();
+                if (params.isRenewSub){
+                    params.workFlowPart = WORKFLOW_PROPERTIES
+                    result << loadDataFor_Properties()
+                } else {
+                    result << loadDataFor_DocsAnnouncementsTasks()
+                }
+                break;
+            case WORKFLOW_PROPERTIES:
+                result << copySubElements_Properties();
+                if (params?.targetSubscriptionId && params.isRenewSub){
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
+                } else {
+                    result << loadDataFor_Properties()
+                }
                 break;
             default:
-                result << copySubElements_DatesOwnerRelations();
+                result << loadDataFor_DatesOwnerRelations()
                 break;
         }
 
-//        TODO: Unuseded Entf?
-//        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
-//        result.navPrevSubscription = links.prevLink
-//        result.navNextSubscription = links.nextLink
-//        result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
-//        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-//        result.visiblePrsLinks = []
-//        result.subscriptionInstance.prsLinks.each { pl ->
-//            if (!result.visiblePrsLinks.contains(pl.prs)) {
-//                if (pl.prs.isPublic?.value != 'No') {
-//                    result.visiblePrsLinks << pl
-//                } else {
-//                    // nasty lazy loading fix
-//                    result.user.authorizedOrgs.each { ao ->
-//                        if (ao.getId() == pl.prs.tenant.getId()) {
-//                            result.visiblePrsLinks << pl
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        result.targetSubscription?.refresh()
         if (params?.targetSubscriptionId) {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+        result.isRenewSub = params?.isRenewSub ?: null
         result
     }
 
@@ -3625,21 +3745,21 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
 
         if (isTargetSubChanged) {
-            newSub.refresh()
+            newSub = newSub.refresh()
         }
-
-        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
-        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+        result.subscription = baseSub
+        result.newSub = newSub
+        result.targetSubscription = newSub
+        result
+    }
+    private loadDataFor_DatesOwnerRelations(){
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
-
-        params?.workFlowPart = WORKFLOW_DATES_OWNER_RELATIONS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.subscription = baseSub
-        result.newSub = newSub
-        result.targetSubscription = newSub
         result
     }
 
@@ -3650,49 +3770,69 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
-
+        boolean isTargetSubChanged = false
         if (params?.subscription?.deleteDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteDocs = []
             params.list('subscription.deleteDocIds').each { doc -> toDeleteDocs << Long.valueOf(doc) }
             subscriptionService.deleteDocs(toDeleteDocs, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeDocIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyDocs = []
             params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
             subscriptionService.copyDocs(baseSub, toCopyDocs, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteAnnouncements = []
             params.list('subscription.deleteAnnouncementIds').each { announcement -> toDeleteAnnouncements << Long.valueOf(announcement) }
             subscriptionService.deleteAnnouncements(toDeleteAnnouncements, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeAnnouncementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyAnnouncements = []
             params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
             subscriptionService.copyAnnouncements(baseSub, toCopyAnnouncements, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toDeleteTasks =  []
             params.list('subscription.deleteTaskIds').each{ tsk -> toDeleteTasks << Long.valueOf(tsk) }
             subscriptionService.deleteTasks(toDeleteTasks, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.takeTaskIds && isBothSubscriptionsSet(baseSub, newSub)) {
             def toCopyTasks =  []
             params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
             subscriptionService.copyTasks(baseSub, toCopyTasks, newSub, flash)
+            isTargetSubChanged = true
+        }
+
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
         }
 
         result.sourceSubscription = baseSub
-        result.targetSubscription = newSub?.refresh()
+        result.targetSubscription = newSub
+        result
+    }
+    private loadDataFor_DocsAnnouncementsTasks() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
+
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-        params.workFlowPart = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        params.workFlowPartNext = WORKFLOW_SUBSCRIBER
         result
     }
 
@@ -3842,7 +3982,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
 
         if (newSub) {
-            newSub = Subscription.get(newSub.id)
+            result.newSub = newSub.refresh()
+        }
+        result
+    }
+
+    private loadDataFor_Properties() {
+        LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = null
+        List<Subscription> subsToCompare = [baseSub]
+        if (params.targetSubscriptionId) {
+            newSub = Subscription.get(params.targetSubscriptionId)
+            subsToCompare.add(newSub)
+        }
+
+        if (newSub) {
+            result.newSub = newSub.refresh()
         }
         subsToCompare.each{ sub ->
             TreeMap customProperties = result.customProperties
@@ -3855,45 +4011,52 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-
     private copySubElements_PackagesEntitlements() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
+        boolean isTargetSubChanged = false
         if (params?.subscription?.deletePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<SubscriptionPackage> packagesToDelete = params?.list('subscription.deletePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.deletePackages(packagesToDelete, newSub, flash)
+            isTargetSubChanged = true
         }
         if (params?.subscription?.takePackageIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyPackages(packagesToTake, newSub, flash)
+            isTargetSubChanged = true
         }
 
         if (params?.subscription?.deleteEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToDelete = params?.list('subscription.deleteEntitlementIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.deleteEntitlements(entitlementsToDelete, newSub, flash)
+            isTargetSubChanged = true
         }
         if (params?.subscription?.takeEntitlementIds && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
             subscriptionService.copyEntitlements(entitlementsToTake, newSub, flash)
+            isTargetSubChanged = true
         }
 
-        params?.workFlowPart = WORKFLOW_PACKAGES_ENTITLEMENTS
-        params?.workFlowPartNext = WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        if (newSub) {
-            newSub.refresh()
+        if (isTargetSubChanged) {
+            newSub = newSub.refresh()
         }
-//        result.sourceIEs = baseSub.getIssueEntitlements()
-//        result.targetIEs = newSub.getIssueEntitlements()
+        result.newSub = newSub
+        result.subscription = baseSub
+        result
+    }
 
+    private loadDataFor_PackagesEntitlements() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
         result.newSub = newSub
         result.subscription = baseSub
         result
     }
-
 
     private boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
         if (! baseSub || !newSub) {

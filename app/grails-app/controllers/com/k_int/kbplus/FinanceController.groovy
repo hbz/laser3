@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
@@ -16,6 +17,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.grails.datastore.mapping.query.Query
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
@@ -159,10 +161,10 @@ class FinanceController extends AbstractDebugController {
         else if(orgRoleSubscr) {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
-        SXSSFWorkbook workbook = processFinancialXLSX(result)
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint'))
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
         if(params.exportXLS) {
+            SXSSFWorkbook workbook = processFinancialXLSX(result)
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
@@ -326,7 +328,12 @@ class FinanceController extends AbstractDebugController {
                                     sumCurrencyAfterTaxCell = cellnum
                                     //tax rate
                                     cellnum++
-                                    row.add("${ci.taxRate ?: 0} %")
+                                    String taxString
+                                    if(ci.taxKey) {
+                                        taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                                    }
+                                    else taxString = message(code:'financials.taxRate.notSet')
+                                    row.add(taxString)
                                 }
                                 if(["own","cons"].indexOf(viewMode) < 0)
                                     sumCurrencyAfterTaxCell = cellnum
@@ -629,7 +636,12 @@ class FinanceController extends AbstractDebugController {
                         }
                         //tax rate
                         cell = row.createCell(cellnum++)
-                        cell.setCellValue("${ci.taxRate ?: 0} %")
+                        String taxString
+                        if(ci.taxKey) {
+                            taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
+                        }
+                        else taxString = message(code:'financials.taxRate.notSet')
+                        cell.setCellValue(taxString)
                     }
                     //billing currency and value
                     cell = row.createCell(cellnum++)
@@ -992,7 +1004,8 @@ class FinanceController extends AbstractDebugController {
               newCostItem.issueEntitlement = IssueEntitlement.findBySubscriptionAndTipp(sub,ie?.tipp) ?: null
               newCostItem.order = order
               newCostItem.invoice = invoice
-              newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
+              //continue here: test, if visibility is set to false, check visibility settings of other consortial subscriptions, check then the financial data query whether the costs will be displayed or not!
+              newCostItem.isVisibleForSubscriber = sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE ? false : cost_item_isVisibleForSubscriber
               newCostItem.costItemCategory = cost_item_category
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status
@@ -1089,6 +1102,59 @@ class FinanceController extends AbstractDebugController {
 
 
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [view: result.showView])
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addCostItems() {
+        boolean withErrors = false
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        flash.error = ""
+        def candidates = JSON.parse(params.candidates)
+        def costItemGroups = JSON.parse(params.costItemGroups)
+        candidates.eachWithIndex { ci, int c ->
+            if(params["take${c}"]) {
+                //a single cast did not work because of financialYear type mismatch
+                CostItem costItem = new CostItem(owner: Org.get(ci.owner.id))
+                costItem.sub = Subscription.get(ci.sub.id) ?: null
+                costItem.subPkg = SubscriptionPackage.get(ci.subPkg?.id) ?: null
+                costItem.issueEntitlement = IssueEntitlement.get(ci.issueEntitlement?.id) ?: null
+                costItem.order = Order.get(ci.order?.id) ?: null
+                costItem.invoice = Invoice.get(ci.invoice?.id) ?: null
+                costItem.billingCurrency = RefdataValue.get(ci.billingCurrency?.id) ?: null
+                costItem.costItemElement = RefdataValue.get(ci.costItemElement?.id) ?: null
+                costItem.costItemElementConfiguration = RefdataValue.get(ci.costItemElementConfiguration?.id) ?: null
+                costItem.taxKey = CostItem.TAX_TYPES.valueOf(ci.taxKey?.name) ?: null
+                costItem.costInBillingCurrency = ci.costInBillingCurrency ?: 0.0
+                costItem.costInLocalCurrency = ci.costInLocalCurrency ?: 0.0
+                costItem.currencyRate = ci.currencyRate ?: 0.0
+                costItem.invoiceDate = ci.invoiceDate ? sdf.parse(ci.invoiceDate) : null
+                costItem.financialYear = Year.parse(ci.financialYear?.value?.toString()) ?: null
+                costItem.costTitle = ci.costTitle ?: null
+                costItem.costDescription = ci.costDescription ?: null
+                costItem.reference = ci.reference ?: null
+                costItem.datePaid = ci.datePaid ? sdf.parse(ci.datePaid) : null
+                costItem.startDate = ci.startDate ? sdf.parse(ci.startDate) : null
+                costItem.endDate = ci.endDate ? sdf.parse(ci.endDate) : null
+                costItem.isVisibleForSubscriber = params["visibleForSubscriber${c}"] == 'true' ?: false
+                if(!costItem.save()) {
+                    withErrors = true
+                    flash.error += costItem.getErrors()
+                }
+                else {
+                    List budgetCodes = costItemGroups.get(ci)
+                    budgetCodes.each { obj ->
+                        BudgetCode bc = (BudgetCode) JSON.parse(obj)
+                        bc.save()
+                        new CostItemGroup(budgetCode: bc, costItem: costItem).save()
+                    }
+                }
+            }
+        }
+        if(!withErrors)
+            redirect action: 'index'
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")

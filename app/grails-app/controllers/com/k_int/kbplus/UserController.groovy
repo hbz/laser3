@@ -7,6 +7,9 @@ import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.gorm.*
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 
 import java.security.MessageDigest
 
@@ -227,7 +230,7 @@ class UserController extends AbstractDebugController {
     def create() {
         def result = setResultGenerics()
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            flash.error = message(code: 'default.noPermissions')
             redirect controller: 'user', action: 'list'
             return
         }
@@ -249,10 +252,16 @@ class UserController extends AbstractDebugController {
         switch (request.method) {
             case 'POST':
                 def user = new User(params)
-                user.enabled = true;
+                user.enabled = true
 
                 if (! user.save(flush: true)) {
-                    flash.error = message(code: 'default.not.created.message', args: [user])
+                    Set errMess = []
+                    user.errors.fieldErrors.each { FieldError e ->
+                        if(e.field == 'username' && e.code == 'unique')
+                            errMess.add(message(code: 'user.not.created.message'))
+                        else errMess.add(message(code: 'default.not.created.message', args: [message(code:'user.withArticle.label')]))
+                    }
+                    flash.error = errMess.join('<br>')
 
                     render view: 'create', model: [
                             userInstance: user,
@@ -263,6 +272,8 @@ class UserController extends AbstractDebugController {
                     return
                 }
 
+                log.debug("created new user: " + user)
+
                 def defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
                 defaultRole.save(flush: true)
 
@@ -271,6 +282,9 @@ class UserController extends AbstractDebugController {
                     Role formalRole = Role.get(params.formalRole)
                     if (org && formalRole) {
                         instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD, org)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD_TAB,
+                                RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
                     }
                 }
                 if (params.comboOrg && params.comboFormalRole) {
@@ -278,6 +292,9 @@ class UserController extends AbstractDebugController {
                     Role formalRole2 = Role.get(params.comboFormalRole)
                     if (org2 && formalRole2) {
                         instAdmService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD, org2)
+                        user.getSetting(UserSettings.KEYS.DASHBOARD_TAB,
+                                RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
                     }
                 }
 

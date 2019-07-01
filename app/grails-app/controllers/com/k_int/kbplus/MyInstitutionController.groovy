@@ -8,9 +8,11 @@ import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
 import de.laser.helper.SortUtil
+import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.time.TimeCategory
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import com.k_int.properties.*
@@ -30,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.awt.Color
@@ -39,6 +42,8 @@ import java.text.RuleBasedCollator
 
 import java.text.SimpleDateFormat
 import groovy.sql.Sql
+
+import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -52,7 +57,7 @@ class MyInstitutionController extends AbstractDebugController {
     def transformerService
     def institutionsService
     def docstoreService
-    def tsvSuperlifterService
+    def addressbookService
     def accessService
     def contextService
     def taskService
@@ -66,6 +71,7 @@ class MyInstitutionController extends AbstractDebugController {
     def organisationService
     def titleStreamService
     def financeService
+    def surveyService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -211,7 +217,7 @@ class MyInstitutionController extends AbstractDebugController {
         */
 
         String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                "TitleInstancePackagePlatform tipp join tipp.platform p " +
+                "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
                 "where tipp.pkg = pkg and s.id in (:currentSubIds) "
 
         qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
@@ -229,9 +235,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         if ( params.q?.length() > 0 ) {
             qry3 += "and ("
-            qry3 += "  ( p.normname like :query ) or "
-            qry3 += "  ( p.primaryUrl like :query ) or"
-            qry3 += "  ( lower(p.org.name) like :query or lower(p.org.sortname) like :query or lower(p.org.shortname) like :query ) "
+            qry3 += "   p.normname like :query"
+            qry3 += "   or p.primaryUrl like :query"
+            qry3 += "   or lower(o.name) like :query or lower(o.sortname) like :query or lower(o.shortname) like :query "
             qry3 += ")"
             qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
         }
@@ -988,6 +994,111 @@ from License as l where (
         }
     }
 
+    private def exportSurveyInfo(List<SurveyResult> results, String format, Org org) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        List titles = [g.message(code: 'surveyInfo.owner.label'),
+
+                       g.message(code: 'surveyConfigsInfo.comment'),
+
+                       g.message(code: 'surveyProperty.subName'),
+                       g.message(code: 'surveyProperty.subProvider'),
+                       g.message(code: 'surveyProperty.subAgency'),
+                       g.message(code: 'subscription.owner.label'),
+                       g.message(code: 'subscription.packages.label'),
+                       g.message(code: 'subscription.details.status'),
+                       g.message(code: 'subscription.details.type'),
+                       g.message(code: 'subscription.form.label'),
+                       g.message(code: 'subscription.resource.label'),
+
+                       g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
+
+                       g.message(code: 'surveyProperty.label'),
+                       g.message(code: 'surveyProperty.type.label'),
+                       g.message(code: 'surveyResult.result'),
+                       g.message(code: 'surveyResult.comment'),
+                        g.message(code: 'surveyResult.finishDate')]
+
+        List surveyData = []
+        results.findAll{it.surveyConfig.type == 'Subscription'}.each { result ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+
+                    def sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org)
+
+                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org))
+
+                    row.add([field: result?.owner?.name ?: '', style: null])
+                    row.add([field: result?.surveyConfig?.comment ?: '', style: null])
+                    row.add([field: sub?.name ?: "", style: null])
+
+
+                    row.add([field: sub?.providers ? sub?.providers?.join(", "): '', style: null])
+                    row.add([field: sub?.agencies ? sub?.agencies?.join(", "): '', style: null])
+
+                    row.add([field: sub?.owner?.reference ?: '', style: null])
+                    List packageNames = sub?.packages?.collect {
+                        it.pkg.name
+                    }
+                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
+                    row.add([field: sub?.status?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.type?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
+                    row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
+
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits:"2", maxFractionDigits:"2", type:"number") : '', style: null])
+
+                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+
+                    row.add([field: result.type?.getI10n('name') ?: '', style: null])
+                    row.add([field: result.type?.getLocalizedType() ?: '', style: null])
+
+                    def value = ""
+
+                    if(result?.type?.type == Integer.toString())
+                    {
+                        value = result?.intValue ? result?.intValue.toString() : ""
+                    }
+                    else if (result?.type?.type == String.toString())
+                    {
+                        value = result?.stringValue ?: ""
+                    }
+                    else if (result?.type?.type ==  BigDecimal.toString())
+                    {
+                        value = result?.decValue ? result?.decValue.toString() : ""
+                    }
+                    else if (result?.type?.type == Date.toString())
+                    {
+                        value = result?.dateValue ? sdf.format(result?.dateValue) : ""
+                    }
+                    else if (result?.type?.type == URL.toString())
+                    {
+                        value = result?.urlValue ? result?.urlValue.toString() : ""
+                    }
+                    else if (result?.type?.type == RefdataValue.toString())
+                    {
+                        value = result?.refValue ? result?.refValue.getI10n('value') : ""
+                    }
+
+                    row.add([field: value ?: '', style: null])
+                    row.add([field: result.comment ?: '', style: null])
+                    row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
+
+                    surveyData.add(row)
+                    break
+            }
+        }
+        switch(format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
+                return exportService.generateXLSXWorkbook(sheetData)
+        }
+    }
+
     @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1100,40 +1211,43 @@ from License as l where (
         def result = setResultGenerics()
         result.orgType = result.institution?.getallOrgTypeIds()
 
-        def role_sub = RDStore.OR_SUBSCRIBER
-        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
-        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
-        def orgRole = null
-        def subType = null
+        RefdataValue orgRole = null
+        RefdataValue subType = null
 
-        if (params.asOrgType) {
-            log.debug("asOrgType ${params.asOrgType} in ${result.orgType} ?")
-
-            if ((Long.valueOf(params.asOrgType) in result.orgType)
-                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
-                orgRole = role_cons
-                subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
-            }
+        if (params.type) {
+            subType = RefdataValue.get(params.type)
+            if(subType == RDStore.SUBSCRIPTION_TYPE_LOCAL)
+                orgRole = role_sub
+            else orgRole = role_cons
         }
-        if (! subType) {
+        else if (!params.type) {
             orgRole = role_sub
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-            def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+            Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+            RefdataValue status = RefdataValue.get(params.status)
 
+            boolean administrative = false
+            if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
+                administrative = true
 
             def new_sub = new Subscription(
                     type: subType,
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
-                    status: RefdataValue.get(params.status),
+                    status: status,
+                    administrative: administrative,
                     identifier: params.newEmptySubId,
                     isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
@@ -1145,7 +1259,7 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
+                if(accessService.checkPerm('ORG_CONSORTIUM')) {
                     
                     def cons_members = []
 
@@ -1172,23 +1286,39 @@ from License as l where (
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
+                                          status: status,
+                                          administrative: administrative,
                                           instanceOf: new_sub,
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                                          
-                        new OrgRole(org: cm,
-                            sub: cons_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: cons_sub,
+                                    roleType: role_sub_cons).save()
+                        }
+
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
-                            roleType: role_cons).save();
+                            roleType: role_cons).save()
                     }
                     else {
-                        new OrgRole(org: cm,
-                            sub: new_sub,
-                            roleType: role_sub_cons).save();
+                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons_hidden).save()
+                        }
+                        else {
+                            new OrgRole(org: cm,
+                                    sub: new_sub,
+                                    roleType: role_sub_cons).save()
+                        }
                     }
                   }
                 }
@@ -1435,7 +1565,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
 
@@ -1764,19 +1893,12 @@ from License as l where (
         def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
-        
-        def allInst = []
-        if(result.availableConsortia){
-          allInst = result.availableConsortia
-        }
-        
-        allInst.add(result.institution)
 
-        def sub_params = [institution: allInst,roles:roles,sub_del:del_sub]
+        def sub_params = [institution: result.institution,roles:roles,sub_del:del_sub]
         def sub_qry = """
 Subscription AS s INNER JOIN s.orgRelations AS o
 WHERE o.roleType IN (:roles)
-AND o.org IN (:institution)
+AND o.org = :institution
 AND s.status !=:sub_del """
         if (date_restriction) {
             sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
@@ -3233,17 +3355,9 @@ AND EXISTS (
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
 
+        def currentDate = new Date(System.currentTimeMillis())
 
-        result.surveys = SurveyResult.findAll("from SurveyResult where " +
-                " participant = :contextOrg and surveyConfig.surveyInfo.status != :status " +
-                " and ((startDate >= :startDate and endDate <= :endDate)" +
-                " or (startDate <= :startDate and endDate is null) " +
-                " or (startDate is null and endDate is null))",
-                [contextOrg: contextService.org,
-                 status:  RefdataValue.getByValueAndCategory('In Processing', 'Survey Status'),
-                 startDate: new Date(System.currentTimeMillis()),
-                 endDate: new Date(System.currentTimeMillis())])
-
+        params.currentDate = currentDate
 
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
 
@@ -3441,36 +3555,44 @@ AND EXISTS (
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
-      def result = setResultGenerics()
-
-      if (! accessService.checkUserIsMember(result.user, result.institution)) {
-          flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
-          response.sendError(401)
-          return;
-      }
-
-      def defaults = [ 'owner':result.institution];
-
-      if (request.method == 'POST'){
-        def input_stream = request.getFile("tsvfile")?.inputStream
-        result.loaderResult = tsvSuperlifterService.load(input_stream,
-                                                         grailsApplication.config.financialImportTSVLoaderMappings,
-                                                         params.dryRun=='Y'?true:false,
-                                                         defaults)
-      }
-      result
+        def result = setResultGenerics()
+        result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
+                              "currency","exchangeRate","taxType","taxRate","value","subscription","package",
+                              "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
+                              "description","invoiceNumber","orderNumber","institution"]
+        result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processFinanceImport() {
+        def result = setResultGenerics()
+        CommonsMultipartFile tsvFile = params.tsvFile
+        if(tsvFile && tsvFile.size > 0) {
+            result.filename = tsvFile.originalFilename
+            Map<String,Map> financialData = financeService.financeImport(tsvFile)
+            result.candidates = financialData.candidates
+            result.costItemGroups = financialData.costItemGroups
+            render view: 'postProcessingFinanceImport', model: result
+        }
+        else {
+            flash.error = message(code:'myinst.financeImport.error.noFileProvided')
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -3485,16 +3607,16 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfos() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3503,26 +3625,47 @@ AND EXISTS (
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
-        result.editable = result.surveyResults?.finishDate?.contains(null) ? true : false
+        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-        result.surveyResults = result.surveyResults.groupBy {it?.surveyConfig?.id}
+        result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
         result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
 
-        result
+        if ( params.exportXLS ) {
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            withFormat {
+                html {
+                    result
+                }
+            }
+        }
+
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyConfigsInfo() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3539,22 +3682,37 @@ AND EXISTS (
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        result.editable = result.surveyResults.finishDate.contains(null) ? true : false
+        result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
+
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
         result.consCostTransfer = true
 
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyFinishConfig() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3597,16 +3755,16 @@ AND EXISTS (
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3647,16 +3805,16 @@ AND EXISTS (
     }
 
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyResultFinish() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -3726,38 +3884,10 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        def qParts = [
-                'p.tenant = :tenant',
-                'p.isPublic = :public'
-        ]
-        def qParams = [
-                tenant: result.institution,
-                public: RefdataValue.getByValueAndCategory('No', 'YN')
-        ]
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        if (params.prs) {
-            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
-            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
-        }
-        if (params.org) {
-            qParts << """(EXISTS (
-SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)
-))
-"""
-            qParams << [orgName: "%${params.org.toLowerCase()}%"]
-        }
-
-        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
-
-        if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
-            query = psq.query
-            qParams = psq.queryParams
-        }
-
-        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
+        result.visiblePersons = addressbookService.getVisiblePersons("addressbook",result.max,result.offset,params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3767,7 +3897,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         tenant: contextService.getOrg() // private properties
                 )
 
-        result.num_visiblePersons = Person.executeQuery(query, qParams).size()
+        result.num_visiblePersons = result.visiblePersons.size()
+
+        result
+      }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def myPublicContacts() {
+
+        def result = setResultGenerics()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+        result.num_visiblePersons = result.visiblePersons.size()
 
         result
       }
@@ -3994,8 +4150,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
         result.filterSet    = params.filterSet ? true : false
 
@@ -4008,8 +4164,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
         }
 
-        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.toalMembers     = totalMembers.clone()
+        List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.totalMembers    = totalMembers.clone()
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
@@ -4065,8 +4221,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
@@ -4510,8 +4666,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
     def manageConsortiaSurveys() {
         def result = setResultGenerics()
 
@@ -4841,16 +4997,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_ADM", specRole = "ROLE_ADMIN")
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyParticipantConsortia() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")

@@ -5,6 +5,8 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.DebugAnnotation
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
@@ -716,6 +718,30 @@ class AjaxController {
       render result as JSON
   }
 
+  @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+  def verifyUserInput() {
+      Map result = [result:false]
+      if(params.input) {
+          List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)",[searchTerm:params.input])
+          result.result = checkList.size() > 0
+      }
+      render result as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def updateChecked() {
+      EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${params.sub}")
+      Map checked = cache.get('checked')
+      if(params.index == 'all') {
+          checked.eachWithIndex { e, int idx ->
+              checked[idx] = params.checked == 'true' ? 'checked' : null
+          }
+      }
+      else checked[params.index] = params.checked == 'true' ? 'checked' : null
+      cache.put('checked',checked)
+  }
+
   /**
    * connects the context subscription with the given pair.
    *
@@ -745,41 +771,51 @@ class AjaxController {
       //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
       //perspectiveIndex 0: source -> dest, 1: dest -> source
       if(params.link) {
-        link = genericOIDService.resolveOID(params.link)
-        Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
-        String linkTypeString = params["linkType_${link.id}"].split("§")[0]
-        int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
-        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-        commentContent = params["linkComment_${link.id}"].trim()
-        if(perspectiveIndex == 0) {
-          link.source = context.id
-          link.destination = pair.id
-        }
-        else if(perspectiveIndex == 1) {
-          link.source = pair.id
-          link.destination = context.id
-        }
-        link.linkType = linkType
-        log.debug(linkType)
+          link = genericOIDService.resolveOID(params.link)
+          if(params["linkType_${link.id}"]) {
+              Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+              String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+              int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+              RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+              commentContent = params["linkComment_${link.id}"].trim()
+              if(perspectiveIndex == 0) {
+                  link.source = context.id
+                  link.destination = pair.id
+              }
+              else if(perspectiveIndex == 1) {
+                  link.source = pair.id
+                  link.destination = context.id
+              }
+              link.linkType = linkType
+              log.debug(linkType)
+          }
+          else if(!params["linkType_${link.id}"]) {
+              flash.error = message(code:'subscription.linking.linkTypeError')
+          }
       }
       else {
-        Subscription pair = genericOIDService.resolveOID(params.pair_new)
-        String linkTypeString = params["linkType_new"].split("§")[0]
-        int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
-        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
-        commentContent = params.linkComment_new
-        Long source, destination
-        if(perspectiveIndex == 0) {
-          source = context.id
-          destination = pair.id
+        if(params["linkType_new"]) {
+            Subscription pair = genericOIDService.resolveOID(params.pair_new)
+            String linkTypeString = params["linkType_new"].split("§")[0]
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+            commentContent = params.linkComment_new
+            Long source, destination
+            if(perspectiveIndex == 0) {
+                source = context.id
+                destination = pair.id
+            }
+            else if(perspectiveIndex == 1) {
+                source = pair.id
+                destination = context.id
+            }
+            link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
         }
-        else if(perspectiveIndex == 1) {
-          source = pair.id
-          destination = context.id
+        else if(!params["linkType_new"]) {
+            flash.error = message(code:'subscription.linking.linkTypeError')
         }
-        link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
       }
-      if(link.save(flush:true)) {
+      if(link && link.save(flush:true)) {
         if(linkComment) {
           if(commentContent.length() > 0) {
             linkComment.content = commentContent
@@ -800,8 +836,9 @@ class AjaxController {
           }
         }
       }
-      else {
-        log.error(link.errors)
+      else if(link && link.errors) {
+          log.error(link.errors)
+          flash.error = message(code:'subscription.linking.savingError')
       }
     redirect(url: request.getHeader('referer'))
   }
@@ -1335,6 +1372,18 @@ class AjaxController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def toggleOrgRole() {
+        OrgRole oo = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType in :roleTypes',[sub:Subscription.get(params.id),roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+        if(oo) {
+            if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+            else if(oo.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
+                oo.roleType = RDStore.OR_SUBSCRIBER_CONS
+        }
+        oo.save()
+        redirect(url: request.getHeader('referer'))
+    }
 
     @Secured(['ROLE_USER'])
     def toggleAudit() {
@@ -1368,13 +1417,13 @@ class AjaxController {
                     // delete pending changes
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
-                    openPD.each { pc ->
-                        def event = JSON.parse(pc.changeDoc)
-                        if (event && event.changeDoc) {
-                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                            def eventProp = event.changeDoc.prop
+                    openPD?.each { pc ->
+                        def event = JSON.parse(pc?.changeDoc)
+                        if (event && event?.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc?.OID)
+                            def eventProp = event.changeDoc?.prop
 
-                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                            if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
                                 pc.delete(flush: true)
                             }
                         }

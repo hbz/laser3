@@ -34,15 +34,14 @@
 
 
 
-        %{--Disabled because Problemes with copyEmailaddresses in tabs--}%
-        %{--<div class="ui divider"></div>
+        <div class="ui divider"></div>
         <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal"
-                                   message="survey.copyEmailaddresses.participants"/>--}%
+                                   message="survey.copyEmailaddresses.participants"/>
 
-        %{--<g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+        <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
 
         <g:render template="../templates/copyEmailaddresses"
-                  model="[orgList: orgs ?: null]"/>--}%
+                  model="[orgList: orgs ?: null]"/>
 
         </g:else>
 

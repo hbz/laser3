@@ -308,8 +308,16 @@
                                             <g:if test="${tskObj.controller.contains('license')}">
                                                 <i class="book icon"></i>
                                             </g:if>
+                                            <g:if test="${tskObj.controller.contains('survey')}">
+                                                <i class="chart bar icon"></i>
+                                            </g:if>
                                         </span>
-                                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    <g:if test="${tskObj.controller.contains('survey')}">
+                                        <g:link controller="${tskObj.controller}" action="surveyConfigsInfo" params="${[id: tskObj.object?.surveyInfo?.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    </g:if>
+                                        <g:else>
+                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                        </g:else>
                                     </div>
                                 </g:each>
                             </g:if>
@@ -328,9 +336,10 @@
         <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
             <g:if test="${grailsApplication.config.featureSurvey}">
             <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active':''}" data-tab="fifth" style="border-top: 1px solid #d4d4d5; ">
-                <div>
-                    <g:render template="surveys"/>
+                <div class="pull-right">
+                    <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                 </div>
+                    <g:render template="surveys"/>
             </div>
             </g:if>
         </g:if>

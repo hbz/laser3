@@ -13,11 +13,18 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportSurCostItems" id="${surveyInfo?.id}"
+                    params="[exportXLS: true, surveyConfigID: surveyConfig?.id]">${message(code: 'survey.exportCostItems')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 
@@ -34,235 +41,302 @@
     <div class="ui grid">
         <div class="four wide column">
             <div class="ui vertical fluid menu">
-                <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
+    <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
-                    <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            style="${config?.configFinish ? 'background-color: Lime' : ''}"
-                            controller="survey" action="surveyCostItems"
-                            id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
+        <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
+                style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
+                controller="survey" action="surveyCostItems"
+                id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-                        ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
-
-
-                        <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
-                    </g:link>
-                </g:each>
-            </div>
-        </div>
-
-        <div class="twelve wide stretched column">
-            <div class="ui top attached tabular menu">
-                <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyCostItems"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
-                    ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                    <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
-                </g:link>
-
-                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyCostItems"
-                        id="${surveyConfig?.surveyInfo?.id}"
-                        params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
-                    ${message(code: 'surveyParticipants.selectedParticipants')}
-                    <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
-                </g:link>
-
-            </div>
-
-            <g:if test="${params.tab == 'selectedSubParticipants'}">
-
-                <div class="ui bottom attached tab segment active">
-                    <br>
-                    <g:if test="${surveyConfig?.type == 'Subscription'}">
-                        <h3 class="ui icon header"><semui:headerIcon/>
-                        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-                            ${surveyConfig?.subscription?.name}
-                        </g:link>
-                        </h3>
-                    </g:if>
-                    <g:else>
-                        <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-                    </g:else>
-
-                    <div class="four wide column">
-
-                    %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                            data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+            <h5 class="ui header">${config?.getConfigNameShort()}</h5>
+            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                    <g:render template="/survey/costItemModal"
-                              model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
-
-                        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </div>
-
-                    <br>
-                    <br>
-
-                    <semui:filter>
-                        <g:form action="surveyCostItems" method="post" class="ui form"
-                                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
-                            <g:render template="/templates/filter/orgFilter"
-                                      model="[
-                                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
-                                              tmplConfigFormFilter: true,
-                                              useNewLayouter      : true
-                                      ]"/>
-                        </g:form>
-                    </semui:filter>
-
-
-                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
-
-                    <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                                  it?.sortname
-                              },
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID       : 'costTable'
-                              ]"/>
-
-
-                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
-                    <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
-
-                    <div class="four wide column">
-                        <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
-                                code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
-                    </div>
-
-                    <g:render template="../templates/copyEmailaddresses"
-                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
-
-                    <br>
-                    <br>
-
-                    <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : surveyParticipantsHasNotAccess,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
-                                      tableID       : 'costTable'
-                              ]"/>
-
-                </div>
-
-            </g:if>
-
-
-            <g:if test="${params.tab == 'selectedParticipants'}">
-
-                <div class="ui bottom attached tab segment active">
-                    <br>
-                    <g:if test="${surveyConfig?.type == 'Subscription'}">
-                        <h3 class="ui icon header"><semui:headerIcon/>
-                        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-                            ${surveyConfig?.subscription?.name}
-                        </g:link>
-                        </h3>
-                    </g:if>
-                    <g:else>
-                        <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-                    </g:else>
-
-                    <div class="four wide column">
-
-                    %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                            data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
-
-
-                    <g:render template="/survey/costItemModal"
-                              model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
-
-                        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </div>
-
-                    <br>
-                    <br>
-
-                    <semui:filter>
-                        <g:form action="surveyCostItems" method="post" class="ui form"
-                                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
-                            <g:render template="/templates/filter/orgFilter"
-                                      model="[
-                                              tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
-                                              tmplConfigFormFilter: true,
-                                              useNewLayouter      : true
-                                      ]"/>
-                        </g:form>
-                    </semui:filter>
-
-
-
-                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
-
-
-                    <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                                  it?.sortname
-                              },
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                      tableID       : 'costTable'
-                              ]"/>
-
-
-                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
-                    <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
-
-                    <div class="four wide column">
-                        <button type="button" class="ui icon button right floated" data-semui="modal"
-                                data-href="#copyEmailaddresses_selectedParticipants"><g:message
-                                code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
-                    </div>
-
-                    <g:render template="../templates/copyEmailaddresses"
-                              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
-
-                    <br>
-                    <br>
-
-                    <g:render template="/templates/filter/orgFilterTable"
-                              model="[orgList       : surveyParticipantsHasNotAccess,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
-                                      tableID       : 'costTable'
-                              ]"/>
-
-                </div>
-
-            </g:if>
-
-            <g:form action="surveyConfigFinish" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
-
-                <div class="ui right floated compact segment">
-                    <div class="ui checkbox">
-                        <input type="checkbox" onchange="this.form.submit()"
-                               name="configFinish" ${surveyConfig?.configFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyConfig.configFinish.label"/></label>
-                    </div>
-                </div>
-
-            </g:form>
-
-        </div>
+            <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
+        </g:link>
+    </g:each>
     </div>
+</div>
+
+<div class="twelve wide stretched column">
+    <div class="ui top attached tabular menu">
+    <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
+            controller="survey" action="surveyCostItems"
+            id="${surveyConfig?.surveyInfo?.id}"
+            params="[surveyConfigID: surveyConfig?.id, tab: 'selectedSubParticipants']">
+        ${message(code: 'surveyParticipants.selectedSubParticipants')}
+        <div class="ui floating circular label">${selectedSubParticipants?.size() ?: 0}</div>
+    </g:link>
+
+    <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
+            controller="survey" action="surveyCostItems"
+            id="${surveyConfig?.surveyInfo?.id}"
+            params="[surveyConfigID: surveyConfig?.id, tab: 'selectedParticipants']">
+        ${message(code: 'surveyParticipants.selectedParticipants')}
+        <div class="ui floating circular label">${selectedParticipants?.size() ?: 0}</div>
+    </g:link>
+
+    </div>
+
+    <g:if test="${params.tab == 'selectedSubParticipants'}">
+
+        <div class="ui bottom attached tab segment active">
+            <br>
+        <g:if test="${surveyConfig?.type == 'Subscription'}">
+            <h3 class="ui icon header"><semui:headerIcon/>
+            <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+                ${surveyConfig?.subscription?.name}
+            </g:link>
+            </h3>
+        </g:if>
+        <g:else>
+            <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
+        </g:else>
+
+        <div class="four wide column">
+
+        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+
+
+        <g:render template="/survey/costItemModal"
+                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+
+            <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                <i class="plus icon"></i>
+            </g:link>
+        </div>
+
+        <br>
+        <br>
+
+        <semui:filter>
+            <g:form action="surveyCostItems" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
+                <g:render template="/templates/filter/orgFilter"
+                          model="[
+                                  tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter      : true
+                          ]"/>
+            </g:form>
+        </semui:filter>
+
+
+        <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+
+        <g:set var="surveyParticipantsHasAccess"
+               value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                   it?.sortname
+               }}"/>
+
+        <div class="four wide column">
+
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasAccess"/>
+        </g:link>
+
+        <br>
+        <br>
+
+        <g:render template="/templates/filter/orgFilterTable"
+                  model="[orgList       : surveyParticipantsHasAccess,
+                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                          tableID       : 'costTable'
+                  ]"/>
+
+
+        <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+        <g:set var="surveyParticipantsHasNotAccess"
+               value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+
+        <div class="four wide column">
+
+            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
+                    class="ui icon button right floated trigger-modal">
+                <g:message
+                        code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+            </g:link>
+
+            <br>
+            <br>
+
+            <g:render template="/templates/filter/orgFilterTable"
+                      model="[orgList       : surveyParticipantsHasNotAccess,
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveySubInfoStartEndDate', 'surveySubCostItem', 'surveyCostItem'],
+                              tableID       : 'costTable'
+                      ]"/>
+
+        </div>
+
+    </g:if>
+
+
+    <g:if test="${params.tab == 'selectedParticipants'}">
+
+        <div class="ui bottom attached tab segment active">
+            <br>
+            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                <h3 class="ui icon header"><semui:headerIcon/>
+                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+                    ${surveyConfig?.subscription?.name}
+                </g:link>
+                </h3>
+            </g:if>
+            <g:else>
+                <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
+            </g:else>
+
+            <div class="four wide column">
+
+            %{--<button type="button" class="ui icon button right floated"
+                    data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+
+
+            <g:render template="/survey/costItemModal"
+                      model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+
+                <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                    <i class="plus icon"></i>
+                </g:link>
+            </div>
+
+            <br>
+            <br>
+
+            <semui:filter>
+                <g:form action="surveyCostItems" method="post" class="ui form"
+                        params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">
+                    <g:render template="/templates/filter/orgFilter"
+                              model="[
+                                      tmplConfigShow      : [['name', 'libraryType'], ['federalState', 'libraryNetwork', 'property'], ['customerType']],
+                                      tmplConfigFormFilter: true,
+                                      useNewLayouter      : true
+                              ]"/>
+                </g:form>
+            </semui:filter>
+
+
+
+            <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+
+
+            <g:set var="surveyParticipantsHasAccess"
+                   value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+                       it?.sortname
+                   }}"/>
+
+            <div class="four wide column">
+
+                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
+                        class="ui icon button right floated trigger-modal">
+                    <g:message
+                            code="survey.copyEmailaddresses.participantsHasAccess"/>
+                </g:link>
+
+            </div>
+
+
+            <g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
+                    class="ui icon button trigger-modal">
+                <i class="write icon"></i>
+            </g:link>
+
+            <br>
+            <br>
+
+
+
+            <g:render template="/templates/filter/orgFilterTable"
+                      model="[orgList       : surveyParticipantsHasAccess,
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                              tableID       : 'costTable'
+                      ]"/>
+
+
+            <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+            <g:set var="surveyParticipantsHasNotAccess"
+                   value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+
+            <div class="four wide column">
+                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
+                        class="ui icon button right floated trigger-modal">
+                    <g:message
+                            code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                </g:link>
+            </div>
+
+
+            <br>
+            <br>
+
+            <g:render template="/templates/filter/orgFilterTable"
+                      model="[orgList       : surveyParticipantsHasNotAccess,
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                              tableID       : 'costTable'
+                      ]"/>
+
+        </div>
+
+    </g:if>
+
+    <g:form action="surveyCostItemsFinish" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+        <div class="ui right floated compact segment">
+            <div class="ui checkbox">
+                <input type="checkbox" onchange="this.form.submit()"
+                       name="costItemsFinish" ${surveyConfig?.costItemsFinish ? 'checked' : ''}>
+                <label><g:message code="surveyConfig.costItemsFinish.label"/></label>
+            </div>
+        </div>
+
+    </g:form>
+
+    </div>
+</div>
 </g:if>
 <g:else>
-    <p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
+<p><b>${message(code: 'surveyConfigs.noConfigList')}</b></p>
 </g:else>
 
-<r:script>
+<g:javascript>
 
 var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(' '),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
 function addForAllSurveyCostItem() {
                         event.preventDefault();
 
@@ -302,7 +376,7 @@ function addForAllSurveyCostItem() {
                         }
                     }
 
-</r:script>
+</g:javascript>
 
 </body>
 </html>

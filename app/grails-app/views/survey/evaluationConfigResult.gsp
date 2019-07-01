@@ -29,6 +29,7 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
+<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
 <g:render template="nav"/>
@@ -132,6 +133,24 @@
                 total="${surveyResult?.size()}"/></h4>
 
         <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+
+
+        <g:set var="surveyParticipantsHasAccess"
+               value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort {
+                   it?.participant.sortname
+               }}"/>
+
+        <div class="four wide column">
+            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
+                    class="ui icon button right floated trigger-modal">
+                <g:message
+                        code="survey.copyEmailaddresses.participantsHasAccess"/>
+            </g:link>
+        </div>
+
+        <br>
+        <br>
+
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
@@ -211,16 +230,15 @@
         <g:set var="surveyParticipantsHasNotAccess"
                value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort {
                    it?.participant.sortname
-               }.participant}"/>
+               }}"/>
 
         <div class="four wide column">
-            <button type="button" class="ui icon button right floated" data-semui="modal"
-                    data-href="#copyEmailaddresses_selectedParticipants"><g:message
-                    code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.participant?.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+        </g:link>
         </div>
-
-        <g:render template="../templates/copyEmailaddresses"
-                  model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
 
         <br>
         <br>
@@ -235,7 +253,7 @@
                 <th>${message(code: 'surveyResult.commentParticipant')}</th>
             </tr>
             </thead>
-            <g:each in="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort { it?.participant.sortname }}"
+            <g:each in="${surveyParticipantsHasNotAccess}"
                     var="result" status="i">
 
                 <tr>
@@ -299,6 +317,41 @@
         </table>
     </semui:form>
 </div>
+
+<g:javascript>
+
+var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(' '),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+</g:javascript>
 
 </body>
 </html>

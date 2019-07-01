@@ -31,9 +31,8 @@ class SurveyResult extends AbstractProperty {
         resultValues (nullable:true, blank:false)
         startDate  (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
-
-
     }
+
     static mapping = {
         includes AbstractProperty.mapping
 
@@ -61,4 +60,34 @@ class SurveyResult extends AbstractProperty {
         comment column: 'surre_comment'
 
     }
+
+    def boolean getFinish()
+    {
+        if(type?.type == Integer.toString())
+        {
+            return intValue ? true : false
+        }
+        else if (type?.type == String.toString())
+        {
+            return stringValue ? true : false
+        }
+        else if (type?.type ==  BigDecimal.toString())
+        {
+            return decValue ? true : false
+        }
+        else if (type?.type == Date.toString())
+        {
+            return dateValue ? true : false
+        }
+        else if (type?.type == URL.toString())
+        {
+            return urlValue ? true : false
+        }
+        else if (type?.type == RefdataValue.toString())
+        {
+            return refValue ? true : false
+        }
+
+    }
+
 }

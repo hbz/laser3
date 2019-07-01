@@ -10,19 +10,20 @@ class SemanticUiInplaceTagLib {
     static namespace = "semui"
 
     /**
-    * Attributes:
-    *   owner - Object
-    *   field - property
-    *   type - type of input
-     *  validation - trigger js validation
-    *   id [optional] -
-    *   class [optional] - additional classes
+     *   Attributes:
+     *   owner - Object
+     *   field - property
+     *   type - type of input
+     *   validation - trigger js validation
+     *   id [optional] -
+     *   class [optional] - additional classes
+     *   overwriteEditable - if existing, value overwrites global editable
     */
     def xEditable = { attrs, body ->
 
         // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
 
-        boolean editable = (request.getAttribute('editable') || attrs.overwriteEditable)
+        boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
         if (editable == true) {
 
@@ -120,9 +121,14 @@ class SemanticUiInplaceTagLib {
         }
     }
 
+
+    /**
+     *   Attributes:
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
     def xEditableRefData = { attrs, body ->
         try {
-            boolean editable = (request.getAttribute('editable') || attrs.overwriteEditable)
+            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable == true ) {
 
@@ -178,9 +184,13 @@ class SemanticUiInplaceTagLib {
         }
     }
 
+    /**
+     *   Attributes:
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
     def xEditableBoolean = { attrs, body ->
         try {
-            boolean editable = (request.getAttribute('editable') || attrs.overwriteEditable)
+            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable == true ) {
 
@@ -246,7 +256,7 @@ class SemanticUiInplaceTagLib {
     }
 
     private renderObjectValue(value) {
-        def result=''
+        def result = ''
         def not_set = message(code:'refdata.notSet')
 
         if ( value ) {
@@ -254,7 +264,7 @@ class SemanticUiInplaceTagLib {
                 case com.k_int.kbplus.RefdataValue.class:
 
                     if ( value.icon != null ) {
-                        result="<span class=\"select-icon ${value.icon}\"></span>";
+                        result = "<span class=\"select-icon ${value.icon}\"></span>";
                         result += value.value ? value.getI10n('value') : not_set
                     }
                     else {
@@ -273,5 +283,22 @@ class SemanticUiInplaceTagLib {
             }
         }
         result;
+    }
+
+    private boolean isEditable (editable, overwrite) {
+
+        boolean result = Boolean.valueOf(editable)
+
+        List positive = [true, 'true', 'True', 1]
+        List negative = [false, 'false', 'False', 0]
+
+        if (overwrite in positive) {
+            result = true
+        }
+        else if (overwrite in negative) {
+            result = false
+        }
+
+        result
     }
 }

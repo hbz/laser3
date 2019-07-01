@@ -269,6 +269,63 @@ class SemanticUiTagLib {
         }
     }
 
+    def auditInfo = { attrs, body ->
+
+        if (attrs.auditable) {
+            try {
+                def obj = attrs.auditable[0]
+                def objAttr = attrs.auditable[1]
+
+                if (obj?.getClass().controlledProperties?.contains(objAttr)) {
+
+                    // inherited (to)
+                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+
+                        if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
+                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '</span>'
+                            }
+                            else {
+                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                //out <<   '<button class="ui icon mini green button">'
+                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '</span>'
+                            }
+                        }
+                    }
+                    // inherit (from)
+                    else if (obj?.showUIShareButton()) {
+                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
+
+                        if (auditService.getAuditConfig(obj, objAttr)) {
+
+                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '</span>'
+                            }
+                            else {
+                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                //out <<   '<button class="ui icon mini green button">'
+                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '</span>'
+                            }
+                        }
+                        else {
+                            out << '&nbsp; <span data-tooltip="Wert wird nicht vererbt" data-position="top right">'
+                            out << '<i class="icon la-thumbtack slash"></i>'
+                            out << '</span>'
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+            }
+        }
+    }
+
     def listIcon = { attrs, body ->
         def hideTooltip = attrs.hideTooltip ? false : true
 
@@ -406,6 +463,12 @@ class SemanticUiTagLib {
     def filter = { attrs, body ->
 
         out << '<div class="ui la-filter segment">'
+        out << body()
+        out << '</div>'
+    }
+    def filterTemp = { attrs, body ->
+
+        out << '<div class="ui la-filter-temp segment">'
         out << body()
         out << '</div>'
     }
@@ -686,6 +749,62 @@ class SemanticUiTagLib {
         } else {
             out << '<i class="arrow right icon disabled"></i>'
         }
+        out << '</div>'
+    }
+
+    def surveyStatus = { attrs, body ->
+        def object = attrs.object
+
+
+        def statusType = object.status?.owner?.desc
+        def color
+        def tooltip
+        def startDate
+        def endDate
+        def dash
+
+        if (object.status) {
+            tooltip = object.status.getI10n('value')
+            switch (object.status) {
+                case RefdataValue.getByValueAndCategory('Survey started', statusType): color = 'la-status-active'
+                    break
+                case RefdataValue.getByValueAndCategory('Survey completed', statusType): color = 'la-status-inactive'
+                    break
+                case RefdataValue.getByValueAndCategory('Ready', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('In Evaluation', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('Completed', statusType): color = 'la-status-else'
+                    break
+                case RefdataValue.getByValueAndCategory('In Processing', statusType): color = 'la-status-else'
+                    break
+
+                default: color = 'la-status-else'
+                    break
+            }
+        } else {
+            tooltip = message(code: 'subscription.details.statusNotSet')
+        }
+        out << "<div class='ui large label la-annual-rings'>"
+        if (object.startDate) {
+            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+        }
+        if (object.endDate) {
+            dash = '–'
+            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+        }
+        out << '<i class="icon"></i>'
+        out << "<span class='la-annual-rings-text'>"
+        out << startDate
+        out << dash
+        out << endDate
+        out << "</span>"
+
+        out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
+        out << '       &nbsp;'
+        out << '</a>'
+        out << '<i class="icon"></i>'
+
         out << '</div>'
     }
 

@@ -455,8 +455,8 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         if ( id != null ) {
           ids.add(id);
 
-          // If the namespace is marked as non-unique, we allow repeats. otherwise check for uniqueness
-          if ( id.ns.nonUnique == Boolean.TRUE ) {
+          // If the namespace is NOT marked as unique, we allow repeats. otherwise check for uniqueness
+          if ( id.ns.unique != Boolean.TRUE ) {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {
@@ -932,7 +932,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     static_logger.debug("Looking for identifier ${value} in title ids ${this.ids}");
 
     this.ids.each {
-      if ( it.identifier.ns.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
+      if ( it?.identifier?.ns?.ns.toLowerCase() == ns.toLowerCase() && it.identifier.value == value ) {
         found = true
       }
     }

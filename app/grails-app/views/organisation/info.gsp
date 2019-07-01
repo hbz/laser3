@@ -75,7 +75,7 @@
         
           <g:if test="${orgInstance?.ids?.sort{it?.identifier?.ns?.ns}}">
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
-              <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
+              <g:each in="${orgInstance.ids?.sort{it?.identifier?.ns?.ns}}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link></dd>
               </g:each>
           </g:if>

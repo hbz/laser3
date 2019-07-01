@@ -1,3 +1,28 @@
+0.17.6
+
+- fixed: org navigation to addressbook and access points 
+
+0.17.5
+
+- fixed: tenant check for private contacts
+- fixed: default dashboard and dashboard tab for new users
+- added information for ip-ranges
+
+0.17.4
+
+- improvement org profil
+- fixed: translation by org profil
+- fixed: financial export now gives tax data properly
+- fixed: filter functionality corrected 
+- fixed: further tipp display correction
+- fixed: org data can now be edited by INST_EDITOR
+- fixed: costItems translation
+- improvement on survey function
+- fixed: survey function bugs
+- fixed: commands in comment (various view changes)
+- improved legacy filter query 
+- display of shared docs for basic members reenabled
+
 0.17.3
 
 - fixed: creating cost items

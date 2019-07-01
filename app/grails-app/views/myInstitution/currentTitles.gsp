@@ -102,8 +102,8 @@
                             value="">${message(code: 'myinst.currentTitles.all_subs', default: 'All Subscriptions')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.name}${s.consortia ? ' (' + s.consortia.name + ')' : ''}">
-                            ${s.getNameConcatenated()}
+                                                                                                        title="${s.dropdownNamingConvention(institution)}">
+                            ${s.dropdownNamingConvention(institution)}
                         </option>
                     </g:each>
                 </select>
@@ -250,6 +250,7 @@
                                     <br/>
                                 </g:if>
 
+
                                 <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
 
                                         <g:if test="${tipp?.hostPlatformURL}">
@@ -260,7 +261,7 @@
                                         </g:if>
                                 </g:each>
 
-                                <g:each in="${ti?.ids?.sort { it.identifier.ns.ns }}" var="id">
+                                <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
                                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                                         <span class="ui small teal image label">
                                             ${id.identifier.ns.ns}: <div class="detail"><a
@@ -282,24 +283,29 @@
                                 <br/>
 
                                 <div class="ui list">
-                                <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
+
+                                    <g:set var="platforms" value="${ti?.tipps?.sort { it?.platform?.name }}"/>
+                                    <g:each in="${platforms.groupBy{it.platform?.id}}" var="platformID">
+
+                                        <g:set var="platform" value="${com.k_int.kbplus.Platform.get(platformID.key)}"/>
+
                                         <div class="item"><b>${message(code: 'tipp.platform', default: 'Platform')}:</b>
-                                            <g:if test="${tipp?.platform.name}">
-                                                ${tipp?.platform.name}
+                                            <g:if test="${platform?.name}">
+                                                ${platform?.name}
                                             </g:if>
                                             <g:else>${message(code: 'default.unknown')}</g:else>
 
-                                            <g:if test="${tipp?.platform.name}">
+                                            <g:if test="${platform?.name}">
                                                 <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'tipp.tooltip.changePlattform')}"
                                                         controller="platform" action="show"
-                                                        id="${tipp?.platform.id}"><i
+                                                        id="${platform?.id}"><i
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
-                                            <g:if test="${tipp?.platform?.primaryUrl}">
+                                            <g:if test="${platform?.primaryUrl}">
                                                 <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${tipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
+                                                   href="${platform?.primaryUrl?.contains('http') ? platform?.primaryUrl : 'http://' + platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 

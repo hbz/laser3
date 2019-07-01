@@ -28,6 +28,13 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 
         <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
+        <g:if test="${editable}">
+            <input class="ui button"
+                   value="${message(code: 'person.create_new.contactPerson.label')}"
+                   data-semui="modal"
+                   data-href="#personFormModal" />
+        </g:if>
+
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')

@@ -27,8 +27,24 @@
 
     <h3><g:message code="surveyParticipants.hasAccess"/></h3>
 
+    <g:set var="surveyParticipantsHasAccess"
+           value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
+               it?.sortname
+           }}"/>
+
+    <div class="four wide column">
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasAccess"/>
+        </g:link>
+    </div>
+    <br>
+    <br>
+
+
     <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : selectedParticipants.findAll { it?.hasAccessOrg() }.sort { it?.sortname },
+              model="[orgList         : surveyParticipantsHasAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType']
               ]"/>
@@ -39,12 +55,12 @@
     <g:set var="surveyParticipantsHasNotAccess" value="${selectedParticipants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
     <div class="four wide column">
-        <button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#copyEmailaddresses_selectedParticipants"><g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/></button>
+        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.id})"
+                class="ui icon button right floated trigger-modal">
+            <g:message
+                    code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+        </g:link>
     </div>
-
-    <g:render template="../templates/copyEmailaddresses"
-              model="[orgList: surveyParticipantsHasNotAccess ?: null, modalID: 'copyEmailaddresses_selectedParticipants']"/>
 
     <br>
     <br>
@@ -63,3 +79,38 @@
     </g:if>
 
 </g:form>
+
+<g:javascript>
+
+var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(' '),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+</g:javascript>

@@ -398,7 +398,7 @@
                                     <g:link class="item" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link class="item" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
                                     <g:link class="item" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
-                                    <g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>
+                                    <%--<g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>--%>
                                 </div>
                             </div>
                             <div class="divider"></div>
@@ -484,6 +484,7 @@
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
+                                    <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
