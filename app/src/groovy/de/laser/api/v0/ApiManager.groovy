@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.55'
+    static final VERSION = '0.56'
     static final NOT_SUPPORTED = false
 
     /**
@@ -122,10 +122,10 @@ class ApiManager {
                 result = ApiOrg.findOrganisationBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
 
                     if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiOA2020.getDummy()
+                        result = ApiOA2020.getOrganisation(result)
                     }
                     else {
                         result = Constants.HTTP_FORBIDDEN
@@ -193,14 +193,14 @@ class ApiManager {
                 result = ApiPkg.findPackageBy(query, value) // use of http status code
 
                 if (result && !(result in failureCodes)) {
-                    // TODO: def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
 
-                    //if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
                         result = ApiStatistic.getPackage(result)
-                    //}
-                    //else {
-                    //    result = Constants.HTTP_FORBIDDEN
-                    //}
+                    }
+                    else {
+                        result = Constants.HTTP_FORBIDDEN
+                    }
                 }
             }
             else {
