@@ -36,12 +36,13 @@
 
             <div class="ui divider"></div>
 
-            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique{ a, b -> a?.id <=> b?.id }.id)?.sort{it.sortname}}"/>
-            <g:set var="orgIds" value="${orgs?.collect{it.id}.join(',')} "/>
+            <semui:actionsDropdownItem data-semui="modal"
+                                       href="#copyEmailaddresses_static"
+                                       message="survey.copyEmailaddresses.participants"/>
 
-            <g:link class="item trigger-modal" data-targetId="copyEmailaddresses_ajaxModal1" data-orgIdList="${orgIds}">
-                <g:message code="survey.copyEmailaddresses.participants"/>
-            </g:link>
+            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
+            <g:render template="copyEmailaddresses" model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
 
         </g:else>
 
@@ -56,6 +57,8 @@ $('.trigger-modal').on('click', function(e) {
     var targetId = $(this).attr('data-targetId');
 
     if (orgIdList && targetId) {
+        $("html").css("cursor", "wait");
+
         $.ajax({
             url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
             data: {
@@ -84,7 +87,9 @@ $('.trigger-modal').on('click', function(e) {
                     return false;
                 }
             }).modal('show');
-        })
+        }).always( function() {
+            $("html").css("cursor", "auto");
+        });
     }
 })
 
