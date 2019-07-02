@@ -48,7 +48,7 @@
                       consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType',
+                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'consortia',
                               (editable ? 'consortiaToggle' : '')
                       ]
               ]"/>
