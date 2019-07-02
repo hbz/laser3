@@ -163,7 +163,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       def tip = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
       if(!tip){
         tip = new TitleInstitutionProvider(title:title,institution:inst,provider:provider)
-        tip.save(flush:true)
+        tip.save()
       }
       return tip
     }

@@ -249,7 +249,7 @@ class GlobalSourceSyncService {
     }
     //tracker, old_rec_info, new_record_info)
     def packageReconcile = { grt, oldpkg, newpkg ->
-        def pkg = null;
+        Package pkg = null;
         boolean auto_accept_flag = true
 
         println "Reconciling new Package!"
@@ -278,8 +278,8 @@ class GlobalSourceSyncService {
         // Firstly, make sure that there is a package for this record
         if (grt.localOid != null) {
             println "getting local package ..."
-            pkg = genericOIDService.resolveOID(grt.localOid)
-
+            pkg = (Package) genericOIDService.resolveOID(grt.localOid)
+            log.debug("Package successfully found, processing LAS:eR id #${pkg.id}, with GOKb id ${pkg.gokbId}")
             if (pkg && newpkg.status != 'Current') {
                 def pkg_del_status = RefdataValue.loc('Package Status', [en: 'Deleted', de: 'Gelöscht'])
                 if (newpkg.status == 'Retired') {

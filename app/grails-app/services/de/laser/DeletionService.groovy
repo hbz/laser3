@@ -509,6 +509,7 @@ class DeletionService {
     }
 
     static boolean deletePackage(Package pkg) {
+        println "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
                 //to be absolutely sure ...
@@ -526,6 +527,8 @@ class DeletionService {
                 OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                 //deleting (empty) subscription packages
                 SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting empty-running trackers
+                GlobalRecordTracker.findByLocalOid(pkg.class.name+':'+pkg.id).delete()
                 pkg.delete()
                 status.flush()
                 return true

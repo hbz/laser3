@@ -1217,6 +1217,7 @@ select s from Subscription as s where
     @Secured(['ROLE_YODA'])
     Map getDuplicatePackages() {
         List<Package> pkgDuplicates = Package.executeQuery('select pkg from Package pkg where pkg.gokbId in (select p.gokbId from Package p group by p.gokbId having count(p.gokbId) > 1)')
+        Map<String,List<Package>> result = [pkgDuplicates: pkgDuplicates]
         if(pkgDuplicates) {
             List<Package> pkgDupsWithTipps = Package.executeQuery('select distinct(tipp.pkg) from TitleInstancePackagePlatform tipp where tipp.pkg in (:pkg) and tipp.status != :deleted',[pkg:pkgDuplicates,deleted:RDStore.TIPP_STATUS_DELETED])
             List<Package> pkgDupsWithoutTipps = []
@@ -1227,7 +1228,7 @@ select s from Subscription as s where
             result.pkgDupsWithTipps = pkgDupsWithTipps
             result.pkgDupsWithoutTipps = pkgDupsWithoutTipps
         }
-        return [pkgDuplicates: pkgDuplicates]
+        result
     }
 
     @Secured(['ROLE_YODA'])
