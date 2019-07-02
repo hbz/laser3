@@ -35,7 +35,7 @@
                     boolean inOwnerOrg = false
 
                     boolean inTargetOrg = false
-                    
+
                     boolean isCreator = false
 
                     if(docctx.owner.owner?.id == contextService.org.id)
@@ -73,58 +73,55 @@
                                     ${docctx.owner.title}
                                 </g:if>
                                 <g:elseif test="${docctx.owner?.filename}">
-                                    ${docctx.owner.filename}
+                                    ${docctx.owner?.filename}
                                 </g:elseif>
                                 <g:else>
                                     ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                                 </g:else>
 
-                            </g:link>(${docctx.owner?.type?.getI10n("value")})
-                        </div>
-                        <div class="center aligned four wide column">
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
-                                <g:if test="${docctx?.isShared}">
-
-                                    <g:remoteLink class="ui mini icon button green js-no-wait-wheel"
-                                                  controller="ajax" action="toggleShare"
+                        </g:link>(${docctx.owner?.type?.getI10n("value")})
+                    </div>
+                    <div class="center aligned four wide column la-js-editmode-container">
+                        <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
+                            <g:if test="${docctx?.isShared}">
+                                <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
+                                                  controller="ajax"
+                                                  action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
-                                                  onSuccess=""
-                                                  onComplete=""
-                                                  update="container-documents"
-                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
-                                    >
-                                        <i class="la-share icon"></i>
-                                    </g:remoteLink>
+                                                  data-content="${message(code:'property.share.tooltip.on')}"
+                                                  data-done=""
+                                                  data-always="bb8.init('#container-documents')"
+                                                  data-update="container-documents"
+                                >
+                                    <i class="icon la-share la-js-editmode-icon"></i>
+                                </laser:remoteLink>
 
-                                </g:if>
-                                <g:else>
-                                    <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
-                                        <i class="la-share slash icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                  controller="ajax" action="toggleShare"
+                            </g:if>
+                            <g:else>
+                                <laser:remoteLink class="ui mini icon button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                                  controller="ajax"
+                                                  action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
-                                                  onSuccess=""
-                                                  onComplete=""
-                                                  update="container-documents"
-                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
-
+                                                  data-content="${message(code:'property.share.tooltip.off')}"
                                                   data-confirm-term-what="element"
                                                   data-confirm-term-what-detail="${docctx.owner.title}"
                                                   data-confirm-term-where="member"
                                                   data-confirm-term-how="share"
-                                    >
-                                    </g:remoteLink>
-                                </g:else>
-                            </g:if>
-                        </div>
+                                                  data-done=""
+                                                  data-always="bb8.init('#container-documents')"
+                                                  data-update="container-documents"
+                                >
+                                    <i class="la-share slash icon la-js-editmode-icon"></i>
+                                </laser:remoteLink>
+                            </g:else>
+                        </g:if>
                     </div>
                 </div>
-            </g:if>
-        </g:each>
-    </semui:card>
+            </div>
+        </g:if>
+    </g:each>
+</semui:card>
 </g:if>
-
 <g:if test="${sharedItems}">
     <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">

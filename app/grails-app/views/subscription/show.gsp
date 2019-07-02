@@ -62,12 +62,12 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                             </dl>
                             <% /*
                             <dl>
@@ -78,7 +78,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
 
                         </div>
@@ -88,7 +88,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
@@ -101,17 +101,17 @@
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
                                     </g:else>
                                 </dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
                             </dl>
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
-                                <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
+                                <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>
@@ -141,7 +141,7 @@
 
                         </h5>
                         <g:if test="${links.entrySet()}">
-                            <table class="ui three column la-selectable table">
+                            <table class="ui three column table">
                                 <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
                                     <g:if test="${linkTypes.getValue().size() > 0}">
                                         <g:each in="${linkTypes.getValue()}" var="link">
@@ -201,9 +201,9 @@
                 </div>
 
                 <g:if test="${subscriptionInstance.packages}">
-                    <div class="ui card la-js-hideable">
+                    <div class="ui card la-js-hideable hidden">
                         <div class="content">
-                            <table class="ui three column la-selectable table">
+                            <table class="ui three column table">
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                     <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
@@ -233,7 +233,7 @@
                     </div>
                 </g:if>
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                     <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
@@ -315,10 +315,10 @@
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                     <div class="content">
 
-                        <table class="ui three column la-selectable table">
+                        <table class="ui three column table">
                             <tr>
                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                 <td>
