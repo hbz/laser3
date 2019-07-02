@@ -98,7 +98,7 @@
             <div class="three fields">
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
-                    <div class="ui search selection dropdown newFilter" id="filterCIBudgetCode">
+                    <div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
                         <input type="hidden" name="filterCIBudgetCode" value="${params.filterCIBudgetCode}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
