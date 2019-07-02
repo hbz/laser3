@@ -638,10 +638,6 @@ class Subscription
         }
     }
 
-    if(params.hideDeleted == 'true'){
-      hqlString += " AND sub.status.value != 'Deleted' "
-    }
-
     if(params.inst_shortcode && params.inst_shortcode.length() > 1){
       hqlString += " AND exists ( select orgs from sub.orgRelations orgs where orgs.org.shortcode = :inst AND orgs.roleType IN (:viableRoles) ) "
       hqlParams.put('inst', params.inst_shortcode)

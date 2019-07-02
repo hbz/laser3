@@ -182,31 +182,6 @@
                                 <i class="trash alternate icon"></i>
                             </g:link>
 
-                        <%-- ERMS-1348 removing delete buttons
-                            <g:if test="${CostItem.findBySub(sub)}">
-                                <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="ui icon button negative" disabled="disabled">
-                                        <i class="unlink icon"></i>
-                                    </button>
-                                </span>
-                            </g:if>
-                            <g:else>
-                                <g:each in="${sub.getAllSubscribers()}" var="subscr">
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
-                                            data-confirm-term-what="membershipSubscription"
-                                            data-confirm-term-what-detail="${subscr}"
-                                            data-confirm-term-where="an der Lizenz"
-                                            data-confirm-term-where-detail="${(sub.name)}"
-                                            data-confirm-term-how="unlink"
-                                            controller="subscription" action="deleteMember"
-                                            params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}">
-                                        <i class="unlink icon"></i>
-                                    </g:link>
-
-                                </g:each>
-
-                            </g:else>
-                            --%>
                         </g:if>
                     </td>
                 </tr>

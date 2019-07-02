@@ -22,10 +22,7 @@
 
                 <g:else>
                     <%
-                        def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                sub,
-                                com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-                        )
+                        def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOf( sub )
                     %>
                     <g:if test="${validSubChilds}">
                         <label for="newLicenseeTargets">Für folgende Teilnehmer kopieren</label>

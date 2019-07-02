@@ -199,12 +199,12 @@
                     <g:if test="${params.orgRole == 'Licensing Consortium'}">
                         <td>
                             <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
-                                <g:if test="${lChild.status?.value != 'Deleted'}">
-                                    <g:link controller="license" action="show" id="${lChild.id}">
-                                        ${lChild}
-                                    </g:link>
-                                    <br/>
-                                </g:if>
+
+                                <g:link controller="license" action="show" id="${lChild.id}">
+                                    ${lChild}
+                                </g:link>
+                                <br/>
+
                             </g:each>
                         </td>
                     </g:if>
@@ -234,18 +234,6 @@
                                 isLicTenant = true
                             }
                         %>
-                        <%-- ERMS-1348 removing delete buttons
-                        <g:if test="${! l.subscriptions && isLicTenant}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="license"
-                                    data-confirm-term-what-detail="${l.reference}"
-                                    data-confirm-term-how="delete"
-                                    controller="myInstitution" action="actionLicenses"
-                                    params="${[baselicense:l.id,'delete-license':'Y']}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
-                        </g:if>
-                        --%>
                 </g:if>
               </td>
             </tr>

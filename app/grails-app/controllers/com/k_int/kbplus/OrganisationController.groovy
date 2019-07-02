@@ -144,7 +144,7 @@ class OrganisationController extends AbstractDebugController {
         ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     Map listInstitution() {
-        Map result = setResultGenerics()
+        Map result = setResultGenericsAndCheckAccess(params)
         if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
             flash.error = message(code:'org.error.noConsortium')
             response.sendError(401)

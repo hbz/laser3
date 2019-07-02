@@ -77,15 +77,6 @@ class LicenseController extends AbstractDebugController {
             def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
             def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
-            //Filter any deleted subscriptions out of displayed links
-            Iterator<Subscription> it = result.license.subscriptions.iterator()
-            while (it.hasNext()) {
-                def sub = it.next();
-                if (sub.status == RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')) {
-                    it.remove();
-                }
-            }
-
             log.debug("pc result is ${result.pendingChanges}");
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
@@ -406,7 +397,6 @@ class LicenseController extends AbstractDebugController {
       def base_qry = """
 from Subscription as s where 
   ( ( exists ( select o from s.orgRelations as o where (o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial') and o.org in (:orgs) ) ) ) 
-  AND ( s.status.value != 'Deleted' ) 
   AND (s.owner = null) 
 """
       def qry_params = [orgs:licenseInstitutions]
@@ -534,13 +524,15 @@ from Subscription as s where
         }
 
         def validMemberLicenses = License.where {
-            (instanceOf == result.license) && (status.value != 'Deleted')
+            instanceOf == result.license
         }
 
         result.validMemberLicenses = validMemberLicenses
         result
     }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteMember() {
@@ -556,17 +548,15 @@ from Subscription as s where
         def delLicense      = genericOIDService.resolveOID(params.target)
         def delInstitutions = delLicense?.getAllLicensee()
 
-        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
-
         if (delLicense?.hasPerm("edit", result.user)) {
-            def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
+            def derived_lics = License.findByInstanceOf(delLicense)
 
             if (! derived_lics) {
                 if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
                     OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
                 }
 
-                delLicense.status = deletedStatus
+                delLicense.status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
                 delLicense.save(flush: true)
             } else {
                 flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
@@ -578,6 +568,7 @@ from Subscription as s where
 
         redirect action: 'members', params: [id: params.id], model: result
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -590,7 +581,7 @@ from Subscription as s where
         }
 
         def validMemberLicenses = License.where {
-            (instanceOf == result.license) && (status.value != 'Deleted')
+            instanceOf == result.license
         }
 
         result.pendingChanges = [:]
@@ -678,7 +669,7 @@ from Subscription as s where
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.license.status.value != 'Deleted' and pc.status.value in (:stats)"
+        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
         def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(

@@ -482,7 +482,7 @@ class License
     }
 
     def getNonDeletedDerivedLicenses() {
-        License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+        License.where{ instanceOf == this }
     }
 
     def getCalculatedPropDefGroups(Org contextOrg) {
@@ -757,7 +757,6 @@ class License
       String INSTITUTIONAL_LICENSES_QUERY = """
  FROM License AS l WHERE
 ( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS))
-AND l.status.value != 'Deleted'
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []

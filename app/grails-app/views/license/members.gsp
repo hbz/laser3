@@ -72,18 +72,6 @@
                         <g:link class="ui icon negative button" controller="license" action="delete" params="${[id:lic.id]}">
                             <i class="trash alternate icon"></i>
                         </g:link>
-
-                        <%-- ERMS-1348 removing delete buttons
-                        <g:link class="ui icon negative button js-open-confirm-modal"
-                                data-confirm-term-what="license"
-                                data-confirm-term-what-detail="${lic.reference}"
-                                data-confirm-term-how="delete"
-                                controller="license"
-                                params="${[id:license.id, target: lic.class.name + ':' + lic.id]}"
-                                action="deleteMember">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
-                        --%>
                     </g:if>
                 </td>
             </tr>

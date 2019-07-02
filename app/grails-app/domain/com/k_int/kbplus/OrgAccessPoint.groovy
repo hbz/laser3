@@ -83,7 +83,6 @@ class OrgAccessPoint extends AbstractBaseDomain {
             " and not exists (select 1 from OrgAccessPointLink oapl where oapl.platform = p and oapl.active = true)"
         qry += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
         qry += " and ((p.status is null) or (p.status != :platformDeleted))"
-        qry += " and ((s.status is null) or (s.status != :subDeleted))"
         qry += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
         qry += " order by p.normname asc"
 
@@ -91,7 +90,6 @@ class OrgAccessPoint extends AbstractBaseDomain {
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_DELETED,
             platformDeleted: RDStore.PLATFORM_DELETED,
-            subDeleted: RDStore.SUBSCRIPTION_DELETED,
             tippDeleted: RDStore.TIPP_DELETED
         ]
 
