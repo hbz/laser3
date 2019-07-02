@@ -67,6 +67,9 @@
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
             <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetworkTableHead.label')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('consortia')}">
+            <th class="la-th-wrap la-hyphenation">${message(code: 'consortium.label')}</th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
         </g:if>
@@ -335,6 +338,13 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
             <td>${org.libraryNetwork?.getI10n('value')}</td>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('consortia')}">
+            <td>
+                <g:each in="${org.outgoingCombos}" var="combo">
+                    ${combo.toOrg.name}<br><br>
+                </g:each>
+            </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <td>${org.libraryType?.getI10n('value')}</td>
