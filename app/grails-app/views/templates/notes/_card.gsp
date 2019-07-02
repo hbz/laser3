@@ -65,6 +65,7 @@
                                                   data-done=""
                                                   data-always="bb8.init('#container-notes')"
                                                   data-update="container-notes"
+                                                  role="button"
                                 >
                                     <i class="icon la-share la-js-editmode-icon"></i>
                                 </laser:remoteLink>
@@ -82,6 +83,7 @@
                                                   data-done=""
                                                   data-always="bb8.init('#container-notes')"
                                                   data-update="container-notes"
+                                                  role="button"
                                 >
                                     <i class="la-share slash icon la-js-editmode-icon"></i>
                                 </laser:remoteLink>

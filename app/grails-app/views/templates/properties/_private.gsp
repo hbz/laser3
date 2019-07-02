@@ -109,6 +109,7 @@
                                               data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                                               data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
                                               data-update="${custom_props_div}"
+                                              role="button"
                             >
                                 <i class="trash alternate icon"></i>
                             </laser:remoteLink>
