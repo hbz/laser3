@@ -531,6 +531,8 @@ from Subscription as s where
         result
     }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteMember() {
@@ -566,6 +568,7 @@ from Subscription as s where
 
         redirect action: 'members', params: [id: params.id], model: result
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })

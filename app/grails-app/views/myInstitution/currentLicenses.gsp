@@ -234,18 +234,6 @@
                                 isLicTenant = true
                             }
                         %>
-                        <%-- ERMS-1348 removing delete buttons
-                        <g:if test="${! l.subscriptions && isLicTenant}">
-                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="license"
-                                    data-confirm-term-what-detail="${l.reference}"
-                                    data-confirm-term-how="delete"
-                                    controller="myInstitution" action="actionLicenses"
-                                    params="${[baselicense:l.id,'delete-license':'Y']}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
-                        </g:if>
-                        --%>
                 </g:if>
               </td>
             </tr>

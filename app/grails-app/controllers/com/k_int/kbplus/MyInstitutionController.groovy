@@ -292,9 +292,9 @@ class MyInstitutionController extends AbstractDebugController {
         log.debug("actionLicenses :: ${params}")
         if (params['copy-license']) {
             newLicense_DEPR(params)
-        } else if (params['delete-license']) {
+        } /*else if (params['delete-license']) {
             deleteLicense(params)
-        }
+        } */
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -1519,6 +1519,8 @@ from License as l where (
         }
     }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteLicense(params) {
@@ -1557,6 +1559,7 @@ from License as l where (
 
         redirect action: 'currentLicenses'
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
