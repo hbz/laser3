@@ -146,6 +146,11 @@ class PropertyService {
         log.debug("replacing: ${pdFrom} with: ${pdTo}")
         def count = 0
 
+        PropertyDefinition.executeUpdate(
+                "update PropertyDefinitionGroupItem set propDef = :pdTo where propDef = :pdFrom",
+                [pdTo: pdTo, pdFrom: pdFrom]
+        )
+
         def implClass = pdFrom.getImplClass('custom')
         def customProps = Class.forName(implClass)?.findAllWhere(
                 type: pdFrom
@@ -156,7 +161,6 @@ class PropertyService {
             cp.save(flush:true)
             count++
         }
-
         count
     }
 }
