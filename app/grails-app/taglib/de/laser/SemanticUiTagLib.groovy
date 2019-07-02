@@ -252,7 +252,7 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << '<a data-content="Wert wird nicht vererbt" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',

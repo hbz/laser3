@@ -270,11 +270,16 @@ r2d2 = {
         }
 
         //popup tooltips
-        $(ctxSel + ' .la-popup-tooltip.la-delay').popup({delay: {
+        /*$(ctxSel + ' .la-delay').popup({delay: {
             show: 300,
-            hide: 0
+            hide: 1000
         }
         });
+        $(ctxSel + ' .la-popup-tooltip.la-delay').popup( {
+            hoverable: true,
+            inline     : true,
+            lastResort: true
+        });*/
         $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
@@ -658,7 +663,6 @@ deckSaver = {
             inline     : true,
             lastResort: true,
             onShow: function() {
-                console.log ("hoi")
                 // generate a random ID
                 var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
                 // add aria-label to container-span
@@ -727,8 +731,6 @@ deckSaver = {
             // ***************************
             $(deckSaver.configs.icon).each(function(){
                 var container = $(this).closest('.la-js-editmode-container');
-                console.log("container: ")
-                console.log(container)
                 var button = $(this).closest('.button');
                 var clone = $(this).clone();
                 clone.appendTo(container);
@@ -763,7 +765,7 @@ deckSaver = {
 }
 tooltip = {
     configs : {
-        tooltipTrigger: $('.la-js-popup'),
+        tooltipTrigger: $('.la-popup-tooltip'),
 
     },
     go : function() {
@@ -798,7 +800,7 @@ tooltip = {
                 $(this).popup('hide');
             }
         })
-    }
+    },
 }
 
 bb8 = {
@@ -868,6 +870,7 @@ $(document).ready(function() {
     r2d2.go();
     bb8.go();
     tooltip.go();
+
 
 })
 
