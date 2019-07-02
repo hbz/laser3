@@ -9,19 +9,24 @@
 <g:set var="org" value="${contextService.getOrg()}" />
 
 <%
+    boolean fromConsortia = false
+
     if (costItem) {
         if(mode && mode.equals("edit")) {
             modalText = g.message(code: 'financials.editCost')
             submitButtonLabel = g.message(code:'default.button.save.label')
         }
         else if(mode && mode.equals("copy")) {
-            modalText = g.message(code: 'financials.costItem.copy.tooltip')
+            modalText = costItem.sub?.instanceOf?.getAllSubscribers()//g.message(code: 'financials.costItem.copy.tooltip')
             submitButtonLabel = g.message(code:'default.button.copy.label')
+            if(costItem.owner == costItem.sub?.getConsortia() && org != costItem.sub?.getConsortia()) {
+                fromConsortia = true
+            }
         }
 
         def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
         if ( subscriberExists ) {
-            modalText = subscriberExists.org?.toString()
+         //   modalText = subscriberExists.org?.toString()
         }
     }
 
@@ -34,7 +39,7 @@
                 <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
             </div>
         </g:if>
-        <g:elseif test="${costItem?.isVisibleForSubscriber && tab == "subscr"}">
+        <g:elseif test="${fromConsortia}">
             <div class="ui blue ribbon label">
                 <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
             </div>
@@ -46,7 +51,7 @@
         <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
-        <g:elseif test="${costItem && (mode && mode.equals("copy"))}">
+        <g:elseif test="${costItem && (mode && mode.equals("copy")) && fromConsortia}">
             <g:hiddenField name="copyBase" value="${costItem.class.getName()}:${costItem.id}" />
         </g:elseif>
 
