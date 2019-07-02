@@ -96,22 +96,22 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
-                    <td class="x">
+                    <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
-                            <button class="ui icon negative button js-open-confirm-modal-copycat">
+                            <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                              controller="ajax"
+                                              action="deletePrivateProperty"
+                                              params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'
+                                              id="${prop.id}"
+                                              data-confirm-term-what="property"
+                                              data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                              data-confirm-term-how="delete"
+                                              data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                              data-always="c3po.loadJsAfterAjax(); bb8.init('#${custom_props_div}') "
+                                              data-update="${custom_props_div}"
+                            >
                                 <i class="trash alternate icon"></i>
-                            </button>
-                            <%--<g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" /> --%>
-                            <g:remoteLink class="js-gost"
-                                style="visibility: hidden"
-                                data-confirm-term-what="property"
-                                data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                data-confirm-term-how="delete"
-                                controller="ajax" action="deletePrivateProperty"
-                                params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id}), c3po.loadJsAfterAjax()"
-                                update="${custom_props_div}" >
-                            </g:remoteLink>
+                            </laser:remoteLink>
                         </g:if>
                     </td>
                 </tr>

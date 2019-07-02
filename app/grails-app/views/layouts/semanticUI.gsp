@@ -592,7 +592,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${controllerName=='subscription' && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -604,7 +604,34 @@
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
+                            <r:script>
+                                $(function(){
+                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                        deckSaver.configs.editMode  = true;
+                                    </g:if>
+                                    <g:else>
+                                        deckSaver.configs.editMode  = false;
+                                    </g:else>
+                                    deckSaver.toggleEditableElements();
+                                    $(".ui.toggle.button").click(function(){
+                                        deckSaver.configs.editMode = !deckSaver.configs.editMode;
+                                         $.ajax({
+                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                            data: {
+                                                showEditMode: deckSaver.configs.editMode
+                                            },
+                                            success: function(){
+                                                deckSaver.toggleEditableElements();
+                                            },
+                                            complete: function () {
 
+                                            }
+
+                                        })
+                                    });
+                                })
+                            </r:script>
+                                <%--
                             <r:script>
                                 $(function(){
                                      <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
@@ -633,10 +660,10 @@
 
                                         var toggleButton = $(".ui.toggle.button");
                                         var toggleIcon = $(".ui.toggle.button .icon");
-                                        $(".table").trigger('reflow');
 
                                         if (  editMode) {
                                             // show Contoll Elements
+                                            $('.la-clone').remove();
                                             $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.la-js-hide-this-card').removeClass('hidden');
                                             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
@@ -656,6 +683,11 @@
                                         }
                                         else {
                                             // hide Contoll Elements
+                                            $('.la-js-editmode-icon').each(function(){
+                                                var container = $(this).closest('.la-js-editmode-container')
+                                                var clone = $(this).clone().appendTo(container);
+                                                $(clone).addClass('la-clone blue')
+                                            });
                                             $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
@@ -680,6 +712,7 @@
                                 });
 
                             </r:script>
+                            --%>
                             </div>
                             </g:if>
                             <g:if test="${(params.mode)}">

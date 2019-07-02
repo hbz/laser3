@@ -58,7 +58,7 @@
         <g:if test="${cons_members}">
             <div class="ui two fields">
                 <div class="field">
-                    <label>Lizenz kopieren</label>
+                    <label for="subStatus">Lizenz kopieren</label>
 
                     %{--ERMS-1155
                     <div class="ui checkbox">
@@ -77,21 +77,22 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
+                              id="subStatus"
                               value="${com.k_int.kbplus.Subscription.get(params.id).status?.id.toString()}"/>
                 </div>
 
                 <div class="field">
-                    <label>Vertrag kopieren</label>
+                    <label >Vertrag kopieren</label>
                     <g:if test="${subscriptionInstance.owner}">
                         <div class="ui radio checkbox">
                             <g:if test="${subscriptionInstance.owner.derivedLicenses}">
-                                <input class="hidden" type="radio" name="generateSlavedLics" value="no">
+                                <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
                             </g:if>
                             <g:else>
-                                <input class="hidden" type="radio" name="generateSlavedLics" value="no"
+                                <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no"
                                        checked="checked">
                             </g:else>
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_no')}</label>
+                            <label for="generateSlavedLics">${message(code: 'myinst.emptySubscription.seperate_lics_no')}</label>
                         </div>
 
                         <div class="ui radio checkbox">
