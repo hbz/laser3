@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
-
+<laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>
@@ -15,7 +15,7 @@
         ${orgInstance.name}
     </h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance]}" />
+    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
     <semui:messages data="${flash}" />
     

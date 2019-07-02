@@ -23,7 +23,7 @@
         ${orgInstance.name}
     </h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance]}"/>
+    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
     <semui:filter>
         <g:form controller="organisation" action="users" params="${[id: orgInstance.id]}" method="get" class="ui form">
