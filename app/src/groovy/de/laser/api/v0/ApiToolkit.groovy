@@ -85,6 +85,15 @@ class ApiToolkit {
         list
     }
 
+    static Object checkPreconditionFailed(result) {
+
+        if (result) {
+            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
+        }
+
+        result
+    }
+
     static Object parseTimeLimitedQuery(String query, String value) {
         String[] queries = query.split(",")
         String[] values = value.split(",")

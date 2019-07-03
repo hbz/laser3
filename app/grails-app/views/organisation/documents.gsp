@@ -28,7 +28,7 @@
 
   <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance]}"/>
+    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
     <semui:messages data="${flash}" />
 

@@ -571,7 +571,7 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
             ],
             [
-                    name: [en: "Course pack term note", de: "Notzifeld zu den Bedingungen zur Nutzung elektronischer Skripte"],
+                    name: [en: "Course pack term note", de: "Semesterapparat Bedingungen zur Nutzung elektronischer Skripte"],
                     expl: [en: "Information which qualifies a permissions statement on Course Packs.", de: "Bedingungen zur Nutzung elektronischer Skripte."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
@@ -586,7 +586,7 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
             ],
             [
-                    name: [en: "Course reserve term note", de: "Notizfeld zu den Bedingungen der Nutzung für Semesterapparate mit Zugangsbeschränkung"],
+                    name: [en: "Course reserve term note", de: "Seminarapparat mit Zugangsbeschränkung Bedingungen der Nutzung"],
                     expl: [en: "Information which qualifies a permissions statement on Course Reserves.", de: ""],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
@@ -786,7 +786,7 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'License.RemoteAccess'
             ],
             [
-                    name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre"],
+                    name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre Bedingungen"],
                     expl: [en: "Information which qualifies a permissions statement on Scholarly Sharing.", de: "Bedingungen der Weitergabe im Rahmen der Lehre."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
@@ -1260,6 +1260,16 @@ class BootStrap {
                         descr:allDescr, type: OT.URL
                 ],
                 [
+                        name: [key: "AdminAccess", en: "Admin Access", de: "Adminzugang"],
+                        expl : [en: "", de: "Mit welchen Zugangsdaten gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "AdminLink", en: "Admin Link", de: "Admin-Link"],
+                        expl : [en: "", de: "Über welchen Link gelangt in den Admin-Bereich auf der Anbieterplattform?"],
+                        descr:allDescr, type: OT.URL
+                ],
+                [
                         name: [en: "KBART", de: "KBART"],
                         expl : [en: "", de: "Existiert ein KBART-Lieferung?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
@@ -1342,12 +1352,12 @@ class BootStrap {
                 [
                         name: [en: "Subscriptionsnummer vom Verlag", de: "Subskriptionsnummer des Verlags"],
                         expl: [en: "", de: "Subskriptionsnummer des Verlags."],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
                         name: [en: "Subskriptionsnummer des Lieferanten", de: "Subskriptionsnummer des Lieferanten"],
                         expl: [en: "", de: "Subskriptionsnummer des Lieferanten."],
-                        descr:allDescr, type: OT.String
+                        descr:allDescr, type: OT.String, multiple:true
                 ],
                 [
                         name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],
@@ -1383,7 +1393,7 @@ class BootStrap {
                 [
                         name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],
                         expl: [en: "", de: "Fachstatistik / Klassifikation"],
-                        descr:allDescr, type: OT.Int
+                        descr:allDescr, type: OT.Int, multiple:true
                 ],
                 [
                         name: [en: "Archivzugriff", de: "Archivzugriff"],
@@ -1399,7 +1409,7 @@ class BootStrap {
                         name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
-                ]
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -2238,6 +2248,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [key: 'IntendedPerennial', en: 'Intended (Perennial term)', de: 'Geplant (Mehrjahreslaufzeit)'])
         RefdataValue.loc('Subscription Status',      [key: 'ExpiredPerennial', en: 'Expired (Perennial term)', de: 'Abgelaufen (Mehrjahreslaufzeit)'])
+        RefdataValue.loc('Subscription Status',      [key: 'Deferred', en: 'Deferred', de: 'Zurückgestellt'])
         RefdataValue.loc('Subscription Status',      [en: 'Status not defined', de: 'Status nicht festgelegt'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
@@ -2530,6 +2541,7 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: short term loan', en: 'price: short term loan', de: 'Preis: Short-Term-Loan'], BOOTSTRAP)
+        RefdataValue.loc('CostItemElement', [key: 'price: print share', en: 'price: print share', de: 'Preis: Printanteil'], BOOTSTRAP)
 
         RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'], BOOTSTRAP)
@@ -2540,7 +2552,7 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'discount: other', en: 'discount: other', de: 'Rabatt: Sonstige'], BOOTSTRAP)
 
         RefdataValue.loc('CostItemElement', [key: 'refund: currency rate', en: 'refund: currency rate', de: 'Erstattung: Kursgutschrift'], BOOTSTRAP)
-        RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Acces-Gutschrift'], BOOTSTRAP)
+        RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Access-Gutschrift'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'refund: retransfer', en: 'refund: retransfer', de: 'Erstattung: Rücküberweisung'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'refund: system downtime', en: 'refund: system downtime', de: 'Erstattung: Ersatz für Ausfallzeiten'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'refund: other', en: 'refund: other', de: 'Erstattung: Sonstige'], BOOTSTRAP)

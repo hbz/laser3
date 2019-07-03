@@ -364,8 +364,13 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
 
-            // getting context
-            contextOrg = Org.findWhere(globalUID: params.get('context'))
+            // getting context or fallback
+            if (params.get('context')) {
+                contextOrg = Org.findWhere(globalUID: params.get('context'))
+            }
+            else {
+                contextOrg = apiOrg
+            }
         }
 
         if (!contextOrg || !hasAccess) {
@@ -441,6 +446,8 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         response.setCharacterEncoding(Constants.UTF8)
         response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
         response.setStatus(responseCode)
+
+        log.debug("API Call: Response Code : " + responseCode)
 
         render responseJson.toString(true)
     }
