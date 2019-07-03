@@ -473,6 +473,7 @@
                                     <g:link class="item" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
                                     <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
                                     <g:link class="item" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
+                                    <g:link class="item" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
                                 </div>
                             </div>
 

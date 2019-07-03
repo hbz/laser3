@@ -65,6 +65,12 @@ class PendingChangeService {
                                     log.debug("We are dealing with custom properties: ${event}")
                                     processCustomPropertyChange(event)
                                 }
+                                else if ( prop_info.name == 'status' ) {
+                                    RefdataValue oldStatus = RefdataValue.get(event.changeDoc.old.id)
+                                    RefdataValue newStatus = RefdataValue.get(event.changeDoc.new.id)
+                                    log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
+                                    target_object.status = newStatus
+                                }
                                 else if ( prop_info.isAssociation() ) {
                                     log.debug("Setting association for ${event.changeDoc.prop} to ${event.changeDoc.new}");
                                     target_object[event.changeDoc.prop] = genericOIDService.resolveOID(event.changeDoc.new)
@@ -147,7 +153,7 @@ class PendingChangeService {
                                     event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
                                 }
 
-                                if(event.changeDoc?.status)
+                                if(event.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
                                 {
                                     event.changeDoc?.status = event.changeDoc?.status?.id
                                 }

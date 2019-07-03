@@ -316,7 +316,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                   PendingChange.PROP_SUBSCRIPTION,
                                                           dep_ie.subscription,
                   // pendingChange.message_TP01
-                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
+                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problembenachrichtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
                                                             changeType:PendingChangeService.EVENT_TIPP_DELETE,

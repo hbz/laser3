@@ -541,4 +541,24 @@ class DeletionService {
             }
         }
     }
+
+    boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+        println "processing tipp #${tipp.id}"
+        TitleInstancePackagePlatform.withTransaction { status ->
+            try {
+                //rebasing subscriptions
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',[old:tipp,replacement:replacement])
+                //deleting old TIPPs
+                tipp.delete()
+                status.flush()
+                return true
+            }
+            catch(Exception e) {
+                println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
 }

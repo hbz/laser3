@@ -991,12 +991,12 @@ class GlobalSourceSyncService {
 
     def internalRunAllActiveSyncTasks() {
 
-        running = true;
+        running = true
 
         def jobs = GlobalRecordSource.findAll()
 
         jobs.each { sync_job ->
-            log.debug(sync_job);
+            log.debug(sync_job)
             // String identifier
             // String name
             // String type
@@ -1008,13 +1008,20 @@ class GlobalSourceSyncService {
             // String credentials
             switch (sync_job.type) {
                 case 'OAI':
-                    log.debug("start internal sync");
-                    this.doOAISync(sync_job)
-                    log.debug("this.doOAISync has returned...");
-                    break;
+                    log.debug("start internal sync")
+                    try {
+                        this.doOAISync(sync_job)
+                        log.debug("this.doOAISync has returned...")
+                    }
+                    catch (Exception e) {
+                        log.error("this.doOAISync has failed, please consult stacktrace as follows: ")
+                        e.printStackTrace()
+                        running = false
+                    }
+                    break
                 default:
-                    log.error("Unhandled sync job type: ${sync_job.type}");
-                    break;
+                    log.error("Unhandled sync job type: ${sync_job.type}")
+                    break
             }
         }
         running = false

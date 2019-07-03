@@ -177,6 +177,7 @@ class ChangeNotificationService {
         log.debug("fireEvent(${changeDocument})")
 
         def submit = executorService.submit({
+            Thread.currentThread().setName("PendingChangeSubmission")
             try {
                 log.debug("inside executor task submission .. ${changeDocument.OID}")
                 def contextObject = genericOIDService.resolveOID(changeDocument.OID)

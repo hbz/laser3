@@ -10,11 +10,13 @@ import com.k_int.kbplus.SubscriptionCustomProperty
 import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.SubscriptionPrivateProperty
 import com.k_int.kbplus.Task
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
@@ -497,6 +499,36 @@ class SubscriptionService {
             result.privateProperties = privateProperties
         }
         result
+    }
+
+    boolean addEntitlement(sub, gokbId) throws EntitlementCreationException {
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
+        if (tipp == null) {
+            throw new EntitlementCreationException("Unable to tipp ${gokbId}")
+            return false
+        } else {
+            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+                    subscription: sub,
+                    tipp: tipp,
+                    accessStartDate: tipp.accessStartDate,
+                    accessEndDate: tipp.accessEndDate,
+                    startDate: tipp.startDate,
+                    startVolume: tipp.startVolume,
+                    startIssue: tipp.startIssue,
+                    endDate: tipp.endDate,
+                    endVolume: tipp.endVolume,
+                    endIssue: tipp.endIssue,
+                    embargo: tipp.embargo,
+                    coverageDepth: tipp.coverageDepth,
+                    coverageNote: tipp.coverageNote,
+                    ieReason: 'Manually Added by User')
+            if (new_ie.save()) {
+                return true
+            } else {
+                throw new EntitlementCreationException(new_ie.errors)
+                return false
+            }
+        }
     }
 
 }
