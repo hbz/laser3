@@ -21,15 +21,18 @@
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
-        <strong>Betrifft:</strong>
-        <g:if test="${taskInstance.getObjects()}">
-            <ul>
+            <strong>Betrifft:</strong>
+            <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
-                    <li>${message(code: 'task.'+tskObj.controller)}: <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link></li>
+                    <br />
+                    - ${message(code: 'task.' + tskObj.controller)}:
+                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
                 </g:each>
-            </ul>
-        </g:if>
-        <g:else>${message(code: 'task.general')}</g:else>
+            </g:if>
+            <g:else>
+                <br />
+                - ${message(code: 'task.general')}
+            </g:else>
         </div>
         %{--<g:if test="${params.owntp == 'license' || enableMyInstFormFields}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} ">
