@@ -242,8 +242,6 @@
         lastUpdated:
           type: string
           format: date-time
-        licenseStatus:
-          type: string
         licenseType:
           type: string
         onixplLicense:

@@ -4,6 +4,7 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
@@ -37,10 +38,8 @@ class ApiLicense {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-        result
+
+        ApiToolkit.checkPreconditionFailed(result)
     }
 
 
@@ -68,7 +67,7 @@ class ApiLicense {
      * @return JSON | FORBIDDEN
      */
     static getLicense(License lic, Org context, boolean hasAccess){
-        Collection<Object> result = []
+        Map<String, Object> result = [:]
         hasAccess = calculateAccess(lic, context, hasAccess)
 
         if (hasAccess) {
