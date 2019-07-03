@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.auth.User; com.k_int.kbplus.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.ReaderNumber; de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.ReaderNumber; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection/>
 <table id="${tableID ?: ''}" class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -28,6 +28,9 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('mainContact')}">
             <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('hasInstAdmin')}">
+            <th>${message(code: 'org.hasInstAdmin.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
             <th>${message(code: 'org.publicContacts.label', default: 'Public Contacts')}</th>
@@ -220,6 +223,20 @@
                         </g:each>
                     </g:if>
                 </g:each>
+            </td>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('hasInstAdmin')}">
+            <td>
+                <%
+                    String instAdminIcon = '<i class="large red times icon"></i>'
+                    List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin',[org:org,instAdmin:Role.findByAuthority('INST_ADM')])
+                    if(users)
+                        instAdminIcon = '<i class="large green check icon"></i>'
+                %>
+                ${raw(instAdminIcon)}
+                <g:if test="${contextService.user.hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <br><g:link controller="organisation" action="users" params="${[id: org.id]}">${message(code:'org.toInstUsers.label')}</g:link>
+                </g:if>
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
