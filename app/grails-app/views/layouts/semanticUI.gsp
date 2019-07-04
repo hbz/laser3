@@ -548,7 +548,7 @@
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
                                 <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
-                                <a data-semui="modal" href="#modalDsgvo" class="item" >${message(code:'ds')}</a>
+                                <a data-semui="modal" href="#modalDsgvo" class="item" >${message(code:'privacyNotice')}</a>
 
                                 <div class="divider"></div>
 
@@ -577,27 +577,13 @@
         </div><!-- container -->
 
     </nav><!-- main menu -->
-<%
-    def file = new File("path/to/file")
 
-    if (file.exists()) {
-        println("<p>geht</p>")
-        return
-    }
-    else {
-        // else for err message
-        out
-        println("<p>fehler</p>")
-    }
-
-%>
-    <semui:modal id="modalDsgvo" message="ds" hideSubmitButton="true" modalSize="small">
+    <semui:modal id="modalDsgvo" message="privacyNotice" hideSubmitButton="true" modalSize="small">
         <a href="https://www.hbz-nrw.de/datenschutz"  class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
             <i class="share square icon"></i>
             ${message(code:'dse')}
         </a>
-        <!-- a href="${file}" class="ui button" onclick="$('#modalDsgvo').modal('hide')" -->
-        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LAS.pdf')}" class="ui button" onclick="$('#modalDsgvo').modal('hide')">
+        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LAS.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
             <i class="file pdf icon"></i>
             ${message(code:'vdv')}
         </a>
