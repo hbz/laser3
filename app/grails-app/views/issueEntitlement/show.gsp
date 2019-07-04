@@ -27,19 +27,19 @@
 
             <dl>
                 <g:if test="${issueEntitlementInstance?.subscription}">
-                    <dt><g:message code="subscription.label" default="Subscription" /></dt>
+                    <dt><g:message code="subscription.label"/></dt>
 
                     <dd><g:link controller="subscription" action="index" id="${issueEntitlementInstance?.subscription?.id}">${issueEntitlementInstance?.subscription?.name}</g:link></dd>
 
                 </g:if>
             <g:if test="${issueEntitlementInstance?.subscription.owner}">
-                <dt><g:message code="licence.label" default="License" /></dt>
+                <dt><g:message code="license.label"/></dt>
 
                 <dd><g:link controller="license" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference}</g:link></dd>
 
             </g:if>
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
-                <dt><g:message code="onixplLicence.licence.label" default="ONIX-PL Licence" /></dt>
+                <dt><g:message code="onixplLicense.license.label"/></dt>
 
                 <dd><g:link controller="onixplLicense" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
             </g:if>

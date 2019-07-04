@@ -1,4 +1,4 @@
-
+import de.laser.helper.RDStore
 import geb.spock.GebReportingSpec
 import org.elasticsearch.common.joda.time.LocalDate
 import pages.*
@@ -116,7 +116,8 @@ class LicenseSpec extends GebReportingSpec {
           def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: sub, org: org).save()
           sub.addToOrgRelations(subRelation) 
           sub.save()//OrgRole needed for
-          def ie_current = RefdataValue.getByValueAndCategory('Current','Entitlement Issue Status')
+          //RefdataCategory Entitlement Issue Status merged into TIPP Status
+          def ie_current = RDStore.TIPP_STATUS_CURRENT
           def ti = new com.k_int.kbplus.TitleInstance(title: Data.Title_titlename, impId:Data.Title_uniqID).save()
           def tipp = new com.k_int.kbplus.TitleInstancePackagePlatform(impId:Data.Tipp_uniqID, title: ti).save()
           def ie = new com.k_int.kbplus.IssueEntitlement(status: ie_current, tipp: tipp, subscription: sub).save()

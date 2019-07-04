@@ -23,7 +23,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   Date coreStatusStart
   Date coreStatusEnd
 
-  @RefdataAnnotation(cat = 'Entitlement Issue Status')
+  //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
+  @RefdataAnnotation(cat = 'TIPP Status')
   RefdataValue status
 
   @RefdataAnnotation(cat = 'CoreStatus')
@@ -162,7 +163,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
       def tip = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
       if(!tip){
         tip = new TitleInstitutionProvider(title:title,institution:inst,provider:provider)
-        tip.save(flush:true)
+        tip.save()
       }
       return tip
     }
