@@ -662,6 +662,10 @@ deckSaver = {
             hoverable: true,
             inline     : true,
             lastResort: true,
+            delay: {
+                show: 300,
+                hide: 500
+            },
             onShow: function() {
                 // generate a random ID
                 var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
@@ -777,6 +781,10 @@ tooltip = {
             hoverable: true,
             inline     : true,
             lastResort: true,
+            delay: {
+                show: 300,
+                hide: 500
+            },
             onShow: function() {
                 // generate a random ID
                 var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
