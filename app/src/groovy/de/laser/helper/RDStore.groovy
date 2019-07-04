@@ -39,7 +39,7 @@ class RDStore {
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
     static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
-    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
+    //static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')

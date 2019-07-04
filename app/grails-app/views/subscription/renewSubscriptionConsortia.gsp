@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Person" %>
 <%@ page import="com.k_int.kbplus.RefdataValue" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
@@ -144,7 +144,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                     <th><g:checkBox name="subscription.takeEntitlements" value="${true}"/></th>
                     <th>${message(code: 'subscription.takeEntitlements', default: 'Take Current Entitlements from Subscription')}</th>
                     <td><b>${message(code: 'issueEntitlement.countSubscription')} </b> ${subscription.issueEntitlements.findAll {
-                        it.status != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                        it.status != RDStore.TIPP_STATUS_DELETED
                     }.size()}
 
                         %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">

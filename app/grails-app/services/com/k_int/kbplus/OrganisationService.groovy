@@ -1974,7 +1974,7 @@ class OrganisationService {
                                         if(entry.issueEntitlementISBNs) {
                                             pkg.addToSubscription(obj,false)
                                             List<TitleInstancePackagePlatform> tippSubset = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.id in (select io.ti from IdentifierOccurrence io join io.identifier i where i.ns.ns = 'isbn' and i.value in (:idSet))",[pkg:pkg,idSet:entry.issueEntitlementISBNs])
-                                            RefdataValue ieCurrent = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
+                                            RefdataValue ieCurrent = RDStore.TIPP_STATUS_CURRENT
                                             tippSubset.each { tipp ->
                                                 IssueEntitlement ie = new IssueEntitlement(status:ieCurrent,
                                                         subscription: obj,

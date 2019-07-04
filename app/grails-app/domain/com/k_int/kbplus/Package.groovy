@@ -284,7 +284,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
+        def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
         TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
           if(tipp.status?.value == "Current"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,

@@ -138,14 +138,14 @@ public class GokbDiffEngine {
                 if (Holders.config.globalDataSync.replaceLocalImpIds.TIPP && newTipp.tippUuid && db_tipp.gokbId != newTipp.tippUuid) {
                     db_tipp.impId = (db_tipp.impId == newTipp.tippUuid) ? db_tipp.impId : newTipp.tippUuid
                     db_tipp.gokbId = newTipp.tippUuid
-                    db_tipp.save(flush: true, failOnError: true)
+                    db_tipp.save(failOnError: true)
                 }
             }
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: newTipp.platform, gokbId: newTipp.platformUuid, primaryUrl: primaryUrl]);
             if(plat_instance) {
                 plat_instance.primaryUrl = (plat_instance?.primaryUrl == primaryUrl) ? plat_instance?.primaryUrl : primaryUrl
-                plat_instance.save(flush: true)
+                plat_instance.save()
             }
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(newTipp.title.gokbId)
@@ -157,7 +157,7 @@ public class GokbDiffEngine {
                     (title_of_tipp_to_update?.gokbId != newTipp.title.gokbId || !title_of_tipp_to_update?.gokbId)) {
                 title_of_tipp_to_update.impId = (title_of_tipp_to_update.impId == newTipp.title.gokbId) ? title_of_tipp_to_update.impId : newTipp.title.gokbId
                 title_of_tipp_to_update.gokbId = newTipp.title.gokbId
-                title_of_tipp_to_update.save(flush: true)
+                title_of_tipp_to_update.save()
             }
 
         }
@@ -231,11 +231,12 @@ public class GokbDiffEngine {
         oldpkg.tipps.each { tippold ->
             if(!(tippold?.tippUuid in newpkgTippsTippUuid))
             {
+                //was introduced to fight the duplicate TIPPs in Beck - may now be obsolete; it now causes problems elsewhere (Web of Science)
                 def db_tipp = ctx.tipps.find {it.gokbId == tippold.tippUuid && it.status?.value != 'Deleted'}
-                if(tippold.status.id != db_tipp.status.id) {
-                    deletedTippClosure(ctx, tippold, auto_accept)
+                //if(tippold.status.id != db_tipp.status.id) {
+                    deletedTippClosure(ctx, tippold, auto_accept, db_tipp)
                     System.out.println("TIPP " + tippold + " Was removed from the package");
-                }
+                //}
             }
         }
     }

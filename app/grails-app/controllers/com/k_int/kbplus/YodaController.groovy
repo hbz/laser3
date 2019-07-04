@@ -4,8 +4,6 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
-import de.laser.AccessService
-import de.laser.DeletionService
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -18,7 +16,6 @@ import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
-import org.quartz.impl.triggers.SimpleTriggerImpl
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -313,6 +310,49 @@ class YodaController {
                 "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
         )
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def retriggerPendingChanges() {
+        log.debug("match IssueEntitlements to TIPPs ...")
+        flash.message = "Pakete werden nachgehalten ..."
+        subscriptionUpdateService.retriggerPendingChanges()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def getTIPPsWithoutGOKBId() {
+        log.debug("delete TIPPs without GOKb-ID")
+        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_STATUS_DELETED)
+        List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
+        Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
+        issueEntitlementsAffected.each { IssueEntitlement ie ->
+            if(ieTippMap.get(ie.tipp))
+                ieTippMap[ie.tipp] << ie
+            else {
+                Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
+                ies.add(ie)
+                ieTippMap[ie.tipp] = ies
+            }
+        }
+        [tipps: tippsWithoutGOKbID, issueEntitlements: ieTippMap]
+    }
+
+    @Secured(['ROLE_YODA'])
+    def purgeTIPPsWithoutGOKBId() {
+        def toDelete = JSON.parse(params.toDelete)
+        if(params.doIt == "true") {
+            toDelete.each { oldTippId, newTippId ->
+                TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
+                TitleInstancePackagePlatform newTipp = TitleInstancePackagePlatform.get(newTippId)
+                deletionService.deleteTIPP(oldTipp,newTipp)
+            }
+            redirect(url: request.getHeader('referer'))
+        }
+        else {
+            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete}"
+            redirect action: 'getTIPPsWithoutGOKBId'
+        }
     }
 
     @Secured(['ROLE_ADMIN'])

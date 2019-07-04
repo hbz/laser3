@@ -2609,13 +2609,14 @@ class BootStrap {
         RefdataValue.loc('Document Type', [key: 'KBART', en: 'KBART', de: 'KBART'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [key: 'Title List', en: 'Title List', de: 'Titelliste'], BOOTSTRAP)
 
-
+        /*
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
 
         RefdataValue.loc('Entitlement Issue Status', [en: 'Live', de: 'Live'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
+        */
 
         RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
@@ -2776,6 +2777,7 @@ class BootStrap {
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Transferred', de: 'Transferred'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'], BOOTSTRAP)
 
         RefdataCategory.loc('TIPP Access Status',
                 [en: 'TIPP Access Status', de: 'TIPP Access Status'], BOOTSTRAP)
