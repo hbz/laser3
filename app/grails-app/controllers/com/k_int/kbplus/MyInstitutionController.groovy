@@ -3895,10 +3895,8 @@ AND EXISTS (
         result
       }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
 
         def result = setResultGenerics()
@@ -3908,12 +3906,12 @@ AND EXISTS (
 
         result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
-                        tenant: contextService.getOrg() // private properties
+                        tenant: result.institution // private properties
                 )
 
         result.num_visiblePersons = result.visiblePersons.size()

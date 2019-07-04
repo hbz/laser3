@@ -26,14 +26,13 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 0px 30px;
+            padding: 0;
             background-color: rgba(0,0,0, 0.75);
             z-index: 99;
         }
-        #swagger-ui .topbar input {
-            width: 250px;
-            padding: 8px 10px;
-            border: none;
+        #swagger-ui .topbar .topbar-wrapper {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
         }
         #swagger-ui .topbar .ui-box {
             font-family: "Courier New";
@@ -41,7 +40,18 @@
             padding: 5px 10px;
             color: #fff;
         }
-
+        #swagger-ui .topbar input {
+            width: 200px;
+            margin: 3px 0;
+            padding: 8px 10px;
+            border: none;
+        }
+        #swagger-ui .topbar input[name=apiContext] {
+            width: 250px;
+        }
+        #swagger-ui .topbar input[name=apiAuth] {
+            width: 470px;
+        }
         #swagger-ui .topbar .link,
         #swagger-ui .topbar .download-url-wrapper {
             display: none;
@@ -52,11 +62,6 @@
         #swagger-ui textarea.curl {
             color: #666;
             background-color: #fff;
-        }
-
-        .glow {
-            background-color: yellow !important;
-            transition: background-color 0.5s;
         }
     </style>
 

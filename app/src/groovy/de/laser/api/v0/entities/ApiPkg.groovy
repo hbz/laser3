@@ -3,6 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import grails.converters.JSON
@@ -37,17 +38,15 @@ class ApiPkg {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-        result
+
+        ApiToolkit.checkPreconditionFailed(result)
     }
 
     /**
      * @return JSON | FORBIDDEN
      */
     static getPackage(Package pkg, Org context, boolean hasAccess) {
-        Collection<Object> result = []
+        Map<String, Object> result = [:]
         // TODO
         if (! hasAccess) {
             pkg.orgs.each { orgRole ->

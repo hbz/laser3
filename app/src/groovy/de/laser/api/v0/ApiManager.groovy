@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.56'
+    static final VERSION = '0.57'
     static final NOT_SUPPORTED = false
 
     /**
@@ -36,207 +36,161 @@ class ApiManager {
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-        if ('costItem'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
-                def costItem = ApiCostItem.findCostItemBy(query, value)
-                if (costItem && !(costItem in failureCodes)) {
-                    result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
-                }
+        def resolve = { endpoint, supportedFormats ->
+            if (! endpoint.equalsIgnoreCase(obj)) {
+                return Constants.HTTP_NOT_IMPLEMENTED
             }
-            else {
+            else if (! format in ApiReader.SUPPORTED_FORMATS){
                 return Constants.HTTP_NOT_ACCEPTABLE
+            }
+            return Constants.VALID_REQUEST
+        }
+
+        if (resolve('costItem', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
+
+            def costItem = ApiCostItem.findCostItemBy(query, value)
+
+            if (costItem && !(costItem in failureCodes)) {
+                result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
             }
         }
-        else if ('costItemList'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
+        else if (resolve('costItemList', ApiReader.SUPPORTED_FORMATS.costItem) == Constants.VALID_REQUEST) {
 
-                def identifierAndTimestamp = ApiToolkit.parseTimeLimitedQuery( query, value )
-                if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
-                    return Constants.HTTP_BAD_REQUEST
-                }
+            def identifierAndTimestamp = ApiToolkit.parseTimeLimitedQuery( query, value )
 
-                result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
-                if (result && !(result in failureCodes)) {
-
-                    if(identifierAndTimestamp[1].key == 'timestamp'){
-                        result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, identifierAndTimestamp[1].value)
-                    }
-                    else {
-                        result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
-                    }
-                }
+            if (identifierAndTimestamp == Constants.HTTP_BAD_REQUEST) {
+                return Constants.HTTP_BAD_REQUEST
             }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+
+            result = ApiOrg.findOrganisationBy(identifierAndTimestamp[0].key, identifierAndTimestamp[0].value) // use of http status code
+
+            if (result && !(result in failureCodes)) {
+
+                if(identifierAndTimestamp[1].key == 'timestamp'){
+                    result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, identifierAndTimestamp[1].value)
+                }
+                else {
+                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+                }
             }
         }
         else if ('document'.equalsIgnoreCase(obj)) {
-            //if (format in ApiReader.SUPPORTED_FORMATS.document) {
-                result = ApiDoc.findDocumentBy(query, value)
-                if (result && !(result in failureCodes)) {
-                    result = ApiDoc.getDocument((Doc) result, contextOrg, accessDueDatamanager)
-                }
-            //}
+
+            result = ApiDoc.findDocumentBy(query, value)
+
+            if (result && !(result in failureCodes)) {
+                result = ApiDoc.getDocument((Doc) result, contextOrg, accessDueDatamanager)
+            }
         }
         else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
-                def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
-                if (subPkg && !(subPkg in failureCodes) ) {
-                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, accessDueDatamanager)
 
-                    if (result && format == Constants.MIME_TEXT_PLAIN) {
-                        def kbart = ApiKbartConverter.convertIssueEntitlements(result)
-                        result = ApiKbartConverter.getAsDocument(kbart)
-                    }
+            def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
+
+            if (subPkg && !(subPkg in failureCodes) ) {
+                result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, accessDueDatamanager)
+
+                if (result && format == Constants.MIME_TEXT_PLAIN) {
+                    def kbart = ApiKbartConverter.convertIssueEntitlements(result)
+                    result = ApiKbartConverter.getAsDocument(kbart)
                 }
             }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+        }
+        else if (resolve('license', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
+
+            result = ApiLicense.findLicenseBy(query, value)
+
+            if (result && !(result in failureCodes)) {
+                result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
             }
         }
-        else if ('license'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.license) {
-                result = ApiLicense.findLicenseBy(query, value)
+        else if (resolve('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
-                if (result && !(result in failureCodes)) {
-                    result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
+            result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+
+            if (result && !(result in failureCodes)) {
+                result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
+            }
+        }
+        else if (resolve('oa2020', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
+
+            result = ApiOrg.findOrganisationBy(query, value)
+
+            if (result && !(result in failureCodes)) {
+                def ssa = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
+
+                if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                    result = ApiOA2020.getOrganisation(result)
+                }
+                else {
+                    result = Constants.HTTP_FORBIDDEN
                 }
             }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
         }
-        else if ('licenseList'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.license) {
-                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
-                if (result && !(result in failureCodes)) {
-                    result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-        }
-        else if ('oa2020'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
-                result = ApiOrg.findOrganisationBy(query, value)
+        else if (resolve('oa2020List', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
 
-                if (result && !(result in failureCodes)) {
-                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
-
-                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiOA2020.getOrganisation(result)
-                    }
-                    else {
-                        result = Constants.HTTP_FORBIDDEN
-                    }
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-        }
-        else if ('oa2020List'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.oa2020) {
-                result = ApiOA2020.getAllOrgs()
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
+            result = ApiOA2020.getAllOrgs()
         }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
-                def lic = ApiLicense.findLicenseBy(query, value)
 
-                if (lic && !(lic in failureCodes)) {
-                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, accessDueDatamanager)
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+            def lic = ApiLicense.findLicenseBy(query, value)
+
+            if (lic && !(lic in failureCodes)) {
+                result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, accessDueDatamanager)
             }
         }
-        else if ('organisation'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
-                result = ApiOrg.findOrganisationBy(query, value)
+        else if (resolve('organisation', ApiReader.SUPPORTED_FORMATS.organisation) == Constants.VALID_REQUEST) {
 
-                if (result && !(result in failureCodes)) {
-                    result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+            result = ApiOrg.findOrganisationBy(query, value)
+
+            if (result && !(result in failureCodes)) {
+                result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
             }
         }
         else if (NOT_SUPPORTED && 'package'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.package) {
-                result = ApiPkg.findPackageBy(query, value)
 
-                if (result && !(result in failureCodes)) {
-                    result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
+            result = ApiPkg.findPackageBy(query, value)
+
+            if (result && !(result in failureCodes)) {
+                result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
+            }
+        }
+        else if (resolve('refdataList', ApiReader.SUPPORTED_FORMATS.refdataList) == Constants.VALID_REQUEST) {
+
+            result = ApiCatalogue.getAllRefdatas()
+        }
+        else if (resolve('statistic', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
+
+            result = ApiPkg.findPackageBy(query, value) // use of http status code
+
+            if (result && !(result in failureCodes)) {
+                def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+
+                if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
+                    result = ApiStatistic.getPackage(result)
+                }
+                else {
+                    result = Constants.HTTP_FORBIDDEN
                 }
             }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
         }
-        else if ('refdataList'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.refdataList) {
-                result = ApiCatalogue.getAllRefdatas()
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-        }
-        else if ('statistic'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
-                result = ApiPkg.findPackageBy(query, value) // use of http status code
+        else if (resolve('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
-                if (result && !(result in failureCodes)) {
-                    def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+            result = ApiStatistic.getAllPackages()
+        }
+        else if (resolve('subscription', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
-                    if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                        result = ApiStatistic.getPackage(result)
-                    }
-                    else {
-                        result = Constants.HTTP_FORBIDDEN
-                    }
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-        }
-        else if ('statisticList'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.statistic) {
-                //result = ApiStatistic.getAllOrgs()
-                result = ApiStatistic.getAllPackages()
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
-            }
-        }
-        else if ('subscription'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.subscription) {
-                result = ApiSubscription.findSubscriptionBy(query, value)
+            result = ApiSubscription.findSubscriptionBy(query, value)
 
-                if (result && !(result in failureCodes)) {
-                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+            if (result && !(result in failureCodes)) {
+                result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
             }
         }
-        else if ('subscriptionList'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.subscription) {
-                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
-                if (result && !(result in failureCodes)) {
-                    result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)
-                }
-            }
-            else {
-                return Constants.HTTP_NOT_ACCEPTABLE
+        else if (resolve('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
+
+            result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+
+            if (result && !(result in failureCodes)) {
+                result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)
             }
         }
         else {

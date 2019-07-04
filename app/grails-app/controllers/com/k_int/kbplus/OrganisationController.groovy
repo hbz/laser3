@@ -924,7 +924,7 @@ class OrganisationController extends AbstractDebugController {
                     result.departmentalView = true
             }
             //restrictions hold if viewed org is not the context org
-            if(org != result.orgInstance && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
+            if(org.id != result.orgInstance.id && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
                 //restrictions further concern only singe users, not consortia
                 if(accessService.checkPerm("ORG_INST")) {
                     if(result.orgInstance.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)) {
