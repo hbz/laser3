@@ -201,7 +201,7 @@ class SubscriptionUpdateService {
         }
         //globalSourceSyncService.cleanUpGorm()
         log.debug("pending changes retrieved, go on with comparison ...")
-        IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub where sub.instanceOf = null').eachWithIndex{ IssueEntitlement entry, int ctr ->
+        IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub where sub.instanceOf = null and ie.status != :deleted',[deleted:RDStore.TIPP_STATUS_DELETED]).eachWithIndex{ IssueEntitlement entry, int ctr ->
             if(entry.subscription.status != RDStore.SUBSCRIPTION_EXPIRED) {
                 //log.debug("now processing ${entry.id} - ${entry.subscription.dropdownNamingConvention(contextOrg)}")
                 boolean equivalent = false
