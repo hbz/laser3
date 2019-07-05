@@ -53,7 +53,7 @@ class SemanticUiDropdownTagLib {
         out << '<select class="ui fluid labeled search dropdown' + id + '">'
 
         if (attrs.noSelection) {
-            out << '<option value="">' + attrs.noSelection + '</div>'
+            out << '<option value="">' + attrs.noSelection + '</option>'
         }
 
         attrs.from?.each { item ->
