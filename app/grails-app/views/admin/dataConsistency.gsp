@@ -29,7 +29,7 @@
                         <tr>
                             <th>ImpId</th>
                             <th>Vorkommen</th>
-                            <th>${message(code:'default.actions')}</th>
+                            <th class="la-action-info">${message(code:'default.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,7 +61,7 @@
                         <th>Attribut</th>
                         <th>Wert</th>
                         <th>Vorkommen</th>
-                        <th>${message(code:'default.actions')}</th>
+                        <th class="la-action-info">${message(code:'default.actions')}</th>
                     </tr>
                     </thead>
                     <tbody>

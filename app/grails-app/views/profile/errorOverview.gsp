@@ -31,7 +31,7 @@
                     <th class="header"><g:message code="ticket.created.label" default="Created" /></th>
                     <th class="header"><g:message code="ticket.title.label" default="Title" /></th>
                     <th class="header"><g:message code="ticket.author.label" default="Author" /></th>
-                    <th>${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions')}</th>
                 </tr>
             </thead>
             <tbody>

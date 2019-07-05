@@ -729,6 +729,8 @@ deckSaver = {
             deckSaver.enableXeditable ('.xEditableDatepicker');
             deckSaver.enableXeditable ('.xEditableManyToOne');
 
+            $('.la-action-info').text('<g:message code="default.actions"  />')
+
         }
         else {
             // ***************************
@@ -765,6 +767,8 @@ deckSaver = {
             deckSaver.diableXeditable ('.xEditable');
             deckSaver.diableXeditable ('.xEditableDatepicker');
             deckSaver.diableXeditable ('.xEditableManyToOne');
+
+            $('.la-action-info').text('<g:message code="default.informations"  />')
         }
     }
 }

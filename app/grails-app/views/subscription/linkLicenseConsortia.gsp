@@ -95,7 +95,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
                 <th>${message(code: 'subscription.linktoLicense')}</th>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>
