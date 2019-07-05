@@ -3,7 +3,7 @@
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
                 workFlowPart: workFlowPart,
                 workFlowPartNext: workFlowPartNext
-            ]" method="post" class="ui form newLicence">
+            ]" method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
@@ -15,7 +15,6 @@
                       value="${sourceSubscription?.id}"
                       />
             </div>
-                      %{--disabled="${(subscription)? true : false}"/>--}%
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
                 <g:select class="ui search dropdown"
@@ -29,7 +28,7 @@
         </div>
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field" style="text-align: right;">
-                <input type="submit" class="ui wide button" value="Lizenzen auswählen" />
+                <input type="submit" class="ui wide button" value="Lizenzen auswählen"/>
             </div>
         </div>
 

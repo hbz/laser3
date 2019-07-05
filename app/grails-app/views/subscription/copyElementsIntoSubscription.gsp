@@ -74,10 +74,22 @@
                     </div>
                 </div>
             </div>
-            <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
+            <div class="${workFlowPart == WORKFLOW_SUBSCRIBER ? 'active' : ''} step">
                 <div class="content">
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
+                            ${message(code: 'consortium.subscriber')}
+                        </g:link>
+                    </div>
+                    <div class="description">
+                        <i class="university icon"></i>${message(code: 'consortium.subscriber')}
+                    </div>
+                </div>
+            </div>
+            <div class="${workFlowPart == WORKFLOW_PROPERTIES ? 'active' : ''} step">
+                <div class="content">
+                    <div class="title">
+                        <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}">
                             ${message(code: 'properties')}
                         </g:link>
                     </div>
@@ -122,7 +134,7 @@
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}"  workFlowPart="${WORKFLOW_SUBSCRIBER}">
                 <div class="content">
                     <div class="title">
                         ${message(code: 'consortium.subscriber')}

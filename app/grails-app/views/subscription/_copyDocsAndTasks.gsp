@@ -239,7 +239,8 @@
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyDocsAndTasks.button')}" />
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation() "/>
+            <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
         </div>
     </g:form>
 </semui:form>

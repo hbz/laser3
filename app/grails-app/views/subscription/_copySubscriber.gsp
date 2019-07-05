@@ -6,18 +6,12 @@
 			targetSubscription: targetSubscription,
 			allSubscriptions_readRights: allSubscriptions_readRights,
 			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
-            params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
-		<g:hiddenField name="baseSubscription" value="${params.id}"/>
-		<g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}"/>
-		<g:hiddenField name="newSubscription" value="${newSub?.id}"/>
-		<g:set var="rdvGcpI10n" value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}"/>
-		<g:set var="rdvSseI10n" value="${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')}"/>
+	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
 
 		<table class="ui celled table">
 			<tbody>
 			<g:if test="${validSourceSubChilds}">
-				<g:each in="${[validSourceSubChilds]}" var="outerLoop">
 					<table>
 						<tr>
 							<td>
@@ -36,16 +30,13 @@
 											<th>${message(code: 'subscription.details.status')}</th>
 											<th>
 												<g:if test="${outerLoop}">
-													%{--<g:checkBox name="subListToggler" id="subListToggler" checked="false"/>--}%
-                                                    %{--</g:if>--}%
-                                                    %{--<g:if test="${targetSubscription}">--}%
                                                     <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
 												</g:if>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
-										<g:each in="${outerLoop}" var="sub">
+										<g:each in="${validSourceSubChilds}" var="sub">
 											<tr>
 												<g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
 													<td>${subscriberOrg.sortname}</td>
@@ -54,8 +45,7 @@
 													<td>${sub.status.getI10n('value')}</td>
 													<td>
 														<div class="ui checkbox la-toggle-radio la-replace">
-															%{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
-															<g:checkBox name="subscription.copySubscriber" value="${genericOIDService.getOID(subscriberOrg)}" data-action="copy" checked="${true}" />
+															<g:checkBox name="subscription.copySubscriber" value="${genericOIDService.getOID(sub)}" data-action="copy" checked="${true}" />
 														</div>
 													</td>
 												</g:each>
@@ -63,55 +53,44 @@
 										</g:each>
 									</tbody>
 								</table>
-				</g:each>
 							</td>
 							<td>
 							%{---------------------------------------}%
-								<g:each in="${[validTargetSubChilds]}" var="outerLoop">
-									<table class="ui celled la-table table">
-										<thead>
+								<table class="ui celled la-table table">
+									<thead>
+									<tr>
+										<th colspan="4">
+											<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+										</th>
+									</tr>
+									<tr>
+										<th>${message(code: 'default.sortname.label')}</th>
+										<th>${message(code: 'default.startDate.label')}</th>
+										<th>${message(code: 'default.endDate.label')}</th>
+										<th>${message(code: 'subscription.details.status')}</th>
+									</tr>
+									</thead>
+									<tbody>
+									<g:each in="${validTargetSubChilds}" var="sub">
 										<tr>
-											<th colspan="5">
-												<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
-											</th>
+											<g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
+												<td>${subscriberOrg.sortname}</td>
+												<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+												<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+												<td>${sub.status.getI10n('value')}</td>
+											</g:each>
 										</tr>
-										<tr>
-											<th>${message(code: 'default.sortname.label')}</th>
-											<th>${message(code: 'default.startDate.label')}</th>
-											<th>${message(code: 'default.endDate.label')}</th>
-											<th>${message(code: 'subscription.details.status')}</th>
-											<th>
-												<g:if test="${targetSubscription}">
-													<input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
-												</g:if>
-											</th>
-										</tr>
-										</thead>
-										<tbody>
-										<g:each in="${outerLoop}" status="j" var="sub">
-											<tr>
-												<g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
-													<td>${subscriberOrg.sortname}</td>
-													<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
-													<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
-													<td>${sub.status.getI10n('value')}</td>
-													<td>
-														<div class="ui checkbox la-toggle-radio la-noChange">
-                                                            %{--<g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/>--}%
-                                                            <g:checkBox name="subscription.deleteSubscriber" value="${genericOIDService.getOID(subscriberOrg)}" data-action="delete" checked="${false}" />
-														</div>
-													</td>
-												</g:each>
-											</tr>
-										</g:each>
-										</tbody>
-									</table>
-								</g:each>
+									</g:each>
+									</tbody>
+								</table>
 							%{---------------------------------------}%
 							</td>
 					</table>
 
-				<input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copySubscriber.button')}"/>
+				<g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+				<div class="sixteen wide field" style="text-align: right;">
+	                <input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.details.copyElementsIntoSubscription.copySubscriber.button')}" ${submitDisabled} />
+				</div>
 			</g:if>
 			<g:else>
 				<br><strong><g:message code="subscription.details.copyElementsIntoSubscription.noMembers" /></strong>
