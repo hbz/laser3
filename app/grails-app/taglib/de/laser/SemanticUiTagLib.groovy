@@ -511,11 +511,14 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" > CONTENT <semui:modal>
+    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
+    // CONTENT
+    // <semui:modal>
 
     def modal = { attrs, body ->
 
         String id = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
         String text = attrs.text ? attrs.text : ''
         String message = attrs.message ? "${message(code: attrs.message)}" : ''
         String title = (text && message) ? text + " - " + message : text + message
@@ -525,7 +528,7 @@ class SemanticUiTagLib {
         String msgSave     = attrs.msgSave ?: (editmodal ? "Änderungen speichern" : "Anlegen")
         String msgDelete   = attrs.msgDelete ?: "Löschen"
 
-        out << '<div class="ui modal"' + id + '>'
+        out << '<div class="ui modal ' + modalSize + '"' + id + '>'
         out << '<div class="header">' + title + '</div>'
         out << '<div class="content">'
         out << body()
@@ -551,6 +554,7 @@ class SemanticUiTagLib {
         out << '</div>'
         out << '</div>'
     }
+
 
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp
