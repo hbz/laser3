@@ -638,23 +638,23 @@
                                 })
                             </r:script>
 
+
                             </div>
-                            </g:if>
+                        </g:if>
                             <g:if test="${(params.mode)}">
                                 <div class="item">
                                     <g:if test="${params.mode=='advanced'}">
                                         <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                             <i class="icon plus square"></i>
+                                        </div>
                                     </g:if>
                                     <g:else>
                                         <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                             <i class="icon plus square green slash"></i>
+                                        </div>
                                     </g:else>
                                 </div>
-
-
-
-                            <script>
+                                <script>
                                 var LaToggle = {};
                                 LaToggle.advanced = {};
                                 LaToggle.advanced.button = {};
@@ -691,14 +691,12 @@
                                     .ready(LaToggle.advanced.button.ready)
                                 ;
                             </script>
-
-                    </div>
-
-                    </div>
                             </g:if>
-                    <%--semui:editableLabel editable="${editable}" /--%>
+                </div>
+
             </div>
-        </div>
+                    <%--semui:editableLabel editable="${editable}" /--%>
+
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
         <%-- global content container --%>
