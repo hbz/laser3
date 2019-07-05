@@ -12,13 +12,14 @@ class AccessPointController extends AbstractDebugController {
     def springSecurityService
     def contextService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET','POST']]
-    
+
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def addIpRange() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
         def org = orgAccessPoint.org;
@@ -120,7 +121,7 @@ class AccessPointController extends AbstractDebugController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
-         def accessPoint = OrgAccessPoint.get(params.id)
+        def accessPoint = OrgAccessPoint.get(params.id)
 
         def org = accessPoint.org;
         def orgId = org.id;
