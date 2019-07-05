@@ -640,7 +640,8 @@ deckSaver = {
         toggleButton: $(".ui.toggle.button"),
         toggleIcon: $(".ui.toggle.button .icon"),
         // the target area
-        areaThatIsAffected: $("#collapseableSubDetails"),
+        //areaThatIsAffected: $("#collapseableSubDetails"),
+        areaThatIsAffected:$(".la-show-context-orgMenu"),
 
         card: {
             hidable:$(".la-js-hideable"),

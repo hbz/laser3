@@ -18,14 +18,14 @@ class SemanticUiDropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<div class="ui icon buttons la-ctrls la-float-right">'
+        out << '<div class="ui icon buttons la-ctrls la-float-right la-js-dont-hide-button">'
         out <<   body()
         out << '</div><br>'
     }
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<   '<i class="download icon"></i>'
         out <<   '<div class="menu">'
 
@@ -82,7 +82,7 @@ class SemanticUiDropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<  '<i class="magic icon"></i>'
         out <<  '<div class="menu">'
 

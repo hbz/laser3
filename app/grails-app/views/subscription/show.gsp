@@ -29,10 +29,12 @@
             <h1 class="ui icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
 
-        <h1 class="ui icon header"><semui:headerIcon />
-            <semui:xEditable owner="${subscriptionInstance}" field="name" />
-        </h1>
-        <semui:auditButton auditable="[subscriptionInstance, 'name']"/>
+        <span class="la-js-editmode-container la-header-with-icon">
+            <h1 class="ui icon header"><semui:headerIcon />
+                <semui:xEditable owner="${subscriptionInstance}" field="name" />
+            </h1>
+            <semui:auditButton auditable="[subscriptionInstance, 'name']" />
+        </span>
         <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
