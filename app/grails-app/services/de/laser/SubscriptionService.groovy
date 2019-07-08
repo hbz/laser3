@@ -280,11 +280,9 @@ class SubscriptionService {
             def found = null
             getValidSubChilds(targetSub).each{
                 it.getAllSubscribers().each {ts ->
-//                    found = subMember.getAllSubscribers().find { subM -> subM.id == ts.id }
                     subMember.getAllSubscribers().each { subM ->
                         if (subM.id == ts.id){
                             found = ts
-                            //Schleifen abbrechen
                         }
                     }
                 }
