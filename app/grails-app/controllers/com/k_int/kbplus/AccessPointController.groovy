@@ -147,8 +147,8 @@ class AccessPointController extends AbstractDebugController {
     def edit_ip() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
 
-        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4cidr'
-        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6cidr'
+        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4range'
+        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6range'
         Boolean autofocus = (params.autofocus) ? true : false
 
         //String ipv4Format = 'range'
