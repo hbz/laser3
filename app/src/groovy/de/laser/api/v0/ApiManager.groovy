@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.57'
+    static final VERSION = '0.58'
     static final NOT_SUPPORTED = false
 
     /**
@@ -105,7 +105,7 @@ class ApiManager {
         }
         else if (resolve('licenseList', ApiReader.SUPPORTED_FORMATS.license) == Constants.VALID_REQUEST) {
 
-            result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+            result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
                 result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
@@ -116,19 +116,12 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                def ssa = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
-
-                if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                    result = ApiOA2020.getOrganisation(result)
-                }
-                else {
-                    result = Constants.HTTP_FORBIDDEN
-                }
+                result = ApiOA2020.getOrganisation(result, contextOrg, accessDueDatamanager)
             }
         }
         else if (resolve('oa2020List', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
 
-            result = ApiOA2020.getAllOrgs()
+            result = ApiOA2020.getAllOrgs(accessDueDatamanager)
         }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
 
@@ -160,22 +153,15 @@ class ApiManager {
         }
         else if (resolve('statistic', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
-            result = ApiPkg.findPackageBy(query, value) // use of http status code
+            result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                def ssa = OrgSettings.get(result, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
-
-                if (ssa != OrgSettings.SETTING_NOT_FOUND && ssa.getValue()?.value == 'Yes') {
-                    result = ApiStatistic.getPackage(result)
-                }
-                else {
-                    result = Constants.HTTP_FORBIDDEN
-                }
+                result = ApiStatistic.getPackage(result, contextOrg, accessDueDatamanager)
             }
         }
         else if (resolve('statisticList', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
-            result = ApiStatistic.getAllPackages()
+            result = ApiStatistic.getAllPackages(accessDueDatamanager)
         }
         else if (resolve('subscription', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
@@ -187,7 +173,7 @@ class ApiManager {
         }
         else if (resolve('subscriptionList', ApiReader.SUPPORTED_FORMATS.subscription) == Constants.VALID_REQUEST) {
 
-            result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+            result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
                 result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)

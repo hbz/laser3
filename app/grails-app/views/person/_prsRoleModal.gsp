@@ -11,8 +11,8 @@
                       id="newPrsRoleOrg" name="newPrsRoleOrg"
                           from="${Org.findAll().sort{ it.name ? it.name?.toLowerCase() : it.sortname?.toLowerCase() }}"
                           optionKey="id"
-                          optionValue="${{ it.name ?: it.sortname }}"
-                value="${personOrg?.id}"
+                          optionValue="${{ it.name ?: it.sortname ?: it.shortname }}"
+                value="${presetOrgId}"
             />
         </div>
 

@@ -345,7 +345,7 @@ ${personInstance}
         roleType: PersonRole.TYPE_FUNCTION,
         roleTypeValues: PersonRole.getAllRefdataValues('Person Function'),
         message:'person.function_new.label',
-        personOrg: personOrg]" />
+        presetOrgId: presetOrg?.id]" />
 
 <g:render template="prsRoleModal" model="[
         tmplId: 'prPositionModal',
@@ -353,7 +353,7 @@ ${personInstance}
         roleType: PersonRole.TYPE_POSITION,
         roleTypeValues: PersonRole.getAllRefdataValues('Person Position'),
         message:'person.position_new.label',
-        personOrg: personOrg]" />
+        presetOrgId: presetOrg?.id]" />
 
 </body>
 </html>

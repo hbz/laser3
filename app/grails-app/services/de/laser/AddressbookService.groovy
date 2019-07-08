@@ -85,17 +85,17 @@ class AddressbookService {
 
     List getVisiblePersons(String fromSite,max,offset,params) {
         def qParts = [
-                'p.tenant = :tenant',
                 'p.isPublic = :public'
         ]
-        def qParams = [
-                tenant: contextService.org,
-
-        ]
+        def qParams = [:]
         switch(fromSite) {
-            case "addressbook": qParams.public = RDStore.YN_NO
+            case "addressbook":
+                qParams.public = RDStore.YN_NO
+                qParts << 'p.tenant = :tenant'
+                qParams.tenant = contextService.org
                 break
-            case "myPublicContacts": qParams.public = RDStore.YN_YES
+            case "myPublicContacts":
+                qParams.public = RDStore.YN_YES
                 break
         }
 

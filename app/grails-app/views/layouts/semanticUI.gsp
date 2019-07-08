@@ -554,7 +554,7 @@
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
                                 <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
-                                <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
+                                <a data-semui="modal" href="#modalDsgvo" class="item" >${message(code:'privacyNotice')}</a>
 
                                 <div class="divider"></div>
 
@@ -583,6 +583,17 @@
         </div><!-- container -->
 
     </nav><!-- main menu -->
+
+    <semui:modal id="modalDsgvo" message="privacyNotice" hideSubmitButton="true" modalSize="small">
+        <a href="https://www.hbz-nrw.de/datenschutz"  class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
+            <i class="share square icon"></i>
+            ${message(code:'dse')}
+        </a>
+        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LAS.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
+            <i class="file pdf icon"></i>
+            ${message(code:'vdv')}
+        </a>
+    </semui:modal>
 
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>

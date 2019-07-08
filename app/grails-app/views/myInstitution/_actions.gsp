@@ -57,4 +57,4 @@
         </semui:actionsDropdown>
     </g:if>
 </g:if>
-<g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org']}"/>
+<g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
