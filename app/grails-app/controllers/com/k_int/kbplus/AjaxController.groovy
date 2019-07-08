@@ -448,7 +448,7 @@ class AjaxController {
                 type: pd.type,
                 multipleOccurrence: pd.multipleOccurrence,
                 tenant: pd.tenant
-        ).minus(pd)
+        )//.minus(pd)
 
         queryResult.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)

@@ -8,7 +8,7 @@
             <tr>
                 <th>Person</th>
                 <th>Funktion</th>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

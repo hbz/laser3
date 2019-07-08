@@ -170,4 +170,8 @@ class Platform extends AbstractBaseDomain {
     }
     return false
   }
+  @Override
+  String toString() {
+    name
+  }
 }

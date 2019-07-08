@@ -232,8 +232,8 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button la-audit-button">'
-                            out   << '<i class="icon thumbtack"></i>'
+                            out << '<div class="ui simple dropdown icon mini green button la-audit-button" data-content="Wert wird vererbt">'
+                            out   << '<i class="icon la-js-editmode-icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
                             out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
@@ -252,14 +252,15 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << ' &nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt">'
-                            out << g.link( '<i class="icon la-thumbtack slash"></i>',
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href="'
+                            out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button la-js-dont-hide-button la-audit-button'
                             )
-                            out <<  '</span>'
+                            out << '">'
+                            out << '<i class="icon la-js-editmode-icon la-thumbtack slash"></i>'
+                            out << '</a>'
                         }
                     }
                 }
@@ -511,11 +512,14 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" > CONTENT <semui:modal>
+    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
+    // CONTENT
+    // <semui:modal>
 
     def modal = { attrs, body ->
 
         String id = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
         String text = attrs.text ? attrs.text : ''
         String message = attrs.message ? "${message(code: attrs.message)}" : ''
         String title = (text && message) ? text + " - " + message : text + message
@@ -525,7 +529,7 @@ class SemanticUiTagLib {
         String msgSave     = attrs.msgSave ?: (editmodal ? "Änderungen speichern" : "Anlegen")
         String msgDelete   = attrs.msgDelete ?: "Löschen"
 
-        out << '<div class="ui modal"' + id + '>'
+        out << '<div class="ui modal ' + modalSize + '"' + id + '>'
         out << '<div class="header">' + title + '</div>'
         out << '<div class="content">'
         out << body()
@@ -551,6 +555,7 @@ class SemanticUiTagLib {
         out << '</div>'
         out << '</div>'
     }
+
 
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp

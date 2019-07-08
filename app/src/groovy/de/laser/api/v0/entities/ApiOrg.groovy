@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import grails.converters.JSON
@@ -36,10 +37,8 @@ class ApiOrg {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-        result
+
+        ApiToolkit.checkPreconditionFailed(result)
     }
 
     /**
@@ -59,7 +58,7 @@ class ApiOrg {
      * @return JSON | FORBIDDEN
      */
     static getOrganisation(Org org, Org context, boolean hasAccess) {
-        Collection<Object> result = []
+        Map<String, Object> result = [:]
         hasAccess = calculateAccess(org, context, hasAccess)
 
         if (hasAccess) {

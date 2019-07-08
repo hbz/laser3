@@ -1080,7 +1080,6 @@ class FinanceController extends AbstractDebugController {
                               PendingChange change = new PendingChange(costItem: cci, owner: cci.owner,desc: diff, ts: new Date())
                               if(!change.save(flush: true))
                                   log.error(change.errors)
-                              //continue here: a) remove pending change again if a button has been clicked or after a certain time, b) check if everything works
                           }
                       }
 

@@ -1727,8 +1727,13 @@ class SurveyController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyEmailaddresses() {
         def result = [:]
+        result.modalID = params.targetId
+        result.orgList = []
 
-        result.orgList = Org.findAllByIdInList(params.list("orgListIDs"))
+        if (params.get('orgListIDs')) {
+            List idList = (params.get('orgListIDs').split(',').collect{ Long.valueOf(it.trim()) }).toList()
+            result.orgList = Org.findAllByIdInList(idList)
+        }
 
         render(template: "/survey/copyEmailaddresses", model: result)
     }

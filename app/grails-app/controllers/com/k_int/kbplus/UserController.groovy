@@ -182,7 +182,7 @@ class UserController extends AbstractDebugController {
             String newPassword = User.generateRandomPassword()
             result.user.password = newPassword
             if (result.user.save(flush: true)) {
-                flash.message = message(code: 'user.newPassword.success', args: [newPassword])
+                flash.message = message(code: 'user.newPassword.success')
 
                 instAdmService.sendMail(result.user, 'Passwortänderung',
                         '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])

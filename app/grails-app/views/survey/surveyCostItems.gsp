@@ -132,10 +132,10 @@
 
         <div class="four wide column">
 
-        <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
+        <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
+                data-targetId="copyEmailaddresses_ajaxModal2"
                 class="ui icon button right floated trigger-modal">
-            <g:message
-                    code="survey.copyEmailaddresses.participantsHasAccess"/>
+            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
         </g:link>
 
         <br>
@@ -155,10 +155,10 @@
 
         <div class="four wide column">
 
-            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
+            <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id).join(',')}"
+                    data-targetId="copyEmailaddresses_ajaxModal3"
                     class="ui icon button right floated trigger-modal">
-                <g:message
-                        code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
             </g:link>
 
             <br>
@@ -225,25 +225,24 @@
 
 
             <g:set var="surveyParticipantsHasAccess"
-                   value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                       it?.sortname
-                   }}"/>
+                   value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
             <div class="four wide column">
 
-                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess.id})"
+                <g:link data-orgIdList="${(surveyParticipantsHasAccess.id).join(',')}"
+                        data-targetId="copyEmailaddresses_ajaxModal4"
                         class="ui icon button right floated trigger-modal">
-                    <g:message
-                            code="survey.copyEmailaddresses.participantsHasAccess"/>
+                    <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                 </g:link>
 
             </div>
 
 
-            <g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
+            <%--<g:link action="copyEmailaddresses" params='[orgList: surveyParticipantsHasAccess]'
+                    data-targetId="copyEmailaddresses_ajaxModal5"
                     class="ui icon button trigger-modal">
                 <i class="write icon"></i>
-            </g:link>
+            </g:link>--%>
 
             <br>
             <br>
@@ -263,10 +262,10 @@
                    value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
 
             <div class="four wide column">
-                <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess.id})"
+                <g:link data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
+                        data-targetId="copyEmailaddresses_ajaxModal6"
                         class="ui icon button right floated trigger-modal">
-                    <g:message
-                            code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                    <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                 </g:link>
             </div>
 
@@ -307,35 +306,6 @@
 <g:javascript>
 
 var isClicked = false;
-
-function copyEmailAdresses(orgListIDs) {
-            event.preventDefault();
-            $.ajax({
-                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
-                                data: {
-                                    orgListIDs: orgListIDs.join(' '),
-                                }
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
-                $('#dynamicModalContainer').empty().html(data);
-
-                $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
-                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
-                    }
-                    ,
-                    detachable: true,
-                    autofocus: false,
-                    closable: false,
-                    transition: 'scale',
-                    onApprove : function() {
-                        $(this).find('.ui.form').submit();
-                        return false;
-                    }
-                }).modal('show');
-            })
-        };
 
 function addForAllSurveyCostItem() {
                         event.preventDefault();

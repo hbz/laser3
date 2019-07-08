@@ -4,6 +4,7 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
@@ -27,10 +28,8 @@ class ApiDoc {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-        result
+
+        ApiToolkit.checkPreconditionFailed(result)
     }
 
     /**

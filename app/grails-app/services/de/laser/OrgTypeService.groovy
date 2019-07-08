@@ -46,7 +46,6 @@ class OrgTypeService {
     List<License> getCurrentLicenses(Org context) {
         return License.executeQuery( """
             select l from License as l join l.orgLinks as ogr where
-                ( l.status.value != 'Deleted' ) and
                 ( l = ogr.lic and ogr.org = :licOrg ) and
                 ( ogr.roleType = (:roleLic) or ogr.roleType = (:roleLicCons) or ogr.roleType = (:roleLicConsortia) )
         """, [licOrg: context,
@@ -62,7 +61,6 @@ class OrgTypeService {
     List<Subscription> getCurrentSubscriptions(Org context) {
         return Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
-                ( s.status.value != 'Deleted' ) and
                 ( s = ogr.sub and ogr.org = :subOrg ) and
                 ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
         """, [subOrg: context,

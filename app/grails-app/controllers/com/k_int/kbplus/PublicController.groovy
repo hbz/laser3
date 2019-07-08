@@ -356,7 +356,7 @@ class PublicController {
   private def retrieveIssueEntitlements(ti, org, result) {
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []
-    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+    def deleted_ie = RDStore.TIPP_STATUS_DELETED
     def today = new Date()
 
     String ie_query = "select ie from IssueEntitlement as ie join ie.subscription as sub where ie.tipp.title=(:journal) and exists ( select orgs from sub.orgRelations orgs where orgs.org = (:org) AND orgs.roleType.value = 'Subscriber' ) and ie.status != (:deleted_ie) and ie.subscription.owner is not null"

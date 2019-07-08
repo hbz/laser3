@@ -92,6 +92,8 @@ class ApiReaderHelper {
             result.normReference    = lic.sortableReference
             // erms-888
             result.calculatedType   = lic.getCalculatedType()
+            result.startDate        = lic.startDate
+            result.endDate          = lic.endDate
 
             // References
             result.identifiers = retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -183,6 +185,8 @@ class ApiReaderHelper {
             result.impId        = sub.impId
             // erms-888
             result.calculatedType = sub.getCalculatedType()
+            result.startDate      = sub.startDate
+            result.endDate        = sub.endDate
 
             // References
             result.identifiers = retrieveIdentifierCollection(sub.ids) // com.k_int.kbplus.IdentifierOccurrence

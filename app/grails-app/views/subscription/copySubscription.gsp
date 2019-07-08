@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>
@@ -112,11 +113,11 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
                 <th><g:checkBox name="subscription.copyEntitlements" value="${true}"/></th>
                 <th>${message(code: 'subscription.copyEntitlements', default: 'Copy Current Entitlements from Subscription')}</th>
                 <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> ${subscription.issueEntitlements.findAll {
-                    it.status != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                    it.status != RDStore.TIPP_STATUS_DELETED
                 }.size()}
 
                     %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
-                                                <g:if test="${ie.status != com.k_int.kbplus.RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')}">
+                                                <g:if test="${ie.status != RDStore.TIPP_STATUS_DELETED}">
                     ${ie.tipp.title.title}
                 </g:if>
                 </g:each>--}%

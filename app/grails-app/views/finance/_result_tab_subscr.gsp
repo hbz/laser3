@@ -25,7 +25,7 @@
                 <g:sortableColumn property="sub.name" title="${message(code:'financials.forSubscription')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="subPkg.pkg" title="${message(code:'financials.forPackage')}" params="[subscrSort: true]"/>
                 <g:if test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
-                    <th>${message(code:'default.actions')}</th>
+                    <th class="la-action-info">${message(code:'default.actions')}</th>
                 </g:if>
             </g:else>
         </tr>

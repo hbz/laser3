@@ -45,7 +45,7 @@
 ${orgInstance.name}
 </h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance]}"/>
+<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 

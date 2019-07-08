@@ -212,13 +212,13 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary: Retrieving catalogue of combined refdatas
       description: >
         Retrieving an overview for RefdataCategories and RefdataValues
 
       parameters:
-        - $ref: "#/components/parameters/context"
+        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -306,7 +306,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
@@ -314,7 +314,7 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/context"
+        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -334,13 +334,13 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL**
 
       parameters:
-        - $ref: "#/components/parameters/context"
+        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -360,7 +360,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
@@ -368,7 +368,7 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/context"
+        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -388,13 +388,13 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL**
 
       parameters:
-        - $ref: "#/components/parameters/context"
+        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:

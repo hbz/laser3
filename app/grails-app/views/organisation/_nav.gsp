@@ -1,9 +1,12 @@
-<laser:serviceInjection />
+<%@page import="de.laser.helper.RDStore" %>
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
+    <g:if test="${inContextOrg}">
+        <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
+    </g:if>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector.id != RDStore.O_SECTOR_PUBLISHER}">
 
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
@@ -21,7 +24,7 @@
         </g:else>
     </g:if>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
         <semui:securedSubNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
     </g:if>
@@ -36,16 +39,13 @@
                              affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
                              message="menu.my.documents" />
 
-    <g:if test="${orgInstance.id != contextService.org.id}">
+    <g:if test="${!inContextOrg}">
         <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: orgInstance.id]}"
                                  affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM"
                                  message="menu.institutions.myAddressbook"/>
     </g:if>
-    <g:else>
-        <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
-    </g:else>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
 
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,

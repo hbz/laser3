@@ -2,9 +2,9 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection />
 
-<g:set var="modalID"               value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
+<g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
-<semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
+<semui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
     <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
@@ -78,7 +78,7 @@
     </g:each>
     <div class="ui form">
         <div class="field">
-            <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
+            <g:textArea name="emailAddresses" readonly="false" rows="5" cols="1" class="emailAddressesTextArea myTargetsNeu" style="width: 100%;" />
         </div>
         <button class="ui icon button right floated" onclick="copyToClipboard()">
             ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
@@ -99,22 +99,22 @@
         $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
 
 
-        $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
-        $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
+        $("#${modalID} #prsFunctionMultiSelect").change(function() { updateTextArea(); });
+        $("#${modalID} #prsPositionMultiSelect").change(function() { updateTextArea(); });
 
         function copyToEmailProgram() {
-            var emailAdresses = $("#emailAddressesTextArea").val();
+            var emailAdresses = $("#${modalID} .emailAddressesTextArea").val();
             window.location.href = "mailto:"+emailAdresses;
         }
 
         function copyToClipboard() {
-            $("#emailAddressesTextArea").select();
+            $("#${modalID} .emailAddressesTextArea").select();
             document.execCommand("copy");
         }
 
         function updateTextArea() {
-            $("#emailAddressesTextArea").val("")
-            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
+            $("#${modalID} .emailAddressesTextArea").val("")
+            var selectedRoleTypIds = $("#${modalID} #prsFunctionMultiSelect").val().concat( $("#${modalID} #prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
             if (selectedRoleTypIds.length == 0) {
                 emailsForSelectedRoleTypes = jsonAllEmailSet;
@@ -135,7 +135,7 @@
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
             emailsAsString = emailsAsString.join('; ');
-            $("#emailAddressesTextArea").val(emailsAsString);
+            $("#${modalID} .emailAddressesTextArea").val(emailsAsString);
         }
     </script>
 

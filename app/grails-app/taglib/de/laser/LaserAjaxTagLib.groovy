@@ -10,6 +10,10 @@ class LaserAjaxTagLib {
 
     def remoteLink = {attrs, body ->
 
+        def cssClass = attrs.class
+        def id = attrs.id
+        def role = attrs.role
+
         Closure switchEntries = { keys ->
             Map<String, Object> map = [:]
 
@@ -24,7 +28,9 @@ class LaserAjaxTagLib {
 
         String href = g.createLink(hrefMap)
 
-        out << '<a class="la-js-remoteLink" href="' + href + '"'
+        out << "<a role='${role}' class='${cssClass} la-js-remoteLink'  href='" + href + "'"
+
+
 
         attrs.each { k,v ->
             out << ' ' << k << '="' << v << '"'

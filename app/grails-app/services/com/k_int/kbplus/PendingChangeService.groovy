@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDStore
 import grails.converters.*
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
@@ -41,7 +42,7 @@ class PendingChangeService {
                         def tipp = genericOIDService.resolveOID(event.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
 
                             if( ie_to_update.save())
                             {
@@ -63,6 +64,12 @@ class PendingChangeService {
                                 if(prop_info == null){
                                     log.debug("We are dealing with custom properties: ${event}")
                                     processCustomPropertyChange(event)
+                                }
+                                else if ( prop_info.name == 'status' ) {
+                                    RefdataValue oldStatus = RefdataValue.get(event.changeDoc.old.id)
+                                    RefdataValue newStatus = RefdataValue.get(event.changeDoc.new.id)
+                                    log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
+                                    target_object.status = newStatus
                                 }
                                 else if ( prop_info.isAssociation() ) {
                                     log.debug("Setting association for ${event.changeDoc.prop} to ${event.changeDoc.new}");
@@ -146,7 +153,7 @@ class PendingChangeService {
                                     event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
                                 }
 
-                                if(event.changeDoc?.status)
+                                if(event.changeDoc?.status) //continue here: reset DB, perform everything, then check process at this line - status of retired TIPPs goes miraculously to null
                                 {
                                     event.changeDoc?.status = event.changeDoc?.status?.id
                                 }

@@ -7,7 +7,7 @@
                 <th>Verantwortlichkeit</th>
             </g:if>
             <th>Organisation</th>
-            <th>${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions')}</th>
         </tr>
     </thead>
     <g:each in="${visiblePrsLinks}" var="pr">

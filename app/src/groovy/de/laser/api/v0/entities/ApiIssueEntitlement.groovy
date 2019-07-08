@@ -4,6 +4,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionPackage
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
@@ -30,8 +31,9 @@ class ApiIssueEntitlement {
 
         if (sub instanceof Subscription && pkg instanceof Package) {
             result = SubscriptionPackage.findAllBySubscriptionAndPkg(sub, pkg)
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
+            result = ApiToolkit.checkPreconditionFailed(result)
         }
+
         result
     }
 

@@ -26,14 +26,13 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 0px 30px;
+            padding: 0;
             background-color: rgba(0,0,0, 0.75);
             z-index: 99;
         }
-        #swagger-ui .topbar input {
-            width: 250px;
-            padding: 8px 10px;
-            border: none;
+        #swagger-ui .topbar .topbar-wrapper {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
         }
         #swagger-ui .topbar .ui-box {
             font-family: "Courier New";
@@ -41,7 +40,18 @@
             padding: 5px 10px;
             color: #fff;
         }
-
+        #swagger-ui .topbar input {
+            width: 200px;
+            margin: 3px 0;
+            padding: 8px 10px;
+            border: none;
+        }
+        #swagger-ui .topbar input[name=apiContext] {
+            width: 250px;
+        }
+        #swagger-ui .topbar input[name=apiAuth] {
+            width: 470px;
+        }
         #swagger-ui .topbar .link,
         #swagger-ui .topbar .download-url-wrapper {
             display: none;
@@ -52,11 +62,6 @@
         #swagger-ui textarea.curl {
             color: #666;
             background-color: #fff;
-        }
-
-        .glow {
-            background-color: yellow !important;
-            transition: background-color 0.5s;
         }
     </style>
 
@@ -132,6 +137,7 @@
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
+
             }, 1000)
 
             setTimeout(function(){
@@ -145,45 +151,36 @@
                 jQuery('.topbar-wrapper input').on('focus', function(){
                     jQuery(this).select()
                 })
+
+                jQuery('.opblock-summary').append('<button name="generateApiAuth" class="btn">Generate Auth</button>')
+
+                jQuery('button[name=generateApiAuth]').on('click', function(event) {
+                    event.stopPropagation()
+
+                    var div = jQuery(event.target).parents('.opblock').find('.parameters').first()
+                    if (div.length) {
+                        var auth = genDigist(div)
+                        jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
+                    }
+                })
             }, 2000)
 
-            /*
-            var reactAccess = function(element) {
-                for (var key in element) {
-                    if (key.startsWith("__reactInternalInstance$")) {
-                        var compInternals = element[key]._currentElement
-                        var compWrapper = compInternals._owner
-                        var comp = compWrapper._instance
-                        return comp
-                    }
-                }
-                return null
-            }
-            function setContext(div) {
-                var context = jQuery('.topbar-wrapper input[name=apiContext]').val()
-                var elem    = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
-                var react   = reactAccess(elem[0])
-
-
-                elem.attr('value', context)
-                elem.val(context)
-
-                //react.props.value = context
-                react.setState({value: context})
-
-                //elem.trigger('change')
-                //react.forceUpdate()
-            }
-            */
-
             function genDigist(div) {
-                var id      = jQuery('.topbar input[name=apiKey]').val().trim()
-                var key     = jQuery('.topbar input[name=apiPassword]').val().trim()
+                var id      = jQuery('.topbar-wrapper input[name=apiKey]').val().trim()
+                var key     = jQuery('.topbar-wrapper input[name=apiPassword]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""
                 var nounce    = ""
-                var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]').val().trim()
+
+                var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
+                if (context.length) {
+                    context = context.val().trim()
+                }
+                else {
+                    context = ""
+                }
+
                 var query     = ""
                 var body      = ""
 

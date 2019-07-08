@@ -507,4 +507,58 @@ class DeletionService {
 
         result
     }
+
+    static boolean deletePackage(Package pkg) {
+        println "processing package #${pkg.id}"
+        Package.withTransaction { status ->
+            try {
+                //to be absolutely sure ...
+                List<Subscription> subsConcerned = Subscription.executeQuery('select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg',[pkg:pkg])
+                if(subsConcerned) {
+                    println 'issue entitlements detected on package to be deleted .. rollback'
+                    status.setRollbackOnly()
+                    return false
+                }
+                //deleting tipps
+                TitleInstancePackagePlatform.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting pending changes
+                PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting orgRoles
+                OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting (empty) subscription packages
+                SubscriptionPackage.findAllByPkg(pkg).each { tmp -> tmp.delete() }
+                //deleting empty-running trackers
+                GlobalRecordTracker.findByLocalOid(pkg.class.name+':'+pkg.id).delete()
+                pkg.delete()
+                status.flush()
+                return true
+            }
+            catch(Exception e) {
+                println 'error while deleting package ' + pkg.id + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
+
+    boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
+        println "processing tipp #${tipp.id}"
+        TitleInstancePackagePlatform.withTransaction { status ->
+            try {
+                //rebasing subscriptions
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.tipp = :replacement where ie.tipp = :old',[old:tipp,replacement:replacement])
+                //deleting old TIPPs
+                tipp.delete()
+                status.flush()
+                return true
+            }
+            catch(Exception e) {
+                println 'error while deleting tipp ' + tipp.id + ' .. rollback'
+                println e.message
+                status.setRollbackOnly()
+                return false
+            }
+        }
+    }
 }

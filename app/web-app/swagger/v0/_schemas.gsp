@@ -64,25 +64,25 @@
           type: string
         dateCreated:
           type: string
-          format: date
+          format: date-time
         datePaid:
           type: string
-          format: date
+          format: date-time
         endDate:
           type: string
-          format: date
+          format: date-time
         finalCostRounding:
           type: string
         invoiceDate:
           type: string
-          format: date
+          format: date-time
         invoice:
           $ref: "#/components/schemas/Invoice"
         issueEntitlement:
           $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
         lastUpdated:
           type: string
-          format: date
+          format: date-time
         order:
           $ref: "#/components/schemas/Order"
         owner:
@@ -91,7 +91,7 @@
           type: string
         startDate:
           type: string
-          format: date
+          format: date-time
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
       #  subPkg:
@@ -142,21 +142,21 @@
           type: string
         dateOfPayment:
           type: string
-          format: date
+          format: date-time
         dateOfInvoice:
           type: string
-          format: date
+          format: date-time
         datePassedToFinance:
           type: string
-          format: date
+          format: date-time
         endDate:
           type: string
-          format: date
+          format: date-time
         invoiceNumber:
           type: string
         startDate:
           type: string
-          format: date
+          format: date-time
         owner:
           $ref: "#/components/schemas/OrganisationStub"
 
@@ -170,16 +170,16 @@
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
         accessStartDate:
           type: string
-          format: date
+          format: date-time
         accessEndDate:
           type: string
-          format: date
+          format: date-time
         coreStatusStart:
           type: string
-          format: date
+          format: date-time
         coreStatusEnd:
           type: string
-          format: date
+          format: date-time
         coreStatus:
           type: string
           description: Mapping RefdataCategory
@@ -191,7 +191,7 @@
           type: string
         endDate:
           type: string
-          format: date
+          format: date-time
         endVolume:
           type: string
         endIssue:
@@ -211,7 +211,7 @@
           type: string
         startDate:
           type: string
-          format: date
+          format: date-time
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
         tipp:
@@ -224,14 +224,14 @@
       properties:
         dateCreated:
           type: string
-          format: date
+          format: date-time
         documents:
           type: array
           items:
             $ref: "#/components/schemas/Document" # resolved DocContext
         endDate:
           type: string
-          format: date
+          format: date-time
         instanceOf:
           $ref: "#/components/schemas/LicenseStub"
         isPublic:
@@ -241,9 +241,7 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
-          format: date
-        licenseStatus:
-          type: string
+          format: date-time
         licenseType:
           type: string
         onixplLicense:
@@ -258,7 +256,7 @@
             $ref: "#/components/schemas/Property"
         startDate:
           type: string
-          format: date
+          format: date-time
         status:
           type: string
           description: Mapping RefdataCategory "License Status"
@@ -277,7 +275,7 @@
           $ref: "#/components/schemas/Document"
         lastmod:
           type: string
-          format: date
+          format: date-time
         title:
           type: string
 
@@ -399,14 +397,14 @@
           type: string
         dateCreated:
           type: string
-          format: date
+          format: date-time
         documents:
           type: array
           items:
             $ref: "#/components/schemas/Document" # resolved DocContext
         endDate:
           type: string
-          format: date
+          format: date-time
         form:
           type: string
           description: Mapping RefdataCategory "Subscription Form"
@@ -421,15 +419,15 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
         lastUpdated:
           type: string
-          format: date
+          format: date-time
         license: # mapping attr owner
           $ref: "#/components/schemas/LicenseStub"
         manualCancellationDate:
           type: string
-          format: date
+          format: date-time
         manualRenewalDate:
           type: string
-          format: date
+          format: date-time
         noticePeriod:
           type: string
         organisations: # mapping attr orgRelations
@@ -453,7 +451,7 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Resource').collect{ it.value }.join(', ') }]
         startDate:
           type: string
-          format: date
+          format: date-time
         status:
           type: string
           description: Mapping RefdataCategory "Subscription Status"
@@ -486,16 +484,16 @@
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
         accessStartDate:
           type: string
-          format: date
+          format: date-time
         accessEndDate:
           type: string
-          format: date
+          format: date-time
         coreStatusStart:
           type: string
-          format: date
+          format: date-time
         coreStatusEnd:
           type: string
-          format: date
+          format: date-time
         coreStatus:
           type: string
           description: Mapping RefdataCategory
@@ -507,7 +505,7 @@
           type: string
         endDate:
           type: string
-          format: date
+          format: date-time
         endVolume:
           type: string
         endIssue:
@@ -527,7 +525,7 @@
           type: string
         startDate:
           type: string
-          format: date
+          format: date-time
 
 
     IssueEntitlement_in_Subscription:
@@ -546,7 +544,7 @@
       properties:
         endDate:
           type: string
-          format: date
+          format: date-time
         organisation:
           $ref: "#/components/schemas/OrganisationStub"
           description: |
@@ -558,7 +556,7 @@
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Organisational Role').collect{ it.value }.join(', ') }]
         startDate:
           type: string
-          format: date
+          format: date-time
 
 
     Package_in_Subscription:
@@ -681,6 +679,12 @@
           type: array
           items:
             $ref: "#/components/schemas/Identifier"
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
         reference:
           type: string
         normReference:
@@ -743,6 +747,12 @@
         impId:
           type: string
           example: "ff74dd15-e27f-48a2-b2d7-f02389e62639"
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
         name:
           type: string
         calculatedType:
@@ -805,16 +815,16 @@
         $ref: "#/components/schemas/LicenseStub"
 
 
-    OA2020List:
-      type: array
-      items:
-        $ref: "#/components/schemas/OrganisationStub"
+%{--    OA2020List:--}%
+%{--      type: array--}%
+%{--      items:--}%
+%{--        $ref: "#/components/schemas/OrganisationStub"--}%
 
 
-    StatisticList:
-      type: array
-      items:
-        $ref: "#/components/schemas/PackageStub"
+%{--    StatisticList:--}%
+%{--      type: array--}%
+%{--      items:--}%
+%{--        $ref: "#/components/schemas/PackageStub"--}%
 
 
     SubscriptionList:

@@ -37,7 +37,7 @@
                                 <th>Name (EN)</th>
                                 <th>${message(code:'propertyDefinition.type.label')}</th>
                                 <th>${message(code:'propertyDefinition.count.label', default:'Count in Use')}</th>
-                                <th>${message(code:'default.actions')}</th>
+                                <th class="la-action-info">${message(code:'default.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>

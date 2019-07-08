@@ -14709,6 +14709,10 @@ i.icon.la-gokb.square:before {
   text-decoration: inherit;
   text-transform: none;
 }
+
+.la-header-with-icon .la-clone {
+  vertical-align: super;
+}
 /*!
  * # Semantic UI 2.3.1 - Image
  * http://github.com/semantic-org/semantic-ui/

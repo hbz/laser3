@@ -22,4 +22,6 @@ class Constants {
     static final MIME_APPLICATION_XML        = "application/xml"
 
     static final UTF8                        = "UTF-8"
+
+    static final VALID_REQUEST               = "VALID_REQUEST"
 }

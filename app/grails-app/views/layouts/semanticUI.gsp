@@ -453,10 +453,6 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
-
-                            <div class="divider"></div>
-
                             <div class="ui dropdown item">
                                 Fällige Termine
                                 <i class="dropdown icon"></i>
@@ -468,8 +464,18 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
-                            <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
+                            <div class="ui dropdown item">
+                                ${message(code:'menu.admin.syncManagement')}
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
+                                    <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
+                                    <g:link class="item" controller="package" action="getDuplicatePackages">${message(code:'menu.yoda.purgeDuplicatePackages')}</g:link>
+                                    <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
+                                    <g:link class="item" controller="yoda" action="retriggerPendingChanges">${message(code:'menu.yoda.retriggerPendingChanges')}</g:link>
+                                    <g:link class="item" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</g:link>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
@@ -548,15 +554,19 @@
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
                                 <g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>
-                                <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
+                                <a data-semui="modal" href="#modalDsgvo" class="item" >${message(code:'privacyNotice')}</a>
 
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
                                 <div class="divider"></div>
+
                                 <g:if test="${grailsApplication.metadata['app.version']}">
                                     <div class="header">Version: ${grailsApplication.metadata['app.version']} – ${grailsApplication.metadata['app.buildDate']}</div>
                                 </g:if>
+                                <div class="header">
+                                    ${yodaService.getNumberOfActiveUsers()} Benutzer online
+                                </div>
                             </div>
                         </div>
                     </g:if>
@@ -574,6 +584,17 @@
 
     </nav><!-- main menu -->
 
+    <semui:modal id="modalDsgvo" message="privacyNotice" hideSubmitButton="true" modalSize="small">
+        <a href="https://www.hbz-nrw.de/datenschutz"  class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
+            <i class="share square icon"></i>
+            ${message(code:'dse')}
+        </a>
+        <a href="${resource(dir: 'resources', file: 'Verzeichnis_Verarbeitungstaetigkeiten_LAS.pdf')}" class="ui button" target="_blank"  onclick="$('#modalDsgvo').modal('hide')">
+            <i class="file pdf icon"></i>
+            ${message(code:'vdv')}
+        </a>
+    </semui:modal>
+
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>
         <nav class="ui fixed  stackable  menu la-contextBar"  >
@@ -588,7 +609,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${controllerName=='subscription' && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -600,99 +621,51 @@
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
-
                             <r:script>
                                 $(function(){
-                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                        var editMode = true;
+                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                        deckSaver.configs.editMode  = true;
                                     </g:if>
                                     <g:else>
-                                        var editMode = false;
+                                        deckSaver.configs.editMode  = false;
                                     </g:else>
+                                    deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
-                                        editMode = !editMode;
-                                        $.ajax({
+                                        deckSaver.configs.editMode = !deckSaver.configs.editMode;
+                                         $.ajax({
                                             url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
                                             data: {
-                                                showEditMode: editMode
+                                                showEditMode: deckSaver.configs.editMode
                                             },
                                             success: function(){
-                                                toggleEditableElements()
+                                                deckSaver.toggleEditableElements();
+                                            },
+                                            complete: function () {
+
                                             }
+
                                         })
                                     });
-                                    function toggleEditableElements(){
-                                        // for future handling on other views
-                                        // 1. add class 'hidden' via markup to all cards that might be toggled
-                                        // 2. add class 'la-js-hideable' to all cards that might be toggled
-                                        // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
-
-                                        var toggleButton = $(".ui.toggle.button");
-                                        var toggleIcon = $(".ui.toggle.button .icon");
-                                        $(".table").trigger('reflow');
-
-                                        if (  editMode) {
-                                            // show Contoll Elements
-                                            $('.card').not('.ui.modal .card').removeClass('hidden');
-                                            $('.la-js-hide-this-card').removeClass('hidden');
-                                            $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
-                                            $('#collapseableSubDetails').find('.button').removeClass('hidden');
-                                            $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
-                                            $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
-                                            $(toggleIcon ).removeClass( "slash" );
-                                            $(toggleButton).addClass('active');
-                                            var enableXeditable = function(cssClass){
-                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
-                                                selection.editable('option', 'disabled', false);
-                                            }
-                                            enableXeditable ('.xEditableValue');
-                                            enableXeditable ('.xEditable');
-                                            enableXeditable ('.xEditableDatepicker');
-                                            enableXeditable ('.xEditableManyToOne');
-                                        }
-                                        else {
-                                            // hide Contoll Elements
-                                            $('.card').not('.ui.modal .card').removeClass('hidden');
-                                            $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
-                                            $('.la-js-hide-this-card').addClass('hidden');
-                                            $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
-                                            $(toggleButton).removeAttr();
-                                            $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
-                                            $( toggleIcon ).addClass( "slash" );
-                                            $(toggleButton).removeClass('active');
-                                            // hide all the x-editable
-                                            var diableXeditable = function(cssClass){
-                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
-                                                selection.editable('option', 'disabled', true);
-                                            }
-                                            diableXeditable ('.xEditableValue');
-                                            diableXeditable ('.xEditable');
-                                            diableXeditable ('.xEditableDatepicker');
-                                            diableXeditable ('.xEditableManyToOne');
-                                        }
-                                    }
-                                    toggleEditableElements();
-                                });
-
+                                })
                             </r:script>
+
+
                             </div>
-                            </g:if>
+                        </g:if>
                             <g:if test="${(params.mode)}">
                                 <div class="item">
                                     <g:if test="${params.mode=='advanced'}">
                                         <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                             <i class="icon plus square"></i>
+                                        </div>
                                     </g:if>
                                     <g:else>
                                         <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                             <i class="icon plus square green slash"></i>
+                                        </div>
                                     </g:else>
                                 </div>
-
-
-
-                            <script>
+                                <script>
                                 var LaToggle = {};
                                 LaToggle.advanced = {};
                                 LaToggle.advanced.button = {};
@@ -729,14 +702,12 @@
                                     .ready(LaToggle.advanced.button.ready)
                                 ;
                             </script>
-
-                    </div>
-
-                    </div>
                             </g:if>
-                    <%--semui:editableLabel editable="${editable}" /--%>
+                </div>
+
             </div>
-        </div>
+                    <%--semui:editableLabel editable="${editable}" /--%>
+
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
         <%-- global content container --%>

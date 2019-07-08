@@ -151,8 +151,7 @@ class TaskService {
             org_roles:  [
                     RDStore.OR_LICENSEE,
                     RDStore.OR_LICENSEE_CONS
-            ],
-            lic_status: RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+            ]
         ]
         def qry_params2 = [
             'roleTypes' : [

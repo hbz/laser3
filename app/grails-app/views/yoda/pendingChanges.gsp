@@ -21,9 +21,9 @@
             <tr>
                 <td>${pc.id}</td>
 
-                <td>${oid.class.simpleName} (${oid.id})</td>
+                <td>${oid?.class?.simpleName} (${oid?.id})</td>
 
-                <td><g:link controller="${oid.class.simpleName}" action="show" id="${oid.id}">${oid}</g:link></td>
+                <td><g:link controller="${oid?.class?.simpleName}" action="show" id="${oid?.id}">${oid}</g:link></td>
 
                 <td><g:formatDate date="${pc.ts}" format="${message(code:'default.date.format.noZ')}" /></td>
             </tr>

@@ -34,16 +34,63 @@
 
 
 
-        <div class="ui divider"></div>
-        <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal"
-                                   message="survey.copyEmailaddresses.participants"/>
+            <div class="ui divider"></div>
 
-        <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+            <semui:actionsDropdownItem data-semui="modal"
+                                       href="#copyEmailaddresses_static"
+                                       message="survey.copyEmailaddresses.participants"/>
 
-        <g:render template="../templates/copyEmailaddresses"
-                  model="[orgList: orgs ?: null]"/>
+            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
+            <g:render template="copyEmailaddresses" model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
 
         </g:else>
 
     </g:if>
 </semui:actionsDropdown>
+
+<g:javascript>
+
+$('.trigger-modal').on('click', function(e) {
+    e.preventDefault();
+    var orgIdList = $(this).attr('data-orgIdList');
+    var targetId = $(this).attr('data-targetId');
+
+    if (orgIdList && targetId) {
+        $("html").css("cursor", "wait");
+
+        $.ajax({
+            url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+            data: {
+                orgListIDs: orgIdList,
+                targetId: targetId
+            }
+        }).done( function(data) {
+            console.log(targetId)
+            $('.ui.dimmer.modals > #' + targetId).remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+
+                onVisible: function () {
+                    console.log(targetId)
+                    r2d2.initDynamicSemuiStuff('#' + targetId);
+                    r2d2.initDynamicXEditableStuff('#' + targetId);
+                }
+                ,
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        }).always( function() {
+            $("html").css("cursor", "auto");
+        });
+    }
+})
+
+</g:javascript>

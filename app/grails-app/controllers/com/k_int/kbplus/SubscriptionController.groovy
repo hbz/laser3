@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -163,55 +164,59 @@ class SubscriptionController extends AbstractDebugController {
             params.asAt = null
         }
 
-        def base_qry = null;
-
-        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
-        def qry_params = [result.subscriptionInstance]
+        String base_qry = null
+        Map<String,Object> qry_params = [subscription: result.subscriptionInstance]
 
         def date_filter
         if (params.asAt && params.asAt.length() > 0) {
             def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
             date_filter = sdf.parse(params.asAt)
-            result.as_at_date = date_filter;
+            result.as_at_date = date_filter
             result.editable = false;
         } else {
             date_filter = new Date()
-            result.as_at_date = date_filter;
+            result.as_at_date = date_filter
         }
         // We dont want this filter to reach SQL query as it will break it.
         def core_status_filter = params.sort == 'core_status'
         if (core_status_filter) params.remove('sort');
 
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                qry_params.add(date_filter)
-                qry_params.add(date_filter)
+                base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like ? ) ) ) "
-            qry_params.add("%${params.filter.trim().toLowerCase()}%")
-            qry_params.add("%${params.filter}%")
+            base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+            qry_params.title = "%${params.filter.trim().toLowerCase()}%"
+            qry_params.identifier = "%${params.filter}%"
         } else {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = ? "
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                qry_params.add(date_filter)
-                qry_params.add(date_filter)
+                base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
             }
         }
 
-        base_qry += " and ie.status <> ? "
-        qry_params.add(deleted_ie);
+        if(params.mode != 'advanced') {
+            base_qry += " and ie.status = :current "
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        }
+        else {
+            base_qry += " and ie.status != :deleted "
+            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+        }
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
-            base_qry += " and ie.tipp.pkg.id = ? "
-            qry_params.add(Long.parseLong(params.pkgfilter));
+            base_qry += " and ie.tipp.pkg.id = :pkgId "
+            qry_params.pkgId = Long.parseLong(params.pkgfilter)
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -223,9 +228,9 @@ class SubscriptionController extends AbstractDebugController {
         result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
         if ((params.format == 'html' || params.format == null) && !params.exportKBart) {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
+            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
         } else {
-            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params);
+            result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
         }
 
         // Now we add back the sort so that the sortable column will recognize asc/desc
@@ -648,7 +653,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
-                    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+                    def deleted_ie = TIPP_STATUS_DELETED
                     ie.status = deleted_ie;
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -673,8 +678,8 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
-        def ie_deleted = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def tipp_deleted = TIPP_STATUS_DELETED
+        def ie_deleted = TIPP_STATUS_DELETED
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -724,7 +729,7 @@ class SubscriptionController extends AbstractDebugController {
             log.debug("Query ${basequery} ${qry_params}");
 
             result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + basequery, qry_params).size()
-            List tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
             result.tipps = tipps.drop(result.offset).take(result.max)
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
@@ -989,7 +994,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         def childLicenses = License.where {
-            (instanceOf == result.parentLicense) && (status.value != 'Deleted')
+            instanceOf == result.parentLicense
         }
 
         childLicenses?.each {
@@ -997,9 +1002,8 @@ class SubscriptionController extends AbstractDebugController {
         }
 
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
+        def validSubChilds = Subscription.findAllByInstanceOf(
+                result.parentSub
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1229,7 +1233,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     if (params.withIssueEntitlements) {
 
-                        pkg_to_link.addToSubscription(subChild, true)
+                        pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
                         changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                     } else {
@@ -1261,7 +1265,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (params.withIssueEntitlements) {
 
-                            pkg_to_link.addToSubscription(subChild, true)
+                            pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
                             changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
 
                         } else {
@@ -1883,7 +1887,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            if(cons_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                            if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
                             else
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
@@ -1929,6 +1933,7 @@ class SubscriptionController extends AbstractDebugController {
         }
     }
 
+    /*
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     @Deprecated
@@ -1936,7 +1941,7 @@ class SubscriptionController extends AbstractDebugController {
         log.debug(params)
 
         return
-        /*
+
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
@@ -1974,8 +1979,9 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         redirect action: 'members', params: [id: params.id], model: result
-        */
+
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1987,9 +1993,8 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def validSubChilds = Subscription.findAllByInstanceOf(
+                result.subscriptionInstance
         )
 
         validSubChilds = validSubChilds.sort { a, b ->
@@ -2085,45 +2090,34 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
-            if(cache.get('checked')) {
-                Map checked = cache.get('checked')
-                checked.each { k,v ->
-                    if(v == 'checked') {
-                        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(k)
-                        if (tipp == null) {
-                            log.error("Unable to tipp ${k}");
-                            flash.error("Unable to tipp ${k}");
-                        } else {
-                            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
-                                    subscription: result.subscriptionInstance,
-                                    tipp: tipp,
-                                    accessStartDate: tipp.accessStartDate,
-                                    accessEndDate: tipp.accessEndDate,
-                                    startDate: tipp.startDate,
-                                    startVolume: tipp.startVolume,
-                                    startIssue: tipp.startIssue,
-                                    endDate: tipp.endDate,
-                                    endVolume: tipp.endVolume,
-                                    endIssue: tipp.endIssue,
-                                    embargo: tipp.embargo,
-                                    coverageDepth: tipp.coverageDepth,
-                                    coverageNote: tipp.coverageNote,
-                                    ieReason: 'Manually Added by User')
-                            if (new_ie.save()) {
-                                log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}");
-                            } else {
-                                new_ie.errors.each { e ->
-                                    log.error(e);
-                                }
-                                flash.error = new_ie.errors
+            if(!params.singleTitle) {
+                EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+                if(cache.get('checked')) {
+                    Map checked = cache.get('checked')
+                    checked.each { k,v ->
+                        if(v == 'checked') {
+                            try {
+                                if(subscriptionService.addEntitlement(result.subscriptionInstance,k))
+                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                            }
+                            catch (EntitlementCreationException e) {
+                                flash.error = e.getMessage()
                             }
                         }
                     }
                 }
+                else {
+                    log.error('cache error or no titles selected')
+                }
             }
-            else {
-                log.error('cache error or no titles selected')
+            else if(params.singleTitle) {
+                try {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle))
+                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                }
+                catch(EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
             }
         } else {
             log.error("Unable to locate subscription instance");
@@ -2137,7 +2131,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def deleted_ie = TIPP_STATUS_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -2343,13 +2337,13 @@ class SubscriptionController extends AbstractDebugController {
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is not null) order by LOWER(l.reference)
+AND (l.instanceOf is not null) order by LOWER(l.reference)
 """
             } else {
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' order by LOWER(l.reference)
+AND order by LOWER(l.reference)
 """
             }
             if (subscriber == consortia) {
@@ -2357,7 +2351,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.reference)
+AND (l.instanceOf is null) order by LOWER(l.reference)
 """
             }
 
@@ -2369,8 +2363,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         render result as JSON
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
         log.debug("Link package, params: ${params} ");
 
@@ -2400,7 +2394,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         params.sort = "name"
 
-        //to be deployed in prallel thread - let's make a test!
+        //to be deployed in parallel thread - let's make a test!
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
                 def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
@@ -2455,6 +2449,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({
+                        Thread.currentThread().setName("PackageSync")
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
                         dataloadService.updateFTIndexes()
@@ -2651,7 +2646,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats)"
+        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
         def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(
@@ -2782,7 +2777,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         sources.each { link ->
             Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user) && destination.status != SUBSCRIPTION_DELETED) {
+            if (destination.isVisibleBy(result.user) && destination.status != RDStore.SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[0]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -2791,7 +2786,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         destinations.each { link ->
             Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user) && source.status != SUBSCRIPTION_DELETED) {
+            if (source.isVisibleBy(result.user) && source.status != RDStore.SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[1]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -3218,7 +3213,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                if (ie.status != TIPP_STATUS_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -3331,10 +3326,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 params.workFlowPartNext = 4
                 result.newSub = newSub2
 
-                def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                        baseSub,
-                        RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-                )
+                def validSubChilds = Subscription.findAllByInstanceOf(baseSub)
 
                 result.validSubChilds = validSubChilds.sort { a, b ->
                     def sa = a.getSubscriber()
@@ -3414,7 +3406,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                    if (ie.status != TIPP_STATUS_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -4205,7 +4197,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                        if (ie.status != TIPP_STATUS_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 

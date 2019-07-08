@@ -280,16 +280,13 @@
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                    ${Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                            s,
-                                            RDStore.SUBSCRIPTION_DELETED
-                                    )?.size()}
+                                    ${Subscription.findAllByInstanceOf(s)?.size()}
                                 </g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)?.size()}
+                                    ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOf(s), institution)?.size()}
                                 </g:link>
                             </td>
                         </g:if>

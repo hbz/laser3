@@ -43,7 +43,7 @@
                             <th>Erklärung</th>
                             <th>Explanation</th>
                             <th></th>
-                            <th>${message(code:'default.actions')}</th>
+                            <th class="la-action-info">${message(code:'default.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>

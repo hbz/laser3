@@ -270,11 +270,16 @@ r2d2 = {
         }
 
         //popup tooltips
-        $(ctxSel + ' .la-popup-tooltip.la-delay').popup({delay: {
+        /*$(ctxSel + ' .la-delay').popup({delay: {
             show: 300,
-            hide: 0
+            hide: 1000
         }
         });
+        $(ctxSel + ' .la-popup-tooltip.la-delay').popup( {
+            hoverable: true,
+            inline     : true,
+            lastResort: true
+        });*/
         $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
@@ -287,7 +292,6 @@ r2d2 = {
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
-            $(".table").trigger('reflow');
         });
 
         // modals
@@ -437,8 +441,7 @@ r2d2 = {
                     default:
                         messageHow = "löschen";
                 }
-                var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
-
+                var url = that.getAttribute('href') && (that.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
                 // INHERIT BUTTON
 
@@ -587,6 +590,9 @@ r2d2 = {
                         $('').html('Entfernen<i class="x icon"></i>');
                 }
 
+                var remoteLink = $(that).hasClass('la-js-remoteLink')
+
+
                 $('.tiny.modal')
                     .modal({
                         closable  : false,
@@ -599,7 +605,10 @@ r2d2 = {
                             if (url){
                                 window.location.href = url;
                             }
-                        },
+                            if (remoteLink) {
+                                bb8.ajax(that)
+                            }
+                        }
                     })
                     .modal('show')
                 ;
@@ -611,68 +620,270 @@ r2d2 = {
             buildConfirmationModal(this);
         });
 
-        // for remote links = ajax calls
+        // for old remote links = ajax calls
         $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
             var onclickString = $(this).next('.js-gost').attr("onclick");
             $('#js-confirmation-button').attr("onclick", onclickString);
             var gostObject = $(this).next('.js-gost');
             buildConfirmationModal(gostObject[0] );
         });
+    },
+
+}
+// for future handling on other views
+// 1. add class 'hidden' via markup to all cards that might be toggled
+// 2. add class 'la-js-hideable' to all cards that might be toggled
+// 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
+deckSaver = {
+    configs : {
+        // the trigger
+        toggleButton: $(".ui.toggle.button"),
+        toggleIcon: $(".ui.toggle.button .icon"),
+        // the target area
+        //areaThatIsAffected: $("#collapseableSubDetails"),
+        areaThatIsAffected:$(".la-show-context-orgMenu"),
+
+        card: {
+            hidable:$(".la-js-hideable"),
+        },
+        element:{
+            hide: $(".la-js-hideMe"),
+            dontHideSurroundingCard:    $(".la-js-dont-hide-this-card"),
+            hideSurroundingCard:        $(".la-js-hide-this-card"),
+        },
+        button: {
+            dontHide: $(".la-js-dont-hide-button")
+        },
+        icon: $(".la-js-editmode-icon")
+
+    },
+    initializePopup: function(obj) {
+
+        $(obj).popup({
+            hoverable: true,
+            inline     : true,
+            lastResort: true,
+            delay: {
+                show: 300,
+                hide: 500
+            },
+            onShow: function() {
+                // generate a random ID
+                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+                // add aria-label to container-span
+                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
+                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
+                $(this).children('.content').attr({role:'tooltip',id:id});
+            },
+        });
+
+    },
+    removeClone: function () {
+        $('.la-clone').remove();
+    },
+    removePopupFromClone:  function () {
+
+        var clone = $('.la-clone');
+        var clonePopup = $(clone).popup('get popup');
+        $(clonePopup).each(function(){
+            $(this).remove();
+        })
+
+    },
+    enableXeditable: function (cssClass){
+
+        var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+        selection.editable('option', 'disabled', false);
+
+    },
+    diableXeditable: function(cssClass){
+
+        var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+        selection.editable('option', 'disabled', true);
+
+    },
+    toggleEditableElements: function (){
+
+        if (deckSaver.configs.editMode) {
+            // ***************************
+            // show Contoll Elements
+            // ***************************
+            $('.button').removeClass('hidden');
+            deckSaver.removeClone();
+            deckSaver.removePopupFromClone();
+
+            $('.card').not('.ui.modal .card').removeClass('hidden');
+            $(deckSaver.configs.element.hideSurroundingCard).removeClass('hidden');
+            $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
+            $(deckSaver.configs.areaThatIsAffected).find('.button').removeClass('hidden');
+
+
+            $(deckSaver.configs.toggleButton).removeAttr("data-tooltip","Hide Buttons");
+            $(deckSaver.configs.toggleButton).attr("data-tooltip","Show Buttons");
+            $(deckSaver.configs.toggleIcon ).removeClass( "slash" );
+            $(deckSaver.configs.toggleButton).addClass('active');
+
+
+            deckSaver.enableXeditable ('.xEditableValue');
+            deckSaver.enableXeditable ('.xEditable');
+            deckSaver.enableXeditable ('.xEditableDatepicker');
+            deckSaver.enableXeditable ('.xEditableManyToOne');
+
+            $('.la-action-info').text('<g:message code="default.actions"  />')
+
+        }
+        else {
+            // ***************************
+            // hide Contoll Elements
+            // ***************************
+            $(deckSaver.configs.icon).each(function(){
+                var container = $(this).closest('.la-js-editmode-container');
+                var button = $(this).closest('.button');
+                var clone = $(this).clone();
+                clone.appendTo(container);
+                $(clone).addClass('la-clone blue');
+
+                //transfer the tooltip-content from button to cloned icon
+                var dataContent = button.attr( "data-content" );
+
+                $(clone).attr('data-content', dataContent);
+                deckSaver.initializePopup(clone);
+            });
+
+            $('.card').not('.ui.modal .card').removeClass('hidden');
+            $(deckSaver.configs.card.hidable).not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
+            $(deckSaver.configs.element.hideSurroundingCard).addClass('hidden');
+            $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
+            $(deckSaver.configs.areaThatIsAffected).not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
+
+            //$('.button').not('.la-js-dont-hide-button').addClass('hidden');
+            $(deckSaver.configs.toggleButton).removeAttr();
+            $(deckSaver.configs.toggleButton).attr("data-tooltip","Hide Buttons");
+            $(deckSaver.configs.toggleIcon ).addClass( "slash" );
+            $(deckSaver.configs.toggleButton).removeClass('active');
+
+
+            deckSaver.diableXeditable ('.xEditableValue');
+            deckSaver.diableXeditable ('.xEditable');
+            deckSaver.diableXeditable ('.xEditableDatepicker');
+            deckSaver.diableXeditable ('.xEditableManyToOne');
+
+            $('.la-action-info').text('<g:message code="default.informations"  />')
+        }
     }
 }
+tooltip = {
+    configs : {
+        tooltipTrigger: $('.la-popup-tooltip'),
 
+    },
+    go : function() {
+        tooltip.initializePopup(tooltip.configs.tooltipTrigger);
+        tooltip.acccessViaKeys();
+    },
+    initializePopup: function(obj) {
+        $(obj).popup({
+            hoverable: true,
+            inline     : true,
+            lastResort: true,
+            delay: {
+                show: 300,
+                hide: 500
+            },
+            onShow: function() {
+                // generate a random ID
+                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
+                // add aria-label to container-span
+                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
+                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
+                $(this).children('.content').attr({role:'tooltip',id:id});
+            },
+        });
+    },
+    acccessViaKeys: function(){
+        // for click and focus
+        $(tooltip.configs.tooltipTrigger).on('click focus', function(){$(this).popup('show'); })
+
+        // for unfocus
+        $(tooltip.configs.tooltipTrigger).on('focusout', function(){$(this).popup('hide'); })
+
+        // for ESC
+        $(tooltip.configs.tooltipTrigger).on('keydown', function(){
+            if(event.keyCode==27){
+                $(this).popup('hide');
+            }
+        })
+    },
+}
 
 bb8 = {
 
+
     go: function() {
+        bb8.init('body');
+    },
 
-        $(".la-js-remoteLink").click(function (event) {
+    init: function(ctxSel) {
+        $(ctxSel + " .la-js-remoteLink").click(function (event) {
+
             event.preventDefault();
+            if (! $(this).hasClass('js-open-confirm-modal')) {
 
-            var url = $(this).attr('href')
-            var before = $(this).attr('js-before')      // before
-            var done = $(this).attr('js-done')          // onSuccess
-            var fail = $(this).attr('js-fail')
-            var always = $(this).attr('js-always')      // onComplete
-            var update = $(this).attr('update')
+                bb8.ajax(this);
+            }
+        })
 
-            $.ajax({
-                url: url,
+    },
 
-                beforeSend: function (xhr) {
-                    if (before) {
-                        //console.log('before')
-                        eval(before)
-                    }
+    ajax: function(elem) {
+
+        var url = $(elem).attr('href')
+        var before = $(elem).attr('data-before')      // before
+        var done = $(elem).attr('data-done')          // onSuccess
+        var fail = $(elem).attr('data-fail')
+        var always = $(elem).attr('data-always')      // onComplete
+        var update = '#' + $(elem).attr('data-update')
+
+        $.ajax({
+            url: url,
+
+            beforeSend: function (xhr) {
+                if (before) {
+                    //console.log('before')
+                    eval(before)
+                }
+            }
+        })
+            .done(function (data) {
+                //console.log('done')
+                $(update).empty()
+                $(update).html(data)
+                if (done) {
+                    eval(done)
                 }
             })
-                .done(function (data) {
-                    //console.log('done')
-                    $(update).empty()
-                    $(update).html(data)
-                    if (done) {
-                        eval(done)
-                    }
-                })
-                .fail(function () {
-                    //console.log('fail')
-                    if (fail) {
-                        eval(fail)
-                    }
-                })
-                .always(function () {
-                    //console.log('always')
-                    if (always) {
-                        eval(always)
-                    }
-                });
+            .fail(function () {
+                //console.log('fail')
+                if (fail) {
+                    eval(fail)
+                }
+            })
+            .always(function () {
+                //console.log('always')
+                if (always) {
+                    eval(always)
+                }
+            });
 
-        })
     }
 }
 
 $(document).ready(function() {
+
     r2d2.go();
     bb8.go();
+    tooltip.go();
+
+
 })
 

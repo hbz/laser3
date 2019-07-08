@@ -33,7 +33,7 @@
                 <th>${message(code: 'financials.budgetCode')}</th>
                 <th>${message(code: 'financials.budgetCode.description')}</th>
                 <th>${message(code: 'financials.budgetCode.usage')}</th>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
         </thead>
         <tbody>

@@ -1,9 +1,9 @@
 <%@ page
 import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
-
 <!doctype html>
-<r:require module="annotations" />
+
+<laser:serviceInjection />
 
 <html>
     <head>
@@ -25,6 +25,9 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.publicContacts')}</h1>
 
         <semui:messages data="${flash}" />
+
+        <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
+        <g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: true]}"/>
 
         <g:if test="${editable}">
             <input class="ui button"

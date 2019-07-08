@@ -11,12 +11,30 @@ import com.k_int.kbplus.SubscriptionPackage
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
+import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
 class ApiStatistic {
+
+    static boolean calculateAccess(Package result, Org context, boolean hasAccess) {
+
+        // context is ignored due hasAccess = accessDueDatamanager
+        // maybe changed later into a lesser accessRole like API_LEVEL_STATISTIC
+
+        if (! hasAccess) {
+            if (result in getAccessiblePackages()) {
+                hasAccess = true
+            }
+            else {
+                hasAccess = false
+            }
+        }
+
+        hasAccess
+    }
 
     static private List<Org> getAccessibleOrgs() {
 
@@ -31,11 +49,7 @@ class ApiStatistic {
         orgs
     }
 
-    /**
-     * @return JSON
-     */
-    static JSON getAllPackages() {
-        def result = []
+    static private List<Package> getAccessiblePackages() {
 
         List<Package> packages = []
         List<Org> orgs = getAccessibleOrgs()
@@ -51,45 +65,61 @@ class ApiStatistic {
             )
         }
 
-        packages.each{ p ->
-            result << ApiReaderHelper.retrievePackageStubMap(p, null) // ? null
-        }
-
-        return (result ? new JSON(result) : null)
+        packages
     }
 
     /**
-     * @return JSON
+     * @return JSON | FORBIDDEN
      */
-    static JSON getPackage(Package pkg) {
+    static getAllPackages(boolean hasAccess) {
+        Collection<Object> result = []
+
+        if (hasAccess) {
+            getAccessiblePackages().each { p ->
+                result << ApiReaderHelper.retrievePackageStubMap(p, null) // ? null
+            }
+        }
+
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return JSON | FORBIDDEN
+     */
+    static getPackage(Package pkg, Org context, boolean hasAccess) {
         if (! pkg || pkg.packageStatus?.value == 'Deleted') {
             return null
         }
-        def result = [:]
 
-        result.globalUID        = pkg.globalUID
-        result.startDate        = pkg.startDate
-        result.endDate          = pkg.endDate
-        result.lastUpdated      = pkg.lastUpdated
-        result.packageType      = pkg.packageType?.value
-        result.packageStatus    = pkg.packageStatus?.value
-        result.name             = pkg.name
-        result.variantNames     = ['TODO-TODO-TODO'] // todo
+        Map<String, Object> result = [:]
+        hasAccess = calculateAccess(pkg, context, hasAccess)
 
-        // References
-        result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
-        result.license          = requestPkgLicense(pkg.license)
-        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
-        //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
-        //result.tipps            = resolvePkgTipps(pkg.tipps)
-        result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, ApiStatistic.getAccessibleOrgs())
+        if (hasAccess) {
 
-        result = ApiToolkit.cleanUp(result, true, true)
+            result.globalUID        = pkg.globalUID
+            result.startDate        = pkg.startDate
+            result.endDate          = pkg.endDate
+            result.lastUpdated      = pkg.lastUpdated
+            result.packageType      = pkg.packageType?.value
+            result.packageStatus    = pkg.packageStatus?.value
+            result.name             = pkg.name
+            result.variantNames     = ['TODO-TODO-TODO'] // todo
 
-        return (result ? new JSON(result) : null)
+            // References
+            result.contentProvider  = retrievePkgOrganisationCollection(pkg.orgs)
+            result.license          = requestPkgLicense(pkg.license)
+            result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+            //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
+            //result.tipps            = resolvePkgTipps(pkg.tipps)
+            result.subscriptions    = retrievePkgSubscriptionCollection(pkg.subscriptions, getAccessibleOrgs())
+
+            result = ApiToolkit.cleanUp(result, true, true)
+        }
+
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
-    static Collection<Object> retrievePkgOrganisationCollection(Set<OrgRole> orgRoles) {
+    static private Collection<Object> retrievePkgOrganisationCollection(Set<OrgRole> orgRoles) {
         if (! orgRoles) {
             return null
         }
@@ -108,7 +138,7 @@ class ApiStatistic {
         return ApiToolkit.cleanUp(result, true, true)
     }
 
-    static requestPkgLicense(License lic) {
+    static private requestPkgLicense(License lic) {
         if (! lic || lic.status?.value == 'Deleted') {
             return null
         }
@@ -148,7 +178,7 @@ class ApiStatistic {
     }
     */
 
-    static Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
+    static private Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (! subscriptionPackages) {
             return null
         }
@@ -217,13 +247,4 @@ class ApiStatistic {
 
         return ApiToolkit.cleanUp(result, true, true)
     }
-
-    /**
-     * @return []
-     */
-    static getDummy() {
-        def result = ['dummy']
-        result
-    }
-
 }

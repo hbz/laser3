@@ -75,11 +75,11 @@ class MyInstitutionController extends AbstractDebugController {
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
-            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) AND (l.status!=:lic_status or l.status=null ) "
+            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) "
 
     // copied from
     static String INSTITUTIONAL_SUBSCRIPTION_QUERY  =
-            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
+            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) "
 
     // Map the parameter names we use in the webapp with the ES fields
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
@@ -222,14 +222,12 @@ class MyInstitutionController extends AbstractDebugController {
 
         qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
         qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
-        qry3 += " and ((s.status is null) or (s.status != :subDeleted))"
         qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
         def qryParams3 = [
                 currentSubIds: currentSubIds,
                 pkgDeleted: RDStore.PACKAGE_DELETED,
                 platformDeleted: RDStore.PLATFORM_DELETED,
-                subDeleted: RDStore.SUBSCRIPTION_DELETED,
                 tippDeleted: RDStore.TIPP_DELETED
         ]
 
@@ -294,9 +292,9 @@ class MyInstitutionController extends AbstractDebugController {
         log.debug("actionLicenses :: ${params}")
         if (params['copy-license']) {
             newLicense_DEPR(params)
-        } else if (params['delete-license']) {
+        } /*else if (params['delete-license']) {
             deleteLicense(params)
-        }
+        } */
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -645,7 +643,7 @@ from License as l where (
         // (OS License specs)
         // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
 
-        def query = "from License as l where l.type = ? AND l.status.value != 'Deleted'"
+        def query = "from License as l where l.type = ? "
 
         if (params.filter) {
             query += " and lower(l.reference) like ?"
@@ -888,7 +886,7 @@ from License as l where (
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
-        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and s.status != :subDeleted and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[subDeleted:RDStore.SUBSCRIPTION_DELETED,ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -1237,6 +1235,7 @@ from License as l where (
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
 
+            //beware: at this place, we cannot calculate the subscription type yet because essential data for the calculation is not persisted/available yet!
             boolean administrative = false
             if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                 administrative = true
@@ -1292,7 +1291,7 @@ from License as l where (
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                        if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: cons_sub,
                                     roleType: role_sub_cons_hidden).save()
@@ -1309,7 +1308,7 @@ from License as l where (
                             roleType: role_cons).save()
                     }
                     else {
-                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                        if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: new_sub,
                                     roleType: role_sub_cons_hidden).save()
@@ -1521,6 +1520,8 @@ from License as l where (
         }
     }
 
+    /*
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteLicense(params) {
@@ -1543,8 +1544,7 @@ from License as l where (
             def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
 
             if (subs_using_this_license.size() == 0) {
-                def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
-                license.status = deletedStatus
+                license.status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
                 license.save(flush: true);
             } else {
                 flash.error = message(code:'myinst.deleteLicense.error', default:'Unable to delete - The selected license has attached subscriptions marked as Current')
@@ -1560,6 +1560,7 @@ from License as l where (
 
         redirect action: 'currentLicenses'
     }
+    */
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -1685,8 +1686,7 @@ from License as l where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
-        RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        RefdataValue del_ie =  RDStore.TIPP_STATUS_DELETED
 
         RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
@@ -1700,7 +1700,6 @@ from License as l where (
         
         def qry_params = [
                 institution: result.institution.id,
-                del_sub: del_sub.id,
                 del_ie: del_ie.id,
                 role_sub: role_sub.id,
                 role_sub_cons: role_sub_cons.id,
@@ -1716,7 +1715,6 @@ from License as l where (
         }
         sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id  and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
-        sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
@@ -1772,7 +1770,7 @@ from License as l where (
         if(params.format || params.exportKBart) {
             //double run until ERMS-1188
             String filterString = ""
-            Map queryParams = [subDeleted:RDStore.SUBSCRIPTION_DELETED,ieDeleted:RDStore.IE_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+            Map queryParams = [ieDeleted:RDStore.IE_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
             if (date_restriction) {
                 filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
                 queryParams.dateRestriction = date_restriction
@@ -1805,9 +1803,9 @@ from License as l where (
                 filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
                 queryParams.contentProvider = filterPvd
             }
-            log.debug("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.subscription.status != :subDeleted and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
+            log.debug("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
             log.debug(queryParams)
-            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.subscription.status != :subDeleted and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
+            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
         }
         else {
             qry_params.max = result.max
@@ -1843,7 +1841,7 @@ from License as l where (
                     response.contentType = "text/csv"
 
                     def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    exportService.StreamOutTitlesCSV(out, result.titles)       RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {
@@ -1882,8 +1880,7 @@ from License as l where (
      */
     private setFiltersLists(result, date_restriction) {
         // Query the list of Subscriptions
-        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        def del_ie =  RDStore.TIPP_STATUS_DELETED
 
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
@@ -1894,12 +1891,11 @@ from License as l where (
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
 
-        def sub_params = [institution: result.institution,roles:roles,sub_del:del_sub]
+        def sub_params = [institution: result.institution,roles:roles]
         def sub_qry = """
 Subscription AS s INNER JOIN s.orgRelations AS o
 WHERE o.roleType IN (:roles)
-AND o.org = :institution
-AND s.status !=:sub_del """
+AND o.org = :institution """
         if (date_restriction) {
             sub_qry += "\nAND s.startDate <= :date_restriction AND s.endDate >= :date_restriction "
             sub_params.date_restriction = date_restriction
@@ -1971,7 +1967,6 @@ ORDER BY p.platform.name""", sub_params);
         title_query.append("\
   WHERE ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) \
   AND o.org = :institution \
-  AND s.status.value != 'Deleted' \
   AND s = ie.subscription ")
         qry_params.institution = institution
 
@@ -2064,9 +2059,7 @@ AND EXISTS (
         def result = [:]
         OrgRole.findAllByOrg(institution).each { it ->
             if (it.roleType in [licensee_role, licensee_cons_role]) {
-                if (it.lic?.status?.value != 'Deleted') {
-                    result["License:${it.lic?.id}"] = it.lic?.reference
-                }
+                result["License:${it.lic?.id}"] = it.lic?.reference
             }
         }
 
@@ -2093,7 +2086,7 @@ AND EXISTS (
         def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (subscription.hasPerm("edit", result.user)) {
-            def derived_subs = Subscription.findByInstanceOfAndStatusNotEqual(subscription, deletedStatus)
+            def derived_subs = Subscription.findByInstanceOf(subscription)
 
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
@@ -3180,7 +3173,7 @@ AND EXISTS (
             }
 
             if (dbtipp) {
-                def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
+                def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
                 def is_core = false
 
                 def new_core_status = null;
@@ -3388,7 +3381,7 @@ AND EXISTS (
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
         def baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by sub.id"
+                " and pc.subscription is not NULL and pc.status.value in (:stats) group by sub.id"
 
         def result1 = PendingChange.executeQuery(
                 baseQuery1,
@@ -3398,7 +3391,7 @@ AND EXISTS (
         result.changes.addAll(result1)
 
         def baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by lic.id"
+                " and pc.license is not NULL and pc.status.value in (:stats) group by lic.id"
 
         def result2 = PendingChange.executeQuery(
                 baseQuery2,
@@ -3409,7 +3402,7 @@ AND EXISTS (
 
         result.changes.addAll(result2)
 
-        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null and (ci.costItemStatus.value != 'Deleted' or ci.costItemStatus is null)",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
 
         //println result.changes
         result3.each { row ->
@@ -3417,6 +3410,7 @@ AND EXISTS (
         }
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getTodoForInst_LEGACY(result){
@@ -3902,10 +3896,8 @@ AND EXISTS (
         result
       }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
 
         def result = setResultGenerics()
@@ -3913,14 +3905,15 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
+        params.org = result.institution.name
         result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
-                        tenant: contextService.getOrg() // private properties
+                        tenant: result.institution // private properties
                 )
 
         result.num_visiblePersons = result.visiblePersons.size()
@@ -4161,7 +4154,7 @@ AND EXISTS (
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)

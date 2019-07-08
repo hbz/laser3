@@ -19,6 +19,7 @@ abstract class AbstractDebugController {
 
         if (delta >= SystemProfiler.THRESHOLD_MS) {
 
+            /*
             Map paramsToLog = [:]
             params.each{ key, value ->
                 if (value instanceof String) {
@@ -29,10 +30,11 @@ abstract class AbstractDebugController {
                 }
             }
             def json = (paramsToLog as JSON)
+            */
 
             (new SystemProfiler(
                     uri:      actionUri,
-                    params:   json?.toString(),
+                    // params:   json?.toString(),
                     ms:       delta,
                     context:  contextService?.getOrg()
             )).save(flush: true)

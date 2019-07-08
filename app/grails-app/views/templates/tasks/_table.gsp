@@ -27,7 +27,7 @@
                 </th>
                 <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label', default: 'Creator')}"/>
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

@@ -20,7 +20,7 @@
 
                 <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
 
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

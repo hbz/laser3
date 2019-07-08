@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
@@ -143,7 +144,11 @@ class PlatformController extends AbstractDebugController {
       [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
       */
 
-        def plattformTipps = platformInstance.tipps.sort{it.title.title}
+        List<TitleInstancePackagePlatform> plattformTipps = []
+        platformInstance.tipps.each { TitleInstancePackagePlatform tipp ->
+            if(tipp.status != RDStore.TIPP_STATUS_DELETED)
+                plattformTipps << tipp
+        }
 
         [platformInstance: platformInstance, editable: editable, tipps: plattformTipps]
 

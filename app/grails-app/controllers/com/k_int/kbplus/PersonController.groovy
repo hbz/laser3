@@ -72,10 +72,25 @@ class PersonController extends AbstractDebugController {
             }
         }
 
+        boolean myPublicContact = false
+        if(personInstance.isPublic == RDStore.YN_YES && personInstance.tenant == contextService.org && !personInstance.roleLinks)
+            myPublicContact = true
+
+        List<PersonRole> gcp = PersonRole.where {
+            prs == personInstance &&
+            functionType == RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+        }.findAll()
+        List<PersonRole> fcba = PersonRole.where {
+            prs == personInstance &&
+            functionType == RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function')
+        }.findAll()
+        
+
         def result = [
                 personInstance: personInstance,
-                personOrg: Org.get(params.personOrgID) ?: null,
-                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+                presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
+                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser()),
+                myPublicContact: myPublicContact
         ]
 
         result

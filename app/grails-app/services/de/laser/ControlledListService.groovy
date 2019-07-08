@@ -223,8 +223,9 @@ class ControlledListService {
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
-            queryString += " and lower(bc.value) like lower(:query) "
+            queryString += " and lower(bc.value) like lower(:query)"
         }
+        queryString += " order by bc.value asc"
         List budgetCodes = BudgetCode.executeQuery(queryString,filter)
         budgetCodes.each { bc ->
             result.results.add([name:bc.value,value:bc.id])
@@ -239,8 +240,9 @@ class ControlledListService {
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
-            queryString += " and i.invoiceNumber like :query "
+            queryString += " and i.invoiceNumber like :query"
         }
+        queryString += " order by i.invoiceNumber asc"
         List invoiceNumbers = Invoice.executeQuery(queryString,filter)
         invoiceNumbers.each { inv ->
             result.results.add([name:inv.invoiceNumber,value:inv.invoiceNumber])
@@ -255,8 +257,9 @@ class ControlledListService {
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
-            queryString += " and ord.orderNumber like :query "
+            queryString += " and ord.orderNumber like :query"
         }
+        queryString += " order by ord.orderNumber asc"
         List orderNumbers = Order.executeQuery(queryString,filter)
         orderNumbers.each { ord ->
             result.results.add([name:ord.orderNumber,value:ord.orderNumber])
@@ -267,16 +270,16 @@ class ControlledListService {
     Map getReferences(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        String queryString = 'select ci from CostItem ci where ci.owner = :owner and ci.reference != null'
+        String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
-            queryString += " and lower(ci.reference) like lower(:query) "
+            queryString += " and lower(ci.reference) like lower(:query)"
         }
+        queryString += " order by ci.reference asc"
         List references = CostItem.executeQuery(queryString,filter)
         references.each { r ->
-            log.debug(r)
-            result.results.add([name:r.reference,value:r.reference])
+            result.results.add([name:r,value:r])
         }
         result
     }

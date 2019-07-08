@@ -16,7 +16,7 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1561453819381-3") {
 		addColumn(schemaName: "public", tableName: "survey_config") {
-			column(name: "surconf_costItems_finish", type: "bool") {
+			column(name: "surconf_costitems_finish", type: "bool") {
 				constraints(nullable: "false")
 			}
 		}

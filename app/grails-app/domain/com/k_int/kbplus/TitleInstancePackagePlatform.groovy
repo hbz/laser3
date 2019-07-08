@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 
@@ -36,7 +37,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                                      'coverageDepth',
                                      'coverageNote',
                                      'accessStartDate',
-                                     'accessEndDate' ]
+                                     'accessEndDate',
+                                     'platform'
+    ]
 
 
   Date accessStartDate
@@ -308,12 +311,12 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         if ( sub.getSubscriber() == null ) {
           // SO - Ignore!
         }
-        else if(sub.status?.value != "Deleted") {
+        else {
           changeNotificationService.registerPendingChange(
                   PendingChange.PROP_SUBSCRIPTION,
                                                           dep_ie.subscription,
                   // pendingChange.message_TP01
-                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
+                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problembenachrichtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
                                                             changeType:PendingChangeService.EVENT_TIPP_DELETE,
@@ -339,7 +342,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         def dep_ies = IssueEntitlement.findAllByTipp(this)
         dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
-        if(dep_ie.subscription && sub && sub?.status?.value != "Deleted" ) {
+        if(dep_ie.subscription && sub) {
         def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
         def pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange(
@@ -453,8 +456,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");
-      def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
-      // def deleted_sub = RefdataCategory.lookupOrCreate('Subscription Status','Deleted');
+      def deleted_ie = RDStore.TIPP_STATUS_DELETED
       IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
       TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])
     }

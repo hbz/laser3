@@ -23,7 +23,7 @@
         ${orgInstance.name}
     </h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance]}"/>
+    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
     <semui:filter>
         <g:form controller="organisation" action="users" params="${[id: orgInstance.id]}" method="get" class="ui form">
@@ -64,7 +64,7 @@
                 <th>${message(code:'profile.membership.role')}</th>
                 <th>${message(code: "profile.membership.date2")}</th>
                 <th>${message(code:'user.status')}</th>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
 
@@ -122,7 +122,7 @@
             <th>${message(code:'profile.membership.role')}</th>
             <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
             <g:if test="${editable}">
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </g:if>
         </tr>
         </thead>

@@ -319,7 +319,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <td>${tipp.coverageNote}</td>
             <td>
                 <g:link class="ui icon positive button" action="processAddEntitlements"
-                        params="${[siid: subscriptionInstance.id, ('_bulkflag.' + tipp.id): 'Y']}"
+                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
                         data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now', default: 'Add now')}">
                     <i class="plus icon"></i>
                 </g:link>

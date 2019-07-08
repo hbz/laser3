@@ -5,6 +5,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.helper.RDStore
@@ -37,10 +38,8 @@ class ApiSubscription {
                 return Constants.HTTP_BAD_REQUEST
                 break
         }
-        if (result) {
-            result = result.size() == 1 ? result.get(0) : Constants.HTTP_PRECONDITION_FAILED
-        }
-        result
+
+        ApiToolkit.checkPreconditionFailed(result)
     }
 
     /**

@@ -75,7 +75,7 @@ class SurveyConfig {
         internalComment column: 'surconf_internal_comment', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
-        costItemsFinish column: 'surconf_costItems_finish', default: false
+        costItemsFinish column: 'surconf_costitems_finish', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -86,7 +86,6 @@ class SurveyConfig {
         surveyInfo column: 'surconf_surinfo_fk'
         subscription column: 'surconf_sub_fk'
         surveyProperty column: 'surconf_surprop_fk'
-
 
         configOrder column: 'surconf_config_order'
     }

@@ -4897,3 +4897,6 @@ i.icon.la-gokb.square:before {
   text-decoration: inherit;
   text-transform: none;
 }
+.la-header-with-icon .la-clone {
+  vertical-align: super;
+}

@@ -1,16 +1,9 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 
 import org.springframework.context.i18n.LocaleContextHolder
-import org.apache.poi.hslf.model.*
-import org.apache.poi.hssf.usermodel.*
-import org.apache.poi.ss.usermodel.*
-import org.elasticsearch.groovy.common.xcontent.*
-
-import com.k_int.kbplus.auth.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController extends AbstractDebugController {

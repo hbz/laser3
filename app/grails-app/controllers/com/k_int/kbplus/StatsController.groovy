@@ -47,7 +47,6 @@ from Org as o, Subscription as s, OrgRole as orl
 where orl.org = o 
 and orl.sub = s 
 and orl.roleType.value = 'Subscriber'
-and s.status.value != 'Deleted'
 group by o
 ''');
     result.currentsoStats.each { r ->
@@ -75,7 +74,6 @@ from Org as o, License as l, OrgRole as orl
 where orl.org = o 
 and orl.lic = l 
 and orl.roleType.value = 'Licensee'
-and l.status.value != 'Deleted'
 group by o
 ''');
     result.currentlStats.each { r ->

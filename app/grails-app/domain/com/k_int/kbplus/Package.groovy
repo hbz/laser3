@@ -284,7 +284,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
+        def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
         TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
           if(tipp.status?.value == "Current"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,
@@ -307,6 +307,47 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     }
   }
+
+    @Transient
+    def addToSubscriptionCurrentStock(Subscription target, Subscription consortia) {
+
+        // copy from: addToSubscription(subscription, createEntitlements) { .. }
+
+        List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
+                "from SubscriptionPackage where subscription = ? and pkg = ?", [target, this])
+
+        if (! dupe){
+
+            RefdataValue statusCurrent = RDStore.TIPP_STATUS_CURRENT
+
+            new SubscriptionPackage(subscription:target, pkg:this).save()
+
+            TitleInstancePackagePlatform.executeQuery(
+                "select tipp from IssueEntitlement ie join ie.tipp tipp " +
+                "where tipp.pkg = :pkg and tipp.status = :current and ie.subscription = :consortia ", [
+                      pkg: this, current: statusCurrent, consortia: consortia
+
+            ]).each { tipp ->
+
+                new IssueEntitlement(
+                        status: statusCurrent,
+                        subscription: target,
+                        tipp: tipp,
+                        accessStartDate: tipp.accessStartDate,
+                        accessEndDate: tipp.accessEndDate,
+                        startDate: tipp.startDate,
+                        startVolume: tipp.startVolume,
+                        startIssue: tipp.startIssue,
+                        endDate: tipp.endDate,
+                        endVolume: tipp.endVolume,
+                        endIssue: tipp.endIssue,
+                        embargo: tipp.embargo,
+                        coverageDepth: tipp.coverageDepth,
+                        coverageNote: tipp.coverageNote
+                ).save()
+            }
+        }
+    }
 
   /**
    *  Tell the event notification service how this object is known to any registered notification

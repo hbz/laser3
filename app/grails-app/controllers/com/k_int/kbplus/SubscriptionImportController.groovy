@@ -701,7 +701,7 @@ class SubscriptionImportController extends AbstractDebugController {
         }
   
         if ( dbtipp ) {
-          def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
+          def live_issue_entitlement = RDStore.TIPP_STATUS_CURRENT
           def is_core = false
   
           def new_core_status = null;
