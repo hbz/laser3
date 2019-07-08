@@ -1237,6 +1237,7 @@ from License as l where (
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
 
+            //beware: at this place, we cannot calculate the subscription type yet because essential data for the calculation is not persisted/available yet!
             boolean administrative = false
             if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                 administrative = true
@@ -1292,7 +1293,7 @@ from License as l where (
                                           isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
                                           isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
-                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                        if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: cons_sub,
                                     roleType: role_sub_cons_hidden).save()
@@ -1309,7 +1310,7 @@ from License as l where (
                             roleType: role_cons).save()
                     }
                     else {
-                        if(new_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
+                        if(new_sub.administrative) {
                             new OrgRole(org: cm,
                                     sub: new_sub,
                                     roleType: role_sub_cons_hidden).save()
@@ -3409,7 +3410,7 @@ AND EXISTS (
 
         result.changes.addAll(result2)
 
-        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null and (ci.costItemStatus.value != 'Deleted' or ci.costItemStatus is null)",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
+        List result3 = PendingChange.executeQuery("select pc from PendingChange pc join pc.costItem ci where pc.owner = :owner and pc.ts >= :tsCheck and pc.costItem is not null",[owner:result.institution,tsCheck:tsCheck],[max:result.max,offset:result.offset])
 
         //println result.changes
         result3.each { row ->
@@ -3911,6 +3912,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
+        params.org = result.institution.name
         result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
@@ -4159,7 +4161,7 @@ AND EXISTS (
         def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: memberIds])
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
