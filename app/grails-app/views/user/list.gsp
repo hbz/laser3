@@ -73,7 +73,7 @@
                         <th>${message(code:'user.displayName.label')}</th>
                         <th>${message(code:'user.org')}</th>
                         <th>${message(code:'user.enabled.label')}</th>
-                        <th>${message(code:'default.actions')}</th>
+                        <th class="la-action-info">${message(code:'default.actions')}</th>
                     </tr>
                 </thead>
                 <tbody>

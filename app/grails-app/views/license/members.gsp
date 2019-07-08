@@ -30,7 +30,7 @@
             <th>${message(code:'license')}</th>
             <th>${message(code:'subscriptionDetails.members.members')}</th>
             <th>${message(code:'license.details.status')}</th>
-            <th>${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions')}</th>
         </tr>
     </thead>
     <tbody>

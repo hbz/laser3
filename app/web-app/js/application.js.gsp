@@ -640,7 +640,8 @@ deckSaver = {
         toggleButton: $(".ui.toggle.button"),
         toggleIcon: $(".ui.toggle.button .icon"),
         // the target area
-        areaThatIsAffected: $("#collapseableSubDetails"),
+        //areaThatIsAffected: $("#collapseableSubDetails"),
+        areaThatIsAffected:$(".la-show-context-orgMenu"),
 
         card: {
             hidable:$(".la-js-hideable"),
@@ -728,6 +729,8 @@ deckSaver = {
             deckSaver.enableXeditable ('.xEditableDatepicker');
             deckSaver.enableXeditable ('.xEditableManyToOne');
 
+            $('.la-action-info').text('<g:message code="default.actions"  />')
+
         }
         else {
             // ***************************
@@ -764,6 +767,8 @@ deckSaver = {
             deckSaver.diableXeditable ('.xEditable');
             deckSaver.diableXeditable ('.xEditableDatepicker');
             deckSaver.diableXeditable ('.xEditableManyToOne');
+
+            $('.la-action-info').text('<g:message code="default.informations"  />')
         }
     }
 }

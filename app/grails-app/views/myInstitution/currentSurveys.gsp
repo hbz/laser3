@@ -107,7 +107,7 @@
             <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th>${message(code: 'surveyInfo.finish')}</th>
-            <th>${message(code:'default.actions')}</th>
+            <th class="la-action-info">${message(code:'default.actions')}</th>
 
         </tr>
 

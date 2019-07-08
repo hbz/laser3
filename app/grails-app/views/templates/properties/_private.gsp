@@ -35,7 +35,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th>${message(code:'default.actions')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
         </thead>
     </g:if>
