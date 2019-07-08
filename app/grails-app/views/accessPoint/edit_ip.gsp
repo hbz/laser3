@@ -23,7 +23,7 @@
               ${orgInstance.name}
               </h1>
 
-              <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org]}"/>
+              <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg]}"/>
 
                 <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
