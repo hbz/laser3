@@ -49,7 +49,7 @@ class Org
     Date lastUpdated
     String categoryId
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'OrgSector')
     RefdataValue sector
 
     @RefdataAnnotation(cat = 'OrgStatus')

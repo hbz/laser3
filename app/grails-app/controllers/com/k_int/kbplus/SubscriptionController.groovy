@@ -1888,7 +1888,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (cons_sub) {
 
-                            if(cons_sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                            if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
                             else
                                 new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
