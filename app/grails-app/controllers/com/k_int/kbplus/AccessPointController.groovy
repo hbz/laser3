@@ -179,7 +179,8 @@ class AccessPointController extends AbstractDebugController {
                  ipv4Ranges: ipv4Ranges, ipv4Format: ipv4Format,
                  ipv6Ranges: ipv6Ranges, ipv6Format: ipv6Format,
                  autofocus: autofocus,
-                 orgInstance: orgAccessPoint.org
+                 orgInstance: orgAccessPoint.org,
+                 inContextOrg: orgId == contextService.org.id
                 ]
                 break
             case 'POST':

@@ -1,5 +1,7 @@
 <%@page import="de.laser.helper.RDStore" %>
 
+<laser:serviceInjection/>
+
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
     <g:if test="${inContextOrg}">
