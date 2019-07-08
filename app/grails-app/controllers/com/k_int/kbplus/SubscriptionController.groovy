@@ -9,7 +9,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
 import grails.doc.internal.StringEscapeCategory
@@ -800,11 +800,11 @@ class SubscriptionController extends AbstractDebugController {
                     String serial
                     String electronicSerial
                     String checked = ""
-                    if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                    if(tipp.title.type.equals(TITLE_TYPE_EBOOK)) {
                         serial = tipp.title.getIdentifierValue('pISBN')
                         electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
                     }
-                    else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                    else if(tipp.title.type.equals(TITLE_TYPE_JOURNAL)) {
                         serial = tipp?.title?.getIdentifierValue('ISSN')
                         electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                     }
@@ -866,7 +866,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.subscriptionInstance,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -891,7 +891,7 @@ class SubscriptionController extends AbstractDebugController {
 
 //        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
 //                result.subscriptionInstance,
-//                RDStore.SUBSCRIPTION_DELETED
+//                SUBSCRIPTION_DELETED
 //          )
 //        result.deletedSubChilds = deletedSubChilds
         //}
@@ -999,7 +999,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1052,7 +1052,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
 
@@ -1115,7 +1115,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
         def removeLic = []
@@ -1158,7 +1158,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1211,7 +1211,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
 
@@ -1310,7 +1310,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
         validSubChilds.each { subChild ->
@@ -1375,7 +1375,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1426,7 +1426,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
@@ -1479,7 +1479,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
         if (params.filterPropDef && params.filterPropValue) {
@@ -1579,7 +1579,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
         def change = []
                 validSubChilds.each { subChild ->
@@ -1653,7 +1653,7 @@ class SubscriptionController extends AbstractDebugController {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.parentSub,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
 
         if (params.filterPropDef) {
@@ -1735,9 +1735,9 @@ class SubscriptionController extends AbstractDebugController {
         tmpParams.remove("max")
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            tmpParams.comboType = COMBO_TYPE_CONSORTIUM.value
         else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
+            tmpParams.comboType = COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {
@@ -1758,7 +1758,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         if (accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            params.comboType = COMBO_TYPE_CONSORTIUM.value
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.cons_members_disabled = []
@@ -1791,11 +1791,11 @@ class SubscriptionController extends AbstractDebugController {
 
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
 
-        def role_sub = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def role_sub_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
-        def role_lic = RDStore.OR_LICENSEE_CONS
-        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+        def role_sub = OR_SUBSCRIBER_CONS
+        def role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
+        def role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
+        def role_lic = OR_LICENSEE_CONS
+        def role_lic_cons = OR_LICENSING_CONSORTIUM
 
         def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
         def role_agency = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
@@ -2095,7 +2095,7 @@ class SubscriptionController extends AbstractDebugController {
                             log.error("Unable to tipp ${k}");
                             flash.error("Unable to tipp ${k}");
                         } else {
-                            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+                            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                                     subscription: result.subscriptionInstance,
                                     tipp: tipp,
                                     accessStartDate: tipp.accessStartDate,
@@ -2330,8 +2330,8 @@ class SubscriptionController extends AbstractDebugController {
 
         if (subscriber || consortia) {
 
-            def licensee_role = RDStore.OR_LICENSEE
-            def licensee_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+            def licensee_role = OR_LICENSEE
+            def licensee_cons_role = OR_LICENSING_CONSORTIUM
 
             def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
 
@@ -2782,7 +2782,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         sources.each { link ->
             Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user) && destination.status != RDStore.SUBSCRIPTION_DELETED) {
+            if (destination.isVisibleBy(result.user) && destination.status != SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[0]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -2791,7 +2791,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         destinations.each { link ->
             Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user) && source.status != RDStore.SUBSCRIPTION_DELETED) {
+            if (source.isVisibleBy(result.user) && source.status != SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[1]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -3021,7 +3021,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401)
             return;
         }
-        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
+        def prevSubs = Links.findByLinkTypeAndObjectTypeAndDestination(LINKTYPE_FOLLOWS, Subscription.class.name, params.id)
         if (prevSubs){
             flash.error = message(code: 'subscription.renewSubExist')
             response.sendError(401)
@@ -3046,7 +3046,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                  sub_name: subscription.name,
                                  sub_id: subscription.id,
                                  sub_license: subscription?.owner?.reference?:'',
-                                 sub_status: RDStore.SUBSCRIPTION_INTENDED]
+                                 sub_status: SUBSCRIPTION_INTENDED]
 
         result
     }
@@ -3080,7 +3080,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: RDStore.YN_NO,
+                isPublic: YN_NO,
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null
@@ -3091,11 +3091,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             // assert an org-role
             def org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: RDStore.OR_SUBSCRIBER
+                    roleType: OR_SUBSCRIBER
             ).save();
 
             if(old_subOID) {
-                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: new_subscription.id, destination: old_subOID, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                 prevLink.save()
             } else { log.error("Problem linking new subscription, ${prevLink.errors}") }
         } else {
@@ -3146,7 +3146,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     def subMember = Subscription.findById(sub)
 
                     //ChildSub Exist
-                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
+                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
                     if (prevLinks.size() == 0) {
 
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
@@ -3173,7 +3173,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         newSubscription.save(flush: true)
                         //ERMS-892: insert preceding relation in new data model
                         if (subMember) {
-                            Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: RDStore.LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
+                            Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
                             if (!prevLink.save()) {
                                 log.error("Subscription linking failed, please check: ${prevLink.errors}")
                             }
@@ -3192,7 +3192,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         if (subMember.privateProperties) {
                             //privatProperties
 
-                            List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                            List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [OR_SUBSCRIBER_CONS, OR_SUBSCRIPTION_CONSORTIA]]).collect {
                                 it -> it.id
                             }
                             subMember.privateProperties?.each { prop ->
@@ -3349,7 +3349,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                 if (params.baseSubscription) {
 
-                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
+                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
                     if (previousSubscriptions.size() > 0) {
                         flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
                     } else {
@@ -3391,7 +3391,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 }
                             }
                             //link to previous subscription
-                            Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                            Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                             if (!prevLink.save(flush: true)) {
                                 log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
@@ -3512,14 +3512,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     def processSimpleRenewal_Consortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
             response.sendError(401); return
         }
 
-//        if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-            ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
+            ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
             if (previousSubscriptions.size() > 0) {
                 flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
             } else {
@@ -3548,7 +3548,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 } else {
                     log.debug("Save ok");
                     //link to previous subscription
-                    Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                    Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                     if (!prevLink.save(flush: true)) {
                         log.error("Problem linking to previous subscription: ${prevLink.errors}")
                     }
@@ -3573,11 +3573,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.institution = contextService.org //TODO überprüfen, ob das richtig ist!!!
-        if (!(result || (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
             response.sendError(401); return
         }
 
-//        if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
             def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
             def sdf = new SimpleDateFormat('dd.MM.yyyy')
@@ -3596,7 +3596,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                      sub_name     : subscription.name,
                                      sub_id       : subscription.id,
                                      sub_license  : subscription?.owner?.reference ?: '',
-                                     sub_status   : RDStore.SUBSCRIPTION_INTENDED]
+                                     sub_status   : SUBSCRIPTION_INTENDED]
 //        }
         result
     }
@@ -3604,11 +3604,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     private getMySubscriptions_readRights(){
         def params = [:]
         List result
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        params.status = SUBSCRIPTION_CURRENT.id
+        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.orgRole = OR_SUBSCRIBER.value
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
@@ -3616,14 +3616,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     private getMySubscriptions_writeRights(){
         List result
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        params.status = SUBSCRIPTION_CURRENT.id
+        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
         params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}"
+        params.status = SUBSCRIPTION_CURRENT.id
+        params.orgRole = OR_SUBSCRIBER.value
+        params.subTypes = "${SUBSCRIPTION_TYPE_LOCAL.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
@@ -3638,7 +3638,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
         flash.error = ""
-        flash.info = ""
+        flash.message = ""
         if (params?.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
         result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
         result.sourceSubscription = Subscription.get(Long.parseLong(params?.sourceSubscriptionId ?: params?.id))
@@ -3652,6 +3652,21 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.isRenewSub = params.isRenewSub ?: null
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
+
+        List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
+                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE,
+                                                SUBSCRIPTION_TYPE_ALLIANCE,
+                                                SUBSCRIPTION_TYPE_NATIONAL,
+                                                SUBSCRIPTION_TYPE_COLLECTIVE]
+        result.isSubscriberVisible =
+                result.sourceSubscription &&
+                result.targetSubscription &&
+                subTypSubscriberVisible.contains(result.sourceSubscription.type) &&
+                subTypSubscriberVisible.contains(result.targetSubscription.type)
+
+        if (! result.isSubscriberVisible) {
+            flash.message += message(code: 'subscription.info.subscriberNotAvailable')
+        }
 
         switch (params.workFlowPart) {
             case WORKFLOW_DATES_OWNER_RELATIONS:
@@ -3675,7 +3690,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copySubElements_DocsAnnouncementsTasks();
                 if (params.isRenewSub){
-                    params.workFlowPart = WORKFLOW_SUBSCRIBER
+                    if (result.isSubscriberVisible){
+                        params.workFlowPart = WORKFLOW_SUBSCRIBER
+                    } else {
+                        params.workFlowPart = WORKFLOW_PROPERTIES
+                    }
                     result << loadDataFor_Subscriber()
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
@@ -3841,24 +3860,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     private copySubElements_Subscriber() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-//        result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
         Subscription newSub = null
         if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        boolean isTargetSubChanged = false
         if (params?.subscription?.copySubscriber && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Subscription> toCopySubs = params.list('subscription.copySubscriber').collect { genericOIDService.resolveOID(it) }
             subscriptionService.copySubscriber(toCopySubs, newSub, flash)
-            isTargetSubChanged = true
         }
 
-//        if (isTargetSubChanged) {
-//            newSub = newSub.refresh()
-//            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-//        }
-//        result.validTargetSubChilds = subscriptionService.getValidSubChilds(newSub)
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         result
@@ -3866,11 +3877,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private loadDataFor_Subscriber() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-        result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
+        result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        result.validSourceSubChilds = subscriptionService.getValidSubChilds(result.sourceSubscription)
         if (params.targetSubscriptionId) {
-            Subscription newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-            result.validTargetSubChilds = subscriptionService.getValidSubChilds(newSub)
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+            result.validTargetSubChilds = subscriptionService.getValidSubChilds(result.targetSubscription)
         }
         result
     }

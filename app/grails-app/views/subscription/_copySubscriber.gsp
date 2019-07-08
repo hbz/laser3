@@ -15,7 +15,6 @@
 					<table>
 						<tr>
 							<td>
-							%{---------------------------------------}%
 								<table class="ui celled la-table table">
 									<thead>
 										<tr>
@@ -29,9 +28,7 @@
 											<th>${message(code: 'default.endDate.label')}</th>
 											<th>${message(code: 'subscription.details.status')}</th>
 											<th>
-												<g:if test="${outerLoop}">
-                                                    <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
-												</g:if>
+                                                <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked />
 											</th>
 										</tr>
 									</thead>
@@ -55,7 +52,6 @@
 								</table>
 							</td>
 							<td>
-							%{---------------------------------------}%
 								<table class="ui celled la-table table">
 									<thead>
 									<tr>
@@ -71,19 +67,18 @@
 									</tr>
 									</thead>
 									<tbody>
-									<g:each in="${validTargetSubChilds}" var="sub">
-										<tr>
-											<g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
-												<td>${subscriberOrg.sortname}</td>
-												<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
-												<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
-												<td>${sub.status.getI10n('value')}</td>
-											</g:each>
-										</tr>
-									</g:each>
+										<g:each in="${validTargetSubChilds}" var="sub">
+											<tr>
+												<g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
+													<td>${subscriberOrg.sortname}</td>
+													<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+													<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+													<td>${sub.status.getI10n('value')}</td>
+												</g:each>
+											</tr>
+										</g:each>
 									</tbody>
 								</table>
-							%{---------------------------------------}%
 							</td>
 					</table>
 

@@ -294,10 +294,11 @@ class SubscriptionService {
                 // mich gibts schon! Fehlermeldung ausgeben!
                 Object[] args = [found.sortname ?: found.sortname]
                 flash.error += messageSource.getMessage('subscription.err.subscriberAlreadyExistsInTargetSub', args, locale)
+//                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
                 //ChildSub Exist
-                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
-                if (prevLinks.size() == 0) {
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
+//                if (prevLinks.size() == 0) {
 
                     /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
@@ -395,7 +396,7 @@ class SubscriptionService {
                             newPersonRole.save(flush: true)
                         }
                     }
-                }
+//                }
             }
         }
     }
