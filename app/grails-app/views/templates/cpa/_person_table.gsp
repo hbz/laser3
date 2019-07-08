@@ -94,7 +94,7 @@
                             <g:render template="/templates/cpa/address" model="${[
                                     address: address,
                                     tmplShowDeleteButton: true
-                            ]}"></g:render>
+                            ]}" />
                         </g:each>
                     </div>
                 </td>
@@ -102,7 +102,7 @@
                     <g:if test="${editable}">
                             <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
                                 <g:hiddenField name="id" value="${person?.id}" />
-                                    <g:link class="ui icon button" controller="person" action="show" id="${person?.id}" params="[personOrgID: restrictToOrg?.id]">
+                                    <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                         <i class="write icon"></i>
                                     </g:link>
                                     <div class="ui icon negative button js-open-confirm-modal"
