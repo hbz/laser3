@@ -2148,7 +2148,7 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-    @Secured(['ROLE_DATAMANAGER'])
+    @Secured(['ROLE_ADMIN'])
     def addCreatorToTitle() {
 
         if(params.role && params.creator && params.title) {

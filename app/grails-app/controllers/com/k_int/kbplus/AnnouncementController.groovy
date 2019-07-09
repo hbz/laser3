@@ -16,7 +16,7 @@ class AnnouncementController extends AbstractDebugController {
     def genericOIDService
     def contextService
 
-    @Secured(['ROLE_DATAMANAGER'])
+    @Secured(['ROLE_ADMIN'])
     def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -26,7 +26,7 @@ class AnnouncementController extends AbstractDebugController {
         result
     }
 
-    @Secured(['ROLE_DATAMANAGER'])
+    @Secured(['ROLE_ADMIN'])
     def createAnnouncement() {
         def result = [:]
         if (params.annTxt) {

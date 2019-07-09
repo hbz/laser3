@@ -28,7 +28,7 @@ environments {
             //configClass     = HibernateFilterDomainConfiguration.class
             pooled          = true
             properties {
-                maxActive = -1
+                maxActive = 80
                 minEvictableIdleTimeMillis=1800000
                 timeBetweenEvictionRunsMillis=1800000
                 numTestsPerEvictionRun=3
@@ -50,7 +50,7 @@ environments {
             //configClass     = HibernateFilterDomainConfiguration.class
             pooled          = true
             properties {
-                maxActive = -1
+                maxActive = 80
                 minEvictableIdleTimeMillis=1800000
                 timeBetweenEvictionRunsMillis=1800000
                 numTestsPerEvictionRun=3
@@ -71,7 +71,7 @@ environments {
             url             = "jdbc:postgresql://localhost:5432/laser"
             //configClass     = HibernateFilterDomainConfiguration.class
             properties {
-                maxActive = -1
+                maxActive = 80
                 minEvictableIdleTimeMillis=1800000
                 timeBetweenEvictionRunsMillis=1800000
                 numTestsPerEvictionRun=3

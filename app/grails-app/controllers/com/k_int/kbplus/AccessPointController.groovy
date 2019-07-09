@@ -147,8 +147,8 @@ class AccessPointController extends AbstractDebugController {
     def edit_ip() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
 
-        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4cidr'
-        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6cidr'
+        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4range'
+        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6range'
         Boolean autofocus = (params.autofocus) ? true : false
 
         //String ipv4Format = 'range'
@@ -179,7 +179,8 @@ class AccessPointController extends AbstractDebugController {
                  ipv4Ranges: ipv4Ranges, ipv4Format: ipv4Format,
                  ipv6Ranges: ipv6Ranges, ipv6Format: ipv6Format,
                  autofocus: autofocus,
-                 orgInstance: orgAccessPoint.org
+                 orgInstance: orgAccessPoint.org,
+                 inContextOrg: orgId == contextService.org.id
                 ]
                 break
             case 'POST':

@@ -103,7 +103,7 @@ class TitleController extends AbstractDebugController {
         result
     }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def findTitleMatches() { 
     // find all titles by n_title proposedTitle
     def result=[:]
@@ -116,7 +116,7 @@ class TitleController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def createTitle() {
     log.debug("Create new title for ${params.title}");
     //def new_title = new TitleInstance(title:params.title, impId:java.util.UUID.randomUUID().toString()
@@ -301,7 +301,7 @@ class TitleController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def dmIndex() {
     log.debug("dmIndex ${params}");
 

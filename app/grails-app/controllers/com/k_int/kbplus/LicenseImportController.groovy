@@ -31,7 +31,7 @@ class LicenseImportController extends AbstractDebugController {
    * Review the offered import to make sure it is a valid ONIX-PL file.
    * @return
    */
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def doImport() {
     // log.debug("Ghost_license" + grails.util.Holders.config.onix_ghost_license);
     // Setup result object
@@ -210,7 +210,7 @@ class LicenseImportController extends AbstractDebugController {
    * @param upload
    * @return a stats object about the import
    */
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def processImport(upload) {
     // log.debug("processImport(upload) "); upload.each{k,v-> log.debug("  ${k} -> ${v}")}
     //log.debug("Processing imported ONIX-PL document");

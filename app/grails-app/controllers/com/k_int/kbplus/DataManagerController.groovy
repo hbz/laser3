@@ -13,7 +13,7 @@ class DataManagerController extends AbstractDebugController {
   def GOKbService
   def contextService
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def index() { 
     def result =[:]
     def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
@@ -23,7 +23,7 @@ class DataManagerController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def changeLog() { 
 
     def result =[:]
@@ -300,7 +300,7 @@ class DataManagerController extends AbstractDebugController {
     return actors
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def deletedTitles() {
     def result = [:]
 
@@ -479,7 +479,7 @@ class DataManagerController extends AbstractDebugController {
     redirect(controller:'home')
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def checkPackageTIPPs() {
     def result = [:]
     result.user = springSecurityService.getCurrentUser()

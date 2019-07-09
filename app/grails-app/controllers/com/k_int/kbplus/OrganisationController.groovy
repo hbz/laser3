@@ -253,7 +253,7 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_DATAMANAGER','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def setupBasicTestData() {
         Org targetOrg = Org.get(params.id)
         if(organisationService.setupBasicTestData(targetOrg)) {
