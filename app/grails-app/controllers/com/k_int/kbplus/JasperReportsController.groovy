@@ -17,12 +17,12 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader
 import net.sf.jasperreports.engine.*
 import net.sf.jasperreports.export.Exporter
 
-@Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_DATAMANAGER'])
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class JasperReportsController extends AbstractDebugController {
 	def dataSource
 	def contextService
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
 	def index(){
 		def result=[:]
 		flash.error = ""
@@ -98,7 +98,7 @@ class JasperReportsController extends AbstractDebugController {
 
 	}
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
 	def generateReport(){
 		flash.error = ""
 		flash.message = ""

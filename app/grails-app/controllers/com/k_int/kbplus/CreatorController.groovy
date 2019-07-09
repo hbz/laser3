@@ -17,12 +17,12 @@ class CreatorController extends AbstractDebugController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
@@ -31,7 +31,7 @@ class CreatorController extends AbstractDebugController {
         [creatorInstanceList: Creator.list(params), creatorInstanceTotal: Creator.count()]
     }
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def create() {
 		switch (request.method) {
 		case 'GET':
@@ -50,7 +50,7 @@ class CreatorController extends AbstractDebugController {
 		}
     }
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def show() {
         def creatorInstance = Creator.get(params.id)
         if (! creatorInstance) {
@@ -61,11 +61,11 @@ class CreatorController extends AbstractDebugController {
 
         [
 				creatorInstance: creatorInstance,
-				editable: SpringSecurityUtils.ifAnyGranted('ROLE_DATAMANAGER')
+				editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 		]
     }
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def edit() {
 		redirect action: 'show', params: params
 		switch (request.method) {
@@ -111,7 +111,7 @@ class CreatorController extends AbstractDebugController {
 		}
     }
 
-	@Secured(['ROLE_DATAMANAGER'])
+	@Secured(['ROLE_ADMIN'])
     def delete() {
         def creatorInstance = Creator.get(params.id)
         if (! creatorInstance) {
