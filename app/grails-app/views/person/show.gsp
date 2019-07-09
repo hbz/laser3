@@ -325,6 +325,7 @@ ${personInstance}
                                         <span data-tooltip="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
                                         </span>
+                                        * Kann nicht geändert werden.
                                     </g:if>
                                     <g:else>
                                         <span data-tooltip="${message(code:'address.public')}" data-position="top right">

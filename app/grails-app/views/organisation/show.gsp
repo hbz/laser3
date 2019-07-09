@@ -473,7 +473,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
                                                               'modalId'                          : 'personFormModalGeneralContactPerson',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalResponsibleContact')}"
@@ -486,7 +486,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
                                                               'modalId'                          : 'personFormModalResponsibleContact',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                         </div>
 
@@ -503,7 +503,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
                                                               'modalId'                          : 'personFormModalBillingContact',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalTechnichalSupport')}"
@@ -516,7 +516,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
                                                               'modalId'                          : 'personFormModalTechnichalSupport',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             %{--<input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalOtherContact')}"
