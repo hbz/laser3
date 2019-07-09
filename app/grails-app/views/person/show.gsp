@@ -7,7 +7,7 @@
     <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
 </head>
-
+<laser:serviceInjection />
 <body>
 
 <semui:breadcrumbs>
@@ -306,15 +306,21 @@ ${personInstance}
                 </div><!-- .card -->
             </g:if>
 
-
-
                     <g:if test="${personInstance?.tenant && !myPublicContact}">
                         <div class="ui card">
                             <div class="content">
                                 <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
                                 <dd>
-                                    <g:link controller="organisation" action="show"
-                                            id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
+
+                                    <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic?.value != 'No'}">
+                                        <semui:xEditableRefData owner="${personInstance}" field="tenant"
+                                                                dataController="person" dataAction="getPossibleTenantsAsJson" />
+                                    </g:if>
+                                    <g:else>
+                                        <g:link controller="organisation" action="show"
+                                                id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
+                                    </g:else>
+
                                     <g:if test="${personInstance?.isPublic?.value == 'No'}">
                                         <span data-tooltip="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
@@ -325,10 +331,27 @@ ${personInstance}
                                             <i class="address card icon"></i>
                                         </span>
                                     </g:else>
+
                                 </dd></dl>
                             </div>
                         </div><!-- .card -->
                     </g:if>
+
+            <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
+                <div class="ui card">
+                    <div class="content">
+                        <g:if test="${personInstance.roleLinks.isEmpty()}">
+                            <g:link class="ui button negative" controller="person" action="_delete" id="${personInstance?.id}">
+                                Kontakt löschen
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <button class="ui button negative disabled"
+                                data-tooltip="Dieser Kontakt ist noch über Funktionen/Positionen mit Organisationen verknüpft.">Kontakt löschen</button>
+                        </g:else>
+                    </div>
+                </div>
+            </g:if>
 
         </div>
 

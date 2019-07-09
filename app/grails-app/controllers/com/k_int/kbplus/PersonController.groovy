@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -72,9 +73,11 @@ class PersonController extends AbstractDebugController {
             }
         }
 
-        boolean myPublicContact = false
-        if(personInstance.isPublic == RDStore.YN_YES && personInstance.tenant == contextService.org && !personInstance.roleLinks)
-            myPublicContact = true
+        //boolean myPublicContact = false
+        //if(personInstance.isPublic == RDStore.YN_YES && personInstance.tenant == contextService.org && !personInstance.roleLinks)
+        //    myPublicContact = true
+
+        boolean myPublicContact = false // TODO: check
 
         List<PersonRole> gcp = PersonRole.where {
             prs == personInstance &&
@@ -164,7 +167,7 @@ class PersonController extends AbstractDebugController {
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def delete() {
+    def _delete() {
         def personInstance = Person.get(params.id)
         if (! personInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
@@ -220,6 +223,23 @@ class PersonController extends AbstractDebugController {
         }
 
         [personInstance: personInstance, editable: editable]
+    }
+
+    @Secured(['ROLE_USER'])
+    def getPossibleTenantsAsJson() {
+        def result = []
+
+        Person person = genericOIDService.resolveOID(params.oid)
+
+        List<Org> orgs = person.roleLinks?.collect{ it.org }
+        orgs.add(person.tenant)
+        orgs.add(contextService.getOrg())
+
+        orgs.unique().each { o ->
+            result.add([value: "${o.class.name}:${o.id}", text: "${o.toString()}"])
+        }
+
+        render result as JSON
     }
 
     @Deprecated
