@@ -8,6 +8,8 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.Year
 
@@ -555,6 +557,7 @@ class FinanceService {
 
 
     Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
+        DecimalFormat.setParseBigDecimal(true)
         Org contextOrg = contextService.org
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
@@ -664,17 +667,7 @@ class FinanceService {
             else {
                 //fetch possible identifier namespaces
                 List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
-                if(!orgMatches) {
-                    PropertyDefinition egpNr = PropertyDefinition.findByName("EGP Nr.") //URGENT! In this case, the property MUST become custom property!
-                    List<Org> egpMatches = Org.executeQuery("select opp.owner from OrgPrivateProperty opp where cast(opp.intValue as string) = :idCandidate and opp.type = :egp",[idCandidate: orgIdentifier,egp: egpNr])
-                    if(!egpMatches)
-                        owner = (Org) contextOrg
-                    else if(egpMatches.size() > 1)
-                        mappingErrorBag.multipleOrgError = egpMatches.collect { org -> org.sortname }
-                    else if(egpMatches.size() == 1)
-                        owner = egpMatches[0]
-                }
-                else if(orgMatches.size() > 1)
+                if(orgMatches.size() > 1)
                     mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname }
                 else if(orgMatches.size() == 1) {
                     if(!accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
@@ -824,8 +817,7 @@ class FinanceService {
             //costInBillingCurrency(nullable: true, blank: false) -> to invoice total
             if(colMap.invoiceTotal != null) {
                 try {
-                    Double costInBillingCurrency = Double.parseDouble(cols[colMap.invoiceTotal])
-                    costItem.costInBillingCurrency = BigDecimal.valueOf(costInBillingCurrency)
+                    costItem.costInBillingCurrency = (BigDecimal) DecimalFormat.parse(cols[colMap.invoiceTotal])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.invoiceTotalInvalid = true
@@ -843,8 +835,7 @@ class FinanceService {
             //costInLocalCurrency(nullable: true, blank: false) -> to value
             if(colMap.value != null) {
                 try {
-                    Double costInLocalCurrency = Double.parseDouble(cols[colMap.value])
-                    costItem.costInLocalCurrency = BigDecimal.valueOf(costInLocalCurrency)
+                    costItem.costInLocalCurrency = (BigDecimal) DecimalFormat.parse(cols[colMap.value])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.valueInvalid = true
@@ -856,8 +847,7 @@ class FinanceService {
             //currencyRate(nullable: true, blank: false) -> to exchange rate
             if(colMap.currencyRate != null) {
                 try {
-                    Double currencyRate = Double.parseDouble(cols[colMap.currencyRate])
-                    costItem.currencyRate = BigDecimal.valueOf(currencyRate)
+                    costItem.currencyRate = (BigDecimal) DecimalFormat.parse(cols[colMap.currencyRate])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.exchangeRateInvalid = true

@@ -10,24 +10,29 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>Finanzdaten importieren - zweiter Schritt</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.post.title')}</title>
     </head>
+
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <semui:crumb message="menu.institutions.financeImport" class="active"/>
+    </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
 
     <body>
-        <h2>Zur Zeit nur Test</h2>
-        <h3>Es wurden Daten ausgelesen. Ausgabe der Daten samt Fehler:</h3>
+        <h2>${message(code:'myinst.financeImport.post.header2')}</h2>
+        <h3>${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="addCostItems" controller="finance" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <g:hiddenField name="costItemGroups" value="${costItemGroups as JSON}"/>
             <table>
                 <tr>
-                    <th>Kostenposten</th>
+                    <th>${message(code:'myinst.financeImport.post.costItem')}</th>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                        <th>Für Teilnehmer sichtbar machen?</th>
+                        <th>${message(code:'myinst.financeImport.post.makeVisibleForSubscribers')}</th>
                     </g:if>
-                    <th>Posten übernehmen?</th>
+                    <th>${message(code:'myinst.financeImport.post.takeItem')}<br>${message(code:'myinst.financeImport.post.takeAllItems')} <g:checkBox name="takeAll"/></th>
                 </tr>
                 <g:each in="${candidates.entrySet()}" var="row" status="r">
                     <tr>
@@ -66,37 +71,7 @@
                                 <li>Fehler:
                                     <ul>
                                         <g:each in="${errors}" var="error">
-                                            <g:if test="${error.getKey() == 'ownerMismatchError'}"><li>Falsche Zuordnung der Organisation! Der Identifikator gehört zu ${error.getValue()}</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidSubscription'}"><li>Zum Identifikator ${error.getValue()} wurde keine passende Lizenz gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleSubError'}"><li>Mehrere Lizenzen zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
-                                            <g:if test="${error.getKey() == 'packageWithoutSubscription'}"><li>Ohne Lizenz kann kein Posten zu einem Paket zugeordnet werden</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidPackage'}"><li>Zum Identifikator ${error.getValue()} wurde kein passendes Paket gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleSubPkgError'}"><li>Mehrere Pakete zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
-                                            <g:if test="${error.getKey() == 'packageNotInSubscription'}"><li>Das Paket ${error.getValue()} ist nicht mit der gegebenen Lizenz verknüpft</li></g:if>
-                                            <g:if test="${error.getKey() == 'entitlementWithoutPackageOrSubscription'}"><li>Ohne Lizenz und Paket kann kein Posten zu einem Einzeltitel zugeordnet werden</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidTitle'}"><li>Zum Identifikator ${error.getValue()} wurde keine passende Titelinstanz gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleTitleError'}"><li>Mehrere Titelinstanzen zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidEntitlement'}"><li>Zum Identifikator ${error.getValue()} wurde kein passender Bestandstitel gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleEntitlementError'}"><li>Mehrere Bestandstitel zu gegebenem Identifikator gefunden: ${error.getValue()}</li></g:if>
-                                            <g:if test="${error.getKey() == 'entitlementNotInSubscriptionPackage'}"><li>Der Bestandstitel mit Identifikator ${error.getValue()} ist nicht im angegebenen Paket enthalten</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleOrderError'}"><li>Zur Auftragsnummer ${error.getValue()} wurden mehrere Treffer gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'multipleInvoiceError'}"><li>Zur Rechnungsnummer ${error.getValue()} wurden mehrere Treffer gefunden</li></g:if>
-                                            <g:if test="${error.getKey() == 'noCurrencyError'}"><li>Keine Währung angegeben</li></g:if>
-                                            <g:if test="${error.getKey() == 'invalidCurrencyError'}"><li>Ungültige Währung angegeben</li></g:if>
-                                            <g:if test="${error.getKey() == 'invoiceTotalInvalid'}"><li>Rechnungssumme konnte nicht verarbeitet werden</li></g:if>
-                                            <g:if test="${error.getKey() == 'valueInvalid'}"><li>Wert (in EUR) konnte nicht verarbeitet werden</li></g:if>
-                                            <g:if test="${error.getKey() == 'exchangeRateInvalid'}"><li>Umrechnungskurs konnte nicht verarbeitet werden</li></g:if>
-                                            <g:if test="${error.getKey() == 'invoiceTotalMissing'}"><li>Rechnungssumme war nicht angegeben</li></g:if>
-                                            <g:if test="${error.getKey() == 'valueMissing'}"><li>Wert (in EUR) war nicht angegeben</li></g:if>
-                                            <g:if test="${error.getKey() == 'exchangeRateMissing'}"><li>Umrechnungskurs war nicht angegeben</li></g:if>
-                                            <g:if test="${error.getKey() == 'invoiceTotalCalculated'}"><li>fehlende Rechnungssumme wurde aus Wert (in EUR) und Umrechnungskurs errechnet</li></g:if>
-                                            <g:if test="${error.getKey() == 'valueCalculated'}"><li>fehlender Wert (in EUR) wurde aus Rechnungssumme und Umrechnungskurs errechnet</li></g:if>
-                                            <g:if test="${error.getKey() == 'exchangeRateCalculated'}"><li>fehlender Umrechnungskurs wurde aus Wert (in EUR) und Rechnungssumme errechnet</li></g:if>
-                                            <g:if test="${error.getKey() == 'invalidTaxType'}"><li>Ungültiger Steuersatz/Steuertyp</li></g:if>
-                                            <g:if test="${error.getKey() == 'invalidYearFormat'}"><li>Ungültiges Format für Haushaltsjahr</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidStatus'}"><li>Status ist nicht im definierten Wertebereich</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidElement'}"><li>Kostenelement ist nicht im definierten Wertebereich</li></g:if>
-                                            <g:if test="${error.getKey() == 'noValidSign'}"><li>Kostenvorzeichen ist nicht im definierten Wertebereich</li></g:if>
+                                            <li>${message(code:"myinst.financeImport.post.error.${error.getKey()}",args:[error.getValue()])}</li>
                                         </g:each>
                                     </ul>
                                 </li>
@@ -105,18 +80,30 @@
                         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                             <td>
                                 <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
-                                    sichtbar <input name="visibleForSubscriber${r}" type="radio" value="true"><br>nicht sichtbar <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
+                                    ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" type="radio" value="true"><br>${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" type="radio" value="false" checked>
                                 </g:if>
                             </td>
                         </g:if>
                         <td>
-                            <input name="take${r}" type="checkbox">
+                            <g:checkBox name="take${r}" class="ciSelect"/>
                         </td>
                     </tr>
                 </g:each>
             </table>
-            <input type="submit" class="ui button primary" value="Speichern">
-            <g:link action="financeImport" class="ui button">Zurück</g:link>
+            <input type="submit" class="ui button primary" value="${message(code:'default.button.save.label')}">
+            <g:link action="financeImport" class="ui button"><g:message code="default.button.back"/></g:link>
         </g:form>
     </body>
+    <r:script>
+        $(document).ready(function() {
+            $("#takeAll").change(function(){
+                if($(this).is(":checked")) {
+                    $(".ciSelect").check();
+                }
+                else {
+                    $(".ciSelect").uncheck();
+                }
+            });
+        });
+    </r:script>
 </html>
