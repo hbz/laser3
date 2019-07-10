@@ -374,7 +374,7 @@ class OrganisationController extends AbstractDebugController {
             else members << link.toOrg.id
             memberMap.put(link.fromOrg.id,members)
         }
-        Map result=[organisationMatches:[],members:memberMap,comboType:comboType]
+        Map result=[institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
         //searching members for consortium, i.e. the context org is a consortium
         if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             if ( params.proposedOrganisation ) {
