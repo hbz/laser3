@@ -13,7 +13,8 @@
 /* Menu */
 @verticalMargin: @medium;
 @horizontalMargin: 0em;
-@margin: @verticalMargin @horizontalMargin;
+@topMargin: 0em;
+@margin: @topMargin @horizontalMargin @verticalMargin ;
 @background: #FFFFFF;
 @fontFamily: @pageFont;
 @itemBackground: none;
