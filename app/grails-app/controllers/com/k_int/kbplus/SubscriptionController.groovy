@@ -3539,18 +3539,17 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                     return newSub
                 } else {
                     log.debug("Save ok");
-//TODO: OrgRole der ContextOrg fehlt noch
-//                    //Copy References
-//                    //OrgRole
-//                    baseSub.orgRelations?.each { or ->
-//
-//                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-//                            OrgRole newOrgRole = new OrgRole()
-//                            InvokerHelper.setProperties(newOrgRole, or.properties)
-//                            newOrgRole.sub = newSub
-//                            newOrgRole.save(flush: true)
-//                        }
-//                    }
+                    //Copy References
+                    //OrgRole
+                    baseSub.orgRelations?.each { or ->
+
+                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.sub = newSub
+                            newOrgRole.save(flush: true)
+                        }
+                    }
                     //link to previous subscription
                     Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                     if (!prevLink.save(flush: true)) {

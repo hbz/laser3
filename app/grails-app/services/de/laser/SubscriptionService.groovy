@@ -206,28 +206,6 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean copyOrgRelationsOwner(Subscription sourceSub, Subscription targetSub, def flash) {
-        sourceSub.orgRelations?.each { or ->
-            if (or.org?.id == contextService.getOrg()?.id) {
-                if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                    Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
-                    flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
-                } else {
-                    def newProperties = or.properties
-                    //Vererbung ausschalten
-                    newProperties.sharedFrom = null
-                    newProperties.isShared = false
-                    OrgRole newOrgRole = new OrgRole()
-                    InvokerHelper.setProperties(newOrgRole, newProperties)
-                    newOrgRole.sub = targetSub
-                    save(newOrgRole, flash)
-                }
-            }
-        }
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Subscription targetSub, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
 //        targetSub.issueEntitlements.each{ ie ->
