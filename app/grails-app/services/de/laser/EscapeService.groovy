@@ -13,4 +13,11 @@ class EscapeService {
         output = StringUtils.replaceEach(output,escapingChars,replacement).replaceAll('[-,\\\\./;:]','')
         output
     }
+
+    BigDecimal parseFinancialValue(String input) {
+        String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
+        BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
+        output
+    }
+
 }
