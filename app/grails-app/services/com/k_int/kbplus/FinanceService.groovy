@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
-import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import static de.laser.helper.RDStore.*
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -186,10 +185,10 @@ class FinanceService {
         //get own costs
         List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
                 'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1])
+                [org:org,consType:OR_SUBSCRIPTION_CONSORTIA,deleted:SUBSCRIPTION_DELETED]+filterQueryOwn[1])
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
                 'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
+                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS],deleted:SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null and ci.surveyOrg is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
         long limit = ownOffset+max
@@ -217,7 +216,7 @@ class FinanceService {
                 'join sub.orgRelations orgRoles ' +
                 'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType) and subC.status != :statusC and sub.status != :statusM and ci.surveyOrg = null' +
                 filterQueryCons[0] + consSort,
-                [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],statusC:RDStore.SUBSCRIPTION_DELETED,statusM:RDStore.SUBSCRIPTION_DELETED]+filterQueryCons[1])
+                [org:org,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],statusC:SUBSCRIPTION_DELETED,statusM:SUBSCRIPTION_DELETED]+filterQueryCons[1])
         result.cons.costItems = []
         limit = consOffset+max
         if(limit > consortialSubscriptionCostItems.size())
@@ -244,7 +243,7 @@ class FinanceService {
                 'join ci.owner orgC ' +
                 'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null'+
                 filterQuerySubscr[0] + subscrSort,
-                [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+filterQuerySubscr[1])
+                [org:org,consType:OR_SUBSCRIPTION_CONSORTIA,subscrType:OR_SUBSCRIBER_CONS]+filterQuerySubscr[1])
         result.subscr.costItems = []
         limit = subscrOffset+max
         if(limit > consortialMemberSubscriptionCostItems.size())
@@ -306,8 +305,8 @@ class FinanceService {
         }
         else if(!params.submit && !forSingleSubscription) {
             filterQuery += " and sub.status = :filterSubStatus "
-            queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
-            params.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+            queryParams.filterSubStatus = SUBSCRIPTION_CURRENT
+            params.filterSubStatus = SUBSCRIPTION_CURRENT.id.toString()
         }
         //the bracket from the subquery has to be closed when in subscription mode and for single subscription
         if(filterView.equals("cons") && forSingleSubscription) {
@@ -694,9 +693,9 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(accessService.checkPerm("ORG_CONSORTIUM"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIBER]])
                     else if(accessService.checkPerm("ORG_INST"))
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:owner,roleType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
@@ -757,7 +756,7 @@ class FinanceService {
                             mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
                         else if(titleMatches.size() == 1) {
                             TitleInstance tiMatch = titleMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:RDStore.IE_DELETED])
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:TIPP_STATUS_DELETED])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)

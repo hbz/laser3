@@ -1773,7 +1773,7 @@ from License as l where (
         if(params.format || params.exportKBart) {
             //double run until ERMS-1188
             String filterString = ""
-            Map queryParams = [subDeleted:RDStore.SUBSCRIPTION_DELETED,ieDeleted:RDStore.IE_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+            Map queryParams = [subDeleted:RDStore.SUBSCRIPTION_DELETED,ieDeleted:RDStore.TIPP_STATUS_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
             if (date_restriction) {
                 filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
                 queryParams.dateRestriction = date_restriction
