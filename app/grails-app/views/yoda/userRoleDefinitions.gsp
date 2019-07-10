@@ -54,13 +54,6 @@
         </tr>
 
         <tr>
-            <td>ROLE_DATAMANAGER</td>
-            <td>global (h)</td>
-            <td>
-            </td>
-        </tr>
-
-        <tr>
             <td>ROLE_ADMIN</td>
             <td>global (h)</td>
             <td>

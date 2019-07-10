@@ -212,7 +212,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary: Retrieving catalogue of combined refdatas
       description: >
         Retrieving an overview for RefdataCategories and RefdataValues
@@ -306,7 +306,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
@@ -334,7 +334,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL**
@@ -360,7 +360,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL** - Supported are queries by following identifiers: *globalUID*.
@@ -388,7 +388,7 @@
 
     get:
       tags:
-        - Specials
+        - Datamanager
       summary:
       description: >
         **EXPERIMENTAL**

@@ -92,7 +92,7 @@
 
                             <div class="label"
                                  style="background-color: transparent">${finishProcess}% <g:message
-                                    code="surveyInfo.finish"/></div>
+                                    code="surveyInfo.finished"/></div>
                         </div>
                     </div>
                 </div>

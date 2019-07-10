@@ -89,9 +89,44 @@
 
                     });
                 } else {
-                    $('label[for=filterProp]').next().replaceWith(
+                    $.ajax({
+                        url: '<g:createLink controller="ajax" action="getPropValues"/>' + '?oid=' + selOpt.attr('data-value') + '&domain=${actionName}&format=json',
+                        success: function (data) {
+                            var select = '';
+                            for (var index = 0; index < data.length; index++) {
+                                var option = data[index];
+                                var optionText = option.text;
+
+                                select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
+                            }
+
+                            select = ' <div   class="ui fluid search selection dropdown la-filterProp">' +
+                                '   <input type="hidden" id="filterProp" name="filterProp">' +
+                                '   <i class="dropdown icon"></i>' +
+                                '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
+                                '   <div class="menu">'
+                                + select +
+                                '   </div>' +
+                                '</div>';
+
+
+                            $('label[for=filterProp]').next().replaceWith(select);
+
+
+                            $('.la-filterProp').dropdown({
+                                duration: 150,
+                                transition: 'fade',
+                                clearable: true,
+                                onChange: function (value, text, $selectedItem) {
+                                    value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+                                }
+                            });
+                        }, async: false
+
+                    });
+                    /*$('label[for=filterProp]').next().replaceWith(
                         '<input id="filterProp" type="text" name="filterProp" placeholder="${message(code:'license.search.property.ph', default:'property value')}" />'
-                    )
+                    )*/
                 }
             },
 

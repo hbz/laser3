@@ -15,13 +15,15 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 // import org.springframework.security.web.authentication.AbstractProcessingFilter
 import org.springframework.security.web.savedrequest.*;
 
-
+@Deprecated
 class ProcessLoginController {
 
   def grailsApplication
   def ediAuthTokenMap
 
-  def index() { 
+  @Deprecated
+  def index() {
+    return
 
     log.debug("ProcessLoginController::index() - session = ${request.session.id}");
 
@@ -146,8 +148,11 @@ class ProcessLoginController {
     render "${response_str}"
   }
 
+  @Deprecated
   @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
   def createUserOrgLink(user, authInstitutionName, shibbScope) {
+    return
+
     if ( ( authInstitutionName ) && ( authInstitutionName.length() > 0 ) ) {
       def candidate = authInstitutionName.trim().replaceAll(" ","_")
       def org = com.k_int.kbplus.Org.findByScope(shibbScope)

@@ -3,6 +3,8 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 %>
 <!doctype html>
 
+<laser:serviceInjection />
+
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
@@ -24,7 +26,8 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/organisation/nav" model="${[orgInstance: institution, inContextOrg: true]}"/>
+        <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
+        <g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: true]}"/>
 
         <g:if test="${editable}">
             <input class="ui button"

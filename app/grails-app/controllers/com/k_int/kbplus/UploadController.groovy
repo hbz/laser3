@@ -53,7 +53,7 @@ class UploadController extends AbstractDebugController {
     [regexp:'[0-9]{4}', format: new SimpleDateFormat('yyyy')]
   ];
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def reviewPackage() {
     def result = [:]
     result.user = User.get(springSecurityService.principal.id)

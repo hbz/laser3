@@ -7,6 +7,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
+import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -14,6 +15,25 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiOA2020 {
+
+    static boolean calculateAccess(Org result, Org context, boolean hasAccess) {
+
+        // context is ignored due hasAccess = accessDueDatamanager
+        // maybe changed later into a lesser accessRole like API_LEVEL_OA2020
+
+        if (! hasAccess) {
+            def resultSetting = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
+
+            if (resultSetting != OrgSettings.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
+                hasAccess = true
+            }
+            else {
+                hasAccess = false
+            }
+        }
+
+        hasAccess
+    }
 
     static private List<Org> getAccessibleOrgs() {
 
@@ -29,74 +49,75 @@ class ApiOA2020 {
     }
 
     /**
-     * @return JSON
+     * @return JSON | FORBIDDEN
      */
-    static JSON getAllOrgs() {
+    static getAllOrgs(boolean hasAccess) {
         Collection<Object> result = []
 
-        // if (requestingOrghasNoAccessDueSpecialFlag?) { return Constants.HTTP_FORBIDDEN }
+        if (hasAccess) {
+            List<Org> orgs = getAccessibleOrgs()
 
-        List<Org> orgs = getAccessibleOrgs()
-
-        orgs.each{ o ->
-            result << ApiReaderHelper.retrieveOrganisationStubMap(o, o)
+            orgs.each { o ->
+                result << ApiReaderHelper.retrieveOrganisationStubMap(o, o)
+            }
         }
 
-        return (result ? new JSON(result) : null)
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
     /**
-     * @return JSON
+     * @return JSON | FORBIDDEN
      */
-    // TODO
-    // TODO
-    // TODO
-    static JSON getOrganisation(Org org) {
-        def result = [:]
+    static getOrganisation(Org org, Org context, boolean hasAccess) {
+        Map<String, Object> result = [:]
+        hasAccess = calculateAccess(org, context, hasAccess)
 
-        org = GrailsHibernateUtil.unwrapIfProxy(org)
+        if (hasAccess) {
 
-        //def context = org // TODO
+            org = GrailsHibernateUtil.unwrapIfProxy(org)
 
-        result.globalUID    = org.globalUID
-        result.gokbId       = org.gokbId
-        result.comment      = org.comment
-        result.name         = org.name
-        result.scope        = org.scope
-        result.shortname    = org.shortname
-        result.sortname     = org.sortname
-        result.federalState = org.federalState?.value
-        result.country      = org.country?.value
-        result.libraryType  = org.libraryType?.value
+            //def context = org // TODO
 
-        //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
-        //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
+            result.globalUID    = org.globalUID
+            result.gokbId       = org.gokbId
+            result.comment      = org.comment
+            result.name         = org.name
+            result.scope        = org.scope
+            result.shortname    = org.shortname
+            result.sortname     = org.sortname
+            result.federalState = org.federalState?.value
+            result.country      = org.country?.value
+            result.libraryType  = org.libraryType?.value
 
-        // RefdataValues
+            //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
+            //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
 
-        result.sector       = org.sector?.value
-        result.type         = org.orgType?.collect{ it -> it.value }
-        result.status       = org.status?.value
+            // RefdataValues
 
-        // References
+            result.sector       = org.sector?.value
+            result.type         = org.orgType?.collect{ it -> it.value }
+            result.status       = org.status?.value
 
-        //result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
-        //result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
-        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
-        //result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
-        //        org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
-        //) // com.k_int.kbplus.PersonRole
+            // References
 
-        //result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+            //result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
+            //result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+            result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+            //result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
+            //        org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
+            //) // com.k_int.kbplus.PersonRole
 
-        result.subscriptions = retrieveSubscriptionCollection(org)
+            //result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
-        result = ApiToolkit.cleanUp(result, true, true)
+            result.subscriptions = retrieveSubscriptionCollection(org)
 
-        return (result ? new JSON(result) : null)
+            result = ApiToolkit.cleanUp(result, true, true)
+        }
+
+        return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
-    static Collection<Object> retrieveSubscriptionCollection(Org org) {
+    static private Collection<Object> retrieveSubscriptionCollection(Org org) {
         if (!org ) {
             return null
         }

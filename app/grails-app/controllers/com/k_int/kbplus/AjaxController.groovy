@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
@@ -540,6 +541,67 @@ class AjaxController {
             html {
                 result
             }
+            json {
+                render result as JSON
+            }
+        }
+    }
+
+    def getPropValues() {
+        Set result = []
+        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+        if(propDef) {
+            List<AbstractProperty> values
+            if(propDef.tenant) {
+                switch(params.domain) {
+                    case 'currentSubscriptions':
+                    case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                        break
+                    case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                        break
+                    case 'listProvider':
+                    case 'currentProviders':
+                    case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                        break
+                    case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                        break
+                }
+            }
+            else {
+                switch(params.domain) {
+                    case 'currentSubscriptions':
+                    case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.findAllByType(propDef)
+                        break
+                    case 'currentLicenses': values = LicenseCustomProperty.findAllByType(propDef)
+                        break
+                    case 'listProvider':
+                    case 'currentProviders':
+                    case 'manageMembers': values = OrgCustomProperty.findAllByType(propDef)
+                        break
+                }
+            }
+
+            if(values) {
+                if(propDef.type == Integer.toString()) {
+                    values.each { v ->
+                        if(v.intValue != null)
+                            result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                    }
+                    result = result.sort { x, y -> x.text.compareTo y.text}
+                }
+                else {
+                    values.each { v ->
+                        if(v.getValue() != null)
+                            result.add([value:v.getValue(),text:v.getValue()])
+                    }
+                    result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                }
+            }
+        }
+
+
+        //excepted structure: [[value:,text:],[value:,text:]]
+        withFormat {
             json {
                 render result as JSON
             }
@@ -2086,7 +2148,7 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result;
   }
-    @Secured(['ROLE_DATAMANAGER'])
+    @Secured(['ROLE_ADMIN'])
     def addCreatorToTitle() {
 
         if(params.role && params.creator && params.title) {

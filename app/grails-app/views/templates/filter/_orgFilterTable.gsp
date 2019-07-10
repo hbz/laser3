@@ -233,10 +233,12 @@
                     if(users)
                         instAdminIcon = '<i class="large green check icon"></i>'
                 %>
-                ${raw(instAdminIcon)}
                 <g:if test="${contextService.user.hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
-                    <br><g:link controller="organisation" action="users" params="${[id: org.id]}">${message(code:'org.toInstUsers.label')}</g:link>
+                    <br><g:link controller="organisation" action="users" params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                 </g:if>
+                <g:else>
+                    ${raw(instAdminIcon)}
+                </g:else>
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">

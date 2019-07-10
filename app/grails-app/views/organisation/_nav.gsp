@@ -1,4 +1,6 @@
-<laser:serviceInjection />
+<%@page import="de.laser.helper.RDStore" %>
+
+<laser:serviceInjection/>
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
@@ -6,7 +8,7 @@
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector.id != RDStore.O_SECTOR_PUBLISHER}">
 
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
@@ -24,7 +26,7 @@
         </g:else>
     </g:if>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
         <semui:securedSubNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
     </g:if>
@@ -45,7 +47,7 @@
                                  message="menu.institutions.myAddressbook"/>
     </g:if>
 
-    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
 
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
