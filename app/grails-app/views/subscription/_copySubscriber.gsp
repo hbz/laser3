@@ -7,7 +7,7 @@
 			allSubscriptions_readRights: allSubscriptions_readRights,
 			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
 
 		<table class="ui celled table">
 			<tbody>
