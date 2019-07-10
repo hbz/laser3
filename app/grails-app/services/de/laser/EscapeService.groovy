@@ -13,4 +13,17 @@ class EscapeService {
         output = StringUtils.replaceEach(output,escapingChars,replacement).replaceAll('[-,\\\\./;:]','')
         output
     }
+
+    void detectEncoding() {
+        /*
+            TODO: PHP to translate
+            $encodings = array('ASCII', 'UTF-8', 'ISO-8859-15');
+            mb_detect_order(implode(', ', $encodings));
+            $detectedEncoding = mb_detect_encoding($data);
+            if($detectedEncoding != 'ASCII' && $detectedEncoding != 'UTF-8') {
+                $data = mb_convert_encoding($data, 'UTF-8', $detectedEncoding);
+            }
+         */
+    }
+
 }
