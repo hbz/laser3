@@ -49,6 +49,17 @@ class PersonController extends AbstractDebugController {
 	        }
             // processing dynamic form data
             addPersonRoles(personInstance)
+
+            ['contact1', 'contact2', 'contact3'].each{ c ->
+                if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
+
+                    RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
+                    RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
+
+                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content" )
+                    contact.save(flush: true)
+                }
+            }
             
 			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
             redirect(url: request.getHeader('referer'))

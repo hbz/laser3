@@ -110,18 +110,74 @@
             <hr/>
         </g:else>
 
+        <g:if test="${!tmplHideContacts}">
+            <div class="field">
+
+                <div class="three fields">
+
+                    <div class="field three wide fieldcontain">
+                        <label for="contact1_contentType" for="contact2_contentType" for="contact3_contentType">
+                            <g:message code="contact.contentType.label" default="ContentType" />
+                        </label>
+
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')?.getI10n('value')}" />
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Phone','ContactContentType')?.getI10n('value')}" />
+                        <input type="text" readonly value="${RefdataValue.getByValueAndCategory('Fax','ContactContentType')?.getI10n('value')}" />
+
+                        <input type="hidden" id="contact1_contentType" name="contact1_contentType"
+                               value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')?.id}" />
+
+                        <input type="hidden" id="contact2_contentType" name="contact2_contentType"
+                               value="${RefdataValue.getByValueAndCategory('Phone','ContactContentType')?.id}" />
+
+                        <input type="hidden" id="contact3_contentType" name="contact3_contentType"
+                               value="${RefdataValue.getByValueAndCategory('Fax','ContactContentType')?.id}" />
+                    </div>
+
+                    <div class="field three fieldcontain">
+                        <label for="contact1_type" for="contact2_type" for="contact3_type">
+                            ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
+                        </label>
+
+                        <laser:select class="ui dropdown" name="contact1_type"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      optionKey="id"
+                                      optionValue="value" />
+
+                        <laser:select class="ui dropdown" name="contact2_type"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      optionKey="id"
+                                      optionValue="value" />
+
+                        <laser:select class="ui dropdown" name="contact3_type"
+                                      from="${com.k_int.kbplus.Contact.getAllRefdataValues('ContactType')}"
+                                      optionKey="id"
+                                      optionValue="value" />
+                    </div>
+
+
+                    <div class="field ten wide fieldcontain">
+                        <label for="contact1_content" for="contact2_content" for="contact3_content">
+                            <g:message code="contact.content.label" default="Content" />
+                        </label>
+
+                        <g:textField name="contact1_content" value=""/>
+                        <g:textField name="contact2_content" value=""/>
+                        <g:textField name="contact3_content" value=""/>
+                    </div>
+
+                </div>
+
+            </div>
+        </g:if>
+
+
         <div id="person-role-manager">
 
             <g:if test="${!tmplHideFunctions}">
                 <div class="person-role-function-manager">
 
-                    <g:if test="${hideFunctionTypeAndPositionAndOrg}">
 
-                        <input name="functionType" type="hidden" value="${presetFunctionType?.id}"/>
-                        <input name="functionOrg" type="hidden" value="${org?.id}"/>
-
-                    </g:if>
-                    <g:else>
                         <div class="field">
                             <div class="two fields">
                                 <div class="field">
@@ -203,15 +259,12 @@
 
                         </div>
                     </div><!-- .field -->
-                    </g:else>
-
                 </div>
-
             </g:if>
             <g:else>
             <%-- DEFAULT --%>
-                <input type="hidden" name="functionOrg.default" value="${org?.id}"/>
-                <input type="hidden" name="functionType.default" value="${presetFunctionType?.id}"/><%-- not used ? --%>
+                <input type="hidden" name="functionOrg" value="${org?.id}"/>
+                <input type="hidden" name="functionType" value="${presetFunctionType?.id}"/><%-- not used ? --%>
             </g:else>
         </div>
 
