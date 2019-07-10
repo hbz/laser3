@@ -1387,6 +1387,9 @@ class GlobalSourceSyncService {
                 return
             }
 
+            //so far, title updates seem to be considered nowhere. So, let's fix that! HOTFIX ERMS-1493
+            title_instance.title = titleinfo.title
+
             if (title_instance instanceof BookInstance) {
 
                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
