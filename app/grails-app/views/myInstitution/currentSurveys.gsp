@@ -153,7 +153,7 @@
 
                 </td>
 
-                <td>
+                <td style="text-align:center">
                     <g:set var="surveyResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, s?.surveyConfigs)}" />
 
                     <g:if test="${surveyResults}">
@@ -167,7 +167,7 @@
 
                             <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
                                   data-tooltip="${message(code: 'surveyResult.finish.info')}">
-                                <i class="circle green icon"></i>
+                                <i class="check big green icon"></i>
                             </span>
                         </g:else>
                     </g:if>
