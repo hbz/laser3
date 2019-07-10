@@ -207,11 +207,11 @@ class SubscriptionController extends AbstractDebugController {
 
         if(params.mode != 'advanced') {
             base_qry += " and ie.status = :current "
-            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+            qry_params.current = TIPP_STATUS_CURRENT
         }
         else {
             base_qry += " and ie.status != :deleted "
-            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+            qry_params.deleted = TIPP_STATUS_DELETED
         }
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
@@ -2777,7 +2777,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
         sources.each { link ->
             Subscription destination = Subscription.get(link.destination)
-            if (destination.isVisibleBy(result.user) && destination.status != RDStore.SUBSCRIPTION_DELETED) {
+            if (destination.isVisibleBy(result.user) && destination.status != SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[0]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -2786,7 +2786,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
         }
         destinations.each { link ->
             Subscription source = Subscription.get(link.source)
-            if (source.isVisibleBy(result.user) && source.status != RDStore.SUBSCRIPTION_DELETED) {
+            if (source.isVisibleBy(result.user) && source.status != SUBSCRIPTION_DELETED) {
                 def index = link.linkType.getI10n("value")?.split("\\|")[1]
                 if (result.links[index] == null) {
                     result.links[index] = [link]
@@ -3539,6 +3539,18 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                     return newSub
                 } else {
                     log.debug("Save ok");
+//TODO: OrgRole der ContextOrg fehlt noch
+//                    //Copy References
+//                    //OrgRole
+//                    baseSub.orgRelations?.each { or ->
+//
+//                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+//                            OrgRole newOrgRole = new OrgRole()
+//                            InvokerHelper.setProperties(newOrgRole, or.properties)
+//                            newOrgRole.sub = newSub
+//                            newOrgRole.save(flush: true)
+//                        }
+//                    }
                     //link to previous subscription
                     Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
                     if (!prevLink.save(flush: true)) {
