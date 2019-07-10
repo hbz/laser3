@@ -106,7 +106,7 @@
                               title="${message(code: 'surveyInfo.status.label')}"/>
             <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
-            <th>${message(code: 'surveyInfo.processed')}</th>
+            <%--<th>${message(code: 'surveyInfo.processed')}</th>--%>
             <th>${message(code: 'surveyInfo.finished')}</th>
             <th>${message(code:'default.actions')}</th>
 
@@ -140,6 +140,7 @@
                     ${s.owner}
                 </td>
 
+                <%--
                 <td>
                 <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
                 <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
@@ -152,6 +153,7 @@
                     </g:else>
 
                 </td>
+                --%>
 
                 <td style="text-align:center">
                     <g:set var="surveyResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, s?.surveyConfigs)}" />
