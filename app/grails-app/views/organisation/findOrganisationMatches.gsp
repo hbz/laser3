@@ -75,7 +75,7 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM') && members.get(organisationInstance.id)?.contains(contextService.org.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
+										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM') && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
 										</g:if>
 									</td>
@@ -93,12 +93,12 @@
 										<td>${organisationInstance.country}</td>
 										<td>
 										<%-- here: switch if in consortia or not --%>
-											<g:if test="${!members.keySet().contains(organisationInstance.id)}">
+											<g:if test="${!members.get(organisationInstance.id).contains(institution.id)}">
 												<g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
 													<i class="plus icon"></i>
 												</g:link>
 											</g:if>
-											<g:elseif test="${members.keySet().contains(organisationInstance.id)}">
+											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
 												<g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
 													<i class="minus icon"></i>
 												</g:link>
