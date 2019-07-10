@@ -682,7 +682,6 @@ deckSaver = {
         $('.la-clone').remove();
     },
     removePopupFromClone:  function () {
-
         var clone = $('.la-clone');
         var clonePopup = $(clone).popup('get popup');
         $(clonePopup).each(function(){
@@ -703,8 +702,8 @@ deckSaver = {
 
     },
     toggleEditableElements: function (){
-
         if (deckSaver.configs.editMode) {
+
             // ***************************
             // show Contoll Elements
             // ***************************
@@ -729,13 +728,14 @@ deckSaver = {
             deckSaver.enableXeditable ('.xEditableDatepicker');
             deckSaver.enableXeditable ('.xEditableManyToOne');
 
-            $('.la-action-info').text('<g:message code="default.actions"  />')
+            $('.la-action-info').css('text-align', 'left').text('<g:message code="default.actions"  />')
 
         }
         else {
             // ***************************
             // hide Contoll Elements
             // ***************************
+            deckSaver.configs.icon = $(".la-js-editmode-icon");
             $(deckSaver.configs.icon).each(function(){
                 var container = $(this).closest('.la-js-editmode-container');
                 var button = $(this).closest('.button');
@@ -768,7 +768,7 @@ deckSaver = {
             deckSaver.diableXeditable ('.xEditableDatepicker');
             deckSaver.diableXeditable ('.xEditableManyToOne');
 
-            $('.la-action-info').text('<g:message code="default.informations"  />')
+            $('.la-action-info').css('text-align', 'right').text('<g:message code="default.informations"  />')
         }
     }
 }
