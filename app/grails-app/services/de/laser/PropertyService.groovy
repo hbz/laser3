@@ -82,6 +82,14 @@ class PropertyService {
                             base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
                         }
                         break
+                    case URL.toString():
+                        if (!params.filterProp || params.filterProp.length() < 1) {
+                            base_qry += " and gProp.urlValue = null ) "
+                        } else {
+                            base_qry += " and gProp.urlValue = :prop ) "
+                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        }
+                        break
                 }
                 base_qry += " ) "
             }

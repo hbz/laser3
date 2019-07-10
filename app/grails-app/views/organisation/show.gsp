@@ -35,7 +35,7 @@
 <g:render template="breadcrumb"
           model="${[orgInstance: orgInstance, contextOrg: contextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
-<g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ORG_EDITOR,ROLE_DATAMANAGER')}">
+<g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ORG_EDITOR,ROLE_ADMIN')}">
     <semui:controlButtons>
         <g:render template="actions" model="${[org: orgInstance, user: user]}"/>
     </semui:controlButtons>
@@ -442,20 +442,22 @@ ${orgInstance.name}
 
                             </dt>
                             <dd>
+
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
-                                    <g:if test="${(pl?.functionType || pl?.positionType) && pl?.prs?.isPublic?.value != 'No'}">
-                                        <g:render template="/templates/cpa/person_details" model="${[
-                                                personRole          : pl,
-                                                tmplShowDeleteButton: true,
-                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                controller          : 'organisation',
-                                                action              : 'show',
-                                                id                  : orgInstance.id,
-                                                showAddContacts     : true,
-                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                        ]}"/>
-                                    </g:if>
+                                <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic.value != 'No'",[org: orgInstance])}" var="prs">
+
+                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                            person          : prs,
+                                            personContext   : orgInstance,
+                                            tmplShowDeleteButton: true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                            controller          : 'organisation',
+                                            action              : 'show',
+                                            id                  : orgInstance.id,
+                                            showAddContacts     : true,
+                                            editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                    ]}"/>
+
                                 </g:each>
                             <%-- </div> --%>
                                 <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
@@ -473,7 +475,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
                                                               'modalId'                          : 'personFormModalGeneralContactPerson',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalResponsibleContact')}"
@@ -486,7 +488,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
                                                               'modalId'                          : 'personFormModalResponsibleContact',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                         </div>
 
@@ -503,7 +505,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
                                                               'modalId'                          : 'personFormModalBillingContact',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalTechnichalSupport')}"
@@ -516,7 +518,7 @@ ${orgInstance.name}
                                                               'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
                                                               'presetFunctionType'               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
                                                               'modalId'                          : 'personFormModalTechnichalSupport',
-                                                              'hideFunctionTypeAndPositionAndOrg': true]"/>
+                                                              'tmplHideFunctions': true]"/>
 
                                             %{--<input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalOtherContact')}"

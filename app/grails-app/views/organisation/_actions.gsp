@@ -35,7 +35,7 @@
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>
     </g:if>
     <g:if test="${actionName == 'show'}">
-        <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_DATAMANAGER">
+        <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
             <semui:actionsDropdownItem controller="organisation" action="setupBasicTestData" params="[id: orgInstance.id]" message="${message(code:'datamanager.setupBasicOrgData.label')}"/>
         </sec:ifAnyGranted>
     </g:if>

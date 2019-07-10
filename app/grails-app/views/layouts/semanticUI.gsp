@@ -244,7 +244,7 @@
                     </div>
                 </g:if>
 
-                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
+                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
@@ -255,7 +255,7 @@
                                         action="index">${message(code: 'menu.datamanager.manage_usage_stats', default: 'Manage Usage Stats')}</g:link>
                             </sec:ifAnyGranted>
 
-                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
                                 <g:link class="item" controller="dataManager"
                                         action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
@@ -266,7 +266,7 @@
                                         action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label', default: 'Deleted Org management')}</g:link>
                             </sec:ifAnyGranted>
 
-                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
@@ -291,12 +291,12 @@
                                 <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
 
-                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_GLOBAL_DATA">
                                 <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
                                 <g:link class="item" controller="dataManager" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
                             </sec:ifAnyGranted>
 
-                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
                                 <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
                                 <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>

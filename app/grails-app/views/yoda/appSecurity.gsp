@@ -20,7 +20,6 @@
         <div class="item">
             <span class="ROLE_YODA">ROLE_YODA</span> &rArr;
             <span class="ROLE_ADMIN">ROLE_ADMIN</span> &rArr;
-            <span class="ROLE_DATAMANAGER">ROLE_DATAMANAGER</span> &rArr;
             <span class="ROLE_USER">ROLE_USER</span> &rArr;
             <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
         </div>

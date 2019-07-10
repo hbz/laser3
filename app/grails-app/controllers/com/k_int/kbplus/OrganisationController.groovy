@@ -253,7 +253,7 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_DATAMANAGER','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def setupBasicTestData() {
         Org targetOrg = Org.get(params.id)
         if(organisationService.setupBasicTestData(targetOrg)) {
@@ -374,7 +374,7 @@ class OrganisationController extends AbstractDebugController {
             else members << link.toOrg.id
             memberMap.put(link.fromOrg.id,members)
         }
-        Map result=[organisationMatches:[],members:memberMap,comboType:comboType]
+        Map result=[institution:contextService.org,organisationMatches:[],members:memberMap,comboType:comboType]
         //searching members for consortium, i.e. the context org is a consortium
         if(comboType == RDStore.COMBO_TYPE_CONSORTIUM) {
             if ( params.proposedOrganisation ) {

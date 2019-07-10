@@ -3,16 +3,22 @@ package com.k_int.kbplus.filter
 import com.k_int.kbplus.auth.*
 import com.k_int.kbplus.*
 
+@Deprecated
 public class EdiauthFilter extends org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter {
 
   private java.util.HashMap map = null;
   def grailsApplication
 
+  @Deprecated
   def setEdiAuthTokenMap(java.util.HashMap map) {
+    return
+
     this.map = map;
   }
 
+  @Deprecated
   def getPreAuthenticatedPrincipal(javax.servlet.http.HttpServletRequest request) {
+    return
 
     log.debug("EdiauthFilter::getPreAuthenticatedPrincipal ${request} - config = ${grailsApplication?.config?.kbplus?.authmethod}");
 
@@ -150,7 +156,10 @@ public class EdiauthFilter extends org.springframework.security.web.authenticati
     result
   }
 
+  @Deprecated
   def getPreAuthenticatedCredentials(javax.servlet.http.HttpServletRequest request) {
+    return
+
     log.debug("EdiauthFilter::getPreAuthenticatedCredentials()");
     return "";
   }

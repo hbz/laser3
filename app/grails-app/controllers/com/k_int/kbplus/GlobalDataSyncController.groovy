@@ -82,7 +82,7 @@ class GlobalDataSyncController {
     render view:'reviewTracker', model:result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def selectLocalPackage() {
     log.debug("params:"+params)
     def result = [:]
@@ -90,7 +90,7 @@ class GlobalDataSyncController {
     result
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  @Secured(['ROLE_ADMIN'])
   def cancelTracking() {
     log.debug("cancelTracking: " + params)
     GlobalRecordTracker.get(params.trackerId).delete()
@@ -98,7 +98,7 @@ class GlobalDataSyncController {
     redirect(action:'index', params:[q:params.itemName])
   }
 
-  /*@Secured(['ROLE_DATAMANAGER'])
+  /*@Secured(['ROLE_ADMIN'])
   def buildMergeTracker() {
     log.debug("params:"+params)
     if(!params.localPkg)

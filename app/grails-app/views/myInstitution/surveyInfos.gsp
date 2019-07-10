@@ -46,6 +46,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
 <br>
 
+<%--
 <div class="ui icon info message">
     <i class="info icon"></i>
 
@@ -70,6 +71,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
         </p>
     </div>
 </div>
+--%>
 
 <g:if test="${!editable}">
     <div class="ui icon positive message">
@@ -79,7 +81,8 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
             <div class="header"></div>
 
             <p>
-                <g:message code="surveyInfo.finishOrSurveyCompleted"/>
+                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                <g:message code="surveyResult.finish.info" />
             </p>
         </div>
     </div>
