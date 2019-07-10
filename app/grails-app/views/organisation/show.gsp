@@ -442,20 +442,22 @@ ${orgInstance.name}
 
                             </dt>
                             <dd>
+
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
-                                    <g:if test="${(pl?.functionType || pl?.positionType) && pl?.prs?.isPublic?.value != 'No'}">
-                                        <g:render template="/templates/cpa/person_details" model="${[
-                                                personRole          : pl,
-                                                tmplShowDeleteButton: true,
-                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                controller          : 'organisation',
-                                                action              : 'show',
-                                                id                  : orgInstance.id,
-                                                showAddContacts     : true,
-                                                editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                        ]}"/>
-                                    </g:if>
+                                <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic.value != 'No'",[org: orgInstance])}" var="prs">
+
+                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                            person          : prs,
+                                            personContext   : orgInstance,
+                                            tmplShowDeleteButton: true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                            controller          : 'organisation',
+                                            action              : 'show',
+                                            id                  : orgInstance.id,
+                                            showAddContacts     : true,
+                                            editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                    ]}"/>
+
                                 </g:each>
                             <%-- </div> --%>
                                 <g:if test="${(((orgInstance.id == contextService.getOrg().id) && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
