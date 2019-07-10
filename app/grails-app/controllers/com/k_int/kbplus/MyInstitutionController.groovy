@@ -3790,7 +3790,7 @@ AND EXISTS (
                 it.finishDate = new Date()
                 it.save(flush: true)
             }
-            flash.message = message(code: "surveyResult.finish.info")
+            // flash.message = message(code: "surveyResult.finish.info")
         }else {
             flash.error = message(code: "surveyResult.finish.error")
         }

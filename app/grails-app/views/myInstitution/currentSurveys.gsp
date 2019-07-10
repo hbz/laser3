@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyResult; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -106,7 +106,8 @@
                               title="${message(code: 'surveyInfo.status.label')}"/>
             <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
-            <th>${message(code: 'surveyInfo.finish')}</th>
+            <%--<th>${message(code: 'surveyInfo.processed')}</th>--%>
+            <th>${message(code: 'surveyInfo.finished')}</th>
             <th class="la-action-info">${message(code:'default.actions')}</th>
 
         </tr>
@@ -139,6 +140,7 @@
                     ${s.owner}
                 </td>
 
+                <%--
                 <td>
                 <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
                 <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
@@ -150,6 +152,27 @@
                         0%
                     </g:else>
 
+                </td>
+                --%>
+
+                <td style="text-align:center">
+                    <g:set var="surveyResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, s?.surveyConfigs)}" />
+
+                    <g:if test="${surveyResults}">
+                        <g:if test="${surveyResults?.finishDate?.contains(null)}">
+                            <%--<span class="la-long-tooltip" data-position="top right" data-variation="tiny"
+                                  data-tooltip="Nicht abgeschlossen">
+                                <i class="circle red icon"></i>
+                            </span>--%>
+                        </g:if>
+                        <g:else>
+
+                            <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
+                                  data-tooltip="${message(code: 'surveyResult.finish.info')}">
+                                <i class="check big green icon"></i>
+                            </span>
+                        </g:else>
+                    </g:if>
                 </td>
 
                 <td class="x">
