@@ -38,7 +38,7 @@
                 ${message(code: 'org.name.label')}
             </th>
             <th>
-                ${message(code: 'surveyInfo.finish')}
+                ${message(code: 'surveyInfo.finished')}
             </th>
             <th></th>
         </tr>
