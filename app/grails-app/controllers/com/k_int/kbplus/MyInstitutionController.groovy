@@ -3568,7 +3568,7 @@ AND EXISTS (
             result.filename = tsvFile.originalFilename
             Map<String,Map> financialData = financeService.financeImport(tsvFile)
             result.candidates = financialData.candidates
-            result.costItemGroups = financialData.costItemGroups
+            result.budgetCodes = financialData.budgetCodes
             render view: 'postProcessingFinanceImport', model: result
         }
         else {
