@@ -14,6 +14,12 @@ class EscapeService {
         output
     }
 
+    BigDecimal parseFinancialValue(String input) {
+        String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
+        BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
+        output
+    }
+
     void detectEncoding() {
         /*
             TODO: PHP to translate
