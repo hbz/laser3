@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -54,8 +54,20 @@
     </g:if>
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <div class="divider"></div>
-
-        <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+        <%
+            Subscription sub = Subscription.get(params.id)
+            Org org = contextService.getOrg()
+            boolean isCopySubEnabled = sub?.orgRelations?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id || it.roleType.id == RDStore.OR_SUBSCRIBER.id)}
+        %>
+        <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
+            <% isCopySubEnabled = true %>
+        </sec:ifAnyGranted>
+        <g:if test="${isCopySubEnabled}">
+            <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+        </g:else>
         <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
 
         <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
