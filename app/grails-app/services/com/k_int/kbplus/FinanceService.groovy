@@ -2,6 +2,10 @@ package com.k_int.kbplus
 
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
+
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 import static de.laser.helper.RDStore.*
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -559,7 +563,7 @@ class FinanceService {
         Org contextOrg = contextService.org
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
-        Map<CostItem,CostItemGroup> costItemGroups = [:]
+        Map<Integer,String> budgetCodes = [:]
         InputStream stream = tsvFile.getInputStream()
         List<String> rows = stream.text.split('\n')
         Map<String,Integer> colMap = [:]
@@ -653,7 +657,7 @@ class FinanceService {
                 'issn':IdentifierNamespace.findByNs('issn'),
                 'eissn':IdentifierNamespace.findByNs('eissn')
         ]
-        rows.each { row ->
+        rows.eachWithIndex { row, Integer r ->
             Map mappingErrorBag = [:]
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...
@@ -995,15 +999,7 @@ class FinanceService {
                 costItem.reference = cols[colMap.reference]
             //budgetCode -> to budget code
             if(colMap.budgetCode != null) {
-                String[] budgetCodeKeys = cols[colMap.budgetCode].matches('[,;]') ? cols[colMap.budgetCode].split('[,;]') : [cols[colMap.budgetCode]]
-                budgetCodeKeys.each { bck ->
-                    BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
-                    if(!bc) {
-                        bc = new BudgetCode(owner: contextOrg, value: bck)
-                    }
-                    CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
-                    costItemGroups.put(costItem,cig)
-                }
+                budgetCodes[r] = cols[colMap.budgetCode].trim()
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
@@ -1022,7 +1018,7 @@ class FinanceService {
             candidates.put(costItem,mappingErrorBag)
         }
         result.candidates = candidates
-        result.costItemGroups = costItemGroups
+        result.budgetCodes = budgetCodes
         result
     }
 
