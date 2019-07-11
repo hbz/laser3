@@ -17,7 +17,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.grails.datastore.mapping.query.Query
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
@@ -25,6 +24,8 @@ import java.awt.Color
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
@@ -1109,11 +1110,16 @@ class FinanceController extends AbstractDebugController {
     })
     def addCostItems() {
         boolean withErrors = false
+        Org contextOrg = contextService.org
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         flash.error = ""
         def candidates = JSON.parse(params.candidates)
-        def costItemGroups = JSON.parse(params.costItemGroups)
-        candidates.eachWithIndex { ci, int c ->
+        def bcJSON = JSON.parse(params.budgetCodes)
+        List budgetCodes = []
+        bcJSON.each { k,v ->
+            budgetCodes[Integer.parseInt(k)] = v
+        }
+        candidates.eachWithIndex { ci, Integer c ->
             if(params["take${c}"]) {
                 //a single cast did not work because of financialYear type mismatch
                 CostItem costItem = new CostItem(owner: Org.get(ci.owner.id))
@@ -1143,11 +1149,31 @@ class FinanceController extends AbstractDebugController {
                     flash.error += costItem.getErrors()
                 }
                 else {
-                    List budgetCodes = costItemGroups.get(ci)
-                    budgetCodes.each { obj ->
-                        BudgetCode bc = (BudgetCode) JSON.parse(obj)
-                        bc.save()
-                        new CostItemGroup(budgetCode: bc, costItem: costItem).save()
+                    String[] budgetCodeKeys
+                    Pattern p = Pattern.compile('.*[,;].*')
+                    String code = budgetCodes.get(c)
+                    Matcher m = p.matcher(code)
+                    if(m.find())
+                        budgetCodeKeys = code.split('[,;]')
+                    else
+                        budgetCodeKeys = [code]
+                    budgetCodeKeys.each { k ->
+                        String bck = k.trim()
+                        BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                        if(!bc) {
+                            bc = new BudgetCode(owner: contextOrg, value: bck)
+                        }
+                        if(!bc.save()) {
+                            withErrors = true
+                            flash.error += bc.getErrors()
+                        }
+                        else {
+                            CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                            if(!cig.save()) {
+                                withErrors = true
+                                flash.error += cig.getErrors()
+                            }
+                        }
                     }
                 }
             }

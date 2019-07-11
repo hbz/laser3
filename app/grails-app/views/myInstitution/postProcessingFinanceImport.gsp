@@ -25,7 +25,7 @@
         <h3>${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="addCostItems" controller="finance" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
-            <g:hiddenField name="costItemGroups" value="${costItemGroups as JSON}"/>
+            <g:hiddenField name="budgetCodes" value="${budgetCodes as JSON}"/>
             <table class="ui striped table">
                 <thead>
                     <tr>
@@ -66,9 +66,7 @@
                                     <li><g:message code="myinst.financeImport.referenceCodes"/>: ${ci.reference}</li>
                                     <li><g:message code="myinst.financeImport.budgetCode"/>:
                                         <ul>
-                                            <g:each in="${costItemGroups.get(ci)}" var="cig">
-                                                <li>${cig.budgetCode}</li>
-                                            </g:each>
+                                            <li>${budgetCodes.get(r)}</li>
                                         </ul>
                                     </li>
                                     <li><g:message code="myinst.financeImport.datePaid"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.datePaid}"/></li>
