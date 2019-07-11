@@ -23,12 +23,12 @@
         <%
             License license = License.get(license?.id)
             Org org = contextService.getOrg()
-            boolean isCopySubEnabled = license?.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
+            boolean isCopyLicenseEnabled = license?.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
         %>
         <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
-            <% isCopySubEnabled = true %>
+            <% isCopyLicenseEnabled = true %>
         </sec:ifAnyGranted>
-        <g:if test="${isCopySubEnabled}">
+        <g:if test="${isCopyLicenseEnabled}">
             <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
         </g:if>
         <g:else>
