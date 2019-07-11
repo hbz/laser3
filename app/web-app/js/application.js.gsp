@@ -658,7 +658,7 @@ deckSaver = {
 
     },
     initializePopup: function(obj) {
-
+        $('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
             inline     : true,
@@ -719,7 +719,7 @@ deckSaver = {
 
             $(deckSaver.configs.toggleButton).removeAttr("data-content","${message(code:'statusbar.hideButtons.tooltip')}");
             $(deckSaver.configs.toggleButton).attr("data-content", "${message(code:'statusbar.showButtons.tooltip')}");
-            tooltip.go();
+            tooltip.initializePopup(deckSaver.configs.toggleButton);
             $(deckSaver.configs.toggleIcon ).removeClass( "slash" );
             $(deckSaver.configs.toggleButton).addClass('active');
 
@@ -756,10 +756,12 @@ deckSaver = {
             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
             $(deckSaver.configs.areaThatIsAffected).not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
-            //$('.button').not('.la-js-dont-hide-button').addClass('hidden');
             $(deckSaver.configs.toggleButton).removeAttr("data-content", "${message(code:'statusbar.showButtons.tooltip')}");
             $(deckSaver.configs.toggleButton).attr("data-content","${message(code:'statusbar.hideButtons.tooltip')}");
-            tooltip.go();
+            tooltip.initializePopup(deckSaver.configs.toggleButton);
+
+
+
             $(deckSaver.configs.toggleIcon ).addClass( "slash" );
             $(deckSaver.configs.toggleButton).removeClass('active');
 
@@ -779,10 +781,12 @@ tooltip = {
 
     },
     go : function() {
+
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
         tooltip.acccessViaKeys();
     },
     initializePopup: function(obj) {
+        $('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
             inline     : true,
