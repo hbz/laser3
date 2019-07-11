@@ -3695,10 +3695,11 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                 if (params.isRenewSub){
                     if (result.isSubscriberVisible){
                         params.workFlowPart = WORKFLOW_SUBSCRIBER
+                        result << loadDataFor_Subscriber()
                     } else {
                         params.workFlowPart = WORKFLOW_PROPERTIES
+                        result << loadDataFor_Properties()
                     }
-                    result << loadDataFor_Subscriber()
                 } else {
                     result << loadDataFor_DocsAnnouncementsTasks()
                 }
