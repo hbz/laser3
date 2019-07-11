@@ -179,7 +179,7 @@ class ApiStatistic {
     */
 
     static private Collection<Object> retrievePkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
-        if (! subscriptionPackages) {
+        if (!subscriptionPackages) {
             return null
         }
 
@@ -199,7 +199,7 @@ class ApiStatistic {
             OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
                 if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]) {
-                    if (ogr.org.id in accessibleOrgs.collect{ it -> it.id }) {
+                    if (ogr.org.id in accessibleOrgs.collect { it -> it.id }) {
 
                         if (ogr.org.status?.value == 'Deleted') {
                         }
@@ -213,36 +213,41 @@ class ApiStatistic {
                 }
             }
             if (orgList) {
+
                 sub?.put('organisations', ApiToolkit.cleanUp(orgList, true, true))
-            }
 
-            List<IssueEntitlement> ieList = []
+                List<IssueEntitlement> ieList = []
 
-            def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
+                def tipps = TitleInstancePackagePlatform.findAllByPkgAndSub(subPkg.pkg, subPkg.subscription)
 
-            //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
+                //println 'subPkg (' + subPkg.pkg?.id + " , " + subPkg.subscription?.id + ") > " + tipps
 
-            tipps.each{ tipp ->
-                if (tipp.status?.value == 'Deleted') {
-                }
-                else {
-                    def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
-                    if (ie) {
-                        if (ie.status?.value == 'Deleted') {
+                tipps.each { tipp ->
+                    if (tipp.status?.value == 'Deleted') {
+                    } else {
+                        def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
+                        if (ie) {
+                            if (ie.status?.value == 'Deleted') {
 
-                        } else {
-                            ieList.add(ApiReaderHelper.retrieveIssueEntitlementMap(ie, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                            } else {
+                                ieList.add(ApiReaderHelper.retrieveIssueEntitlementMap(ie, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, null))
+                            }
                         }
                     }
                 }
-            }
-            if (ieList) {
-                sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
-            }
+                if (ieList) {
+                    sub?.put('issueEntitlements', ApiToolkit.cleanUp(ieList, true, true))
+                }
 
-            //result.add( ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true))
-            //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_TIPP, null))
-            result.add( sub )
+                //result.add( ApiReaderHelper.resolveSubscriptionStub(subPkg.subscription, null, true))
+                //result.add( ApiReader.exportIssueEntitlements(subPkg, ApiReaderHelper.IGNORE_TIPP, null))
+
+                // only add sub if orgList is not empty
+                result.add(sub)
+            }
+            else {
+                result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+            }
         }
 
         return ApiToolkit.cleanUp(result, true, true)
