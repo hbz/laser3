@@ -390,7 +390,12 @@ class PersonController extends AbstractDebugController {
                 }
             }
         }
-        redirect action: 'show', id: params.id
+
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        } else {
+            redirect action: 'show', id: params.id
+        }
     }
 
     def deletePersonRole() {
