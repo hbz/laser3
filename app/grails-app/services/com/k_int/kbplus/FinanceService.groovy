@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import com.k_int.properties.PropertyDefinition
 import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import static de.laser.helper.RDStore.*
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
 
@@ -22,8 +22,9 @@ class FinanceService {
     def genericOIDService
     def messageSource
     def accessService
+    def escapeService
 
-    List possible_date_formats = [
+    List<SimpleDateFormat> possible_date_formats = [
             new SimpleDateFormat('yyyy/MM/dd'),
             new SimpleDateFormat('dd.MM.yyyy'),
             new SimpleDateFormat('dd/MM/yyyy'),
@@ -554,6 +555,7 @@ class FinanceService {
 
 
     Map<String,Map> financeImport(CommonsMultipartFile tsvFile) {
+
         Org contextOrg = contextService.org
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
@@ -663,17 +665,7 @@ class FinanceService {
             else {
                 //fetch possible identifier namespaces
                 List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
-                if(!orgMatches) {
-                    PropertyDefinition egpNr = PropertyDefinition.findByName("EGP Nr.") //URGENT! In this case, the property MUST become custom property!
-                    List<Org> egpMatches = Org.executeQuery("select opp.owner from OrgPrivateProperty opp where cast(opp.intValue as string) = :idCandidate and opp.type = :egp",[idCandidate: orgIdentifier,egp: egpNr])
-                    if(!egpMatches)
-                        owner = (Org) contextOrg
-                    else if(egpMatches.size() > 1)
-                        mappingErrorBag.multipleOrgError = egpMatches.collect { org -> org.sortname }
-                    else if(egpMatches.size() == 1)
-                        owner = egpMatches[0]
-                }
-                else if(orgMatches.size() > 1)
+                if(orgMatches.size() > 1)
                     mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname }
                 else if(orgMatches.size() == 1) {
                     if(!accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
@@ -682,6 +674,9 @@ class FinanceService {
                     else {
                         owner = orgMatches[0]
                     }
+                }
+                else {
+                    owner = contextOrg
                 }
             }
             CostItem costItem = new CostItem(owner: owner)
@@ -823,13 +818,12 @@ class FinanceService {
             //costInBillingCurrency(nullable: true, blank: false) -> to invoice total
             if(colMap.invoiceTotal != null) {
                 try {
-                    Double costInBillingCurrency = Double.parseDouble(cols[colMap.invoiceTotal])
-                    costItem.costInBillingCurrency = BigDecimal.valueOf(costInBillingCurrency)
+                    costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.invoiceTotalInvalid = true
                 }
-                catch (NullPointerException e) {
+                catch (NullPointerException | ParseException e) {
                     mappingErrorBag.invoiceTotalMissing = true
                 }
             }
@@ -842,26 +836,24 @@ class FinanceService {
             //costInLocalCurrency(nullable: true, blank: false) -> to value
             if(colMap.value != null) {
                 try {
-                    Double costInLocalCurrency = Double.parseDouble(cols[colMap.value])
-                    costItem.costInLocalCurrency = BigDecimal.valueOf(costInLocalCurrency)
+                    costItem.costInLocalCurrency = escapeService.parseFinancialValue(cols[colMap.value])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.valueInvalid = true
                 }
-                catch (NullPointerException e) {
+                catch (NullPointerException | ParseException e) {
                     mappingErrorBag.valueMissing = true
                 }
             }
             //currencyRate(nullable: true, blank: false) -> to exchange rate
             if(colMap.currencyRate != null) {
                 try {
-                    Double currencyRate = Double.parseDouble(cols[colMap.currencyRate])
-                    costItem.currencyRate = BigDecimal.valueOf(currencyRate)
+                    costItem.currencyRate = escapeService.parseFinancialValue(cols[colMap.currencyRate])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.exchangeRateInvalid = true
                 }
-                catch (NullPointerException e) {
+                catch (NullPointerException | ParseException e) {
                     mappingErrorBag.exchangeRateMissing = true
                 }
             }
@@ -1038,11 +1030,12 @@ class FinanceService {
         def parsed_date = null;
         if (datestr && (datestr.toString().trim().length() > 0)) {
             for (Iterator<SimpleDateFormat> i = possible_date_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                SimpleDateFormat next = i.next()
                 try {
-                    parsed_date = i.next().parse(datestr.toString())
+                    parsed_date = next.parse(datestr.toString())
                 }
                 catch (Exception e) {
-                    log.error("Invalid date provided!")
+                    log.info("Parser for ${next.toPattern()} could not parse date ${datestr}. Trying next one ...")
                 }
             }
         }
