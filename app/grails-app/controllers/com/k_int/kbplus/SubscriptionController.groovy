@@ -3715,7 +3715,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
-                if (params?.targetSubscriptionId && params.isRenewSub){
+                if (params?.targetSubscriptionId){
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 } else {
                     result << loadDataFor_Properties()
