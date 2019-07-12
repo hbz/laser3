@@ -2,9 +2,14 @@ package de.laser
 
 import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Links
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
+import com.k_int.kbplus.PersonRole
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionCustomProperty
 import com.k_int.kbplus.SubscriptionPackage
@@ -18,10 +23,11 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.cfg.NotYetImplementedException
 
 class SubscriptionService {
     def contextService
@@ -41,7 +47,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
@@ -65,7 +71,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
@@ -85,41 +91,40 @@ class SubscriptionService {
     //Konsortiallizenzen
     private List getSubscriptionsConsortiaQuery() {
         Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.status = SUBSCRIPTION_CURRENT.id
         params.showParentsAndChildsSubs = false
 //        params.showParentsAndChildsSubs = 'true'
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        params.orgRole = OR_SUBSCRIPTION_CONSORTIA.value
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Teilnehmerlizenzen
     private List getSubscriptionsConsortialLicenseQuery() {
         Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
+//        params.status = SUBSCRIPTION_CURRENT.id
+        params.orgRole = OR_SUBSCRIBER.value
+        params.subTypes = SUBSCRIPTION_TYPE_CONSORTIAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     //Lokallizenzen
     private List getSubscriptionsLocalLicenseQuery() {
         Map params = [:]
-//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
+//        params.status = SUBSCRIPTION_CURRENT.id
+        params.orgRole = OR_SUBSCRIBER.value
+        params.subTypes = SUBSCRIPTION_TYPE_LOCAL.id
         subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
     }
 
     List getValidSubChilds(Subscription subscription) {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 subscription,
-                RDStore.SUBSCRIPTION_DELETED
+                SUBSCRIPTION_DELETED
         )
-
-        validSubChilds = validSubChilds.sort { a, b ->
+        validSubChilds = validSubChilds?.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
         }
         validSubChilds
     }
@@ -127,7 +132,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
+                        [sub: subscription, del: TIPP_STATUS_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -173,7 +178,7 @@ class SubscriptionService {
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Subscription targetSub, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
-                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+                [orgRelations: toDeleteOrgRelations, sub: targetSub, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIBER_CONS, OR_SUBSCRIBER]]
         )
     }
 
@@ -206,7 +211,7 @@ class SubscriptionService {
 //        targetSub.issueEntitlements.each{ ie ->
         getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
-                ie.status = RDStore.TIPP_STATUS_DELETED
+                ie.status = TIPP_STATUS_DELETED
                 save(ie, flash)
             }
         }
@@ -239,7 +244,7 @@ class SubscriptionService {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
-            it.status = RDStore.TIPP_STATUS_DELETED
+            it.status = TIPP_STATUS_DELETED
             save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -251,8 +256,8 @@ class SubscriptionService {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED}
+            if (ieToTake.status != TIPP_STATUS_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_STATUS_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -265,6 +270,133 @@ class SubscriptionService {
                     newIssueEntitlement.subscription = targetSub
                     save(newIssueEntitlement, flash)
                 }
+            }
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    void copySubscriber(List<Subscription> subscriptionToTake, Subscription targetSub, def flash) {
+        subscriptionToTake.each { subMember ->
+            //Gibt es mich schon in der Ziellizenz?
+            def found = null
+            getValidSubChilds(targetSub).each{
+                it.getAllSubscribers().each {ts ->
+                    subMember.getAllSubscribers().each { subM ->
+                        if (subM.id == ts.id){
+                            found = ts
+                        }
+                    }
+                }
+            }
+
+            if (found) {
+                // mich gibts schon! Fehlermeldung ausgeben!
+                Object[] args = [found.sortname ?: found.sortname]
+                flash.error += messageSource.getMessage('subscription.err.subscriberAlreadyExistsInTargetSub', args, locale)
+//                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
+            } else {
+                //ChildSub Exist
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, LINKTYPE_FOLLOWS, Subscription.class.name)
+//                if (prevLinks.size() == 0) {
+
+                    /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                            [result.subscriptionInstance, it.id])*/
+
+                    def newSubscription = new Subscription(
+                            type: subMember.type,
+                            status: targetSub.status,
+                            name: subMember.name,
+                            startDate: targetSub.startDate,
+                            endDate: targetSub.endDate,
+                            manualRenewalDate: subMember.manualRenewalDate,
+                            /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                            identifier: java.util.UUID.randomUUID().toString(),
+                            instanceOf: targetSub?.id,
+                            //previousSubscription: subMember?.id,
+                            isSlaved: subMember.isSlaved,
+                            isPublic: subMember.isPublic,
+                            impId: java.util.UUID.randomUUID().toString(),
+                            owner: targetSub.owner?.id ? subMember.owner?.id : null,
+                            resource: targetSub.resource ?: null,
+                            form: targetSub.form ?: null
+                    )
+                    newSubscription.save(flush: true)
+                    //ERMS-892: insert preceding relation in new data model
+                    if (subMember) {
+                        Links prevLink = new Links(source: newSubscription.id, destination: subMember.id, linkType: LINKTYPE_FOLLOWS, objectType: Subscription.class.name, owner: contextService.org)
+                        if (!prevLink.save()) {
+                            log.error("Subscription linking failed, please check: ${prevLink.errors}")
+                        }
+                    }
+
+                    if (subMember.customProperties) {
+                        //customProperties
+                        for (prop in subMember.customProperties) {
+                            def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+                            copiedProp = prop.copyInto(copiedProp)
+                            copiedProp.save(flush: true)
+                            //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+                        }
+                    }
+                    if (subMember.privateProperties) {
+                        //privatProperties
+                        List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)', [sub: subMember, roleType: [OR_SUBSCRIBER_CONS, OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                            it -> it.id
+                        }
+                        subMember.privateProperties?.each { prop ->
+                            if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
+                                def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+                                copiedProp = prop.copyInto(copiedProp)
+                                copiedProp.save(flush: true)
+                                //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
+                            }
+                        }
+                    }
+
+                    if (subMember.packages && targetSub.packages) {
+                        //Package
+                        subMember.packages?.each { pkg ->
+                            SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                            InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                            newSubscriptionPackage.subscription = newSubscription
+                            newSubscriptionPackage.save(flush: true)
+                        }
+                    }
+                    if (subMember.issueEntitlements && targetSub.issueEntitlements) {
+                        subMember.issueEntitlements?.each { ie ->
+                            if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                def ieProperties = ie.properties
+                                ieProperties.globalUID = null
+
+                                IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                                InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
+                                newIssueEntitlement.subscription = newSubscription
+                                newIssueEntitlement.save(flush: true)
+                            }
+                        }
+                    }
+
+                    //OrgRole
+                    subMember.orgRelations?.each { or ->
+                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (targetSub.orgRelations.size() >= 1)) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.sub = newSubscription
+                            newOrgRole.save(flush: true)
+                        }
+                    }
+
+                    if (subMember.prsLinks && targetSub.prsLinks) {
+                        //PersonRole
+                        subMember.prsLinks?.each { prsLink ->
+                            PersonRole newPersonRole = new PersonRole()
+                            InvokerHelper.setProperties(newPersonRole, prsLink.properties)
+                            newPersonRole.sub = newSubscription
+                            newPersonRole.save(flush: true)
+                        }
+                    }
+//                }
             }
         }
     }
@@ -296,7 +428,7 @@ class SubscriptionService {
         toCopyTasks.each { tsk ->
             def task = Task.findBySubscriptionAndId(sourceSub, tsk)
             if (task) {
-                if (task.status != RDStore.TASK_STATUS_DONE) {
+                if (task.status != TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.subscription = targetSub
@@ -360,7 +492,7 @@ class SubscriptionService {
     def deleteDocs(List<Long> toDeleteDocs, Subscription targetSub, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
-        [del: RDStore.DOC_DELETED, ids: toDeleteDocs])
+        [del: DOC_DELETED, ids: toDeleteDocs])
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
@@ -460,14 +592,14 @@ class SubscriptionService {
                         switch(wrapperKey) {
                             case "global":
                                 groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.visible == RDStore.YN_YES)
+                                if(groupKey.visible == YN_YES)
                                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
                                 break
                             case "local":
                                 try {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES) {
+                                    if(groupBinding.visible == YN_YES) {
                                         groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
                                     }
                                 }
@@ -480,7 +612,7 @@ class SubscriptionService {
                                 try {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
+                                    if(groupBinding.visible == YN_YES && groupBinding.visibleForConsortiaMembers == YN_YES) {
                                         groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
                                     }
                                 }
@@ -507,7 +639,7 @@ class SubscriptionService {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
         } else {
-            def new_ie = new IssueEntitlement(status: RDStore.TIPP_STATUS_CURRENT,
+            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: tipp.accessStartDate,

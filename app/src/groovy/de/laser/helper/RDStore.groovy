@@ -39,7 +39,8 @@ class RDStore {
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
     static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
-    //static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
+    @Deprecated
+    static final IE_DELETED                 = TIPP_DELETED
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
@@ -64,9 +65,12 @@ class RDStore {
     static final COST_ITEM_ACTUAL           = getRefdataValue('Actual','CostItemStatus')
     static final COST_ITEM_DELETED          = getRefdataValue('Deleted','CostItemStatus')
 
-    static final SUBSCRIPTION_TYPE_LOCAL = getRefdataValue('Local Licence', 'Subscription Type')
-    static final SUBSCRIPTION_TYPE_CONSORTIAL = getRefdataValue('Consortial Licence', 'Subscription Type')
-    static final SUBSCRIPTION_TYPE_ADMINISTRATIVE = getRefdataValue('Administrative Subscription','Subscription Type')
+    static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription','Subscription Type')
+    static final SUBSCRIPTION_TYPE_ALLIANCE   = getRefdataValue('Alliance Licence','Subscription Type')
+    static final SUBSCRIPTION_TYPE_NATIONAL   = getRefdataValue('National Licence','Subscription Type')
+    static final SUBSCRIPTION_TYPE_COLLECTIVE   = getRefdataValue('Collective Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
