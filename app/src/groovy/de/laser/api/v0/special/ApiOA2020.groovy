@@ -132,10 +132,7 @@ class ApiOA2020 {
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         ).each { sub ->
 
-            def subStub = ApiReaderHelper.requestSubscriptionStub(sub, org, true)
-            if (subStub) {
-                result.add(ApiToolkit.cleanUp(subStub, true, true))
-            }
+            result.add(ApiReaderHelper.requestSubscriptionStub(sub, org, true))
         }
 
         result = ApiToolkit.cleanUp(result, true, true)

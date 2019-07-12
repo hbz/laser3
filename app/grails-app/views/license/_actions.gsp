@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport; com.k_int.kbplus.License; com.k_int.kbplus.Org" %>
 <laser:serviceInjection />
 
 <semui:actionsDropdown>
@@ -20,8 +20,20 @@
         </g:if>
 
         <div class="divider"></div>
-
-        <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+        <%
+            License license = License.get(license?.id)
+            Org org = contextService.getOrg()
+            boolean isCopyLicenseEnabled = license?.orgLinks?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_LICENSING_CONSORTIUM.id || it.roleType.id == RDStore.OR_LICENSEE.id) }
+        %>
+        <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
+            <% isCopyLicenseEnabled = true %>
+        </sec:ifAnyGranted>
+        <g:if test="${isCopyLicenseEnabled}">
+            <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+        </g:else>
 
         <g:if test="${actionName == 'show'}">
             <g:if test="${(license.getLicensingConsortium()?.id == contextService.getOrg()?.id) || (license.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && license.getLicensee()?.id == contextService.getOrg()?.id) && ! license.isTemplate()}">

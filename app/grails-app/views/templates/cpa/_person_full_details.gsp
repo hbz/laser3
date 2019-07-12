@@ -1,3 +1,5 @@
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
 
@@ -25,7 +27,31 @@
             </div>
 
             <div class="content">
-                <g:if test="${editable && tmplShowDeleteButton}">
+                <g:if test="${editable}">
+
+                    <g:if test="${true || showAddPersonRole}">
+                        <input class="ui mini icon button" type="button" data-semui="modal"
+                               data-href="#prsRoleFormModal${person.id}_F"
+                               value="${message(code: 'default.add.label', args: ['Funktion'])}">
+                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                                                                          tmplId: 'prsRoleFormModal' + person.id + '_F',
+                                                                          tmplRoleType: 'Funktion',
+                                                                          roleType: PersonRole.TYPE_FUNCTION,
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues('Person Function'),
+                                                                          message:'person.function_new.label',
+                                                                          presetOrgId: personContext.id ]"/>
+
+                        <input class="ui mini icon button" type="button" data-semui="modal"
+                               data-href="#prsRoleFormModal${person.id}_P"
+                               value="${message(code: 'default.add.label', args: ['Position'])}">
+                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                                                                          tmplId: 'prsRoleFormModal' + person.id + '_P',
+                                                                          tmplRoleType: 'Funktion',
+                                                                          roleType: PersonRole.TYPE_POSITION,
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues('Person Position'),
+                                                                          message:'person.position_new.label',
+                                                                          presetOrgId: personContext.id ]"/>
+                    </g:if>
 
                     <g:if test="${showAddContacts}">
                         <input class="ui mini icon button" type="button" data-semui="modal"
