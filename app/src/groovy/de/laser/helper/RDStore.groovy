@@ -101,6 +101,9 @@ class RDStore {
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
+    static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active','Combo Status')
+    static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive','Combo Status')
+
     static final CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal Contact','Person Contact Type')
     static final CONTACT_TYPE_FUNCTIONAL    = getRefdataValue('Functional Contact','Person Contact Type')
 

@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Contact" %>
 
 <semui:modal id="${modalId ?: 'contactFormModal'}"
-             text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+             text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
 
     <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true" />

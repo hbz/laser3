@@ -1664,6 +1664,7 @@ class BootStrap {
         RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'], BOOTSTRAP)
         RefdataCategory.loc('CreatorType',         	                        [en: 'Creator Type', de: 'Creator Type'], BOOTSTRAP)
         RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'], BOOTSTRAP)
+        RefdataCategory.loc('Combo Status',           	                    [en: 'Combo Status', de: 'Combo Status'], BOOTSTRAP)
         RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'], BOOTSTRAP)
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'], BOOTSTRAP)
         RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'], BOOTSTRAP)
@@ -1771,8 +1772,8 @@ class BootStrap {
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'], BOOTSTRAP)
 
-        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Autor'], BOOTSTRAP)
-        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Herausgeber'], BOOTSTRAP)
+        RefdataValue.loc('Combo Status',   [en: 'Active', de: 'Aktiv'], BOOTSTRAP)
+        RefdataValue.loc('Combo Status',   [en: 'Inactive', de: 'Inaktiv'], BOOTSTRAP)
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'], BOOTSTRAP)
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'], BOOTSTRAP)
@@ -1796,6 +1797,9 @@ class BootStrap {
         RefdataValue.loc('Cost configuration',[en:'positive',de:'positiv'],BOOTSTRAP)
         RefdataValue.loc('Cost configuration',[en:'negative',de:'negativ'],BOOTSTRAP)
         RefdataValue.loc('Cost configuration',[en:'neutral',de:'neutral'],BOOTSTRAP)
+
+        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Autor'], BOOTSTRAP)
+        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Herausgeber'], BOOTSTRAP)
 
         // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
