@@ -657,27 +657,6 @@ deckSaver = {
         icon: $(".la-js-editmode-icon")
 
     },
-    initializePopup: function(obj) {
-        $('.ui.popup').remove();
-        $(obj).popup({
-            hoverable: true,
-            inline     : true,
-            lastResort: true,
-            delay: {
-                show: 300,
-                hide: 500
-            },
-            onShow: function() {
-                // generate a random ID
-                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
-                // add aria-label to container-span
-                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
-                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
-                $(this).children('.content').attr({role:'tooltip',id:id});
-            },
-        });
-
-    },
     removeClone: function () {
         $('.la-clone').remove();
     },
@@ -747,7 +726,7 @@ deckSaver = {
                 var dataContent = button.attr( "data-content" );
 
                 $(clone).attr('data-content', dataContent);
-                deckSaver.initializePopup(clone);
+                tooltip.initializePopup(clone);
             });
 
             $('.card').not('.ui.modal .card').removeClass('hidden');
@@ -777,16 +756,16 @@ deckSaver = {
 }
 tooltip = {
     configs : {
-        tooltipTrigger: $('.la-popup-tooltip'),
-
+        tooltipTrigger: $('.la-popup-tooltip')
     },
     go : function() {
-
+        tooltip.configs.tooltipTrigger =  $('.la-popup-tooltip');
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
         tooltip.acccessViaKeys();
     },
     initializePopup: function(obj) {
-        $('.ui.popup').remove();
+
+        $('.ui.toggle.button').next('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
             inline     : true,
@@ -863,6 +842,8 @@ bb8 = {
                 //console.log('done')
                 $(update).empty()
                 $(update).html(data)
+                tooltip.go();
+
                 if (done) {
                     eval(done)
                 }
