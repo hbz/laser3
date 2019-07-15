@@ -447,14 +447,16 @@ ${orgInstance.name}
                                 <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic.value != 'No'",[org: orgInstance])}" var="prs">
 
                                     <g:render template="/templates/cpa/person_full_details" model="${[
-                                            person          : prs,
-                                            personContext   : orgInstance,
-                                            tmplShowDeleteButton: true,
+                                            person              : prs,
+                                            personContext       : orgInstance,
+                                            tmplShowDeleteButton    : true,
+                                            tmplShowAddPersonRoles  : true,
+                                            tmplShowAddContacts     : true,
+                                            tmplShowAddAddresses    : true,
                                             tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                             controller          : 'organisation',
                                             action              : 'show',
                                             id                  : orgInstance.id,
-                                            showAddContacts     : true,
                                             editable            : ((orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                     ]}"/>
 
@@ -470,12 +472,12 @@ ${orgInstance.name}
                                                    data-href="#personFormModalGeneralContactPerson"/>
 
                                             <g:render template="/person/formModal"
-                                                      model="['tenant'                           : contextOrg,
-                                                              'org'                              : orgInstance,
-                                                              'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                              'presetFunctionType'               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                              'modalId'                          : 'personFormModalGeneralContactPerson',
-                                                              'tmplHideFunctions': true]"/>
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                              modalId                          : 'personFormModalGeneralContactPerson',
+                                                              tmplHideFunctions: true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalResponsibleContact')}"
@@ -483,12 +485,12 @@ ${orgInstance.name}
                                                    data-href="#personFormModalResponsibleContact"/>
 
                                             <g:render template="/person/formModal"
-                                                      model="['tenant'                           : contextOrg,
-                                                              'org'                              : orgInstance,
-                                                              'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                              'presetFunctionType'               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
-                                                              'modalId'                          : 'personFormModalResponsibleContact',
-                                                              'tmplHideFunctions': true]"/>
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
+                                                              modalId                          : 'personFormModalResponsibleContact',
+                                                              tmplHideFunctions: true]"/>
 
                                         </div>
 
@@ -500,12 +502,12 @@ ${orgInstance.name}
                                                    data-href="#personFormModalBillingContact"/>
 
                                             <g:render template="/person/formModal"
-                                                      model="['tenant'                           : contextOrg,
-                                                              'org'                              : orgInstance,
-                                                              'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                              'presetFunctionType'               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
-                                                              'modalId'                          : 'personFormModalBillingContact',
-                                                              'tmplHideFunctions': true]"/>
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
+                                                              modalId                          : 'personFormModalBillingContact',
+                                                              tmplHideFunctions: true]"/>
 
                                             <input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalTechnichalSupport')}"
@@ -513,12 +515,12 @@ ${orgInstance.name}
                                                    data-href="#personFormModalTechnichalSupport"/>
 
                                             <g:render template="/person/formModal"
-                                                      model="['tenant'                           : contextOrg,
-                                                              'org'                              : orgInstance,
-                                                              'isPublic'                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                              'presetFunctionType'               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
-                                                              'modalId'                          : 'personFormModalTechnichalSupport',
-                                                              'tmplHideFunctions': true]"/>
+                                                      model="[tenant                           : contextOrg,
+                                                              org                              : orgInstance,
+                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
+                                                              modalId                          : 'personFormModalTechnichalSupport',
+                                                              tmplHideFunctions: true]"/>
 
                                             %{--<input class="ui button" size="35"
                                                    value="${message(code: 'personFormModalOtherContact')}"

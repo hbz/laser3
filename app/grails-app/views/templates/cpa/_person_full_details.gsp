@@ -1,3 +1,5 @@
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+
 <g:if test="${person && personContext}">
     <div class="ui divided middle aligned selection list la-flex-list la-list-border-around">
 
@@ -25,13 +27,44 @@
             </div>
 
             <div class="content">
-                <g:if test="${editable && tmplShowDeleteButton}">
+                <g:if test="${editable}">
 
-                    <g:if test="${showAddContacts}">
+                    <g:if test="${tmplShowAddPersonRoles}">
+                        <input class="ui mini icon button" type="button" data-semui="modal"
+                               data-href="#prsRoleFormModal${person.id}_F"
+                               value="Funktionen">
+                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                                                                          tmplId: 'prsRoleFormModal' + person.id + '_F',
+                                                                          tmplRoleType: 'Funktion',
+                                                                          roleType: PersonRole.TYPE_FUNCTION,
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues('Person Function'),
+                                                                          message:'person.function_new.label',
+                                                                          presetOrgId: personContext.id ]"/>
+
+                        <input class="ui mini icon button" type="button" data-semui="modal"
+                               data-href="#prsRoleFormModal${person.id}_P"
+                               value="Positionen">
+                        <g:render template="/person/prsRoleModal" model="[personInstance: person,
+                                                                          tmplId: 'prsRoleFormModal' + person.id + '_P',
+                                                                          tmplRoleType: 'Funktion',
+                                                                          roleType: PersonRole.TYPE_POSITION,
+                                                                          roleTypeValues: PersonRole.getAllRefdataValues('Person Position'),
+                                                                          message:'person.position_new.label',
+                                                                          presetOrgId: personContext.id ]"/>
+                    </g:if>
+
+                    <g:if test="${tmplShowAddContacts}">
                         <input class="ui mini icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${person.id}"
-                               value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
+                               value="${message(code: 'person.contacts.label')}">
                         <g:render template="/contact/formModal" model="['prsId': person.id, modalId: 'contactFormModal' + person.id]"/>
+                    </g:if>
+
+                    <g:if test="${tmplShowAddAddresses}">
+                        <input class="ui mini icon button" type="button" data-semui="modal"
+                               data-href="#addressFormModal${person.id}"
+                               value="${message(code: 'person.addresses.label')}">
+                        <g:render template="/address/formModal" model="['prsId': person.id, modalId: 'addressFormModal' + person.id]"/>
                     </g:if>
 
                 </g:if>
@@ -43,7 +76,7 @@
                 <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
                     <g:render template="/templates/cpa/contact" model="${[
                             contact             : contact,
-                            tmplShowDeleteButton: true
+                            tmplShowDeleteButton: tmplShowDeleteButton
                     ]}"/>
                 </g:if>
             </g:each>
@@ -60,39 +93,66 @@
 
         <g:each in="${person.roleLinks.toSorted()}" var="personRole">
             <g:if test="${personRole.org.id == personContext.id}">
+                <g:if test="${personRole?.functionType}">
+                    <div class="ui item person-details">
+                        <span></span>
 
-                <div class="ui item person-details">
-                    <span></span>
-
-                    <div class="content la-space-right">
-                        <g:if test="${personRole?.functionType}">
+                        <div class="content la-space-right">
                             ${personRole?.functionType?.getI10n('value')}
-                        </g:if>
-                        <g:if test="${personRole?.positionType}">
-                            ${personRole?.positionType?.getI10n('value')}
-                        </g:if>
-                        <g:if test="${personRole?.responsibilityType}">
-                            ${personRole?.responsibilityType?.getI10n('value')}
-                        </g:if>
-                    </div>
+                        </div>
 
-                    <div class="content">
-                        <g:if test="${editable && tmplShowDeleteButton}">
+                        <div class="content">
+                            <g:if test="${editable && tmplShowDeleteButton}">
+                                <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
-                            <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
+                                <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="contact"
+                                        data-confirm-term-where="organisation"
+                                        data-confirm-term-how="unlink"
+                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                    <i class="unlink icon"></i>
+                                </g:link>
+                            </g:if>
+                        </div>
 
-                            <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="contact"
-                                    data-confirm-term-where="organisation"
-                                    data-confirm-term-how="unlink"
-                                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                <i class="unlink icon"></i>
-                            </g:link>
-                        </g:if>
-                    </div>
+                    </div><!-- .person-details -->
+                </g:if>
+            </g:if>
+        </g:each>
 
-                </div><!-- .person-details -->
+        <g:each in="${person.roleLinks.toSorted()}" var="personRole">
+            <g:if test="${personRole.org.id == personContext.id}">
+                <g:if test="${personRole?.positionType || personRole?.responsibilityType}">
+                    <div class="ui item person-details">
+                        <span></span>
 
+                        <div class="content la-space-right">
+                            <g:if test="${personRole?.positionType}">
+                                ${personRole?.positionType?.getI10n('value')} (Position)
+                            </g:if>
+                            <g:if test="${personRole?.responsibilityType}">
+                                ${personRole?.responsibilityType?.getI10n('value')} (Verantwortlichkeit)
+                            </g:if>
+                        </div>
+
+                        <div class="content">
+                            <g:if test="${editable && tmplShowDeleteButton}">
+
+                                <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
+
+                                <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="contact"
+                                        data-confirm-term-where="organisation"
+                                        data-confirm-term-how="unlink"
+                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                    <i class="unlink icon"></i>
+                                </g:link>
+                            </g:if>
+                        </div>
+
+                    </div><!-- .person-details -->
+
+                </g:if>
             </g:if>
         </g:each>
 

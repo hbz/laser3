@@ -1664,6 +1664,7 @@ class BootStrap {
         RefdataCategory.loc('Cluster Type',         	                    [en: 'Cluster Type', de: 'Cluster Type'], BOOTSTRAP)
         RefdataCategory.loc('CreatorType',         	                        [en: 'Creator Type', de: 'Creator Type'], BOOTSTRAP)
         RefdataCategory.loc('Combo Type',           	                    [en: 'Combo Type', de: 'Combo Type'], BOOTSTRAP)
+        RefdataCategory.loc('Combo Status',           	                    [en: 'Combo Status', de: 'Combo Status'], BOOTSTRAP)
         RefdataCategory.loc('ConcurrentAccess',     	                    [en: 'Concurrent Access', de: 'SimUser'], BOOTSTRAP)
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'], BOOTSTRAP)
         RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'], BOOTSTRAP)
@@ -1771,8 +1772,8 @@ class BootStrap {
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'], BOOTSTRAP)
 
-        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Autor'], BOOTSTRAP)
-        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Herausgeber'], BOOTSTRAP)
+        RefdataValue.loc('Combo Status',   [en: 'Active', de: 'Aktiv'], BOOTSTRAP)
+        RefdataValue.loc('Combo Status',   [en: 'Inactive', de: 'Inaktiv'], BOOTSTRAP)
 
         RefdataValue.loc('ConcurrentAccess',     [en: 'Specified', de: 'Festgelegt'], BOOTSTRAP)
         RefdataValue.loc('ConcurrentAccess',     [en: 'Not Specified', de: 'Nicht festgelegt'], BOOTSTRAP)
@@ -1796,6 +1797,9 @@ class BootStrap {
         RefdataValue.loc('Cost configuration',[en:'positive',de:'positiv'],BOOTSTRAP)
         RefdataValue.loc('Cost configuration',[en:'negative',de:'negativ'],BOOTSTRAP)
         RefdataValue.loc('Cost configuration',[en:'neutral',de:'neutral'],BOOTSTRAP)
+
+        RefdataValue.loc('CreatorType', [en: 'Author', de: 'Autor'], BOOTSTRAP)
+        RefdataValue.loc('CreatorType', [en: 'Editor', de: 'Herausgeber'], BOOTSTRAP)
 
         // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
         // RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
@@ -2233,7 +2237,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Resource', [key: 'other', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
+        //RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Ordered', de: 'Bestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Abbestellt'], BOOTSTRAP)
@@ -2256,6 +2260,7 @@ class BootStrap {
 		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
 		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
 
         //RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
         //RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)
@@ -2674,7 +2679,7 @@ class BootStrap {
                 [en: 'License Status', de: 'Lizenzstatus'], BOOTSTRAP)
 
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
+        //RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)

@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
 
 <semui:modal id="${modalId ?: 'addressFormModal'}"
-             text="${message(code: 'default.add.label', args: [message(code: (modalId ?: 'addressFormModal'), default: 'Address')])}">
+             text="${message(code: 'default.add.label', args: [message(code: 'person.address.label')])}">
 
     <g:form id="create_address" class="ui form" url="[controller: 'address', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true"/>

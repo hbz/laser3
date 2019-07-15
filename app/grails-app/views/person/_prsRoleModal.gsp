@@ -4,6 +4,7 @@
 <semui:modal id="${tmplId}" message="${message}">
 
     <g:form class="ui form" url="[controller: 'person', action: 'addPersonRole', params: [id: personInstance.id]]" method="POST">
+        <input type="hidden" name="redirect" value="true" />
 
         <div class="field">
             <label for="newPrsRoleOrg">Einrichtung</label>

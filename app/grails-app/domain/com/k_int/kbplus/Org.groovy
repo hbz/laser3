@@ -174,6 +174,20 @@ class Org
              gokbId (nullable:true, blank:true)
     }
 
+    /*
+    // ERMS-1497
+    List<Combo> getIncomingCombos() {
+        Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
+                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+    }
+
+    // ERMS-1497
+    List<Combo> getOutgoingCombos() {
+        Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
+                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+    }
+    */
+
     @Override
     boolean isDeleted() {
         return RDStore.ORG_DELETED.id == status?.id

@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Finance Import</title>
+    <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.pageTitle')}</title>
   </head>
 
   <body>
