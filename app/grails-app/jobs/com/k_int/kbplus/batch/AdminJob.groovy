@@ -28,13 +28,13 @@ class AdminJob extends AbstractJob {
     def execute() {
         log.debug("Execute::AdminJob");
         if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {
-            log.debug("This server is marked as hbz master");
+            log.debug("This server is marked as hbzMaster");
             SystemEvent.createEvent('ADM_JOB_START')
 
             AdminReminderService.AdminReminder();
         }
         else {
-            log.debug("This server is NOT marked as hbz master. NOT Running AdminJob batch job");
+            log.debug("This server is NOT marked as hbzMaster. NOT Running AdminJob batch job");
         }
     }
 }
