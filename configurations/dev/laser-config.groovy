@@ -39,7 +39,7 @@ feature.notifications = true
 onix_ghost_licence  = 'Jisc Collections Model Journals Licence 2015'
 publicationService.baseurl = 'http://knowplus.edina.ac.uk:2012/kbplus/api'
 docstore            = 'http://deprecated/deprecated'
-KBPlusMaster        = false
+//hbzMaster        = true
 doDocstoreMigration = false
 showDebugInfo       = true
 

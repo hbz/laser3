@@ -5,10 +5,10 @@ import de.laser.quartz.AbstractJob
 
 class GlobalDataSyncJob extends AbstractJob {
 
-  def globalSourceSyncService
-  def grailsApplication
+    def globalSourceSyncService
+    def grailsApplication
 
-  static triggers = {
+    static triggers = {
     // Delay 20 seconds, run every 10 mins.
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins 0 0/10 * * * ? 
@@ -22,29 +22,22 @@ class GlobalDataSyncJob extends AbstractJob {
     //                  | | `- Hour, 0-23
     //                  | `- Minute, 0-59
     //                  `- Second, 0-59
-  }
+    }
 
-  static configFlags = ['KBPlusMaster', 'hbzMaster', 'globalDataSyncJobActiv']
+    static configFlags = ['hbzMaster', 'globalDataSyncJobActiv']
 
 
   def execute() {
     log.debug("GlobalDataSyncJob");
-    if ( grailsApplication.config.KBPlusMaster == true ) {
-      log.debug("This server is marked as KBPlus master. Running GlobalDataSyncJob batch job");
-      SystemEvent.createEvent('GD_SYNC_JOB_START')
-
-      globalSourceSyncService.runAllActiveSyncTasks()
-      SystemEvent.createEvent('GD_SYNC_JOB_COMPLETE')
-    }
-    else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
-      log.debug("This server is marked as hbz Master. Running GlobalDataSyncJob batch job");
+    if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
+      log.debug("This server is marked as hbzMaster. Running GlobalDataSyncJob batch job");
       SystemEvent.createEvent('GD_SYNC_JOB_START')
 
       globalSourceSyncService.runAllActiveSyncTasks()
       SystemEvent.createEvent('GD_SYNC_JOB_COMPLETE')
     }
     else {
-      log.debug("This server is NOT marked as KBPlus master. NOT Running GlobalDataSyncJob SYNC batch job");
+      log.debug("This server is NOT marked as hbzMaster. NOT Running GlobalDataSyncJob SYNC batch job");
     }
   }
 
