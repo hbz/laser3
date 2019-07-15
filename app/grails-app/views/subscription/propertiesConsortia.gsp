@@ -249,9 +249,9 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     <%
                                         if (AuditConfig.getConfig(customProperty)) {
                                             if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                             } else {
-                                                println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                             }
                                         }
                                     %>
@@ -317,9 +317,9 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     <%
                                         if (AuditConfig.getConfig(privateProperty)) {
                                             if (parentSub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                             } else {
-                                                println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                             }
                                         }
                                     %>
@@ -455,9 +455,9 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                             <%
                                                 if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
                                                     if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                        println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                     } else {
-                                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                        println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                     }
                                                 }
                                             %>
@@ -520,9 +520,9 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                             <%
                                                 if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
                                                     if (sub.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                                        println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                                     } else {
-                                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                        println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                                     }
                                                 }
                                             %>

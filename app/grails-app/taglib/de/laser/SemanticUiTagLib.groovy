@@ -215,12 +215,12 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -284,12 +284,12 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -303,19 +303,19 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj, objAttr)) {
 
                             if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
                         else {
-                            out << '&nbsp; <span data-tooltip="Wert wird nicht vererbt" data-position="top right">'
+                            out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
                             out << '<i class="icon la-thumbtack slash"></i>'
                             out << '</span>'
                         }
@@ -332,33 +332,33 @@ class SemanticUiTagLib {
 
         switch (attrs.type) {
             case 'Journal':
-                out << '<div class="la-inline-flexbox" '
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
                 }
                 out << '><i class="icon newspaper outline la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'Database':
-                out << '<div class="la-inline-flexbox" '
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
                 }
                 out << '><i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
-                out << '<div class="la-inline-flexbox" '
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
                 }
                 out << '><i class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
-                out << '<div class="la-inline-flexbox" '
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out <<  'data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
+                    out <<  ' data-content="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
                 }
                 out << '><i class="icon book la-list-icon"></i>'
                 out << '</div>'
@@ -371,27 +371,27 @@ class SemanticUiTagLib {
         switch (attrs.type) {
             case 'E-Mail':
             case 'Mail': // Deprecated
-                out << '<span  data-tooltip="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
+                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
                 out << '    <i class="ui icon envelope outline la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Fax':
-                out << '<span  data-tooltip="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
+                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
                 out << '    <i class="ui icon tty la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Phone':
-                out << '<span  data-tooltip="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
+                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon phone la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Url':
-                out << '<span  data-tooltip="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
+                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon globe la-list-icon"></i>'
                 out << '</span>'
                 break
             default:
-                out << '<span  data-tooltip="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
+                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon address book la-list-icon"></i>'
                 out << '</span>'
                 break
@@ -402,7 +402,7 @@ class SemanticUiTagLib {
 
         if (attrs.editable) {
 
-            out << '<div class="ui green circular horizontal label"  style="margin-right:0; margin-left: 1rem;" data-tooltip="' + message(code: 'statusbar.editable.tooltip') + '"  data-position="bottom right" data-variation="tiny">'
+            out << '<div class="ui green circular horizontal label la-popup-tooltip la-delay"  style="margin-right:0; margin-left: 1rem;" data-content="' + message(code: 'statusbar.editable.tooltip') + '"  data-position="bottom right" data-variation="tiny">'
             out << '<i class="write  icon" style="margin-right:0"></i>'
             out << '</div>'
         }
@@ -877,7 +877,7 @@ class SemanticUiTagLib {
         out << "</span>"
     }
     def linkIcon = { attrs, body ->
-        out << ' <span style="bottom: -3px" data-position="top right" data-tooltip="Diese URL aufrufen ..">'
+        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
         out << '&nbsp;<a href="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
         out << '<i class="share square icon"></i>'
         out << '</a>'

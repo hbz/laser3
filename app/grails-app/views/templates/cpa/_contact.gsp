@@ -8,7 +8,7 @@
 
         <div class="content">
             <g:if test="${['Mail', 'E-Mail'].contains(contact?.contentType?.value)}">
-                <span data-position="top right" data-tooltip="Mail senden an ..">
+                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
                     <a href="mailto:${contact?.content}" class="ui mini icon blue button">
                         <i class="share square icon"></i>
                     </a>
@@ -18,7 +18,7 @@
             <g:if test="${editable && tmplShowDeleteButton}">
 
                 <g:if test="${contact.contentType?.getI10n('value') == 'Url'}">
-                    <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Diese URL aufrufen ..">
                         <a href="${contact?.content}" target="_blank" class="ui mini icon blue button">
                             <i class="share square icon"></i>
                         </a>
