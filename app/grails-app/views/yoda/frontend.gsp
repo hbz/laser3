@@ -254,37 +254,79 @@
                 </pre>
             </div>
         </div>
-/////////////////////////////
-        <div class="html ui top attached segment">
-            <ui>
-                <li>Cards, die keinen Inhalt haben, müssen ausgeschaltet werden:
-                    <ul>
-                        <li>class 'la-js-dont-hide-this-card' zu ins Markup einer Tabellen-Zelle</li>
-                    </ul>
-                </li>
-                <li><g:link controller="subscription" action="show">zum Beispiel hier verwendet</g:link></li>
-            </ui>
-            <br>
-
-            <div class="ui top attached label">Cards müssen "ausgeschaltet" werden, wenn es keinen Inhalt gibt
-
-            </div>
-        </div>
-
-        <div class="annotation transition visible" style="display: none;">
-            <div class="ui instructive bottom attached segment">
-                <pre>
-
-
-                </pre>
-            </div>
-        </div>
     </div>
+    <!---- --->
+
+    <h2 class="ui dividing header">Toggle Button<a class="anchor" id="icons"></a></h2>
+
+    <h4 class="ui header">Anzeige Icon</h4>
+    <div class="html ui top attached segment example">
+        <ul>
+            <li><code>tabindex="0"</code><b> – für den Screenreader</b>
+            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="icon thumbtack blue"</code> <b> – für Gestaltung</b>
+            <li><code>data-content="1 2 3"</code>
+        </ul>
+        <div class="ui top attached label">WCAG-Proof Icon</div>
+    </div>
+    <i  tabindex="0" class="la-js-popup icon thumbtack blue" data-content="1 2 3" ></i>
+    <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
+    <div class="html ui top attached segment example">
+        <ul>
+            <li><code>la-js-editmode-container</code> <b>im umschließenden Element</b>
+            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>class="ui icon mini button </code>
+                <ul>
+                    <li><code>la-audit-button </code>
+                    <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+                    <li><code>la-js-editmode-remain-icon"</code>
+                </ul>
+            </li>
+
+        </ul>
+        <div class="ui top attached label">WCAG-Proof Button</div>
+    </div>
+    <dd class="la-js-editmode-container">
+        <a  role="button" class="ui icon mini button la-audit-button la-js-popup" href='https://www.spiegel.de' data-content="4 5 6">
+            <i class="icon thumbtack la-js-editmode-icon"></i>
+        </a>
+    </dd><br>
+
+    <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
+    <div class="html ui top attached segment example">
+        <ul>
+            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>class="ui icon mini button </code>
+            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+
+            </li>
+
+        </ul>
+        <div class="ui top attached label">WCAG-Proof Button</div>
+    </div>
+
+    <a  role="button" class="ui icon mini button la-audit-button la-js-popup" href='https://www.spiegel.de' data-content="10 11 12">
+        <i class="icon thumbtack la-js-editmode-icon"></i>
+    </a><br><br>
+    <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
+    <div class="html ui top attached segment example">
+        <ul>
+            <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
+            <li><code>class="ui icon mini button </code>
+            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+
+            </li>
+
+        </ul>
+        <div class="ui top attached label">WCAG-Proof Button</div>
+    </div>
+
+    <a  role="button" class="ui icon mini button la-audit-button la-js-popup la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
+        <i class="icon thumbtack"></i>
+    </a><br><br>
+
 </section>
-<br><br>
-<g:checkBox name="test" checked="${true}" value="test" data-action="delete"/><br><br>
-<div class="ui checkbox la-toggle-radio la-replace">
-    <g:checkBox name="test2" class="bulkcheck" data-action="copy"  value="" checked="${true}" />
-</div>
+
+
 </body>
 </html>
