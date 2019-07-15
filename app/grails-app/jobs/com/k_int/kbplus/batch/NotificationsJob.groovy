@@ -13,7 +13,7 @@ class NotificationsJob extends AbstractJob {
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins 0 0/10 * * * ? 
     // At zero seconds, 5 mins past 2am every day...
-    cron name:'notificationsTrigger', cronExpression: "0 0/10 * * * ?"
+    cron name:'notificationsTrigger', cronExpression: "0 0 1 * * ?"
   }
 
     static configFlags = ['hbzMaster']
