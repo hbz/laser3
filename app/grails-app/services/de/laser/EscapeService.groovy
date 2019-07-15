@@ -3,6 +3,8 @@ package de.laser
 import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 
+import java.nio.charset.Charset
+
 @Transactional
 class EscapeService {
 
@@ -18,18 +20,6 @@ class EscapeService {
         String uniformedThousandSeparator = input.replaceAll("[',.]/d{3}","")
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
         output
-    }
-
-    void detectEncoding() {
-        /*
-            TODO: PHP to translate
-            $encodings = array('ASCII', 'UTF-8', 'ISO-8859-15');
-            mb_detect_order(implode(', ', $encodings));
-            $detectedEncoding = mb_detect_encoding($data);
-            if($detectedEncoding != 'ASCII' && $detectedEncoding != 'UTF-8') {
-                $data = mb_convert_encoding($data, 'UTF-8', $detectedEncoding);
-            }
-         */
     }
 
 }

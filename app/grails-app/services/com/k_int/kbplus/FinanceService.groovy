@@ -663,8 +663,10 @@ class FinanceService {
             //check if we have some mandatory properties ...
             //owner(nullable: false, blank: false) -> to institution, defaults to context org
             Org owner
-            String orgIdentifier = cols[colMap.institution]
-            if(!orgIdentifier)
+            String orgIdentifier
+            if(colMap.institution)
+                orgIdentifier = cols[colMap.institution]
+            if(orgIdentifier != null)
                 owner = contextOrg
             else {
                 //fetch possible identifier namespaces

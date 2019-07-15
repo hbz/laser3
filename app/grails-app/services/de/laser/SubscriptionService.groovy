@@ -23,6 +23,8 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import org.springframework.web.multipart.commons.CommonsMultipartFile
+
 import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -663,4 +665,16 @@ class SubscriptionService {
         }
     }
 
+    Map<String, Map> subscriptionImport(InputStream stream) {
+        Org contextOrg = contextService.org
+        Map<String, Map> result = [:]
+        List<String> rows = stream.text.split('\n')
+        rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+            switch(headerCol.toLowerCase().trim()) {
+                case "name":
+                    break
+            }
+        }
+        result
+    }
 }

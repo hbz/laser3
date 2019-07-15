@@ -91,7 +91,7 @@ grails.project.dependency.resolution = {
         //runtime 'org.apache.poi:poi:3.8'
         runtime 'org.apache.poi:poi-ooxml:jar:3.9'
         runtime 'net.sf.opencsv:opencsv:2.0'
-        runtime 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+        runtime 'com.github.albfernandez:juniversalchardet:2.3.0'
 
         runtime 'org.apache.commons:commons-exec:1.3'
         compile 'org.apache.httpcomponents:httpcore:4.4.3'
