@@ -33,7 +33,7 @@ class DataloadService {
     def dataload_running=false
     def dataload_stage=-1
     def dataload_message=''
-    def update_running = false
+    boolean update_running = false
     def lastIndexUpdate = null
 
     @javax.annotation.PostConstruct
@@ -57,7 +57,7 @@ class DataloadService {
     def doFTUpdate() {
 
         synchronized(this) {
-            if ( update_running == true ) {
+            if ( update_running ) {
                 return
             }
             else {
@@ -294,7 +294,7 @@ class DataloadService {
             result
         }
 
-        update_running = false;
+        update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
         esclient.admin().indices().flush(new FlushRequest(es_index)).actionGet()

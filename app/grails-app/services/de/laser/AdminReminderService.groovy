@@ -4,21 +4,24 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import de.laser.interfaces.LockableService
 import groovy.text.SimpleTemplateEngine
 import org.codehaus.groovy.grails.web.util.WebUtils
 
-class AdminReminderService {
+import javax.annotation.PostConstruct
+
+class AdminReminderService extends LockableService {
 
     def mailService
     def grailsApplication
     String from
     String replyTo
 
-    @javax.annotation.PostConstruct
+    @PostConstruct
     void init() {
         from = grailsApplication.config.notifications.email.from
         replyTo = grailsApplication.config.notifications.email.replyTo
-        log.debug("Initialised AdminReminder Service...")
+        log.debug("Initialised adminReminder Service...")
     }
 
     def checkPendingMembershipReqs() {
@@ -41,8 +44,8 @@ class AdminReminderService {
 //        }
     }
 
-    def AdminReminder()
-    {
+    def adminReminder() {
+        running = true
         def adminuser = []
         def users = User.getAll()
 
@@ -60,6 +63,7 @@ class AdminReminderService {
            if(content.pendingRequests.size() > 0)
            mailReminder(admin.email, "${grailsApplication.config.laserSystemId} Admin Reminder", content, null, null)
         }
+        running = false
     }
 
     def mailReminder(userAddress, subjectTrigger, content, overrideReplyTo, overrideFrom) {

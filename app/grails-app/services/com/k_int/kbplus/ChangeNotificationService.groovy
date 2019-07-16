@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*;
-import com.k_int.kbplus.*;
+import com.k_int.kbplus.*
+import de.laser.interfaces.LockableService;
 import grails.converters.*
 import java.sql.Timestamp
 
-class ChangeNotificationService {
+class ChangeNotificationService extends LockableService {
 
     def executorService
     def genericOIDService
@@ -36,9 +37,13 @@ class ChangeNotificationService {
   // Gather together all the changes for a give context object, formate them into an aggregated document
   // notify any registered channels
   def aggregateAndNotifyChanges() {
-    def future = executorService.submit({
-      internalAggregateAndNotifyChanges();
-    } as java.util.concurrent.Callable)
+      if(!running) {
+          running = true
+          def future = executorService.submit({
+              internalAggregateAndNotifyChanges();
+          } as java.util.concurrent.Callable)
+      }
+      else log.warn("Not running, still one process active!")
   }
 
 
@@ -61,6 +66,7 @@ class ChangeNotificationService {
             }
             finally {
                 running = false
+                this.running = false
             }
         }
     }

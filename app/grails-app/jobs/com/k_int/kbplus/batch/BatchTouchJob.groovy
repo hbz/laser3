@@ -17,20 +17,27 @@ class BatchTouchJob extends AbstractJob {
     }
 
     static configFlags = []
+    static boolean running = false
 
 
   def execute() {
-    log.debug("BatchTouchJob::execute");
+      if(!running) {
+          running = true
+          log.debug("BatchTouchJob::execute");
 
-      SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
+          SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
 
-    //The following will only make changes to objects when required. If fields are populated they will skip
-    //Make sure all classes have impIDs, as they are the key used for ES
-    impIdJob();
-    //Make sure all packages have sort name, again used by ES 
-    pkgBatchUpdate()
-    //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
-    titleBatchUpdate()
+          //The following will only make changes to objects when required. If fields are populated they will skip
+          //Make sure all classes have impIDs, as they are the key used for ES
+          impIdJob();
+          //Make sure all packages have sort name, again used by ES
+          pkgBatchUpdate()
+          //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
+          titleBatchUpdate()
+      }
+      else {
+          log.warn("Not starting BatchTouchJob ... already running!")
+      }
   }
 
   def titleBatchUpdate() {

@@ -5,7 +5,7 @@ import de.laser.quartz.AbstractJob
 
 class AdminJob extends AbstractJob {
     def grailsApplication
-    def AdminReminderService
+    def adminReminderService
 
     static triggers = {
         // Delay 20 seconds, run every 10 mins.
@@ -31,7 +31,10 @@ class AdminJob extends AbstractJob {
             log.debug("This server is marked as hbzMaster");
             SystemEvent.createEvent('ADM_JOB_START')
 
-            AdminReminderService.AdminReminder();
+            if(!adminReminderService.running)
+                adminReminderService.adminReminder();
+            else
+                log.warn("Not starting adminReminderService ... already running or stuck!")
         }
         else {
             log.debug("This server is NOT marked as hbzMaster. NOT Running AdminJob batch job");
