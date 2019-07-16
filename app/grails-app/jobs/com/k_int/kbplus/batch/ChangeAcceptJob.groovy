@@ -9,6 +9,7 @@ import de.laser.quartz.AbstractJob
 class ChangeAcceptJob extends AbstractJob {
 
   def pendingChangeService
+
   static triggers = {
    // Delay 20 seconds, run every 10 mins.
    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
@@ -27,7 +28,7 @@ class ChangeAcceptJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning // TODO: service.running is missing
+        !jobIsRunning && !pendingChangeService.running
     }
     boolean isRunning() {
         jobIsRunning

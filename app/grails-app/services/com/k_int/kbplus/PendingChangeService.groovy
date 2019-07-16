@@ -22,7 +22,6 @@ class PendingChangeService extends AbstractLockableService {
 
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
-
     def performAccept(change, User user) {
         if(!running) {
             log.debug('performAccept')
