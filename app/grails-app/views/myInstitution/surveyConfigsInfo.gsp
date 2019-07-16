@@ -357,6 +357,12 @@ ${message(code: 'survey.label')} -
                                    it?.costItemElement?.id == costItem?.costItemElement?.id
                                }}"/>
 
+                        <%
+                            // ERMS-1521 HOTFIX
+                            if (! costItemsSub) {
+                                costItemsSub = subscriptionInstance?.costItems.findAll{ it.costItemElement?.value == 'price: consortial price' }
+                            }
+                        %>
 
                         <table class="ui celled la-table-small la-table-inCard table">
                             <thead>
