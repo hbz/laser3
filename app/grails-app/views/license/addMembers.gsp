@@ -78,7 +78,7 @@
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
                         <input class="hidden" type="radio" name="generateSlavedLics" value="shared" checked="checked">
-                        <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                        <label>${message(code: 'myinst.separate_lics_shared')}</label>
                     </div>
 
                     <div class="ui radio checkbox">
@@ -88,13 +88,13 @@
                         <g:else>
                             <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:else>
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
+                        <label>${message(code: 'myinst.separate_lics_explicit')}</label>
                     </div>
 
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
+                            <label>${message(code: 'myinst.separate_lics_reference')}</label>
                         </div>
 
                         <div class="generateSlavedLicsReference-wrapper hidden">

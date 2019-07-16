@@ -71,9 +71,16 @@
     --%>
     <semui:filter>
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
+            <%
+                List<List<String>> tmplConfigShow
+                if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    tmplConfigShow = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+                else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                    tmplConfigShow = [['name'], ['property']]
+            %>
             <g:render template="/templates/filter/orgFilter"
                   model="[
-                      tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                      tmplConfigShow: tmplConfigShow,
                       tmplConfigFormFilter: true,
                       useNewLayouter: true
                   ]"/>
@@ -91,7 +98,9 @@
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
-                <th>${message(code: 'subscription.linktoLicense')}</th>
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                    <th>${message(code: 'subscription.linktoLicense')}</th>
+                </g:if>
                 <th>${message(code:'subscription.details.status')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
@@ -148,17 +157,17 @@
 
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
-                    <td class="center aligned">
-                        <g:if test="${sub?.owner?.id}">
-                            <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        </g:else>
-
-                    </td>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <td class="center aligned">
+                            <g:if test="${sub?.owner?.id}">
+                                <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="subscription" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                            </g:else>
+                        </td>
+                    </g:if>
                     <td>${sub.status.getI10n('value')}</td>
-
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">

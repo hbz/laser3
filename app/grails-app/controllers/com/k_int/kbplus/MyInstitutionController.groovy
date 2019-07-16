@@ -1189,10 +1189,17 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
-                params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            if(accessService.checkPerm("ORG_CONSORTIUM,ORG_INST_COLLECTIVE")) {
+                if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+                    result.consortialView = true
+                }
+                else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                    params.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
+                    result.departmentalView = true
+                }
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
 
             result
@@ -1212,20 +1219,27 @@ from License as l where (
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_cons_hidden = RDStore.OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_sub_coll = RDStore.OR_SUBSCRIBER_COLLECTIVE
         RefdataValue role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        
-        RefdataValue orgRole = null
-        RefdataValue subType = null
+        RefdataValue role_coll = RDStore.OR_SUBSCRIPTION_COLLECTIVE
 
-        if (params.type) {
-            subType = RefdataValue.get(params.type)
-            if(subType == RDStore.SUBSCRIPTION_TYPE_LOCAL)
-                orgRole = role_sub
-            else orgRole = role_cons
-        }
-        else if (!params.type) {
-            orgRole = role_sub
-            subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
+        RefdataValue orgRole
+        RefdataValue memberRole
+        RefdataValue subType = RefdataValue.get(params.type)
+        switch(subType) {
+            case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
+            case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
+            case RDStore.SUBSCRIPTION_TYPE_NATIONAL:
+            case RDStore.SUBSCRIPTION_TYPE_ALLIANCE: orgRole = role_cons
+                memberRole = role_sub_cons
+                break
+            case RDStore.SUBSCRIPTION_TYPE_COLLECTIVE: orgRole = role_coll
+                memberRole = role_sub_coll
+                break
+            default: orgRole = role_sub
+                if(!subType)
+                    subType = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                break
         }
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
@@ -1258,7 +1272,7 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if(accessService.checkPerm('ORG_CONSORTIUM')) {
+                if(accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
                     
                     def cons_members = []
 
@@ -1299,13 +1313,13 @@ from License as l where (
                         else {
                             new OrgRole(org: cm,
                                     sub: cons_sub,
-                                    roleType: role_sub_cons).save()
+                                    roleType: memberRole).save()
                         }
 
 
                         new OrgRole(org: result.institution,
                             sub: cons_sub,
-                            roleType: role_cons).save()
+                            roleType: orgRole).save()
                     }
                     else {
                         if(new_sub.administrative) {
@@ -1316,7 +1330,7 @@ from License as l where (
                         else {
                             new OrgRole(org: cm,
                                     sub: new_sub,
-                                    roleType: role_sub_cons).save()
+                                    roleType: memberRole).save()
                         }
                     }
                   }
@@ -4916,15 +4930,18 @@ AND EXISTS (
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
-                params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+                else(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                    params.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
 
             result
         }
-        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
     @Deprecated

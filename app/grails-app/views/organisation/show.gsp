@@ -49,7 +49,9 @@ ${orgInstance.name}
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
+<g:if test="${!departmentalView}">
+    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
+</g:if>
 
 <semui:messages data="${flash}"/>
 
@@ -67,12 +69,14 @@ ${orgInstance.name}
                         </dd>
                     </dl>
                     <g:if test="${orgInstance.id != contextService.getOrg()?.id || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                        <dl>
-                            <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
-                            </dd>
-                        </dl>
+                        <g:if test="${!departmentalView}">
+                            <dl>
+                                <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                         <dl>
                             <dt><g:message code="org.sortname.label" default="Sortname"/><br>
                                 <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)"/>

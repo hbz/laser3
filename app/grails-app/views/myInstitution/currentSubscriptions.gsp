@@ -191,7 +191,7 @@
 
 
             <div class="six wide field">
-                <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+                <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <%--
                 <g:if test="${params.orgRole == 'Subscriber'}">
                     <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -212,13 +212,20 @@
                             <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
                         </div>
                     </div>
-
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                   <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
+                            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                                <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
+                                       <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
                                 >
-                            <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                                <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                            </g:if>
+                            <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
+                                <input id="radioKollektiv" type="radio" value="Subscription Collective" name="orgRole" tabindex="0" class="hidden"
+                                       <g:if test="${params.orgRole == 'Subscription Collective'}">checked=""</g:if>
+                                >
+                                <label for="radioKollektiv">${message(code: 'myinst.currentSubscriptions.filter.collective.label')}</label>
+                            </g:elseif>
                         </div>
                     </div>
                 </div>
@@ -245,7 +252,7 @@
             </th>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'subscription.slash.name')}" rowspan="2" scope="col" />
             <th rowspan="2" scope="col">
-                ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
+                ${message(code: 'license.details.linked_pkg')}
             </th>
             <% /*
             <th>
@@ -254,7 +261,7 @@
             */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
-                <th scope="col" rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
             </g:if>
 
             <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
@@ -268,12 +275,12 @@
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
 
-            <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
-                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
+            <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfLicenses.label')}</th>
+                <th scope="col" rowspan="2" >${message(code: 'subscription.numberOfCostItems.label')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
-                              title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
+                              title="${message(code: 'default.cancellationDate.label')}"/> */ %>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions')}</th>
         </tr>
 
@@ -282,7 +289,7 @@
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
-            <g:if test="${true || !s.instanceOf}">
+            <g:if test="${!s.instanceOf}">
                 <tr>
                     <td class="center aligned">
                         ${ (params.int('offset') ?: 0)  + i + 1 }
@@ -366,13 +373,10 @@
                         <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
                         <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                     </td>
-                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                    <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                         <td>
                             <g:link controller="subscription" action="members" params="${[id:s.id]}">
-                            ${Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                    s,
-                                    RDStore.SUBSCRIPTION_DELETED
-                            )?.size()}
+                            ${Subscription.findAllByInstanceOf(s)?.size()}
                             </g:link>
                         </td>
                         <td>

@@ -10,6 +10,8 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDStore
+
 import static de.laser.helper.RDStore.*
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
@@ -869,10 +871,7 @@ class SubscriptionController extends AbstractDebugController {
 
         //if (params.showDeleted == 'Y') {
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.subscriptionInstance,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.subscriptionInstance)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -1761,16 +1760,17 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if (accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.comboType = COMBO_TYPE_CONSORTIUM.value
+        if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
+            if(accessService.checkPerm('ORG_CONSORTIUM'))
+                params.comboType = COMBO_TYPE_CONSORTIUM.value
+            if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
+                params.comboType = COMBO_TYPE_DEPARTMENT.value
             def fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            result.cons_members_disabled = []
-            result.cons_members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                        [result.subscriptionInstance, it.id])
-                ) {
-                    result.cons_members_disabled << it.id
+            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.members_disabled = []
+            result.members.each { it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+                    result.members_disabled << it.id
                 }
             }
         }
@@ -1788,77 +1788,82 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        List orgType = [OT_INSTITUTION.id.toString()]
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgType = [OT_CONSORTIUM.id.toString()]
         }
 
-        def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
+        RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: SUBSCRIPTION_CURRENT
 
-        def role_sub = OR_SUBSCRIBER_CONS
-        def role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
-        def role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
-        def role_lic = OR_LICENSEE_CONS
-        def role_lic_cons = OR_LICENSING_CONSORTIUM
+        RefdataValue role_sub = OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll = OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_lic = OR_LICENSEE_CONS
+        RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
-        def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
-        def role_agency = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
+        RefdataValue role_provider = OR_PROVIDER
+        RefdataValue role_agency = OR_AGENCY
 
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-                def cons_members = []
-                def licenseCopy
+            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                List<Org> members = []
+                License licenseCopy
 
                 params.list('selectedOrgs').each { it ->
-                    def fo = Org.findById(Long.valueOf(it))
-                    cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                    members << Org.findById(Long.valueOf(it))
                 }
 
                 def subLicense = result.subscriptionInstance.owner
 
                 List<Subscription> synShareTargetList = []
 
-                cons_members.each { cm ->
+                members.each { cm ->
 
-                    def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                    //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
-                    if (subLicense) {
-                        def subLicenseParams = [
-                                lic_name     : "${subLicense.reference} (${postfix})",
-                                isSlaved     : params.isSlaved,
-                                asOrgType: orgType,
-                                copyStartEnd : true
-                        ]
+                        if (subLicense) {
+                            def subLicenseParams = [
+                                    lic_name     : "${subLicense.reference} (${postfix})",
+                                    isSlaved     : params.isSlaved,
+                                    asOrgType: orgType,
+                                    copyStartEnd : true
+                            ]
 
-                        if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(
-                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                        }
-                        else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(
-                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                        }
-                        else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
-                            licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                        }
+                            if (params.generateSlavedLics == 'explicit') {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                            }
 
-                        if (licenseCopy) {
-                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                            if (licenseCopy) {
+                                new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                            }
                         }
                     }
 
+
                     //ERMS-1155
-                    if (true) {
-                        log.debug("Generating seperate slaved instances for consortia members")
+                    //if (true) {
+                        log.debug("Generating seperate slaved instances for members")
 
-                        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
-                        def cons_sub = new Subscription(
-                                type: result.subscriptionInstance.type ?: "",
+                        Subscription memberSub = new Subscription(
+                                type: result.subscriptionInstance.type ?: null,
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
@@ -1867,36 +1872,41 @@ class SubscriptionController extends AbstractDebugController {
                                 administrative: result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                identifier: java.util.UUID.randomUUID().toString(),
+                                identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: RefdataValue.getByValueAndCategory('Yes', 'YN'),
+                                isSlaved: YN_YES,
                                 isPublic: result.subscriptionInstance.isPublic,
-                                impId: java.util.UUID.randomUUID().toString(),
+                                impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null
                         )
 
-                        if (!cons_sub.save()) {
-                            cons_sub?.errors.each { e ->
+                        if (!memberSub.save()) {
+                            memberSub?.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
-                            flash.error = cons_sub.errors
+                            flash.error = memberSub.errors
                         }
 
 
-                        if (cons_sub) {
+                        if (memberSub) {
+                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
+                                else
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            }
+                            else {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                            }
 
-                            if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
-                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
-                            else
-                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
-                            new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
-
-                            synShareTargetList.add(cons_sub)
+                            synShareTargetList.add(memberSub)
                         }
 
-                        if (cons_sub) {
+                        if (memberSub) {
 
                             SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
                                 AuditConfig ac = AuditConfig.getConfig(scp)
@@ -1904,14 +1914,14 @@ class SubscriptionController extends AbstractDebugController {
                                 if (ac) {
                                     // multi occurrence props; add one additional with backref
                                     if (scp.type.multipleOccurrence) {
-                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
                                         additionalProp = scp.copyInto(additionalProp)
                                         additionalProp.instanceOf = scp
                                         additionalProp.save(flush: true)
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
                                         newProp = scp.copyInto(newProp)
                                         newProp.instanceOf = scp
                                         newProp.save(flush: true)
@@ -1919,7 +1929,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
 
                 result.subscriptionInstance.syncAllShares(synShareTargetList)
@@ -2842,7 +2852,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -4261,6 +4271,9 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
         result.institution = result.subscription?.subscriber
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
+        result.consortialView = result.showConsortiaFunctions
+        result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
+        result.departmentalView = result.showCollectiveFunctions
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
@@ -4282,6 +4295,10 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
+    }
+
+    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
+        return ((subscription?.getCollective()?.id == contextOrg?.id) && !subscription.instanceOf)
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

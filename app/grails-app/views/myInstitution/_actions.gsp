@@ -28,7 +28,7 @@
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${accessService.checkPermAffiliation("ORG_COLLECTIVE,ORG_CONSORTIUM","INST_ADM")}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM")}">
         <semui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <semui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />

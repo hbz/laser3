@@ -282,14 +282,19 @@ class Subscription
         if (isTemplate()) {
             result = CALCULATED_TYPE_TEMPLATE
         }
+        else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
+            result = CALCULATED_TYPE_COLLECTIVE
+        }
+        else if(getCollective() && instanceOf) {
+            result = CALCULATED_TYPE_COLLECTIVE
+        }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)
                 result = CALCULATED_TYPE_ADMINISTRATIVE
             else
                 result = CALCULATED_TYPE_CONSORTIAL
         }
-        else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
-            // current and deleted member subscriptions
+        else if(getConsortia() && instanceOf) {
             if(administrative)
                 result = CALCULATED_TYPE_ADMINISTRATIVE
             else
@@ -330,20 +335,26 @@ class Subscription
     isSlaved?.value == "Yes" ? "Yes" : "No"
   }
 
-  def getSubscriber() {
-    def result = null;
-    def cons = null;
+  Org getSubscriber() {
+    Org result = null
+    Org cons = null
+    Org coll = null
     
     orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] )
-        result = or.org;
+      if ( or?.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+        result = or.org
         
-      if ( or?.roleType?.value=='Subscription Consortia' )
-        cons = or.org;
+      if ( or?.roleType?.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+        cons = or.org
+      else if(or?.roleType?.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
+        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
+    }
+    else if(!result && coll) {
+        result = coll
     }
     
     result
@@ -352,7 +363,7 @@ class Subscription
   def getAllSubscribers() {
     def result = [];
     orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] )
+      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
         result.add(or.org)
     }
     result
@@ -373,6 +384,14 @@ class Subscription
             if ( or?.roleType?.value=='Subscription Consortia' )
                 result = or.org
         }
+        result
+    }
+
+    Org getCollective() {
+        Org result = null
+        result = orgRelations.find { OrgRole or ->
+            or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id
+        }?.org
         result
     }
 

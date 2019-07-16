@@ -8,8 +8,9 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionsQueryService {
     def propertyService
+    def accessService
 
-    def myInstitutionCurrentSubscriptionsBaseQuery(def params, Org contextOrg) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
 
         def date_restriction
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -39,19 +40,24 @@ class SubscriptionsQueryService {
         }
         */
 
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
+        RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_subColl        = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_collective  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         if (! params.orgRole) {
-            if ((RDStore.OT_CONSORTIUM?.id in contextOrg?.getallOrgTypeIds())) {
+            if (accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.orgRole = 'Subscription Consortia'
+            }
+            else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+                params.orgRole = 'Subscription Collective'
             }
             else {
                 params.orgRole = 'Subscriber'
@@ -87,6 +93,22 @@ from Subscription as s where (
                     base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                                 " AND s.instanceOf is null "
                     qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                }
+            }
+        }
+        else if (params.orgRole == 'Subscription Collective') {
+            if (params.actionName == 'manageMembers') {
+                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                        " AND s.instanceOf is not null "
+                qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+            } else {
+                if (params.showParentsAndChildsSubs) {
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                } else {//nur Parents
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                            " AND s.instanceOf is null "
+                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
                 }
             }
         }
@@ -186,10 +208,6 @@ from Subscription as s where (
 
             if (params.status == 'FETCH_ALL') {
                 base_qry += " AND ( s.status.value != 'Deleted' ) "
-            }
-            else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
-                base_qry += " AND s.status is null "
-                filterSet = true
             }
             else {
                 base_qry += " and s.status.id = :status "

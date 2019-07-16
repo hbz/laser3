@@ -42,7 +42,7 @@
 
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id || contextOrg?.id == subscriptionInstance.getCollective()?.id)}">
         <g:render template="message" />
     </g:if>
 
