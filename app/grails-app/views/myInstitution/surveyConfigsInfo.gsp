@@ -360,7 +360,9 @@ ${message(code: 'survey.label')} -
                         <%
                             // ERMS-1521 HOTFIX
                             if (! costItemsSub) {
-                                costItemsSub = subscriptionInstance?.costItems.findAll{ it.costItemElement?.value == 'price: consortial price' }
+                                costItemsSub = subscriptionInstance?.costItems.findAll{
+                                    it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')?.id
+                                }
                             }
                         %>
 

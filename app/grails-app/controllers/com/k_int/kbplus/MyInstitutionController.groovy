@@ -3631,7 +3631,10 @@ AND EXISTS (
 
         result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
-        result.ownerId = result.surveyResults ? SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id : null
+        def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
+        if (tmpList) {
+            result.ownerId = tmpList[0].owner?.id
+        }
 
         if ( params.exportXLS ) {
             def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
