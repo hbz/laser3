@@ -9,7 +9,7 @@ import grails.transaction.Transactional
 @Transactional
 class SurveyUpdateService extends AbstractLockableService {
 
-    void surveyCheck() {
+    boolean surveyCheck() {
         if(!running) {
             running = true
             def currentDate = new Date(System.currentTimeMillis())
@@ -45,11 +45,11 @@ class SurveyUpdateService extends AbstractLockableService {
                 )
             }
             running = false
+            return true
         }
         else {
             log.warn("Surveys already checked ... not starting again.")
+            return false
         }
     }
-
-
 }

@@ -36,11 +36,14 @@ class DashboardDueDatesJob extends AbstractJob {
 
                 SystemEvent.createEvent('DBDD_JOB_START')
 
-                dashboardDueDatesService.takeCareOfDueDates(
+                if (! dashboardDueDatesService.takeCareOfDueDates(
                         grailsApplication.config.isUpdateDashboardTableInDatabase,
                         grailsApplication.config.isSendEmailsForDueDatesOfAllUsers,
                         [:]
-                )
+                )) {
+                    log.warn( 'Failed. Maybe ignored due blocked dashboardDueDatesService')
+                }
+
                 log.info("Execute::dashboardDueDatesJob - Finished");
 
                 SystemEvent.createEvent('DBDD_JOB_COMPLETE')?.save(flush:true)

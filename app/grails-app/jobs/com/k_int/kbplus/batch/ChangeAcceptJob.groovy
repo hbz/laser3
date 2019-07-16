@@ -35,7 +35,7 @@ class ChangeAcceptJob extends AbstractJob {
     }
 
     /**
-    * Accept pending chnages from master subscriptions on slave subscriptions
+    * Accept pending changes from master subscriptions on slave subscriptions
     **/
     def execute(){
         if (! isAvailable()) {
@@ -53,17 +53,15 @@ class ChangeAcceptJob extends AbstractJob {
             def subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
             def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ pending_change_pending_status ]);
             log.debug(subPendingChanges.size() +" pending changes have been found for slaved subscriptions")
-            subPendingChanges.each {
-                pendingChangeService.performAccept(it, user)
-            }
 
             //refactoring: replace link table with instanceOf
             //def licQueryStr = "select pc.id from PendingChange as pc join pc.license.incomingLinks lnk where lnk.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
             def licQueryStr = "select pc.id from PendingChange as pc where license.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
             def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
             log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
-            licPendingChanges.each {
-                pendingChangeService.performAccept(it, user)
+
+            if (! pendingChangeService.performMultipleAcceptsForJob(subPendingChanges, licPendingChanges, user)) {
+                log.warn( 'Failed. Maybe ignored due blocked pendingChangeService')
             }
 
             log.debug("****Change Accept Job Complete*****")
@@ -75,5 +73,5 @@ class ChangeAcceptJob extends AbstractJob {
         SystemEvent.createEvent('CAJ_JOB_COMPLETE')
 
         jobIsRunning = false
- }
+    }
 }

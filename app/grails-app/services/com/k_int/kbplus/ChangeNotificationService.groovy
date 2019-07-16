@@ -35,14 +35,19 @@ class ChangeNotificationService extends AbstractLockableService {
 
   // Gather together all the changes for a give context object, formate them into an aggregated document
   // notify any registered channels
-  def aggregateAndNotifyChanges() {
+  boolean aggregateAndNotifyChanges() {
       if(!running) {
           running = true
           def future = executorService.submit({
               internalAggregateAndNotifyChanges();
           } as java.util.concurrent.Callable)
+
+          return true
       }
-      else log.warn("Not running, still one process active!")
+      else {
+          log.warn("Not running, still one process active!")
+          return false
+      }
   }
 
 

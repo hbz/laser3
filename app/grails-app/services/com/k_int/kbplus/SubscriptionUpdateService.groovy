@@ -18,7 +18,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
      * - if state = planned, then check if start date is reached, if so: update to active, else do nothing
      * - else if state = active, then check if end date is reached, if so: update to terminated, else do nothing
      */
-    void subscriptionCheck() {
+    boolean subscriptionCheck() {
         if(!running) {
             running = true
             println "processing all intended subscriptions ..."
@@ -106,11 +106,13 @@ class SubscriptionUpdateService extends AbstractLockableService {
 
             SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
             running = false
+
+            return true
         }
         else {
             log.warn("Subscription check already running ... not starting again.")
+            return false
         }
-
     }
 
     /**

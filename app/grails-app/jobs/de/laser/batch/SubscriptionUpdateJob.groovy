@@ -34,7 +34,9 @@ class SubscriptionUpdateJob extends AbstractJob {
         try {
             log.info("Execute::SubscriptionUpdateJob - Start");
 
-            subscriptionUpdateService.subscriptionCheck()
+            if (! subscriptionUpdateService.subscriptionCheck()) {
+                log.warn( 'Failed. Maybe ignored due blocked subscriptionUpdateService')
+            }
 
             log.info("Execute::SubscriptionUpdateJob - Finished");
         }

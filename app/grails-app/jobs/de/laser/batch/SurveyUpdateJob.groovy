@@ -35,7 +35,9 @@ class SurveyUpdateJob extends AbstractJob {
 
             SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
 
-            surveyUpdateService.surveyCheck()
+            if (! surveyUpdateService.surveyCheck()) {
+                log.warn('Failed. Maybe ignored due blocked surveyUpdateService')
+            }
 
             log.info("Execute::SurveyUpdateJob - Finished");
 

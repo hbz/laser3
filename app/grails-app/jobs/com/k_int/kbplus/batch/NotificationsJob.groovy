@@ -37,11 +37,15 @@ class NotificationsJob extends AbstractJob {
             if (grailsApplication.config.hbzMaster == true) {
                 log.debug("This server is marked as hbzMaster")
 
-                changeNotificationService.aggregateAndNotifyChanges()
+                if (! changeNotificationService.aggregateAndNotifyChanges()) {
+                    log.warn( 'Failed. Maybe ignored due blocked changeNotificationService')
+                }
 
                 log.debug("About to start the Reminders Job..")
 
-                reminderService.runReminders()
+                if (! reminderService.runReminders()) {
+                    log.warn( 'Failed. Maybe ignored due blocked reminderService')
+                }
             }
             else {
                 log.debug("This server is NOT marked as hbzMaster .. nothing done")

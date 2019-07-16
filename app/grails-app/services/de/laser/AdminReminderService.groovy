@@ -41,26 +41,34 @@ class AdminReminderService extends AbstractLockableService {
 //        }
     }
 
-    def adminReminder() {
-        running = true
-        def adminuser = []
-        def users = User.getAll()
+    boolean adminReminder() {
+        if (! running) {
+            running = true
 
-        users.each {
-            it.roles.each { role ->
-                if (role.role.authority == "ROLE_YODA") {
-                    adminuser.add(it)
+            def adminuser = []
+            def users = User.getAll()
+
+            users.each {
+                it.roles.each { role ->
+                    if (role.role.authority == "ROLE_YODA") {
+                        adminuser.add(it)
+                    }
                 }
             }
-        }
 
-        def content = checkPendingMembershipReqs()
+            def content = checkPendingMembershipReqs()
 
-       adminuser.each { admin ->
-           if(content.pendingRequests.size() > 0)
-           mailReminder(admin.email, "${grailsApplication.config.laserSystemId} Admin Reminder", content, null, null)
+            adminuser.each { admin ->
+                if (content.pendingRequests.size() > 0)
+                    mailReminder(admin.email, "${grailsApplication.config.laserSystemId} Admin Reminder", content, null, null)
+            }
+            running = false
+
+            return true
         }
-        running = false
+        else {
+            return false
+        }
     }
 
     def mailReminder(userAddress, subjectTrigger, content, overrideReplyTo, overrideFrom) {

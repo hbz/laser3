@@ -980,12 +980,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
             [name: 'Title', converter: titleConv, reconciler: titleReconcile, newRemoteRecordHandler: onNewTitle, complianceCheck: testTitleCompliance],
     ]
 
-    def runAllActiveSyncTasks() {
+    boolean runAllActiveSyncTasks() {
 
-        if (!running) {
+        if (! running) {
             def future = executorService.submit({ internalRunAllActiveSyncTasks() } as java.util.concurrent.Callable)
+            return true
         } else {
             log.warn("Not starting duplicate OAI thread");
+            return false
         }
     }
 
