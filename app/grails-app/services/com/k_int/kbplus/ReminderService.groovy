@@ -190,8 +190,8 @@ select s from Subscription as s where
      * Method executed in NotificationJob!
      * @return
      */
-    def runReminders() {
-        if(!running) {
+    boolean runReminders() {
+        if(! running) {
             running = true
             def start_time = System.currentTimeMillis();
             log.debug("Running reminder service... Started: ${start_time}")
@@ -240,9 +240,13 @@ select s from Subscription as s where
             def end_time = System.currentTimeMillis() - start_time
             log.debug("Finished time taken: ${end_time}")
             running = false
+
+            return true
         }
-        else
+        else {
             log.warn("ReminderService already running, not starting again.")
+            return false
+        }
     }
 
     private void addToMasterList(LinkedHashMap masterSubscriptionList, Subscription sub, reminderAndUserInst) {

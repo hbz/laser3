@@ -28,27 +28,34 @@ class DashboardDueDatesJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
 
-        if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
-            log.info("Execute::dashboardDueDatesJob - Start");
+        try {
+            if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
+                log.info("Execute::dashboardDueDatesJob - Start");
 
-            SystemEvent.createEvent('DBDD_JOB_START')
+                SystemEvent.createEvent('DBDD_JOB_START')
 
-            dashboardDueDatesService.takeCareOfDueDates(
-                    grailsApplication.config.isUpdateDashboardTableInDatabase,
-                    grailsApplication.config.isSendEmailsForDueDatesOfAllUsers,
-                    [:]
-            )
-            log.info("Execute::dashboardDueDatesJob - Finished");
+                if (! dashboardDueDatesService.takeCareOfDueDates(
+                        grailsApplication.config.isUpdateDashboardTableInDatabase,
+                        grailsApplication.config.isSendEmailsForDueDatesOfAllUsers,
+                        [:]
+                )) {
+                    log.warn( 'Failed. Maybe ignored due blocked dashboardDueDatesService')
+                }
 
-            SystemEvent.createEvent('DBDD_JOB_COMPLETE')?.save(flush:true)
+                log.info("Execute::dashboardDueDatesJob - Finished");
 
-        } else {
-            log.info("DashboardDueDates batch job: isUpdateDashboardTableInDatabase and isSendEmailsForDueDatesOfAllUsers are switched off in grailsApplication.config file");
+                SystemEvent.createEvent('DBDD_JOB_COMPLETE')?.save(flush:true)
 
-            SystemEvent.createEvent('DBDD_JOB_IGNORE')
+            } else {
+                log.info("DashboardDueDates batch job: isUpdateDashboardTableInDatabase and isSendEmailsForDueDatesOfAllUsers are switched off in grailsApplication.config file");
+
+                SystemEvent.createEvent('DBDD_JOB_IGNORE')
+            }
+        }
+        catch (Exception e) {
+            log.error(e)
         }
 
         jobIsRunning = false

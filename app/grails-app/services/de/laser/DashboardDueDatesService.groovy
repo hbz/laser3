@@ -42,13 +42,14 @@ class DashboardDueDatesService {
         log.debug("Initialised DashboardDueDatesService...")
     }
 
-    def takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers, def flash) {
+    boolean takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers, def flash) {
         if (flash == null) flash = new HashMap<>()
         if (flash.message == null) flash.put('message', '')
         if (flash.error == null)   flash.put('error', '')
 
         if ( update_running ) {
                 log.info("Existing DashboardDueDatesService takeCareOfDueDates - one already running");
+                return false
         } else {
             try {
                 update_running = true;
@@ -85,6 +86,7 @@ class DashboardDueDatesService {
             } finally {
                 update_running = false
             }
+            return true
         }
     }
     private updateDashboardTableInDatabase(def flash){

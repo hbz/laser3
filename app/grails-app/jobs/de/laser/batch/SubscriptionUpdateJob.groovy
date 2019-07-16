@@ -27,17 +27,24 @@ class SubscriptionUpdateJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
+
         SystemEvent.createEvent('SUB_UPDATE_JOB_START')
 
-        log.info("Execute::SubscriptionUpdateJob - Start");
+        try {
+            log.info("Execute::SubscriptionUpdateJob - Start");
 
-        subscriptionUpdateService.subscriptionCheck()
+            if (! subscriptionUpdateService.subscriptionCheck()) {
+                log.warn( 'Failed. Maybe ignored due blocked subscriptionUpdateService')
+            }
 
-        log.info("Execute::SubscriptionUpdateJob - Finished");
-
+            log.info("Execute::SubscriptionUpdateJob - Finished");
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
         SystemEvent.createEvent('SUB_UPDATE_JOB_COMPLETE')
+
         jobIsRunning = false
     }
 }

@@ -141,8 +141,8 @@ class YodaController {
                         name: clazz.simpleName,
                         configFlags: cf.join(', '),
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
-                        isRunning: applicationContext.getBean(key.getName()).isRunning(),
-                        isAvailable: applicationContext.getBean(key.getName()).isAvailable()
+                        running: applicationContext.getBean(key.getName()).isRunning(),
+                        available: applicationContext.getBean(key.getName()).isAvailable()
                 ]
 
                 def crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }

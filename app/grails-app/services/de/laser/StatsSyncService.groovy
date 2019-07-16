@@ -47,7 +47,6 @@ class StatsSyncService {
         log.debug("StatsSyncService::doSync ${this.hashCode()}")
         if ( this.running == true ) {
             log.debug("Skipping sync.. task already running")
-            return
         }
         log.debug("Mark StatsSyncTask as running...")
         running = true

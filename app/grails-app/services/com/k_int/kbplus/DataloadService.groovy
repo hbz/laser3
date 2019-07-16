@@ -54,11 +54,11 @@ class DataloadService {
         log.debug("updateFTIndexes returning")
     }
 
-    def doFTUpdate() {
+    boolean doFTUpdate() {
 
         synchronized(this) {
             if ( update_running ) {
-                return
+                return false
             }
             else {
                 log.debug("Exiting FT update - one already running");
@@ -300,6 +300,7 @@ class DataloadService {
         esclient.admin().indices().flush(new FlushRequest(es_index)).actionGet()
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
+        return true
     }
 
     def updateSiteMapping() {

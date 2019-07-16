@@ -35,7 +35,6 @@ class HeartbeatJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
 
         log.debug("Heartbeat Job");
