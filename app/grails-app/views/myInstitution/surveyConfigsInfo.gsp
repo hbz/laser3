@@ -62,6 +62,9 @@ ${message(code: 'survey.label')} -
 
 <semui:messages data="${flash}"/>
 
+
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+
 <br>
 
 <g:if test="${ownerId}">
@@ -514,7 +517,9 @@ ${message(code: 'survey.label')} -
 
 </semui:form>
 
-</div>
+<br />
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+
 
 </body>
 </html>
