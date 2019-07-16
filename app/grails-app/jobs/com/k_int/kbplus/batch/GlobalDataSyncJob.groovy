@@ -27,7 +27,7 @@ class GlobalDataSyncJob extends AbstractJob {
     static configFlags = ['hbzMaster', 'globalDataSyncJobActiv']
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !globalSourceSyncService.running
     }
     boolean isRunning() {
         jobIsRunning

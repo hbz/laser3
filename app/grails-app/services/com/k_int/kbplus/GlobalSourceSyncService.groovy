@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
-import de.laser.interfaces.LockableService
+import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
  *  to the work the reconciler will need to do (Often this includes sorting lists)
  */
 
-class GlobalSourceSyncService extends LockableService {
+class GlobalSourceSyncService extends AbstractLockableService {
 
 
     def dataloadService

@@ -27,7 +27,7 @@ class ChangeAcceptJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning // TODO: service.running is missing
     }
     boolean isRunning() {
         jobIsRunning

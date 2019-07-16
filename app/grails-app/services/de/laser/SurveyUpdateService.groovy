@@ -1,15 +1,13 @@
 package de.laser
 
-import com.k_int.kbplus.EventLog
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
+
 import com.k_int.kbplus.SurveyInfo
 import de.laser.helper.RDStore
-import de.laser.interfaces.LockableService
+import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 
 @Transactional
-class SurveyUpdateService extends LockableService {
+class SurveyUpdateService extends AbstractLockableService {
 
     void surveyCheck() {
         if(!running) {

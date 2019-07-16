@@ -18,7 +18,7 @@ class DashboardDueDatesJob extends AbstractJob {
     static configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !dashboardDueDatesService.update_running
     }
     boolean isRunning() {
         jobIsRunning

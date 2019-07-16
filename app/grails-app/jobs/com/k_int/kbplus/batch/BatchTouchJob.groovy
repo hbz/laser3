@@ -19,7 +19,7 @@ class BatchTouchJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning // no service needed
     }
     boolean isRunning() {
         jobIsRunning

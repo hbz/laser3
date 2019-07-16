@@ -1,6 +1,6 @@
 package de.laser.interfaces
 
-abstract class LockableService {
+abstract class AbstractLockableService {
 
     boolean running = false
 

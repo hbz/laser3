@@ -14,7 +14,7 @@ class IndexUpdateJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !dataloadService.update_running
     }
     boolean isRunning() {
         jobIsRunning

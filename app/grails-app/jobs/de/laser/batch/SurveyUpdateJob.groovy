@@ -16,7 +16,7 @@ class SurveyUpdateJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !surveyUpdateService.running
     }
     boolean isRunning() {
         jobIsRunning

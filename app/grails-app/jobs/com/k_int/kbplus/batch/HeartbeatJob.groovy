@@ -25,7 +25,7 @@ class HeartbeatJob extends AbstractJob {
     static configFlags = ['quartzHeartbeat']
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning // no service needed
     }
     boolean isRunning() {
         jobIsRunning

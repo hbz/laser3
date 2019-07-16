@@ -2,10 +2,9 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.ContextService
-import de.laser.interfaces.LockableService
+import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
-import org.apache.commons.lang3.time.DateUtils
 import org.joda.time.*
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -16,7 +15,7 @@ import javax.annotation.PostConstruct
  * @author Ryan@k-int.com
  */
 @Transactional(readOnly = true)
-class ReminderService extends LockableService implements ApplicationContextAware{
+class ReminderService extends AbstractLockableService implements ApplicationContextAware{
 
     ApplicationContext applicationContext
     def mailService

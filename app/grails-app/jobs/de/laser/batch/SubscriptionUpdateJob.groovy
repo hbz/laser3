@@ -17,7 +17,7 @@ class SubscriptionUpdateJob extends AbstractJob {
     static configFlags = []
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !subscriptionUpdateService.running
     }
     boolean isRunning() {
         jobIsRunning

@@ -27,7 +27,7 @@ class StatsSyncJob extends AbstractJob {
     static configFlags = ['hbzMaster', 'StatsSyncJobActiv']
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !statsSyncService.running
     }
     boolean isRunning() {
         jobIsRunning

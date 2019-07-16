@@ -26,7 +26,7 @@ class AdminJob extends AbstractJob {
     static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
 
     boolean isAvailable() {
-        !jobIsRunning
+        !jobIsRunning && !adminReminderService.running
     }
     boolean isRunning() {
         jobIsRunning
