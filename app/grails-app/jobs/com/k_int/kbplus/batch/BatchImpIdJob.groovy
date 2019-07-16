@@ -14,80 +14,87 @@ class BatchImpIdJob extends AbstractJob {
     }
 
     static configFlags = []
-    static running = false
 
-  def execute() {
-    log.debug("BatchImpIdJob::execute()");
-      if(!running) {
-          SystemEvent.createEvent('BATCH_IMP_JOB_START')
-          running = true
+    boolean isAvailable() {
+        !jobIsRunning // no service needed
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
-          def event = "BatchImpIdJob"
-          def startTime = printStart(event)
-          def counter = 0
-          def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance]
-          classList.each{ currentClass ->
-              def auditable_store = null
-              try{
-                  if(currentClass.hasProperty('auditable'))  {
-                      auditable_store = currentClass.auditable
-                      currentClass.auditable = false ;
-                  }
-                  currentClass.withSession { session ->
-                      def scroll_res = session.createCriteria(currentClass).scroll(ScrollMode.FORWARD_ONLY)
-                      while (scroll_res.next()) {
-                          def obj = scroll_res.get(0)
-                          if(updateObject(obj)){
-                              counter ++
-                          }
-                          if(counter == 500){
-                              cleanUpGorm(session)
-                              counter = 0
-                          }
-                      }
-                      cleanUpGorm(session)
-                  }
+    def execute() {
+        if (! isAvailable()) {
+            return false
+        }
 
-              }catch( Exception e ) {log.error(e)}
-              finally{
-                  if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
+        jobIsRunning = true
+        SystemEvent.createEvent('BATCH_IMP_JOB_START')
+
+        log.debug("BatchImpIdJob::execute()");
+
+
+    def event = "BatchImpIdJob"
+    def startTime = printStart(event)
+    def counter = 0
+    def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance] 
+    classList.each{ currentClass ->
+      def auditable_store = null
+      try{
+        if(currentClass.hasProperty('auditable'))  {
+          auditable_store = currentClass.auditable
+          currentClass.auditable = false ;
+        }
+        currentClass.withSession { session ->
+           def scroll_res = session.createCriteria(currentClass).scroll(ScrollMode.FORWARD_ONLY)
+           while (scroll_res.next()) {
+              def obj = scroll_res.get(0)
+              if(updateObject(obj)){
+                counter ++
               }
+              if(counter == 500){
+                cleanUpGorm(session)
+                counter = 0
+              }
+           }
+           cleanUpGorm(session)
+        }
 
-          }
-          printDuration(startTime,event)
-          running = false
       }
-      else {
-          log.warn("Not starting BatchImpJob ... already running!")
+      catch( Exception e ) {
+          log.error(e)
+      }
+      finally {
+        if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
       }
 
+    }
+    printDuration(startTime,event)
+
+        jobIsRunning = false
   }
 
-  def cleanUpGorm(session) {
+    private def cleanUpGorm(session) {
     session.flush()
     session.clear()
   }
 
-  def updateObject(obj){
+    private def updateObject(obj){
     if(obj.impId) return null;
     obj.impId = java.util.UUID.randomUUID().toString();
     obj.save()
   }
-  
-   def printStart(event){
+
+    private def printStart(event){
        def starttime = new Date();
        log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
-  def printDuration(starttime, event){
-    use(groovy.time.TimeCategory) {
+    private def printDuration(starttime, event){
+      use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
       log.debug("******* End ${event}: ${new Date()} *******")
       log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }
   }
-
-
-
 }

@@ -1,12 +1,11 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
-import com.k_int.kbplus.*
-import de.laser.interfaces.LockableService;
+import com.k_int.kbplus.auth.*
+import de.laser.interfaces.AbstractLockableService;
 import grails.converters.*
 import java.sql.Timestamp
 
-class ChangeNotificationService extends LockableService {
+class ChangeNotificationService extends AbstractLockableService {
 
     def executorService
     def genericOIDService

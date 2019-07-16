@@ -3,11 +3,11 @@ package com.k_int.kbplus
 import com.k_int.ClassUtils
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
-import de.laser.interfaces.LockableService
+import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
-class SubscriptionUpdateService extends LockableService {
+class SubscriptionUpdateService extends AbstractLockableService {
 
     def changeNotificationService
     def contextService

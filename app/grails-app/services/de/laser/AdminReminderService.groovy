@@ -1,16 +1,13 @@
 package de.laser
 
-import com.k_int.kbplus.auth.Role
+
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
-import de.laser.interfaces.LockableService
-import groovy.text.SimpleTemplateEngine
-import org.codehaus.groovy.grails.web.util.WebUtils
+import de.laser.interfaces.AbstractLockableService
 
 import javax.annotation.PostConstruct
 
-class AdminReminderService extends LockableService {
+class AdminReminderService extends AbstractLockableService {
 
     def mailService
     def grailsApplication

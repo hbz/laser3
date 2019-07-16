@@ -4,18 +4,32 @@ import de.laser.quartz.AbstractJob
 
 class IndexUpdateJob extends AbstractJob {
 
-  def dataloadService
+    def dataloadService
 
-  static triggers = {
-    // Delay 120 seconds, run every 10 mins.
-    cron name:'cronTrigger', startDelay:190000, cronExpression: "0 0/10 7-20 * * ?"
-  }
+    static triggers = {
+        // Delay 120 seconds, run every 10 mins.
+        cron name:'cronTrigger', startDelay:190000, cronExpression: "0 0/10 7-20 * * ?"
+    }
 
-  static configFlags = []
+    static configFlags = []
 
-  def execute() {
-    log.debug("****Running Index Update Job****")
+    boolean isAvailable() {
+        !jobIsRunning && !dataloadService.update_running
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
-    dataloadService.doFTUpdate()
-  }
+    def execute() {
+        if (! isAvailable()) {
+            return false
+        }
+        jobIsRunning = true
+
+        log.debug("****Running Index Update Job****")
+
+        dataloadService.doFTUpdate()
+
+        jobIsRunning = false
+    }
 }
