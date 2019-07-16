@@ -37,21 +37,25 @@ class GlobalDataSyncJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
 
-    log.debug("GlobalDataSyncJob");
+        try {
+            log.debug("GlobalDataSyncJob");
 
-    if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
-      log.debug("This server is marked as hbzMaster. Running GlobalDataSyncJob batch job");
-      SystemEvent.createEvent('GD_SYNC_JOB_START')
+            if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.globalDataSyncJobActiv == true ) {
+                log.debug("This server is marked as hbzMaster. Running GlobalDataSyncJob batch job");
+                SystemEvent.createEvent('GD_SYNC_JOB_START')
 
-      globalSourceSyncService.runAllActiveSyncTasks()
-      SystemEvent.createEvent('GD_SYNC_JOB_COMPLETE')
-    }
-    else {
-      log.debug("This server is NOT marked as hbzMaster. NOT Running GlobalDataSyncJob SYNC batch job");
-    }
+                globalSourceSyncService.runAllActiveSyncTasks()
+                SystemEvent.createEvent('GD_SYNC_JOB_COMPLETE')
+            }
+            else {
+                log.debug("This server is NOT marked as hbzMaster. NOT Running GlobalDataSyncJob SYNC batch job");
+            }
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
 
         jobIsRunning = false
   }

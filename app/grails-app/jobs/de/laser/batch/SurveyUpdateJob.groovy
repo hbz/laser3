@@ -26,22 +26,26 @@ class SurveyUpdateJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
-        new EventLog(event:'Execute::SurveyUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
+        try {
+            new EventLog(event:'Execute::SurveyUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-        log.info("Execute::SurveyUpdateJob - Start");
+            log.info("Execute::SurveyUpdateJob - Start");
 
-        SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
+            SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
 
-        surveyUpdateService.surveyCheck()
+            surveyUpdateService.surveyCheck()
 
-        log.info("Execute::SurveyUpdateJob - Finished");
+            log.info("Execute::SurveyUpdateJob - Finished");
 
-        SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
+            SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
 
-        new EventLog(event:'Execute::SurveyUpdateJob', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+            new EventLog(event:'Execute::SurveyUpdateJob', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
 
         jobIsRunning = false
     }

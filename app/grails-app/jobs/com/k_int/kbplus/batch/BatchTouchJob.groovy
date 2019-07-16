@@ -29,20 +29,22 @@ class BatchTouchJob extends AbstractJob {
         if (! isAvailable()) {
             return false
         }
-
         jobIsRunning = true
         SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
 
-        log.debug("BatchTouchJob::execute");
-
-
-        //The following will only make changes to objects when required. If fields are populated they will skip
-        //Make sure all classes have impIDs, as they are the key used for ES
-        impIdJob();
-        //Make sure all packages have sort name, again used by ES
-        pkgBatchUpdate()
-        //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
-        titleBatchUpdate()
+        try {
+            log.debug("BatchTouchJob::execute");
+            //The following will only make changes to objects when required. If fields are populated they will skip
+            //Make sure all classes have impIDs, as they are the key used for ES
+            impIdJob();
+            //Make sure all packages have sort name, again used by ES
+            pkgBatchUpdate()
+            //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
+            titleBatchUpdate()
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
 
         jobIsRunning = false
     }

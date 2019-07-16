@@ -26,9 +26,14 @@ class IndexUpdateJob extends AbstractJob {
         }
         jobIsRunning = true
 
-        log.debug("****Running Index Update Job****")
+        try {
+            log.debug("****Running Index Update Job****")
 
-        dataloadService.doFTUpdate()
+            dataloadService.doFTUpdate()
+        }
+        catch (Exception e) {
+            log.error(e)
+        }
 
         jobIsRunning = false
     }
