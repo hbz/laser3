@@ -143,8 +143,8 @@
                 </g:form>
 
                 <h5>${message(code: 'accessPoint.link.header', default: 'Access Config for Platform/License')}
-                  <span class="la-long-tooltip" data-variation="tiny"
-                        data-tooltip="${message(code:'accessPoint.platformHelp')}">
+                  <span class="la-long-tooltip la-popup-tooltip la-delay"
+                        data-content="${message(code:'accessPoint.platformHelp')}">
                     <i class="question circle icon la-popup"></i>
                   </span>
                 </h5>

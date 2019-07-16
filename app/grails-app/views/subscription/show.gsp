@@ -158,30 +158,24 @@
                                                     ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}
                                                 </td>
                                                 <td class="right aligned">
-                                                    <div class="ui icon buttons">
-                                                        <g:render template="/templates/links/subLinksModal"
-                                                                  model="${[tmplText:message(code:'subscription.details.editLink'),
-                                                                            tmplIcon:'write',
-                                                                            tmplCss: 'la-selectable-button',
-                                                                            tmplID:'editLink',
-                                                                            tmplModalID:"sub_edit_link_${link.id}",
-                                                                            editmode: editable,
-                                                                            context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
-                                                                            link: link
-                                                                  ]}" />
-                                                    </div>
-
-                                                    <div class="ui icon negative buttons">
-                                                        <g:if test="${editable}">
-                                                            <g:link class="ui mini icon button la-selectable-button js-open-confirm-modal"
-                                                                    data-confirm-term-what="subscription"
-                                                                    data-confirm-term-how="unlink"
-                                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
-                                                                <i class="unlink icon"></i>
-                                                            </g:link>
-                                                        </g:if>
-                                                    </div>
-
+                                                    <g:render template="/templates/links/subLinksModal"
+                                                              model="${[tmplText:message(code:'subscription.details.editLink'),
+                                                                        tmplIcon:'write',
+                                                                        tmplCss: 'icon la-selectable-button',
+                                                                        tmplID:'editLink',
+                                                                        tmplModalID:"sub_edit_link_${link.id}",
+                                                                        editmode: editable,
+                                                                        context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
+                                                                        link: link
+                                                              ]}" />
+                                                    <g:if test="${editable}">
+                                                        <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                                data-confirm-term-what="subscription"
+                                                                data-confirm-term-how="unlink"
+                                                                controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                            <i class="unlink icon"></i>
+                                                        </g:link>
+                                                    </g:if>
                                                 </td>
                                             </tr>
                                         </g:each>
@@ -218,13 +212,9 @@
                                         </td>
                                         <td class="right aligned">
                                             <g:if test="${editable}">
-
-                                                <div class="ui icon negative buttons">
-                                                    <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                        <i class="unlink icon"></i>
-                                                    </button>
-                                                </div>
-                                                <br />
+                                                <button class="ui icon negative button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                    <i class="unlink icon"></i>
+                                                </button>
                                             </g:if>
                                         </td>
                                     </tr>

@@ -603,21 +603,21 @@
                 <div class="right menu la-advanced-view">
                     <div class="item">
                         <g:if test="${cachedContent}">
-                            <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <button class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
                                 <i class="hourglass end icon green"></i>
                             </button>
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                    <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                    <button class="ui icon toggle button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                                         <i class="pencil alternate icon"></i>
                                     </button>
                                 </g:if>
                                 <g:else>
-                                    <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <button class="ui icon toggle button active la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
@@ -655,12 +655,12 @@
                             <g:if test="${(params.mode)}">
                                 <div class="item">
                                     <g:if test="${params.mode=='advanced'}">
-                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
                                             <i class="icon plus square"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
                                             <i class="icon plus square green slash"></i>
                                         </div>
                                     </g:else>

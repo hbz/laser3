@@ -85,7 +85,7 @@
                                 </div>
                             </g:else>
                             <g:if test="${propValue?.note}">
-                                <div class="ui circular label la-long-tooltip" data-tooltip="${propValue?.note}">Anm.</div>
+                                <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay" data-content="${propValue?.note}">Anm.</div>
                             </g:if>
                             <g:if test="${propValues.get(sourceSubscription)?.size() > 1}"><br></g:if>
                         </div>
@@ -146,7 +146,7 @@
                                  </div>
                              </g:else>
                             <g:if test="${propValue?.note}">
-                                <div class="ui circular label la-long-tooltip"  data-tooltip="${propValue?.note}">Anm.</div>
+                                <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"  data-content="${propValue?.note}">Anm.</div>
                             </g:if>
                             <g:if test="${propValues.get(targetSubscription)?.size() > 1}"><br></g:if>
                         </div>

@@ -160,15 +160,15 @@
 
                     <g:if test="${surveyResults}">
                         <g:if test="${surveyResults?.finishDate?.contains(null)}">
-                            <%--<span class="la-long-tooltip" data-position="top right" data-variation="tiny"
-                                  data-tooltip="Nicht abgeschlossen">
+                            <%--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="Nicht abgeschlossen">
                                 <i class="circle red icon"></i>
                             </span>--%>
                         </g:if>
                         <g:else>
 
-                            <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
-                                  data-tooltip="${message(code: 'surveyResult.finish.info')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code: 'surveyResult.finish.info')}">
                                 <i class="check big green icon"></i>
                             </span>
                         </g:else>
