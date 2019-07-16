@@ -138,9 +138,11 @@ class YodaController {
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
                 Map map = [
-                        name: key.getName(),
+                        name: clazz.simpleName,
                         configFlags: cf.join(', '),
-                        nextFireTime: nft ? nft.get(0)?.toTimestamp() : ''
+                        nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
+                        isRunning: applicationContext.getBean(key.getName()).isRunning(),
+                        isAvailable: applicationContext.getBean(key.getName()).isAvailable()
                 ]
 
                 def crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }

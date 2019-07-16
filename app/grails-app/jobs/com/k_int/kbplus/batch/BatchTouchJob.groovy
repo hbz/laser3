@@ -17,30 +17,37 @@ class BatchTouchJob extends AbstractJob {
     }
 
     static configFlags = []
-    static boolean running = false
+
+    boolean isAvailable() {
+        !jobIsRunning
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
+
+    def execute() {
+        if (! isAvailable()) {
+            return false
+        }
+
+        jobIsRunning = true
+        SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
+
+        log.debug("BatchTouchJob::execute");
 
 
-  def execute() {
-      if(!running) {
-          running = true
-          log.debug("BatchTouchJob::execute");
+        //The following will only make changes to objects when required. If fields are populated they will skip
+        //Make sure all classes have impIDs, as they are the key used for ES
+        impIdJob();
+        //Make sure all packages have sort name, again used by ES
+        pkgBatchUpdate()
+        //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
+        titleBatchUpdate()
 
-          SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
+        jobIsRunning = false
+    }
 
-          //The following will only make changes to objects when required. If fields are populated they will skip
-          //Make sure all classes have impIDs, as they are the key used for ES
-          impIdJob();
-          //Make sure all packages have sort name, again used by ES
-          pkgBatchUpdate()
-          //Generate norm,sort,and key title for TitleInstances,used by ES and app sorting.
-          titleBatchUpdate()
-      }
-      else {
-          log.warn("Not starting BatchTouchJob ... already running!")
-      }
-  }
-
-  def titleBatchUpdate() {
+  private def titleBatchUpdate() {
 
     log.debug("BatchTouchJob::titleBatchUpdate");
 
@@ -150,7 +157,7 @@ class BatchTouchJob extends AbstractJob {
   }
 
 
-  def updatePackage(pkg){
+  private def updatePackage(pkg){
     // Instead of trigger update, do this, as if nothing changes Hibernate will not bother saving.
      if(pkg.sortName) return null;
      pkg.sortName = Package.generateSortName(pkg.name)
@@ -158,30 +165,29 @@ class BatchTouchJob extends AbstractJob {
      return 1
 
   }
-  def cleanUpGorm(session) {
+  private def cleanUpGorm(session) {
     log.debug("clean up GORM");
     session.flush()
     session.clear()
   }
 
-  def updateObject(obj){
+  private def updateObject(obj){
     if(obj.impId) return null;
     obj.impId = java.util.UUID.randomUUID().toString();
     obj.save()
   }
   
-   def printStart(event){
+   private def printStart(event){
        def starttime = new Date();
        log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
-  def printDuration(starttime, event){
+  private def printDuration(starttime, event){
     use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
       log.debug("******* End ${event}: ${new Date()} *******")
       log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }
   }
-
 }

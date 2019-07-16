@@ -22,6 +22,7 @@
                 <th>Job</th>
                 <th>Config</th>
                 <th>s  m  h  DoM  M  DoW  Y</th>
+                <th>Status</th>
                 <th>Nächste Ausführung</th>
             </tr>
         </thead>
@@ -45,6 +46,14 @@
                         <code>${job.cronEx}</code>
                     </td>
                     <td>
+                        <g:if test="${job.isRunning}">
+                            <i class="ui icon circle green"></i>
+                        </g:if>
+                        <g:else>
+                            <i class="ui icon circle outline grey"></i>
+                        </g:else>
+                    </td>
+                    <td>
                         <%
                             boolean isActive = true
                             job.configFlags.split(',').each { flag ->
@@ -65,6 +74,9 @@
         </tbody>
     </table>
 </g:each>
+
+<br />
+<br />
 
 </body>
 </html>

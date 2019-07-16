@@ -25,7 +25,19 @@ class AdminJob extends AbstractJob {
 
     static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
 
+    boolean isAvailable() {
+        !jobIsRunning
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
+
     def execute() {
+        if (! isAvailable()) {
+            return false
+        }
+        jobIsRunning = true
+
         log.debug("Execute::AdminJob");
         if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {
             log.debug("This server is marked as hbzMaster");
@@ -39,6 +51,8 @@ class AdminJob extends AbstractJob {
         else {
             log.debug("This server is NOT marked as hbzMaster. NOT Running AdminJob batch job");
         }
+
+        jobIsRunning = false
     }
 }
 

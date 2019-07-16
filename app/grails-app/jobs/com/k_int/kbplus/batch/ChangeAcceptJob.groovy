@@ -25,16 +25,24 @@ class ChangeAcceptJob extends AbstractJob {
    //                  `- Second, 0-59
  }
     static configFlags = []
-    static boolean running = false
 
-/**
-* Accept pending chnages from master subscriptions on slave subscriptions 
-**/
- def execute(){
-     if(!running) {
-         log.debug("****Running Change Accept Job****")
-         running = true
-         SystemEvent.createEvent('CAJ_JOB_START')
+    boolean isAvailable() {
+        !jobIsRunning
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
+
+    /**
+    * Accept pending chnages from master subscriptions on slave subscriptions
+    **/
+    def execute(){
+        if (! isAvailable()) {
+            return false
+        }
+
+        jobIsRunning = true
+        SystemEvent.createEvent('CAJ_JOB_START')
 
          def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
          //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -57,12 +65,10 @@ class ChangeAcceptJob extends AbstractJob {
              pendingChangeService.performAccept(it, user)
          }
 
-         SystemEvent.createEvent('CAJ_JOB_COMPLETE')
-         running = false
-         log.debug("****Change Accept Job Complete*****")
-     }
-     else {
-         log.warn("Not starting ChangeAcceptJob ... already running")
-     }
+        SystemEvent.createEvent('CAJ_JOB_COMPLETE')
+
+        log.debug("****Change Accept Job Complete*****")
+
+        jobIsRunning = false
  }
 }

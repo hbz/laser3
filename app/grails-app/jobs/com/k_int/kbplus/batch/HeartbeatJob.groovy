@@ -4,9 +4,9 @@ import de.laser.quartz.AbstractJob
 
 class HeartbeatJob extends AbstractJob {
 
-  def grailsApplication
+    def grailsApplication
 
-  static triggers = {
+    static triggers = {
     // Delay 20 seconds, run every 10 mins.
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
     // Example - every 10 mins 0 0/10 * * * ? 
@@ -20,13 +20,27 @@ class HeartbeatJob extends AbstractJob {
     //                  | | `- Hour, 0-23
     //                  | `- Minute, 0-59
     //                  `- Second, 0-59
-  }
+    }
 
-  static configFlags = ['quartzHeartbeat']
+    static configFlags = ['quartzHeartbeat']
 
-  def execute() {
-    log.debug("Heartbeat Job");
-    grailsApplication.config.quartzHeartbeat = new Date()
-  }
+    boolean isAvailable() {
+        !jobIsRunning
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
+    def execute() {
+        if (! isAvailable()) {
+            return false
+        }
+
+        jobIsRunning = true
+
+        log.debug("Heartbeat Job");
+        grailsApplication.config.quartzHeartbeat = new Date()
+
+        jobIsRunning = false
+    }
 }

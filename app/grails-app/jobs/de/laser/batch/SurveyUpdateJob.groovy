@@ -15,11 +15,23 @@ class SurveyUpdateJob extends AbstractJob {
 
     static configFlags = []
 
+    boolean isAvailable() {
+        !jobIsRunning
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
+
     def execute() {
-        log.info("Execute::SurveyUpdateJob - Start");
+        if (! isAvailable()) {
+            return false
+        }
 
-
+        jobIsRunning = true
         new EventLog(event:'Execute::SurveyUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+
+        log.info("Execute::SurveyUpdateJob - Start");
 
         SystemEvent.createEvent('SURVEY_UPDATE_JOB_START')
 
@@ -30,5 +42,7 @@ class SurveyUpdateJob extends AbstractJob {
         SystemEvent.createEvent('SURVEY_UPDATE_JOB_COMPLETE')
 
         new EventLog(event:'Execute::SurveyUpdateJob', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        jobIsRunning = false
     }
 }
