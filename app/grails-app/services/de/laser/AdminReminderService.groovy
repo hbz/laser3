@@ -1,24 +1,24 @@
 package de.laser
 
-import com.k_int.kbplus.auth.Role
+
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import com.k_int.kbplus.auth.UserRole
-import groovy.text.SimpleTemplateEngine
-import org.codehaus.groovy.grails.web.util.WebUtils
+import de.laser.interfaces.AbstractLockableService
 
-class AdminReminderService {
+import javax.annotation.PostConstruct
+
+class AdminReminderService extends AbstractLockableService {
 
     def mailService
     def grailsApplication
     String from
     String replyTo
 
-    @javax.annotation.PostConstruct
+    @PostConstruct
     void init() {
         from = grailsApplication.config.notifications.email.from
         replyTo = grailsApplication.config.notifications.email.replyTo
-        log.debug("Initialised AdminReminder Service...")
+        log.debug("Initialised adminReminder Service...")
     }
 
     def checkPendingMembershipReqs() {
@@ -41,24 +41,33 @@ class AdminReminderService {
 //        }
     }
 
-    def AdminReminder()
-    {
-        def adminuser = []
-        def users = User.getAll()
+    boolean adminReminder() {
+        if (! running) {
+            running = true
 
-        users.each {
-            it.roles.each { role ->
-                if (role.role.authority == "ROLE_YODA") {
-                    adminuser.add(it)
+            def adminuser = []
+            def users = User.getAll()
+
+            users.each {
+                it.roles.each { role ->
+                    if (role.role.authority == "ROLE_YODA") {
+                        adminuser.add(it)
+                    }
                 }
             }
+
+            def content = checkPendingMembershipReqs()
+
+            adminuser.each { admin ->
+                if (content.pendingRequests.size() > 0)
+                    mailReminder(admin.email, "${grailsApplication.config.laserSystemId} Admin Reminder", content, null, null)
+            }
+            running = false
+
+            return true
         }
-
-        def content = checkPendingMembershipReqs()
-
-       adminuser.each { admin ->
-           if(content.pendingRequests.size() > 0)
-           mailReminder(admin.email, "${grailsApplication.config.laserSystemId} Admin Reminder", content, null, null)
+        else {
+            return false
         }
     }
 

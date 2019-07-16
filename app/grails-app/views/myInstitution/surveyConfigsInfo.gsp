@@ -25,6 +25,7 @@ ${message(code: 'survey.label')} -
 </h1>
 
 <g:if test="${navigation}">
+    <%--
     <br>
 
     <div class="ui center aligned grid">
@@ -54,6 +55,7 @@ ${message(code: 'survey.label')} -
             </g:else>
         </div>
     </div>
+    --%>
 </g:if>
 
 <br>

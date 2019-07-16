@@ -22,6 +22,7 @@
                 <th>Job</th>
                 <th>Config</th>
                 <th>s  m  h  DoM  M  DoW  Y</th>
+                <th>Status</th>
                 <th>Nächste Ausführung</th>
             </tr>
         </thead>
@@ -44,6 +45,17 @@
                     <td>
                         <code>${job.cronEx}</code>
                     </td>
+                    <td style="text-align:center">
+                        <g:if test="${job.running}">
+                            <i class="ui icon circle green"></i>
+                        </g:if>
+                        <g:elseif test="${job.available}">
+                            <i class="ui icon circle yellow"></i>
+                        </g:elseif>
+                        <g:else>
+                            <%--<i class="ui icon circle outline grey"></i>--%>
+                        </g:else>
+                    </td>
                     <td>
                         <%
                             boolean isActive = true
@@ -65,6 +77,9 @@
         </tbody>
     </table>
 </g:each>
+
+<br />
+<br />
 
 </body>
 </html>

@@ -4028,11 +4028,11 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType == 'Consortium'
+            result.comboType = 'Consortium'
             params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType == 'Department'
+            result.comboType = 'Department'
             params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
         }
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
@@ -4068,15 +4068,15 @@ AND EXISTS (
 
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
 
-        def message
+        def tableHeader
         if(result.comboType == 'Consortium')
-            message = message(code: 'menu.public.all_orgs')
+            tableHeader = message(code: 'menu.public.all_orgs')
         else if(result.comboType == 'Department')
-            message = message(code: 'menu.my.departments')
-        String filename = message+"_"+sdf.format(new Date(System.currentTimeMillis()))
+            tableHeader = message(code: 'menu.my.departments')
+        String filename = tableHeader+"_"+sdf.format(new Date(System.currentTimeMillis()))
         if ( params.exportXLS ) {
             List orgs = (List) result.availableOrgs
-            SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
+            SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, tableHeader, true,'xls')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -4095,7 +4095,7 @@ AND EXISTS (
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
                     }
                     out.close()
                 }

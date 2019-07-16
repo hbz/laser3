@@ -1,13 +1,14 @@
 package com.k_int.kbplus
 
 import de.laser.helper.RDStore
+import de.laser.interfaces.AbstractLockableService
 import grails.converters.*
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.springframework.transaction.TransactionStatus
 import com.k_int.properties.PropertyDefinition
 
-class PendingChangeService {
+class PendingChangeService extends AbstractLockableService {
 
     def genericOIDService
     def grailsApplication
@@ -21,11 +22,32 @@ class PendingChangeService {
 
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
+    boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges, User user) {
+        log.debug('performMultipleAcceptsFromJob')
+
+        if (!running) {
+            running = true
+
+            subscriptionChanges.each {
+                pendingChangeService.performAccept(it, user)
+            }
+            licenseChanges.each {
+                pendingChangeService.performAccept(it, user)
+            }
+
+            running = false
+            return true
+        }
+        else {
+            return false
+        }
+    }
 
     def performAccept(change, User user) {
-        log.debug('performAccept')
 
+        log.debug('performAccept')
         def result = true
+
         PendingChange.withNewTransaction { TransactionStatus status ->
             def pendingChange = (change instanceof PendingChange) ? change : PendingChange.get(change)
 
@@ -195,7 +217,6 @@ class PendingChangeService {
                 log.error("Problem accepting change",e);
                 result = false;
             }
-
             return result
         }
     }
@@ -220,7 +241,7 @@ class PendingChangeService {
         }
     }
 
-    def processCustomPropertyChange(event) {
+    private def processCustomPropertyChange(event) {
         def changeDoc = event.changeDoc
 
         if ((event.changeTarget != null) && (event.changeTarget.length() > 0)) {

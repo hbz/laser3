@@ -41,6 +41,7 @@ class YodaController {
     def identifierService
     def deletionService
     def surveyUpdateService
+    def changeNotificationService
 
     static boolean ftupdate_running = false
 
@@ -120,6 +121,8 @@ class YodaController {
     def quartzInfo() {
         Map result = [:]
 
+        // DEBUG ONLY: changeNotificationService.aggregateAndNotifyChanges()
+
         result.currentConfig   = grails.util.Holders.config
         result.quartzScheduler = quartzScheduler
 
@@ -135,12 +138,14 @@ class YodaController {
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
                 Map map = [
-                        name: key.getName(),
+                        name: clazz.simpleName,
                         configFlags: cf.join(', '),
-                        nextFireTime: nft ? nft.get(0)?.toTimestamp() : ''
+                        nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
+                        running: applicationContext.getBean(key.getName()).isRunning(),
+                        available: applicationContext.getBean(key.getName()).isAvailable()
                 ]
 
-                def crx = triggers.collect{ it.cronEx ?: null }
+                def crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
 
                 if (crx) {
                     map << ['cronEx': crx.get(0).cronExpression]
