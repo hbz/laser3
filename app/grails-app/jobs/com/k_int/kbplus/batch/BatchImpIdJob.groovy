@@ -14,45 +14,53 @@ class BatchImpIdJob extends AbstractJob {
     }
 
     static configFlags = []
+    static running = false
 
   def execute() {
     log.debug("BatchImpIdJob::execute()");
+      if(!running) {
+          SystemEvent.createEvent('BATCH_IMP_JOB_START')
+          running = true
 
-      SystemEvent.createEvent('BATCH_IMP_JOB_START')
+          def event = "BatchImpIdJob"
+          def startTime = printStart(event)
+          def counter = 0
+          def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance]
+          classList.each{ currentClass ->
+              def auditable_store = null
+              try{
+                  if(currentClass.hasProperty('auditable'))  {
+                      auditable_store = currentClass.auditable
+                      currentClass.auditable = false ;
+                  }
+                  currentClass.withSession { session ->
+                      def scroll_res = session.createCriteria(currentClass).scroll(ScrollMode.FORWARD_ONLY)
+                      while (scroll_res.next()) {
+                          def obj = scroll_res.get(0)
+                          if(updateObject(obj)){
+                              counter ++
+                          }
+                          if(counter == 500){
+                              cleanUpGorm(session)
+                              counter = 0
+                          }
+                      }
+                      cleanUpGorm(session)
+                  }
 
-    def event = "BatchImpIdJob"
-    def startTime = printStart(event)
-    def counter = 0
-    def classList = [com.k_int.kbplus.Package,com.k_int.kbplus.Org,com.k_int.kbplus.License,com.k_int.kbplus.Subscription,com.k_int.kbplus.Platform,com.k_int.kbplus.TitleInstance] 
-    classList.each{ currentClass ->
-      def auditable_store = null
-      try{
-        if(currentClass.hasProperty('auditable'))  {
-          auditable_store = currentClass.auditable
-          currentClass.auditable = false ;
-        }
-        currentClass.withSession { session ->
-           def scroll_res = session.createCriteria(currentClass).scroll(ScrollMode.FORWARD_ONLY)
-           while (scroll_res.next()) {
-              def obj = scroll_res.get(0)
-              if(updateObject(obj)){
-                counter ++ 
+              }catch( Exception e ) {log.error(e)}
+              finally{
+                  if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
               }
-              if(counter == 500){
-                cleanUpGorm(session)
-                counter = 0
-              }
-           }
-           cleanUpGorm(session)
-        }
 
-      }catch( Exception e ) {log.error(e)}
-      finally{
-        if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
+          }
+          printDuration(startTime,event)
+          running = false
       }
-      
-    }
-    printDuration(startTime,event)
+      else {
+          log.warn("Not starting BatchImpJob ... already running!")
+      }
+
   }
 
   def cleanUpGorm(session) {

@@ -47,7 +47,7 @@ class DashboardDueDatesService {
         if (flash.message == null) flash.put('message', '')
         if (flash.error == null)   flash.put('error', '')
 
-        if ( update_running == true ) {
+        if ( update_running ) {
                 log.info("Existing DashboardDueDatesService takeCareOfDueDates - one already running");
         } else {
             try {

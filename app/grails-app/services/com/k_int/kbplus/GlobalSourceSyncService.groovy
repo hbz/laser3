@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.SystemEvent
+import de.laser.interfaces.LockableService
 import de.laser.oai.OaiClient
 import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
@@ -16,11 +17,10 @@ import java.text.SimpleDateFormat
  *  to the work the reconciler will need to do (Often this includes sorting lists)
  */
 
-class GlobalSourceSyncService {
+class GlobalSourceSyncService extends LockableService {
 
 
     def dataloadService
-    public static boolean running = false;
     def genericOIDService
     def executorService
     def sessionFactory
@@ -982,7 +982,7 @@ class GlobalSourceSyncService {
 
     def runAllActiveSyncTasks() {
 
-        if (running == false) {
+        if (!running) {
             def future = executorService.submit({ internalRunAllActiveSyncTasks() } as java.util.concurrent.Callable)
         } else {
             log.warn("Not starting duplicate OAI thread");

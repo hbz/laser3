@@ -3,10 +3,11 @@ package com.k_int.kbplus
 import com.k_int.ClassUtils
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
+import de.laser.interfaces.LockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
-class SubscriptionUpdateService {
+class SubscriptionUpdateService extends LockableService {
 
     def changeNotificationService
     def contextService
@@ -18,122 +19,97 @@ class SubscriptionUpdateService {
      * - else if state = active, then check if end date is reached, if so: update to terminated, else do nothing
      */
     void subscriptionCheck() {
-        println "processing all intended subscriptions ..."
-        def currentDate = new Date(System.currentTimeMillis())
+        if(!running) {
+            running = true
+            println "processing all intended subscriptions ..."
+            def currentDate = new Date(System.currentTimeMillis())
 
-        def updatedObjs = [:]
+            def updatedObjs = [:]
 
-        // INTENDED -> CURRENT
+            // INTENDED -> CURRENT
 
-        def intendedSubsIds1 = Subscription.where {
-            status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
-        }.collect{ it -> it.id }
+            def intendedSubsIds1 = Subscription.where {
+                status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
+            }.collect{ it -> it.id }
 
-        log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
+            log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
 
-        if (intendedSubsIds1) {
-            updatedObjs << ['intendedToCurrent' : intendedSubsIds1]
+            if (intendedSubsIds1) {
+                updatedObjs << ['intendedToCurrent' : intendedSubsIds1]
 
-            Subscription.executeUpdate(
-                    'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: RDStore.SUBSCRIPTION_CURRENT, ids: intendedSubsIds1]
-            )
+                Subscription.executeUpdate(
+                        'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
+                        [status: RDStore.SUBSCRIPTION_CURRENT, ids: intendedSubsIds1]
+                )
 
-            log.debug("Writing events")
-            intendedSubsIds1.each { id ->
-                new EventLog(
-                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT,
-                        message: 'SQL Update',
-                        tstp: currentDate
-                ).save()
-            }
-        }
-
-        // INTENDED -> EXPIRED
-
-        def intendedSubsIds2 = Subscription.where {
-            status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate)
-        }.collect{ it -> it.id }
-
-        log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds2)
-
-        if (intendedSubsIds2) {
-            updatedObjs << ['intendedToExpired' : intendedSubsIds2]
-
-            Subscription.executeUpdate(
-                    'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds2]
-            )
-
-            log.debug("Writing events")
-            intendedSubsIds2.each { id ->
-                new EventLog(
-                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
-                        message: 'SQL Update',
-                        tstp: currentDate
-                ).save()
-            }
-        }
-
-        // CURRENT -> EXPIRED
-
-        def currentSubsIds = Subscription.where {
-            status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate)
-        }.collect{ it -> it.id }
-
-        log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
-
-        if (currentSubsIds) {
-            updatedObjs << ['currentToExpired' : currentSubsIds]
-
-            Subscription.executeUpdate(
-                    'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds]
-            )
-
-            log.debug("Writing events")
-            currentSubsIds.each { id ->
-                new EventLog(
-                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
-                        message: 'SQL Update',
-                        tstp: currentDate
-                ).save()
-            }
-        }
-
-        SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
-
-        /*
-        Subscription.findAllByStatus(INTENDED).each { sub ->
-            try {
-                if (currentTime > sub.startDate.time && currentTime <= sub.endDate.time) {
-                    log.info("Intended subscription with ID ${sub.id} has reached start date and is now running.")
-                    Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: CURRENT, id: sub.id])
-                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + CURRENT, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
-                }
-                else if (currentTime > sub.startDate.time && sub.endDate != null && currentTime > sub.endDate.time) {
-                    log.info("Intended subscription with ID ${sub.id} has reached start and end date and is now expired.")
-                    Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: EXPIRED, id: sub.id])
-                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
+                log.debug("Writing events")
+                intendedSubsIds1.each { id ->
+                    new EventLog(
+                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT,
+                            message: 'SQL Update',
+                            tstp: currentDate
+                    ).save()
                 }
             }
-            catch (NullPointerException e) {
-                log.info("Subscription with ID ${sub.id} has no start date.")
-            }
-        }
-        println "processing all current subscriptions ..."
-        Subscription.findAllByStatus(CURRENT).each { sub ->
-            try {
-                if (currentTime > sub.startDate.time && sub.endDate != null && currentTime > sub.endDate.time) {
-                    log.info("Current subscription with ID ${sub.id} has reached end date and is now expired: ${sub.endDate.time} vs. ${currentTime}")
-                    Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: EXPIRED, id: sub.id])
-                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
+
+            // INTENDED -> EXPIRED
+
+            def intendedSubsIds2 = Subscription.where {
+                status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate)
+            }.collect{ it -> it.id }
+
+            log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds2)
+
+            if (intendedSubsIds2) {
+                updatedObjs << ['intendedToExpired' : intendedSubsIds2]
+
+                Subscription.executeUpdate(
+                        'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
+                        [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds2]
+                )
+
+                log.debug("Writing events")
+                intendedSubsIds2.each { id ->
+                    new EventLog(
+                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
+                            message: 'SQL Update',
+                            tstp: currentDate
+                    ).save()
                 }
             }
-            catch (NullPointerException e) {
-                log.info("Subscription with ID ${sub.id} has no start date.")
+
+            // CURRENT -> EXPIRED
+
+            def currentSubsIds = Subscription.where {
+                status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate)
+            }.collect{ it -> it.id }
+
+            log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
+
+            if (currentSubsIds) {
+                updatedObjs << ['currentToExpired' : currentSubsIds]
+
+                Subscription.executeUpdate(
+                        'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
+                        [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds]
+                )
+
+                log.debug("Writing events")
+                currentSubsIds.each { id ->
+                    new EventLog(
+                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
+                            message: 'SQL Update',
+                            tstp: currentDate
+                    ).save()
+                }
             }
-        }*/
+
+            SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            running = false
+        }
+        else {
+            log.warn("Subscription check already running ... not starting again.")
+        }
 
     }
 
