@@ -102,6 +102,7 @@ class SemanticUiInplaceTagLib {
         }
         // !editable
         else {
+            out << "<span class=\"${attrs.class ?: ''}\">"
             if ( body ) {
                 out << body()
             }
@@ -118,6 +119,7 @@ class SemanticUiInplaceTagLib {
                     }
                 }
             }
+            out << '</span>'
         }
     }
 
