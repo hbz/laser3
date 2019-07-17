@@ -71,10 +71,12 @@
                             ${prop.refValue?.getI10n('value')}
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
-                            ${prop.urlValue}
-                            <g:if test="${prop.value}">
-                                <semui:linkIcon href="${prop.value}" />
-                            </g:if>
+                            <span class="la-overflow la-ellipsis">
+                                ${prop.urlValue}
+                                <g:if test="${prop.value}">
+                                    <semui:linkIcon href="${prop.value}" />
+                                </g:if>
+                            </span>
                         </g:elseif>
                     </td>
                     <td>
