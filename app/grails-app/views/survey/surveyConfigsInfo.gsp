@@ -222,7 +222,7 @@
                                 </g:if>
 
                                 <button id="subscription-properties-toggle"
-                                        class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                        class="ui button la-js-dont-hide-button">Lizenzmerkmale anzeigen</button>
                                 <script>
                                     $('#subscription-properties-toggle').on('click', function () {
                                         $('#subscription-properties').toggleClass('hidden')
