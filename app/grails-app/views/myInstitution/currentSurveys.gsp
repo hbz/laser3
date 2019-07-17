@@ -178,9 +178,11 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button"><i
-                                class="write icon"></i></g:link>
-
+                        <span data-tooltip="${message(code:'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button">
+                                <i class="write icon"></i>
+                            </g:link>
+                        </span>
                     </g:if>
                 </td>
             </tr>
