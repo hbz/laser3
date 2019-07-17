@@ -227,9 +227,9 @@
                                     $('#subscription-properties-toggle').on('click', function () {
                                         $('#subscription-properties').toggleClass('hidden')
                                         if ($('#subscription-properties').hasClass('hidden')) {
-                                            $(this).text('Lizenzsmerkmale anzeigen')
+                                            $(this).text('Lizenzmerkmale anzeigen')
                                         } else {
-                                            $(this).text('Lizenzsmerkmale ausblenden')
+                                            $(this).text('Lizenzmerkmale ausblenden')
                                         }
                                     })
                                 </script>
