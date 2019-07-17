@@ -8,6 +8,8 @@ class NotificationsJob extends AbstractJob {
     def grailsApplication
     def reminderService
 
+    /* ----> DISABLED
+    
   static triggers = {
     // Delay 20 seconds, run every 10 mins.
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
@@ -15,7 +17,7 @@ class NotificationsJob extends AbstractJob {
     // At zero seconds, 5 mins past 2am every day...
     cron name:'notificationsTrigger', cronExpression: "0 0 0/1 * * ?"
   }
-
+    */
     static configFlags = ['hbzMaster']
 
     boolean isAvailable() {

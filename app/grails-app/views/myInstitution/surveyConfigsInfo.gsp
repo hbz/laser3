@@ -62,6 +62,9 @@ ${message(code: 'survey.label')} -
 
 <semui:messages data="${flash}"/>
 
+
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+
 <br>
 
 <g:if test="${ownerId}">
@@ -354,6 +357,14 @@ ${message(code: 'survey.label')} -
                                    it?.costItemElement?.id == costItem?.costItemElement?.id
                                }}"/>
 
+                        <%
+                            // ERMS-1521 HOTFIX
+                            if (! costItemsSub) {
+                                costItemsSub = subscriptionInstance?.costItems.findAll{
+                                    it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')?.id
+                                }
+                            }
+                        %>
 
                         <table class="ui celled la-table-small la-table-inCard table">
                             <thead>
@@ -514,7 +525,9 @@ ${message(code: 'survey.label')} -
 
 </semui:form>
 
-</div>
+<br />
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+
 
 </body>
 </html>
