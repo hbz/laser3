@@ -252,7 +252,7 @@ ${message(code: 'survey.label')} -
                             </g:if>
 
                             <button id="subscription-properties-toggle"
-                                    class="ui button la-js-dont-hide-button">Lizensmerkmale anzeigen</button>
+                                    class="ui button la-js-dont-hide-button">Lizenzmerkmale anzeigen</button>
                             <script>
                                 $('#subscription-properties-toggle').on('click', function () {
                                     $('#subscription-properties').toggleClass('hidden')
