@@ -3888,10 +3888,10 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        result.visiblePersons = addressbookService.getVisiblePersons("addressbook",result.max,result.offset,params)
+        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3901,7 +3901,8 @@ AND EXISTS (
                         tenant: contextService.getOrg() // private properties
                 )
 
-        result.num_visiblePersons = result.visiblePersons.size()
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
         result
       }
@@ -3912,11 +3913,11 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        params.org = result.institution.name
-        result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
+        params.org = result.institution
+        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3926,7 +3927,8 @@ AND EXISTS (
                         tenant: result.institution // private properties
                 )
 
-        result.num_visiblePersons = result.visiblePersons.size()
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
         result
       }
