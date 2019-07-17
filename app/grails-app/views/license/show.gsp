@@ -76,14 +76,14 @@
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
-                                    <dd><semui:auditButton auditable="[license, 'startDate']" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" /></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
-                                    <dd><semui:auditButton auditable="[license, 'endDate']" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" /></dd>
                                 </dl>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
-                                    <dd><semui:auditButton auditable="[license, 'status']" /></dd>
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" /></dd>
                                 </dl>
                                 <%--
                                 <dl>
