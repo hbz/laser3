@@ -51,7 +51,7 @@
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                          value="${Role.findByAuthority('INST_USER').id}"
+                                          value="${Role.findByAuthority('INST_EDITOR').id}"
                                           class="ui fluid dropdown"/>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                          value="${Role.findByAuthority('INST_USER').id}"
+                                          value="${Role.findByAuthority('INST_EDITOR').id}"
                                           class="ui fluid dropdown"/>
                             </div>
                         </div>
