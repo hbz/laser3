@@ -3759,9 +3759,9 @@ AND EXISTS (
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         def result = [:]
@@ -3775,25 +3775,12 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
-        def allResultHaveValue = true
-        surveyResults.each {
-            def value = null
-            if (it?.type?.type == Integer.toString()) {
-                value = it.intValue.toString()
-            } else if (it?.type?.type == String.toString()) {
-                value = it.stringValue ?: ''
-            } else if (it?.type?.type == BigDecimal.toString()) {
-                value = it.decValue.toString()
-            } else if (it?.type?.type == Date.toString()) {
-                value = it.dateValue.toString()
-            } else if (it?.type?.type == RefdataValue.toString()) {
-                value = it.refValue?.getI10n('value') ?: ''
-            }
-
-
-
+        boolean allResultHaveValue = true
+        surveyResults.each { surre ->
+            if(!surre.getFinish())
+                allResultHaveValue = false
         }
         if(allResultHaveValue) {
             surveyResults.each {
