@@ -28,7 +28,38 @@ class ApiController extends AbstractDebugController {
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         log.debug("API")
+        Map result = fillRequestMap(params)
 
+        switch ( (params.version ?: 'v0').toLowerCase() ) {
+            default:
+                result.apiVersion = 'v0'
+                render view: 'v0', model: result
+                break
+        }
+    }
+
+    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def loadSpec() {
+        Map result = fillRequestMap(params)
+
+        switch ( (params.version ?: 'v0').toLowerCase() ) {
+            default:
+                result.apiVersion = 'v0'
+                render view: '/swagger/v0/laser.yaml.gsp', model: result
+                break
+        }
+    }
+
+    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def dispatch() {
+        switch ( (params.version ?: 'v0').toLowerCase() ) {
+            default:
+                v0()
+                break
+        }
+    }
+
+    private Map<String, Object> fillRequestMap (params) {
         Map result = [:]
         User user
         Org org
@@ -41,33 +72,11 @@ class ApiController extends AbstractDebugController {
         def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
         def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
 
-        switch ( (params.version ?: 'v0').toLowerCase() ) {
-            default:
-                result.apiKey  = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
-                result.apiPassword = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
-                result.apiContext = org?.globalUID ?: ''
-                result.apiVersion = 'v0'
-                render view: 'v0', model: result
-                break
-        }
-    }
+        result.apiKey       = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
+        result.apiPassword  = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
+        result.apiContext   = org?.globalUID ?: ''
 
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def loadSpec() {
-        switch ( (params.version ?: 'v0').toLowerCase() ) {
-            default:
-                render view: '/swagger/v0/laser.yaml.gsp'
-                break
-        }
-    }
-
-    // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
-    def dispatch() {
-        switch ( (params.version ?: 'v0').toLowerCase() ) {
-            default:
-                v0()
-                break
-        }
+        result
     }
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])

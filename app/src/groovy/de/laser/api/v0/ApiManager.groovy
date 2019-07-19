@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.59'
+    static final VERSION = '0.60'
     static final NOT_SUPPORTED = false
 
     /**
@@ -113,6 +113,9 @@ class ApiManager {
         }
         else if (resolve('oa2020', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
 
+            if (! accessDueDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
@@ -153,6 +156,9 @@ class ApiManager {
         }
         else if (resolve('statistic', ApiReader.SUPPORTED_FORMATS.statistic) == Constants.VALID_REQUEST) {
 
+            if (! accessDueDatamanager) {
+                return Constants.HTTP_FORBIDDEN
+            }
             result = ApiPkg.findPackageBy(query, value)
 
             if (result && !(result in failureCodes)) {
