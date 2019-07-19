@@ -163,7 +163,7 @@
                                 <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
                             </g:if>
                             <g:else>
-                                <g:link controller="subscription" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="subscription" action="linkLicenseMembers" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                             </g:else>
                         </td>
                     </g:if>

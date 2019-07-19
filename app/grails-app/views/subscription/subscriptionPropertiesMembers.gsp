@@ -28,15 +28,14 @@
 <g:render template="navSubscriberManagement"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.subscriptionPropertiesConsortia.header')}
+${message(code: 'subscription.subscriptionPropertiesMembers.header')}
 </h3>
 
 <semui:messages data="${flash}"/>
 
 <h4>
-    ${message(code: 'subscription.linkPackagesConsortium.consortialSubscription')}: <g:link
-        controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br><br>
+    <g:message code="subscription.linkPackagesMembers.subscription" args="${args.superOrgType}"/>: <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link>
+    <br><br>
 
 </h4>
 
@@ -89,7 +88,7 @@ ${message(code: 'subscription.subscriptionPropertiesConsortia.header')}
     <div class="divider"></div>
 
     <div class="ui segment">
-        <h3>${message(code: 'subscription.propertiesConsortia.consortialSubscription')}</h3>
+        <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
         <table class="ui celled la-table table">
             <thead>
             <tr>
@@ -119,11 +118,11 @@ ${message(code: 'subscription.subscriptionPropertiesConsortia.header')}
                 <semui:auditButton auditable="[parentSub, 'status']"/>
             </td>
             <td>
-                ${parentSub.form.getI10n('value')}
+                ${parentSub.form?.getI10n('value')}
                 <semui:auditButton auditable="[parentSub, 'form']"/>
             </td>
             <td>
-                ${parentSub.resource.getI10n('value')}
+                ${parentSub.resource?.getI10n('value')}
                 <semui:auditButton auditable="[parentSub, 'resource']"/>
             </td>
 
@@ -138,7 +137,7 @@ ${message(code: 'subscription.subscriptionPropertiesConsortia.header')}
     </div>
 
     <div class="ui segment">
-        <h3>${message(code: 'subscription.propertiesConsortia.subscriber')} <semui:totalNumber
+        <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                 total="${filteredSubChilds?.size()}"/></h3>
         <table class="ui celled la-table table">
             <thead>

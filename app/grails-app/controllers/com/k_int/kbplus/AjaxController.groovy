@@ -1186,12 +1186,14 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+      boolean showCollectiveFunctions = Boolean.parseBoolean(params.showCollectiveFunctions)
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
+                showCollectiveFunctions: showCollectiveFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
@@ -1204,6 +1206,7 @@ class AjaxController {
                 ownobj          : owner,
                 newProp         : newProp,
                 showConsortiaFunctions: showConsortiaFunctions,
+                showCollectiveFunctions: showCollectiveFunctions,
                 error           : error,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr, // form data
@@ -1215,6 +1218,7 @@ class AjaxController {
                   ownobj          : owner,
                   newProp         : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
+                  showCollectiveFunctions: showCollectiveFunctions,
                   error           : error,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : type.descr // form data
@@ -1257,7 +1261,8 @@ class AjaxController {
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
                 editable: params.editable,
-                showConsortiaFunctions: params.showConsortiaFunctions
+                showConsortiaFunctions: params.showConsortiaFunctions,
+                showCollectiveFunctions: params.showCollectiveFunctions
         ])
     }
 

@@ -646,13 +646,14 @@ ${orgInstance.name}
             </g:if><%-- sorted_links --%>--}%
             </g:if>
 
-
-            <div id="new-dynamic-properties-block">
-                <g:render template="properties" model="${[
-                        orgInstance   : orgInstance,
-                        authorizedOrgs: authorizedOrgs
-                ]}"/>
-            </div><!-- #new-dynamic-properties-block -->
+            <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
+                <div id="new-dynamic-properties-block">
+                    <g:render template="properties" model="${[
+                            orgInstance   : orgInstance,
+                            authorizedOrgs: authorizedOrgs
+                    ]}"/>
+                </div><!-- #new-dynamic-properties-block -->
+            </g:if>
 
         </div>
     </div>

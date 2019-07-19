@@ -196,7 +196,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
     }
 
     @Override
@@ -452,19 +452,25 @@ class Subscription
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
+            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_CONS
+            )
+            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || subscr
+                return cons || subscrCons || coll || subscrColl || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || subscr
+                    return cons || coll || subscr
             }
         }
 
@@ -757,13 +763,16 @@ class Subscription
            orgRelations.each { or ->
                orgRelationsMap.put(or.roleType.id,or.org)
            }
-           //log.debug(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id))
-           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
                if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id).sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id).sortname
-           }else{
+           }
+           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
+               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id).sortname
+           }
+           else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 

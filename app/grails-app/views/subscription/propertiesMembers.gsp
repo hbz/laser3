@@ -28,22 +28,21 @@
 <g:render template="navSubscriberManagement"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.propertiesConsortia.header')}
+${message(code: 'subscription.propertiesMembers.header')}
 </h3>
 
 <semui:messages data="${flash}"/>
 
 <h4>
-    ${message(code: 'subscription.linkPackagesConsortium.consortialSubscription')}: <g:link
-        controller="subscription" action="show"
-        id="${parentSub.id}">${parentSub.name}</g:link><br><br>
+    <g:message code="subscription.linkPackagesMembers.subscription" args="${args.superOrgType}"/>:
+    <g:link controller="subscription" action="show" id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
 </h4>
 
 
 <semui:filter>
-    <h4>${message(code: 'subscription.propertiesConsortia.onlyPropOfConsortialSubscription', args: [parentSub.name])}</h4>
-    <g:form action="propertiesConsortia" method="post" class="ui form" id="${params.id}">
+    <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [parentSub.name])}</h4>
+    <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
         <g:render template="../templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
         <div class="field la-field-right-aligned">
@@ -61,7 +60,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
 
 %{--<div class="ui segment">
 
-    <b>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
+    <b>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</b>
     <br>${message(code: 'propertyDefinition.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.type == 'class com.k_int.kbplus.RefdataValue'}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -84,15 +83,15 @@ ${message(code: 'subscription.propertiesConsortia.header')}
 
             <div class="ui bulleted list">
                 <div class="item">
-                    ${message(code: 'subscription.propertiesConsortia.info2')}
+                    <g:message code="subscription.propertiesMembers.info2"/>
                 </div>
 
                 <div class="item">
-                    ${message(code: 'subscription.propertiesConsortia.info3')}
+                    <g:message code="subscription.propertiesMembers.info3" args="${args.superOrgType}"/>
                 </div>
 
                 <div class="item">
-                    ${message(code: 'subscription.propertiesConsortia.info4')}
+                    <g:message code="subscription.propertiesMembers.info4"/>
                 </div>
             </div>
         </div>
@@ -103,10 +102,10 @@ ${message(code: 'subscription.propertiesConsortia.header')}
             <g:hiddenField name="id" value="${params.id}"/>
 
             <div class="field required">
-                <h4>${message(code: 'subscription.propertiesConsortia.info')}</h4>
+                <h4>${message(code: 'subscription.propertiesMembers.info')}</h4>
 
                 <div class="inline field">
-                    <label>${message(code: 'subscription.propertiesConsortia.propertySelected')}:</label>
+                    <label>${message(code: 'subscription.propertiesMembers.propertySelected')}:</label>
 
                     <b>${filterPropDef?.getI10n('name')}
                         <g:if test="${filterPropDef?.tenant != null}">
@@ -156,18 +155,18 @@ ${message(code: 'subscription.propertiesConsortia.header')}
 
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.propertiesConsortia.deletePropertyInfo')}</h4>
+        <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo')}</h4>
 
             <g:link class="ui button js-open-confirm-modal"
-                    data-confirm-term-content = "${message(code: 'subscription.propertiesConsortia.deleteProperty.button.confirm')}"
-                    data-confirm-term-how="ok" action="processDeletePropertiesConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesConsortia.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
+                    data-confirm-term-content = "${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
+                    data-confirm-term-how="ok" action="processDeletePropertiesConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.propertiesMembers.deleteProperty.button', args: [filterPropDef?.getI10n('name')])}</g:link>
 
     </div>
 
     <div class="divider"></div>
 
     <div class="ui segment">
-        <h3>${message(code: 'subscription.propertiesConsortia.consortialSubscription')}</h3>
+        <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
         <table class="ui celled la-table table">
             <thead>
             <tr>
@@ -175,7 +174,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
-                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
+                <th>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -209,7 +208,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                             <g:set var="customProperty"
                                    value="${parentSub.customProperties.find { it.type == filterPropDef }}"/>
                             <g:if test="${customProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
+                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -259,7 +258,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                 </div>
                             </g:if><g:else>
                             <div class="content">
-                                ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
+                                ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
                             </div>
                         </g:else>
 
@@ -277,7 +276,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                             <g:set var="privateProperty"
                                    value="${parentSub.privateProperties.find { it.type == filterPropDef }}"/>
                             <g:if test="${privateProperty}">
-                                <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
                                 <div class="content">
 
@@ -327,7 +326,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                 </div>
                             </g:if><g:else>
                             <div class="content">
-                                ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
+                                ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
                             </div>
                         </g:else>
 
@@ -348,7 +347,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
     </div>
 
     <div class="ui segment">
-        <h3>${message(code: 'subscription.propertiesConsortia.subscriber')} <semui:totalNumber
+        <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                 total="${filteredSubChilds?.size()}"/></h3>
         <table class="ui celled la-table table">
             <thead>
@@ -359,7 +358,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                 <th>${message(code: 'default.startDate.label')}</th>
                 <th>${message(code: 'default.endDate.label')}</th>
                 <th>${message(code: 'subscription.details.status')}</th>
-                <th>${message(code: 'subscription.propertiesConsortia.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
+                <th>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -416,7 +415,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     <g:set var="customProperty"
                                            value="${sub.customProperties.find { it.type == filterPropDef }}"/>
                                     <g:if test="${customProperty}">
-                                        <div class="header">${message(code: 'subscription.propertiesConsortia.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
+                                        <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef?.getI10n('name')}</div>
 
                                         <div class="content">
                                             <g:if test="${customProperty.type.type == Integer.toString()}">
@@ -465,7 +464,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                         </div>
                                     </g:if><g:else>
                                     <div class="content">
-                                        ${message(code: 'subscription.propertiesConsortia.noCustomProperty')}
+                                        ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
                                     </div>
                                 </g:else>
                                 </div>
@@ -482,7 +481,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                     </div>
 
                                     <g:if test="${privateProperty}">
-                                        <div class="header">${message(code: 'subscription.propertiesConsortia.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
+                                        <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.org}: ${filterPropDef?.getI10n('name')}</div>
 
                                         <div class="content">
                                             <g:if test="${privateProperty.type.type == Integer.toString()}">
@@ -530,7 +529,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
                                         </div>
                                     </g:if><g:else>
                                     <div class="content">
-                                        ${message(code: 'subscription.propertiesConsortia.noPrivateProperty')}
+                                        ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
                                     </div>
                                 </g:else>
 
@@ -561,7 +560,7 @@ ${message(code: 'subscription.propertiesConsortia.header')}
     </g:if>
 
     <g:if test="${!filterPropDef}"><g:message
-            code="subscription.propertiesConsortia.noPropertySeleced"/></strong>
+            code="subscription.propertiesMembers.noPropertySeleced"/></strong>
     </g:if>
 </g:else>
 
