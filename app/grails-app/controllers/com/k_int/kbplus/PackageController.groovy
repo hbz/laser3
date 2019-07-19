@@ -511,30 +511,13 @@ class PackageController extends AbstractDebugController {
         result.visibleOrgs = packageInstance.orgs
         result.visibleOrgs.sort { it.org.sortname }
 
-        result.subscriptionList = []
-        // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
-        // and subscription that does not already link this package
-        // No, we do not. Only the context institution is important.
-        /*def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        result.user?.getAuthorizedAffiliations().each { ua ->
-            if (ua.formalRole.authority == 'INST_ADM') {
-                def qry_params = [ua.org, packageInstance, new Date()]
-                def q = """
-select s from Subscription as s where 
-  ( exists ( select o from s.orgRelations as o where ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) and o.org = ? ) )
-  AND ( not exists ( select sp from s.packages as sp where sp.pkg = ? ) ) AND s.endDate >= ?
-"""
+        List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            roleTypes << RDStore.OR_SUBSCRIPTION_CONSORTIA
+        }
 
-                Subscription.executeQuery(q, qry_params).each { s ->
-                    if (!result.subscriptionList.contains(s)) {
-                        // Need to make sure that this package is not already linked to this subscription
-                        result.subscriptionList.add([org: ua.org, sub: s])
-                    }
-                }
-            }
-        }*/
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub)',
-                [contextOrg: contextService.org, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], current: RDStore.SUBSCRIPTION_CURRENT])
+                [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT])
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         params.max = result.max
