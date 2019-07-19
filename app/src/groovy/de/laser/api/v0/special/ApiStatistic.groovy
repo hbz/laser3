@@ -23,8 +23,8 @@ class ApiStatistic {
 
         // context is ignored due hasAccess = accessDueDatamanager
         // maybe changed later into a lesser accessRole like API_LEVEL_STATISTIC
-
         if (! hasAccess) {
+
             if (result in getAccessiblePackages()) {
                 hasAccess = true
             }

@@ -674,7 +674,7 @@ class ApiReaderHelper {
                 tmp.subscription = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
             if (it.title && (IGNORE_TITLE != ignoreRelationType)) {
-                tmp.title = resolveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
+                tmp.title = retrieveTitleStubMap(it.title) // com.k_int.kbplus.TitleInstance
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -910,7 +910,7 @@ class ApiReaderHelper {
         result.additionalPlatforms  = retrievePlatformTippCollection(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
         result.identifiers          = retrieveIdentifierCollection(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
         result.platform             = retrievePlatformStubMap(tipp.platform) // com.k_int.kbplus.Platform
-        result.title                = resolveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.title                = retrieveTitleStubMap(tipp.title)       // com.k_int.kbplus.TitleInstance
 
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation != IGNORE_PACKAGE) {

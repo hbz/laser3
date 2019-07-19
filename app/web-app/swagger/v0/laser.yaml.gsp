@@ -32,6 +32,15 @@ components:
       in: query
       schema:
         type: string
+        default: globalUID
+      required: true
+      description: Identifier for this query
+
+    q_withoutDefault:
+      name: q
+      in: query
+      schema:
+        type: string
       required: true
       description: Identifier for this query
 
@@ -51,13 +60,25 @@ components:
       required: false
       description: Timestamp from which changes should be considered
 
+<g:if test="${apiContext}">
     context:
       name: context
       in: query
       schema:
         type: string
-      required: false
+        default: ${apiContext}
+      required: true
       description: Concrete globalUID of context organisation
+</g:if>
+<g:else>
+    context:
+      name: context
+      in: query
+      schema:
+        type: string
+      required: true
+      description: Concrete globalUID of context organisation
+</g:else>
 
     authorization:
       name: x-authorization
