@@ -28,7 +28,7 @@ class ApiController extends AbstractDebugController {
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         log.debug("API")
-        Map result = fillRequestMap(params)
+        Map<String, Object> result = fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -40,7 +40,7 @@ class ApiController extends AbstractDebugController {
 
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def loadSpec() {
-        Map result = fillRequestMap(params)
+        Map<String, Object> result = fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
@@ -60,7 +60,7 @@ class ApiController extends AbstractDebugController {
     }
 
     private Map<String, Object> fillRequestMap (params) {
-        Map result = [:]
+        Map<String, Object> result = [:]
         User user
         Org org
 
