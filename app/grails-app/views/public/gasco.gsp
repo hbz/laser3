@@ -30,7 +30,7 @@
                             <div class="inline fields la-filter-inline">
 
                                 <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
-                                    <g:if test="${subType.value != 'Local Licence'}">
+                                    <g:if test="${!(subType.value in ['Local Licence','Administrative Subscription','Collective Subscription'])}">
                                         <g:if test="${subType.value == 'National Licence'}">
                                             <div class="inline field js-nationallicence">
                                         </g:if>

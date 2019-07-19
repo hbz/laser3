@@ -28,24 +28,10 @@ class ApiController extends AbstractDebugController {
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def index() {
         log.debug("API")
-
-        Map result = [:]
-        User user
-        Org org
-
-        if (springSecurityService.isLoggedIn()) {
-            user = User.get(springSecurityService.principal.id)
-            org = contextService.getOrg()
-        }
-
-        def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
-        def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
+        Map<String, Object> result = fillRequestMap(params)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
-                result.apiKey  = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
-                result.apiPassword = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
-                result.apiContext = org?.globalUID ?: ''
                 result.apiVersion = 'v0'
                 render view: 'v0', model: result
                 break
@@ -54,9 +40,12 @@ class ApiController extends AbstractDebugController {
 
     // @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
     def loadSpec() {
+        Map<String, Object> result = fillRequestMap(params)
+
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             default:
-                render view: '/swagger/v0/laser.yaml.gsp'
+                result.apiVersion = 'v0'
+                render view: '/swagger/v0/laser.yaml.gsp', model: result
                 break
         }
     }
@@ -68,6 +57,26 @@ class ApiController extends AbstractDebugController {
                 v0()
                 break
         }
+    }
+
+    private Map<String, Object> fillRequestMap (params) {
+        Map<String, Object> result = [:]
+        User user
+        Org org
+
+        if (springSecurityService.isLoggedIn()) {
+            user = User.get(springSecurityService.principal.id)
+            org = contextService.getOrg()
+        }
+
+        def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
+        def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
+
+        result.apiKey       = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
+        result.apiPassword  = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
+        result.apiContext   = org?.globalUID ?: ''
+
+        result
     }
 
     @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])

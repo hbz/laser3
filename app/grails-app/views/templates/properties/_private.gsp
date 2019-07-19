@@ -5,8 +5,8 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
+<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />
 
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
@@ -131,14 +131,15 @@
                                   onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                                   onComplete="c3po.loadJsAfterAjax()"
                     >
+                    <g:if test="${actionName != 'surveyConfigsInfo'}">
+                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
+                        <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
+                        <input type="hidden" name="editable"   value="${editable}"/>
+                        <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                    <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                    <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                    <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                    <input type="hidden" name="editable"   value="${editable}"/>
-                    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
-
-                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                    </g:if>
                 </g:formRemote>
 
             </td>
