@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.SurveyInfo; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="com.k_int.kbplus.SurveyInfo; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyResult" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -95,7 +95,7 @@
 </semui:filter>
 
 <g:if test="${participant}">
-    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}" />
+    <g:set var="choosenOrg" value="${Org.findById(participant.id)}" />
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}" />
 
     <table class="ui table la-table la-table-small">
@@ -138,8 +138,8 @@
             <g:sortableColumn params="${params}" property="si.status"
                               title="${message(code: 'surveyInfo.status.label')}"/>
             <th>${message(code: 'surveyInfo.property')}</th>
+            <th><g:message code="surveyInfo.finished"/></th>
             <th>${message(code: 'surveyInfo.evaluation')}</th>
-
         </tr>
 
         </thead>
@@ -167,17 +167,36 @@
                     ${s.status?.getI10n('value')}
                 </td>
 
-
                 <td class="center aligned">
 
-                    <g:set var="surveyConfigsOfParticipant" value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(contextService.org, params.participant, s?.surveyConfigs)}"/>
+                    <g:set var="surveyConfigsOfParticipant" value="${SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(contextService.org, params.participant, s?.surveyConfigs)}"/>
 
                     ${surveyConfigsOfParticipant?.groupBy {it.surveyConfig.id}.size()}
                 </td>
 
                 <td>
-                    <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
-                    <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+                    <g:set var="surveyResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(params.participant, s?.surveyConfigs)}" />
+
+                    <g:if test="${surveyResults}">
+                        <g:if test="${surveyResults?.finishDate?.contains(null)}">
+                        <%--<span class="la-long-tooltip" data-position="top right" data-variation="tiny"
+                              data-tooltip="Nicht abgeschlossen">
+                            <i class="circle red icon"></i>
+                        </span>--%>
+                        </g:if>
+                        <g:else>
+
+                            <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
+                                  data-tooltip="${message(code: 'surveyResult.finish.info')}">
+                                <i class="check big green icon"></i>
+                            </span>
+                        </g:else>
+                    </g:if>
+                </td>
+
+                <td>
+                    <g:set var="finish" value="${SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+                    <g:set var="total"  value="${SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
                     <g:link action="surveyParticipantConsortia" id="${s.id}" params="[participant: participant?.id]" class="ui icon button">
                         <g:if test="${finish != 0 && total != 0}">
                             <g:formatNumber number="${(finish/total)*100}" minFractionDigits="2" maxFractionDigits="2"/>%
