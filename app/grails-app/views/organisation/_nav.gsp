@@ -33,7 +33,7 @@
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         <%-- TODO: check ctx != foreign org --%>
         <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
-                                 orgPerm="ORG_BASIC_MEMBER,ORG_CONSORTIUM" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
+                                 specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                  affiliation="INST_ADM" affiliationOrg="${orgInstance}"
                                  message="org.nav.options" />
     </g:if>

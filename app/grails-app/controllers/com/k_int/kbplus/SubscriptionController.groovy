@@ -967,9 +967,9 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
     }
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1031,9 +1031,9 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1091,9 +1091,9 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1128,9 +1128,9 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def linkPackagesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1180,9 +1180,9 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1276,9 +1276,9 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1331,9 +1331,9 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def propertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1388,9 +1388,9 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def subscriptionPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1436,11 +1436,11 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processPropertiesConsortia() {
+    def processPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1535,11 +1535,11 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processSubscriptionPropertiesConsortia() {
+    def processSubscriptionPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1604,11 +1604,11 @@ class SubscriptionController extends AbstractDebugController {
         redirect(action: 'subscriptionPropertiesMembers', id: id)
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processDeletePropertiesConsortia() {
+    def processDeletePropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1716,8 +1716,8 @@ class SubscriptionController extends AbstractDebugController {
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
         log.debug("addMembers ..")
 
@@ -1744,8 +1744,8 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
 

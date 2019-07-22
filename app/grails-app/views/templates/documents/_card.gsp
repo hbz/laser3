@@ -135,19 +135,27 @@
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
 
-                    <div class="summary">
-                        <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
-                            <g:if test="${docctx.owner?.title}">
-                                ${docctx.owner.title}
-                            </g:if>
-                            <g:elseif test="${docctx.owner?.filename}">
-                                ${docctx.owner.filename}
-                            </g:elseif>
-                            <g:else>
-                                ${message(code:'template.documents.missing', default: 'Missing title and filename')}
-                            </g:else>
+                    <div class="ui grid summary">
+                        <div class="twelve wide column">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                                <g:if test="${docctx.owner?.title}">
+                                    ${docctx.owner.title}
+                                </g:if>
+                                <g:elseif test="${docctx.owner?.filename}">
+                                    ${docctx.owner.filename}
+                                </g:elseif>
+                                <g:else>
+                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                </g:else>
 
-                        </g:link>(${docctx.owner?.type?.getI10n("value")})
+                            </g:link>(${docctx.owner?.type?.getI10n("value")})
+                        </div>
+                        <g:if test="${docctx.owner.owner.id == contextService.org.id}">
+                            <div class="two wide column">
+                                <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                            </div>
+                        </g:if>
                     </div>
                 </div>
             </g:if>

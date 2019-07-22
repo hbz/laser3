@@ -260,9 +260,12 @@
             </th>
             */ %>
 
-            <g:if test="${params.orgRole == 'Subscriber'}">
+            <g:if test="${params.orgRole == 'Subscriber' && accessService.checkPerm("ORG_BASIC_MEMBER")}">
                 <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
             </g:if>
+            <g:elseif test="${params.orgRole == 'Subscriber'}">
+                <th rowspan="2">${message(code:'org.institution.label')}</th>
+            </g:elseif>
 
             <g:sortableColumn scope="col" params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
             <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
@@ -289,107 +292,109 @@
         </tr>
         </thead>
         <g:each in="${subscriptions}" var="s" status="i">
-            <g:if test="${!s.instanceOf}">
-                <tr>
-                    <td class="center aligned">
-                        ${ (params.int('offset') ?: 0)  + i + 1 }
-                    </td>
-                    <td>
-                        <g:link controller="subscription" action="show" id="${s.id}">
-                            <g:if test="${s.name}">
-                                ${s.name}
+            <tr>
+                <td class="center aligned">
+                    ${ (params.int('offset') ?: 0)  + i + 1 }
+                </td>
+                <td>
+                    <g:link controller="subscription" action="show" id="${s.id}">
+                        <g:if test="${s.name}">
+                            ${s.name}
+                        </g:if>
+                        <g:else>
+                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                        </g:else>
+                        <g:if test="${s.instanceOf}">
+                            <g:if test="${s.consortia && s.consortia == institution}">
+                                ( ${s.subscriber?.name} )
+                            </g:if>
+                        </g:if>
+                    </g:link>
+                    <g:if test="${s.owner}">
+                        <div class="la-flexbox">
+                            <i class="icon balance scale la-list-icon"></i>
+                            <g:link controller="license" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
+                        </div>
+                    </g:if>
+                </td>
+                <td>
+                <!-- packages -->
+                    <g:each in="${s.packages.sort{it?.pkg?.name}}" var="sp" status="ind">
+                        <g:if test="${ind < 10}">
+                            <div class="la-flexbox">
+                                <i class="icon gift la-list-icon"></i>
+                                <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
+                                        title="${sp.pkg?.contentProvider?.name}">
+                                    ${sp.pkg.name}
+                                </g:link>
+                            </div>
+                        </g:if>
+                    </g:each>
+                    <g:if test="${s.packages.size() > 10}">
+                        <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
+                    </g:if>
+                    <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
+                        <i>
+                            <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                                <g:message code="myinst.currentSubscriptions.no_links" />
+                                <g:link controller="subscription" action="linkPackage"
+                                        id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
                             </g:if>
                             <g:else>
-                                -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                                <g:message code="myinst.currentSubscriptions.no_links_basic" />
                             </g:else>
-                            <g:if test="${s.instanceOf}">
-                                <g:if test="${s.consortia && s.consortia == institution}">
-                                    ( ${s.subscriber?.name} )
-                                </g:if>
-                            </g:if>
-                        </g:link>
-                        <g:if test="${s.owner}">
-                                <div class="la-flexbox">
-                                    <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="license" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
-                                </div>
-                        </g:if>
-                    </td>
-                    <td>
-                    <!-- packages -->
-                        <g:each in="${s.packages.sort{it?.pkg?.name}}" var="sp" status="ind">
-                            <g:if test="${ind < 10}">
-                                <div class="la-flexbox">
-                                    <i class="icon gift la-list-icon"></i>
-                                    <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
-                                            title="${sp.pkg?.contentProvider?.name}">
-                                        ${sp.pkg.name}
-                                    </g:link>
-                                </div>
-                            </g:if>
-                        </g:each>
-                        <g:if test="${s.packages.size() > 10}">
-                            <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
-                        </g:if>
-                        <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
-                            <i>
-                                ${message(code: 'myinst.currentSubscriptions.no_links', default: 'None currently, Add packages via')}
-                                <g:link controller="subscription" action="linkPackage"
-                                        id="${s.id}">${message(code: 'subscription.details.linkPackage.label', default: 'Link Package')}</g:link>
-                            </i>
-                        </g:if>
-                    <!-- packages -->
-                    </td>
-                    <%--
-                    <td>
-                        ${s.type?.getI10n('value')}
-                    </td>
-                    --%>
-
-                    <g:if test="${params.orgRole == 'Subscriber'}">
-                        <td>
-                            ${s.getConsortia()?.name}
-                        </td>
+                        </i>
                     </g:if>
+                <!-- packages -->
+                </td>
+                <%--<td>
+                    ${s.type?.getI10n('value')}
+                </td>--%>
+                <g:if test="${params.orgRole == 'Subscriber'}">
                     <td>
-                        <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
-                        <g:each in="${s.providers}" var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
-                        </g:each>
-                        <g:each in="${s.agencies}" var="org">
-                            <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
-                        </g:each>
+                        <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                            ${s.getConsortia()?.name}
+                        </g:if>
+                        <g:else>
+                            ${s.getCollective()?.name}
+                        </g:else>
                     </td>
-                    <%--
+                </g:if>
+                <td>
+                <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
+                    <g:each in="${s.providers}" var="org">
+                        <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
+                    </g:each>
+                    <g:each in="${s.agencies}" var="org">
+                        <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                    </g:each>
+                </td>
+                <%--
                     <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
+                           <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
                                 <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>
-                    --%>
+                --%>
+                <td>
+                    <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                    <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                </td>
+                <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
-                        <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                        <g:link controller="subscription" action="members" params="${[id:s.id]}">${Subscription.findAllByInstanceOf(s)?.size()}</g:link>
                     </td>
-                    <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
-                        <td>
-                            <g:link controller="subscription" action="members" params="${[id:s.id]}">
-                            ${Subscription.findAllByInstanceOf(s)?.size()}
-                            </g:link>
-                        </td>
-                        <td>
+                    <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
                             ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOf(s), institution)?.size()}
                         </g:link>
-                        </td>
-                    </g:if>
-
-
-                    <td class="x">
-                        <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
-                          <laser:statsLink class="ui icon button"
+                    </td>
+                </g:if>
+                <td class="x">
+                    <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
+                        <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
                                          module="statistics"
                                          controller="default"
@@ -401,9 +406,8 @@
                                          ]"
                                          title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
                             <i class="chart bar outline icon"></i>
-                          </laser:statsLink>
-                        </g:if>
-
+                        </laser:statsLink>
+                    </g:if>
                     <%--<g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
                         (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
@@ -430,10 +434,9 @@
                                 </g:link>
                             </g:else>
                         </g:if>
-                        --%>
-                    </td>
-                </tr>
-            </g:if>
+                     --%>
+                </td>
+            </tr>
         </g:each>
     </table>
 </div>

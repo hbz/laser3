@@ -44,7 +44,7 @@ class SubscriptionsQueryService {
         RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
         RefdataValue role_subColl        = RDStore.OR_SUBSCRIBER_COLLECTIVE
-        RefdataValue role_sub_collective  = RDStore.OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub_collective = RDStore.OR_SUBSCRIPTION_COLLECTIVE
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
@@ -66,18 +66,9 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = """
-from Subscription as s where (
-    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-    AND (
-        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
-        or
-        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
-    )
-)
-"""
+            base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':contextOrg, 'scRoleType':role_sub_consortia]
+            qry_params = ['roleType1':role_sub, 'roleType2':[role_subCons,role_subColl], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia,role_sub_collective]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {

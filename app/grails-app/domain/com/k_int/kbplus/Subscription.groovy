@@ -286,7 +286,7 @@ class Subscription
             result = CALCULATED_TYPE_COLLECTIVE
         }
         else if(getCollective() && instanceOf) {
-            result = CALCULATED_TYPE_COLLECTIVE
+            result = CALCULATED_TYPE_PARTICIPATION
         }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)

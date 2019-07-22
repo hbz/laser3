@@ -43,7 +43,7 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
 <g:if test="${filteredSubChilds}">
 
     <div class="ui segment">
-        <g:form action="processSubscriptionPropertiesConsortia" method="post" class="ui form">
+        <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
             <h4>${message(code: 'subscription.subscriptionPropertiesConsortia.info')}</h4>

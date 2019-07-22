@@ -121,7 +121,7 @@ class FinanceService {
          */
             case CALCULATED_TYPE_PARTICIPATION:
                 String visibility = ""
-                if(sub.getConsortia().id != org.id) {
+                if(!(org.id in [sub.getConsortia()?.id,sub.getCollective()?.id])) {
                     visibility = " and ci.isVisibleForSubscriber = true"
                 }
                 String subscrSort
@@ -129,7 +129,7 @@ class FinanceService {
                     subscrSort = " order by ${params.sort} ${params.order}"
                 else
                     subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia(),sub.getCollective()],sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -757,7 +757,7 @@ class FinanceService {
                             mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
                         else if(titleMatches.size() == 1) {
                             TitleInstance tiMatch = titleMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:TIPP_STATUS_DELETED])
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance',[subscription:subscription,titleInstance:tiMatch])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)

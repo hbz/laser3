@@ -549,57 +549,57 @@ class AjaxController {
 
     def getPropValues() {
         Set result = []
-        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-        if(propDef) {
-            List<AbstractProperty> values
-            if(propDef.tenant) {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
-                        break
-                }
-            }
-            else {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicenseCustomProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgCustomProperty.findAllByType(propDef)
-                        break
-                }
-            }
-
-            if(values) {
-                if(propDef.type == Integer.toString()) {
-                    values.each { v ->
-                        if(v.intValue != null)
-                            result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+        if(params.oid != "undefined") {
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if(propDef) {
+                List<AbstractProperty> values
+                if(propDef.tenant) {
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareTo y.text}
                 }
                 else {
-                    values.each { v ->
-                        if(v.getValue() != null)
-                            result.add([value:v.getValue(),text:v.getValue()])
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.executeQuery('select scp from SubscriptionCustomProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                }
+
+                if(values) {
+                    if(propDef.type == Integer.toString()) {
+                        values.each { v ->
+                            if(v.intValue != null)
+                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                        }
+                        result = result.sort { x, y -> x.text.compareTo y.text}
+                    }
+                    else {
+                        values.each { v ->
+                            if(v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.getValue()])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                    }
                 }
             }
         }
-
-
         //excepted structure: [[value:,text:],[value:,text:]]
         withFormat {
             json {
