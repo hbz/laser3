@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 
 import java.text.SimpleDateFormat
 
+import static com.k_int.kbplus.UserSettings.KEYS.*
+import static com.k_int.kbplus.UserSettings.*
 import static groovyx.net.http.ContentType.ANY
 
 class DashboardDueDatesService {
@@ -99,9 +101,9 @@ class DashboardDueDatesService {
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
-            int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+
             orgs.each {org ->
-                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user, reminderPeriod)
+                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {

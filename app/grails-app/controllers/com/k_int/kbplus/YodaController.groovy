@@ -1189,6 +1189,17 @@ class YodaController {
 
         result
     }
+    @Secured(['ROLE_YODA'])
+    def replace_DASHBOARD_REMINDER_PERIOD() {
+        //Schleife über alle Benutzer
+
+            //DASHBOARD_REMINDER_PERIOD für diesen Benutzer lesen (default = 14)
+            //Für den Benutzer alle neuen Einträge mit dem DASHBOARD_REMINDER_PERIOD wert anlegen.
+        //Ende schleife
+
+        //Lösche alle DASHBOARD_REMINDER_PERIOD-Einträge in der UserSettings
+
+    }
 
     @Secured(['ROLE_YODA'])
     def correctCostsInLocalCurrency() {
