@@ -16,9 +16,13 @@ import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.springframework.transaction.TransactionStatus
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+
+import static com.k_int.kbplus.UserSettings.KEYS.*
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -1195,15 +1199,38 @@ class YodaController {
         result
     }
     @Secured(['ROLE_YODA'])
-    def replace_DASHBOARD_REMINDER_PERIOD() {
-        //Schleife über alle Benutzer
+    def replaceUserSettingDashboardReminderPeriod() {
+        Map<String, Object> result = [:]
+        User.withTransaction { TransactionStatus status ->
+            try {
+                def users = User.findAll()
+                print users
+                users.each { user ->
+                    UserSettings userSettingDashboardReminderPeriod = user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD)
+                    int oldPeriod = userSettingDashboardReminderPeriod.value
+                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
 
-            //DASHBOARD_REMINDER_PERIOD für diesen Benutzer lesen (default = 14)
-            //Für den Benutzer alle neuen Einträge mit dem DASHBOARD_REMINDER_PERIOD wert anlegen.
-        //Ende schleife
-
-        //Lösche alle DASHBOARD_REMINDER_PERIOD-Einträge in der UserSettings
-
+                    println '-----> deleting userSetting: ' + userSettingDashboardReminderPeriod.id + ", " + userSettingDashboardReminderPeriod.key
+                    userSettingDashboardReminderPeriod.delete()
+                }
+                result.users = users
+                flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
+            } catch (Exception ex) {
+                status.setRollbackOnly()
+                flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD: ' + ex.message
+                flash.error += '<br /><br /><b>Es wurde ein Rollback durchgeführt!</b>'
+            }
+        }
+        result
     }
 
     @Secured(['ROLE_YODA'])
