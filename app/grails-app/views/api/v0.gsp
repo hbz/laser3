@@ -136,17 +136,17 @@
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Generate after the request is defined .." value=""></span>')
 
             }, 1000)
 
             setTimeout(function(){
-                jQuery('.opblock').delegate('input, textarea', 'change', function() {
-                    var div = jQuery(this).parents('.parameters').first()
-                    var auth = genDigist(div)
-
-                    jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
-                })
+                //jQuery('.opblock').delegate('input, textarea', 'change', function() {
+                //    var div = jQuery(this).parents('.parameters').first()
+                //    var auth = genDigist(div)
+                //
+                //    jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
+                //})
 
                 jQuery('.topbar-wrapper input').on('focus', function(){
                     jQuery(this).select()

@@ -222,14 +222,14 @@
                                 </g:if>
 
                                 <button id="subscription-properties-toggle"
-                                        class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                        class="ui button la-js-dont-hide-button">Lizenzmerkmale anzeigen</button>
                                 <script>
                                     $('#subscription-properties-toggle').on('click', function () {
                                         $('#subscription-properties').toggleClass('hidden')
                                         if ($('#subscription-properties').hasClass('hidden')) {
-                                            $(this).text('Lizenzsmerkmale anzeigen')
+                                            $(this).text('Lizenzmerkmale anzeigen')
                                         } else {
-                                            $(this).text('Lizenzsmerkmale ausblenden')
+                                            $(this).text('Lizenzmerkmale ausblenden')
                                         }
                                     })
                                 </script>
@@ -421,8 +421,8 @@
                             </g:if>
 
                             <g:if test="${surveyProperty?.surveyProperty?.getI10n('explain')}">
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${surveyProperty?.surveyProperty?.getI10n('explain')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${surveyProperty?.surveyProperty?.getI10n('explain')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>

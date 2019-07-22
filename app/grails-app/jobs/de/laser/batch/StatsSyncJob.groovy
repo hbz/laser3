@@ -24,26 +24,43 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static configFlags = ['KBPlusMaster', 'hbzMaster', 'StatsSyncJobActiv']
+    static configFlags = ['hbzMaster', 'StatsSyncJobActiv']
+
+    boolean isAvailable() {
+        !jobIsRunning && !statsSyncService.running
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
     def execute() {
-        log.debug("Execute::statsSyncJob");
-        if ( grailsApplication.config.KBPlusMaster == true ) {
-            log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
-            SystemEvent.createEvent('STATS_SYNC_JOB_START')
+        if (! isAvailable()) {
+            return false
+        }
+        jobIsRunning = true
 
-            statsSyncService.doSync()
-            SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
-        }
-        else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
-            log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
-            SystemEvent.createEvent('STATS_SYNC_JOB_START')
+        try {
+            log.debug("Execute::statsSyncJob")
 
-            statsSyncService.doSync()
-            SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
+            if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
+                log.debug("This server is marked as hbzMaster. Running Stats SYNC batch job");
+                SystemEvent.createEvent('STATS_SYNC_JOB_START')
+
+                statsSyncService.doSync()
+                //if (! statsSyncService.doSync()) {
+                //    log.warn( 'Failed. Maybe ignored due blocked statsSyncService')
+                //}
+
+                SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
+            }
+            else {
+                log.debug("This server is NOT marked as hbzMaster. NOT Running Stats SYNC batch job");
+            }
         }
-        else {
-            log.debug("This server is NOT marked as KBPlus master. NOT Running Stats SYNC batch job");
+        catch (Exception e) {
+            log.error(e)
         }
+
+        jobIsRunning = false
     }
 }

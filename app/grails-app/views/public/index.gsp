@@ -149,6 +149,10 @@
                     <a href="mailto:laser@hbz-nrw.de" class="ui huge blue button">
                         ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
                     </a>
+                    <g:link controller="home" action="index" class="ui huge blue button">
+                        ${message(code: 'landingpage.login', default: 'Login')}
+                        <i class="right arrow icon"></i>
+                    </g:link>
                 </div>
             </div>
         </div>

@@ -136,10 +136,13 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
 
-            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+            <g:if test="${editable}">
                 <div class="divider"></div>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> Lizenz löschen</g:link>
             </g:if>
+            <g:else>
+                <a class="item disabled" href="#"><i class="trash alternate icon"></i> Lizenz löschen</a>
+            </g:else>
         </g:if>
 
     </g:if>

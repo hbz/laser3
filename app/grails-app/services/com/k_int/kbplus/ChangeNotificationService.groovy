@@ -1,19 +1,19 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
-import com.k_int.kbplus.*;
+import com.k_int.kbplus.auth.*
+import de.laser.interfaces.AbstractLockableService;
 import grails.converters.*
 import java.sql.Timestamp
 
-class ChangeNotificationService {
+class ChangeNotificationService extends AbstractLockableService {
 
     def executorService
     def genericOIDService
     def sessionFactory
     def grailsApplication
 
-  // N,B, This is critical for this service as it's called from domain object OnChange handlers
-  static transactional = false;
+    // N,B, This is critical for this service as it's called from domain object OnChange handlers
+    static transactional = false
 
   def broadcastEvent(contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
@@ -35,47 +35,78 @@ class ChangeNotificationService {
 
   // Gather together all the changes for a give context object, formate them into an aggregated document
   // notify any registered channels
-  def aggregateAndNotifyChanges() {
-    def future = executorService.submit({
-      internalAggregateAndNotifyChanges();
-    } as java.util.concurrent.Callable)
+  boolean aggregateAndNotifyChanges() {
+      if(!running) {
+          running = true
+          def future = executorService.submit({
+              internalAggregateAndNotifyChanges();
+          } as java.util.concurrent.Callable)
+
+          return true
+      }
+      else {
+          log.warn("Not running, still one process active!")
+          return false
+      }
   }
 
 
-  // Sum up all pending changes by OID and write a unified message
-  def internalAggregateAndNotifyChanges() {
+    // Sum up all pending changes by OID and write a unified message
+    def internalAggregateAndNotifyChanges() {
 
-    try {
-      def pendingOIDChanges = ChangeNotificationQueueItem.executeQuery("select distinct c.oid from ChangeNotificationQueueItem as c order by c.oid");
+        boolean running = true
 
-      pendingOIDChanges.each { poidc ->
+        while (running) {
+            try {
+                List<ChangeNotificationQueueItem> queueItems = ChangeNotificationQueueItem.executeQuery(
+                    "select distinct c.oid from ChangeNotificationQueueItem as c order by c.oid", [max: 1]
+                )
 
-        def contr = 0
-        // log.debug("Consider pending changes for ${poidc}");
-        def contextObject = genericOIDService.resolveOID(poidc);
-        log.debug("Got contextObject ${contextObject} for poidc ${poidc}")
-
-        if ( contextObject == null ) {
-          log.warn("Pending changes for a now deleted item.. nuke them!");
-          ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
+                innerInternalAggregateAndNotifyChanges(queueItems)
+            }
+            catch (Exception e) {
+                running = false
+                log.error("Problem", e)
+            }
+            finally {
+                running = false
+                this.running = false
+            }
         }
+    }
 
-        def pendingChanges = ChangeNotificationQueueItem.executeQuery("select c from ChangeNotificationQueueItem as c where c.oid = ? order by c.ts asc",[poidc]);
-        StringWriter sw = new StringWriter();
+    def innerInternalAggregateAndNotifyChanges(List<ChangeNotificationQueueItem> queueItems) throws Exception {
 
-        if ( contextObject ) {
-          if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
-              // pendingChange.message_1001
-            sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
-          }
-          else  {
-              // pendingChange.message_1002
-            sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
-          }
-        }
-        else {
-        }
-        def pc_delete_list = []
+        queueItems.each { poidc ->
+
+            def contr = 0
+            def contextObject = genericOIDService.resolveOID(poidc);
+            log.debug("Got contextObject ${contextObject} for poidc ${poidc}")
+
+            if ( contextObject == null ) {
+              log.warn("Pending changes for a now deleted item.. nuke them!");
+              ChangeNotificationQueueItem.executeUpdate("delete ChangeNotificationQueueItem c where c.oid = :oid", [oid:poidc])
+            }
+
+            List<ChangeNotificationQueueItem> pendingChanges = ChangeNotificationQueueItem.executeQuery(
+                    "select c from ChangeNotificationQueueItem as c where c.oid = ? order by c.ts asc", [poidc]
+            )
+            StringWriter sw = new StringWriter();
+
+            if ( contextObject ) {
+              if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
+                  // pendingChange.message_1001
+                sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
+              }
+              else  {
+                  // pendingChange.message_1002
+                sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
+              }
+            }
+
+            def pc_delete_list = []
+
+            log.debug("TODO: Processing ${pendingChanges.size()} notifications for object ${poidc}")
 
         pendingChanges.each { pc ->
           // log.debug("Process pending change ${pc}");    
@@ -114,13 +145,14 @@ class ChangeNotificationService {
           if(contr > 0 && contr % 100 == 0){
             log.debug("Processed ${contr} notifications for object ${poidc}")
           }
-          pc_delete_list.add(pc)
-        }
+          pc_delete_list.add(pc.id)
+
+        } // pendingChanges.each{}
+
         sw.write("</ul></p>");
 
         if ( contextObject != null ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getNotificationEndpoints') ) {
-            // log.debug("  -> looking at notification endpoints...");
             def announcement_content = sw.toString();
             // Does the objct have a zendesk URL, or any other comms URLs for that matter?
               // How do we decouple Same-As links? Only the object should know about what
@@ -145,26 +177,22 @@ class ChangeNotificationService {
               }
             }
           }
-          else {
-          }
         }
+
+
+            if (pc_delete_list) {
+                log.debug('Deleting ChangeNotificationQueueItems: ' + pc_delete_list)
+                ChangeNotificationQueueItem.executeUpdate('DELETE FROM ChangeNotificationQueueItem WHERE id in (:idList)', [idList: pc_delete_list])
+            }
 
         // log.debug("Delete reported changes...");
         // If we got this far, all is OK, delete any pending changes
-        pc_delete_list.each { pc ->
+        //pc_delete_list.each { pc ->
           // log.debug("Deleting reported change ${pc.id}");
-          pc.delete()
-        }
+          //pc.delete()
+        //}
         cleanUpGorm()
-      }
-    }
-    catch ( Exception e ) {
-      log.error("Problem",e);
-    }
-    finally {
-      // log.debug("aggregateAndNotifyChanges completed");
-    }
- 
+      } // queueItems.each{}
   }
 
     /**

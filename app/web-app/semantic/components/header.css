@@ -243,7 +243,7 @@ h5.ui.header .sub.header {
   visibility: hidden;
 }
 .ui.icon.header:first-child {
-  margin-top: 0em;
+  margin-top: 1rem;
 }
 .ui.icon.header .icon {
   float: none;

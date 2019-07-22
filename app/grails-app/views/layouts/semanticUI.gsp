@@ -138,20 +138,20 @@
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                         <div class="divider"></div>
                         <g:if test="${grailsApplication.config.featureSurvey}">
-                        <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                        <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                         </g:if>
                         <g:else>
-                            <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_ADM" controller="myInstitution" action="" message="menu.my.surveys" />
+                            <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_EDITOR" controller="myInstitution" action="" message="menu.my.surveys" />
                         </g:else>
                     </g:if>
 
                             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                 <g:if test="${grailsApplication.config.featureSurvey}">
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
                                 <g:else>
-                                <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_ADM" controller="myInstitution" action="" message="menu.my.surveys" />
+                                <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_EDITOR" controller="myInstitution" action="" message="menu.my.surveys" />
                                 </g:else>
 
                                 <div class="divider"></div>
@@ -159,7 +159,7 @@
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                                           action="manageMembers" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN"
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN"
                                                           action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
@@ -604,21 +604,21 @@
                 <div class="right menu la-advanced-view">
                     <div class="item">
                         <g:if test="${cachedContent}">
-                            <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <button class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
                                 <i class="hourglass end icon green"></i>
                             </button>
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
+                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                    <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                    <button class="ui icon toggle button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                                         <i class="pencil alternate icon"></i>
                                     </button>
                                 </g:if>
                                 <g:else>
-                                    <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <button class="ui icon toggle button active la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
@@ -656,12 +656,12 @@
                             <g:if test="${(params.mode)}">
                                 <div class="item">
                                     <g:if test="${params.mode=='advanced'}">
-                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
                                             <i class="icon plus square"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
                                             <i class="icon plus square green slash"></i>
                                         </div>
                                     </g:else>

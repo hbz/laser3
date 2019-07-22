@@ -102,3 +102,45 @@ data-confirm-term-how="cancel"
     update="${custom_props_div}" >
 </g:remoteLink>
 ```
+
+### Function 'deckSaver'
+
+#### Functions
+
+Improve usability at special views while toggle the hide/show button in upper right corner
+
+##### Show Bottons
+- build a clone fom icons in icon button
+- delete button style hidden
+- 'turn on' x-editable
+
+##### Hide Buttons:
+- delete clone
+- delete tooltip popup from the clone
+- set buttons on hidden - add button style hidden
+- 'turn off' x-editable
+
+#### How to invoke it
+
+1.) the outer HML Element (around the button) need the class <b>la-js-editmode-container</b>
+
+2.) Icon in the button need to have the class <b>la-js-editmode-icon</b>
+
+3.) the whole area affected from show/hide the buttons need to have the class <b>la-show-context-orgMenu</b>
+
+### Function 'tooltip'
+
+#### Functions
+
+1.) create a random talken like "<b>wcag_f735ng3k7</b>"
+- add this token as id to inner div in the tooltip popup
+- add this token to the button markup like "<b>aria-labelledby="wcag_f735ng3k7</b>"
+
+2.) Access via keys
+
+#### How to invoke it
+
+1.) Element (Button / Icon) need to have the css class <b>la-popup-tooltip</b>
+
+2.) Element (Button / Icon) need to have the data attribut <b>data-content="lorem ipsum"</b>
+

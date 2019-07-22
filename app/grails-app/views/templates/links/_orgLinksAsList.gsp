@@ -16,41 +16,36 @@
                     <g:if test="${editmode}">
                         <g:if test="${roleObject?.showUIShareButton()}">
                             <g:if test="${role?.isShared}">
-                                <div class="ui icon buttons">
-                                    <g:link class="ui mini icon button green la-selectable-button"
+                                <span class="la-js-editmode-container">
+                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay test"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
-                                            data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
+                                            data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="la-share icon"></i>
+                                        <i class="la-share icon la-js-editmode-icon"></i>
                                     </g:link>
-                                </div>
+                                </span>
                             </g:if>
                             <g:else>
-                                <div class="ui icon buttons">
-                                    <g:link class="ui mini icon button la-selectable-button"
+                                <span class="la-js-editmode-container">
+                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay test "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
+                                             data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
                                     >
-                                        <i class="la-share slash icon"></i>
+                                        <i class="la-share slash icon la-js-editmode-icon"></i>
                                     </g:link>
-                                </div>
+                                </span>
                             </g:else>
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
-                            <div class="ui icon negative buttons">
-                                <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                                    <i class="unlink icon"></i>
-                                </g:link>
-                            </div>
+                            <g:link class="ui negative icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                                <i class="unlink icon"></i>
+                            </g:link>
                         </g:if>
-
-                        <div class="ui icon buttons">
-                            <button class="ui button la-selectable-button" data-semui="modal" data-href="#${cssId}">
-                                        <i class="address plus icon"></i>
-                            </button>
-                        </div>
-
+                         <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
+                             <i class="address plus icon"></i>
+                         </button>
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,

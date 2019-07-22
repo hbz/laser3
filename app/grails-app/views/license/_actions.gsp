@@ -41,9 +41,14 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
 
-
+            <g:if test="${editable}">
                 <div class="divider"></div>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> Vertrag löschen</g:link>
+            </g:if>
+            <g:else>
+                <a class="item disabled" href="#"><i class="trash alternate icon"></i> Vertrag löschen</a>
+            </g:else>
+
         </g:if>
 
     </g:if>

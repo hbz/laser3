@@ -7737,7 +7737,7 @@ h5.ui.header .sub.header {
 }
 
 .ui.icon.header:first-child {
-  margin-top: 0em;
+  margin-top: 1rem;
 }
 
 .ui.icon.header .icon {
@@ -24617,7 +24617,7 @@ input#spotlightSearch[type="search"] {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 1rem 0em;
+  margin: 0em 0em 1rem;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   background: #FFFFFF;
   font-weight: normal;
@@ -29093,6 +29093,40 @@ Floated Menu / Item
 
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
+}
+
+.ui.table thead tr:first-child > th:last-child {
+  border-radius: 0;
+}
+
+.ui.table thead tr:first-child > th {
+  top: 90px;
+}
+
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
+  position: -webkit-sticky !important;
+  position: sticky!important;
+  z-index: 2;
+  background-color: #f4f8f9;
+}
+
+.ui.table.la-table-inCard tr th {
+  background-color: #f4f8f9;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+}
+
+.ui.table tr th {
+  color: gray;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
+
+.ui.table tr td,
+.ui.table tr th {
+  padding-left: .9rem;
+  padding-right: .9rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad

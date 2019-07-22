@@ -2,9 +2,9 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.ContextService
+import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
-import org.apache.commons.lang3.time.DateUtils
 import org.joda.time.*
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct
  * @author Ryan@k-int.com
  */
 @Transactional(readOnly = true)
-class ReminderService implements ApplicationContextAware{
+class ReminderService extends AbstractLockableService implements ApplicationContextAware{
 
     ApplicationContext applicationContext
     def mailService
@@ -190,53 +190,63 @@ select s from Subscription as s where
      * Method executed in NotificationJob!
      * @return
      */
-    def runReminders() {
-        def start_time = System.currentTimeMillis();
-        log.debug("Running reminder service... Started: ${start_time}")
-        if (mailService.disabled)
-        {
-            log.error("Unable to send reminders, mail service is disabled!")
-            return
-        }
+    boolean runReminders() {
+        if(! running) {
+            running = true
+            def start_time = System.currentTimeMillis();
+            log.debug("Running reminder service... Started: ${start_time}")
+            if (mailService.disabled)
+            {
+                log.error("Unable to send reminders, mail service is disabled!")
+                return
+            }
 
-        def usersReminders = getActiveEmailRemindersByUserID()
-        int userCounter    = usersReminders.size()
-        LocalDate today    = new LocalDate();
+            def usersReminders = getActiveEmailRemindersByUserID()
+            int userCounter    = usersReminders.size()
+            LocalDate today    = new LocalDate();
 
-        log.debug("Presently there is ${userCounter} Users with potentially 1..* reminders")
+            log.debug("Presently there is ${userCounter} Users with potentially 1..* reminders")
 
-        //Will be for the final stage... A Subscription instance as key
-        def masterSubscriptionList = [:]
+            //Will be for the final stage... A Subscription instance as key
+            def masterSubscriptionList = [:]
 
-        //Key = User ID Val = List of Reminders 1..* for that user!
-        //Go through each reminder a user has, lookup subscriptions accessible to user, compare each subscription to the date range 
-        usersReminders.each { k,v ->
-            def user = v.first().user
+            //Key = User ID Val = List of Reminders 1..* for that user!
+            //Go through each reminder a user has, lookup subscriptions accessible to user, compare each subscription to the date range
+            usersReminders.each { k,v ->
+                def user = v.first().user
 
-            //All possible subscriptions for this user
-            def availableSubs  = getAuthorisedSubsciptionsByUser(user)
+                //All possible subscriptions for this user
+                def availableSubs  = getAuthorisedSubsciptionsByUser(user)
 
-            log.debug("Lookup up ${v.size()}:Reminders for dates **  ${v.collect { [it.unit.value,it.amount] }}   ** \nSubscriptions for user ID:${k} (Username:${user.username}) total has ${availableSubs.size()} ")
+                log.debug("Lookup up ${v.size()}:Reminders for dates **  ${v.collect { [it.unit.value,it.amount] }}   ** \nSubscriptions for user ID:${k} (Username:${user.username}) total has ${availableSubs.size()} ")
 
-            //Iterate through available subscriptions (List would not have anything past 12 months of present date for server load purposes!)
-            //Organise master list i.e. [Subscription inst][['reminder':reminder inst1, 'user': user inst1],['reminder':reminder inst2, 'user': user inst2],etc]
-            availableSubs.each { sub ->
-                if (sub.manualRenewalDate != null) {
-                    def reminderAndUserInst = isSubInReminderRange(v, sub, today, user)
+                //Iterate through available subscriptions (List would not have anything past 12 months of present date for server load purposes!)
+                //Organise master list i.e. [Subscription inst][['reminder':reminder inst1, 'user': user inst1],['reminder':reminder inst2, 'user': user inst2],etc]
+                availableSubs.each { sub ->
+                    if (sub.manualRenewalDate != null) {
+                        def reminderAndUserInst = isSubInReminderRange(v, sub, today, user)
 
-                    if (reminderAndUserInst.isFound) {
-                        log.debug("Found Subscription: ${sub.name} for User: ${reminderAndUserInst.instance.user.username} Reminder: ${reminderAndUserInst.instance.reminder.id}")
-                        addToMasterList(masterSubscriptionList, sub, reminderAndUserInst.instance)
+                        if (reminderAndUserInst.isFound) {
+                            log.debug("Found Subscription: ${sub.name} for User: ${reminderAndUserInst.instance.user.username} Reminder: ${reminderAndUserInst.instance.reminder.id}")
+                            addToMasterList(masterSubscriptionList, sub, reminderAndUserInst.instance)
+                        }
                     }
                 }
             }
+
+            //Now a master list has been created (after going through each reminder for a user), need to process for email now!
+            processMasterList(masterSubscriptionList)
+
+            def end_time = System.currentTimeMillis() - start_time
+            log.debug("Finished time taken: ${end_time}")
+            running = false
+
+            return true
         }
-
-        //Now a master list has been created (after going through each reminder for a user), need to process for email now!
-        processMasterList(masterSubscriptionList)
-
-        def end_time = System.currentTimeMillis() - start_time
-        log.debug("Finished time taken: ${end_time}")
+        else {
+            log.warn("ReminderService already running, not starting again.")
+            return false
+        }
     }
 
     private void addToMasterList(LinkedHashMap masterSubscriptionList, Subscription sub, reminderAndUserInst) {

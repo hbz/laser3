@@ -163,8 +163,9 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
                     <td>
                         <g:if test="${participantSubscription}">
-                            <g:link controller="subscription" action="show"
-                                    id="${participantSubscription?.id}">${participantSubscription?.name}</g:link>
+                            <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]">
+                                ${participantSubscription?.name}
+                            </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
@@ -209,31 +210,31 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     <td class="center aligned">
                         <g:set var="finish" value="${surveyConfig.checkResultsFinishByOrg(institution)}"/>
                         <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
-                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                  data-tooltip="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
                                 <i class="circle green icon"></i>
                             </span>
                         </g:if>
                         <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
-                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                  data-tooltip="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
                                 <i class="circle yellow icon"></i>
                             </span>
                         </g:elseif>
                         <g:else>
-                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                  data-tooltip="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'surveyConfig.allResultsNotFinishByOrg')}">
                                 <i class="circle red icon"></i>
                             </span>
                         </g:else>
                     </td>
 
                     <td>
-
-                        <g:link action="surveyConfigsInfo" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig?.id]" class="ui icon button"><i
-                                class="tasks icon"></i></g:link>
-
+                        <span data-tooltip="${message(code: 'surveyConfig.editResult')}">
+                            <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui icon button">
+                                <i class="pencil icon"></i>
+                            </g:link>
+                        </span>
                     </td>
                 </tr>
             </g:if>
@@ -281,8 +282,8 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                 ${surveyConfig?.surveyProperty?.getI10n('name')}
 
                                 <g:if test="${surveyConfig?.surveyProperty?.getI10n('explain')}">
-                                    <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                          data-tooltip="${surveyConfig?.surveyProperty?.getI10n('explain')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${surveyConfig?.surveyProperty?.getI10n('explain')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>

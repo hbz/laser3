@@ -3624,7 +3624,10 @@ AND EXISTS (
 
         result.surveyResults = surveyResults.groupBy {it?.surveyConfig?.id}
 
-        result.ownerId = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)[0].owner?.id
+        def tmpList = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs)
+        if (tmpList) {
+            result.ownerId = tmpList[0].owner?.id
+        }
 
         if ( params.exportXLS ) {
             def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
@@ -3749,9 +3752,9 @@ AND EXISTS (
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_INST", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         def result = [:]
@@ -3765,25 +3768,12 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
-        def allResultHaveValue = true
-        surveyResults.each {
-            def value = null
-            if (it?.type?.type == Integer.toString()) {
-                value = it.intValue.toString()
-            } else if (it?.type?.type == String.toString()) {
-                value = it.stringValue ?: ''
-            } else if (it?.type?.type == BigDecimal.toString()) {
-                value = it.decValue.toString()
-            } else if (it?.type?.type == Date.toString()) {
-                value = it.dateValue.toString()
-            } else if (it?.type?.type == RefdataValue.toString()) {
-                value = it.refValue?.getI10n('value') ?: ''
-            }
-
-
-
+        boolean allResultHaveValue = true
+        surveyResults.each { surre ->
+            if(!surre.getFinish())
+                allResultHaveValue = false
         }
         if(allResultHaveValue) {
             surveyResults.each {
@@ -3878,10 +3868,10 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        result.visiblePersons = addressbookService.getVisiblePersons("addressbook",result.max,result.offset,params)
+        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3891,7 +3881,8 @@ AND EXISTS (
                         tenant: contextService.getOrg() // private properties
                 )
 
-        result.num_visiblePersons = result.visiblePersons.size()
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
         result
       }
@@ -3902,11 +3893,11 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP() as Integer
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        params.org = result.institution.name
-        result.visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",result.max,result.offset,params)
+        params.org = result.institution
+        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3916,7 +3907,8 @@ AND EXISTS (
                         tenant: result.institution // private properties
                 )
 
-        result.num_visiblePersons = result.visiblePersons.size()
+        result.num_visiblePersons = visiblePersons.size()
+        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
         result
       }
@@ -4028,11 +4020,11 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.comboType == 'Consortium'
+            result.comboType = 'Consortium'
             params.orgType   = RDStore.OT_INSTITUTION.id?.toString()
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            result.comboType == 'Department'
+            result.comboType = 'Department'
             params.orgType   = RDStore.OT_DEPARTMENT.id?.toString()
         }
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id?.toString()
@@ -4068,15 +4060,15 @@ AND EXISTS (
 
         SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notimenopoint'))
 
-        def message
+        def tableHeader
         if(result.comboType == 'Consortium')
-            message = message(code: 'menu.public.all_orgs')
+            tableHeader = message(code: 'menu.public.all_orgs')
         else if(result.comboType == 'Department')
-            message = message(code: 'menu.my.departments')
-        String filename = message+"_"+sdf.format(new Date(System.currentTimeMillis()))
+            tableHeader = message(code: 'menu.my.departments')
+        String filename = tableHeader+"_"+sdf.format(new Date(System.currentTimeMillis()))
         if ( params.exportXLS ) {
             List orgs = (List) result.availableOrgs
-            SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, message, true,'xls')
+            SXSSFWorkbook workbook = (SXSSFWorkbook) organisationService.exportOrg(orgs, tableHeader, true,'xls')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -4095,7 +4087,7 @@ AND EXISTS (
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
                     }
                     out.close()
                 }

@@ -13,8 +13,10 @@
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
 
+<br />
+
 <g:each in="${quartz}" var="groupKey, group">
-    <h3 class="ui header">${groupKey}</h3>
+    <%--<h3 class="ui header">${groupKey}</h3>--%>
 
     <table class="ui celled la-table la-table-small table">
         <thead>
@@ -22,6 +24,7 @@
                 <th>Job</th>
                 <th>Config</th>
                 <th>s  m  h  DoM  M  DoW  Y</th>
+                <th>Status</th>
                 <th>Nächste Ausführung</th>
             </tr>
         </thead>
@@ -44,12 +47,25 @@
                     <td>
                         <code>${job.cronEx}</code>
                     </td>
+                    <td style="text-align:center">
+                        <g:if test="${job.running}">
+                            <i class="ui icon circle green"></i>
+                        </g:if>
+                        <g:elseif test="${job.available}">
+                            <i class="ui icon circle yellow"></i>
+                        </g:elseif>
+                        <g:else>
+                           <%-- <i class="ui icon circle outline lightgrey"></i> --%>
+                        </g:else>
+                    </td>
                     <td>
                         <%
                             boolean isActive = true
-                            job.configFlags.split(',').each { flag ->
-                                flag = flag.trim()
-                                isActive = isActive && (currentConfig.get(flag) && currentConfig.get(flag) != false)
+
+                            if (job.configFlags) {
+                                job.configFlags.split(',').each { flag ->
+                                    isActive = isActive && (currentConfig.get(flag) && ! (currentConfig.get(flag) in [null, false]))
+                                }
                             }
                         %>
                         <g:if test="${isActive}">
@@ -65,6 +81,16 @@
         </tbody>
     </table>
 </g:each>
+
+<br />
+<br />
+
+    <%-- TODO: implement ajax calls --%>
+    <script>
+        setTimeout(function() {
+            window.document.location.reload();
+        }, (30 * 1000)); // refresh ~ 30 Seconds
+    </script>
 
 </body>
 </html>
