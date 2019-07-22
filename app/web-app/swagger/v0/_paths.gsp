@@ -302,7 +302,7 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /oa2020:
+  /oaManager:
 
     get:
       tags:
@@ -330,7 +330,7 @@
           $ref: "#/components/responses/forbidden"
 
 
-  /oa2020List:
+  /oaManagerList:
 
     get:
       tags:

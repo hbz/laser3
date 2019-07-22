@@ -14,7 +14,7 @@ import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
-class ApiOA2020 {
+class ApiOAManager {
 
     static boolean calculateAccess(Org result, Org context, boolean hasAccess) {
 
@@ -107,8 +107,7 @@ class ApiOA2020 {
             //        org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
             //) // com.k_int.kbplus.PersonRole
 
-            //result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
-
+            result.properties    = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = retrieveSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)

@@ -28,6 +28,7 @@ class ControlledListService {
     def contextService
     def genericOIDService
     def messageSource
+    def accessService
 
     /**
      * Retrieves a list of providers
@@ -74,8 +75,8 @@ class ControlledListService {
     Map getSubscriptions(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
-        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
+        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
@@ -97,6 +98,10 @@ class ControlledListService {
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
+        }
+        if(params.localOnly) {
+            if(!accessService.checkPerm("ORG_CONSORTIUM"))
+                filter.orgRoles = [RDStore.OR_SUBSCRIBER]
         }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
         subscriptions.each { row ->
