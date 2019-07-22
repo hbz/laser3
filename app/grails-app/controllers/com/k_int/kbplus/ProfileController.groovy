@@ -175,7 +175,6 @@ class ProfileController {
 
     flash.message = ""
     flash.error = ""
-//    changeValue(user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD),                      params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
 
     changeValue(user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
@@ -229,8 +228,7 @@ class ProfileController {
                 flash.message += (message(code: messageSuccessfull) + "<br/>")
             }
         } else {
-            if (//DASHBOARD_REMINDER_PERIOD == userSetting.key ||
-                    REMIND_PERIOD_FOR_TASKS == userSetting.key ||
+            if (    REMIND_PERIOD_FOR_TASKS == userSetting.key ||
                     REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD == userSetting.key ||
                     REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP == userSetting.key ||
                     REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP == userSetting.key ||

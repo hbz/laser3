@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <%@ page import="static de.laser.helper.RDStore.*" %>
-<%@ page import="static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD" %>
+<%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
+<%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -140,6 +141,7 @@
 
 
                 <table class="ui celled la-table table">
+                    <g:set var="defaultRemindPeriod" value="${UserSettings.DEFAULT_REMINDER_PERIOD}" />
                     <thead>
                         <tr>
                             <th></th>
@@ -157,7 +159,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.noticePeriod')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionNoticeperiod" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionNoticeperiod" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -170,7 +172,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.enddate')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionEnddate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionEnddate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -182,7 +184,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -194,7 +196,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.subscriptions.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -206,7 +208,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.license.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -218,7 +220,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.license.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -230,7 +232,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.person.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -242,7 +244,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.org.customProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -254,7 +256,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.org.privateProperty')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                         <tr>
@@ -266,7 +268,7 @@
                             </td>
                             <td>${message(code: 'profile.reminder.for.tasks')}</td>
                             <td>
-                                <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, DEFAULT_REMINDER_PERIOD)?.strValue}"/>
+                                <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
                     </tbody>
