@@ -292,13 +292,13 @@ class ApiReaderHelper {
         result
     }
 
-    @Deprecated
-    static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {  // TODO
+    // TODO: oaManager
+    static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {
         def result = []
 
         list?.each { it ->               // com.k_int.kbplus.CostItem
             def tmp                     = [:]
-            tmp.id                      = it.id
+            //tmp.id                      = it.id
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
             tmp.costDescription         = it.costDescription
@@ -319,6 +319,7 @@ class ApiReaderHelper {
             tmp.taxCode             = it.taxCode?.value
 
             // References
+            /*
             def context = null // TODO: use context
             tmp.invoice             = retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
             tmp.issueEntitlement    = retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
@@ -326,13 +327,11 @@ class ApiReaderHelper {
             tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
             tmp.package             = retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-            result << tmp
+            */
+
+            result << ApiToolkit.cleanUp(tmp, true, false)
         }
 
-        /*
-        User lastUpdatedBy
-        User createdBy
-        */
         result
     }
 

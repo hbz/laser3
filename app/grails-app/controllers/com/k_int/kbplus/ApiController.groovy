@@ -349,15 +349,15 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         def result
         boolean hasAccess = false
-        def apiManager = ApiManager
+        long startTimeMillis = System.currentTimeMillis()
 
         String obj     = params.get('obj')
         String query   = params.get('q')
         String value   = params.get('v', '')
         String context = params.get('context')
-        def format
+        String format
 
-        Org contextOrg = null
+        Org contextOrg = null // TODO refactoring
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
 
         if (apiOrg) {
@@ -373,7 +373,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
 
-            // getting context or fallback
+            // getting context (fallback)
             if (params.get('context')) {
                 contextOrg = Org.findWhere(globalUID: params.get('context'))
             }
@@ -414,7 +414,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = apiManager.read((String) obj, (String) query, (String) value, (Org) contextOrg, format)
+                    result = ApiManager.read((String) obj, (String) query, (String) value, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         response.contentType = result.mimeType
@@ -439,24 +439,27 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = apiManager.write((String) obj, data, (User) user, (Org) contextOrg)
+                    result = ApiManager.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
-        def responseStruct = apiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
+        def responseStruct = ApiManager.buildResponse(request, obj, query, value, context, contextOrg, result)
 
         def responseJson = responseStruct[0]
         def responseCode = responseStruct[1]
 
+        String responseTime = ((System.currentTimeMillis() - startTimeMillis) / 1000).toString()
+
         response.setContentType(Constants.MIME_APPLICATION_JSON)
         response.setCharacterEncoding(Constants.UTF8)
         response.setHeader("Debug-Result-Length", responseJson.toString().length().toString())
+        response.setHeader("Debug-Result-Time", responseTime)
         response.setStatus(responseCode)
 
-        log.debug("API Call: Response Code : " + responseCode)
+        log.debug("API Call (Response Code : ${responseCode}, Response Time: ${responseTime}")
 
         render responseJson.toString(true)
     }

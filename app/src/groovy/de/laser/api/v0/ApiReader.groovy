@@ -321,7 +321,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return Map<String, Object>
      */
-    static Map<String, Object> retrieveSubscriptionMap(Subscription sub, Org context){
+    static Map<String, Object> retrieveSubscriptionMap(Subscription sub, def ignoreRelation, Org context){
         def result = [:]
 
         sub = GrailsHibernateUtil.unwrapIfProxy(sub)
@@ -392,7 +392,9 @@ class ApiReader {
                 sub.prsLinks,  true, true, context
         ) // com.k_int.kbplus.PersonRole
         */
-        // result.costItems    = exportHelperService.resolveCostItems(sub.costItems) // com.k_int.kbplus.CostItem
+
+        // TODO: oaManager
+        result.costItems    = ApiReaderHelper.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
 
         return ApiToolkit.cleanUp(result, true, true)
     }
