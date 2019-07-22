@@ -3779,13 +3779,14 @@ AND EXISTS (
 
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
-            if(!surre.getFinish())
+            SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
+            if(!surre.getFinish() && !surorg.checkPerennialTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {
             surveyResults.each {
                 it.finishDate = new Date()
-                it.save(flush: true)
+                it.save()
             }
             // flash.message = message(code: "surveyResult.finish.info")
         }else {
