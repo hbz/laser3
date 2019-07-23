@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.interfaces.TemplateSupport
+import static de.laser.interfaces.TemplateSupport.*
 import grails.transaction.Transactional
 
 import java.util.regex.Matcher
@@ -93,7 +93,9 @@ class FinanceService {
             that is: a) owner = contextOrg and sub = contextSub
             b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
          */
-            case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+            case CALCULATED_TYPE_CONSORTIAL:
+            case CALCULATED_TYPE_ADMINISTRATIVE:
+            case CALCULATED_TYPE_COLLECTIVE:
                 String consSort
                 if(params.consSort)
                     consSort = " order by ${params.sort} ${params.order}"
@@ -117,9 +119,9 @@ class FinanceService {
             that is: a) owner = contextOrg and sub = contextSub
             b) owner = consortium and sub = contextSub and visibleForSubscriber
          */
-            case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+            case CALCULATED_TYPE_PARTICIPATION:
                 String visibility = ""
-                if(sub.getConsortia().id != org.id) {
+                if(!(org.id in [sub.getConsortia()?.id,sub.getCollective()?.id])) {
                     visibility = " and ci.isVisibleForSubscriber = true"
                 }
                 String subscrSort
@@ -127,7 +129,7 @@ class FinanceService {
                     subscrSort = " order by ${params.sort} ${params.order}"
                 else
                     subscrSort = ""
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia(),sub.getCollective()],sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -189,11 +191,11 @@ class FinanceService {
         }
         //get own costs
         List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles ' +
-                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType = :consType and sub.instanceOf = null and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,consType:OR_SUBSCRIPTION_CONSORTIA,deleted:SUBSCRIPTION_DELETED]+filterQueryOwn[1])
+                'where ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :consType and sub.instanceOf = null and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
+                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE]]+filterQueryOwn[1])
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
-                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
-                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS],deleted:SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
+                'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and ci.surveyOrg = null'+filterQueryOwn[0]+ownSort,
+                [org:org,nonConsTypes:[OR_SUBSCRIBER,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+filterQueryOwn[1]))
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null and ci.surveyOrg is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
         long limit = ownOffset+max
@@ -219,9 +221,9 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations roleMC ' +
                 'join sub.orgRelations orgRoles ' +
-                'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and orgRoles.roleType in (:subscrType) and subC.status != :statusC and sub.status != :statusM and ci.surveyOrg = null' +
+                'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
                 filterQueryCons[0] + consSort,
-                [org:org,consortialType:OR_SUBSCRIPTION_CONSORTIA,subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN],statusC:SUBSCRIPTION_DELETED,statusM:SUBSCRIPTION_DELETED]+filterQueryCons[1])
+                [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN,OR_SUBSCRIBER_COLLECTIVE]]+filterQueryCons[1])
         result.cons.costItems = []
         limit = consOffset+max
         if(limit > consortialSubscriptionCostItems.size())
@@ -246,9 +248,9 @@ class FinanceService {
                 'join subC.orgRelations roleC ' +
                 'join sub.orgRelations orgRoles ' +
                 'join ci.owner orgC ' +
-                'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null'+
+                'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true and ci.surveyOrg = null'+
                 filterQuerySubscr[0] + subscrSort,
-                [org:org,consType:OR_SUBSCRIPTION_CONSORTIA,subscrType:OR_SUBSCRIBER_CONS]+filterQuerySubscr[1])
+                [org:org,consType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE]]+filterQuerySubscr[1])
         result.subscr.costItems = []
         limit = subscrOffset+max
         if(limit > consortialMemberSubscriptionCostItems.size())
@@ -755,7 +757,7 @@ class FinanceService {
                             mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
                         else if(titleMatches.size() == 1) {
                             TitleInstance tiMatch = titleMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance and ie.status != :deleted',[subscription:subscription,titleInstance:tiMatch,deleted:TIPP_STATUS_DELETED])
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance',[subscription:subscription,titleInstance:tiMatch])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)

@@ -42,7 +42,7 @@
 
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
         <g:render template="message" />
     </g:if>
 
@@ -115,7 +115,7 @@
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
