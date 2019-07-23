@@ -102,23 +102,7 @@
         <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showView.equals("consAtSubscr")}">
-            <div class="ui negative message">
-                <div class="header">
-                    <g:message code="myinst.message.attention" />:
-                    <g:message code="myinst.subscriptionDetails.message.ChildView" />
-                    <span class="ui label">${subscription.getAllSubscribers().collect{itOrg -> itOrg.getDesignation()}.join(',')}</span>.
-                </div>
-                <p>
-                    <g:message code="myinst.subscriptionDetails.message.hereLink" />
-                    <g:link controller="subscription" action="members" id="${subscription.instanceOf.id}">
-                        <g:message code="myinst.subscriptionDetails.message.backToMembers" />
-                    </g:link>
-                    <g:message code="myinst.subscriptionDetails.message.and" />
-                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}">
-                        <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
-                    </g:link>.
-                </p>
-            </div>
+            <g:render template="../subscription/message" model="${[subscriptionInstance: subscription]}"/>
         </g:if>
 
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />

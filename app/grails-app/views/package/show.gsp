@@ -212,35 +212,36 @@
 
 
         <aside class="four wide column la-sidekick">
+            <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                <semui:card message="package.show.addToSub" class="notes">
+                    <div class="content">
+                        <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
 
-            <semui:card message="package.show.addToSub" class="notes">
-                <div class="content">
-                <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
+                            <g:form controller="package" action="addToSub" id="${packageInstance.id}" class="ui form">
 
-                    <g:form controller="package" action="addToSub" id="${packageInstance.id}" class="ui form">
+                                <select class="ui dropdown" name="subid">
+                                    <g:each in="${subscriptionList}" var="s">
+                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.org)}</option>
+                                    </g:each>
+                                </select>
 
-                        <select class="ui dropdown" name="subid">
-                            <g:each in="${subscriptionList}" var="s">
-                                <option value="${s.id}">${s.dropdownNamingConvention(contextService.org)}</option>
-                            </g:each>
-                        </select>
+                                <br/>
+                                <br/>
+                                <div class="ui checkbox">
+                                    <label>${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}</label>
+                                    <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
+                                </div>
 
-                        <br/>
-                        <br/>
-                        <div class="ui checkbox">
-                            <label>${message(code:'package.show.addEnt', default:'Create Entitlements in Subscription')}</label>
-                            <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
-                        </div>
+                                <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
 
-                        <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
-
-                    </g:form>
-                </g:if>
-                <g:else>
-                  ${message(code: 'package.show.no_subs')}
-                </g:else>
-                </div>
-            </semui:card>
+                            </g:form>
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'package.show.no_subs')}
+                        </g:else>
+                    </div>
+                </semui:card>
+            </g:if>
 
             <g:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
 

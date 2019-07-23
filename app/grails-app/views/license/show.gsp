@@ -187,7 +187,7 @@
                                                         <input type="hidden" name="subscription">
                                                         <i class="dropdown icon"></i>
                                                         <input type="text" class="search">
-                                                        <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
+                                                        <div class="default text">${message(code:'subscription')}</div>
                                                     </div>
                                                 </div>
                                                 <div class="field">
