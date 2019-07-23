@@ -5,7 +5,7 @@ import de.laser.quartz.AbstractJob
 
 class AdminJob extends AbstractJob {
     def grailsApplication
-    def AdminReminderService
+    def adminReminderService
 
     static triggers = {
         // Delay 20 seconds, run every 10 mins.
@@ -25,17 +25,39 @@ class AdminJob extends AbstractJob {
 
     static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
 
-    def execute() {
-        log.debug("Execute::AdminJob");
-        if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {
-            log.debug("This server is marked as hbz master");
-            SystemEvent.createEvent('ADM_JOB_START')
+    boolean isAvailable() {
+        !jobIsRunning && !adminReminderService.running
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
-            AdminReminderService.AdminReminder();
+    def execute() {
+        if (! isAvailable()) {
+            return false
         }
-        else {
-            log.debug("This server is NOT marked as hbz master. NOT Running AdminJob batch job");
+        jobIsRunning = true
+
+        try {
+            log.debug("Execute::AdminJob")
+
+            if (grailsApplication.config.hbzMaster == true && grailsApplication.config.AdminReminderJobActiv == true) {
+                log.debug("This server is marked as hbzMaster");
+                SystemEvent.createEvent('ADM_JOB_START')
+
+                if (! adminReminderService.adminReminder()) {
+                    log.warn( 'Failed. Maybe ignored due blocked adminReminderService')
+                }
+            }
+            else {
+                log.debug("This server is NOT marked as hbzMaster. NOT Running AdminJob batch job")
+            }
         }
+        catch (Exception e) {
+            log.error(e)
+        }
+
+        jobIsRunning = false
     }
 }
 

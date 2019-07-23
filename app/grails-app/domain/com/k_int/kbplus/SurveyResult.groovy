@@ -61,7 +61,7 @@ class SurveyResult extends AbstractProperty {
 
     }
 
-    def boolean getFinish()
+    boolean getFinish()
     {
         if(type?.type == Integer.toString())
         {

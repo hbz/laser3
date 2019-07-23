@@ -25,6 +25,7 @@ ${message(code: 'survey.label')} -
 </h1>
 
 <g:if test="${navigation}">
+    <%--
     <br>
 
     <div class="ui center aligned grid">
@@ -54,11 +55,15 @@ ${message(code: 'survey.label')} -
             </g:else>
         </div>
     </div>
+    --%>
 </g:if>
 
 <br>
 
 <semui:messages data="${flash}"/>
+
+
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
 
 <br>
 
@@ -247,14 +252,14 @@ ${message(code: 'survey.label')} -
                             </g:if>
 
                             <button id="subscription-properties-toggle"
-                                    class="ui button la-js-dont-hide-button">Lizenzsmerkmale anzeigen</button>
+                                    class="ui button la-js-dont-hide-button">Lizenzmerkmale anzeigen</button>
                             <script>
                                 $('#subscription-properties-toggle').on('click', function () {
                                     $('#subscription-properties').toggleClass('hidden')
                                     if ($('#subscription-properties').hasClass('hidden')) {
-                                        $(this).text('Lizenzsmerkmale anzeigen')
+                                        $(this).text('Lizenzmerkmale anzeigen')
                                     } else {
-                                        $(this).text('Lizenzsmerkmale ausblenden')
+                                        $(this).text('Lizenzmerkmale ausblenden')
                                     }
                                 })
                             </script>
@@ -352,6 +357,14 @@ ${message(code: 'survey.label')} -
                                    it?.costItemElement?.id == costItem?.costItemElement?.id
                                }}"/>
 
+                        <%
+                            // ERMS-1521 HOTFIX
+                            if (! costItemsSub) {
+                                costItemsSub = subscriptionInstance?.costItems.findAll{
+                                    it.costItemElement?.id == RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement')?.id
+                                }
+                            }
+                        %>
 
                         <table class="ui celled la-table-small la-table-inCard table">
                             <thead>
@@ -451,8 +464,8 @@ ${message(code: 'survey.label')} -
                     ${surveyResult?.type?.getI10n('name')}
 
                     <g:if test="${surveyResult?.type?.getI10n('explain')}">
-                        <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                              data-tooltip="${surveyResult?.type?.getI10n('explain')}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${surveyResult?.type?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
                     </g:if>
@@ -512,7 +525,9 @@ ${message(code: 'survey.label')} -
 
 </semui:form>
 
-</div>
+<br />
+<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+
 
 </body>
 </html>

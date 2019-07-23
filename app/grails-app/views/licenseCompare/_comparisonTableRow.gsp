@@ -79,7 +79,7 @@
                         %>
                         ${value}
                         <g:if test="${propValue?.paragraph}">
-                            <div class="ui circular huge label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div><br>
+                            <div class="ui circular huge label la-long-tooltip la-popup-tooltip la-delay" data-content="${propValue?.paragraph}">§</div><br>
                         </g:if>
                     </g:each>
                 </td>

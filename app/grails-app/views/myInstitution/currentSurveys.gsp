@@ -160,15 +160,15 @@
 
                     <g:if test="${surveyResults}">
                         <g:if test="${surveyResults?.finishDate?.contains(null)}">
-                            <%--<span class="la-long-tooltip" data-position="top right" data-variation="tiny"
-                                  data-tooltip="Nicht abgeschlossen">
+                            <%--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="Nicht abgeschlossen">
                                 <i class="circle red icon"></i>
                             </span>--%>
                         </g:if>
                         <g:else>
 
-                            <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
-                                  data-tooltip="${message(code: 'surveyResult.finish.info')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code: 'surveyResult.finish.info')}">
                                 <i class="check big green icon"></i>
                             </span>
                         </g:else>
@@ -178,9 +178,11 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button"><i
-                                class="write icon"></i></g:link>
-
+                        <span data-tooltip="${message(code:'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button">
+                                <i class="write icon"></i>
+                            </g:link>
+                        </span>
                     </g:if>
                 </td>
             </tr>

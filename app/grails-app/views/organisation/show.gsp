@@ -250,8 +250,8 @@ ${orgInstance.name}
                         <dl>
                             <dt>
                                 <g:message code="org.libraryType.label" default="Library Type"/>
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'org.libraryType.expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.libraryType.expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </dt>
@@ -263,8 +263,8 @@ ${orgInstance.name}
                         <dl>
                             <dt>
                                 <g:message code="org.libraryNetwork.label" default="Library Network"/>
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'org.libraryNetwork.expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </dt>
@@ -276,8 +276,8 @@ ${orgInstance.name}
                         <dl>
                             <dt>
                                 <g:message code="org.funderType.label" default="Funder Type"/>
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'org.funderType.expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.funderType.expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </dt>
@@ -288,8 +288,8 @@ ${orgInstance.name}
                         <dl>
                             <dt>
                                 <g:message code="org.federalState.label" default="Federal State"/>
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'org.federalState.expl')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.federalState.expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </dt>
@@ -302,8 +302,8 @@ ${orgInstance.name}
                     <dl>
                         <dt>
                             <g:message code="org.country.label" default="Country"/>
-                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                  data-tooltip="${message(code: 'org.country.expl')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: 'org.country.expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </dt>
@@ -344,8 +344,8 @@ ${orgInstance.name}
                         <dl>
                             <dt><g:message code="org.addresses.label" default="Addresses"/>
 
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'adressFormModal.info')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'adressFormModal.info')}">
                                     <i class="question circle icon"></i>
                                 </span>
 
@@ -435,8 +435,8 @@ ${orgInstance.name}
                         <dl>
                             <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen"/>
 
-                                <span class="la-long-tooltip" data-position="right center" data-variation="tiny"
-                                      data-tooltip="${message(code: 'personFormModal.info')}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'personFormModal.info')}">
                                     <i class="question circle icon"></i>
                                 </span>
 

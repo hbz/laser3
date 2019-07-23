@@ -78,7 +78,7 @@
         Supported are queries by following identifiers: *uuid*
 
       parameters:
-        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/q_withoutDefault"
         - $ref: "#/components/parameters/v"
         - $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"

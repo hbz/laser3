@@ -657,32 +657,10 @@ deckSaver = {
         icon: $(".la-js-editmode-icon")
 
     },
-    initializePopup: function(obj) {
-
-        $(obj).popup({
-            hoverable: true,
-            inline     : true,
-            lastResort: true,
-            delay: {
-                show: 300,
-                hide: 500
-            },
-            onShow: function() {
-                // generate a random ID
-                var id =  'wcag_' + Math.random().toString(36).substr(2, 9);
-                // add aria-label to container-span
-                $(this).prev(tooltip.configs.tooltipTrigger).attr('aria-labelledby',id);
-                //add role=tooltip and the generated ID to the tooltip-div (generated from semantic)
-                $(this).children('.content').attr({role:'tooltip',id:id});
-            },
-        });
-
-    },
     removeClone: function () {
         $('.la-clone').remove();
     },
     removePopupFromClone:  function () {
-
         var clone = $('.la-clone');
         var clonePopup = $(clone).popup('get popup');
         $(clonePopup).each(function(){
@@ -703,8 +681,8 @@ deckSaver = {
 
     },
     toggleEditableElements: function (){
-
         if (deckSaver.configs.editMode) {
+
             // ***************************
             // show Contoll Elements
             // ***************************
@@ -718,8 +696,9 @@ deckSaver = {
             $(deckSaver.configs.areaThatIsAffected).find('.button').removeClass('hidden');
 
 
-            $(deckSaver.configs.toggleButton).removeAttr("data-tooltip","Hide Buttons");
-            $(deckSaver.configs.toggleButton).attr("data-tooltip","Show Buttons");
+            $(deckSaver.configs.toggleButton).removeAttr("data-content","${message(code:'statusbar.hideButtons.tooltip')}");
+            $(deckSaver.configs.toggleButton).attr("data-content", "${message(code:'statusbar.showButtons.tooltip')}");
+            tooltip.initializePopup(deckSaver.configs.toggleButton);
             $(deckSaver.configs.toggleIcon ).removeClass( "slash" );
             $(deckSaver.configs.toggleButton).addClass('active');
 
@@ -729,13 +708,13 @@ deckSaver = {
             deckSaver.enableXeditable ('.xEditableDatepicker');
             deckSaver.enableXeditable ('.xEditableManyToOne');
 
-            $('.la-action-info').text('<g:message code="default.actions"  />')
-
+            $('.la-action-info').css('text-align', 'left').text('<g:message code="default.actions"  />')
         }
         else {
             // ***************************
             // hide Contoll Elements
             // ***************************
+            deckSaver.configs.icon = $(".la-js-editmode-icon");
             $(deckSaver.configs.icon).each(function(){
                 var container = $(this).closest('.la-js-editmode-container');
                 var button = $(this).closest('.button');
@@ -747,7 +726,7 @@ deckSaver = {
                 var dataContent = button.attr( "data-content" );
 
                 $(clone).attr('data-content', dataContent);
-                deckSaver.initializePopup(clone);
+                tooltip.initializePopup(clone);
             });
 
             $('.card').not('.ui.modal .card').removeClass('hidden');
@@ -756,9 +735,12 @@ deckSaver = {
             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
             $(deckSaver.configs.areaThatIsAffected).not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
 
-            //$('.button').not('.la-js-dont-hide-button').addClass('hidden');
-            $(deckSaver.configs.toggleButton).removeAttr();
-            $(deckSaver.configs.toggleButton).attr("data-tooltip","Hide Buttons");
+            $(deckSaver.configs.toggleButton).removeAttr("data-content", "${message(code:'statusbar.showButtons.tooltip')}");
+            $(deckSaver.configs.toggleButton).attr("data-content","${message(code:'statusbar.hideButtons.tooltip')}");
+            tooltip.initializePopup(deckSaver.configs.toggleButton);
+
+
+
             $(deckSaver.configs.toggleIcon ).addClass( "slash" );
             $(deckSaver.configs.toggleButton).removeClass('active');
 
@@ -768,20 +750,22 @@ deckSaver = {
             deckSaver.diableXeditable ('.xEditableDatepicker');
             deckSaver.diableXeditable ('.xEditableManyToOne');
 
-            $('.la-action-info').text('<g:message code="default.informations"  />')
+            $('.la-action-info').css('text-align', 'right').text('<g:message code="default.informations"  />')
         }
     }
 }
 tooltip = {
     configs : {
-        tooltipTrigger: $('.la-popup-tooltip'),
-
+        tooltipTrigger: $('.la-popup-tooltip')
     },
     go : function() {
+        tooltip.configs.tooltipTrigger =  $('.la-popup-tooltip');
         tooltip.initializePopup(tooltip.configs.tooltipTrigger);
         tooltip.acccessViaKeys();
     },
     initializePopup: function(obj) {
+
+        $('.ui.toggle.button').next('.ui.popup').remove();
         $(obj).popup({
             hoverable: true,
             inline     : true,
@@ -858,6 +842,8 @@ bb8 = {
                 //console.log('done')
                 $(update).empty()
                 $(update).html(data)
+                tooltip.go();
+
                 if (done) {
                     eval(done)
                 }

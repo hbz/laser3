@@ -15,10 +15,23 @@ class BatchImpIdJob extends AbstractJob {
 
     static configFlags = []
 
-  def execute() {
-    log.debug("BatchImpIdJob::execute()");
+    boolean isAvailable() {
+        !jobIsRunning // no service needed
+    }
+    boolean isRunning() {
+        jobIsRunning
+    }
 
-      SystemEvent.createEvent('BATCH_IMP_JOB_START')
+    def execute() {
+        if (! isAvailable()) {
+            return false
+        }
+
+        jobIsRunning = true
+        SystemEvent.createEvent('BATCH_IMP_JOB_START')
+
+        log.debug("BatchImpIdJob::execute()");
+
 
     def event = "BatchImpIdJob"
     def startTime = printStart(event)
@@ -36,7 +49,7 @@ class BatchImpIdJob extends AbstractJob {
            while (scroll_res.next()) {
               def obj = scroll_res.get(0)
               if(updateObject(obj)){
-                counter ++ 
+                counter ++
               }
               if(counter == 500){
                 cleanUpGorm(session)
@@ -46,40 +59,42 @@ class BatchImpIdJob extends AbstractJob {
            cleanUpGorm(session)
         }
 
-      }catch( Exception e ) {log.error(e)}
-      finally{
+      }
+      catch( Exception e ) {
+          log.error(e)
+      }
+      finally {
         if(currentClass.hasProperty('auditable')) currentClass.auditable = auditable_store?:true ;
       }
-      
+
     }
     printDuration(startTime,event)
+
+        jobIsRunning = false
   }
 
-  def cleanUpGorm(session) {
+    private def cleanUpGorm(session) {
     session.flush()
     session.clear()
   }
 
-  def updateObject(obj){
+    private def updateObject(obj){
     if(obj.impId) return null;
     obj.impId = java.util.UUID.randomUUID().toString();
     obj.save()
   }
-  
-   def printStart(event){
+
+    private def printStart(event){
        def starttime = new Date();
        log.debug("******* Start ${event}: ${starttime} *******")
        return starttime
    }
 
-  def printDuration(starttime, event){
-    use(groovy.time.TimeCategory) {
+    private def printDuration(starttime, event){
+      use(groovy.time.TimeCategory) {
       def duration = new Date() - starttime
       log.debug("******* End ${event}: ${new Date()} *******")
       log.debug("Duration: ${(duration.hours*60)+duration.minutes}m ${duration.seconds}s")
     }
   }
-
-
-
 }

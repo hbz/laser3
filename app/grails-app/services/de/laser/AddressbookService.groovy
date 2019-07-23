@@ -83,7 +83,7 @@ class AddressbookService {
         //true // TODO: Rechte nochmal überprüfen
     }
 
-    List getVisiblePersons(String fromSite,max,offset,params) {
+    List getVisiblePersons(String fromSite,params) {
         def qParts = [
                 'p.isPublic = :public'
         ]
@@ -103,12 +103,16 @@ class AddressbookService {
             qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
             qParams << [prsName: "%${params.prs.toLowerCase()}%"]
         }
-        if (params.org) {
-            qParts << """(EXISTS (SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)))"""
-            qParams << [orgName: "%${params.org.toLowerCase()}%"]
+        if (params.org && params.org instanceof Org) {
+            qParts << "pr.org = :org"
+            qParams << [org: params.org]
+        }
+        else if(params.org && params.org instanceof String) {
+            qParts << "(pr.org.name like :name or pr.org.shortname like :name or pr.org.sortname like :name)"
+            qParams << [name: "%${params.org}%"]
         }
 
-        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
+        def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
             def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
@@ -116,7 +120,7 @@ class AddressbookService {
             qParams = psq.queryParams
         }
 
-        List result = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:max, offset:offset])
+        List result = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
         result
     }
 
