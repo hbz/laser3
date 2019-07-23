@@ -29,6 +29,9 @@ class ApiReaderHelper {
 
     final static IGNORE_SUBSCRIPTION_AND_PACKAGE = "IGNORE_SUBSCRIPTION_AND_PACKAGE"
 
+    final static IGNORE_CUSTOM_PROPERTIES   = "IGNORE_CUSTOM_PROPERTIES"
+    final static IGNORE_PRIVATE_PROPERTIES  = "IGNORE_PRIVATE_PROPERTIES"
+
 
     // ################### HELPER ###################
 
@@ -779,9 +782,16 @@ class ApiReaderHelper {
         result
     }
 
-    static retrievePropertyCollection(Object generic, Org context) {
+    static retrievePropertyCollection(Object generic, Org context, def ignoreFlag) {
         def cp = retrieveCustomPropertyCollection(generic.customProperties, generic, context)
         def pp = retrievePrivatePropertyCollection(generic.privateProperties, context)
+
+        if (ignoreFlag == IGNORE_CUSTOM_PROPERTIES) {
+            return pp
+        }
+        else if (ignoreFlag == IGNORE_PRIVATE_PROPERTIES) {
+            return cp
+        }
 
         pp.each { cp << it }
         cp

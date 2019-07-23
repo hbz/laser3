@@ -1,4 +1,7 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; de.laser.helper.RDStore; com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="static de.laser.helper.RDStore.*" %>
+<%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
+<%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -128,98 +131,148 @@
                     ${message(code: 'profile.reminder.label')}
                 </h4>
 
-                <div class="field">
-                    <label>${message(code: 'profile.reminderPeriod')}</label>
-                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-                    <div class="ui right labeled input">
-                    <input type="number" name="dashboardReminderPeriod" value="${US_DASHBOARD_REMINDER_PERIOD.strValue}"/>
-                        <div class="ui basic label">
-                            ${message(code: 'profile.reminderDaysbeforeData')}
-                        </div>
-                    </div>
-                    %{--TODO: strValue überprüfen--}%
-                </div>
-
                 <div class="inline field">
                     <div class="ui checkbox">
-                        <g:set var="isRemindByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
+                        <g:set var="isRemindByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
                         <input type="checkbox" name="isRemindByEmail" class="hidden" value="Y" ${isRemindByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isRemindByEmail')}</label>
                     </div>
                 </div>
-                <h5 class="ui header">
-                    ${message(code: 'profile.reminder.for.label')}
-                </h5>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isSubscriptionsNoticePeriod" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isSubscriptionsNoticePeriod" class="hidden" value="Y" ${isSubscriptionsNoticePeriod?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.subscriptions.noticePeriod')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isSubscriptionsEnddate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isSubscriptionsEnddate" class="hidden" value="Y" ${isSubscriptionsEnddate?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.subscriptions.enddate')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isSubscriptionsCustomProp" class="hidden" value="Y" ${isSubscriptionsCustomProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.subscriptions.customProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isSubscriptionsPrivateProp" class="hidden" value="Y" ${isSubscriptionsPrivateProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.subscriptions.privateProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isLicenseCustomProp" class="hidden" value="Y" ${isLicenseCustomProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.license.customProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isLicensePrivateProp" class="hidden" value="Y" ${isLicensePrivateProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.license.privateProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isPersonPrivateProp" class="hidden" value="Y" ${isPersonPrivateProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.person.privateProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isOrgCustomProp" class="hidden" value="Y" ${isOrgCustomProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.org.customProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isOrgPrivateProp" class="hidden" value="Y" ${isOrgPrivateProp?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.org.privateProperty')}</label>
-                    </div>
-                </div>
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <g:set var="isTasks" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_TASKS, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
-                        <input type="checkbox" name="isTasks" class="hidden" value="Y" ${isTasks?'checked':''}/>
-                        <label>${message(code: 'profile.reminder.for.tasks')}</label>
-                    </div>
-                </div>
+
+
+                <table class="ui celled la-table table">
+                    <g:set var="defaultRemindPeriod" value="${UserSettings.DEFAULT_REMINDER_PERIOD}" />
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>${message(code: 'profile.reminder.for.label')}</th>
+                            <th>${message(code: 'profile.reminderDaysbeforeData')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSubscriptionsNoticePeriod" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSubscriptionsNoticePeriod" class="hidden" value="Y" ${isSubscriptionsNoticePeriod?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.subscriptions.noticePeriod')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSubscriptionNoticeperiod" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSubscriptionsEnddate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSubscriptionsEnddate" class="hidden" value="Y" ${isSubscriptionsEnddate?'checked':''}/>
+                                    <label></label>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.subscriptions.enddate')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSubscriptionEnddate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSubscriptionsCustomProp" class="hidden" value="Y" ${isSubscriptionsCustomProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.subscriptions.customProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSubscriptionsCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSubscriptionsPrivateProp" class="hidden" value="Y" ${isSubscriptionsPrivateProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.subscriptions.privateProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSubscriptionsPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isLicenseCustomProp" class="hidden" value="Y" ${isLicenseCustomProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.license.customProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForLicenseCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isLicensePrivateProp" class="hidden" value="Y" ${isLicensePrivateProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.license.privateProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForLicensePrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isPersonPrivateProp" class="hidden" value="Y" ${isPersonPrivateProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.person.privateProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForPersonPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isOrgCustomProp" class="hidden" value="Y" ${isOrgCustomProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.org.customProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForOrgCustomProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isOrgPrivateProp" class="hidden" value="Y" ${isOrgPrivateProp?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.org.privateProperty')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForOrgPrivateProp" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isTasks" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_TASKS, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isTasks" class="hidden" value="Y" ${isTasks?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.tasks')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <div class="inline field">
                     <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
@@ -265,7 +318,7 @@
 
                 <div class="field">
                     <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
-                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, YN_YES)}" />
                     <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                 </div>
 

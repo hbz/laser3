@@ -317,10 +317,10 @@ class OrganisationController extends AbstractDebugController {
             Org orgInstance = new Org(name: params.institution, sector: orgSector)
             orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
             try {
-                orgInstance.save(flush:true)
-                if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
+                orgInstance.save()
+                if(accessService.checkPerm("ORG_CONSORTIUM")) {
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:RDStore.COMBO_TYPE_CONSORTIUM)
-                    newMember.save(flush:true)
+                    newMember.save()
                 }
                 orgInstance.setDefaultCustomerType()
 
@@ -339,8 +339,8 @@ class OrganisationController extends AbstractDebugController {
             Org deptInstance = new Org(name: params.department)
             deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
             try {
-                deptInstance.save(flush:true)
-                if(RDStore.OT_INSTITUTION.id in (contextOrg.getallOrgTypeIds())) {
+                deptInstance.save()
+                if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:RDStore.COMBO_TYPE_DEPARTMENT)
                     newMember.save()
                 }
@@ -941,8 +941,8 @@ class OrganisationController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_ADM", specRole="ROLE_ORG_EDITOR")
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_ADM", "ROLE_ORG_EDITOR") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ORG_EDITOR")
+    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ORG_EDITOR") })
     def toggleCombo() {
         Map result = setResultGenericsAndCheckAccess(params)
         if(!result) {

@@ -16,8 +16,8 @@ class ApiReader {
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
-            'oa2020':               [Constants.MIME_APPLICATION_JSON],
-            'oa2020List':           [Constants.MIME_APPLICATION_JSON],
+            'oaManager':            [Constants.MIME_APPLICATION_JSON],
+            'oaManagerList':        [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
             'refdataList':          [Constants.MIME_APPLICATION_JSON],
@@ -26,7 +26,7 @@ class ApiReader {
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oa2020List', 'refdataList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaManagerList', 'refdataList', 'statisticList']
 
     /**
      * @param com.k_int.kbplus.CostItem costItem
@@ -155,7 +155,7 @@ class ApiReader {
 
         result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
         result.instanceOf       = ApiReaderHelper.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
-        result.properties       = ApiReaderHelper.retrievePropertyCollection(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.properties       = ApiReaderHelper.retrievePropertyCollection(lic, context, ApiReaderHelper.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiReaderHelper.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = ApiReaderHelper.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
 
@@ -246,7 +246,7 @@ class ApiReader {
                 org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
         ) // com.k_int.kbplus.PersonRole
 
-        result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+        result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
 
         // Ignored
 
@@ -364,7 +364,7 @@ class ApiReader {
         //TODO contact David upon this!
 
         result.previousSubscription = ApiReaderHelper.requestSubscriptionStub(sub.getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-        result.properties           = ApiReaderHelper.retrievePropertyCollection(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+        result.properties           = ApiReaderHelper.retrievePropertyCollection(sub, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
         def allOrgRoles = []
 

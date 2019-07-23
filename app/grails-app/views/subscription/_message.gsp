@@ -13,7 +13,12 @@
         </g:link>
         <g:message code="myinst.subscriptionDetails.message.and" />
         <g:link controller="subscription" action="show" id="${subscriptionInstance.instanceOf.id}">
-            <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
+            <g:if test="${subscriptionInstance.getConsortia()}">
+                <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
+            </g:if>
+            <g:elseif test="${subscriptionInstance.getCollective()}">
+                <g:message code="myinst.subscriptionDetails.message.collectiveLicence" />
+            </g:elseif>
         </g:link>.
     </p>
 </div>

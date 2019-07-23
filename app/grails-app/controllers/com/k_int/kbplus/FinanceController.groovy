@@ -94,7 +94,7 @@ class FinanceController extends AbstractDebugController {
         result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        if(result.subscription.instanceOf && result.institution.id == result.subscription.getConsortia().id)
+        if(result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id])
             params.view = "consAtSubscr"
         switch(params.view) {
             case "own": result.ownOffset = result.offset
@@ -108,7 +108,7 @@ class FinanceController extends AbstractDebugController {
                 break
         }
         result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max,result.offset)
-        if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
+        if(OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE])) {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
@@ -116,7 +116,7 @@ class FinanceController extends AbstractDebugController {
             Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
-        else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
+        else if(OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]))
             result.showView = "subscr"
         else if(accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER"))
             result.showView = "own"
@@ -149,8 +149,8 @@ class FinanceController extends AbstractDebugController {
             return
         }
         // I need the consortial data as well ...
-        def orgRoleCons = accessService.checkPerm('ORG_CONSORTIUM')
-        def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
+        def orgRoleCons = accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')
+        def orgRoleSubscr = OrgRole.findByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE])
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
         result.cost_item_tabs = [:]
         if(accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) {
@@ -797,8 +797,6 @@ class FinanceController extends AbstractDebugController {
         result.orgConfigurations = orgConfigurations
         result.formUrl = g.createLink(controller:"finance",action:"newCostItem",params:[tab:result.tab,mode:"copy"])
         result.mode = "copy"
-        if(result.sub.getConsortia()?.id != contextService.org.id)
-            result.consCostTransfer = true
         render(template: "/finance/ajaxModal", model: result)
     }
 

@@ -91,17 +91,24 @@
                         <%--${financialData}--%>
                         <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
                         <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
-                            <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
+                            <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
                                 <div class="item" data-tab="own">${message(code:'financials.tab.ownCosts')}</div>
                             </g:if>
                             <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
-                                <div class="item" data-tab="cons">${message(code:'financials.tab.consCosts')}</div>
+                                <div class="item" data-tab="cons">
+                                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                                        <g:message code="financials.tab.consCosts"/>
+                                    </g:if>
+                                    <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
+                                        <g:message code="financials.tab.collCosts"/>
+                                    </g:elseif>
+                                </div>
                             </g:if>
                             <g:if test="${showView.equals("subscr")}">
                                 <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
                             </g:if>
                         </div>
-                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
+                        <g:if test="${(!showView.equals("consAtSubscr") || showView.equals("own")) && accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
