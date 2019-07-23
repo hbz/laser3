@@ -459,7 +459,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         response.setHeader("Debug-Result-Time", responseTime)
         response.setStatus(responseCode)
 
-        log.debug("API Call (Response Code : ${responseCode}, Response Time: ${responseTime}")
+        log.debug("API Call (Response Code: ${responseCode}, Response Time: ${responseTime})")
 
         render responseJson.toString(true)
     }
