@@ -517,7 +517,12 @@ class Org
   }
 
     def getDesignation() {
-        return (shortname?:(sortname?:(name?:(globalUID?:id))))
+        String ret = ""
+        Org hasDept = Combo.findByFromOrgAndType(this,RDStore.COMBO_TYPE_DEPARTMENT)?.toOrg
+        if(hasDept)
+            ret = "${hasDept.shortname?:(hasDept.sortname?: hasDept.name)} – "
+        ret += shortname?:(sortname?:(name?:(globalUID?:id)))
+        return ret
     }
 
     boolean isEmpty() {

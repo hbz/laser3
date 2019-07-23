@@ -14,7 +14,7 @@
         }
     }
 
-    boolean editable2 = accessService.checkPermAffiliation("ORG_BASIC_MEMBER","INST_EDITOR")
+    boolean editable2 = accessService.checkMinUserOrgRole(contextService.user,contextService.org,"INST_EDITOR")
     //println "EDITABLE: ${editable}"
     //println "EDITABLE2: ${editable2}"
 %>
@@ -22,7 +22,7 @@
     <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
 
         <g:each in="${baseItems}" var="docctx">
-            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
+            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <!--<div class="event">-->
 

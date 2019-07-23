@@ -4,7 +4,7 @@
 
     if(ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
-        if(contextService.org.id in [ownobj.getConsortia().id] && ownobj.instanceOf) {
+        if(contextService.org.id in [ownobj.getConsortia()?.id,ownobj.getCollective()?.id] && ownobj.instanceOf) {
             parentAtChild = true
         }
     }

@@ -33,7 +33,7 @@
 <g:render template="/templates/pendingChanges"
           model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': subscriptionInstance]}"/>
 
-<g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+<g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
     <g:render template="message"/>
 </g:if>
 

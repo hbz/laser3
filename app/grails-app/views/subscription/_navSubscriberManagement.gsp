@@ -2,20 +2,20 @@
 
 <semui:subNav actionName="${actionName}">
 
-    <semui:subNavItem  controller="subscription" action="linkLicenseConsortia"
+    <semui:subNavItem  controller="subscription" action="linkLicenseMembers"
                        params="${[id: params.id]}"
-                       message="subscription.details.linkLicenseConsortium.label"/>
+                       message="subscription.details.linkLicenseMembers.label"/>
 
-    <semui:subNavItem controller="subscription" action="linkPackagesConsortia"
+    <semui:subNavItem controller="subscription" action="linkPackagesMembers"
                       params="${[id: params.id]}"
-                      message="subscription.details.linkPackagesConsortium.label"/>
+                      message="subscription.details.linkPackagesMembers.label"/>
 
-    <semui:subNavItem controller="subscription" action="propertiesConsortia"
+    <semui:subNavItem controller="subscription" action="propertiesMembers"
                                params="${[id: params.id]}"
-                               message="subscription.propertiesConsortia.label"/>
+                               message="subscription.propertiesMembers.label"/>
 
-    <semui:subNavItem controller="subscription" action="subscriptionPropertiesConsortia"
+    <semui:subNavItem controller="subscription" action="subscriptionPropertiesMembers"
                       params="${[id: params.id]}"
-                      message="subscription.subscriptionPropertiesConsortia.label"/>
+                      message="subscription.subscriptionPropertiesMembers.label"/>
 
 </semui:subNav>

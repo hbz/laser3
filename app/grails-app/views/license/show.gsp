@@ -293,7 +293,7 @@
             $(document).ready(function() {
               $("#subscription").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?localOnly=true&query={query}",
+                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}",
                     cache: false
                 },
                 clearable: true,

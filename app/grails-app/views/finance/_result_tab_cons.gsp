@@ -115,7 +115,7 @@
                     <td>
                         <%
                             int offset = consOffset ? consOffset : 0
-                            Set<RefdataValue> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]
+                            Set<Long> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id,RDStore.OR_SUBSCRIBER_COLLECTIVE.id]
                         %>
                         ${ jj + 1 + offset }
                     </td>
@@ -131,7 +131,7 @@
                            <g:if test="${memberRoles.contains(or.roleType.id)}">
                                <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
 
-                               <g:if test="${or.roleType.id == RDStore.OR_SUBSCRIBER_CONS.id && ci.isVisibleForSubscriber}">
+                               <g:if test="${or.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_COLLECTIVE.id] && ci.isVisibleForSubscriber}">
                                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                        <i class="ui icon eye orange"></i>
                                    </span>

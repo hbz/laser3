@@ -513,7 +513,10 @@ class PackageController extends AbstractDebugController {
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            roleTypes << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
+        }
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
         }
 
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub)',

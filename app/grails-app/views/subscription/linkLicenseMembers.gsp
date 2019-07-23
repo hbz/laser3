@@ -29,20 +29,20 @@ ${message(code: 'subscription.details.subscriberManagement.label')}
 
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkLicenseConsortium.header')}
+${message(code: 'subscription.linkLicenseMembers.header')}
 </h3>
 
 <semui:messages data="${flash}"/>
 
 <h4>
-    ${message(code: 'subscription.linkLicenseConsortium.consortialSubscription')}: <g:link
+    <g:message code="subscription.linkLicenseMembers.subscription" args="${args.superOrgType}"/>: <g:link
         controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
     <g:if test="${parentLicense}">
-        ${message(code: 'subscription.linkLicenseConsortium.consortialLicense')}: <g:link controller="license"
-                                                                                          action="show"
-                                                                                          id="${parentLicense?.id}">${parentLicense?.reference}</g:link>
+        <g:message code="subscription.linkLicenseMembers.license" args="${args.superOrgType}"/>: <g:link controller="license"
+                                                                             action="show"
+                                                                             id="${parentLicense?.id}">${parentLicense?.reference}</g:link>
     </g:if>
 </h4>
 
@@ -50,12 +50,12 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
 <g:if test="${filteredSubChilds}">
 
     <div class="ui segment">
-        <g:form action="processLinkLicenseConsortia" method="post" class="ui form">
+        <g:form action="processLinkLicenseMembers" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkLicenseConsortium.info')}</h4>
+                <h4>${message(code: 'subscription.linkLicenseMembers.info')}</h4>
 
                 <label>${message(code: 'subscription.linktoLicense')}</label>
                 <g:if test="${validLicenses}">
@@ -63,9 +63,9 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                               optionKey="id" optionValue="reference"
                               from="${validLicenses}" name="license_All" value=""
                               required=""
-                              noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
+                              noSelection='["": "${message(code: 'subscription.linkLicenseMembers.noSelection')}"]'/>
                 </g:if><g:else>
-                    ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}
+                    <g:message code="subscription.linkLicenseMembers.noValidLicenses" args="${args.superOrgType}"/>
                 </g:else>
             </div>
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
@@ -75,15 +75,15 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
     <div class="divider"></div>
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.linkLicenseConsortium.deleteLicensesInfo')}</h4>
+        <h4>${message(code: 'subscription.linkLicenseMembers.deleteLicensesInfo')}</h4>
 
         <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button.confirm')}"
-                data-confirm-term-how="ok" action="processUnLinkLicenseConsortia" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseConsortium.deleteLicenses.button')}</g:link>
+                data-confirm-term-content = "${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkLicenseMembers" id="${params.id}" params="[filterPropDef: filterPropDef]">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</g:link>
 
     </div>
 
-    <g:form action="processLinkLicenseConsortia" method="post" class="ui form">
+    <g:form action="processLinkLicenseMembers" method="post" class="ui form">
         <g:hiddenField name="id" value="${params.id}"/>
         <table class="ui celled la-table table">
             <thead>
@@ -131,9 +131,9 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                             <g:select class="ui search dropdown"
                                       optionKey="id" optionValue="reference"
                                       from="${validLicenses}" name="license_${sub.id}" value="${sub?.owner?.id}"
-                                      noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
+                                      noSelection='["": "${message(code: 'subscription.linkLicenseMembers.noSelection')}"]'/>
                         </g:if><g:else>
-                            ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}
+                            <g:message code="subscription.linkLicenseMembers.noValidLicenses" args="${args.superOrgType}"/>
                         </g:else>
                     </td>
 
@@ -149,8 +149,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
     </g:form>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label"
-                           default="No members have been added to this license. You must first add members."/></strong>
+    <br><strong><g:message code="subscription.details.nomembers.label"/></strong>
 </g:else>
 
 </body>
