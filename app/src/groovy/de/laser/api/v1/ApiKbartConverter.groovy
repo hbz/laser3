@@ -7,6 +7,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
+@Deprecated
 class ApiKbartConverter {
 
     static final KBART2_HEADER = [

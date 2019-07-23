@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Log4j
+@Deprecated
 class ApiReader {
 
     /**
