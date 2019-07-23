@@ -3327,7 +3327,7 @@ AND EXISTS (
 
         // changes
 
-        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
+        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         getTodoForInst(result, periodInDays)
 
