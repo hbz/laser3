@@ -80,7 +80,6 @@
       parameters:
         - $ref: "#/components/parameters/q_withoutDefault"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -114,7 +113,6 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -149,8 +147,7 @@
 
       parameters:
         - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/v_forList"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -184,7 +181,6 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -218,7 +214,6 @@
         Retrieving an overview for RefdataCategories and RefdataValues
 
       parameters:
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -244,7 +239,6 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -279,8 +273,7 @@
 
       parameters:
         - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/v_forList"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -314,7 +307,6 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -340,7 +332,6 @@
         **EXPERIMENTAL**
 
       parameters:
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -368,7 +359,6 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -394,7 +384,6 @@
         **EXPERIMENTAL**
 
       parameters:
-        #- $ref: "#/components/parameters/context"
         - $ref: "#/components/parameters/authorization"
 
       responses:
