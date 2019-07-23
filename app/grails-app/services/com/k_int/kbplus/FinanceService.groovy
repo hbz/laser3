@@ -668,9 +668,7 @@ class FinanceService {
             String orgIdentifier
             if(colMap.institution)
                 orgIdentifier = cols[colMap.institution]
-            if(orgIdentifier != null)
-                owner = contextOrg
-            else {
+            else if(orgIdentifier){
                 //fetch possible identifier namespaces
                 List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
                 if(orgMatches.size() > 1)
@@ -686,6 +684,9 @@ class FinanceService {
                 else {
                     owner = contextOrg
                 }
+            }
+            else {
+                owner = contextOrg
             }
             CostItem costItem = new CostItem(owner: owner)
             //sub(nullable: true, blank: false) -> to subscription
