@@ -3784,30 +3784,18 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
-        def allResultHaveValue = true
-        surveyResults.each {
-            def value = null
-            if (it?.type?.type == Integer.toString()) {
-                value = it.intValue.toString()
-            } else if (it?.type?.type == String.toString()) {
-                value = it.stringValue ?: ''
-            } else if (it?.type?.type == BigDecimal.toString()) {
-                value = it.decValue.toString()
-            } else if (it?.type?.type == Date.toString()) {
-                value = it.dateValue.toString()
-            } else if (it?.type?.type == RefdataValue.toString()) {
-                value = it.refValue?.getI10n('value') ?: ''
-            }
-
-
-
+        boolean allResultHaveValue = true
+        surveyResults.each { surre ->
+            SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
+            if(!surre.getFinish() && !surorg.checkPerennialTerm())
+                allResultHaveValue = false
         }
         if(allResultHaveValue) {
             surveyResults.each {
                 it.finishDate = new Date()
-                it.save(flush: true)
+                it.save()
             }
             // flash.message = message(code: "surveyResult.finish.info")
         }else {
