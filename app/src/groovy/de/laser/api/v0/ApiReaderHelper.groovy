@@ -292,47 +292,63 @@ class ApiReaderHelper {
         result
     }
 
-    @Deprecated
-    static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {  // TODO
+    // TODO: oaManager
+    static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {
         def result = []
 
         list?.each { it ->               // com.k_int.kbplus.CostItem
+
+            // TODO: isVisibleForSubscriber
+            // TODO: finalCostRounding
+            // TODO: budgetcodes
+
             def tmp                     = [:]
-            tmp.id                      = it.id
+            tmp.globalUID               = it.globalUID
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
+            tmp.currencyRate            = it.currencyRate
+            tmp.costTitle               = it.costTitle
             tmp.costDescription         = it.costDescription
-            tmp.includeInSubscription   = it.includeInSubscription
+            //tmp.includeInSubscription   = it.includeInSubscription
             tmp.reference               = it.reference
 
+            tmp.costInLocalCurrencyAfterTax     = it.getCostInLocalCurrencyAfterTax()
+            tmp.costInBillingCurrencyAfterTax   = it.getCostInBillingCurrencyAfterTax()
+
+            tmp.calculatedType      = it.getCalculatedType()
             tmp.datePaid            = it.datePaid
+            tmp.invoiceDate         = it.invoiceDate
+            tmp.financialYear       = it.financialYear
             tmp.startDate           = it.startDate
             tmp.endDate             = it.endDate
             tmp.dateCreated         = it.dateCreated
             tmp.lastUpdated         = it.lastUpdated
+            tmp.taxRate             = it.taxKey?.taxRate
 
             // RefdataValues
             tmp.billingCurrency     = it.billingCurrency?.value
             tmp.costItemCategory    = it.costItemCategory?.value
             tmp.costItemElement     = it.costItemElement?.value
+            tmp.costItemElementConfiguration = it.costItemElementConfiguration?.value
             tmp.costItemStatus      = it.costItemStatus?.value
-            tmp.taxCode             = it.taxCode?.value
+            tmp.taxCode             = it.taxKey?.taxType?.value
 
             // References
-            def context = null // TODO: use context
-            tmp.invoice             = retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
-            tmp.issueEntitlement    = retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
-            tmp.order               = retrieveOrderMap(it.order) // com.k_int.kbplus.Order
-            tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
-            tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-            tmp.package             = retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-            result << tmp
+            //def context = null // TODO: use context
+            tmp.budgetCodes         = CostItemGroup.findAllByCostItem(it).collect{ it.budgetCode?.value }.unique()
+            tmp.copyBase            = it.copyBase?.globalUID
+            tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
+            // tmp.issueEntitlement    = retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+            tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // com.k_int.kbplus.Order
+            // tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
+            // tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+            // tmp.package             = retrieveSubscriptionPackageStubMixed(it.subPkg, IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+            //tmp.surveyOrg
+            //tmp.subPkg
+
+            result << ApiToolkit.cleanUp(tmp, true, true)
         }
 
-        /*
-        User lastUpdatedBy
-        User createdBy
-        */
         result
     }
 

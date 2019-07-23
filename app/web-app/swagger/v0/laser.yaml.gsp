@@ -52,6 +52,26 @@ components:
       required: true
       description: Value for this query
 
+<g:if test="${apiContext}">
+    v_forList:
+      name: v
+      in: query
+      schema:
+        type: string
+        default: ${apiContext}
+      required: true
+      description: Value for this query
+</g:if>
+<g:else>
+    v_forList:
+      name: v
+      in: query
+      schema:
+        type: string
+      required: true
+      description: Value for this query
+</g:else>
+
     timestamp:
       name: timestamp
       in: query

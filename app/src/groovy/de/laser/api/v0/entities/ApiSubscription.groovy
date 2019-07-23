@@ -70,7 +70,7 @@ class ApiSubscription {
         hasAccess = calculateAccess(sub, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.retrieveSubscriptionMap(sub, context)
+            result = ApiReader.retrieveSubscriptionMap(sub, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

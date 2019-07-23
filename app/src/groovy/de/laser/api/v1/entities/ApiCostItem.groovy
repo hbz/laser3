@@ -9,6 +9,7 @@ import de.laser.api.v1.ApiReader
 import de.laser.helper.Constants
 import grails.converters.JSON
 
+@Deprecated
 class ApiCostItem {
 
     /**

@@ -4,7 +4,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
@@ -130,7 +129,6 @@ class ApiOAManager {
                 'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         ).each { sub ->
-
             result.add(ApiReaderHelper.requestSubscriptionStub(sub, org, true))
         }
 

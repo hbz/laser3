@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
 @Log4j
+@Deprecated
 class ApiWriter {
 
     /**
