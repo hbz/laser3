@@ -1,4 +1,5 @@
 <%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore;"%>
+<laser:serviceInjection/>
 <%
     String modalText
     String submitButtonLabel
@@ -117,7 +118,7 @@
                             }
                             List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
                             List availableConfigs = []
-                            if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
+                            if(!accessService.checkPerm("ORG_CONSORTIUM")){
                                 availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
                             }
                             else availableConfigs = allConfigs

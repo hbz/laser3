@@ -106,7 +106,7 @@
             </div>
 
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
 
                 <div class="two fields">
                     <div class="field">
@@ -141,7 +141,7 @@
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 </div><!--.two fields-->
             </g:if>
 
@@ -177,7 +177,7 @@
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value == 'Current'}">
-                                  <g:if test="${institution?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+                                  <g:if test="${institution?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM")}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>

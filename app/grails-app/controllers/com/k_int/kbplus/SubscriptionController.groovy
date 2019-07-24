@@ -2356,10 +2356,6 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-
-        }
-
         params.gokbApi = false
 
         if (ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
@@ -2908,7 +2904,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
+                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
                         result.usage = fsresult?.usage
                         result.x_axis_labels = fsresult?.x_axis_labels
                         result.y_axis_labels = fsresult?.y_axis_labels
@@ -3086,11 +3082,11 @@ class SubscriptionController extends AbstractDebugController {
     def renewSubscriptionConsortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
@@ -3477,11 +3473,11 @@ class SubscriptionController extends AbstractDebugController {
     def processSimpleRenewal_Consortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
@@ -3549,11 +3545,11 @@ class SubscriptionController extends AbstractDebugController {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.institution = contextService.org //TODO überprüfen, ob das richtig ist!!!
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
             def sdf = new SimpleDateFormat('dd.MM.yyyy')

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
 <laser:serviceInjection/>
 <g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
 
@@ -20,7 +20,7 @@
         <tbody>
             <%
                 Set documentSet = instance.documents
-                if(instance instanceof Org && instance.id == contextService.org.id){
+                if(instance instanceof Org && inContextOrg){
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>

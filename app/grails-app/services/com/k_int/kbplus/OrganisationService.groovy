@@ -375,14 +375,14 @@ class OrganisationService {
                                    contactTypes:localRDStoreContactType,
                                    exampleOrgs:exampleOrgs,
                                    examplePackages:examplePackages]
-                if(RDStore.OT_INSTITUTION.id in current.getallOrgTypeIds()) {
+                if(current.hasPerm("ORG_INST")) {
                     return setupTestDataForInst(generalData,current)
                 }
-                else if(RDStore.OT_CONSORTIUM.id in current.getallOrgTypeIds()) {
+                else if(current.hasPerm("ORG_CONSORTIUM")) {
                     return setupTestDataForCons(generalData,current)
                 }
                 else {
-                    errors.add("Kein Einrichtungstyp gegeben!")
+                    errors.add("Kein Kundentyp gegeben!")
                     return false
                 }
             }

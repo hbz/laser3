@@ -563,7 +563,7 @@ class PackageController extends AbstractDebugController {
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextOrg?.getallOrgTypeIds())) ? 'package' : 'institution'
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
