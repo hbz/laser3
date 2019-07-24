@@ -12,10 +12,11 @@ import java.nio.charset.Charset
 
 class User {
 
-  transient springSecurityService
-  def contextService
-  def yodaService
-  def grailsApplication
+    transient springSecurityService
+    def contextService
+    def yodaService
+    def userService
+    def grailsApplication
 
   String username
   String display
@@ -54,15 +55,19 @@ class User {
     UserRole.findAllByUser(this).collect { it.role } as Set
   }
 
-  void beforeInsert() {
-    encodePassword()
-  }
-
-  void beforeUpdate() {
-    if (isDirty('password')) {
-      encodePassword()
+    void afterInsert() {
+        userService.initMandatorySettings(this)
     }
-  }
+
+    void beforeInsert() {
+        encodePassword()
+    }
+
+    void beforeUpdate() {
+        if (isDirty('password')) {
+            encodePassword()
+        }
+    }
 
     /*
         gets UserSetting

@@ -29,6 +29,7 @@ class Org
     def sessionFactory // TODO: ugliest HOTFIX ever
     @Transient
     def contextService
+    def organisationService
 
     String name
     String shortname
@@ -191,6 +192,10 @@ class Org
     @Override
     boolean isDeleted() {
         return RDStore.ORG_DELETED.id == status?.id
+    }
+
+    void afterInsert() {
+        organisationService.initMandatorySettings(this)
     }
 
     @Override
