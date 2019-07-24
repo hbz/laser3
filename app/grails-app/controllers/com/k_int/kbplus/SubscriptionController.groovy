@@ -3688,10 +3688,19 @@ class SubscriptionController extends AbstractDebugController {
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
-                if (params?.targetSubscriptionId){
+                if (params.isRenewSub && params.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 } else {
                     result << loadDataFor_Properties()
+                }
+                break;
+            case WORKFLOW_END:
+                if (params?.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             default:
