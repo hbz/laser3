@@ -26,7 +26,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
-import java.awt.*
+import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
