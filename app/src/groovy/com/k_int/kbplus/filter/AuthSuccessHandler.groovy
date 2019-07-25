@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.web.authentication.AjaxAwareAuthenticationSuccessHandler
 import grails.util.Holders
 import org.springframework.security.core.Authentication
+
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse

@@ -1,11 +1,10 @@
 package com.k_int.kbplus.onixpl
 
+import com.k_int.kbplus.OnixplLicense
 import grails.util.GrailsNameUtils
 import grails.util.Holders
 import org.apache.commons.collections.list.TreeList
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import com.k_int.kbplus.OnixplLicense
-import grails.converters.JSON
 
 /**
  * This service handles the manipulation of the Onix-pl XML documents so they can be displayed, and compared.

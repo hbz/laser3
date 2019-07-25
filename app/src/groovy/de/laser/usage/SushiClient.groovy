@@ -1,6 +1,6 @@
 package de.laser.usage
 
-import groovy.json.JsonOutput
+
 import groovy.util.logging.Log4j
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder

@@ -1,11 +1,7 @@
 package de.laser.traits
 
 import com.k_int.kbplus.DocContext
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Links
 import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.Subscription
 import de.laser.interfaces.ShareSupport
 
 import javax.persistence.Transient

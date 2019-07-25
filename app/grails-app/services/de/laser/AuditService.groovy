@@ -1,11 +1,8 @@
 package de.laser
 
-import com.k_int.kbplus.*
-import de.laser.interfaces.ShareSupport
+
 import de.laser.traits.AuditableTrait
 import org.codehaus.groovy.grails.commons.GrailsApplication
-
-import javax.persistence.Transient
 
 //@CompileStatic
 class AuditService {

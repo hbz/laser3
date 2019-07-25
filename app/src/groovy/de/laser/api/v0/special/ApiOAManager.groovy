@@ -4,7 +4,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants

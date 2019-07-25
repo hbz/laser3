@@ -3,17 +3,16 @@ package com.k_int.kbplus
 import gov.loc.repository.bagit.BagFactory
 import gov.loc.repository.bagit.PreBag
 import groovy.xml.MarkupBuilder
-import groovyx.net.http.*
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
+import org.apache.http.entity.mime.HttpMultipartMode
+import org.apache.http.entity.mime.MultipartEntity
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
-import org.apache.http.entity.mime.*
-import org.apache.http.entity.mime.content.*
-import static de.laser.helper.RDStore.*
+import static de.laser.helper.RDStore.getDOC_DELETED
 
 class DocstoreService {
   

@@ -1,11 +1,8 @@
 package de.laser
 
-import com.k_int.kbplus.Combo
-import com.k_int.kbplus.Doc
+
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
 

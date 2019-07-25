@@ -1,8 +1,7 @@
 package de.laser.helper
 
-import com.k_int.kbplus.RefdataCategory
+
 import com.k_int.kbplus.RefdataValue
-import de.laser.interfaces.Permissions
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 

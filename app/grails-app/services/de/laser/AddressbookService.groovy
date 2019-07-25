@@ -4,8 +4,6 @@ import com.k_int.kbplus.Address
 import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
-import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
