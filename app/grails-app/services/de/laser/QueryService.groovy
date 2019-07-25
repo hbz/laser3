@@ -6,7 +6,7 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
 
 import static com.k_int.kbplus.UserSettings.KEYS.*
-import static com.k_int.kbplus.UserSettings.getDEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static de.laser.helper.RDStore.*
 
 class QueryService {

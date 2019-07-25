@@ -12,7 +12,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-import static de.laser.helper.RDStore.getDOC_DELETED
+import static de.laser.helper.RDStore.DOC_DELETED
 
 class DocstoreService {
   
