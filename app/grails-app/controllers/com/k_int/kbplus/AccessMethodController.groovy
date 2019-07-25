@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.controller.AbstractDebugController
-import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.*
+import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.dao.DataIntegrityViolationException
 
 class AccessMethodController extends AbstractDebugController {
 

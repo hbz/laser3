@@ -103,21 +103,25 @@ grails.project.dependency.resolution = {
             excludes "commons-logging", "httpclient", "xml-apis", "groovy", "groovy-all", "xercesImpl", "nekohtml"
         }
 
+        /* NO USAGE YET ..
+
         //There should be a fix for jdt core on jasperreports version 6.
         // Without exclude jasper report compiling crashes on Java8
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
             excludes "eclipse:jdtcore:3.1.0"
         }
+         */
 
         // compile 'cglib:cglib:2.2.2'
-        compile "com.lowagie:itext:2.1.7"
+        // compile "com.lowagie:itext:2.1.7" NO USAGE YET ..
 
-        //compile group: 'org.codehaus.groovy', name: 'groovy-ant', version: '2.4.14'
         compile 'org.codehaus.groovy:groovy-ant:2.5.0'
 
         compile 'org.apache.commons:commons-lang3:3.7'
 
         // -- test setup --
+
+        /* NO USAGE YET ..
 
         test 'org.hamcrest:hamcrest-all:1.3'
 
@@ -132,6 +136,8 @@ grails.project.dependency.resolution = {
 
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:$gebVersion"
+
+         */
     }
 
     plugins {
@@ -171,7 +177,6 @@ grails.project.dependency.resolution = {
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.2"
         compile ":jsonp:0.2"
-        // compile ":grails-melody:1.59.0"
 
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
 

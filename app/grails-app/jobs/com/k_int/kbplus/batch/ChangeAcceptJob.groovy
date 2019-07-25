@@ -1,8 +1,8 @@
 package com.k_int.kbplus.batch
 
+import com.k_int.kbplus.PendingChange
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.PendingChange
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 

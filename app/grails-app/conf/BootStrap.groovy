@@ -224,8 +224,8 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        log.debug("addDefaultJasperReports ..")
-        addDefaultJasperReports()
+        //log.debug("addDefaultJasperReports ..")
+        //addDefaultJasperReports()
 
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
@@ -397,7 +397,8 @@ class BootStrap {
 
         def requiredProps = [
                 [name: [en: "onix_ghost_license"],
-                    descr:allDescr, type: OT.String, val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
+                    descr:allDescr, type: OT.String, val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."]
+                /*
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1"],
                     descr:allDescr, type: OT.String, val:"columnHeader", note:"Only show 1 column header for csv"],
                 [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1"],
@@ -410,6 +411,7 @@ class BootStrap {
                     descr:allDescr, type: OT.String, val:"pageHeader", note: " Remove header/footer from csv/xls"],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.2"],
                     descr:allDescr, type: OT.String, val:"pageFooter", note: " Remove header/footer from csv/xls"]
+                */
         ]
 
         requiredProps.each { prop ->
@@ -1566,9 +1568,11 @@ class BootStrap {
         }
     }
 
+    @Deprecated
     def addDefaultJasperReports() {
         //Add default Jasper reports, if there are currently no reports in DB
 
+        /*
         def reportsFound = JasperReportFile.findAll()
         def defaultReports = ["floating_titles", "match_coverage", "no_identifiers", "title_no_url",
                               "previous_expected_sub", "previous_expected_pkg", "duplicate_titles"]
@@ -1591,7 +1595,8 @@ class BootStrap {
                 }
             }
         }
-  }
+        */
+    }
 
     def ensurePermGrant(role, perm) {
         def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)

@@ -1,18 +1,15 @@
 package com.k_int.kbplus
 
-import static de.laser.interfaces.TemplateSupport.*
 import grails.transaction.Transactional
-
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
-import static de.laser.helper.RDStore.*
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
+
+import static de.laser.helper.RDStore.*
+import static de.laser.interfaces.TemplateSupport.*
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.

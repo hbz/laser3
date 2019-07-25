@@ -8,8 +8,6 @@ import com.k_int.properties.PropertyDefinition
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
-import java.text.SimpleDateFormat
-
 @Log4j
 class ApiService {
 

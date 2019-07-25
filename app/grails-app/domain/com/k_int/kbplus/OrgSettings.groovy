@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
+
 import javax.persistence.Transient
 
 class OrgSettings {

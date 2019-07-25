@@ -1,15 +1,14 @@
 package de.laser
 
 import de.laser.helper.EhcacheWrapper
+import grails.plugin.cache.GrailsConcurrentMapCache
 import grails.plugin.cache.GrailsConcurrentMapCacheManager
 import grails.plugin.springsecurity.SpringSecurityService
-import groovy.transform.CompileStatic
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
-import grails.plugin.cache.GrailsConcurrentMapCache
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 
 class CacheService implements ApplicationContextAware {
 

@@ -7,16 +7,13 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.lang.StringUtils
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
-import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {

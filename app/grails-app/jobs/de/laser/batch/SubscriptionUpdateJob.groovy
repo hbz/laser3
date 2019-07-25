@@ -1,6 +1,6 @@
 package de.laser.batch
 
-import com.k_int.kbplus.EventLog
+
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 

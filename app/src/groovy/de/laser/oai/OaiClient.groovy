@@ -1,8 +1,10 @@
 package de.laser.oai
 
-import groovyx.net.http.*
-import static groovyx.net.http.ContentType.*
-import static groovyx.net.http.Method.*
+
+import groovyx.net.http.HTTPBuilder
+
+import static groovyx.net.http.ContentType.XML
+import static groovyx.net.http.Method.GET
 
 public class OaiClient {
 

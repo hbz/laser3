@@ -1,10 +1,12 @@
 package com.k_int.kbplus
-import com.k_int.kbplus.auth.*
+
+
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
-import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDStore
-import grails.plugin.cache.Cacheable;
-import grails.plugin.springsecurity.annotation.Secured;
+import grails.plugin.cache.Cacheable
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['permitAll'])
 class PublicController {

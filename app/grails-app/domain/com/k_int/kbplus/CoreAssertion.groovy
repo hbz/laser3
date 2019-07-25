@@ -1,7 +1,6 @@
 package com.k_int.kbplus
-import javax.persistence.Transient
 
-class CoreAssertion { 
+class CoreAssertion {
 
   Date startDate
   Date endDate

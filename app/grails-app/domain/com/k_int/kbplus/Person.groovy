@@ -3,9 +3,7 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.*
-
-import javax.persistence.Transient
+import groovy.util.logging.Log4j
 
 @Log4j
 class Person extends AbstractBaseDomain {

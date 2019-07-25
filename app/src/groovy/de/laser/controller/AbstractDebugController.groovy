@@ -2,9 +2,6 @@ package de.laser.controller
 
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugUtil
-import grails.converters.JSON
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 abstract class AbstractDebugController {
 

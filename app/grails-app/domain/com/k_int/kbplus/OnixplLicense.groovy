@@ -1,14 +1,13 @@
 package com.k_int.kbplus
 
-import de.laser.interfaces.Permissions
-
-import javax.persistence.Transient
-
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.onixpl.OnixPLHelperService
 import com.k_int.kbplus.onixpl.OnixPLService
 import com.k_int.xml.XMLDoc
+import de.laser.interfaces.Permissions
 import groovy.util.logging.Log4j
+
+import javax.persistence.Transient
 
 /**
  * An OnixplLicense has many OnixplUsageTerms and OnixplLicenseTexts.

@@ -2,8 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
-import org.hibernate.event.PostUpdateEvent // Hibernate 3
-//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
+import org.hibernate.event.PostUpdateEvent
 
 import javax.persistence.Transient
 

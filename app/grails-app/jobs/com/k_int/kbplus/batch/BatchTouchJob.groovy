@@ -1,7 +1,7 @@
 package com.k_int.kbplus.batch
 
-import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.Package
+import com.k_int.kbplus.TitleInstance
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 import org.hibernate.ScrollMode

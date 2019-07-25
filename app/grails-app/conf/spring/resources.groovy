@@ -1,9 +1,11 @@
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlStrategy
 import org.springframework.security.web.session.ConcurrentSessionFilter
 import org.springframework.security.core.session.SessionRegistryImpl
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 beans = {
 
+    // [ user counter ..
     sessionRegistry(SessionRegistryImpl)
 
     sessionAuthenticationStrategy(ConcurrentSessionControlStrategy, sessionRegistry) {
@@ -14,8 +16,22 @@ beans = {
         sessionRegistry = sessionRegistry
         expiredUrl = '/login/concurrentSession'
     }
+    // .. ]
 
-    // ---
+    // [ supporting initMandatorySettings for users ..
+    authenticationSuccessHandler(de.laser.helper.AuthSuccessHandler) {
+        // Reusing the security configuration
+        def conf = SpringSecurityUtils.securityConfig
+        // Configuring the bean ..
+        requestCache = ref('requestCache')
+        redirectStrategy = ref('redirectStrategy')
+        defaultTargetUrl = conf.successHandler.defaultTargetUrl
+        alwaysUseDefaultTargetUrl = conf.successHandler.alwaysUseDefault
+        targetUrlParameter = conf.successHandler.targetUrlParameter
+        ajaxSuccessUrl = conf.successHandler.ajaxSuccessUrl
+        useReferer = conf.successHandler.useReferer
+    }
+    // .. ]
 
     //localeResolver(org.springframework.web.servlet.i18n.SessionLocaleResolver) {
     //    defaultLocale = new java.util.Locale('de', 'DE')
@@ -34,12 +50,11 @@ beans = {
         preAuthenticatedUserDetailsService = ref('userDetailsByNameServiceWrapper')
     }
 
-    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){
-    }
+    securityContextPersistenceFilter(org.springframework.security.web.context.SecurityContextPersistenceFilter){}
 
-    // controls api access via hmac
-    apiFilter(com.k_int.kbplus.filter.ApiFilter){
-    }
+    // [ controls api access via hmac ..
+    apiFilter(com.k_int.kbplus.filter.ApiFilter){}
+    // .. ]
 
     //ediAuthTokenMap(java.util.HashMap) {
     //}
@@ -49,14 +64,12 @@ beans = {
     //    authenticationManager = ref('authenticationManager')
     //    ediAuthTokenMap = ref('ediAuthTokenMap')
     //}
-  
+
     //apiauthFilter(com.k_int.kbplus.filter.ApiauthFilter){
     //   authenticationManager = ref("authenticationManager")
     //   rememberMeServices = ref("rememberMeServices")
     //   springSecurityService = ref("springSecurityService")
     //}
-
-
 
     //preAuthFilter(org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter) {
     //  principalRequestHeader = 'remoteUser'
