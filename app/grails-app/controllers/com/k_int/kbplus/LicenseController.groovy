@@ -284,7 +284,7 @@ class LicenseController extends AbstractDebugController {
                 if (memberSubs) {
                     validOrgs = Org.executeQuery(
                             'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',
-                            [orgs: consMembers, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], subs: memberSubs]
+                            [orgs: consMembers, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], subs: memberSubs]
                     )
                 }
 
