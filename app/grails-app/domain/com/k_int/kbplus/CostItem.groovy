@@ -4,9 +4,9 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
-import java.time.Year
 
 import javax.persistence.Transient
+import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain

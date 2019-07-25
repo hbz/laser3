@@ -1,8 +1,5 @@
 package com.k_int.kbplus
 
-import javax.persistence.Transient
- 
-
 class GlobalRecordTracker {
 
   GlobalRecordInfo owner

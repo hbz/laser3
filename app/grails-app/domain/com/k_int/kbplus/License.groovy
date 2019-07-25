@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.DeleteFlag
-import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
@@ -15,8 +16,6 @@ import de.laser.traits.ShareableTrait
 
 import javax.persistence.Transient
 import java.text.Normalizer
-import com.k_int.properties.PropertyDefinition
-import com.k_int.ClassUtils
 
 class License
         extends AbstractBaseDomain

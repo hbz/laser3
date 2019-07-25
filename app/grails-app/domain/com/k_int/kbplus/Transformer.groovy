@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import java.util.Date;
-
 class Transformer {
 		
 	String name
