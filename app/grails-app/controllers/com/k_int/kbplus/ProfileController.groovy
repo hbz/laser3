@@ -1,15 +1,19 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import com.k_int.kbplus.auth.*
+
 import static com.k_int.kbplus.UserSettings.KEYS.*
-import static com.k_int.kbplus.UserSettings.*
-import static de.laser.helper.RDStore.*
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
+import static de.laser.helper.RDStore.YN_NO
+import static de.laser.helper.RDStore.YN_YES
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {

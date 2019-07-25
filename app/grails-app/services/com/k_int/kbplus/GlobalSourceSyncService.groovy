@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
+import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
-import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
-import org.springframework.transaction.annotation.*
-import de.laser.helper.RDStore
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 import java.text.SimpleDateFormat
 

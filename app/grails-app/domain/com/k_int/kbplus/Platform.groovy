@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
+import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
-import com.k_int.ClassUtils
-import org.apache.commons.logging.*
-import grails.util.Holders
 
 class Platform extends AbstractBaseDomain {
 

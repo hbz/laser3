@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import groovy.transform.CompileStatic
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil

@@ -1,9 +1,9 @@
 package de.laser
 
-import groovy.xml.MarkupBuilder
-import java.lang.reflect.Method
 import grails.web.Action
+import groovy.xml.MarkupBuilder
 
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 class SitemapController {

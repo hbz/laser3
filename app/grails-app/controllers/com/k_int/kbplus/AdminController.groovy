@@ -1,20 +1,21 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+import au.com.bytecode.opencsv.CSVReader
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.SystemEvent
-import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import grails.plugin.springsecurity.SpringSecurityUtils;
+import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import au.com.bytecode.opencsv.CSVReader
-import com.k_int.properties.PropertyDefinition
-import org.apache.commons.lang.RandomStringUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {

@@ -4,8 +4,6 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
-import de.laser.AuditConfig
 
 import javax.persistence.Transient
 

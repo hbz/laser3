@@ -6,14 +6,14 @@ import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
 import groovy.time.TimeCategory
-import groovyx.net.http.*
+import groovyx.gpars.GParsPool
+import groovyx.net.http.RESTClient
+import groovyx.net.http.URIBuilder
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-
-import groovyx.gpars.GParsPool
 
 class StatsSyncService {
 

@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
-import com.k_int.properties.PropertyDefinition
-import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*
+import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController extends AbstractDebugController {

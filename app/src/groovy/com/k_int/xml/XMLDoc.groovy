@@ -1,6 +1,7 @@
 package com.k_int.xml
 
 import groovy.util.slurpersupport.NodeChild
+import org.springframework.core.io.InputStreamSource
 
 import javax.xml.namespace.QName
 import javax.xml.parsers.DocumentBuilderFactory
@@ -12,8 +13,6 @@ import javax.xml.transform.stream.StreamResult
 import javax.xml.xpath.XPath
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
-
-import org.springframework.core.io.InputStreamSource
 
 class XMLDoc {
 

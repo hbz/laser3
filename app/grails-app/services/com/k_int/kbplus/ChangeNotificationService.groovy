@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
-import de.laser.interfaces.AbstractLockableService;
-import grails.converters.*
+
+import com.k_int.kbplus.auth.User
+import de.laser.interfaces.AbstractLockableService
+import grails.converters.JSON
+
 import java.sql.Timestamp
 
 class ChangeNotificationService extends AbstractLockableService {

@@ -1,24 +1,23 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+
+import com.k_int.kbplus.auth.Perm
+import com.k_int.kbplus.auth.PermGrant
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import groovy.sql.Sql
+import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
-import groovy.util.logging.*
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.Criteria
-import org.hibernate.event.PostUpdateEvent // Hibernate 3
-//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
 
 import javax.persistence.Transient
-import grails.util.Holders
 
 @Log4j
 class Org

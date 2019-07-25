@@ -4,8 +4,6 @@ import de.laser.CacheService
 import grails.util.Holders
 import groovy.transform.CompileStatic
 
-import java.sql.Timestamp
-
 @CompileStatic
 class DebugUtil {
 

@@ -1,11 +1,7 @@
 import com.k_int.kbplus.auth.User
 import grails.converters.JSON
-import org.springframework.security.access.annotation.Secured
-
-import javax.servlet.http.HttpServletResponse
-
 import grails.plugin.springsecurity.SpringSecurityUtils
-
+import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -13,8 +9,13 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
+import org.springframework.security.web.savedrequest.SavedRequest
+
+import javax.servlet.http.HttpServletResponse
+
 //import org.springframework.security.web.authentication.AbstractProcessingFilter
-import org.springframework.security.web.savedrequest.*;
+
 import java.security.MessageDigest
 
 @Secured('permitAll')
