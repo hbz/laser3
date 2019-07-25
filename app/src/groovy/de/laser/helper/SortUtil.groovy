@@ -1,6 +1,8 @@
 package de.laser.helper
 
-import java.text.*;
+
+import java.text.Collator
+import java.text.RuleBasedCollator;
 
 class SortUtil {
 

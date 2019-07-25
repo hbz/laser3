@@ -21,8 +21,8 @@ import org.springframework.transaction.TransactionStatus
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.KEYS.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {

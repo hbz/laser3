@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
@@ -7,16 +10,10 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.converters.*
-import com.k_int.kbplus.auth.*;
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-
-import javax.servlet.ServletOutputStream
-
-import static grails.async.Promises.task
-import static grails.async.Promises.waitAll
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])

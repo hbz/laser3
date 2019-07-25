@@ -1,12 +1,9 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
-import org.springframework.dao.DataIntegrityViolationException
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import org.springframework.dao.DataIntegrityViolationException
 
 @Deprecated
 @Secured(['IS_AUTHENTICATED_FULLY'])

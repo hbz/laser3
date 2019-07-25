@@ -1,13 +1,11 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.helper.RefdataAnnotation
+import org.hibernate.Session
 
 import javax.persistence.Transient
 import java.sql.Blob
-
-import org.hibernate.Session
-
-import com.k_int.kbplus.auth.User
 
 class Doc {
 

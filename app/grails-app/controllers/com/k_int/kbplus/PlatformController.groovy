@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*
+import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController extends AbstractDebugController {

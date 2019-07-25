@@ -1,26 +1,14 @@
 package de.laser
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+
+import com.k_int.kbplus.EventLog
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import grails.util.Holders
-import groovyx.gpars.GParsPool
-import groovyx.net.http.RESTClient
-import groovyx.net.http.URIBuilder
-import org.hibernate.Transaction
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
-
-import java.text.SimpleDateFormat
-
-import static com.k_int.kbplus.UserSettings.KEYS.*
-import static com.k_int.kbplus.UserSettings.*
-import static groovyx.net.http.ContentType.ANY
 
 class DashboardDueDatesService {
 

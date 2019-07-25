@@ -298,7 +298,7 @@
 
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
                                 <div class="divider"></div>
-                                <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
+                                <%--<g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>--%>
                                 <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
                             </sec:ifAnyGranted>
                         </div>

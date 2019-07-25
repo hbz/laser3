@@ -1,11 +1,9 @@
 package com.k_int.kbplus.onixpl
 
-import grails.transaction.Transactional
+import com.k_int.xml.XMLDoc
 import groovy.util.slurpersupport.GPathResult
 
-import com.k_int.xml.XMLDoc
 import javax.xml.xpath.XPathConstants
-
 
 /**
  * @author Steve Osguthorpe <steve.osguthorpe@k-int.com>

@@ -1,15 +1,10 @@
 package com.k_int.kbplus
 
 //For Transform
-import groovyx.net.http.*
-import org.apache.http.entity.mime.MultipartEntity
-import org.apache.http.entity.mime.content.InputStreamBody
-import org.apache.http.entity.mime.content.StringBody
+
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
-import static groovyx.net.http.ContentType.*
-import static groovyx.net.http.Method.*
 
 class TransformerService {
   

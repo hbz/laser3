@@ -8,8 +8,8 @@ import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import java.text.Normalizer
 import javax.persistence.Transient
+import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class Package

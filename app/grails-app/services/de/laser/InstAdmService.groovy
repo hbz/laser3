@@ -1,13 +1,11 @@
 package de.laser
 
-import com.k_int.kbplus.Combo
+
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 

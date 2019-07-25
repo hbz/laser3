@@ -1,14 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.helper.RefdataAnnotation
-
-import java.util.List
-
 import groovy.util.logging.Log4j
-
 import org.apache.commons.logging.LogFactory
-
-import groovy.util.logging.*
 
 @Log4j
 class Address {

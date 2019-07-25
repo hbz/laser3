@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import grails.util.Holders
-import org.grails.datastore.mapping.query.Query
 import org.springframework.context.i18n.LocaleContextHolder
 
 class BookInstance extends TitleInstance {

@@ -1,8 +1,9 @@
 package com.k_int.xml
 
-import javax.xml.namespace.NamespaceContext
-import javax.xml.XMLConstants
 import org.w3c.dom.Document
+
+import javax.xml.XMLConstants
+import javax.xml.namespace.NamespaceContext
 
 /**
  * @author Steve Osguthorpe <steve.osguthorpe@k-int.com>
