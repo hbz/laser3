@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.EntitlementCreationException
@@ -10,24 +12,18 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-
-import static de.laser.helper.RDStore.*
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
+import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
-import de.laser.AuditConfig
-
-// 2.0
-import grails.converters.*
-import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -35,6 +31,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
+
+// 2.0
 
 //For Transform
 

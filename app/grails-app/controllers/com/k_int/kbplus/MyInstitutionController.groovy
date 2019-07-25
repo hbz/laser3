@@ -2,29 +2,20 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.DashboardDueDate
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.RDStore
-import de.laser.helper.DateUtil
-import de.laser.helper.SortUtil
-import de.laser.interfaces.TemplateSupport
+import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.time.TimeCategory
+import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-import com.k_int.properties.*
-import de.laser.DashboardDueDate
 import org.apache.poi.POIXMLProperties
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.ClientAnchor
-import org.apache.poi.ss.usermodel.CreationHelper
-import org.apache.poi.ss.usermodel.Drawing
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.RichTextString
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -35,15 +26,12 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
-import java.awt.Color
+import java.awt.*
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
-
 import java.text.SimpleDateFormat
-import groovy.sql.Sql
-
-import java.time.Year
+import java.util.List
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {

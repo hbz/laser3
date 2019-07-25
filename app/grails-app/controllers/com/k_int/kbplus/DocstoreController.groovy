@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
-
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

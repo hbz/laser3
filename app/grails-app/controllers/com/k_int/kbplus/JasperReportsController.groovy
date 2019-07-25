@@ -1,21 +1,20 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import net.sf.jasperreports.engine.JasperCompileManager
-import net.sf.jasperreports.engine.JasperReport
 import grails.plugin.springsecurity.annotation.Secured
-import org.jasper.JasperExportFormat
-import javax.servlet.http.HttpSession
+import net.sf.jasperreports.engine.JasperCompileManager
+import net.sf.jasperreports.engine.JasperFillManager
 import net.sf.jasperreports.engine.JasperPrint
-import net.sf.jasperreports.j2ee.servlets.ImageServlet
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
-import java.util.Date
-import org.springframework.web.multipart.MultipartHttpServletRequest
+import net.sf.jasperreports.engine.JasperReport
 import net.sf.jasperreports.engine.design.JasperDesign
 import net.sf.jasperreports.engine.xml.JRXmlLoader
-import net.sf.jasperreports.engine.*
 import net.sf.jasperreports.export.Exporter
+import net.sf.jasperreports.j2ee.servlets.ImageServlet
+import org.jasper.JasperExportFormat
+import org.springframework.web.multipart.MultipartHttpServletRequest
+
+import javax.servlet.http.HttpSession
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class JasperReportsController extends AbstractDebugController {

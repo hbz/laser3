@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
@@ -10,12 +11,12 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import com.k_int.properties.PropertyDefinition
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 

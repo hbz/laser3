@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -9,9 +10,9 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
+import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -20,10 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
-import java.awt.Color
+import java.awt.*
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.List
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

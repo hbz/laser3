@@ -1,15 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.I10nTranslation
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.User
-import org.jfree.ui.about.Licences
-import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseCompareController extends AbstractDebugController {
