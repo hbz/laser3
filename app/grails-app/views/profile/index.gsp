@@ -132,12 +132,11 @@
                     <label>${message(code: 'profile.reminderPeriod')}</label>
                     <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
                     <div class="ui right labeled input">
-                    <input type="number" name="dashboardReminderPeriod" value="${US_DASHBOARD_REMINDER_PERIOD.strValue}"/>
+                        <input type="number" name="dashboardReminderPeriod" value="${US_DASHBOARD_REMINDER_PERIOD.strValue}"/>
                         <div class="ui basic label">
                             ${message(code: 'profile.reminderDaysbeforeData')}
                         </div>
                     </div>
-                    %{--TODO: strValue überprüfen--}%
                 </div>
 
                 <div class="inline field">
@@ -147,6 +146,17 @@
                         <label>${message(code: 'profile.isRemindByEmail')}</label>
                     </div>
                 </div>
+
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <g:set var="isRemindCCByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
+                        <input type="checkbox" name="isRemindCCByEmail" class="hidden" value="Y" ${isRemindCCByEmail?'checked':''}/>
+                        <label>${message(code: 'profile.isRemindCCByEmail')}</label>
+                    </div>
+                    <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(UserSettings.KEYS.REMIND_CC_EMAILADDRESS)}"/>
+                    <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
+                </div>
+
                 <h5 class="ui header">
                     ${message(code: 'profile.reminder.for.label')}
                 </h5>

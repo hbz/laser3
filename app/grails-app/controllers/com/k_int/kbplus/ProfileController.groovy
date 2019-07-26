@@ -9,6 +9,7 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static de.laser.helper.RDStore.*
+import static de.laser.helper.RDStore.YN_YES
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
@@ -176,11 +177,21 @@ class ProfileController {
     flash.error = ""
     changeValue(user.getSetting(DASHBOARD_REMINDER_PERIOD, 14),    params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
 
-      if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO)) {
-          flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
-      } else {
-          changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
+    if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_YES)) {
+      flash.error += message(code:'profile.updateProfile.updated.isRemindByEmail.error')
+    } else {
+      changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
+    }
+    changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),    params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
+      if (user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO) && user.getSetting(IS_REMIND_CC_BY_EMAIL).equals(YN_YES)){
+          flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.isRemindByEmailNotChecked')
       }
+      changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),    params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
+    if ( (! user.getSetting(REMIND_CC_EMAILADDRESS, null) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_YES))) {
+      flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
+    } else {
+      changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
+    }
 
 
     changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
