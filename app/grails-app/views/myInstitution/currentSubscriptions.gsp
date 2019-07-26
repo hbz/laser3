@@ -174,6 +174,12 @@
                             if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
+                            if(!accessService.checkPerm("ORG_CONSORTIUM")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
+                            }
+                            else if(!accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                                subTypes -= RDStore.SUBSCRIPTION_TYPE_COLLECTIVE
+                            }
                         %>
                         <g:each in="${subTypes}" var="subType">
                             <div class="inline field">

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address" %>
 <!doctype html>
 <html>
 	<head>
@@ -9,7 +9,7 @@
 
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')?.id in addressInstance?.org?.getallOrgTypeIds())}">
+		<g:if test="${(RDStore.OT_PROVIDER.id in addressInstance?.org?.getallOrgTypeIds())}">
 			<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"/>
 			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>

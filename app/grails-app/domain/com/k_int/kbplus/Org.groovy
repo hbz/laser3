@@ -29,6 +29,8 @@ class Org
     @Transient
     def contextService
     def organisationService
+    @Transient
+    def accessService
 
     String name
     String shortname
@@ -593,6 +595,20 @@ class Org
         result
     }
 
+    boolean isInComboOfType(RefdataValue comboType) {
+        if(Combo.findByFromOrgAndType(this, comboType))
+            return true
+        return false
+    }
+
+    boolean isConsortiaMember() {
+        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM) && !accessService.checkPerm("ORG_INST")
+    }
+
+    boolean isDepartment() {
+        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !accessService.checkPerm("ORG_INST")
+    }
+
     // Only for ISIL, EZB, WIBID
     def addOnlySpecialIdentifiers(ns,value) {
         boolean found = false
@@ -653,4 +669,5 @@ class Org
         }
         check
     }
+
 }

@@ -48,18 +48,6 @@
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}" class="ui select dropdown"/>
                 </div>
 
-                <%--<g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
-                    <div class="field">
-                        <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
-
-                        <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
-                                <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
-                            </g:each>
-                        </select>
-
-                    </div>
-                </g:if>--%>
                 <div class="field">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
