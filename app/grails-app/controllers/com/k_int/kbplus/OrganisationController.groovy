@@ -242,7 +242,7 @@ class OrganisationController extends AbstractDebugController {
                     if (orgInstance.save(flush: true)) {
                         orgInstance.setDefaultCustomerType()
 
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
@@ -282,7 +282,7 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.addToOrgType(orgType2)
             orgInstance.save(flush:true)
 
-            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
         else {
@@ -324,7 +324,7 @@ class OrganisationController extends AbstractDebugController {
                 }
                 orgInstance.setDefaultCustomerType()
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
@@ -345,7 +345,7 @@ class OrganisationController extends AbstractDebugController {
                     newMember.save()
                 }
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.name])
                 redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
@@ -465,19 +465,27 @@ class OrganisationController extends AbstractDebugController {
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds())
-        {
+        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
             du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
             du.setBenchMark('editable2')
-            List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),result.orgInstance).collect { it ->
-                it.toOrg.id
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
+                    result.editable = true
             }
-            if(RDStore.OT_CONSORTIUM.id in result.institution.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
-                result.editable = true
+            else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                List<Long> department = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
+                    result.editable = true
+            }
             else
                 result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
