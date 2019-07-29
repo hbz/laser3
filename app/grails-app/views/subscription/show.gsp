@@ -215,7 +215,7 @@
                                             tmplShowPositions       : false,
                                             tmplShowResponsiblities : false,
                                             tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                            tmplUnlink          : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
+                                            tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
                                             controller          : 'subscription',
                                             action              : 'show',
                                             id                  : pse.tenant.id,

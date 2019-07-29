@@ -108,7 +108,7 @@
 
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="contact"
-                                        data-confirm-term-where="organisation"
+                                        data-confirm-term-where="${controller}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                     <i class="unlink icon"></i>
@@ -137,7 +137,7 @@
 
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="contact"
-                                        data-confirm-term-where="organisation"
+                                        data-confirm-term-where="${controller}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                     <i class="unlink icon"></i>
@@ -166,7 +166,7 @@
 
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="contact"
-                                        data-confirm-term-where="organisation"
+                                        data-confirm-term-where="${controller}"
                                         data-confirm-term-how="unlink"
                                         controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                                     <i class="unlink icon"></i>
@@ -181,14 +181,14 @@
 
     </div><!-- .la-flex-list -->
 
-    <g:if test="${tmplUnlink}"><%-- TODO.: refactoring layout --%>
+    <g:if test="${editable && tmplUnlinkedObj}"><%-- TODO.: refactoring layout --%>
 
-        <g:set var="oid" value="${tmplUnlink?.class.name}:${tmplUnlink?.id}"/>
+        <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
 
         <g:link class="ui mini icon negative button js-open-confirm-modal"
                 data-confirm-term-what="contact"
-                data-confirm-term-what-detail="${tmplUnlink.prs}"
-                data-confirm-term-where="subscription"
+                data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
+                data-confirm-term-where="${controller}"
                 data-confirm-term-how="unlink"
                 controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
             <i class="unlink icon"></i>
