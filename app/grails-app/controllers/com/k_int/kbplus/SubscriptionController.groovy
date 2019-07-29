@@ -2937,8 +2937,11 @@ class SubscriptionController extends AbstractDebugController {
         if (costItems.own.count > 0) {
             result.costItemSums.ownCosts = costItems.own.sums
         }
-        if (costItems.cons.count > 0) {
+        if (costItems.cons.count > 0 && accessService.checkPerm("ORG_CONSORTIUM")) {
             result.costItemSums.consCosts = costItems.cons.sums
+        }
+        else if(costItems.coll.count > 0 && accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            result.costItemSums.collCosts = costItems.coll.sums
         }
         if (costItems.subscr.count > 0) {
             result.costItemSums.subscrCosts = costItems.subscr.sums
@@ -3688,10 +3691,19 @@ class SubscriptionController extends AbstractDebugController {
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
-                if (params?.targetSubscriptionId){
+                if (params.isRenewSub && params.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 } else {
                     result << loadDataFor_Properties()
+                }
+                break;
+            case WORKFLOW_END:
+                if (params?.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             default:
