@@ -1,14 +1,14 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <%@ page import="static de.laser.helper.RDStore.*" %>
 <laser:serviceInjection />
 
-<g:set var="modalID"               value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
+<g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}" scope="request"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}" scope="request"/>
 
     <div>
     <label><g:message code="person.function.label" default="Function"/></label>&nbsp
@@ -33,22 +33,22 @@
     </div>
     <br />
     <div class="ui checkbox">
-        <input type="checkbox" id="public" checked/>
-        <label for="public">${message(code:'email.fromPublicContacts')}</label>
+        <input type="checkbox" id="publicContacts" checked/>
+        <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
     </div>
     <div class="ui checkbox">
-        <input type="checkbox" id="private" checked/>
-        <label for="private">${message(code:'email.fromPrivateAddressbook')}</label>
+        <input type="checkbox" id="privateContacts" checked/>
+        <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
     </div>
 
     <br><br>
     %{--Create Collections of EmailAdresses, that will be shown by javascript acconding to the dropdown selection--}%
     %{--Create a map with EmailAdresses for each Element in the dropdownmenu--}%
-    <g:set var="functionEmailsPublicMap" value="${new HashMap()}"/>
-    <g:set var="functionEmailsPrivateMap" value="${new HashMap()}"/>
+    <g:set var="functionPublicEmailsMap" value="${new HashMap()}"/>
+    <g:set var="functionPrivateEmailsMap" value="${new HashMap()}"/>
     %{--Create a set with all EmailAdresses, in case no dropdown Element is selected--}%
-    <g:set var="functionAllEmailsPublicSet" value="${new HashSet()}"/>
-    <g:set var="functionAllEmailsPrivateSet" value="${new HashSet()}"/>
+    <g:set var="functionAllPublicEmailsSet" value="${new HashSet()}"/>
+    <g:set var="functionAllPrivateEmailsSet" value="${new HashSet()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" >
         <g:set var="publicEmailsForFunction" value="${new HashSet()}"/>
         <g:set var="privateEmailsForFunction" value="${new HashSet()}"/>
@@ -60,7 +60,7 @@
                             def emailPF = email?.content?.trim()
                             if (emailPF != null) {
                                 publicEmailsForFunction.add( emailPF )
-                                functionAllEmailsPublicSet.add( emailPF )
+                                functionAllPublicEmailsSet.add( emailPF )
                             }
                         %>
                     </g:each>
@@ -71,16 +71,25 @@
                             emailPF = email?.content?.trim()
                             if (emailPF != null) {
                                 privateEmailsForFunction.add( emailPF )
-                                functionAllEmailsPrivateSet.add( emailPF )
+                                functionAllPrivateEmailsSet.add( emailPF )
                             }
                         %>
                     </g:each>
                 </g:elseif>
             </g:each>
+ %{--comment in for control purposes--}%
+            %{--<g:if test="${privateEmailsForFunction || publicEmailsForFunction}">--}%
+                %{--<g:textArea id="test1" name="test1" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" >--}%
+                    %{--${"---------privateEmailsForFunction for Org "+org.sortname+" and function "+prsFunction?.getI10n('value')+"-----"}--}%
+                    %{--${privateEmailsForFunction}--}%
+                    %{--${"---------publiceEmailsForFunction for Org "+org.sortname+" and function "+prsFunction?.getI10n('value')+"-----"}--}%
+                    %{--${publicEmailsForFunction}--}%
+                %{--</g:textArea>--}%
+            %{--</g:if>--}%
         </g:each>
         <%
-            functionEmailsPublicMap.put(prsFunction.id, publicEmailsForFunction)
-            functionEmailsPrivateMap.put(prsFunction.id, privateEmailsForFunction)
+            functionPublicEmailsMap.put(prsFunction.id, publicEmailsForFunction)
+            functionPrivateEmailsMap.put(prsFunction.id, privateEmailsForFunction)
         %>
     </g:each>
     <g:each in="${rdvAllPersonPositions}" var="prsPosition" >
@@ -94,7 +103,7 @@
                             def emailPP = email?.content?.trim()
                             if (emailPP != null) {
                                 publicEmailsForPosition.add(emailPP)
-                                functionAllEmailsPublicSet.add(emailPP)
+                                functionAllPublicEmailsSet.add(emailPP)
                             }
                         %>
                     </g:each>
@@ -105,7 +114,7 @@
                             emailPP = email?.content?.trim()
                             if (emailPP != null) {
                                 privateEmailsForPosition.add(emailPP)
-                                functionAllEmailsPrivateSet.add(emailPP)
+                                functionAllPrivateEmailsSet.add(emailPP)
                             }
                         %>
                     </g:each>
@@ -113,8 +122,8 @@
             </g:each>
         </g:each>
         <%
-            functionEmailsPublicMap.put(prsPosition.id, publicEmailsForPosition)
-            functionEmailsPrivateMap.put(prsPosition.id, privateEmailsForPosition)
+            functionPublicEmailsMap.put(prsPosition.id, publicEmailsForPosition)
+            functionPrivateEmailsMap.put(prsPosition.id, privateEmailsForPosition)
         %>
     </g:each>
     <div class="ui form">
@@ -154,15 +163,15 @@
             }).modal('show')
         });
 
-        var jsonEmailMapPublic = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsPublicMap)%>;
-        var jsonEmailMapPrivate = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsPrivateMap)%>;
-        var jsonAllEmailSetPublic = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsPublicSet)%>;
-        var jsonAllEmailSetPrivate = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsPrivateSet)%>;
+        var jsonFunctionPublicEmailsMap = <%=groovy.json.JsonOutput.toJson((Map)functionPublicEmailsMap)%>;
+        var jsonFunctionPrivateEmailsMap = <%=groovy.json.JsonOutput.toJson((Map)functionPrivateEmailsMap)%>;
+        var jsonFunctionAllPublicEmailsSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllPublicEmailsSet)%>;
+        var jsonFunctionAllPrivateEmailsSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllPrivateEmailsSet)%>;
 
         $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
         $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
-        $("#private").change(function() { updateTextArea(); });
-        $("#public").change(function() { updateTextArea(); });
+        $("#privateContacts").change(function() { updateTextArea(); });
+        $("#publicContacts").change(function() { updateTextArea(); });
 
         function copyToEmailProgram() {
             var emailAdresses = $("#emailAddressesTextArea").val();
@@ -175,19 +184,19 @@
         }
 
         function updateTextArea() {
-            var isPrivate = $("#private").is(":checked")
-            var isPublic = $("#public").is(":checked")
+            var isPrivate = $("#privateContacts").is(":checked")
+            var isPublic = $("#publicContacts").is(":checked")
             $("#emailAddressesTextArea").val("")
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
             if (selectedRoleTypIds.length == 0) {
-                if (isPrivate) emailsForSelectedRoleTypes.pushValues(jsonAllEmailSetPrivate);
-                if (isPublic) emailsForSelectedRoleTypes.pushValues(jsonAllEmailSetPublic);
+                if (isPrivate) emailsForSelectedRoleTypes.pushValues(jsonFunctionAllPrivateEmailsSet);
+                if (isPublic) emailsForSelectedRoleTypes.pushValues(jsonFunctionAllPublicEmailsSet);
             } else {
                 // Collect selected EmailAdresses from Map without duplicates
                 for (var i = 0; i<selectedRoleTypIds.length; i++) {
                     if (isPrivate){
-                        var tmpEmailArray = jsonEmailMapPrivate[selectedRoleTypIds[i]];
+                        var tmpEmailArray = jsonFunctionPrivateEmailsMap[selectedRoleTypIds[i]];
                         for (var j = 0; j<tmpEmailArray.length; j++) {
                             var email = tmpEmailArray[j].trim();
                             if ( ! emailsForSelectedRoleTypes.includes(email)) {
@@ -196,7 +205,7 @@
                         }
                     }
                     if (isPublic){
-                        var tmpEmailArray = jsonEmailMapPublic[selectedRoleTypIds[i]];
+                        var tmpEmailArray = jsonFunctionPublicEmailsMap[selectedRoleTypIds[i]];
                         for (var j = 0; j<tmpEmailArray.length; j++) {
                             var email = tmpEmailArray[j].trim();
                             if ( ! emailsForSelectedRoleTypes.includes(email)) {
