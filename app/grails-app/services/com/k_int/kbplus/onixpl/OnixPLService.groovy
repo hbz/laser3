@@ -334,7 +334,7 @@ class OnixPLService {
       Map row_cells = new TreeMap()
       
       // Initial value of key is the heading.
-      TreeList<String> keys = []
+      TreeList keys = []
       
       // Create list of element names.
       List el_names = data.keySet() as List

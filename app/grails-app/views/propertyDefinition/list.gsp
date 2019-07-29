@@ -35,7 +35,7 @@
                     <td>${fieldValue(bean: propDefInstance, field: "descr")}</td>
 
                     <td>${fieldValue(bean: propDefInstance, field: "type")}</td>
-      <g:set var="num_lcp" value="${propDefInstance.countOccurrences('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.SystemAdminCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
+      <g:set var="num_lcp" value="${propDefInstance.countOccurrences('com.k_int.kbplus.LicenseCustomProperty','com.k_int.kbplus.OrgCustomProperty')}" />
 
                     <td> ${num_lcp} </td>
                     <td class="link">
