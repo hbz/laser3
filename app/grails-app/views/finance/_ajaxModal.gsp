@@ -65,7 +65,7 @@
                 <%
                     OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id in [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIPTION_COLLECTIVE.id]}
                 %>
-                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
+                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE && costItem?.sub != sub}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>

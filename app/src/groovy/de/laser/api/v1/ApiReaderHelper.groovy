@@ -6,6 +6,7 @@ import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
+@Deprecated
 class ApiReaderHelper {
 
     final static NO_CONSTRAINT          = "NO_CONSTRAINT"

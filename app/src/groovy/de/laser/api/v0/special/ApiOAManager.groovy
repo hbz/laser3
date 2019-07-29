@@ -129,7 +129,6 @@ class ApiOAManager {
                 'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         ).each { sub ->
-
             result.add(ApiReaderHelper.requestSubscriptionStub(sub, org, true))
         }
 

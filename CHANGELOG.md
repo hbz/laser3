@@ -28,15 +28,29 @@
 
 0.18.3
 
-- TODO
+- improved display of persons
+- reworked creation and deletion of persons
+- removed role datamanager
+- changed survey finish message
+- minor markup changes
+- ERMS-1300, ERMS-1482
+- ERMS-1489, ERMS-1493
+- ERMS-980, ERMS-1059, ERMS-1171, ERMS-1204, ERMS-1486
 
 0.18.2
 
-- TODO
+- changed info box for adding ip ranges
+- ERMS-980, ERMS-1446, ERMS-1477, ERMS-1478 
 
 0.18.1
 
-- TODO
+- added dsgvo materials
+- fixed: adding access points
+- added tooltip delay
+- minor markup changes
+- api changes
+- ERMS-980, ERMS-1299, ERMS-1300, ERMS-1456, ERMS-1469
+- ERMS-1228, ERMS-1418, ERMS-1452
 
 0.18
 
