@@ -1,12 +1,10 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.onixpl.OnixPLHelperService
+import com.k_int.kbplus.onixpl.OnixPLService
 import de.laser.controller.AbstractDebugController
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.GrailsNameUtils
-
-import com.k_int.kbplus.onixpl.OnixPLHelperService
-import com.k_int.kbplus.onixpl.OnixPLService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OnixplLicenseCompareController extends AbstractDebugController {

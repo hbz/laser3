@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -9,9 +10,9 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
 import org.apache.poi.POIXMLProperties
+import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -20,10 +21,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
-import java.awt.Color
+import java.awt.*
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.List
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -58,7 +60,8 @@ class FinanceController extends AbstractDebugController {
         switch(params.view) {
             case "own": result.ownOffset = result.offset
                 break
-            case "cons": result.consOffset = result.offset
+            case "cons":
+            case "coll": result.consOffset = result.offset
                 break
             case "subscr": result.subscrOffset = result.offset
                 break
@@ -67,17 +70,27 @@ class FinanceController extends AbstractDebugController {
         }
         result.financialData = financeService.getCostItems(params,result.max)
         //replaces the mode check MODE_CONS vs. MODE_SUBSCR
-        if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
             result.showView = "cons"
             params.comboType = 'Consortium'
+            def fsq = filterService.getOrgComboQuery(params,result.institution)
+            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+        }
+        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            result.showView = "coll"
+            params.comboType = 'Department'
             def fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
         else result.showView = "subscr"
         if(params.ownSort)
             result.view = "own"
-        else if(params.consSort)
-            result.view = "cons"
+        else if(params.consSort) {
+            if(accessService.checkPerm("ORG_CONSORTIUM"))
+                result.view = "cons"
+            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                result.view = "coll"
+        }
         else if(params.subscrSort)
             result.view = "subscr"
         else result.view = params.view ? params.view : result.showView
@@ -100,6 +113,7 @@ class FinanceController extends AbstractDebugController {
             case "own": result.ownOffset = result.offset
                 break
             case "cons":
+            case "coll":
             case "consAtSubscr": result.consOffset = result.offset
                 break
             case "subscr": result.subscrOffset = result.offset
@@ -108,11 +122,19 @@ class FinanceController extends AbstractDebugController {
                 break
         }
         result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max,result.offset)
-        if(OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE])) {
+        if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
             params.comboType = "Consortium"
+            Map fsq = filterService.getOrgComboQuery(params,result.institution)
+            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+        }
+        else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_COLLECTIVE)) {
+            result.showView = "coll"
+            if(params.view.equals("consAtSubscr"))
+                result.showView = "consAtSubscr"
+            params.comboType = "Department"
             Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
@@ -123,7 +145,10 @@ class FinanceController extends AbstractDebugController {
         if(params.ownSort)
             result.view = "own"
         else if(params.consSort) {
-            result.view = "cons"
+            if(accessService.checkPerm("ORG_CONSORTIUM"))
+                result.view = "cons"
+            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                result.view = "coll"
             if(params.view == "consAtSubscr")
                 result.view = "consAtSubscr"
         }

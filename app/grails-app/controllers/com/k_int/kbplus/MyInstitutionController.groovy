@@ -2,29 +2,20 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.DashboardDueDate
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DebugAnnotation
-import de.laser.helper.DebugUtil
-import de.laser.helper.RDStore
-import de.laser.helper.DateUtil
-import de.laser.helper.SortUtil
-import de.laser.interfaces.TemplateSupport
+import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.time.TimeCategory
+import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-import com.k_int.properties.*
-import de.laser.DashboardDueDate
 import org.apache.poi.POIXMLProperties
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.ClientAnchor
-import org.apache.poi.ss.usermodel.CreationHelper
-import org.apache.poi.ss.usermodel.Drawing
-import org.apache.poi.ss.usermodel.FillPatternType
-import org.apache.poi.ss.usermodel.RichTextString
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -39,11 +30,8 @@ import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
-
 import java.text.SimpleDateFormat
-import groovy.sql.Sql
-
-import java.time.Year
+import java.util.List
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -338,7 +326,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.filterSet = params.filterSet ? true : false
 
         if (! params.orgRole) {
-            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -618,8 +606,6 @@ from License as l where (
             response.sendError(401)
             return;
         }
-
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         def cal = new java.util.GregorianCalendar()
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -1174,7 +1160,6 @@ from License as l where (
     })
     def emptySubscription() {
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
         
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -1216,7 +1201,6 @@ from License as l where (
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -3327,7 +3311,7 @@ AND EXISTS (
 
         // changes
 
-        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
+        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
         getTodoForInst(result, periodInDays)
 
@@ -4342,7 +4326,7 @@ AND EXISTS (
 
         du.setBenchMark('costs')
 
-        List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
+        List costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
@@ -4915,12 +4899,11 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {

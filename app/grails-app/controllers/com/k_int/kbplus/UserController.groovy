@@ -1,17 +1,14 @@
 package com.k_int.kbplus
 
-import de.laser.AccessService
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
-import grails.gorm.*
-import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-
-import java.security.MessageDigest
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UserController extends AbstractDebugController {

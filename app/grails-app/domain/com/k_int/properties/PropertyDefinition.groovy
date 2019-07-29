@@ -4,12 +4,18 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import de.laser.CacheService
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
-import groovy.util.logging.*
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import de.laser.helper.EhcacheWrapper
+import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
@@ -51,11 +57,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            //LIC_OA_PROP,
-            //LIC_ARC_PROP,
             ORG_CONF,
             SUB_PROP,
-            SYS_CONF,
+            //SYS_CONF,
             ORG_PROP
     ]
     @Transient
@@ -231,26 +235,42 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static def refdataFind(params) {
         def result = []
-        
-        def matches = I10nTranslation.refdataFindHelper(
-                params.baseClass,
-                'name',
-                params.q,
-                LocaleContextHolder.getLocale()
-        )
-        matches.each { it ->
-            // used for private properties
-            def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
 
-            if (tenantMatch) {
-                if (params.desc && params.desc != "*") {
-                    if (it.getDescr() == params.desc) {
+        CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+        EhcacheWrapper cache
+
+        if (! params.tenant) {
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/")
+        } else {
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/private/${params.desc}/tenant/${params.tenant}/")
+        }
+
+        if (cache.get('propDefs')) {
+            result = cache.get('propDefs')
+            log.debug('load propertyDefinitions from cache')
+        }
+        else {
+            def matches = I10nTranslation.refdataFindHelper(
+                    params.baseClass,
+                    'name',
+                    params.q,
+                    LocaleContextHolder.getLocale()
+            )
+            matches.each { it ->
+                // used for private properties
+                def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
+
+                if (tenantMatch) {
+                    if (params.desc && params.desc != "*") {
+                        if (it.getDescr() == params.desc) {
+                            result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                        }
+                    } else {
                         result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
                     }
-                } else {
-                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
                 }
             }
+            cache.put('propDefs', result)
         }
         result
     }

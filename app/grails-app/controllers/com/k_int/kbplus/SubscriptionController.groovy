@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.EntitlementCreationException
@@ -10,24 +12,18 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-
-import static de.laser.helper.RDStore.*
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
+import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
-import de.laser.AuditConfig
-
-// 2.0
-import grails.converters.*
-import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -35,6 +31,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
+
+// 2.0
 
 //For Transform
 
@@ -2356,10 +2356,6 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-
-        }
-
         params.gokbApi = false
 
         if (ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
@@ -2908,7 +2904,7 @@ class SubscriptionController extends AbstractDebugController {
                         }
 
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
+                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
                         result.usage = fsresult?.usage
                         result.x_axis_labels = fsresult?.x_axis_labels
                         result.y_axis_labels = fsresult?.y_axis_labels
@@ -2937,8 +2933,11 @@ class SubscriptionController extends AbstractDebugController {
         if (costItems.own.count > 0) {
             result.costItemSums.ownCosts = costItems.own.sums
         }
-        if (costItems.cons.count > 0) {
+        if (costItems.cons.count > 0 && accessService.checkPerm("ORG_CONSORTIUM")) {
             result.costItemSums.consCosts = costItems.cons.sums
+        }
+        else if(costItems.coll.count > 0 && accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            result.costItemSums.collCosts = costItems.coll.sums
         }
         if (costItems.subscr.count > 0) {
             result.costItemSums.subscrCosts = costItems.subscr.sums
@@ -3086,11 +3085,11 @@ class SubscriptionController extends AbstractDebugController {
     def renewSubscriptionConsortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
@@ -3477,11 +3476,11 @@ class SubscriptionController extends AbstractDebugController {
     def processSimpleRenewal_Consortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
@@ -3549,11 +3548,11 @@ class SubscriptionController extends AbstractDebugController {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.institution = contextService.org //TODO überprüfen, ob das richtig ist!!!
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
             def sdf = new SimpleDateFormat('dd.MM.yyyy')

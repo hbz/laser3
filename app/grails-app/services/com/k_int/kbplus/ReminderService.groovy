@@ -5,7 +5,7 @@ import de.laser.ContextService
 import de.laser.interfaces.AbstractLockableService
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
-import org.joda.time.*
+import org.joda.time.LocalDate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 

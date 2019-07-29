@@ -21,7 +21,7 @@
 
     <%-- does not work as it is mapped upon a DomainClass attribute <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 
-    <g:render template="/templates/documents/table" model="${[instance: Org.get(institution.id), context:'documents', redirect:'documents', owntp: 'org']}"/>
+    <g:render template="/templates/documents/table" model="${[instance: Org.get(institution.id), inContextOrg: true, context:'documents', redirect:'documents', owntp: 'org']}"/>
 
     <semui:paginate action="documents" params="${params}" total="${totalSize}"/>
   </body>

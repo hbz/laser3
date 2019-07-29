@@ -1,7 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.entities.*
+import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 

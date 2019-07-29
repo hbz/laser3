@@ -224,8 +224,8 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        log.debug("addDefaultJasperReports ..")
-        addDefaultJasperReports()
+        //log.debug("addDefaultJasperReports ..")
+        //addDefaultJasperReports()
 
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
@@ -256,8 +256,8 @@ class BootStrap {
             apiService.setupBasicData()
         }
 
-        log.debug("initializeDefaultSettings ..")
-        initializeDefaultSettings()
+        //log.debug("initializeDefaultSettings ..")
+        //initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()
@@ -376,8 +376,9 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
+    @Deprecated
     def initializeDefaultSettings(){
-
+        /*
         def admObj = SystemAdmin.list()
         if (! admObj) {
             log.debug("no SystemAdmin object found, creating new")
@@ -389,10 +390,12 @@ class BootStrap {
         createDefaultSysProps(admObj)
         admObj.refresh()
         log.debug("finished updating config from SystemAdmin")
+        */
     }
 
+    @Deprecated
     def createDefaultSysProps(admObj){
-
+        /*
         def allDescr = [en: PropertyDefinition.SYS_CONF, de: PropertyDefinition.SYS_CONF]
 
         def requiredProps = [
@@ -432,6 +435,7 @@ class BootStrap {
                 newProp.save()
             }
         }
+        */
     }
 
     def createOrgConfig() {
@@ -1566,9 +1570,11 @@ class BootStrap {
         }
     }
 
+    @Deprecated
     def addDefaultJasperReports() {
         //Add default Jasper reports, if there are currently no reports in DB
 
+        /*
         def reportsFound = JasperReportFile.findAll()
         def defaultReports = ["floating_titles", "match_coverage", "no_identifiers", "title_no_url",
                               "previous_expected_sub", "previous_expected_pkg", "duplicate_titles"]
@@ -1591,7 +1597,8 @@ class BootStrap {
                 }
             }
         }
-  }
+        */
+    }
 
     def ensurePermGrant(role, perm) {
         def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)

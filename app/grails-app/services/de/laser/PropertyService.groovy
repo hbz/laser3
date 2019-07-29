@@ -1,8 +1,7 @@
 package de.laser
 
-import com.k_int.kbplus.RefdataCategory
+
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
@@ -115,7 +114,7 @@ class PropertyService {
                 def query = "SELECT DISTINCT type FROM ${dc.name}"
                 //log.debug(query)
 
-                def pds = SystemAdmin.executeQuery(query)
+                def pds = PropertyDefinition.executeQuery(query)
                 log.debug(pds)
                 detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
 

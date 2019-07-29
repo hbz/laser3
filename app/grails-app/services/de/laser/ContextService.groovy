@@ -1,12 +1,12 @@
 package de.laser
 
-import net.sf.ehcache.Cache
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import de.laser.helper.EhcacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.CompileStatic
+import net.sf.ehcache.Cache
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsHttpSession
 import org.codehaus.groovy.grails.web.util.WebUtils

@@ -1,18 +1,13 @@
 package com.k_int.kbplus
 
-import static de.laser.interfaces.TemplateSupport.*
 import grails.transaction.Transactional
-
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
-import static de.laser.helper.RDStore.*
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Year
+import static de.laser.helper.RDStore.*
+import static de.laser.interfaces.TemplateSupport.*
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
@@ -46,7 +41,7 @@ class FinanceService {
      */
     Map getCostItemsForSubscription(Subscription sub,params,long max,int offset) {
         Org org = contextService.org
-        LinkedHashMap result = [own:[:],cons:[:],subscr:[:]]
+        LinkedHashMap result = [own:[:],cons:[:],coll:[:],subscr:[:]]
         int ownOffset = 0
         int consOffset = 0
         int subscrOffset = 0
@@ -55,6 +50,7 @@ class FinanceService {
                 if(params.max) max = Long.parseLong(params.max)
                 break
             case "cons":
+            case "coll":
             case "consAtSubscr": consOffset = offset
                 if(params.max) max =  Long.parseLong(params.max)
                 break
@@ -101,7 +97,7 @@ class FinanceService {
                     consSort = " order by ${params.sort} ${params.order}"
                 else
                     consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIPTION_COLLECTIVE,OR_SUBSCRIPTION_CONSORTIA]]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
@@ -113,6 +109,8 @@ class FinanceService {
                 if(result.cons.count > 0){
                     result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
                 }
+                if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                    result.coll = result.cons
                 break
         /*
             own costs, consortial participation costs
@@ -164,7 +162,7 @@ class FinanceService {
      * @return a LinkedHashMap with the cost items for each tab to display
      */
     Map getCostItems(params,long max) {
-        LinkedHashMap result = [own:[:],cons:[:],subscr:[:]]
+        LinkedHashMap result = [own:[:],cons:[:],coll:[:],subscr:[:]]
         Org org = contextService.org
         List filterQueryOwn = processFilterParams(params,"own",false)
         List filterQueryCons = processFilterParams(params,"cons",false)
@@ -175,7 +173,9 @@ class FinanceService {
         switch(params.view) {
             case "own": ownOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
-            case "cons": consOffset = params.offset ? Integer.parseInt(params.offset) : 0
+            case "cons":
+            case "coll":
+                consOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
             case "subscr": subscrOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
@@ -214,26 +214,52 @@ class FinanceService {
             consSort = " order by ${params.sort} ${params.order}"
         else
             consSort = " order by orgRoles.org.sortname asc "
-        List<CostItem> consortialSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
-                'join ci.owner orgC ' +
-                'join ci.sub sub ' +
-                'join sub.instanceOf subC ' +
-                'join subC.orgRelations roleC ' +
-                'join sub.orgRelations roleMC ' +
-                'join sub.orgRelations orgRoles ' +
-                'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
-                filterQueryCons[0] + consSort,
-                [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA,OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN,OR_SUBSCRIBER_COLLECTIVE]]+filterQueryCons[1])
-        result.cons.costItems = []
-        limit = consOffset+max
-        if(limit > consortialSubscriptionCostItems.size())
-            limit = consortialSubscriptionCostItems.size()
-        for(int i = consOffset;i < limit;i++){
-            result.cons.costItems.add(consortialSubscriptionCostItems[i])
+        List<CostItem> parentSubscriptionCostItems
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            parentSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
+                    'join ci.owner orgC ' +
+                    'join ci.sub sub ' +
+                    'join sub.instanceOf subC ' +
+                    'join subC.orgRelations roleC ' +
+                    'join sub.orgRelations roleMC ' +
+                    'join sub.orgRelations orgRoles ' +
+                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
+                    filterQueryCons[0] + consSort,
+                    [org:org,consortialType:[OR_SUBSCRIPTION_CONSORTIA],subscrType:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterQueryCons[1])
+            result.cons.costItems = []
+            limit = consOffset+max
+            if(limit > parentSubscriptionCostItems.size())
+                limit = parentSubscriptionCostItems.size()
+            for(int i = consOffset;i < limit;i++){
+                result.cons.costItems.add(parentSubscriptionCostItems[i])
+            }
+            result.cons.count = parentSubscriptionCostItems.size()
+            if(result.cons.count > 0) {
+                result.cons.sums = calculateResults(parentSubscriptionCostItems)
+            }
         }
-        result.cons.count = consortialSubscriptionCostItems.size()
-        if(result.cons.count > 0) {
-            result.cons.sums = calculateResults(consortialSubscriptionCostItems)
+        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            parentSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
+                    'join ci.owner orgC ' +
+                    'join ci.sub sub ' +
+                    'join sub.instanceOf subC ' +
+                    'join subC.orgRelations roleC ' +
+                    'join sub.orgRelations roleMC ' +
+                    'join sub.orgRelations orgRoles ' +
+                    'where orgC = :org and orgC = roleC.org and roleMC.roleType in :consortialType and orgRoles.roleType in (:subscrType) and ci.surveyOrg = null' +
+                    filterQueryCons[0] + consSort,
+                    [org:org,consortialType:[OR_SUBSCRIPTION_COLLECTIVE],subscrType:[OR_SUBSCRIBER_COLLECTIVE]]+filterQueryCons[1])
+            result.coll.costItems = []
+            limit = consOffset+max
+            if(limit > parentSubscriptionCostItems.size())
+                limit = parentSubscriptionCostItems.size()
+            for(int i = consOffset;i < limit;i++){
+                result.coll.costItems.add(parentSubscriptionCostItems[i])
+            }
+            result.coll.count = parentSubscriptionCostItems.size()
+            if(result.coll.count > 0) {
+                result.coll.sums = calculateResults(parentSubscriptionCostItems)
+            }
         }
         //get membership costs
         String subscrSort

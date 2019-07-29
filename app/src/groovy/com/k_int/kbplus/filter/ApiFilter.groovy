@@ -7,16 +7,16 @@ import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils
 import org.springframework.web.filter.GenericFilterBean
+
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.crypto.spec.SecretKeySpec
-import javax.crypto.Mac
 import java.security.SignatureException
-import com.k_int.kbplus.auth.User
 
 class ApiFilter extends GenericFilterBean {
 

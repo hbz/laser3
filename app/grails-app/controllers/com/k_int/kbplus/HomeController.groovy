@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.controller.AbstractDebugController
-import grails.converters.*
-import groovy.xml.MarkupBuilder
+import com.k_int.kbplus.auth.User
+import grails.converters.JSON
+import grails.converters.XML
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import groovy.xml.MarkupBuilder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class HomeController {

@@ -2,7 +2,7 @@
 
 <laser:serviceInjection/>
 
-<g:set var="departmentalView" value="${orgInstance.getallOrgTypeIds().contains(RDStore.OT_DEPARTMENT.id)}" />
+<g:set var="departmentalView" value="${orgInstance.isDepartment()}" />
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>

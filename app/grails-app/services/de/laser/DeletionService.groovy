@@ -2,9 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 //@CompileStatic

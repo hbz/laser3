@@ -153,7 +153,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in context?.getallOrgTypeIds())) {
+        if (org.id == context?.id || (RDStore.OT_CONSORTIUM.id in context?.getallOrgTypeIds())) {
             hasAccess = true
         }
         if (hasAccess) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
+<%@ page import="static de.laser.helper.RDStore.*; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:if test="${RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
+    <g:if test="${OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -33,7 +33,7 @@
 </semui:debugInfo>
 
 <g:render template="breadcrumb"
-          model="${[orgInstance: orgInstance, contextOrg: contextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
+          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, departmentalView: departmentalView, institutionalView: institutionalView]}"/>
 
 <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ORG_EDITOR,ROLE_ADMIN')}">
     <semui:controlButtons>
@@ -45,7 +45,7 @@
 ${orgInstance.name}
 </h1>
 
-<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+<g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
@@ -68,7 +68,7 @@ ${orgInstance.name}
                             <semui:xEditable owner="${orgInstance}" field="name"/>
                         </dd>
                     </dl>
-                    <g:if test="${orgInstance.id != contextService.getOrg()?.id || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                    <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                         <g:if test="${!departmentalView}">
                             <dl>
                                 <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
@@ -101,7 +101,7 @@ ${orgInstance.name}
                             </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                    <g:if test="${orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM")}">
                         <dl>
                             <dt><g:message code="org.urlGov.label"/></dt>
                             <dd>
@@ -116,7 +116,7 @@ ${orgInstance.name}
             </div><!-- .card -->
 
 
-            <g:if test="${(RDStore.OT_CONSORTIUM.id in orgInstance.getallOrgTypeIds() || RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()) && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
+            <g:if test="${orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
                 <div class="ui card">
                     <div class="content">
                         <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -182,10 +182,10 @@ ${orgInstance.name}
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${((fromCreate) && (orgInstance.id != contextOrg.id)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${(RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds())}">
+                        <g:if test="${orgInstance.hasPerm("ORG_INST")}">
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector"/></dt>
                                 <dd>
@@ -217,7 +217,7 @@ ${orgInstance.name}
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${((fromCreate) && (orgInstance.id != contextOrg.id)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${((fromCreate) && !inContextOrg) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                 <div class="ui card">
                     <div class="content">
                         <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
@@ -250,7 +250,7 @@ ${orgInstance.name}
 
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${RDStore.OT_INSTITUTION.id in orgInstance.getallOrgTypeIds()}">
+                    <g:if test="${orgInstance.hasPerm("ORG_INST")}">
                         <dl>
                             <dt>
                                 <g:message code="org.libraryType.label" default="Library Type"/>
@@ -318,7 +318,7 @@ ${orgInstance.name}
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+            <g:if test="${(OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -650,7 +650,8 @@ ${orgInstance.name}
                 <div id="new-dynamic-properties-block">
                     <g:render template="properties" model="${[
                             orgInstance   : orgInstance,
-                            authorizedOrgs: authorizedOrgs
+                            authorizedOrgs: authorizedOrgs,
+                            contextOrg: institution
                     ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>

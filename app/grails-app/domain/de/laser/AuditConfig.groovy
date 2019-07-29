@@ -1,6 +1,7 @@
 package de.laser
 
 import groovy.util.logging.Log4j
+
 import javax.persistence.Transient
 
 @Log4j

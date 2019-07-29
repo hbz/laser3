@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.properties.PropertyDefinition
 
 /**Org private properties are used to store Org related settings and options only for specific memberships**/
 class OrgPrivateProperty extends PrivateProperty {

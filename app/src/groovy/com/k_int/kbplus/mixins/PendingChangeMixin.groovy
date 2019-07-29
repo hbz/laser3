@@ -1,9 +1,11 @@
 package com.k_int.kbplus.mixins
 
-import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured // 2.0
-import com.k_int.kbplus.*;
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.PendingChange
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.auth.User
+
+// 2.0
 
 public class PendingChangeMixin {
 

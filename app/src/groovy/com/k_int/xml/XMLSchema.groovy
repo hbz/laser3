@@ -1,19 +1,11 @@
 package com.k_int.xml
 
-import javax.xml.transform.Transformer
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
-
 import org.apache.xerces.impl.xs.XSImplementationImpl
 import org.apache.xerces.impl.xs.XSLoaderImpl
 import org.apache.xerces.impl.xs.XSModelImpl
 import org.springframework.core.io.InputStreamSource
 import org.w3c.dom.bootstrap.DOMImplementationRegistry
 import org.w3c.dom.ls.LSInput
-
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration
-import com.sun.org.apache.xerces.internal.xs.XSModel
 
 class XMLSchema {
   

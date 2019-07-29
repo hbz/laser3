@@ -1,21 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.DocContext
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.IssueEntitlement
-import com.k_int.kbplus.Links
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgRole
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.SubscriptionCustomProperty
-import com.k_int.kbplus.SubscriptionPackage
-import com.k_int.kbplus.SubscriptionPrivateProperty
-import com.k_int.kbplus.Task
-import com.k_int.kbplus.TitleInstancePackagePlatform
+import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
@@ -23,11 +8,11 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
-import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.cfg.NotYetImplementedException
+
+import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
     def contextService
@@ -36,6 +21,7 @@ class SubscriptionService {
     def docstoreService
     def messageSource
     def locale
+    def accessService
 
     @javax.annotation.PostConstruct
     void init() {
@@ -47,7 +33,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
@@ -71,7 +57,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
