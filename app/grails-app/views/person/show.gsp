@@ -295,11 +295,11 @@ ${personInstance}
                                     </g:each>
                                 </div>
 
-                                <%--
-                                <g:if test="${editable}">
+
+                                <%--<g:if test="${editable}">
                                     <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                                </g:if>
-                                --%>
+                                </g:if>--%>
+
                             </dd></dl>
 
                     </div>
