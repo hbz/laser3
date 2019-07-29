@@ -9,6 +9,7 @@ import grails.converters.JSON
 import groovy.util.logging.Log4j
 
 @Log4j
+@Deprecated
 class ApiOrg {
 
     /**

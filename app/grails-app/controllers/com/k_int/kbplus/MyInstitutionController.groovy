@@ -328,7 +328,7 @@ class MyInstitutionController extends AbstractDebugController {
         result.filterSet = params.filterSet ? true : false
 
         if (! params.orgRole) {
-            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -608,8 +608,6 @@ from License as l where (
             response.sendError(401)
             return;
         }
-
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         def cal = new java.util.GregorianCalendar()
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -1164,7 +1162,6 @@ from License as l where (
     })
     def emptySubscription() {
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
         
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -1206,7 +1203,6 @@ from License as l where (
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         RefdataValue role_sub = RDStore.OR_SUBSCRIBER
         RefdataValue role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -3201,7 +3197,7 @@ AND EXISTS (
 
         du.setBenchMark('costs')
 
-        List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
+        List costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
@@ -3774,12 +3770,11 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgType = result.institution?.getallOrgTypeIds()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {

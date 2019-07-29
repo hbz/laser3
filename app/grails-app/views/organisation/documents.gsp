@@ -28,10 +28,10 @@
 
   <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
 
-    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+    <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/documents/table" model="${[instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
+    <g:render template="/templates/documents/table" model="${[inContextOrg: inContextOrg, instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
   </body>
 </html>

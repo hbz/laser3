@@ -6,6 +6,7 @@ import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
+@Deprecated
 class ApiReaderHelper {
 
     final static NO_CONSTRAINT          = "NO_CONSTRAINT"
@@ -152,7 +153,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in context?.getallOrgTypeIds())) {
+        if (org.id == context?.id || (RDStore.OT_CONSORTIUM.id in context?.getallOrgTypeIds())) {
             hasAccess = true
         }
         if (hasAccess) {

@@ -129,7 +129,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
+            def rdvConsortiumOrgRole = RDStore.OT_CONSORTIUM.id.toString()
 
             if (params.asOrgType) {
                 if (rdvConsortiumOrgRole in params.asOrgType) {

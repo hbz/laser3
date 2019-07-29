@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 
 @Log4j
+@Deprecated
 class ApiMainClass {
 
     /**

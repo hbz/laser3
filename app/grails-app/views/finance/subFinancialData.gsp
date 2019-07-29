@@ -14,6 +14,7 @@
         <laser:serviceInjection />
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
+        <g:set var="coll" value="${financialData.coll}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
@@ -80,8 +81,17 @@
             <g:set var="showConsortiaFunctions" value="true"/>
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.consortialCosts')}"/>
         </g:if>
+        <g:elseif test="${showView.equals("coll")}">
+            <g:set var="showCollectiveFunctions" value="true"/>
+            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.collectiveCosts')}"/>
+        </g:elseif>
         <g:elseif test="${showView.equals("consAtSubscr")}">
-            <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
+            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
+            </g:if>
+            <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
+                <g:set var="totalString" value="${coll.count ? coll.count : 0} ${message(code:'financials.header.collectiveCosts')}"/>
+            </g:elseif>
         </g:elseif>
         <g:elseif test="${showView.equals("subscr") && accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")}">
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"/>

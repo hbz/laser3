@@ -22,6 +22,7 @@ class SubscriptionService {
     def docstoreService
     def messageSource
     def locale
+    def accessService
 
     @javax.annotation.PostConstruct
     void init() {
@@ -33,7 +34,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 
@@ -57,7 +58,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(contextService.org.getallOrgTypeIds().contains(OT_CONSORTIUM.id)) {
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery()
             result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 

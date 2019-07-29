@@ -10,6 +10,7 @@ import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
 @Log4j
+@Deprecated
 class ApiDoc {
 
     /**

@@ -256,8 +256,8 @@ class BootStrap {
             apiService.setupBasicData()
         }
 
-        log.debug("initializeDefaultSettings ..")
-        initializeDefaultSettings()
+        //log.debug("initializeDefaultSettings ..")
+        //initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()
@@ -376,8 +376,9 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
+    @Deprecated
     def initializeDefaultSettings(){
-
+        /*
         def admObj = SystemAdmin.list()
         if (! admObj) {
             log.debug("no SystemAdmin object found, creating new")
@@ -389,16 +390,17 @@ class BootStrap {
         createDefaultSysProps(admObj)
         admObj.refresh()
         log.debug("finished updating config from SystemAdmin")
+        */
     }
 
+    @Deprecated
     def createDefaultSysProps(admObj){
-
+        /*
         def allDescr = [en: PropertyDefinition.SYS_CONF, de: PropertyDefinition.SYS_CONF]
 
         def requiredProps = [
                 [name: [en: "onix_ghost_license"],
-                    descr:allDescr, type: OT.String, val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."]
-                /*
+                    descr:allDescr, type: OT.String, val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1"],
                     descr:allDescr, type: OT.String, val:"columnHeader", note:"Only show 1 column header for csv"],
                 [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1"],
@@ -411,7 +413,6 @@ class BootStrap {
                     descr:allDescr, type: OT.String, val:"pageHeader", note: " Remove header/footer from csv/xls"],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.2"],
                     descr:allDescr, type: OT.String, val:"pageFooter", note: " Remove header/footer from csv/xls"]
-                */
         ]
 
         requiredProps.each { prop ->
@@ -434,6 +435,7 @@ class BootStrap {
                 newProp.save()
             }
         }
+        */
     }
 
     def createOrgConfig() {
