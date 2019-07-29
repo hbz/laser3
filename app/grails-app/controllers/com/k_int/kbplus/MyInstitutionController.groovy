@@ -4326,7 +4326,7 @@ AND EXISTS (
 
         du.setBenchMark('costs')
 
-        List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
+        List costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()

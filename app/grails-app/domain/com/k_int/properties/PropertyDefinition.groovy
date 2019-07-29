@@ -57,11 +57,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            //LIC_OA_PROP,
-            //LIC_ARC_PROP,
             ORG_CONF,
             SUB_PROP,
-            SYS_CONF,
+            //SYS_CONF,
             ORG_PROP
     ]
     @Transient

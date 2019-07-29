@@ -111,11 +111,11 @@ class YodaController {
     def appConfig() {
         Map result = [:]
         //SystemAdmin should only be created once in BootStrap
-        result.adminObj = SystemAdmin.list().first()
+        //result.adminObj = SystemAdmin.list().first()
         result.editable = true
-        if (request.method == "POST") {
-            result.adminObj.refresh()
-        }
+        //if (request.method == "POST") {
+        //    result.adminObj.refresh()
+        //}
         result.currentconf = grails.util.Holders.config
 
         result
