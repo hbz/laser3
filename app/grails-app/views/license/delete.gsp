@@ -53,7 +53,9 @@
                         </g:else>
                     </td>
                     <td>
-                        ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
+                        <div style="overflow-y:scroll;scrollbar-color:grey white;max-height:14.25em">
+                            ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.sort().join(', ')}
+                        </div>
                     </td>
                 </tr>
             </g:each>

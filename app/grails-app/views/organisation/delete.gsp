@@ -4,28 +4,50 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'org.label')}</title>
 </head>
 
 <body>
-    <g:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
+    <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${subscription.name}
+        ${orgInstance?.name}
     </h1>
 
     <g:if test="${deletionService.RESULT_SUCCESS != result?.status}">
         <g:render template="nav" />
     </g:if>
 
+    <h3>{ BAUSTELLE }</h3>
+
     <g:if test="${dryRun}">
-        <semui:msg class="info" header="" message="subscription.delete.info" />
-        <br />
-        <g:link controller="subscription" action="edit" params="${[id: subscription.id]}" class="ui button">Vorgang abbrechen</g:link>
-        <g:if test="${editable}">
-            <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">Lizenzen löschen</g:link>
+        <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+            <semui:msg class="info" header="" message="org.delete.info2" />
         </g:if>
+        <g:else>
+            <semui:msg class="info" header="" message="org.delete.info" />
+        </g:else>
+
         <br />
+
+        <g:if test="${editable}">
+            <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}">
+                <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button">Vorgang abbrechen</g:link>
+                <input disabled type="submit" class="ui button red" value="Organisation löschen" />
+
+                <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                    <br /><br />
+                    Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
+
+                    <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
+                              from="${substituteList.sort()}"
+                              optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
+                </g:if>
+            </g:form>
+        </g:if>
+
+        <br />
+
         <table class="ui celled la-table la-table-small table">
             <thead>
             <tr>
@@ -43,11 +65,8 @@
                     <td style="text-align:center">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
                             <span class="ui circular label ${info[2]}"
-                                <g:if test="${info[2] == 'red'}">
-                                    data-tooltip="${message(code:'subscription.delete.blocker')}"
-                                </g:if>
-                                <g:if test="${info[2] == 'yellow'}">
-                                    data-tooltip="${message(code:'subscription.existingCostItems.warning')}"
+                                <g:if test="${info[2] == 'blue'}">
+                                    data-tooltip="${message(code:'org.delete.moveToNewOrg')}"
                                 </g:if>
                             >${info[1].size()}</span>
                         </g:if>
@@ -69,17 +88,17 @@
     <g:if test="${result?.status == deletionService.RESULT_SUCCESS}">
         <semui:msg class="positive" header=""
                    text="Löschvorgang wurde erfolgreich durchgeführt." />
-        <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">Meine Lizenzen</g:link>
+        <g:link controller="organisation" action="listInstitution" class="ui button">Alle Einrichtungen</g:link>
     </g:if>
     <g:if test="${result?.status == deletionService.RESULT_QUIT}">
         <semui:msg class="negative" header="Löschvorgang abgebrochen"
-                   text="Es existieren Teilnehmerlizenzen. Diese müssen zuerst gelöscht werden." />
-        <g:link controller="subscription" action="delete" params="${[id: subscription.id]}" class="ui button">Zur Übersicht</g:link>
+                   text="Es existieren relevante Verknüpfungen. Diese müssen zuerst gelöscht werden." />
+        <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
     </g:if>
     <g:if test="${result?.status == deletionService.RESULT_ERROR}">
         <semui:msg class="negative" header="Unbekannter Fehler"
                    text="Der Löschvorgang wurde abgebrochen." />
-        <g:link controller="subscription" action="delete" params="${[id: subscription.id]}" class="ui button">Zur Übersicht</g:link>
+        <g:link controller="organisation" action="_delete" params="${[id: orgInstance.id]}" class="ui button">Zur Übersicht</g:link>
     </g:if>
 
 </body>

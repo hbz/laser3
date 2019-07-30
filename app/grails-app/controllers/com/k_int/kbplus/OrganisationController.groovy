@@ -4,6 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -29,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def docstoreService
     def instAdmService
     def organisationService
+    def deletionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -715,23 +718,34 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def delete() {
-        def orgInstance = Org.get(params.id)
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-            return
+    def _delete() {
+        def result = [:]
+
+        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")  // TODO
+        result.orgInstance = Org.get(params.id)
+
+        if (result.orgInstance) {
+            if (params.process  && result.editable) {
+                //result.result = deletionService.deleteOrganisation(result.orgInstance, false) // TODO enable
+            }
+            else {
+                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+            }
+
+            if (contextService.getUser().isAdmin()) {
+                result.substituteList = Org.executeQuery("select distinct o from Org o where o.status.value != 'Deleted'")
+            }
+            else {
+                List<Org> orgList = [result.orgInstance]
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.status.value != 'Deleted' and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.status.value != 'Deleted' and cmb.fromOrg = :org", [org: result.orgInstance]))
+                orgList.unique()
+
+                result.substituteList = orgList
+            }
         }
 
-        try {
-            orgInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        render view: 'delete', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
