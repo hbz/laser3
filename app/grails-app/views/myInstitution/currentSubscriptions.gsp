@@ -163,8 +163,7 @@
 
         </div>
 
-        <div class="three fields">
-            <div class="ten wide field">
+        <div class="field">
                 <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
 
                 <fieldset id="subscritionType">
@@ -193,10 +192,10 @@
                         </g:each>
                     </div>
                 </fieldset>
-            </div>
+        </div>
 
-
-            <div class="six wide field">
+        <div class="two fields">
+            <div class="field">
                 <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                 <%--
                 <g:if test="${params.orgRole == 'Subscriber'}">
@@ -238,13 +237,11 @@
                 </g:if>
             </div>
 
-
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+            </div>
         </div>
-                    <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
-                    </div>
-
 
     </g:form>
 </semui:filter>

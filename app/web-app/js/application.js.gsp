@@ -480,6 +480,9 @@ r2d2 = {
                         case "organisation":
                             var messageWhere = "mit der Organisation";
                             break;
+                        case "subscription":
+                            var messageWhere = "mit der Lizenz";
+                            break;
                         default:
                             var messageWhere = where;
                     }

@@ -1,6 +1,7 @@
-<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
-<%@ page import="com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <r:require module="annotations" />
 
@@ -196,6 +197,55 @@
                     </div>
                 </div>
 
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt class="control-label"><g:message code="license.responsibilites" default="Responsibilites" /></dt>
+                            <dd>
+
+                                <g:each in="${publicSubscriptionEditors}" var="pse">
+                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                            person              : pse,
+                                            personContext       : pse.tenant,
+                                            tmplShowDeleteButton    : true,
+                                            tmplShowAddPersonRoles  : false,
+                                            tmplShowAddContacts     : true,
+                                            tmplShowAddAddresses    : true,
+                                            tmplShowFunctions       : false,
+                                            tmplShowPositions       : false,
+                                            tmplShowResponsiblities : false,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                            tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
+                                            controller          : 'subscription',
+                                            action              : 'show',
+                                            id                  : pse.tenant.id,
+                                            editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                    ]}"/>
+
+                                </g:each>
+                            </dd>
+                        </dl>
+
+                        <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
+
+                            <div class="ui la-vertical buttons">
+                                <input class="ui button"
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                                       data-semui="modal"
+                                       data-href="#prsLinksModal" />
+                            </div>
+
+                            <g:render template="/templates/links/prsResponsibilityModal"
+                                      model="[
+                                              parent: subscriptionInstance,
+                                              modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
+                                              org: contextOrg,
+                                              role: modalPrsLinkRole
+                                      ]"/>
+                        </g:if>
+                    </div>
+                </div>
+
                 <g:if test="${subscriptionInstance.packages}">
                     <div class="ui card la-js-hideable hidden">
                         <div class="content">
@@ -283,26 +333,6 @@
                      </dd>
                </dl>
                </g:if */ %>
-
-                    <%--
-                        <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
-
-                        <g:render template="/templates/links/prsLinksModal"
-                              model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                    --%>
-
-                    <% /*
-                <dl>
-                    <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
-                    <dd>
-                        <g:render template="/templates/links/prsLinks" model="[tmplShowFunction:false]"/>
-
-                        <g:render template="/templates/links/prsLinksModal"
-                                  model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                    </dd>
-                </dl>
-            */ %>
-
 
                     </div>
                 </div>

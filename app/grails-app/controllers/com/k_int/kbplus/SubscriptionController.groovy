@@ -2966,6 +2966,9 @@ class SubscriptionController extends AbstractDebugController {
 
         //}
 
+
+        result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
+
         List bm = du.stopBenchMark()
         result.benchMark = bm
 
@@ -2974,6 +2977,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result
     }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Local() {
