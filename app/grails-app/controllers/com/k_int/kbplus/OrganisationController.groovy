@@ -711,39 +711,33 @@ class OrganisationController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN'])
     def _delete() {
-        //def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         def result = [:]
-        result.editable = true // TODO
-        result.orgInstance = Org.get(params.id) // TODO
 
-        if (params.process  && result.editable) {
-            //result.result = deletionService.deleteOrganisation(result.orgInstance, false)
-            result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
-        }
-        else {
-            result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")  // TODO
+        result.orgInstance = Org.get(params.id)
+
+        if (result.orgInstance) {
+            if (params.process  && result.editable) {
+                //result.result = deletionService.deleteOrganisation(result.orgInstance, false) // TODO enable
+            }
+            else {
+                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+            }
+
+            if (contextService.getUser().isAdmin()) {
+                result.substituteList = Org.executeQuery("select distinct o from Org o where o.status.value != 'Deleted'")
+            }
+            else {
+                List<Org> orgList = [result.orgInstance]
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.status.value != 'Deleted' and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.status.value != 'Deleted' and cmb.fromOrg = :org", [org: result.orgInstance]))
+                orgList.unique()
+
+                result.substituteList = orgList
+            }
         }
 
         render view: 'delete', model: result
-
-        /*
-        def orgInstance = Org.get(params.id)
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        try {
-            orgInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'show', id: params.id
-        }
-        */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
