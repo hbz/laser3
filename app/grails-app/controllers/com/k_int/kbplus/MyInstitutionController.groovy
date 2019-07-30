@@ -20,20 +20,16 @@ import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
-import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
-import java.awt.Color
-import java.nio.charset.Charset
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
 import java.text.SimpleDateFormat
-import java.util.List
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -2398,15 +2394,19 @@ AND EXISTS (
                 Map<String,Map> financialData = financeService.financeImport(tsvFile)
                 result.candidates = financialData.candidates
                 result.budgetCodes = financialData.budgetCodes
+                result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                                         'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
+                                         'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
+                                         'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
                 render view: 'postProcessingFinanceImport', model: result
             }
             else {
-                flash.error = message(code:'myinst.financeImport.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
                 redirect(url: request.getHeader('referer'))
             }
         }
         else {
-            flash.error = message(code:'myinst.financeImport.error.noFileProvided')
+            flash.error = message(code:'default.import.error.noFileProvided')
             redirect(url: request.getHeader('referer'))
         }
     }
@@ -2417,8 +2417,8 @@ AND EXISTS (
     })
     def subscriptionImport() {
         def result = setResultGenerics()
-        result.mappingCols = ["name","status","type","form","resource","startDate","endDate","manualRenewalDate",
-                              "manualCancellationDate","isAdministrative","member","customProperties","privateProperties"]
+        result.mappingCols = ["name","owner","status","type","form","resource","startDate","endDate","instanceOf",
+                              "manualCancellationDate","member","customProperties","privateProperties"]
         result
     }
 
@@ -2430,20 +2430,27 @@ AND EXISTS (
         def result = setResultGenerics()
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
-            InputStream stream = tsvFile.getInputStream()
-            String encoding = UniversalDetector.detectCharset(stream)
+            String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
             if(encoding == "UTF-8") {
                 result.filename = tsvFile.originalFilename
-                Map<String,Map> subscriptionData = subscriptionService.subscriptionImport(stream)
+                Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
+                if(subscriptionData.globalErrors)
+                    flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
+                result.candidates = subscriptionData.candidates
+                result.parentSubType = subscriptionData.parentSubType
+                result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
+                                         'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
+                                         'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
+                                         'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
                 render view: 'postProcessingSubscriptionImport', model: result
             }
             else {
-                flash.error = message(code:'myinst.subscriptionImport.error.wrongCharset',args:[encoding])
+                flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
                 redirect(url: request.getHeader('referer'))
             }
         }
         else {
-            flash.error = message(code:'myinst.subscriptionImport.error.noFileProvided')
+            flash.error = message(code:'default.import.error.noFileProvided')
             redirect(url: request.getHeader('referer'))
         }
     }

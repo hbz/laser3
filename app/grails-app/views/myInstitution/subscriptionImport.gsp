@@ -1,9 +1,10 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;static de.laser.helper.RDStore.*" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser')} : ${message(code:'myinst.subscriptionImport.pageTitle')}</title>
+    <title><g:message code="laser"/> : <g:message code="myinst.subscriptionImport.pageTitle"/></title>
   </head>
 
   <body>
@@ -14,19 +15,18 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.subscriptionImport')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.subscriptionImport"/></h1>
 
-          ${message(code:'myinst.subscriptionImport.headline')}
-          <%-- continue here: make the template and make then test processes --%>
+          <g:message code="myinst.subscriptionImport.headline"/>
           <a href="${resource(dir: 'resources/downloadFile', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">
-            <p>${message(code:'myinst.subscriptionImport.template')}</p>
+            <p><g:message code="myinst.subscriptionImport.template"/></p>
           </a>
          <table class="ui celled striped table la-table">
            <thead>
              <tr>
-                <th>${message(code:'myinst.subscriptionImport.tsvColumnName')}</th>
-                <th>${message(code:'myinst.subscriptionImport.descriptionColumnName')}</th>
-                <th>${message(code:'myinst.subscriptionImport.necessaryFormat')}</th>
+                <th><g:message code="myinst.subscriptionImport.tsvColumnName"/></th>
+                <th><g:message code="myinst.subscriptionImport.descriptionColumnName"/></th>
+                <th><g:message code="myinst.subscriptionImport.necessaryFormat"/></th>
               </tr>
             </thead>
             <tbody>
@@ -35,6 +35,14 @@
                     List args = []
                     switch(mpg) {
                         case 'status': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Status').collect { it -> it.getI10n('value') })
+                            break
+                        case 'instanceOf':
+                            List<String> parentSubscriptionType = []
+                            if(accessService.checkPerm("ORG_CONSORTIUM"))
+                                parentSubscriptionType << SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')
+                            else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+                                parentSubscriptionType << SUBSCRIPTION_TYPE_COLLECTIVE.getI10n('value')
+                            args.addAll(parentSubscriptionType)
                             break
                         case 'type': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Type').collect { it -> it.getI10n('value') })
                             break
@@ -45,7 +53,7 @@
                     }
                 %>
                 <tr>
-                    <td>${message(code:"myinst.subscriptionImport.${mpg}")}</td>
+                    <td>${message(code:"myinst.subscriptionImport.${mpg}",args:args ?: '')}</td>
                     <td>${message(code:"myinst.subscriptionImport.description.${mpg}") ?: ''}</td>
                     <td>${message(code:"myinst.subscriptionImport.format.${mpg}",args:[raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
                 </tr>
@@ -53,16 +61,16 @@
             </tbody>
           </table>
 
-          <g:form action="processSubscriptionImport" method="post" enctype="multipart/form-data">
+          <g:uploadForm action="processSubscriptionImport" method="post">
             <dl>
               <div class="field">
-                <dt>${message(code:'myinst.subscriptionImport.upload')}</dt>
+                <dt><g:message code="myinst.subscriptionImport.upload"/></dt>
                 <dd>
                   <input type="file" name="tsvFile" />
                 </dd>
               </div>
-              <button class="ui button" name="load" type="submit" value="Go">${message(code:"myinst.subscriptionImport.upload")}</button>
+              <button class="ui button" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
             </dl>
-          </g:form>
+          </g:uploadForm>
   </body>
 </html>

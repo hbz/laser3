@@ -23,15 +23,6 @@ class FinanceService {
     def accessService
     def escapeService
 
-    List<SimpleDateFormat> possible_date_formats = [
-            new SimpleDateFormat('yyyy/MM/dd'),
-            new SimpleDateFormat('dd.MM.yyyy'),
-            new SimpleDateFormat('dd/MM/yyyy'),
-            new SimpleDateFormat('dd/MM/yy'),
-            new SimpleDateFormat('yyyy/MM'),
-            new SimpleDateFormat('yyyy')
-    ]
-
     /**
      * Will replace the methods index and financialData methods in FinanceController class for a single subscription.
      * Retrieves the cost item data for the given subscription type and returns a map grouping the cost items per view.
@@ -592,8 +583,7 @@ class FinanceService {
         Map<String,Map> result = [:]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
-        InputStream stream = tsvFile.getInputStream()
-        List<String> rows = stream.text.split('\n')
+        List<String> rows = tsvFile.getInputStream().text.split('\n')
         Map<String,Integer> colMap = [:]
         rows[0].split('\t').eachWithIndex { String headerCol, int c ->
             switch(headerCol.toLowerCase().trim()) {
@@ -698,7 +688,7 @@ class FinanceService {
                 //fetch possible identifier namespaces
                 List<Org> orgMatches = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.org.id as string) = :idCandidate or idOcc.org.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :wibid)",[idCandidate:orgIdentifier,wibid:namespaces.wibid])
                 if(orgMatches.size() > 1)
-                    mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname }
+                    mappingErrorBag.multipleOrgsError = orgMatches.collect { org -> org.sortname ?: org.name }
                 else if(orgMatches.size() == 1) {
                     if(!accessService.checkPerm('ORG_CONSORTIUM') && orgMatches[0].id != contextOrg.id) {
                         mappingErrorBag.ownerMismatchError = orgMatches[0]
@@ -864,7 +854,7 @@ class FinanceService {
             }
             //datePaid(nullable: true, blank: false) -> to date paid
             if(colMap.datePaid != null) {
-                Date datePaid = parseDate(cols[colMap.datePaid])
+                Date datePaid = escapeService.parseDate(cols[colMap.datePaid])
                 if(datePaid)
                     costItem.datePaid = datePaid
             }
@@ -975,7 +965,7 @@ class FinanceService {
             }
             //invoiceDate(nullable: true, blank: false) -> to invoice date
             if(colMap.invoiceDate != null) {
-                Date invoiceDate = parseDate(cols[colMap.invoiceDate])
+                Date invoiceDate = escapeService.parseDate(cols[colMap.invoiceDate])
                 if(invoiceDate)
                     costItem.invoiceDate = invoiceDate
             }
@@ -1034,13 +1024,13 @@ class FinanceService {
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
-                Date startDate = parseDate(cols[colMap.dateFrom])
+                Date startDate = escapeService.parseDate(cols[colMap.dateFrom])
                 if(startDate)
                     costItem.startDate = startDate
             }
             //endDate(nullable: true, blank: false) -> to date to
             if(colMap.dateTo != null) {
-                Date endDate = parseDate(cols[colMap.dateTo])
+                Date endDate = escapeService.parseDate(cols[colMap.dateTo])
                 if(endDate)
                     costItem.endDate = endDate
             }
@@ -1051,22 +1041,6 @@ class FinanceService {
         result.candidates = candidates
         result.budgetCodes = budgetCodes
         result
-    }
-
-    def parseDate(datestr) {
-        def parsed_date = null;
-        if (datestr && (datestr.toString().trim().length() > 0)) {
-            for (Iterator<SimpleDateFormat> i = possible_date_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
-                SimpleDateFormat next = i.next()
-                try {
-                    parsed_date = next.parse(datestr.toString())
-                }
-                catch (Exception e) {
-                    log.info("Parser for ${next.toPattern()} could not parse date ${datestr}. Trying next one ...")
-                }
-            }
-        }
-        parsed_date
     }
 
 }
