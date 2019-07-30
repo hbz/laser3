@@ -2,7 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.SystemProfiler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 //@CompileStatic
@@ -357,6 +361,120 @@ class DeletionService {
         result
     }
 
+    static Map<String, Object> deleteOrganisation(Org org, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        List links          = Links.where { objectType == org.class.name &&
+                (source == org.id || destination == org.id) }.findAll()
+
+        List ios            = new ArrayList(org.ids)
+        List outgoingCombos = new ArrayList(org.outgoingCombos)
+        List incomingCombos = new ArrayList(org.incomingCombos)
+
+        List orgTypes      = new ArrayList(org.orgType)
+        List orgLinks      = new ArrayList(org.links)
+        List orgSettings   = OrgSettings.findAllWhere(org: org)
+        List userSettings  = UserSettings.findAllWhere(orgValue: org)
+
+        List addresses      = new ArrayList(org.addresses)
+        List contacts       = new ArrayList(org.contacts)
+        List prsLinks       = new ArrayList(org.prsLinks)
+        List persons        = Person.findAllByTenant(org)
+        List affiliations   = new ArrayList(org.affiliations)
+        List docContexts    = new ArrayList(org.documents)
+        List platforms      = new ArrayList(org.platforms)
+        List tips           = TitleInstitutionProvider.findAllByInstitution(org)
+        List tipsProviders  = TitleInstitutionProvider.findAllByProvider(org)
+
+        List customProperties       = new ArrayList(org.customProperties)
+        List privateProperties      = new ArrayList(org.privateProperties)
+        List propertyDefinitions    = PropertyDefinition.findAllByTenant(org)
+        List propDefGroups          = PropertyDefinitionGroup.findAllByTenant(org)
+        List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByOrg(org)
+
+        List budgetCodes        = BudgetCode.findAllByOwner(org)
+        List costItems          = CostItem.findAllByOwner(org)
+        List costItemsECs       = CostItemElementConfiguration.findAllByForOrganisation(org)
+        List invoices           = Invoice.findAllByOwner(org)
+        List orderings          = Order.findAllByOwner(org)
+
+        List dashboardDueDates  = DashboardDueDate.findAllByResponsibleOrg(org)
+        List documents          = Doc.findAllByOwner(org)
+        List pendingChanges     = PendingChange.findAllByOwner(org)
+        List tasks              = Task.findAllByOrg(org)
+        List tasksResp          = Task.findAllByResponsibleOrg(org)
+        List systemMessages     = SystemMessage.findAllByOrg(org)
+        List systemProfilers    = SystemProfiler.findAllByContext(org)
+
+        List facts              = Fact.findAllByInst(org)
+        List readerNumbers      = ReaderNumber.findAllByOrg(org)
+        List orgAccessPoints    = OrgAccessPoint.findAllByOrg(org)
+        List orgTitleStats      = OrgTitleStats.findAllByOrg(org)
+
+        List surveyInfos        = SurveyInfo.findAllByOwner(org)
+        List surveyProperties   = SurveyProperty.findAllByOwner(org)
+        List surveyResults      = SurveyResult.findAllByOwner(org)
+        List surveyResultsParts = SurveyResult.findAllByParticipant(org)
+
+        if (dryRun) {
+            result.info = []
+
+            result.info << ['Links: Orgs', links]
+
+            result.info << ['Identifikatoren', ios]
+            result.info << ['Combos (out)', outgoingCombos]
+            result.info << ['Combos (in)', incomingCombos]
+
+            result.info << ['OrgTypes', orgTypes]
+            result.info << ['OrgLinks', orgLinks]
+            result.info << ['Einstellungen', orgSettings]
+            result.info << ['Nutzer-Einstellungen', userSettings]
+
+            result.info << ['Adressen', addresses]
+            result.info << ['Kontaktdaten', contacts]
+            result.info << ['Personen', prsLinks]
+            result.info << ['Personen (tenant)', persons]
+            result.info << ['Zugehörigkeiten', affiliations]
+            result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+            result.info << ['Platformen', platforms]
+            result.info << ['TitleInstitutionProvider (inst)', tips]
+            result.info << ['TitleInstitutionProvider (provider)', tipsProviders]
+
+            result.info << ['Allgemeine Merkmale', customProperties]
+            result.info << ['Private Merkmale', privateProperties]
+            result.info << ['Merkmalsdefinitionen', propertyDefinitions]
+            result.info << ['Merkmalsgruppen', propDefGroups]
+            result.info << ['Merkmalsgruppenzuweisungen', propDefGroupBindings]
+
+            result.info << ['BudgetCodes', budgetCodes]
+            result.info << ['CostItems', costItems]
+            result.info << ['CostItemElementConfigurations', costItemsECs]
+            result.info << ['Invoices', invoices]
+            result.info << ['Orders', orderings]
+
+            result.info << ['Dokumente (owner)', documents]
+            result.info << ['DashboardDueDates (responsibility)', dashboardDueDates]
+            result.info << ['Anstehende Änderungen', pendingChanges]
+            result.info << ['Tasks (owner)', tasks]
+            result.info << ['Tasks (responsibility)', tasksResp]
+            result.info << ['SystemMessages', systemMessages]
+            result.info << ['SystemProfilers', systemProfilers]
+
+            result.info << ['Facts', facts]
+            result.info << ['ReaderNumbers', readerNumbers]
+            result.info << ['OrgAccessPoints', orgAccessPoints]
+            result.info << ['OrgTitleStats', orgTitleStats]
+
+            result.info << ['SurveyInfos', surveyInfos]
+            result.info << ['SurveyProperties', surveyProperties]
+            result.info << ['SurveyResults (owner)', surveyResults]
+            result.info << ['SurveyResults (participant)', surveyResultsParts]
+        }
+
+        result
+    }
+
     static Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -402,13 +520,13 @@ class DeletionService {
             //result.info << ['Kosten', costItems, 'blue']
             result.info << ['Kostenkonfigurationen', ciecs, 'blue']
             result.info << ['DashboardDueDate', ddds]
-            result.info << ['Dokumente', docs, 'teal']
+            result.info << ['Dokumente', docs, 'blue']
             result.info << ['Links', links, 'blue']
-            result.info << ['Anstehende Änderungen', pendingChanges, 'teal']
+            result.info << ['Anstehende Änderungen', pendingChanges, 'blue']
             result.info << ['Reminder', reminders]
-            result.info << ['Umfrageergebnisse', surveyResults, 'teal']
-            result.info << ['Tickets', systemTickets, 'teal']
-            result.info << ['Aufgaben', tasks, 'teal']
+            result.info << ['Umfrageergebnisse', surveyResults, 'blue']
+            result.info << ['Tickets', systemTickets, 'blue']
+            result.info << ['Aufgaben', tasks, 'blue']
         }
         else {
             User.withTransaction { status ->

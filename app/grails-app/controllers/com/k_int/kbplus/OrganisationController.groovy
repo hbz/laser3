@@ -4,6 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -29,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def docstoreService
     def instAdmService
     def organisationService
+    def deletionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -707,7 +710,23 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def delete() {
+    def _delete() {
+        //def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        def result = [:]
+        result.editable = true // TODO
+        result.orgInstance = Org.get(params.id) // TODO
+
+        if (params.process  && result.editable) {
+            //result.result = deletionService.deleteOrganisation(result.orgInstance, false)
+            result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+        }
+        else {
+            result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+        }
+
+        render view: 'delete', model: result
+
+        /*
         def orgInstance = Org.get(params.id)
         if (!orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -724,6 +743,7 @@ class OrganisationController extends AbstractDebugController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'show', id: params.id
         }
+        */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
