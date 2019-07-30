@@ -2434,14 +2434,13 @@ AND EXISTS (
             if(encoding == "UTF-8") {
                 result.filename = tsvFile.originalFilename
                 Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
-                if(subscriptionData.globalErrors)
+                if(subscriptionData.globalErrors) {
                     flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
+                    redirect(action: 'subscriptionImport')
+                }
                 result.candidates = subscriptionData.candidates
                 result.parentSubType = subscriptionData.parentSubType
-                result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
-                                         'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
-                                         'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                         'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
+                result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
                 render view: 'postProcessingSubscriptionImport', model: result
             }
             else {

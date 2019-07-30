@@ -5,7 +5,7 @@
   Time: 08:44
 --%>
 
-<%@ page import="grails.converters.JSON;com.k_int.kbplus.OrgRole;de.laser.helper.RDStore" contentType="text/html;charset=UTF-8" %>
+<%@ page import="grails.converters.JSON;com.k_int.kbplus.OrgRole;static de.laser.helper.RDStore.*" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>
     <head>
@@ -22,23 +22,12 @@
         <semui:messages data="${flash}" />
         <h2><g:message code="myinst.subscriptionImport.post.header2"/></h2>
         <h3><g:message code="myinst.subscriptionImport.post.header3"/></h3>
-        <g:form name="costItemParameter" action="addCostItems" controller="subscription" method="post">
+        <g:form name="subscriptionParameter" action="addSubscriptions" controller="subscription" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <table class="ui striped table">
                 <thead>
                     <tr>
                         <th rowspan="2"><g:message code="myinst.subscriptionImport.post.subscription"/></th>
-                        <%-- 
-                            administrative(nullable:false, blank:false, default: false) -> handled in second step
-                            isSlaved(nullable:true, blank:false) -> handled in second step
-                        --%>
-                        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                            <th rowspan="2"><g:message code="myinst.subscriptionImport.post.makeAdministrative"/></th>
-                            <th rowspan="2"><g:message code="myinst.subscriptionImport.post.makeSlaved"/></th>
-                        </g:if>
-                        <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
-                            <th rowspan="2"><g:message code="myinst.subscriptionImport.post.makeSlaved"/></th>
-                        </g:elseif>
                         <th><g:message code="myinst.subscriptionImport.post.takeItem"/></th>
                     </tr>
                     <tr>
@@ -54,7 +43,7 @@
                                     <g:set var="errors" value="${row.getValue()}"/>
                                     <li><g:message code="myinst.subscriptionImport.name"/>: ${sub.name}</li>
                                     <li><g:message code="myinst.subscriptionImport.owner"/>: ${genericOIDService.resolveOID(sub.owner)}</li>
-                                    <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                                    <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>
@@ -64,32 +53,38 @@
                                     <li><g:message code="myinst.subscriptionImport.resource"/>: ${genericOIDService.resolveOID(sub.resource)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
-                                    <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li>
+                                        Merkmale:
+                                        <ul>
+                                            <g:each in="${sub.properties?.entrySet()}" var="prop">
+                                                <%
+                                                    String value = genericOIDService.resolveOID(prop.getValue())?.getI10n("value")
+                                                    if(!value)
+                                                        value = prop.getValue()
+                                                %>
+                                                <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value}</li>
+                                            </g:each>
+                                        </ul>
+                                    </li>
                                     <li>Fehler:
                                         <ul>
                                             <g:each in="${errors}" var="error">
                                                 <g:if test="${error.getKey() in criticalErrors}">
                                                     <g:set var="withCriticalErrors" value="true"/>
                                                 </g:if>
-                                                <li>${message(code:"myinst.subscriptionImport.post.error.${error.getKey()}",args:[error.getValue()])}</li>
+                                                <%
+                                                    List args
+                                                    if(!(error.getValue() instanceof List))
+                                                        args = [error.getValue()]
+                                                    else args = error.getValue()
+                                                %>
+                                                <li>${message(code:"myinst.subscriptionImport.post.error.${error.getKey()}",args:args)}</li>
                                             </g:each>
                                         </ul>
                                     </li>
                                 </ul>
                             </td>
-                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                                <td>
-                                    ${message(code:'myinst.subscriptionImport.post.isAdministrative')} <input name="isAdministrative${r}" type="radio" value="true"><br>${message(code:'myinst.subscriptionImport.post.isNotAdministrative')} <input name="isAdministrative${r}" type="radio" value="false" checked>
-                                </td>
-                                <td>
-                                    ${message(code:'myinst.subscriptionImport.post.isSlaved')} <input name="isSlaved${r}" type="radio" value="true"><br>${message(code:'myinst.subscriptionImport.post.isNotSlaved')} <input name="isSlaved${r}" type="radio" value="false" checked>
-                                </td>
-                            </g:if>
-                            <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
-                                <td>
-                                    ${message(code:'myinst.subscriptionImport.post.isAdministrative')} <input name="isAdministrative${r}" type="radio" value="true"><br>${message(code:'myinst.subscriptionImport.post.isNotAdministrative')} <input name="isAdministrative${r}" type="radio" value="false" checked>
-                                </td>
-                            </g:elseif>
                             <td>
                                 <g:if test="${!withCriticalErrors}">
                                     <g:checkBox name="take${r}" class="ciSelect"/>

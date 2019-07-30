@@ -664,15 +664,16 @@ class SubscriptionService {
             comboType = COMBO_TYPE_DEPARTMENT
             parentSubType = [SUBSCRIPTION_TYPE_COLLECTIVE.getI10n('value')]
         }
-        Map<String, Integer> colMap = [:]
-        Map<String, Integer> propMap = [:]
+        Map colMap = [:]
+        Map<String, Map<String, Integer>> propMap = [:]
         Map candidates = [:]
         InputStream fileContent = tsvFile.getInputStream()
         List<String> rows = fileContent.text.split('\n')
         List<String> ignoredColHeads = [], multiplePropDefs = []
-        rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+        rows[0].split('\t').eachWithIndex { String s, int c ->
+            String headerCol = s.trim()
             //important: when processing column headers, grab those which are reserved; default case: check if it is a name of a property definition; if there is no result as well, reject.
-            switch(headerCol.toLowerCase().trim()) {
+            switch(headerCol.toLowerCase()) {
                 case "name": colMap.name = c
                     break
                 case "member":
@@ -714,11 +715,18 @@ class SubscriptionService {
                     break
                 default:
                     //check if property definition
-                    Map queryParams = [propDef:"%${headerCol.toLowerCase()}%",pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
-                    List<PropertyDefinition> propDef = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) like :propDef or lower(i.valueEn) like :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
-                    if(propDef.size() == 1)
-                        propMap[propDef.class.name+':'+propDef.id] = c
-                    else if(propDef.size() > 1)
+                    Map queryParams = [propDef:"${headerCol.toLowerCase()}",pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
+                    List<PropertyDefinition> posiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    if(posiblePropDefs.size() == 1) {
+                        PropertyDefinition propDef = posiblePropDefs[0]
+                        String refCategory = ""
+                        if(propDef.type == RefdataValue.toString()) {
+                            refCategory = propDef.refdataCategory
+                        }
+                        Map<String,Integer> defPair = [colno:c,refCategory:refCategory]
+                        propMap[propDef.class.name+':'+propDef.id] = defPair
+                    }
+                    else if(posiblePropDefs.size() > 1)
                         multiplePropDefs << headerCol
                     else
                         ignoredColHeads << headerCol
@@ -732,7 +740,7 @@ class SubscriptionService {
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
         rows.remove(0)
         rows.each { row ->
-            Map mappingErrorBag = [:], candidate = [:]
+            Map mappingErrorBag = [:], candidate = [properties: [:]]
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...
             //status(nullable:false, blank:false) -> to status, defaults to status not set
@@ -773,15 +781,17 @@ class SubscriptionService {
             //owner(nullable:true, blank:false) -> to license
             if(colMap.owner != null) {
                 String ownerKey = cols[colMap.owner]
-                List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
-                if(licCandidates.size() == 1) {
-                    License owner = licCandidates[0]
-                    candidate.owner = "${owner.class.name}:${owner.id}"
+                if(ownerKey) {
+                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
+                    if(licCandidates.size() == 1) {
+                        License owner = licCandidates[0]
+                        candidate.owner = "${owner.class.name}:${owner.id}"
+                    }
+                    else if(licCandidates.size() > 1)
+                        mappingErrorBag.multipleLicenseError = ownerKey
+                    else
+                        mappingErrorBag.noValidLicense = ownerKey
                 }
-                else if(licCandidates.size() > 1)
-                    mappingErrorBag.multipleLicenseError = colMap.owner
-                else
-                    mappingErrorBag.noValidLicense = colMap.owner
             }
             //type(nullable:true, blank:false) -> to type
             if(colMap.type != null) {
@@ -869,21 +879,26 @@ class SubscriptionService {
                 String memberIdCandidate = cols[colMap.member]
                 if(idCandidate && memberIdCandidate) {
                     List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
-                    List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNamespace('wibid'),contextOrg: contextOrg,type: comboType])
+                    List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                     if(parentSubs.size() == 1) {
                         Subscription instanceOf = parentSubs[0]
                         candidate.instanceOf = "${instanceOf.class.name}:${instanceOf.id}"
+                        if(!candidate.name)
+                            candidate.name = instanceOf.name
                     }
                     else {
                         mappingErrorBag.noValidSubscription = idCandidate
                     }
-                    //further check needed: is the subscriber linked per combo to the organisation?
                     if(possibleOrgs.size() == 1) {
+                        //further check needed: is the subscriber linked per combo to the organisation?
                         Org member = possibleOrgs[0]
                         candidate.member = "${member.class.name}:${member.id}"
                     }
                     else if(possibleOrgs.size() > 1) {
                         mappingErrorBag.multipleOrgsError = possibleOrgs.collect { org -> org.sortname ?: org.name }
+                    }
+                    else {
+                        mappingErrorBag.noValidOrg = memberIdCandidate
                     }
                 }
                 else {
@@ -895,28 +910,27 @@ class SubscriptionService {
             }
             else {
                 if(colMap.instanceOf == null && colMap.member != null)
-                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
-                if(colMap.instanceOf != null && colMap.member == null)
                     globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.memberWithoutInstanceOf',null,locale)
+                if(colMap.instanceOf != null && colMap.member == null)
+                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
             }
             //properties -> propMap
+            propMap.each { String k, Map defPair ->
+                if(cols[defPair.colno].trim()) {
+                    def v
+                    if(defPair.refCategory) {
+                        v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
+                        if(!v) {
+                            mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
+                        }
+                    }
+                    else v = cols[defPair.colno]
+                    candidate.properties[k] = v
+                }
+            }
             candidates.put(candidate,mappingErrorBag)
         }
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
-    }
-
-    void addSubscriptions() {
-        //set some global params ...
-        //boolean asConsortium = false, asCollective = false
-        RefdataValue comboType
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            //asConsortium = true
-            comboType = COMBO_TYPE_CONSORTIUM
-        }
-        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-            //asCollective = true
-            comboType = COMBO_TYPE_DEPARTMENT
-        }
     }
 
 }

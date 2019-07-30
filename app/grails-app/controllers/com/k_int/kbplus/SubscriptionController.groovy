@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
+import de.laser.RefdataService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
@@ -60,7 +61,7 @@ class SubscriptionController extends AbstractDebugController {
     def propertyService
     def factService
     def docstoreService
-    def ESWrapperService
+    def refdataService
     def globalSourceSyncService
     def dataloadService
     def GOKbService
@@ -4236,6 +4237,134 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
 
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addSubscriptions() {
+        boolean withErrors = false
+        Org contextOrg = contextService.org
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        flash.error = ""
+        def candidates = JSON.parse(params.candidates)
+        candidates.eachWithIndex{ entry, int s ->
+            if(params["take${s}"]) {
+                //create object itself
+                Subscription sub = new Subscription(name: entry.name, 
+                        status: genericOIDService.resolveOID(entry.status),
+                        type: genericOIDService.resolveOID(entry.type),
+                        form: genericOIDService.resolveOID(entry.form),
+                        resource: genericOIDService.resolveOID(entry.resource),
+                        identifier: UUID.randomUUID(),
+                        isPublic: YN_NO)
+                sub.startDate = entry.startDate ? sdf.parse(entry.startDate) : null
+                sub.endDate = entry.endDate ? sdf.parse(entry.endDate) : null
+                sub.manualCancellationDate = entry.manualCancellationDate ? sdf.parse(entry.manualCancellationDate) : null
+                if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
+                    sub.administrative = true
+                sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
+                sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
+                Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
+                if(sub.instanceOf && member)
+                    sub.isSlaved = YN_YES
+                if(sub.save()) {
+                    //create the org role associations
+                    RefdataValue parentRoleType, memberRoleType
+                    switch(sub.type) {
+                        case SUBSCRIPTION_TYPE_CONSORTIAL:
+                        case SUBSCRIPTION_TYPE_NATIONAL:
+                        case SUBSCRIPTION_TYPE_ALLIANCE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                            memberRoleType = OR_SUBSCRIBER_CONS
+                            break
+                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                            memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
+                            break
+                        case SUBSCRIPTION_TYPE_COLLECTIVE: parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
+                            memberRoleType = OR_SUBSCRIBER_COLLECTIVE
+                            break
+                        default: parentRoleType = OR_SUBSCRIBER
+                            break
+                    }
+                    OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
+                    if(!parentRole.save()) {
+                        withErrors = true
+                        flash.error += parentRole.getErrors()
+                    }
+                    if(memberRoleType && member) {
+                        OrgRole memberRole = new OrgRole(roleType: memberRoleType, sub: sub, org: member)
+                        if(!memberRole.save()) {
+                            withErrors = true
+                            flash.error += memberRole.getErrors()
+                        }
+                    }
+                    //process subscription properties
+                    entry.properties.each { k, v ->
+                        log.debug("${k}:${v}")
+                        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
+                        List<String> valueList
+                        if(propDef.multipleOccurrence) {
+                            valueList = v.split(',')
+                        }
+                        else valueList = [v]
+                        //in most cases, valueList is a list with one entry
+                        valueList.each { value ->
+                            try {
+                                createProperty(propDef,sub,contextOrg,value)
+                            }
+                            catch (Exception e) {
+                                withErrors = true
+                                flash.error += e.getMessage()
+                            }
+                        }
+                    }
+                }
+                else {
+                    withErrors = true
+                    flash.error += sub.getErrors()
+                }
+            }
+        }
+        if(!withErrors)
+            redirect controller: 'myInstitution', action: 'currentSubscriptions'
+        else redirect(url: request.getHeader("referer"))
+    }
+
+    private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value) {
+        //check if private or custom property
+        AbstractProperty prop
+        if(propDef.tenant == contextOrg) {
+            //process private property
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef)
+        }
+        else {
+            //process custom property
+            prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef)
+        }
+        switch(propDef.type) {
+            case Integer.toString(): int intVal = Integer.parseInt(value)
+                prop.setIntValue(intVal)
+                break
+            case BigDecimal.toString(): BigDecimal decVal = new BigDecimal(value)
+                prop.setDecValue(decVal)
+                break
+            case RefdataValue.toString(): RefdataValue rdv = genericOIDService.resolveOID(value)
+                if(rdv)
+                    prop.setRefValue(rdv)
+                break
+            case Date.toString(): Date date = parseDate(value,possible_date_formats)
+                if(date)
+                    prop.setDateValue(date)
+                break
+            case URL.toString(): URL url = new URL(value)
+                if(url)
+                    prop.setUrlValue(url)
+                break
+            default: prop.setStringValue(value)
+                break
+        }
+        prop.save()
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {

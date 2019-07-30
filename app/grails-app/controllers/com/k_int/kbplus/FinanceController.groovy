@@ -1203,6 +1203,7 @@ class FinanceController extends AbstractDebugController {
         }
         if(!withErrors)
             redirect action: 'index'
+        else redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
