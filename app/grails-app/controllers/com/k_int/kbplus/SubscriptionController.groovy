@@ -1726,11 +1726,16 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        result.superOrgType = []
         if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
-            if(accessService.checkPerm('ORG_CONSORTIUM'))
+            if(accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.comboType = COMBO_TYPE_CONSORTIUM.value
-            if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
+                result.superOrgType << message(code:'consortium.superOrgType')
+            }
+            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
                 params.comboType = COMBO_TYPE_DEPARTMENT.value
+                result.superOrgType << message(code:'collective.superOrgType')
+            }
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = []

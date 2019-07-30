@@ -433,11 +433,11 @@ class DeletionService {
                     userTransforms.each { tmp -> tmp.delete() }
 
                     // cost items
-                    costItems.each { tmp ->
-                        tmp.lastUpdatedBy = replacement
-                        tmp.createdBy = replacement
-                        tmp.save()
-                    }
+                    //costItems.each { tmp ->
+                    //    tmp.lastUpdatedBy = replacement
+                    //    tmp.createdBy = replacement
+                    //    tmp.save()
+                    //}
 
                     // cost item element configurations
                     ciecs.each { tmp ->
