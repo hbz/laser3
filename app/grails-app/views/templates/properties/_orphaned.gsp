@@ -103,7 +103,7 @@
                     </td>
                     <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
-                            <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
+                            <g:if test="${ownobj.hasProperty('instanceOf') && (showConsortiaFunctions || showCollectiveFunctions)}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
@@ -199,6 +199,7 @@
                 <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                 <input type="hidden" name="editable" value="${editable}"/>
                 <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
+                <input type="hidden" name="showCollectiveFunctions" value="${showCollectiveFunctions}"/>
                 <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
                 <input type="hidden" name="onlyOrphaned" value="onlyOrphaned"/><%-- switch for ajax controller --%>
 

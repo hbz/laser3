@@ -1,6 +1,7 @@
-<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
-<%@ page import="com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.OrgRole" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 <r:require module="annotations" />
 
@@ -42,7 +43,7 @@
 
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
         <g:render template="message" />
     </g:if>
 
@@ -115,7 +116,7 @@
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id])}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
@@ -193,6 +194,55 @@
                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt class="control-label"><g:message code="license.responsibilites" default="Responsibilites" /></dt>
+                            <dd>
+
+                                <g:each in="${publicSubscriptionEditors}" var="pse">
+                                    <g:render template="/templates/cpa/person_full_details" model="${[
+                                            person              : pse,
+                                            personContext       : pse.tenant,
+                                            tmplShowDeleteButton    : true,
+                                            tmplShowAddPersonRoles  : false,
+                                            tmplShowAddContacts     : true,
+                                            tmplShowAddAddresses    : true,
+                                            tmplShowFunctions       : false,
+                                            tmplShowPositions       : false,
+                                            tmplShowResponsiblities : false,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                            tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
+                                            controller          : 'subscription',
+                                            action              : 'show',
+                                            id                  : pse.tenant.id,
+                                            editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                    ]}"/>
+
+                                </g:each>
+                            </dd>
+                        </dl>
+
+                        <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
+
+                            <div class="ui la-vertical buttons">
+                                <input class="ui button"
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
+                                       data-semui="modal"
+                                       data-href="#prsLinksModal" />
+                            </div>
+
+                            <g:render template="/templates/links/prsResponsibilityModal"
+                                      model="[
+                                              parent: subscriptionInstance,
+                                              modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
+                                              org: contextOrg,
+                                              role: modalPrsLinkRole
+                                      ]"/>
+                        </g:if>
                     </div>
                 </div>
 
@@ -284,26 +334,6 @@
                </dl>
                </g:if */ %>
 
-                    <%--
-                        <g:render template="/templates/links/prsLinksAsList" model="[tmplShowFunction:false]"/>
-
-                        <g:render template="/templates/links/prsLinksModal"
-                              model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                    --%>
-
-                    <% /*
-                <dl>
-                    <dt><g:message code="license.responsibilites" default="Responsibilites" /></dt>
-                    <dd>
-                        <g:render template="/templates/links/prsLinks" model="[tmplShowFunction:false]"/>
-
-                        <g:render template="/templates/links/prsLinksModal"
-                                  model="['subscription': subscriptionInstance, parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id, role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
-                    </dd>
-                </dl>
-            */ %>
-
-
                     </div>
                 </div>
 
@@ -380,17 +410,23 @@
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
-                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                <g:if test="${costItemSums.ownCosts || costItemSums.collCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
-                            <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
-                                <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
+                            <g:if test="${costItemSums.ownCosts}">
+                                <g:if test="${(!(contextOrg.id in [subscription.getConsortia()?.id,subscription.getCollective()?.id]) && subscription.instanceOf) || !subscription.instanceOf}">
+                                    <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                                    <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
+                                </g:if>
                             </g:if>
                             <g:if test="${costItemSums.consCosts}">
                                 <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.consCosts]"/>
                             </g:if>
+                            <g:elseif test="${costItemSums.collCosts}">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.collCosts')}</h5>
+                                <g:render template="financials" model="[data:costItemSums.collCosts]"/>
+                            </g:elseif>
                             <g:elseif test="${costItemSums.subscrCosts}">
                                 <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
                                 <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>

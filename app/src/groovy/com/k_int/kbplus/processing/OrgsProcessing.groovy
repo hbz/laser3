@@ -1,7 +1,8 @@
 package com.k_int.kbplus.processing
 
+import com.k_int.kbplus.Identifier
+import com.k_int.kbplus.IdentifierOccurrence
 import org.apache.commons.logging.LogFactory
-import com.k_int.kbplus.*
 
 public class OrgsProcessing {
 

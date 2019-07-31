@@ -33,6 +33,13 @@ class OrganisationService {
     def grailsApplication
     List<String> errors = []
 
+    void initMandatorySettings(Org org) {
+        log.debug('initMandatorySettings for org #' + org.id)
+
+        // called after
+        // new Org.save()
+    }
+
     /**
      * Exports organisation data in the given format. It can be specified if higher education titles should be outputted or not.
      * Do NOT mix this method with exportOrgs of MyInstitutionController which is for consortia subscription members! That method should be generalised as well!!
@@ -375,14 +382,14 @@ class OrganisationService {
                                    contactTypes:localRDStoreContactType,
                                    exampleOrgs:exampleOrgs,
                                    examplePackages:examplePackages]
-                if(RDStore.OT_INSTITUTION.id in current.getallOrgTypeIds()) {
+                if(current.hasPerm("ORG_INST")) {
                     return setupTestDataForInst(generalData,current)
                 }
-                else if(RDStore.OT_CONSORTIUM.id in current.getallOrgTypeIds()) {
+                else if(current.hasPerm("ORG_CONSORTIUM")) {
                     return setupTestDataForCons(generalData,current)
                 }
                 else {
-                    errors.add("Kein Einrichtungstyp gegeben!")
+                    errors.add("Kein Kundentyp gegeben!")
                     return false
                 }
             }

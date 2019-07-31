@@ -7,16 +7,13 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.commons.lang.StringUtils
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
-import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
-import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -616,21 +613,20 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        //result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.surveyProperties = result.surveyConfig?.surveyProperties
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && result.institution.id == result.surveyInfo.owner.id
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        result.surveyProperties = result.surveyConfig?.surveyProperties
 
         result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 

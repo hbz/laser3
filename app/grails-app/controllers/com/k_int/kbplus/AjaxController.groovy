@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
@@ -10,12 +11,12 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import com.k_int.properties.PropertyDefinition
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -549,57 +550,57 @@ class AjaxController {
 
     def getPropValues() {
         Set result = []
-        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-        if(propDef) {
-            List<AbstractProperty> values
-            if(propDef.tenant) {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
-                        break
-                }
-            }
-            else {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicenseCustomProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgCustomProperty.findAllByType(propDef)
-                        break
-                }
-            }
-
-            if(values) {
-                if(propDef.type == Integer.toString()) {
-                    values.each { v ->
-                        if(v.intValue != null)
-                            result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+        if(params.oid != "undefined") {
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if(propDef) {
+                List<AbstractProperty> values
+                if(propDef.tenant) {
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareTo y.text}
                 }
                 else {
-                    values.each { v ->
-                        if(v.getValue() != null)
-                            result.add([value:v.getValue(),text:v.getValue()])
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.executeQuery('select scp from SubscriptionCustomProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                }
+
+                if(values) {
+                    if(propDef.type == Integer.toString()) {
+                        values.each { v ->
+                            if(v.intValue != null)
+                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                        }
+                        result = result.sort { x, y -> x.text.compareTo y.text}
+                    }
+                    else {
+                        values.each { v ->
+                            if(v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.getValue()])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                    }
                 }
             }
         }
-
-
         //excepted structure: [[value:,text:],[value:,text:]]
         withFormat {
             json {
@@ -1186,12 +1187,14 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+      boolean showCollectiveFunctions = Boolean.parseBoolean(params.showCollectiveFunctions)
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
+                showCollectiveFunctions: showCollectiveFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
@@ -1204,6 +1207,7 @@ class AjaxController {
                 ownobj          : owner,
                 newProp         : newProp,
                 showConsortiaFunctions: showConsortiaFunctions,
+                showCollectiveFunctions: showCollectiveFunctions,
                 error           : error,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr, // form data
@@ -1215,6 +1219,7 @@ class AjaxController {
                   ownobj          : owner,
                   newProp         : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
+                  showCollectiveFunctions: showCollectiveFunctions,
                   error           : error,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : type.descr // form data
@@ -1257,7 +1262,8 @@ class AjaxController {
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
                 editable: params.editable,
-                showConsortiaFunctions: params.showConsortiaFunctions
+                showConsortiaFunctions: params.showConsortiaFunctions,
+                showCollectiveFunctions: params.showCollectiveFunctions
         ])
     }
 

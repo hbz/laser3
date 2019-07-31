@@ -4,11 +4,12 @@ import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
-import de.laser.api.v1.ApiReaderHelper
 import de.laser.api.v1.ApiReader
+import de.laser.api.v1.ApiReaderHelper
 import de.laser.helper.Constants
 import grails.converters.JSON
 
+@Deprecated
 class ApiCostItem {
 
     /**

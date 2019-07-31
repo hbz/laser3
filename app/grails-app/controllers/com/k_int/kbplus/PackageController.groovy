@@ -1,19 +1,19 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import de.laser.oai.OaiClientLaser
-import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
-import org.apache.poi.hssf.usermodel.*
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.hssf.usermodel.HSSFRow
+import org.apache.poi.hssf.usermodel.HSSFSheet
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-
-import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController extends AbstractDebugController {
@@ -511,30 +511,16 @@ class PackageController extends AbstractDebugController {
         result.visibleOrgs = packageInstance.orgs
         result.visibleOrgs.sort { it.org.sortname }
 
-        result.subscriptionList = []
-        // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
-        // and subscription that does not already link this package
-        // No, we do not. Only the context institution is important.
-        /*def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        result.user?.getAuthorizedAffiliations().each { ua ->
-            if (ua.formalRole.authority == 'INST_ADM') {
-                def qry_params = [ua.org, packageInstance, new Date()]
-                def q = """
-select s from Subscription as s where 
-  ( exists ( select o from s.orgRelations as o where ( o.roleType.value = 'Subscriber' or o.roleType.value = 'Subscriber_Consortial' ) and o.org = ? ) )
-  AND ( not exists ( select sp from s.packages as sp where sp.pkg = ? ) ) AND s.endDate >= ?
-"""
+        List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
+        }
+        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
+        }
 
-                Subscription.executeQuery(q, qry_params).each { s ->
-                    if (!result.subscriptionList.contains(s)) {
-                        // Need to make sure that this package is not already linked to this subscription
-                        result.subscriptionList.add([org: ua.org, sub: s])
-                    }
-                }
-            }
-        }*/
         result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub)',
-                [contextOrg: contextService.org, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS], current: RDStore.SUBSCRIPTION_CURRENT])
+                [contextOrg: contextService.org, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT])
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         params.max = result.max
@@ -577,7 +563,7 @@ select s from Subscription as s where
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextOrg?.getallOrgTypeIds())) ? 'package' : 'institution'
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 

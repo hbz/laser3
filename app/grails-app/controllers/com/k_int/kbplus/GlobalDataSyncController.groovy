@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class GlobalDataSyncController {

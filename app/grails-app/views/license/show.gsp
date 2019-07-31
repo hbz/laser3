@@ -141,7 +141,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && (contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds()))}">
+                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && (contextOrg?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM"))}">
                                         <table class="ui three column table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
@@ -187,7 +187,7 @@
                                                         <input type="hidden" name="subscription">
                                                         <i class="dropdown icon"></i>
                                                         <input type="text" class="search">
-                                                        <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
+                                                        <div class="default text">${message(code:'subscription')}</div>
                                                     </div>
                                                 </div>
                                                 <div class="field">

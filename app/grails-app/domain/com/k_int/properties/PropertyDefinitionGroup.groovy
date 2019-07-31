@@ -9,8 +9,6 @@ import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 
-import javax.persistence.Transient
-
 @Log4j
 class PropertyDefinitionGroup {
 

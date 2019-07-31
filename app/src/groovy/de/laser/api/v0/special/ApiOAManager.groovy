@@ -4,7 +4,6 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
@@ -14,7 +13,7 @@ import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
-class ApiOA2020 {
+class ApiOAManager {
 
     static boolean calculateAccess(Org result, Org context, boolean hasAccess) {
 
@@ -107,8 +106,7 @@ class ApiOA2020 {
             //        org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
             //) // com.k_int.kbplus.PersonRole
 
-            //result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
-
+            result.properties    = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_PRIVATE_PROPERTIES) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = retrieveSubscriptionCollection(org)
 
             result = ApiToolkit.cleanUp(result, true, true)
@@ -131,7 +129,6 @@ class ApiOA2020 {
                 'select distinct(oo.sub) from OrgRole oo where oo.roleType in (:roleTypes)',
                 [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         ).each { sub ->
-
             result.add(ApiReaderHelper.requestSubscriptionStub(sub, org, true))
         }
 

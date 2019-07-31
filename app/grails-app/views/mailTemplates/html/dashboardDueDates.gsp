@@ -2,7 +2,7 @@
                           ${message(code: 'email.subject.dueDates', locale: language)}
 ----------------------------------------------------------------------------------------------------------------------------------
 
-${message(code: 'profile.dashboardReminderEmailText1', locale: language, args:[user?.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14),userName])}
+${message(code: 'profile.dashboardReminderEmailText1', locale: language, args:[userName])}
 ${message(code: 'profile.dashboardReminderEmailText2', locale: language, args:[orgName])}
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ ${message(code: 'profile.dashboardReminderEmailText2', locale: language, args:[o
                           ${message(code: 'email.subject.noDueDates', locale: language)}
 ----------------------------------------------------------------------------------------------------------------------------------
 
-<g:message code="profile.noDashboardReminderDates" default="In the next {0} days no dates are due!" args="${user?.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
+<g:message code="profile.noDashboardReminderDates" default="There are no due dates for your personal reminder periods." />
 
 ----------------------------------------------------------------------------------------------------------------------------------
 </g:else>

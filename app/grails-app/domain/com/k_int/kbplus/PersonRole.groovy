@@ -6,8 +6,9 @@ import de.laser.helper.RefdataAnnotation
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
-    static TYPE_FUNCTION = 'functionType'
-    static TYPE_POSITION = 'positionType'
+    static TYPE_FUNCTION        = 'functionType'
+    static TYPE_POSITION        = 'positionType'
+    static TYPE_RESPONSIBILITY  = 'responsibilityType'
 
     @RefdataAnnotation(cat = 'Person Position')
     RefdataValue    positionType  //  exclusive with other types

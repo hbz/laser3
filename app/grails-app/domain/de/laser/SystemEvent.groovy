@@ -4,6 +4,7 @@ import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.Transient
 
 @Log4j

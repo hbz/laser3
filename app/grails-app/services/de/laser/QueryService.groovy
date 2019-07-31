@@ -4,24 +4,31 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
-import static com.k_int.kbplus.UserSettings.KEYS.*
 
+import static com.k_int.kbplus.UserSettings.KEYS.*
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static de.laser.helper.RDStore.*
 
 class QueryService {
     def subscriptionsQueryService
     def taskService
 
-    def getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser, int daysToBeInformedBeforeToday) {
+    private computeInfoDate(User user, String userSettingsKey){
+        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
+        infoDate
+    }
+
+
+    def getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES || contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES) {
             def endDateFrom =                (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES)? today : null
-            def endDateTo =                  (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES)? infoDate : null
+            def endDateTo =                  (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE) : null
             def manualCancellationDateFrom = (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? today : null
-            def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? infoDate : null
+            def manualCancellationDateTo =   (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==YN_YES)? computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             dueObjects.addAll(getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo))
         }
 
@@ -31,29 +38,29 @@ class QueryService {
                     contextOrg,
                     [query:" and status = :open and endDate <= :endDate",
                      queryParams:[open: RefdataValue.getByValueAndCategory('Open', 'Task Status'),
-                                  endDate: infoDate]]) )
+                                  endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, infoDate))
+            dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LIZENSE_PRIVATE_PROP)==YN_YES) {
-            dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, infoDate))
+            dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_PERSON_PRIVATE_PROP)==YN_YES) {
-            dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextOrg))
+            dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP), contextOrg))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_ORG_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+            dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_ORG_CUSTOM_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_ORG_PRIVATE_PROP)==YN_YES) {
-            dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, infoDate))
+            dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_ORG_PRIVATE_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==YN_YES) {
-            dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, infoDate))
+            dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)))
         }
         if (contextUser.getSettingsValue(IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP)==YN_YES) {
-            dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, infoDate))
+            dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
         }
         dueObjects = dueObjects.sort {
             (it instanceof AbstractProperty)?

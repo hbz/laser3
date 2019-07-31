@@ -1,11 +1,14 @@
 <laser:serviceInjection />
 
+<g:set var="user" value="${contextService.user}"/>
+<g:set var="org" value="${contextService.org}"/>
+
 <semui:actionsDropdown>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
     </g:if>
-    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR') && ! ['list'].contains(actionName)}">
+    <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
@@ -26,6 +29,6 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.org, owntp: 'pkg']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
-<g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR') && ! ['list'].contains(actionName)}">
+<g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
 </g:if>

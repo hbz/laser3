@@ -4,10 +4,10 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
+import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
-import de.laser.api.v0.ApiReader
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -70,7 +70,7 @@ class ApiSubscription {
         hasAccess = calculateAccess(sub, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.retrieveSubscriptionMap(sub, context)
+            result = ApiReader.retrieveSubscriptionMap(sub, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

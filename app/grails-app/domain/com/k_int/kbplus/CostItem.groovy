@@ -4,9 +4,9 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
-import java.time.Year
 
 import javax.persistence.Transient
+import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain
@@ -29,10 +29,10 @@ class CostItem
     }
 
     Org owner
-    Subscription sub
-    SubscriptionPackage subPkg
-    IssueEntitlement issueEntitlement
-    SurveyOrg surveyOrg
+    Subscription sub // NOT set if surveyOrg (exclusive)
+    SubscriptionPackage subPkg // only set if sub
+    IssueEntitlement issueEntitlement // only set if sub
+    SurveyOrg surveyOrg // NOT set if sub (exclusive)
     Order order
     Invoice invoice
 

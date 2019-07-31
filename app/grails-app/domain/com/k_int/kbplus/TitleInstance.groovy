@@ -3,14 +3,14 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
-import grails.util.Holders
+import groovy.util.logging.Log4j
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
-import java.util.regex.Pattern;
-import org.apache.commons.lang.StringUtils;
 import javax.persistence.Transient
-import org.apache.commons.logging.*
 import java.text.Normalizer
-import groovy.util.logging.*
+import java.util.regex.Pattern
 
 @Log4j
 class TitleInstance extends AbstractBaseDomain implements AuditableTrait {

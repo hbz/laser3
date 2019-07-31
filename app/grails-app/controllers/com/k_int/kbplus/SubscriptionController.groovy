@@ -1,8 +1,10 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.EntitlementCreationException
@@ -10,23 +12,18 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-import static de.laser.helper.RDStore.*
 import de.laser.interfaces.TemplateSupport
 import de.laser.oai.OaiClientLaser
+import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
-import de.laser.AuditConfig
-
-// 2.0
-import grails.converters.*
-import com.k_int.kbplus.auth.*
 import groovy.time.TimeCategory
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -34,6 +31,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+
+import static de.laser.helper.RDStore.*
+
+// 2.0
 
 //For Transform
 
@@ -869,10 +870,7 @@ class SubscriptionController extends AbstractDebugController {
 
         //if (params.showDeleted == 'Y') {
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.subscriptionInstance,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.subscriptionInstance)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -969,11 +967,11 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
     }
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def linkLicenseConsortia() {
+    def linkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1002,9 +1000,7 @@ class SubscriptionController extends AbstractDebugController {
         }
 
 
-        def validSubChilds = Subscription.findAllByInstanceOf(
-                result.parentSub
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -1035,11 +1031,11 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processLinkLicenseConsortia() {
+    def processLinkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1054,10 +1050,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentLicense = result.parentSub.owner
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
 
         def changeAccepted = []
@@ -1071,7 +1064,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join(', ')])
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join(', ')])
             }
 
 
@@ -1089,20 +1082,20 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkLicenseConsortium.changeAcceptedAll', args: [changeAccepted.join('')])
+                flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [changeAccepted.join('')])
             }
 
         }
 
 
-        redirect(action: 'linkLicenseConsortia', id: params.id)
+        redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processUnLinkLicenseConsortia() {
+    def processUnLinkLicenseMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1117,10 +1110,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentLicense = result.parentSub.owner
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         def removeLic = []
         validSubChilds.each { subChild ->
@@ -1131,18 +1121,18 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (removeLic) {
-                flash.message = message(code: 'subscription.linkLicenseConsortium.removeAcceptedAll', args: [removeLic.join(', ')])
+                flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [removeLic.join(', ')])
             }
 
 
-        redirect(action: 'linkLicenseConsortia', id: params.id)
+        redirect(action: 'linkLicenseMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def linkPackagesConsortia() {
+    def linkPackagesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1157,13 +1147,9 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
-        result.validPackages
         result.validPackages = result.parentPackages
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -1194,9 +1180,9 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1213,10 +1199,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
 
         def changeAccepted = []
@@ -1248,10 +1231,10 @@ class SubscriptionController extends AbstractDebugController {
             }
 
             if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
+                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [pkg_to_link.name, changeAccepted.join(", ")])
             }
             if (changeAcceptedwithIE) {
-                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
+                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [pkg_to_link.name, changeAcceptedwithIE.join(", ")])
             }
 
 
@@ -1279,23 +1262,23 @@ class SubscriptionController extends AbstractDebugController {
                 }
             }
             if (changeAccepted) {
-                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedAll', args: [changeAccepted.join(" ")])
+                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedAll', args: [changeAccepted.join(" ")])
             }
             if (changeAcceptedwithIE) {
-                flash.message = message(code: 'subscription.linkPackagesConsortium.changeAcceptedIEAll', args: [changeAcceptedwithIE.join(" ")])
+                flash.message = message(code: 'subscription.linkPackagesMembers.changeAcceptedIEAll', args: [changeAcceptedwithIE.join(" ")])
             }
             if (changeFailed) {
-                flash.error = message(code: 'subscription.linkPackagesConsortium.changeFailedAll', args: [changeFailed.join(" ")])
+                flash.error = message(code: 'subscription.linkPackagesMembers.changeFailedAll', args: [changeFailed.join(" ")])
             }
         }
 
 
-        redirect(action: 'linkPackagesConsortia', id: params.id)
+        redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesConsortia() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -1312,10 +1295,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentPackages = result.parentSub.packages.sort { it.pkg.name }
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         validSubChilds.each { subChild ->
 
@@ -1336,26 +1316,26 @@ class SubscriptionController extends AbstractDebugController {
                             if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
                             SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                            flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.successful')
+                            flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
                         }
                     } else {
                         SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                        flash.message = message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage.successful')
+                        flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                     }
                 }
             }
         }
 
 
-        redirect(action: 'linkPackagesConsortia', id: params.id)
+        redirect(action: 'linkPackagesMembers', id: params.id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def propertiesConsortia() {
+    def propertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1377,10 +1357,7 @@ class SubscriptionController extends AbstractDebugController {
         result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
 
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -1411,11 +1388,11 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def subscriptionPropertiesConsortia() {
+    def subscriptionPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1428,10 +1405,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -1462,11 +1436,11 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processPropertiesConsortia() {
+    def processPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1481,10 +1455,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef && params.filterPropValue) {
 
@@ -1554,21 +1525,21 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                 }
-                flash.message = message(code: 'subscription.propertiesConsortia.successful', args: [newProperties, changeProperties])
+                flash.message = message(code: 'subscription.propertiesMembers.successful', args: [newProperties, changeProperties])
             }
 
         }
 
         def filterPropDef = params.filterPropDef
         def id = params.id
-        redirect(action: 'propertiesConsortia', id: id, params: [filterPropDef: filterPropDef])
+        redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processSubscriptionPropertiesConsortia() {
+    def processSubscriptionPropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1581,10 +1552,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         def change = []
                 validSubChilds.each { subChild ->
 
@@ -1633,14 +1601,14 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         def id = params.id
-        redirect(action: 'subscriptionPropertiesConsortia', id: id)
+        redirect(action: 'subscriptionPropertiesMembers', id: id)
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_ADM")
+    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_ADM")
+        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def processDeletePropertiesConsortia() {
+    def processDeletePropertiesMembers() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1655,10 +1623,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
-                result.parentSub,
-                SUBSCRIPTION_DELETED
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
         if (params.filterPropDef) {
 
@@ -1722,14 +1687,14 @@ class SubscriptionController extends AbstractDebugController {
                     }
 
                 }
-                flash.message = message(code: 'subscription.propertiesConsortia.deletedProperties', args: [deletedProperties])
+                flash.message = message(code: 'subscription.propertiesMembers.deletedProperties', args: [deletedProperties])
             }
 
         }
 
         def filterPropDef = params.filterPropDef
         def id = params.id
-        redirect(action: 'propertiesConsortia', id: id, params: [filterPropDef: filterPropDef])
+        redirect(action: 'propertiesMembers', id: id, params: [filterPropDef: filterPropDef])
     }
 
     private ArrayList<Long> getOrgIdsForFilter() {
@@ -1751,8 +1716,8 @@ class SubscriptionController extends AbstractDebugController {
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
         log.debug("addMembers ..")
 
@@ -1761,16 +1726,22 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if (accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.comboType = COMBO_TYPE_CONSORTIUM.value
+        result.superOrgType = []
+        if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
+            if(accessService.checkPerm('ORG_CONSORTIUM')) {
+                params.comboType = COMBO_TYPE_CONSORTIUM.value
+                result.superOrgType << message(code:'consortium.superOrgType')
+            }
+            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+                params.comboType = COMBO_TYPE_DEPARTMENT.value
+                result.superOrgType << message(code:'collective.superOrgType')
+            }
             def fsq = filterService.getOrgComboQuery(params, result.institution)
-            result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-            result.cons_members_disabled = []
-            result.cons_members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                        [result.subscriptionInstance, it.id])
-                ) {
-                    result.cons_members_disabled << it.id
+            result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+            result.members_disabled = []
+            result.members.each { it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?", [result.subscriptionInstance, it.id])) {
+                    result.members_disabled << it.id
                 }
             }
         }
@@ -1778,8 +1749,8 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
         log.debug(params)
 
@@ -1788,77 +1759,82 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        List orgType = [OT_INSTITUTION.id.toString()]
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgType = [OT_CONSORTIUM.id.toString()]
         }
 
-        def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
+        RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: SUBSCRIPTION_CURRENT
 
-        def role_sub = OR_SUBSCRIBER_CONS
-        def role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
-        def role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
-        def role_lic = OR_LICENSEE_CONS
-        def role_lic_cons = OR_LICENSING_CONSORTIUM
+        RefdataValue role_sub = OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_cons = OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_coll = OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
+        RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
+        RefdataValue role_lic = OR_LICENSEE_CONS
+        RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
-        def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
-        def role_agency = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
+        RefdataValue role_provider = OR_PROVIDER
+        RefdataValue role_agency = OR_AGENCY
 
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-                def cons_members = []
-                def licenseCopy
+            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                List<Org> members = []
+                License licenseCopy
 
                 params.list('selectedOrgs').each { it ->
-                    def fo = Org.findById(Long.valueOf(it))
-                    cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                    members << Org.findById(Long.valueOf(it))
                 }
 
                 def subLicense = result.subscriptionInstance.owner
 
                 List<Subscription> synShareTargetList = []
 
-                cons_members.each { cm ->
+                members.each { cm ->
 
-                    def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                    //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
+                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
-                    if (subLicense) {
-                        def subLicenseParams = [
-                                lic_name     : "${subLicense.reference} (${postfix})",
-                                isSlaved     : params.isSlaved,
-                                asOrgType: orgType,
-                                copyStartEnd : true
-                        ]
+                        if (subLicense) {
+                            def subLicenseParams = [
+                                    lic_name     : "${subLicense.reference} (${postfix})",
+                                    isSlaved     : params.isSlaved,
+                                    asOrgType: orgType,
+                                    copyStartEnd : true
+                            ]
 
-                        if (params.generateSlavedLics == 'explicit') {
-                            licenseCopy = institutionsService.copyLicense(
-                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                        }
-                        else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
-                            licenseCopy = institutionsService.copyLicense(
-                                    subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
-                        }
-                        else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
-                            licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
-                        }
+                            if (params.generateSlavedLics == 'explicit') {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'shared' && !licenseCopy) {
+                                licenseCopy = institutionsService.copyLicense(
+                                        subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
+                            }
+                            else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                                licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                            }
 
-                        if (licenseCopy) {
-                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                            if (licenseCopy) {
+                                new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                            }
                         }
                     }
 
+
                     //ERMS-1155
-                    if (true) {
-                        log.debug("Generating seperate slaved instances for consortia members")
+                    //if (true) {
+                        log.debug("Generating seperate slaved instances for members")
 
-                        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-                        def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                        def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                        SimpleDateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+                        Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
+                        Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
-                        def cons_sub = new Subscription(
-                                type: result.subscriptionInstance.type ?: "",
+                        Subscription memberSub = new Subscription(
+                                type: result.subscriptionInstance.type ?: null,
                                 status: subStatus,
                                 name: result.subscriptionInstance.name,
                                 //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
@@ -1867,36 +1843,41 @@ class SubscriptionController extends AbstractDebugController {
                                 administrative: result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                                identifier: java.util.UUID.randomUUID().toString(),
+                                identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: RefdataValue.getByValueAndCategory('Yes', 'YN'),
+                                isSlaved: YN_YES,
                                 isPublic: result.subscriptionInstance.isPublic,
-                                impId: java.util.UUID.randomUUID().toString(),
+                                impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
                                 resource: result.subscriptionInstance.resource ?: null,
                                 form: result.subscriptionInstance.form ?: null
                         )
 
-                        if (!cons_sub.save()) {
-                            cons_sub?.errors.each { e ->
+                        if (!memberSub.save()) {
+                            memberSub?.errors.each { e ->
                                 log.debug("Problem creating new sub: ${e}")
                             }
-                            flash.error = cons_sub.errors
+                            flash.error = memberSub.errors
                         }
 
 
-                        if (cons_sub) {
+                        if (memberSub) {
+                            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
+                                else
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+                            }
+                            else {
+                                new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
+                                new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_coll).save()
+                            }
 
-                            if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
-                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub_hidden).save()
-                            else
-                                new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
-                            new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
-
-                            synShareTargetList.add(cons_sub)
+                            synShareTargetList.add(memberSub)
                         }
 
-                        if (cons_sub) {
+                        if (memberSub) {
 
                             SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
                                 AuditConfig ac = AuditConfig.getConfig(scp)
@@ -1904,14 +1885,14 @@ class SubscriptionController extends AbstractDebugController {
                                 if (ac) {
                                     // multi occurrence props; add one additional with backref
                                     if (scp.type.multipleOccurrence) {
-                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
                                         additionalProp = scp.copyInto(additionalProp)
                                         additionalProp.instanceOf = scp
                                         additionalProp.save(flush: true)
                                     }
                                     else {
                                         // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, cons_sub, scp.type)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, scp.type)
                                         newProp = scp.copyInto(newProp)
                                         newProp.instanceOf = scp
                                         newProp.save(flush: true)
@@ -1919,7 +1900,7 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
 
                 result.subscriptionInstance.syncAllShares(synShareTargetList)
@@ -1993,9 +1974,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def validSubChilds = Subscription.findAllByInstanceOf(
-                result.subscriptionInstance
-        )
+        def validSubChilds = Subscription.findAllByInstanceOf(result.subscriptionInstance)
 
         validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
@@ -2262,13 +2241,10 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def launchRenewalsProcess() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.subscriptionInstance = Subscription.get(params.id)
-        result.institution = result.subscriptionInstance.subscriber
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
 
         def shopping_basket = UserFolder.findByUserAndShortcode(result.user, 'RenewalsBasket') ?: new UserFolder(user: result.user, shortcode: 'RenewalsBasket').save(flush: true);
 
@@ -2296,15 +2272,15 @@ class SubscriptionController extends AbstractDebugController {
     }
     */
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def acceptChange() {
         processAcceptChange(params, Subscription.get(params.id), genericOIDService)
         redirect controller: 'subscription', action: 'index', id: params.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def rejectChange() {
         processRejectChange(params, Subscription.get(params.id))
         redirect controller: 'subscription', action: 'index', id: params.id
@@ -2314,48 +2290,50 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def possibleLicensesForSubscription() {
-        def result = []
+        List result = []
 
-        def subscription = genericOIDService.resolveOID(params.oid)
-        def subscriber = subscription.getSubscriber();
-        def consortia = subscription.getConsortia();
+        Subscription subscription = genericOIDService.resolveOID(params.oid)
+        Org subscriber = subscription.getSubscriber()
+        Org consortia = subscription.getConsortia()
+        Org collective = subscription.getCollective()
 
         result.add([value: '', text: 'None']);
 
-        if (subscriber || consortia) {
+        if (subscriber || collective || consortia) {
 
-            def licensee_role = OR_LICENSEE
-            def licensee_cons_role = OR_LICENSING_CONSORTIUM
+            RefdataValue licensee_role = OR_LICENSEE
+            RefdataValue licensee_cons_role = OR_LICENSING_CONSORTIUM
 
-            def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+            RefdataValue template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
 
-            def qry_params = [(subscription.instanceOf ? consortia : subscriber), licensee_role, licensee_cons_role]
+            Org org
+            if(subscription.instanceOf) {
+                if(subscription.getConsortia())
+                    org = consortia
+                else if(subscription.getCollective())
+                    org = collective
+            }
+            else org = subscriber
 
-            def qry = ""
+            Map qry_params = [org: org, licRole: licensee_role, licConsRole: licensee_cons_role]
+
+            String qry = ""
 
             if (subscription.instanceOf) {
-                qry = """
-select l from License as l 
-where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND (l.instanceOf is not null) order by LOWER(l.reference)
-"""
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND (l.instanceOf is not null) order by LOWER(l.reference)"
             } else {
-                qry = """
-select l from License as l 
-where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
-AND order by LOWER(l.reference)
-"""
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND order by LOWER(l.reference)"
             }
             if (subscriber == consortia) {
-                qry_params = [consortia, licensee_cons_role]
-                qry = """
-select l from License as l 
-where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
-AND (l.instanceOf is null) order by LOWER(l.reference)
-"""
+                qry_params = [org: consortia,licConsRole: licensee_cons_role]
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licConsRole) ) AND (l.instanceOf is null) order by LOWER(l.reference)"
+            }
+            else if(subscriber == collective) {
+                qry_params = [org: collective,licRole: licensee_role]
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole) ) AND (l.instanceOf is null) order by LOWER(l.reference)"
             }
 
-            def license_list = License.executeQuery(qry, qry_params);
+            List<License> license_list = License.executeQuery(qry, qry_params);
             license_list.each { l ->
                 result.add([value: "${l.class.name}:${l.id}", text: l.reference ?: "No reference - license ${l.id}"]);
             }
@@ -2381,10 +2359,6 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
-        }
-
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-
         }
 
         params.gokbApi = false
@@ -2842,7 +2816,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
             result.subscriptionInstance.orgRelations?.each { or ->
-                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
                     result.visibleOrgRelations << or
                 }
             }
@@ -2935,7 +2909,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                         }
 
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                        result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
+                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
                         result.usage = fsresult?.usage
                         result.x_axis_labels = fsresult?.x_axis_labels
                         result.y_axis_labels = fsresult?.y_axis_labels
@@ -2964,8 +2938,11 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
         if (costItems.own.count > 0) {
             result.costItemSums.ownCosts = costItems.own.sums
         }
-        if (costItems.cons.count > 0) {
+        if (costItems.cons.count > 0 && accessService.checkPerm("ORG_CONSORTIUM")) {
             result.costItemSums.consCosts = costItems.cons.sums
+        }
+        else if(costItems.coll.count > 0 && accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            result.costItemSums.collCosts = costItems.coll.sums
         }
         if (costItems.subscr.count > 0) {
             result.costItemSums.subscrCosts = costItems.subscr.sums
@@ -2994,6 +2971,9 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
         //}
 
+
+        result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscriptionInstance, 'Specific subscription editor')
+
         List bm = du.stopBenchMark()
         result.benchMark = bm
 
@@ -3002,6 +2982,7 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
         result
     }
+
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def renewSubscription_Local() {
@@ -3113,11 +3094,11 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
     def renewSubscriptionConsortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
@@ -3504,11 +3485,11 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
     def processSimpleRenewal_Consortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
@@ -3576,11 +3557,11 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         result.institution = contextService.org //TODO überprüfen, ob das richtig ist!!!
-        if (!(result || (OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
+        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if ((OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
             def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
             def sdf = new SimpleDateFormat('dd.MM.yyyy')
@@ -3715,10 +3696,19 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
                 break;
             case WORKFLOW_PROPERTIES:
                 result << copySubElements_Properties();
-                if (params?.targetSubscriptionId){
+                if (params.isRenewSub && params.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
                     redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 } else {
                     result << loadDataFor_Properties()
+                }
+                break;
+            case WORKFLOW_END:
+                if (params?.targetSubscriptionId){
+                    flash.error = ""
+                    flash.message = ""
+                    redirect controller: 'subscription', action: 'show', params: [id: params?.targetSubscriptionId]
                 }
                 break;
             default:
@@ -4261,6 +4251,18 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
         result.institution = result.subscription?.subscriber
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
+        result.consortialView = result.showConsortiaFunctions
+        result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
+        result.departmentalView = result.showCollectiveFunctions
+
+        Map args = [:]
+        if(result.consortialView) {
+            args.superOrgType = [message(code:'consortium.superOrgType')]
+        }
+        else if(result.departmentalView) {
+            args.superOrgType = [message(code:'collective.superOrgType')]
+        }
+        result.args = args
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
@@ -4282,6 +4284,10 @@ AND (l.instanceOf is null) order by LOWER(l.reference)
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
+    }
+
+    static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
+        return ((subscription?.getCollective()?.id == contextOrg?.id) && !subscription.instanceOf)
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

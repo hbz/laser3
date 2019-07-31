@@ -117,7 +117,7 @@
 
                     <div class="field three wide fieldcontain">
                         <label for="contact1_contentType" for="contact2_contentType" for="contact3_contentType">
-                            <g:message code="contact.contentType.label" default="ContentType" />
+                            &nbsp;<%--<g:message code="contact.contentType.label" default="ContentType" />--%>
                         </label>
 
                         <input type="text" readonly value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')?.getI10n('value')}" />

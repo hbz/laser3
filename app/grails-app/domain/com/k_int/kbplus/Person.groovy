@@ -3,9 +3,7 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.*
-
-import javax.persistence.Transient
+import groovy.util.logging.Log4j
 
 @Log4j
 class Person extends AbstractBaseDomain {
@@ -166,9 +164,10 @@ class Person extends AbstractBaseDomain {
         [publicContacts: publicContactMap, privateContacts: privateContactMap]
     }
 
+    // if org is null, get ALL public responsibilities
     static def getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
         def q = ''
-        def p = ['org': org, 'resp': resp]
+        def p = org ? ['org': org, 'resp': resp] : ['resp': resp]
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
@@ -192,7 +191,9 @@ class Person extends AbstractBaseDomain {
         }
 
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.responsibilityType.value = :resp " + q,
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' " +
+                        (org ? "and pr.org = :org " : "" ) +
+                        "and pr.responsibilityType.value = :resp " + q,
                 p
         )
         result

@@ -48,47 +48,53 @@
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}" class="ui select dropdown"/>
                 </div>
 
-                <%--<g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
-                    <div class="field">
-                        <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
-
-                        <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
-                                <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
-                            </g:each>
-                        </select>
-
-                    </div>
-                </g:if>--%>
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                    <div class="field">
-                        <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                        <laser:select name="type" from="${RefdataCategory.getAllRefdataValues('Subscription Type')}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
-                    </div>
-                </g:if>
+                <div class="field">
+                    <%
+                        List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                    %>
+                    <label>${message(code:'myinst.emptySubscription.create_as')}</label>
+                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes.minus([RDStore.SUBSCRIPTION_TYPE_COLLECTIVE])}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                    </g:if>
+                    <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
+                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes.minus([RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,RDStore.SUBSCRIPTION_TYPE_ALLIANCE,RDStore.SUBSCRIPTION_TYPE_NATIONAL])}" value="${RDStore.SUBSCRIPTION_TYPE_COLLECTIVE.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                    </g:elseif>
+                </div>
 
                 <br/>
                 <div id="dynHiddenValues"></div>
 
-                <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
+                <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
+                </g:if>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label', default:'Create')}" />
             </g:form>
         </semui:form>
 
     <hr>
 
-        <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
+        <g:if test="${consortialView || departmentalView}">
 
-            <g:if test="${! cons_members}">
+            <g:if test="${! members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <hr />
 
                     <div class="ui info message">
-                        <div class="header">Konsorten verwalten</div>
+                        <div class="header">
+                            <g:if test="${consortialView}">
+                                <g:message code="myinst.noMembers.cons.header"/>
+                            </g:if>
+                            <g:elseif test="${departmentalView}">
+                                <g:message code="myinst.noMembers.dept.header"/>
+                            </g:elseif>
+                        </div>
                         <p>
-                            Sie können bei Bedarf über
-                            <g:link controller="myInstitution" action="addMembers">diesen Link</g:link>
-                            Ihre Konsorten verwalten ..
+                            <g:if test="${consortialView}">
+                                <g:message code="myinst.noMembers.cons.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
+                            </g:if>
+                            <g:elseif test="${departmentalView}">
+                                <g:message code="myinst.noMembers.dept.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
+                            </g:elseif>
                         </p>
                     </div>
                 </g:if>
@@ -96,7 +102,7 @@
             <g:else>
                 <div class="cons-options">
                     <semui:filter>
-                        <g:formRemote name="x" url="[controller:'MyInstitution', action:'ajaxEmptySubscription', params:[shortcode:contextService.getOrg()?.shortcode]]" update="orgListTable" class="ui form">
+                        <g:formRemote name="x" url="[action:'ajaxEmptySubscription']" update="orgListTable" class="ui form">
                             <g:render template="/templates/filter/orgFilter"
                                       model="[
                                               tmplConfigShow: [['name']],
@@ -107,12 +113,15 @@
                     </semui:filter>
 
                     <div id="orgListTable">
-                        <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']]" />
+                        <g:render template="/templates/filter/orgFilterTable" model="[orgList: members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']]" />
                     </div>
 
                     <div class="ui checkbox">
                         <input class="hidden" type="checkbox" checked="checked" readonly="readonly">
-                        <label>${message(code:'myinst.emptySubscription.seperate_subs', default:'Generate seperate Subscriptions for all Consortia Members')}</label>
+                        <label>
+                            <g:if test="${consortialView}">${message(code:'myinst.separate_subs')}</g:if>
+                            <g:elseif test="${departmentalView}">${message(code:'myinst.separate_subs_dept')}</g:elseif>
+                        </label>
                     </div>
 
                 </div><!-- .cons-options -->
@@ -130,8 +139,8 @@
                 });
 
                 $('#asOrgType').change(function() {
-                    var selVal = $(this).find('option:selected').attr('data-value');
-                    if ('Consortium' == selVal) {
+                    var selVal = $(this).val();
+                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_COLLECTIVE.id}'].indexOf(selVal) > -1) {
                         $('.cons-options').show()
                     }
                     else {

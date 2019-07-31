@@ -1,24 +1,22 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.User
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
-import de.laser.api.v0.special.ApiOA2020
+import de.laser.api.v0.special.ApiOAManager
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
-import org.apache.commons.lang.RandomStringUtils
 
 import javax.servlet.http.HttpServletRequest
 
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.60'
+    static final VERSION = '0.63'
     static final NOT_SUPPORTED = false
 
     /**
@@ -32,7 +30,7 @@ class ApiManager {
         def result
 
         def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def accessDueDatamanager = ApiToolkit.isDataManager(contextOrg)
+        boolean accessDueDatamanager = ApiToolkit.isDataManager(contextOrg)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -111,7 +109,7 @@ class ApiManager {
                 result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
             }
         }
-        else if (resolve('oa2020', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
+        else if (resolve('oaManager', ApiReader.SUPPORTED_FORMATS.oaManager) == Constants.VALID_REQUEST) {
 
             if (! accessDueDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -119,12 +117,12 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOA2020.getOrganisation(result, contextOrg, accessDueDatamanager)
+                result = ApiOAManager.getOrganisation(result, contextOrg, accessDueDatamanager)
             }
         }
-        else if (resolve('oa2020List', ApiReader.SUPPORTED_FORMATS.oa2020) == Constants.VALID_REQUEST) {
+        else if (resolve('oaManagerList', ApiReader.SUPPORTED_FORMATS.oaManagerList) == Constants.VALID_REQUEST) {
 
-            result = ApiOA2020.getAllOrgs(accessDueDatamanager)
+            result = ApiOAManager.getAllOrgs(accessDueDatamanager)
         }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
 
@@ -194,6 +192,9 @@ class ApiManager {
 
     @Deprecated
     static write(String obj, JSONObject data, Org contextOrg) {
+
+        return // closed ..
+
         def result
 
         // TODO check isDataManager, etc for contextOrg

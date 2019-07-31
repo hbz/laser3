@@ -2,8 +2,6 @@ package com.k_int.kbplus
 
 import de.laser.helper.RefdataAnnotation
 
-import javax.persistence.Transient
-
 class GlobalRecordInfo {
 
   GlobalRecordSource source

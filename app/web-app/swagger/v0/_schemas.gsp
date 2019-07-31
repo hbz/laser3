@@ -395,6 +395,8 @@
       properties:
         cancellationAllowances:
           type: string
+        costItems:
+          $ref: "#/components/schemas/CostItemCollection" # resolved CostItemCollection
         dateCreated:
           type: string
           format: date-time
@@ -475,6 +477,117 @@
 
 
 <%-- virtual objects --%>
+
+    CostItemCollection:
+      type: array
+      items:
+        type: object
+        properties:
+          globalUID:
+            type: string
+            example: "costitem:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
+          calculatedType:
+            type: string
+            description: Calculated object type
+            enum:
+              ["Template", "Local", "Consortial", "Participation", "Unkown"]
+          billingCurrency:
+            type: string
+            description: Mapping RefdataCategory "Currency"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Currency').collect{ it.value }.join(', ') }]
+          budgetCodes:
+            type: array
+            items:
+              type: string
+          copyBase:
+            type: string
+          costInBillingCurrency:
+            type: string
+          costInBillingCurrencyAfterTax:
+            type: string
+          costInLocalCurrency:
+            type: string
+          costInLocalCurrencyAfterTax:
+            type: string
+          costItemElement:
+            type: string
+            description: Mapping RefdataCategory "CostItemElement"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemElement').collect{ it.value }.join(', ') }]
+          costItemElementConfiguration:
+            type: string
+            description: Mapping RefdataCategory "Cost configuration"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Cost configuration').collect{ it.value }.join(', ') }]
+          costItemStatus:
+            type: string
+            description: Mapping RefdataCategory "CostItemStatus"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemStatus').collect{ it.value }.join(', ') }]
+          costItemCategory:
+            type: string
+            description: Mapping RefdataCategory "CostItemCategory"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemCategory').collect{ it.value }.join(', ') }]
+          costTitle:
+            type: string
+          costDescription:
+            type: string
+          currencyRate:
+            type: string
+          dateCreated:
+            type: string
+            format: date-time
+          datePaid:
+            type: string
+            format: date-time
+          endDate:
+            type: string
+            format: date-time
+        #  finalCostRounding:
+        #    type: string
+          financialYear:
+            type: string
+          invoiceDate:
+            type: string
+            format: date-time
+          invoiceNumber:
+            type: string
+          #invoice:
+          #  $ref: "#/components/schemas/Invoice"
+          #issueEntitlement:
+          #  $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
+          lastUpdated:
+            type: string
+            format: date-time
+          orderNumber:
+            type: string
+          #order:
+          #  $ref: "#/components/schemas/Order"
+          #owner:
+          #  $ref: "#/components/schemas/OrganisationStub"
+          #package:
+          #  $ref: "#/components/schemas/PackageStub"
+          reference:
+            type: string
+          startDate:
+            type: string
+            format: date-time
+          #sub:
+          #  $ref: "#/components/schemas/SubscriptionStub"
+        #  subPkg:
+        #    $ref: "#/components/schemas/PackageStub"
+          taxCode:
+            type: string
+            description: Mapping RefdataCategory "TaxType"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('TaxType').collect{ it.value }.join(', ') }]
+          taxRate:
+            type: string
+            enum:
+              [${ com.k_int.kbplus.CostItem.TAX_RATES.collect{ it }.join(', ') }]
+
 
     IssueEntitlement_in_CostItem:
       type: object

@@ -9,10 +9,13 @@ import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.EhcacheWrapper
 import grails.util.Holders
-import groovy.util.logging.*
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import org.springframework.context.i18n.LocaleContextHolder
+
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
@@ -54,11 +57,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            //LIC_OA_PROP,
-            //LIC_ARC_PROP,
             ORG_CONF,
             SUB_PROP,
-            SYS_CONF,
+            //SYS_CONF,
             ORG_PROP
     ]
     @Transient

@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
 <laser:serviceInjection/>
 <g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
 
@@ -20,7 +20,7 @@
         <tbody>
             <%
                 Set documentSet = instance.documents
-                if(instance instanceof Org && instance.id == contextService.org.id){
+                if(instance instanceof Org && inContextOrg){
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>
@@ -54,9 +54,11 @@
                                 break
                         }
                     }
-                    else visible = true
+                    else if(inOwnerOrg || docctx.sharedFrom) {
+                        visible = true
+                    }
                 %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted') && visible)}">
+                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_DELETED)}">
                     <tr>
                         <td>
                             ${docctx.owner.title}
@@ -119,8 +121,10 @@
                                     </g:if>
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
-                                <g:if test="${editable && !docctx.sharedFrom && inOwnerOrg}">
+                                <g:if test="${contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
                                     <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                </g:if>
+                                <g:if test="${!docctx.sharedFrom && contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>

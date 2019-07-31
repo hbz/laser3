@@ -1,24 +1,14 @@
 package de.laser
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+
+import com.k_int.kbplus.EventLog
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import grails.util.Holders
-import groovyx.gpars.GParsPool
-import groovyx.net.http.RESTClient
-import groovyx.net.http.URIBuilder
-import org.hibernate.Transaction
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
-
-import java.text.SimpleDateFormat
-
-import static groovyx.net.http.ContentType.ANY
 
 class DashboardDueDatesService {
 
@@ -101,9 +91,9 @@ class DashboardDueDatesService {
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
-            int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+
             orgs.each {org ->
-                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user, reminderPeriod)
+                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {

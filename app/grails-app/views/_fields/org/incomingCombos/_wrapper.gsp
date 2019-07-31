@@ -1,3 +1,4 @@
+<laser:serviceInjection/>
 <div class="control-group">
   <label class="control-label" for="incomingCombos">${message(code:'org.incomingCombos.label', default:'Incoming Combos')}</label>
   <div class="controls">
@@ -8,7 +9,7 @@
         </g:each>
       </ul>
     </g:if>
-    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
         <g:form name="addIncomingCombo" controller="organisation" action="addOrgCombo" class="form-search" method="get">
           <g:hiddenField name="toOrg" value="${orgInstance.id}" />
           <g:select name="fromOrg"

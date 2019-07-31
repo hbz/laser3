@@ -1,16 +1,16 @@
 package com.k_int.kbplus
 
-import de.laser.domain.*
+import com.k_int.ClassUtils
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
+import groovy.time.TimeCategory
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
-
-import com.k_int.ClassUtils
-import org.springframework.context.i18n.LocaleContextHolder
-import org.apache.commons.logging.*
-import groovy.time.TimeCategory
 
 class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditableTrait {
   @Transient

@@ -224,8 +224,8 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        log.debug("addDefaultJasperReports ..")
-        addDefaultJasperReports()
+        //log.debug("addDefaultJasperReports ..")
+        //addDefaultJasperReports()
 
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
@@ -256,8 +256,8 @@ class BootStrap {
             apiService.setupBasicData()
         }
 
-        log.debug("initializeDefaultSettings ..")
-        initializeDefaultSettings()
+        //log.debug("initializeDefaultSettings ..")
+        //initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()
@@ -294,6 +294,8 @@ class BootStrap {
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
         def or_subscr_cons_hidden = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial_Hidden', en: 'Consortial subscriber (hidden)', de: 'Konsortialteilnehmer (versteckt)'], BOOTSTRAP)
+        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Kollektivlizenzverwalter'], BOOTSTRAP)
+        def or_subscr_coll_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Collective', en: 'Collective subscriber', de: 'Kollektivteilnehmer'], BOOTSTRAP)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
@@ -374,8 +376,9 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
+    @Deprecated
     def initializeDefaultSettings(){
-
+        /*
         def admObj = SystemAdmin.list()
         if (! admObj) {
             log.debug("no SystemAdmin object found, creating new")
@@ -387,10 +390,12 @@ class BootStrap {
         createDefaultSysProps(admObj)
         admObj.refresh()
         log.debug("finished updating config from SystemAdmin")
+        */
     }
 
+    @Deprecated
     def createDefaultSysProps(admObj){
-
+        /*
         def allDescr = [en: PropertyDefinition.SYS_CONF, de: PropertyDefinition.SYS_CONF]
 
         def requiredProps = [
@@ -430,6 +435,7 @@ class BootStrap {
                 newProp.save()
             }
         }
+        */
     }
 
     def createOrgConfig() {
@@ -1564,9 +1570,11 @@ class BootStrap {
         }
     }
 
+    @Deprecated
     def addDefaultJasperReports() {
         //Add default Jasper reports, if there are currently no reports in DB
 
+        /*
         def reportsFound = JasperReportFile.findAll()
         def defaultReports = ["floating_titles", "match_coverage", "no_identifiers", "title_no_url",
                               "previous_expected_sub", "previous_expected_pkg", "duplicate_titles"]
@@ -1589,7 +1597,8 @@ class BootStrap {
                 }
             }
         }
-  }
+        */
+    }
 
     def ensurePermGrant(role, perm) {
         def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)

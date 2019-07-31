@@ -1,8 +1,7 @@
 package de.laser.helper
 
-import com.k_int.kbplus.RefdataCategory
+
 import com.k_int.kbplus.RefdataValue
-import de.laser.interfaces.Permissions
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -19,6 +18,8 @@ class RDStore {
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
     static final OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden','Organisational Role')
+    static final OR_SUBSCRIPTION_COLLECTIVE = getRefdataValue('Subscription Collective','Organisational Role')
+    static final OR_SUBSCRIBER_COLLECTIVE   = getRefdataValue('Subscriber_Collective','Organisational Role')
 
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
