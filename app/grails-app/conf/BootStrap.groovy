@@ -644,17 +644,17 @@ class BootStrap {
             ],
             [
                     name: [key: "Ill ZETA code", en: "Ill ZETA code", de: "Fernleihindikator: Lieferweg"],
-                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 1. Position: Bestellaufgabe und Lieferweg"],
+                    expl: [en: "", de: "Fernleihindikator gemäß ZETA/RDA, 1. Position: Bestellaufgabe und Lieferweg"],
                     descr:allDescr, type: OT.Rdv, cat:'Ill code', isUsedForLogic: false
             ],
             [
                     name: [key: "Ill ZETA inland only", en: "Ill ZETA inland only", de: "Fernleihindikator: Inland"],
-                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 2. Position: Nur Inland"],
+                    expl: [en: "", de: "Fernleihindikator gemäß ZETA/RDA, 2. Position: Nur Inland"],
                     descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: false
             ],
             [
                     name: [key: "Ill ZETA electronic fobidden", en: "Ill ZETA electronic fobidden", de: "Fernleihindikator: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
-                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 3. Position: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
+                    expl: [en: "", de:"Fernleihindikator gemäß ZETA/RDA, 3. Position: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
                     descr:allDescr,type: OT.Rdv, cat:'YN', isUsedForLogic: false
             ],
             [
