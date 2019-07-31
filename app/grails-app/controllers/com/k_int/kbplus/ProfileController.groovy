@@ -13,7 +13,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static de.laser.helper.RDStore.*
-import static de.laser.helper.RDStore.YN_YES
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
