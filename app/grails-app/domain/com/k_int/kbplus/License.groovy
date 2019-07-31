@@ -122,14 +122,21 @@ class License
             licenseType column:'lic_license_type_str'
           //licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
-              documents sort:'owner.id', order:'desc'
+              documents sort:'owner.id', order:'desc', batchSize: 10
           onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date'
                 endDate column: 'lic_end_date'
-       customProperties sort:'type', order:'desc'
-      privateProperties sort:'type', order:'desc'
-         pendingChanges sort: 'ts', order: 'asc'
+       customProperties sort:'type', order:'desc', batchSize: 10
+      privateProperties sort:'type', order:'desc', batchSize: 10
+         pendingChanges sort: 'ts', order: 'asc', batchSize: 10
+
+              ids               batchSize: 10
+              pkgs              batchSize: 10
+              subscriptions     batchSize: 10
+              orgLinks          batchSize: 10
+              prsLinks          batchSize: 10
+              derivedLicenses   batchSize: 10
   }
 
     static constraints = {

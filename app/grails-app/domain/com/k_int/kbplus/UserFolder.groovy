@@ -25,7 +25,7 @@ class UserFolder {
         user column:'uf_owner_id'
    shortcode column:'uf_shortcode'
         name column:'uf_name'
-       items cascade: 'all-delete-orphan'
+       items cascade: 'all-delete-orphan', batchSize: 10
       dateCreated column: 'uf_dateCreated'
       lastUpdated column: 'uf_lastUpdated'
   }

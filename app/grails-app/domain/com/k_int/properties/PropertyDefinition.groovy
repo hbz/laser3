@@ -135,7 +135,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
           isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
 
-        propDefGroupItems cascade: 'all'  // for deleting
+        propDefGroupItems cascade: 'all', batchSize: 10
     }
 
     static constraints = {

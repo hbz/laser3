@@ -40,8 +40,8 @@ class PropertyDefinitionGroup {
         ownerType   column: 'pdg_owner_type'
         visible     column: 'pdg_visible_rv_fk'
 
-        items    cascade: 'all' // for deleting
-        bindings cascade: 'all' // for deleting
+        items       cascade: 'all', batchSize: 10
+        bindings    cascade: 'all', batchSize: 10
     }
 
     static constraints = {

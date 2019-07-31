@@ -19,8 +19,8 @@ class AuditConfig {
     static mapping = {
         id              column: 'auc_id'
         version         column: 'auc_version'
-        referenceId     column: 'auc_reference_id'
-        referenceClass  column: 'auc_reference_class'
+        referenceId     column: 'auc_reference_id',    index:'auc_ref_idx'
+        referenceClass  column: 'auc_reference_class', index:'auc_ref_idx'
         referenceField  column: 'auc_reference_field'
     }
 

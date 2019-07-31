@@ -144,6 +144,17 @@ class Org
         ], lazy: false
         addresses   lazy: false
         contacts    lazy: false
+
+        ids                 batchSize: 10
+        outgoingCombos      batchSize: 10
+        incomingCombos      batchSize: 10
+        links               batchSize: 10
+        prsLinks            batchSize: 10
+        affiliations        batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        documents           batchSize: 10
+        platforms           batchSize: 10
     }
 
     static constraints = {

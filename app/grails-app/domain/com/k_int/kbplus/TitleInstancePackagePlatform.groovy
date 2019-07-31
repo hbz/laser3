@@ -126,6 +126,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
      coreStatusEnd column:'tipp_core_status_end_date'
    accessStartDate column:'tipp_access_start_date'
      accessEndDate column:'tipp_access_end_date'
+
+      ids                   batchSize: 10
+      additionalPlatforms   batchSize: 10
   }
 
     static constraints = {

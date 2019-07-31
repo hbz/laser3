@@ -138,7 +138,19 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
-        pendingChanges  sort: 'ts', order: 'asc'
+        pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
+
+        ids                 batchSize: 10
+        packages            batchSize: 10
+        issueEntitlements   batchSize: 10
+        documents           batchSize: 10
+        orgRelations        batchSize: 10
+        prsLinks            batchSize: 10
+        derivedSubscriptions    batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        costItems           batchSize: 10
+        oapl                batchSize: 10
     }
 
     static constraints = {

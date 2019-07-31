@@ -49,7 +49,7 @@ class DashboardDueDate {
         date                    column: 'das_date'
         oid                     column: 'das_oid'
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_fk_idx'
-        responsibleOrg          column: 'das_responsible_org_fk', index:  'das_responsible_org_fk_idx'
+        responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_fk_idx'
         autoTimestamp true
     }
 
