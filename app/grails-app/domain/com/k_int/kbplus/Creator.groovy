@@ -29,6 +29,7 @@ class Creator extends AbstractBaseDomain{
         lastUpdated column:'cre_lastUpdated'
         dateCreated column:'cre_dateCreated'
 
+        title   batchSize: 10
     }
 
     static constraints = {

@@ -40,10 +40,10 @@ class Person extends AbstractBaseDomain {
         contactType     column:'prs_contact_type_rv_fk'
         roleType        column:'prs_role_type_rv_fk'
 
-        roleLinks   cascade: 'all'
-        addresses   cascade: 'all', lazy: false
-        contacts    cascade: 'all', lazy: false
-        privateProperties   cascade: 'all'
+        roleLinks           cascade: 'all', batchSize: 10
+        addresses           cascade: 'all', lazy: false
+        contacts            cascade: 'all', lazy: false
+        privateProperties   cascade: 'all', batchSize: 10
     }
     
     static mappedBy = [

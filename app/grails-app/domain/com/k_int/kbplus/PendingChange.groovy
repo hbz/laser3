@@ -47,11 +47,11 @@ class PendingChange {
 
     static mapping = {
         systemObject column:'pc_sys_obj'
-        subscription column:'pc_sub_fk'
-            license column:'pc_lic_fk'
-                pkg column:'pc_pkg_fk'
-           costItem column:'pc_ci_fk'
-                oid column:'pc_oid', index:'pending_change_oid_idx'
+        subscription column:'pc_sub_fk',    index:'pending_change_sub_idx'
+            license column:'pc_lic_fk',     index:'pending_change_lic_idx'
+                pkg column:'pc_pkg_fk',     index:'pending_change_pkg_idx'
+           costItem column:'pc_ci_fk',      index:'pending_change_costitem_idx'
+                oid column:'pc_oid',        index:'pending_change_oid_idx'
           changeDoc column:'pc_change_doc', type:'text'
            msgToken column:'pc_msg_token'
           msgParams column:'pc_msg_doc', type:'text'

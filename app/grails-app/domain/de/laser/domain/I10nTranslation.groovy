@@ -20,14 +20,14 @@ class I10nTranslation {
     String valueFr
 
     static mapping = {
-        id          column:'i10n_id'
-        version     column:'i10n_version'
-        referenceId column:'i10n_reference_id',       index: 'i10n_ref_idx'
-        referenceClass column:'i10n_reference_class', index: 'i10n_ref_idx'
-        referenceField column:'i10n_reference_field'
-        valueDe     column:'i10n_value_de', type: 'text'
-        valueEn     column:'i10n_value_en', type: 'text'
-        valueFr     column:'i10n_value_fr', type: 'text'
+        id              column:'i10n_id'
+        version         column:'i10n_version'
+        referenceId     column:'i10n_reference_id',    index: 'i10n_ref_idx'
+        referenceClass  column:'i10n_reference_class', index: 'i10n_ref_idx'
+        referenceField  column:'i10n_reference_field'
+        valueDe         column:'i10n_value_de', type: 'text'
+        valueEn         column:'i10n_value_en', type: 'text'
+        valueFr         column:'i10n_value_fr', type: 'text'
     }
 
     static constraints = {

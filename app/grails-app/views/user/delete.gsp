@@ -11,26 +11,31 @@
     <g:render template="breadcrumb" model="${[ user:user, params:params ]}"/>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${user.username} : ${user.displayName?:'No username'}
+        ${user?.username} : ${user?.displayName?:'Nutzer unbekannt'}
     </h1>
 
     <g:if test="${dryRun}">
-        <semui:msg class="info" header="" message="user.delete.info" />
+        <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+            <semui:msg class="info" header="" message="user.delete.info2" />
+        </g:if>
+        <g:else>
+            <semui:msg class="info" header="" message="user.delete.info" />
+        </g:else>
         <br />
 
         <g:if test="${editable}">
             <g:form controller="user" action="_delete" params="${[id: user.id, process: true]}">
                 <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button">Vorgang abbrechen</g:link>
                 <input type="submit" class="ui button red" value="Benutzer löschen" />
-                <br />
-                <br />
-                <p>
-                    Gekennzeichnete Daten dabei an folgenden Nutzer übertragen:
+
+                <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+                    <br /><br />
+                    Die gekennzeichneten Daten dabei an folgenden Nutzer übertragen:
 
                     <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
-                          from="${ctxOrgUserList.sort()}"
+                          from="${substituteList.sort()}"
                           optionKey="${{'com.k_int.kbplus.auth.User:' + it.id}}" optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
-                </p>
+                </g:if>
             </g:form>
         </g:if>
 
@@ -56,9 +61,6 @@
                                 <g:if test="${info[2] == 'blue'}">
                                     data-tooltip="${message(code:'user.delete.moveToNewUser')}"
                                 </g:if>
-                                <g:if test="${info[2] == 'teal'}">
-                                    data-tooltip="${message(code:'user.delete.moveToNewUser')}"
-                                </g:if>
                             >${info[1].size()}</span>
                         </g:if>
                         <g:else>
@@ -66,7 +68,9 @@
                         </g:else>
                     </td>
                     <td>
-                        ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.join(', ')}
+                        <div style="overflow-y:scroll;scrollbar-color:grey white;max-height:14.25em">
+                            ${info[1].collect{ item -> item.hasProperty('id') ? item.id : 'x'}.sort().join(', ')}
+                        </div>
                     </td>
                 </tr>
             </g:each>

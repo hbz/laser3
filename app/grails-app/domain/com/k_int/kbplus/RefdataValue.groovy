@@ -33,8 +33,8 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static mapping = {
                     id column: 'rdv_id'
                version column: 'rdv_version'
-                 owner column: 'rdv_owner', index: 'rdv_entry_idx'
-                 value column: 'rdv_value', index: 'rdv_entry_idx'
+                 owner column: 'rdv_owner', index: 'rdv_owner_value_idx'
+                 value column: 'rdv_value', index: 'rdv_owner_value_idx'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
               hardData column: 'rdv_hard_data'

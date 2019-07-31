@@ -10,8 +10,8 @@ class SubscriptionPackage {
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
-      subscription column:'sp_sub_fk'
-               pkg column:'sp_pkg_fk'
+      subscription column:'sp_sub_fk',  index: 'sp_sub_pkg_idx'
+               pkg column:'sp_pkg_fk',  index: 'sp_sub_pkg_idx'
   }
 
   static constraints = {
