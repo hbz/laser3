@@ -643,6 +643,21 @@ class BootStrap {
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
+                    name: [key: "Ill ZETA code", en: "Ill ZETA code", de: "Fernleihindikator: Lieferweg"],
+                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 1. Position: Bestellaufgabe und Lieferweg"],
+                    descr:allDescr, type: OT.Rdv, cat:'Ill code', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "Ill ZETA inland only", en: "Ill ZETA inland only", de: "Fernleihindikator: Inland"],
+                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 2. Position: Nur Inland"],
+                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "Ill ZETA electronic fobidden", en: "Ill ZETA electronic fobidden", de: "Fernleihindikator: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
+                    expl: [en: "Fernleihindikator gemäß ZETA/RDA, 3. Position: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
+                    descr:allDescr,type: OT.Rdv, cat:'YN', isUsedForLogic: false
+            ],
+            [
                     name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"],
                     expl: [en: "A clause by which the licensor agrees to indemnify the licensee against a legal claim. This may specifically include intellectual property claims (third party rights), or may be broader in application.", de: "Aussage darüber, inwiefern der Lizenzgeber den Lizenznehmer von juristischen Ansprüchen schadlos hält."],
                     descr:allDescr, type: OT.Rdv, cat:'Indemnification', isUsedForLogic: false
@@ -732,9 +747,27 @@ class BootStrap {
                     expl: [en: "Information which qualifies a permissions statement on Digitally Copy", de: "Bedingungen der dititalen Kopie."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
+            // change contents in DB per Script
+            /*
             [
                     name: [en: "Datamining", de: "Datamining"],
                     expl: [en: "", de: "Aussagen darüber, ob bzw. wie das Material im Kontext des Datamining zu Verfügung steht, ferner Informationen über weiter zu berücksichtigende Aspekte wie Nutzungsbedingungen, Sicherheitserklärungen und Datenvernichtung."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            */
+            [
+                    name: [key: "TextDataMining", en: "Text- and Datamining", de: "Text- and Datamining"],
+                    expl: [en: "", de: "Aussagen darüber, ob das Material im Kontext des Datamining zu Verfügung steht."],
+                    descr:allDescr, type:  OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "TextDataMiningCharacters", en: "Text- and Datamining Character Count", de: "Text- and Datamining Zeichenzahl"],
+                    expl: [en: "", de: "Zahl der Zeichen, die im Rahmen eines Text- und Dataminings erlaubt sind."],
+                    descr:allDescr, type: OT.Int, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "TextDataMiningRestrictions", en: "Text- and Datamining Restrictions", de: "Text- and Datamining Einschränkungen."],
+                    expl: [en: "", de: "Aussagen darüber, welchen Einschränkungen das Text- und Datamining unterliegt, sowie Informationen über weiter zu berücksichtigende Aspekte wie Nutzungsbedingungen, Sicherheitserklärungen und Datenvernichtung."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
@@ -1659,6 +1692,7 @@ class BootStrap {
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'], BOOTSTRAP)
         RefdataCategory.loc('Permissions',                                  [en: 'Permissions', de: 'Berechtigungen'], BOOTSTRAP)
         RefdataCategory.loc('Existence',                                    [en: 'Existence', de: 'Vorliegen'], BOOTSTRAP)
+        RefdataCategory.loc('Ill code',                                     [en: 'Ill code', de:'Fernleihindikator'], BOOTSTRAP)
         RefdataCategory.loc('Indemnification',                              [en: 'Indemnification Choice', de: 'Entschädigung Auswahl'], BOOTSTRAP)
         RefdataCategory.loc('Confidentiality',                              [en: 'Confidentiality Choice', de: 'Vertraulichkeit Auswahl'], BOOTSTRAP)
         RefdataCategory.loc('Termination Condition',                        [en: 'Termination Condition', de: 'Kündigung Voraussetzung'], BOOTSTRAP)
@@ -1749,6 +1783,12 @@ class BootStrap {
 
         RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'], BOOTSTRAP)
         RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'], BOOTSTRAP)
+
+        RefdataValue.loc('Ill code',   [key: 'a', en: 'a - Ill (loan only)', de: 'a - Fernleihe (Ausleihe)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'b', en: 'b - Ill (copy only)', de: 'b - Fernleihe (Papierkopie an Endnutzer)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'c', en: 'c - Ill (loan and copy)', de: 'c - Fernleihe (Papierkopie und Ausleihe)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'd', en: 'd - Ill forbidden', de: 'd - keine Fernleihe'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'e', en: 'e - Ill (electronic delivery)', de: 'e - Fernleihe (Elektronischer Versand an Endnutzer)'], BOOTSTRAP)
 
         RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'], BOOTSTRAP)
@@ -2157,6 +2197,7 @@ class BootStrap {
         RefdataValue.loc('OrgRoleType',      [en: 'Platform Provider', de: 'Plattformanbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Issuing Body'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Imprint'], BOOTSTRAP)
+        RefdataValue.loc('OrgRoleType',      [en: 'Library Service', de: 'Bibliotheksservice'], BOOTSTRAP)
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
