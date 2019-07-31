@@ -29,10 +29,10 @@
             <% isCopyLicenseEnabled = true %>
         </sec:ifAnyGranted>
         <g:if test="${isCopyLicenseEnabled}">
-            <semui:actionsDropdownItem controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+            <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled controller="license" action="copyLiceInstitutionsServicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+            <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
         </g:else>
 
         <g:if test="${actionName == 'show'}">

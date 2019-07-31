@@ -165,7 +165,7 @@
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
                                                           action="manageMembers" message="menu.my.departments" />
                             </g:elseif>
 

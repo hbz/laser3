@@ -45,6 +45,10 @@ class User {
   static mapping = {
       table (name: '`user`')
       password column: '`password`'
+
+      affiliations  batchSize: 10
+      roles         batchSize: 10
+      reminders     batchSize: 10
   }
 
   Set<Role> getAuthorities() {

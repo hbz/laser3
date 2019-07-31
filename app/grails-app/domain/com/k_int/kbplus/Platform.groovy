@@ -60,8 +60,9 @@ class Platform extends AbstractBaseDomain {
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
-              org  column: 'plat_org_fk'
-             tipps sort: 'title.title', order: 'asc'
+              org  column: 'plat_org_fk', index: 'plat_org_idx'
+             tipps sort: 'title.title', order: 'asc', batchSize: 10
+            oapp batchSize: 10
   }
 
   static constraints = {

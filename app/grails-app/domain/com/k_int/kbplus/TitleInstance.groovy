@@ -69,9 +69,14 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         gokbId column:'ti_gokb_id', type:'text'
        status column:'ti_status_rv_fk'
          type column:'ti_type_rv_fk'
-        tipps sort:'startDate', order: 'asc'
+        tipps sort:'startDate', order: 'asc', batchSize: 10
     sortTitle column:'sort_title', type:'text'
 
+      ids           batchSize: 10
+      orgs          batchSize: 10
+      historyEvents batchSize: 10
+      prsLinks      batchSize: 10
+      creators      batchSize: 10
   }
 
     static constraints = {

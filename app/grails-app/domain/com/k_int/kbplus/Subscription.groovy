@@ -121,15 +121,15 @@ class Subscription
         version     column:'sub_version'
         globalUID   column:'sub_guid'
         status      column:'sub_status_rv_fk'
-        type        column:'sub_type_rv_fk'
-        owner       column:'sub_owner_license_fk'
+        type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
+        owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
         identifier  column:'sub_identifier'
         impId       column:'sub_imp_id', index:'sub_imp_id_idx'
-        startDate   column:'sub_start_date'
-        endDate     column:'sub_end_date'
+        startDate   column:'sub_start_date',        index: 'sub_dates_idx'
+        endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
@@ -138,7 +138,19 @@ class Subscription
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
-        pendingChanges  sort: 'ts', order: 'asc'
+        pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
+
+        ids                 batchSize: 10
+        packages            batchSize: 10
+        issueEntitlements   batchSize: 10
+        documents           batchSize: 10
+        orgRelations        batchSize: 10
+        prsLinks            batchSize: 10
+        derivedSubscriptions    batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        costItems           batchSize: 10
+        oapl                batchSize: 10
     }
 
     static constraints = {
