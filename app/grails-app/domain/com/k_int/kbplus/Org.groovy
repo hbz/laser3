@@ -115,10 +115,10 @@ class Org
                 id          column:'org_id'
            version          column:'org_version'
          globalUID          column:'org_guid'
-             impId          column:'org_imp_id', index:'org_imp_id_idx'
-              name          column:'org_name', index:'org_name_idx'
+             impId          column:'org_imp_id',    index:'org_imp_id_idx'
+              name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
-          sortname          column:'org_sortname', index:'org_sortname_idx'
+          sortname          column:'org_sortname',  index:'org_sortname_idx'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
            comment          column:'org_comment'
@@ -146,6 +146,17 @@ class Org
         ], lazy: false
         addresses   lazy: false
         contacts    lazy: false
+
+        ids                 batchSize: 10
+        outgoingCombos      batchSize: 10
+        incomingCombos      batchSize: 10
+        links               batchSize: 10
+        prsLinks            batchSize: 10
+        affiliations        batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        documents           batchSize: 10
+        platforms           batchSize: 10
     }
 
     static constraints = {

@@ -9,7 +9,7 @@ class BudgetCode {
     static mapping = {
          id column:'bc_id'
     version column:'bc_version'
-      owner column:'bc_owner_fk'
+      owner column:'bc_owner_fk', index:'bc_owner_idx'
       value column:'bc_value'
       descr column:'bc_description'
     }

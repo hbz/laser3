@@ -10,6 +10,10 @@ class TitleHistoryEvent {
   static hasMany = [ participants:TitleHistoryEventParticipant ]
   static mappedBy = [ participants:'event' ]
 
+  static mapping = {
+    participants  batchSize: 10
+  }
+
   @Transient 
   public boolean inRole(String role, TitleInstance t) {
     boolean result = false
