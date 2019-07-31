@@ -33,8 +33,8 @@ class PropertyDefinitionGroup {
         id          column: 'pdg_id'
         version     column: 'pdg_version'
         name        column: 'pdg_name'
-        description column: 'pdg_description', type: 'text'
-        tenant      column: 'pdg_tenant_fk'
+        description column: 'pdg_description',  type: 'text'
+        tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
         ownerType   column: 'pdg_owner_type'
         visible     column: 'pdg_visible_rv_fk'
 

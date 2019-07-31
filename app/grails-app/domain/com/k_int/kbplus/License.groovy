@@ -124,8 +124,8 @@ class License
               documents sort:'owner.id', order:'desc', batchSize: 10
           onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
-              startDate column: 'lic_start_date'
-                endDate column: 'lic_end_date'
+              startDate column: 'lic_start_date',   index: 'lic_dates_idx'
+                endDate column: 'lic_end_date',     index: 'lic_dates_idx'
        customProperties sort:'type', order:'desc', batchSize: 10
       privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10

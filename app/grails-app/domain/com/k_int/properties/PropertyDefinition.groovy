@@ -129,7 +129,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                     expl column: 'pd_explanation', index: 'td_new_idx', type: 'text'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
-                  tenant column: 'pd_tenant_fk'
+                  tenant column: 'pd_tenant_fk',   index: 'pd_tenant_idx'
       multipleOccurrence column: 'pd_multiple_occurrence'
                mandatory column: 'pd_mandatory'
                 hardData column: 'pd_hard_data'
