@@ -4,20 +4,18 @@
 
 0.18.9
 
-- TODO
+- ERMS-1534
 
 0.18.8
 
-- TODO
+- gasco view: removed invalid subscriptions
+- ERMS-1522, ERMS-1523, ERMS-1524, ERMS-1530
+- minor survey changes
 
-0.18.7
-
-- TODO
-
-0.18.6
+0.18.7 / 0.18.6
 
 - multiple survey bugfixes
-- bugfix: missing combo type
+- missing combo type
 - service refactorings
 - cronjob refactorings
 - fixed translations
