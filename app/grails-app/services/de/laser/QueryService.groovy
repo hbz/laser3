@@ -13,8 +13,8 @@ class QueryService {
     def subscriptionsQueryService
     def taskService
 
-    private computeInfoDate(User user, String userSettingsKey){
-        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)
+    private computeInfoDate(User user, UserSettings.KEYS userSettingsKey){
+        int daysToBeInformedBeforeToday = user.getSetting(userSettingsKey, DEFAULT_REMINDER_PERIOD)?.getValue()
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         infoDate
     }
