@@ -111,6 +111,11 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    private validateEmailAddress(String email) {
+        def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
+        return ( email ==~ mailPattern )
+    }
+
   @Secured(['ROLE_USER'])
   def updateProfile() {
     def user = User.get(springSecurityService.principal.id)
@@ -123,8 +128,7 @@ class ProfileController {
     }
 
     if ( user.email != params.email ) {
-      def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
-      if ( params.email ==~ mailPattern ) {
+      if ( validateEmailAddress(params.email) ) {
         user.email = params.email
         flash.message += message(code:'profile.updateProfile.updated.email', default:"User email address updated<br/>")
       }
@@ -205,8 +209,14 @@ class ProfileController {
         if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
             flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
         } else {
+            if (params.remindCCEmailaddress){
+                if (validateEmailAddress(params.remindCCEmaisaddress)){
+                    changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
+                } else {
+                    flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                }
+            }
             changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),                   params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
-            changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
         }
     }
 
