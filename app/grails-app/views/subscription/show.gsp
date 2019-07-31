@@ -229,10 +229,9 @@
                         <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
 
                             <div class="ui la-vertical buttons">
-                                <input class="ui button"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
-                                       data-semui="modal"
-                                       data-href="#prsLinksModal" />
+                                <a class="ui button" data-semui="modal" href="#prsLinksModal">
+                                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                                </a>
                             </div>
 
                             <g:render template="/templates/links/prsResponsibilityModal"

@@ -97,13 +97,13 @@
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
                                    value="shared">
-                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared')}</label>
+                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared', args: superOrgType)}</label>
                         </div>
 
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
                                    value="explicit">
-                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit')}</label>
+                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit', args: superOrgType)}</label>
                         </div>
 
                         <g:if test="${subscriptionInstance.owner.derivedLicenses}">
@@ -167,10 +167,10 @@
             </div>
             <p>
                 <g:if test="${consortialView}">
-                    <g:message code="myinst.noMembers.cons.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
+                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
                 </g:if>
                 <g:elseif test="${departmentalView}">
-                    <g:message code="myinst.noMembers.dept.body" args="${["${link(action:'addMembers'){message(code:'myinst.noMembers.link')}}"]}"/>
+                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'collective.member.plural')]}"/>
                 </g:elseif>
             </p>
         </div>

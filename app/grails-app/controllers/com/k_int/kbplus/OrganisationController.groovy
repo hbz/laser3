@@ -4,6 +4,8 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
+import de.laser.AccessService
+import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
@@ -29,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def docstoreService
     def instAdmService
     def organisationService
+    def deletionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -239,7 +242,7 @@ class OrganisationController extends AbstractDebugController {
                     if (orgInstance.save(flush: true)) {
                         orgInstance.setDefaultCustomerType()
 
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
@@ -279,7 +282,7 @@ class OrganisationController extends AbstractDebugController {
             orgInstance.addToOrgType(orgType2)
             orgInstance.save(flush:true)
 
-            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
         else {
@@ -321,7 +324,7 @@ class OrganisationController extends AbstractDebugController {
                 }
                 orgInstance.setDefaultCustomerType()
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
@@ -343,7 +346,7 @@ class OrganisationController extends AbstractDebugController {
                 }
                 deptInstance.setDefaultCustomerType()
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.id])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.name])
                 redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
@@ -463,19 +466,27 @@ class OrganisationController extends AbstractDebugController {
         def orgType = OT_PROVIDER
 
         //IF ORG is a Provider
-        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds())
-        {
+        if(result.orgInstance.sector == orgSector || orgType?.id in result.orgInstance?.getallOrgTypeIds()) {
             du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
             du.setBenchMark('editable2')
-            List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),result.orgInstance).collect { it ->
-                it.toOrg.id
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
+                    result.editable = true
             }
-            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR") && consortia.size() == 1 && consortia.contains(result.institution.id))
-                result.editable = true
+            else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                List<Long> department = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
+                    it.toOrg.id
+                }
+                if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
+                    result.editable = true
+            }
             else
                 result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
@@ -707,23 +718,34 @@ class OrganisationController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def delete() {
-        def orgInstance = Org.get(params.id)
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-            return
+    def _delete() {
+        def result = [:]
+
+        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")  // TODO
+        result.orgInstance = Org.get(params.id)
+
+        if (result.orgInstance) {
+            if (params.process  && result.editable) {
+                //result.result = deletionService.deleteOrganisation(result.orgInstance, false) // TODO enable
+            }
+            else {
+                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+            }
+
+            if (contextService.getUser().isAdmin()) {
+                result.substituteList = Org.executeQuery("select distinct o from Org o where o.status.value != 'Deleted'")
+            }
+            else {
+                List<Org> orgList = [result.orgInstance]
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.status.value != 'Deleted' and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.status.value != 'Deleted' and cmb.fromOrg = :org", [org: result.orgInstance]))
+                orgList.unique()
+
+                result.substituteList = orgList
+            }
         }
 
-        try {
-            orgInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        render view: 'delete', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')

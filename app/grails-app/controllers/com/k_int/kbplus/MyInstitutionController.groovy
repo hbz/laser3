@@ -1233,7 +1233,7 @@ from License as l where (
             Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
             RefdataValue status = RefdataValue.get(params.status)
 
-            //beware: at this place, we cannot calculate the subscription type yet because essential data for the calculation is not persisted/available yet!
+            //beware: at this place, we cannot calculate the subscription type because essential data for the calculation is not persisted/available yet!
             boolean administrative = false
             if(subType == RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                 administrative = true
@@ -1256,7 +1256,7 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if(accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
+                if(accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL) {
                     
                     def cons_members = []
 
