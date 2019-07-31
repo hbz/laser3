@@ -1,4 +1,4 @@
-0.19-RC
+0.19
 
 - TODO
 
@@ -16,15 +16,22 @@
 
 0.18.6
 
-- TODO
+- multiple survey bugfixes
+- bugfix: missing combo type
+- service refactorings
+- cronjob refactorings
+- fixed translations
 
 0.18.5
 
-- TODO
+- bugfix: copying subscriptions
 
 0.18.4
 
-- TODO
+- bugfixes: copying subscriptions
+- bugfixes: copying licenses
+- minor survey bugfixes
+- api changes
 
 0.18.3
 
