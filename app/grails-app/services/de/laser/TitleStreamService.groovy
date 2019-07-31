@@ -14,7 +14,7 @@ class TitleStreamService {
     SimpleDateFormat dateFormat = new SimpleDateFormat('yyyy-MM-dd')
 
     /**
-     * Generates a title stream export list according to the KBart II-standard but enriched with additional identifiers such as ZDB-ID
+     * Generates a title stream export list according to the KBart II-standard but enriched with proprietary fields such as ZDB-ID
      * The standard is as defined on {@see <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBart definition</a>}
      *
      * @param entitlementData - a {@link List} containing the actual data
@@ -62,7 +62,7 @@ class TitleStreamService {
             List row = []
             log.debug("processing ${entitlement.tipp.title}")
             //publication_title
-            row.add("${entitlement.tipp.title.title} (${entitlement.subscription.dropdownNamingConvention(contextService.org)})")
+            row.add("${entitlement.tipp.title.title}")
             log.debug("add main identifiers")
             //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
             if(entitlement.tipp.title.getIdentifierValue('pISBN'))
