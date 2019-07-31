@@ -209,7 +209,7 @@ class ProfileController {
             flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
         } else {
             if (params.remindCCEmailaddress){
-                if (validateEmailAddress(params.remindCCEmaisaddress)){
+                if (validateEmailAddress(params.remindCCEmailaddress)){
                     changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
                 } else {
                     flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
