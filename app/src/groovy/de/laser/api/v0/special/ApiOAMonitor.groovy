@@ -13,7 +13,7 @@ import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
-class ApiOAManager {
+class ApiOAMonitor {
 
     static boolean calculateAccess(Org result, Org context, boolean hasAccess) {
 

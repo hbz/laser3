@@ -16,8 +16,8 @@ class ApiReader {
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
-            'oaManager':            [Constants.MIME_APPLICATION_JSON],
-            'oaManagerList':        [Constants.MIME_APPLICATION_JSON],
+            'oaMonitor':            [Constants.MIME_APPLICATION_JSON],
+            'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
             'refdataList':          [Constants.MIME_APPLICATION_JSON],
@@ -26,7 +26,7 @@ class ApiReader {
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaManagerList', 'refdataList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'statisticList']
 
     /**
      * @param com.k_int.kbplus.CostItem costItem
@@ -393,7 +393,7 @@ class ApiReader {
         ) // com.k_int.kbplus.PersonRole
         */
 
-        // TODO: oaManager
+        // TODO: oaMonitor
         result.costItems    = ApiReaderHelper.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
 
         return ApiToolkit.cleanUp(result, true, true)

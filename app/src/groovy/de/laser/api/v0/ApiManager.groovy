@@ -3,7 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
-import de.laser.api.v0.special.ApiOAManager
+import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.63'
+    static final VERSION = '0.64'
     static final NOT_SUPPORTED = false
 
     /**
@@ -109,7 +109,7 @@ class ApiManager {
                 result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
             }
         }
-        else if (resolve('oaManager', ApiReader.SUPPORTED_FORMATS.oaManager) == Constants.VALID_REQUEST) {
+        else if (resolve('oaMonitor', ApiReader.SUPPORTED_FORMATS.oaMonitor) == Constants.VALID_REQUEST) {
 
             if (! accessDueDatamanager) {
                 return Constants.HTTP_FORBIDDEN
@@ -117,12 +117,12 @@ class ApiManager {
             result = ApiOrg.findOrganisationBy(query, value)
 
             if (result && !(result in failureCodes)) {
-                result = ApiOAManager.getOrganisation(result, contextOrg, accessDueDatamanager)
+                result = ApiOAMonitor.getOrganisation(result, contextOrg, accessDueDatamanager)
             }
         }
-        else if (resolve('oaManagerList', ApiReader.SUPPORTED_FORMATS.oaManagerList) == Constants.VALID_REQUEST) {
+        else if (resolve('oaMonitorList', ApiReader.SUPPORTED_FORMATS.oaMonitorList) == Constants.VALID_REQUEST) {
 
-            result = ApiOAManager.getAllOrgs(accessDueDatamanager)
+            result = ApiOAMonitor.getAllOrgs(accessDueDatamanager)
         }
         else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
 
