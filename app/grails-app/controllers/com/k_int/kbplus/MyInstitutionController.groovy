@@ -1288,8 +1288,8 @@ from License as l where (
                                           status: status,
                                           administrative: administrative,
                                           instanceOf: new_sub,
-                                          isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
-                                          isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                                          isSlaved: true,
+                                          isPublic: false,
                                           impId: java.util.UUID.randomUUID().toString()).save()
                         if(new_sub.administrative) {
                             new OrgRole(org: cm,

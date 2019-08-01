@@ -17,8 +17,7 @@ class Person extends AbstractBaseDomain {
     @RefdataAnnotation(cat = 'Gender')
     RefdataValue gender
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
+    boolean isPublic
 
     @RefdataAnnotation(cat = 'Person Contact Type')
     RefdataValue contactType
@@ -68,7 +67,7 @@ class Person extends AbstractBaseDomain {
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
         tenant      (nullable:true)
-        isPublic    (nullable:true)
+        isPublic    (nullable:false, blank:false)
         contactType (nullable:true)
         roleType    (nullable:true)
     }
@@ -124,7 +123,7 @@ class Person extends AbstractBaseDomain {
 
     static def getPublicByOrgAndFunc(Org org, String func) {
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ?",
                 [org, func]
         )
         result
@@ -136,7 +135,7 @@ class Person extends AbstractBaseDomain {
         allPersons.each { row ->
             Person p = (Person) row[0]
             PersonRole pr = (PersonRole) row[1]
-            if(p.isPublic == RDStore.YN_YES) {
+            if(p.isPublic) {
                 p.contacts.each { c ->
                     if(c.contentType == RDStore.CCT_EMAIL) {
                         if(publicContactMap[pr.org])
@@ -148,7 +147,7 @@ class Person extends AbstractBaseDomain {
                     }
                 }
             }
-            else if(p.isPublic == RDStore.YN_NO) {
+            else {
                 p.contacts.each { c ->
                     if(c.contentType == RDStore.CCT_EMAIL && p.tenant == contextOrg) {
                         if(privateContactMap[pr.org])
@@ -201,7 +200,7 @@ class Person extends AbstractBaseDomain {
 
     static def getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
         )
         result

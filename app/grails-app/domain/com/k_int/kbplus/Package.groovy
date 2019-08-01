@@ -51,8 +51,7 @@ class Package
     @RefdataAnnotation(cat = '?')
     RefdataValue fixed
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
+    boolean isPublic
 
     @RefdataAnnotation(cat = '?')
     RefdataValue packageScope
@@ -132,7 +131,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate(nullable:true, blank:false)
                    endDate(nullable:true, blank:false)
                    license(nullable:true, blank:false)
-                  isPublic(nullable:true, blank:false)
+                  isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)

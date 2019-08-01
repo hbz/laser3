@@ -54,7 +54,7 @@
         <g:set var="privateEmailsForFunction" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
-                <g:if test="${(person?.isPublic?.value=='Yes')}">
+                <g:if test="${person?.isPublic}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             def emailPF = email?.content?.trim()
@@ -65,7 +65,7 @@
                         %>
                     </g:each>
                 </g:if>
-                <g:elseif test="${(person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                <g:elseif test="${(! person.isPublic) && (person.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             emailPF = email?.content?.trim()
@@ -97,7 +97,7 @@
         <g:set var="privateEmailsForPosition" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
-                <g:if test="${person?.isPublic?.value=='Yes'}">
+                <g:if test="${person?.isPublic}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             def emailPP = email?.content?.trim()
@@ -108,7 +108,7 @@
                         %>
                     </g:each>
                 </g:if>
-                <g:elseif test="${person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id}">
+                <g:elseif test="${(! person.isPublic) && person.tenant?.id == contextService.getOrg()?.id}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             emailPP = email?.content?.trim()

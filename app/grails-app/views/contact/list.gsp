@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.Contact; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
 	<head>
@@ -49,7 +49,7 @@
 
 							<td>${fieldValue(bean: contactInstance, field: "org")}</td>
 						
-							<td>${contactInstance?.prs?.isPublic}</td>
+							<td>${contactInstance?.prs?.isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
 							
 							<td class="link">
 								<g:link action="show" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>

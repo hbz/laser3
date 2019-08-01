@@ -153,7 +153,7 @@ class LicenseController extends AbstractDebugController {
 
             result.license.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix

@@ -90,13 +90,13 @@ class ApiWriterHelper {
                     middle_name: it.middleName,
                     last_name:   it.lastName
             )
-
+            ['Yes', 'yes']
             // RefdataValues
             person.gender   = getRefdataValue(it.gender?.value, "Gender")
-            person.isPublic = getRefdataValue(it.isPublic?.value, "YN")
+            person.isPublic = it.isPublic in ['Yes', 'yes']
 
             // References
-            person.tenant = "No".equalsIgnoreCase(person.isPublic?.value) ? contextOrg : owner
+            person.tenant = person.isPublic ? contextOrg : owner
 
             person.addresses = getAddresses(it.addresses, null, person)
             person.contacts  = getContacts(it.contacts, null, person)
@@ -200,10 +200,9 @@ class ApiWriterHelper {
 
         data.each { it ->
             def property
-            def isPublic = getRefdataValue(it.isPublic?.value,"YN")
 
             // Private Property
-            if ("No".equalsIgnoreCase(isPublic?.value)) {
+            if (! it.isPublic) {
                 if (owner instanceof Org) {
                     property = new OrgPrivateProperty(
                             owner:  owner,

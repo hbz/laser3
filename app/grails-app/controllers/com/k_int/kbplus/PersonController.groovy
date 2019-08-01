@@ -75,7 +75,7 @@ class PersonController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        else if(personInstance && personInstance.isPublic.equals(RDStore.YN_NO)) {
+        else if(personInstance && ! personInstance.isPublic) {
             if(contextService.org?.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 flash.error = message(code: 'default.notAutorized.message')
                 redirect(url: request.getHeader('referer'))

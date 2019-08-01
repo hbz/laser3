@@ -982,9 +982,8 @@ class YodaController {
                                     }
                                 }
                                 if(p.isPublic) {
-                                    isPublic {
-                                        rdc(p.isPublic.owner.desc)
-                                        rdv(p.isPublic.value)
+                                    isPublic { // ? ERMS-1562
+                                        'Yes'
                                     }
                                 }
                                 if(p.contactType) {

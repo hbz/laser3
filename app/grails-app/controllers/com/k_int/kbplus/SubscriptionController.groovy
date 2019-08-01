@@ -1845,7 +1845,7 @@ class SubscriptionController extends AbstractDebugController {
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: YN_YES,
+                                isSlaved: true,
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
@@ -2858,7 +2858,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -3459,7 +3459,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -4044,7 +4044,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.subscriptionInstance.prsLinks.each { pl ->
             if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
+                if (pl.prs.isPublic) {
                     result.visiblePrsLinks << pl
                 } else {
                     // nasty lazy loading fix

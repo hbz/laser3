@@ -38,7 +38,7 @@ class AddressbookService {
         def visiblePersons = []
         orgs.each { org ->
             org.prsLinks.each { pl ->
-                if (pl.prs?.isPublic?.value == 'No') {
+                if (pl.prs && ! pl.prs.isPublic) {
                     if (pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)) {
                         if (! visiblePersons.contains(pl.prs)) {
                             visiblePersons << pl.prs
@@ -54,7 +54,7 @@ class AddressbookService {
         def result = []
 
         Person.findAllByTenant(tenant)?.each{ prs ->
-            if (prs.isPublic?.value == 'No') {
+            if (! prs.isPublic) {
                 if (! result.contains(prs)) {
                     result << prs
                 }

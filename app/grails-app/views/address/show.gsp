@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; static de.laser.helper.RDStore.*" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; static de.laser.helper.RDStore.*" %>
 <!doctype html>
 <html>
 	<head>
@@ -55,7 +55,7 @@
 
                             <g:if test="${addressInstance?.prs?.isPublic}">
                                 <dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
-                                <dd>${addressInstance?.prs?.isPublic?.getI10n('value')}</dd>
+                                <dd>${RDStore.YN_YES.getI10n('value')}</dd>
                             </g:if>
 
                             <hr />
