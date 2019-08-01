@@ -78,7 +78,7 @@ class LicenseController extends AbstractDebugController {
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-            if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.license.isSlaved && pendingChanges) {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->

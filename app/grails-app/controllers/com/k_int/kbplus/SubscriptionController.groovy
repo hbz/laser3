@@ -132,7 +132,7 @@ class SubscriptionController extends AbstractDebugController {
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
         def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
-        if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
+        if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
@@ -2783,7 +2783,7 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("pc result is ${result.pendingChanges}")
 
-            if (result.subscription.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.subscription.isSlaved && pendingChanges) {
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->

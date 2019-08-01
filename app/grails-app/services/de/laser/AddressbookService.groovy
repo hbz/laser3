@@ -88,12 +88,12 @@ class AddressbookService {
         def qParams = [:]
         switch(fromSite) {
             case "addressbook":
-                qParams.public = RDStore.YN_NO
+                qParams.public = false
                 qParts << 'p.tenant = :tenant'
                 qParams.tenant = contextService.org
                 break
             case "myPublicContacts":
-                qParams.public = RDStore.YN_YES
+                qParams.public = true
                 break
         }
 

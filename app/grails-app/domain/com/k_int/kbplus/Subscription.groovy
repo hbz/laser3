@@ -446,7 +446,7 @@ class Subscription
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+        if (perm == 'view' && this.isPublic) {
             return true
         }
         def adm = Role.findByAuthority('ROLE_ADMIN')

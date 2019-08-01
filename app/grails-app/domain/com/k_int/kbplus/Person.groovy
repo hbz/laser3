@@ -190,7 +190,7 @@ class Person extends AbstractBaseDomain {
         }
 
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' " +
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true " +
                         (org ? "and pr.org = :org " : "" ) +
                         "and pr.responsibilityType.value = :resp " + q,
                 p
@@ -232,7 +232,7 @@ class Person extends AbstractBaseDomain {
         }
 
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
                 p
         )
         result

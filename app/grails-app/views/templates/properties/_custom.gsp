@@ -55,7 +55,7 @@
                             }
                             */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
-                                if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                if (ownobj.isSlaved) {
                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                 }
                                 else {
