@@ -641,7 +641,8 @@ class ApiService {
                         //log.debug("gender: ${RefdataValue.getByValueAndCategory(personData.gender.rdv.text(),personData.gender.rdc.text())}")
                         person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
                     }
-                    if(personData.isPublic) {
+
+                    if(personData.isPublic.rdv.text() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true'] ) { // todo tmp fallback; remove later
                         //log.debug("isPublic: ${RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(),personData.isPublic.rdc.text())}")
                         person.isPublic = true
                     }

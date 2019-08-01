@@ -100,7 +100,7 @@ class ApiWriterHelper {
             person.isPublic = it.isPublic in ['Yes', 'yes']
 
             // References
-            person.tenant = person.isPublic ? contextOrg : owner
+            person.tenant = person.isPublic ? owner : contextOrg
 
             person.addresses = getAddresses(it.addresses, null, person)
             person.contacts  = getContacts(it.contacts, null, person)

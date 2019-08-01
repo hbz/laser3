@@ -200,7 +200,7 @@ class Person extends AbstractBaseDomain {
 
     static def getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
         )
         result
