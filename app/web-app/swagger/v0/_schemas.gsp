@@ -235,7 +235,7 @@
         instanceOf:
           $ref: "#/components/schemas/LicenseStub"
         isPublic:
-          type: string
+          type: string #mapped to boolean
           description: Mapping RefdataCategory "YN"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
@@ -415,7 +415,7 @@
         instanceOf:
           $ref: "#/components/schemas/SubscriptionStub"
         isSlaved:
-          type: string
+          type: string #mapped to boolean
           description: Mapping RefdataCategory "YN"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
