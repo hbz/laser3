@@ -64,7 +64,7 @@
                 <g:set var="pdI10nExplain" value="${I10nTranslation.createI10nOnTheFly(property, 'explain')}"/>
                 <td class="center aligned">
 
-                    <g:if test="${property.hardData}">
+                    <g:if test="${property.isHardData}">
                         <span data-position="top left" data-tooltip="${message(code: 'default.hardData.tooltip')}">
                             <i class="check circle icon green"></i>
                         </span>
@@ -91,7 +91,7 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nName}" field="valueDe"/>
                     </g:if>
                     <g:else>
@@ -99,7 +99,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nName}" field="valueEn"/>
                     </g:if>
                     <g:else>
@@ -107,7 +107,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nIntroduction}" field="valueDe"/>
                     </g:if>
                     <g:else>
@@ -115,7 +115,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nIntroduction}" field="valueEn"/>
                     </g:if>
                     <g:else>
@@ -123,7 +123,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nExplain}" field="valueDe" type="textarea"/>
                     </g:if>
                     <g:else>
@@ -131,7 +131,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${!property.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                    <g:if test="${!property.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                         <semui:xEditable owner="${pdI10nExplain}" field="valueEn" type="textarea"/>
                     </g:if>
                     <g:else>

@@ -625,7 +625,7 @@ from License as l where (
 
         def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def qparams = [template_license_type]
-        def public_flag = RefdataValue.getByValueAndCategory('No','YN')
+        def public_flag = false
 
        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
         // (OS License specs)
@@ -640,7 +640,7 @@ from License as l where (
 
         //separately select all licenses that are not public or are null, to test access rights.
         // For some reason that I could track, l.isPublic != 'public-yes' returns different results.
-        def non_public_query = query + " and ( l.isPublic = ? or l.isPublic is null) "
+        def non_public_query = query + " and ( l.isPublic = ? ) "
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             query += " order by l.${params.sort} ${params.order}"
@@ -1288,8 +1288,8 @@ from License as l where (
                                           status: status,
                                           administrative: administrative,
                                           instanceOf: new_sub,
-                                          isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
-                                          isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                                          isSlaved: true,
+                                          isPublic: false,
                                           impId: java.util.UUID.randomUUID().toString()).save()
                         if(new_sub.administrative) {
                             new OrgRole(org: cm,

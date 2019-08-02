@@ -146,7 +146,7 @@ class ApiReader {
 
         // RefdataValues
 
-        result.isPublic         = lic.isPublic?.value
+        result.isPublic         = lic.isPublic ? 'Yes' : 'No'
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
         // result.type             = lic.type?.value
@@ -293,7 +293,7 @@ class ApiReader {
         result.breakable        = pkg.breakable?.value
         result.consistent       = pkg.consistent?.value
         result.fixed            = pkg.fixed?.value
-        result.isPublic         = pkg.isPublic?.value
+        result.isPublic         = pkg.isPublic ? 'Yes' : 'No'
         result.packageScope     = pkg.packageScope?.value
 
         // References
@@ -344,8 +344,8 @@ class ApiReader {
         // RefdataValues
 
         result.form         = sub.form?.value
-        result.isSlaved     = sub.isSlaved?.value
-        //result.isPublic     = sub.isPublic?.value // legacy
+        result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
+        //result.isPublic     = sub.isPublic ? 'Yes' : 'No'
         result.resource     = sub.resource?.value
         result.status       = sub.status?.value
         result.type         = sub.type?.value

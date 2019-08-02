@@ -312,7 +312,7 @@ ${personInstance}
                                 <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
                                 <dd>
 
-                                    <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic?.value != 'No'}">
+                                    <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
                                         <semui:xEditableRefData owner="${personInstance}" field="tenant"
                                                                 dataController="person" dataAction="getPossibleTenantsAsJson" />
                                     </g:if>
@@ -321,7 +321,7 @@ ${personInstance}
                                                 id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
                                     </g:else>
 
-                                    <g:if test="${personInstance?.isPublic?.value == 'No'}">
+                                    <g:if test="${! personInstance.isPublic}">
                                         <span data-tooltip="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
                                         </span>

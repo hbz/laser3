@@ -161,7 +161,7 @@ class DataloadService {
             }
 
             //result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
-            result.isPublic = pkg?.isPublic?.value?:'No'
+            result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
             result.endDate = pkg.endDate
             def lastmod = pkg.lastUpdated ?: pkg.dateCreated
             if (lastmod != null) {

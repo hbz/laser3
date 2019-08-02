@@ -91,7 +91,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     // mandatory
     boolean mandatory
     // indicates this object is created via current bootstrap
-    boolean hardData
+    boolean isHardData
     // indicates hard coded logic
     boolean isUsedForLogic
 
@@ -132,7 +132,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                   tenant column: 'pd_tenant_fk',   index: 'pd_tenant_idx'
       multipleOccurrence column: 'pd_multiple_occurrence'
                mandatory column: 'pd_mandatory'
-                hardData column: 'pd_hard_data'
+                isHardData column: 'pd_hard_data'
           isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
 
@@ -148,7 +148,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true,  default: false)
         mandatory           (nullable: false, blank: false, default: false)
-        hardData            (nullable: false, blank: false, default: false)
+        isHardData            (nullable: false, blank: false, default: false)
         isUsedForLogic      (nullable: false, blank: false, default: false)
     }
 

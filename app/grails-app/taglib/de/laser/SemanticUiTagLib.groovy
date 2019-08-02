@@ -214,7 +214,7 @@ class SemanticUiTagLib {
                     if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
-                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                            if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'
@@ -283,7 +283,7 @@ class SemanticUiTagLib {
                     if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
-                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                            if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'
@@ -302,7 +302,7 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
 
-                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                            if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i class="icon thumbtack blue"></i>'
                                 out << '</span>'

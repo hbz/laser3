@@ -42,7 +42,7 @@ class ApiWriter {
                 // todo: license.lastmod     = data.lastmod // long ????
 
                 // RefdataValues
-                license.isPublic         = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
+                license.isPublic         = data.isPublic in ['Yes','yes']
                 license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, "LicenseCategory")
                 license.status           = ApiWriterHelper.getRefdataValue(data.status, "License Status")
                 license.type             = ApiWriterHelper.getRefdataValue(data.type, "License Type")
@@ -154,10 +154,10 @@ class ApiWriter {
                 sub.manualRenewalDate = ApiWriterHelper.getValidDateFormat(data.manualRenewalDate)
 
                 // RefdataValues
-                sub.isSlaved  = ApiWriterHelper.getRefdataValue(data.isSlaved, "YN")
-                sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
-                sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
-                sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
+                sub.isSlaved  = data.isSlaved in ['Yes','yes']
+                sub.isPublic  = data.isPublic in ['Yes','yes']
+                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
+                //sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
                 def properties       = ApiWriterHelper.getProperties(data.properties, sub, context)

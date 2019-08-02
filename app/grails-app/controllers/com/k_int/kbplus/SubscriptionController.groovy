@@ -132,7 +132,7 @@ class SubscriptionController extends AbstractDebugController {
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
         def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
-        if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
+        if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
@@ -1845,7 +1845,7 @@ class SubscriptionController extends AbstractDebugController {
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: YN_YES,
+                                isSlaved: true,
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
@@ -2783,7 +2783,7 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("pc result is ${result.pendingChanges}")
 
-            if (result.subscription.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.subscription.isSlaved && pendingChanges) {
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
@@ -2858,7 +2858,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -3459,7 +3459,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -4044,7 +4044,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.subscriptionInstance.prsLinks.each { pl ->
             if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
+                if (pl.prs.isPublic) {
                     result.visiblePrsLinks << pl
                 } else {
                     // nasty lazy loading fix

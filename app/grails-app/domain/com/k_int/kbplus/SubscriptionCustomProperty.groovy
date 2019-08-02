@@ -120,7 +120,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
                         msgParams,
                         "Das Merkmal <b>${scp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
                 )
-                if (newPendingChange && scp.owner.isSlaved?.value == "Yes") {
+                if (newPendingChange && scp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange
                 }
             }

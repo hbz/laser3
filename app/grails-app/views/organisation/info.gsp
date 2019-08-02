@@ -43,7 +43,7 @@
         	<g:if test="${orgInstance?.prsLinks}">
 				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
 				<g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
-					<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">		
+					<g:if test="${pl?.functionType?.value && pl?.prs.isPublic}">
 						<g:render template="/templates/cpa/person_details" model="${[
                                 personRole: pl,
                                 tmplConfigShow: 'address'

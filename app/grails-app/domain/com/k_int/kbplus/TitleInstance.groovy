@@ -461,7 +461,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           ids.add(id);
 
           // If the namespace is NOT marked as unique, we allow repeats. otherwise check for uniqueness
-          if ( id.ns.unique != Boolean.TRUE ) {
+          if ( ! id.ns.isUnique ) {
             // Namespace is marked as non-unique, don't perform a uniqueness check
           }
           else {

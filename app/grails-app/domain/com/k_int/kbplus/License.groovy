@@ -45,8 +45,8 @@ class License
     License instanceOf
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isSlaved
+    boolean isSlaved
+    boolean isPublic
 
     @RefdataAnnotation(cat = 'License Status')
     RefdataValue status
@@ -56,9 +56,6 @@ class License
 
     @RefdataAnnotation(cat = 'LicenseCategory')
     RefdataValue licenseCategory
-
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
 
   String reference
   String sortableReference
@@ -113,10 +110,10 @@ class License
                    type column:'lic_type_rv_fk'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
-               isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
+               isPublic column:'lic_is_public'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           //licenseStatus column:'lic_license_status_str'
@@ -145,11 +142,11 @@ class License
         impId(nullable:true, blank:false)
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublic(nullable:true, blank:true)
+        isPublic    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
-        isSlaved(nullable:true, blank:false)
+        isSlaved    (nullable:false, blank:false)
         licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
@@ -373,7 +370,7 @@ class License
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+        if (perm == 'view' && this.isPublic) {
             return true
         }
         def adm = Role.findByAuthority('ROLE_ADMIN')
@@ -475,7 +472,7 @@ class License
                     "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
             )
 
-            if (newPendingChange && dl.isSlaved?.value == "Yes") {
+            if (newPendingChange && dl.isSlaved) {
                 slavedPendingChanges << newPendingChange
             }
         }
@@ -762,7 +759,7 @@ class License
 
       String INSTITUTIONAL_LICENSES_QUERY = """
  FROM License AS l WHERE
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS))
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic = (:publicBool))
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []
@@ -776,8 +773,15 @@ AND lower(l.reference) LIKE (:ref)
           roleTypes << params.roleType?.toLong()
       }
 
+      boolean publicBool = false // ERMS-1562
+      if (params.isPublic) {
+          if (params.isPublic.toString() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
+              publicBool = true
+          }
+      }
+
       ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
-        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicS: params.isPublic?.toLong(), ref: "${params.q.toLowerCase()}"])
+        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicBool: publicBool, ref: "${params.q.toLowerCase()}"])
 
 
       if ( ql ) {

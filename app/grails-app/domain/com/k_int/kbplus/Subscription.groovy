@@ -55,12 +55,9 @@ class Subscription
     @RefdataAnnotation(cat = 'Subscription Resource')
     RefdataValue resource
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
-
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isSlaved
+    boolean isSlaved
+	boolean isPublic
 
   String name
   String identifier
@@ -136,8 +133,8 @@ class Subscription
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
-        noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
+        noticePeriod    column:'sub_notice_period'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
         ids                 batchSize: 10
@@ -176,9 +173,9 @@ class Subscription
         instanceOf(nullable:true, blank:false)
         administrative(nullable:false, blank:false, default: false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved(nullable:true, blank:false)
+        isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublic(nullable:true, blank:true)
+        isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
     }
@@ -344,7 +341,7 @@ class Subscription
     }
 
   def getIsSlavedAsString() {
-    isSlaved?.value == "Yes" ? "Yes" : "No"
+    isSlaved ? "Yes" : "No"
   }
 
   Org getSubscriber() {
@@ -449,7 +446,7 @@ class Subscription
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+        if (perm == 'view' && this.isPublic) {
             return true
         }
         def adm = Role.findByAuthority('ROLE_ADMIN')
@@ -541,7 +538,7 @@ class Subscription
                     "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
             )
 
-            if (newPendingChange && ds.isSlaved?.value == "Yes") {
+            if (newPendingChange && ds.isSlaved) {
                 slavedPendingChanges << newPendingChange
             }
         }

@@ -569,7 +569,7 @@ class Org
 
         if (onlyPublic) {
             Person.executeQuery(
-                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.functionType = :gcp",
+                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :gcp",
                     [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
             )
         }
@@ -577,7 +577,7 @@ class Org
             Org ctxOrg = contextService.getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
-                    " and ( (p.isPublic.value = 'No' and p.tenant = :ctx) or (p.isPublic.value != 'No') )",
+                    " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
                     [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, ctx: ctxOrg]
             )
         }
@@ -585,7 +585,7 @@ class Org
 
     List<Person> getPublicPersons() {
         Person.executeQuery(
-                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
+                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org",
                 [org: this]
         )
     }
