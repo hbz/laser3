@@ -47,7 +47,7 @@ class IdentifierNamespace {
 
     static constraints = {
         nsType          nullable:true, blank:false
-        isHidden        nullable:true, blank:false
+        isHidden        nullable:false, blank:false, default: false
         validationRegex nullable:true, blank:false
         family          nullable:true, blank:false
         isUnique        nullable:false, blank:false, default: true
