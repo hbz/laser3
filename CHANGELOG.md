@@ -1,3 +1,7 @@
+0.19.1
+
+- fixed null pointer exception
+
 0.19
 
 - TODO

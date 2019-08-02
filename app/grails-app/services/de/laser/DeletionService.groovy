@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
@@ -14,12 +13,16 @@ class DeletionService {
 
     GrailsApplication grailsApplication
 
-    static boolean DRY_RUN          = true
-    static String RESULT_SUCCESS    = 'RESULT_SUCCESS'
-    static String RESULT_QUIT       = 'RESULT_QUIT'
-    static String RESULT_ERROR      = 'RESULT_ERROR'
+    static boolean DRY_RUN                  = true
 
-    static String RESULT_SUBSTITUTE_NEEDED = 'RESULT_SUBSTITUTE_NEEDED'
+    static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
+    static String RESULT_QUIT               = 'RESULT_QUIT'
+    static String RESULT_ERROR              = 'RESULT_ERROR'
+    static String RESULT_SUBSTITUTE_NEEDED  = 'RESULT_SUBSTITUTE_NEEDED'
+
+    static String FLAG_BLOCKER      = 'red'
+    static String FLAG_WARNING      = 'yellow'
+    static String FLAG_SUBSTITUTE   = 'blue'
 
     static Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
@@ -46,7 +49,7 @@ class DeletionService {
 
         if (dryRun) {
             result.info = []
-            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
 
             result.info << ['Links: Verträge', links]
             result.info << ['Aufgaben', tasks]
@@ -211,7 +214,7 @@ class DeletionService {
         if (dryRun) {
             result.info = []
 
-            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, 'red']
+            result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
             result.info << ['Referenzen: Nachfolger', ref_previousSubscription]
 
             result.info << ['Links: Lizenzen', links]
@@ -226,7 +229,7 @@ class DeletionService {
             result.info << ['Pakete', subPkgs]
             result.info << ['Anstehende Änderungen', pendingChanges]
             result.info << ['IssueEntitlements', ies]
-            result.info << ['Kostenposten', costs, 'yellow']
+            result.info << ['Kostenposten', costs, FLAG_WARNING]
             result.info << ['OrgAccessPointLink', oapl]
             result.info << ['Private Merkmale', sub.privateProperties]
             result.info << ['Allgemeine Merkmale', sub.customProperties]
@@ -361,7 +364,7 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteOrganisation(Org org, boolean dryRun) {
+    static Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
@@ -417,83 +420,109 @@ class DeletionService {
         List surveyResults      = SurveyResult.findAllByOwner(org)
         List surveyResultsParts = SurveyResult.findAllByParticipant(org)
 
-        if (dryRun) {
-            result.info = []
+        // collect informations
 
-            result.info << ['Links: Orgs', links]
+        result.info = []
 
-            result.info << ['Identifikatoren', ios]
-            result.info << ['Combos (out)', outgoingCombos]
-            result.info << ['Combos (in)', incomingCombos]
+        result.info << ['Links: Orgs', links]
 
-            result.info << ['Typen', orgTypes]
-            result.info << ['OrgRoles', orgLinks]
-            result.info << ['Einstellungen', orgSettings]
-            result.info << ['Nutzereinstellungen', userSettings]
+        result.info << ['Identifikatoren', ios]
+        result.info << ['Combos (out)', outgoingCombos]
+        result.info << ['Combos (in)', incomingCombos]
 
-            result.info << ['Adressen', addresses]
-            result.info << ['Kontaktdaten', contacts]
-            result.info << ['Personen', prsLinks]
-            result.info << ['Personen (tenant)', persons]
-            result.info << ['Nutzerzugehörigkeiten', affiliations]
-            result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
-            result.info << ['Platformen', platforms]
-            result.info << ['TitleInstitutionProvider (inst)', tips]
-            result.info << ['TitleInstitutionProvider (provider)', tipsProviders]
+        result.info << ['Typen', orgTypes]
+        result.info << ['OrgRoles', orgLinks]
+        result.info << ['Einstellungen', orgSettings]
+        result.info << ['Nutzereinstellungen', userSettings]
 
-            result.info << ['Allgemeine Merkmale', customProperties]
-            result.info << ['Private Merkmale', privateProperties]
-            result.info << ['Merkmalsdefinitionen', propertyDefinitions]
-            result.info << ['Merkmalsgruppen', propDefGroups]
-            result.info << ['Merkmalsgruppen (gebunden)', propDefGroupBindings]
+        result.info << ['Adressen', addresses]
+        result.info << ['Kontaktdaten', contacts]
+        result.info << ['Personen', prsLinks]
+        result.info << ['Personen (tenant)', persons]
+        result.info << ['Nutzerzugehörigkeiten', affiliations]
+        result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+        result.info << ['Platformen', platforms]
+        result.info << ['TitleInstitutionProvider (inst)', tips]
+        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
 
-            result.info << ['BudgetCodes', budgetCodes]
-            result.info << ['Kostenposten', costItems]
-            result.info << ['Kostenposten-Konfigurationen', costItemsECs]
-            result.info << ['Rechnungen', invoices]
-            result.info << ['Aufträge', orderings]
+        result.info << ['Allgemeine Merkmale', customProperties]
+        result.info << ['Private Merkmale', privateProperties]
+        result.info << ['Merkmalsdefinitionen', propertyDefinitions]
+        result.info << ['Merkmalsgruppen', propDefGroups]
+        result.info << ['Merkmalsgruppen (gebunden)', propDefGroupBindings]
 
-            result.info << ['Dokumente (owner)', documents]
-            result.info << ['DashboardDueDates (responsibility)', dashboardDueDates]
-            result.info << ['Anstehende Änderungen', pendingChanges]
-            result.info << ['Aufgaben (owner)', tasks]
-            result.info << ['Aufgaben (responsibility)', tasksResp]
-            result.info << ['SystemMessages', systemMessages]
-            result.info << ['SystemProfilers', systemProfilers]
+        result.info << ['BudgetCodes', budgetCodes]
+        result.info << ['Kostenposten', costItems]
+        result.info << ['Kostenposten-Konfigurationen', costItemsECs]
+        result.info << ['Rechnungen', invoices]
+        result.info << ['Aufträge', orderings]
 
-            result.info << ['Facts', facts]
-            result.info << ['ReaderNumbers', readerNumbers]
-            result.info << ['OrgAccessPoints', orgAccessPoints]
-            result.info << ['OrgTitleStats', orgTitleStats]
+        result.info << ['Dokumente (owner)', documents]
+        result.info << ['DashboardDueDates (responsibility)', dashboardDueDates]
+        result.info << ['Anstehende Änderungen', pendingChanges]
+        result.info << ['Aufgaben (owner)', tasks]
+        result.info << ['Aufgaben (responsibility)', tasksResp]
+        result.info << ['SystemMessages', systemMessages]
+        result.info << ['SystemProfilers', systemProfilers]
 
-            result.info << ['SurveyInfos', surveyInfos]
-            result.info << ['Umfrage-Merkmale', surveyProperties]
-            result.info << ['Umfrageergebnisse (owner)', surveyResults]
-            result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
+        result.info << ['Facts', facts]
+        result.info << ['ReaderNumbers', readerNumbers]
+        result.info << ['OrgAccessPoints', orgAccessPoints]
+        result.info << ['OrgTitleStats', orgTitleStats]
 
-            result.info.each { it ->
-                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == 'blue') {
-                    result.status = RESULT_SUBSTITUTE_NEEDED
+        result.info << ['SurveyInfos', surveyInfos]
+        result.info << ['Umfrage-Merkmale', surveyProperties]
+        result.info << ['Umfrageergebnisse (owner)', surveyResults]
+        result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
+
+        int count = 0
+        int constraint = 0
+
+        result.info.each { it ->
+            count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result << [status: RESULT_SUBSTITUTE_NEEDED]
+
+                if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
+                    constraint = it.get(1).size()
                 }
             }
         }
+
+        if (dryRun) {
+            result << [deletable: count == 0, mergeable: constraint == count]
+        }
         else {
+            if (constraint == count) {
+                Org.withTransaction { status ->
 
-            Org.withTransaction { status ->
+                    try {
+                        // TODO delete routine
+                        // TODO delete routine
+                        // TODO delete routine
 
-                try {
-                    // TODO delete routine
-                    // TODO delete routine
-                    // TODO delete routine
+                        tipsProviders.each { tmp ->
+                            tmp.provider = replacement
+                            tmp.save()
+                        }
 
-                    result = [status: RESULT_ERROR]
+                        org.delete()
+                        status.flush()
+
+                        result = [status: RESULT_SUCCESS]
+                    }
+                    catch (Exception e) {
+                        println 'error while deleting org ' + org.id + ' .. rollback'
+                        println e.message
+                        status.setRollbackOnly()
+                        result = [status: RESULT_ERROR]
+                    }
                 }
-                catch (Exception e) {
-                    println 'error while deleting org ' + org.id + ' .. rollback'
-                    println e.message
-                    status.setRollbackOnly()
-                    result = [status: RESULT_ERROR]
-                }
+            }
+            else {
+                result = [status: RESULT_SUBSTITUTE_NEEDED]
+                result << [deletable: count == 0, mergeable: constraint == count]
             }
         }
 
@@ -531,30 +560,38 @@ class DeletionService {
         List tasks = Task.executeQuery(
                 'select x from Task x where x.creator = :user or x.responsibleUser = :user', [user: user])
 
-        if (dryRun) {
-            result.info = []
+        // collect informations
 
-            result.info << ['Zugehörigkeiten', userOrgs]
-            result.info << ['Rollen', userRoles]
-            result.info << ['Folder', userFolder]
-            result.info << ['Einstellungen', userSettings]
-            result.info << ['Transforms', userTransforms]
+        result.info = []
 
-            result.info << ['Kostenkonfigurationen', ciecs, 'blue']
-            result.info << ['DashboardDueDate', ddds]
-            result.info << ['Dokumente', docs, 'blue']
-            result.info << ['Links', links, 'blue']
-            result.info << ['Anstehende Änderungen', pendingChanges, 'blue']
-            result.info << ['Reminder', reminders]
-            result.info << ['Umfrageergebnisse', surveyResults, 'blue']
-            result.info << ['Tickets', systemTickets, 'blue']
-            result.info << ['Aufgaben', tasks, 'blue']
+        result.info << ['Zugehörigkeiten', userOrgs]
+        result.info << ['Rollen', userRoles]
+        result.info << ['Folder', userFolder]
+        result.info << ['Einstellungen', userSettings]
+        result.info << ['Transforms', userTransforms]
 
-            result.info.each { it ->
-                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == 'blue') {
-                    result.status = RESULT_SUBSTITUTE_NEEDED
-                }
+        result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
+        result.info << ['DashboardDueDate', ddds]
+        result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
+        result.info << ['Links', links, FLAG_SUBSTITUTE]
+        result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
+        result.info << ['Reminder', reminders]
+        result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
+        result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
+        result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+
+        int count = 0
+
+        result.info.each { it ->
+            count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result << [status: RESULT_SUBSTITUTE_NEEDED]
             }
+        }
+
+        if (dryRun) {
+            // TODO
         }
         else {
             User.withTransaction { status ->
