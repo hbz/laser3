@@ -8,7 +8,7 @@ ALTER TABLE license ALTER lic_is_slaved TYPE bool USING CASE WHEN lic_is_slaved=
 
 ALTER TABLE license ALTER COLUMN lic_is_public_rdv_fk DROP DEFAULT;
 ALTER TABLE license DROP CONSTRAINT fk9f084413d2aceb;
-ALTER TABLE license ALTER lic_is_public_rv_fk TYPE bool USING CASE WHEN lic_is_public_rv_fk=1 THEN TRUE ELSE FALSE END;
+ALTER TABLE license ALTER lic_is_public_rdv_fk TYPE bool USING CASE WHEN lic_is_public_rdv_fk=1 THEN TRUE ELSE FALSE END;
 ALTER TABLE license RENAME lic_is_public_rdv_fk TO lic_is_public;
 
 ALTER TABLE subscription ALTER COLUMN sub_is_slaved DROP DEFAULT;
