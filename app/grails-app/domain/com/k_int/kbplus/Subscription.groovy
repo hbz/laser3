@@ -133,8 +133,8 @@ class Subscription
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
-        noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
+        noticePeriod    column:'sub_notice_period'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
         ids                 batchSize: 10

@@ -35,7 +35,7 @@ class Person extends AbstractBaseDomain {
         last_name       column:'prs_last_name'
         gender          column:'prs_gender_rv_fk'
         tenant          column:'prs_tenant_fk'
-        isPublic        column:'prs_is_public_rv_fk'
+        isPublic        column:'prs_is_public'
         contactType     column:'prs_contact_type_rv_fk'
         roleType        column:'prs_role_type_rv_fk'
 

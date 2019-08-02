@@ -982,8 +982,8 @@ class YodaController {
                                     }
                                 }
                                 if(p.isPublic) {
-                                    isPublic { // ? ERMS-1562
-                                        'Yes'
+                                    isPublic { // ERMS-1562
+                                        'Yes'  // todo @Andreas
                                     }
                                 }
                                 if(p.contactType) {
