@@ -206,7 +206,9 @@ class MyInstitutionController extends AbstractDebugController {
 
         List allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
         List allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
+        List allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
         List allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
+        List allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
 
         if(currentSubIds) {
             /*
@@ -267,7 +269,13 @@ class MyInstitutionController extends AbstractDebugController {
                     else if (allSubscrCons.contains(entry[1].id)) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
+                    else if (allSubscrColl.contains(entry[1].id)) {
+                        result.subscriptionMap.get(key).add(entry[1])
+                    }
                     else if (allConsOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
+                        result.subscriptionMap.get(key).add(entry[1])
+                    }
+                    else if (allCollOnly.contains(entry[1].id) && entry[1].instanceOf == null) {
                         result.subscriptionMap.get(key).add(entry[1])
                     }
                 }
