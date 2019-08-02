@@ -1,7 +1,6 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.auth.Role; com.k_int.kbplus.auth.UserOrg; com.k_int.kbplus.UserSettings" %>
 <%@ page import="static de.laser.helper.RDStore.*" %>
 <%@ page import="static com.k_int.kbplus.UserSettings.KEYS.*" %>
-<%@ page import="com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
 <head>
@@ -134,9 +133,18 @@
                 <div class="inline field">
                     <div class="ui checkbox">
                         <g:set var="isRemindByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
-                        <input type="checkbox" name="isRemindByEmail" class="hidden" value="Y" ${isRemindByEmail?'checked':''}/>
+                        <input type="checkbox" name="isRemindByEmail" id="isRemindByEmail" class="hidden" value="Y" ${isRemindByEmail?'checked':''}/>
                         <label>${message(code: 'profile.isRemindByEmail')}</label>
                     </div>
+                </div>
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <g:set var="isRemindCCByEmail" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <input type="checkbox" name="isRemindCCByEmail" id="isRemindCCByEmail" class="hidden" value="Y" ${isRemindCCByEmail?'checked':''}/>
+                        <label>${message(code: 'profile.isRemindCCByEmail')}</label>
+                    </div>
+                    <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(UserSettings.KEYS.REMIND_CC_EMAILADDRESS)}"/>
+                    <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                 </div>
 
 
@@ -592,6 +600,19 @@
                 }
             }
         });
+
+        $('#isRemindByEmail').change( function (e) {
+            if (this.checked) {
+                $('#isRemindCCByEmail').attr("disabled", false);
+                // $('#isRemindCCByEmail').prop("checked", false);
+                $('#emailCC').attr("disabled", false);
+            } else {
+                $('#isRemindCCByEmail').attr("disabled", true);
+                $('#emailCC').attr("disabled", true);
+            }
+        });
+
+        $('#isRemindByEmail').trigger('change');
 
         $(".reminderBtn").on('click', function (e) {
             //e.preventDefault();

@@ -27,8 +27,8 @@ class Links {
 
     static mapping = {
         id          column: 'l_id'
-        source      column: 'l_source_fk'
-        destination column: 'l_destination_fk'
+        source      column: 'l_source_fk',      index: 'l_source_idx'
+        destination column: 'l_destination_fk', index: 'l_dest_idx'
         objectType  column: 'l_object'
         linkType    column: 'l_link_type_rv_fk'
         owner       column: 'l_owner_fk'

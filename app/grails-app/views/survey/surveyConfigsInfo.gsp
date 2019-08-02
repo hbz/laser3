@@ -128,7 +128,7 @@
                                         ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
                                     </dt>
                                     <dd>
-                                        ${surveyConfig?.subscription?.isSlaved?.getI10n('value')}
+                                        ${surveyConfig?.subscription?.isSlaved ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                                     </dd>
                                 </dl>
                             </g:if>

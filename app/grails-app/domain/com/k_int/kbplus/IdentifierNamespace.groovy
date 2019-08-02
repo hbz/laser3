@@ -30,26 +30,26 @@ class IdentifierNamespace {
 
     String ns
     String nsType
-    Boolean hide
+    Boolean isHidden
     String validationRegex
     String family
-    Boolean unique
+    Boolean isUnique
 
     static mapping = {
         id column:'idns_id'
         ns column:'idns_ns'
         nsType column:'idns_type'
-        hide column:'idns_hide'
+        isHidden column:'idns_hide'
         validationRegex column:'idns_val_regex'
         family column:'idns_family'
-        unique column:'idns_unique'
+        isUnique column:'idns_unique'
     }
 
     static constraints = {
         nsType          nullable:true, blank:false
-        hide            nullable:true, blank:false
+        isHidden        nullable:true, blank:false
         validationRegex nullable:true, blank:false
         family          nullable:true, blank:false
-        unique          nullable:false, blank:false, default: true
+        isUnique        nullable:false, blank:false, default: true
     }
 }

@@ -145,7 +145,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                         msgParams,
                         "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
                 )
-                if (newPendingChange && lcp.owner.isSlaved?.value == "Yes") {
+                if (newPendingChange && lcp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange
                 }
             }

@@ -26,6 +26,6 @@ class LaserInjectionTagLib {
         g.set( var:'subscriptionsQueryService', bean:'subscriptionsQueryService' )
         g.set( var:'instAdmService', bean:'instAdmService' )
         g.set( var:'surveyService', bean:'surveyService' )
-        g.set( var:'orgDocumentService', bean:'orgDocumentService')
+        g.set( var:'orgDocumentService', bean:'orgDocumentService' )
     }
 }

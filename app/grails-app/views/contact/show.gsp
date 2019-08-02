@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.Contact; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
 	<head>
@@ -54,7 +54,7 @@
 
 						<g:if test="${contactInstance?.prs?.isPublic}">
 							<dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
-							<dd>${contactInstance?.prs?.isPublic?.getI10n('value')}</dd>
+							<dd>${RDStore.YN_YES.getI10n('value')}</dd>
 						</g:if>
 					</dl>
 

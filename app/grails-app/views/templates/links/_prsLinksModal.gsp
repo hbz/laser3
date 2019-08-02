@@ -19,7 +19,7 @@
 
                         <tr>
                             <td>
-                                <g:if test="${p.isPublic?.value == "No"}">
+                                <g:if test="${! p.isPublic}">
                                     <span data-tooltip="${message(code:'address.private')}" data-position="top right">
                                         <i class="address card outline icon"></i>
                                     </span>

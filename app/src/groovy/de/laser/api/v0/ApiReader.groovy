@@ -16,8 +16,8 @@ class ApiReader {
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
             'onixpl':               [Constants.MIME_APPLICATION_XML],
-            'oaManager':            [Constants.MIME_APPLICATION_JSON],
-            'oaManagerList':        [Constants.MIME_APPLICATION_JSON],
+            'oaMonitor':            [Constants.MIME_APPLICATION_JSON],
+            'oaMonitorList':        [Constants.MIME_APPLICATION_JSON],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
             'refdataList':          [Constants.MIME_APPLICATION_JSON],
@@ -26,7 +26,7 @@ class ApiReader {
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SIMPLE_QUERIES = ['oaManagerList', 'refdataList', 'statisticList']
+    static SIMPLE_QUERIES = ['oaMonitorList', 'refdataList', 'statisticList']
 
     /**
      * @param com.k_int.kbplus.CostItem costItem
@@ -146,7 +146,7 @@ class ApiReader {
 
         // RefdataValues
 
-        result.isPublic         = lic.isPublic?.value
+        result.isPublic         = lic.isPublic ? 'Yes' : 'No'
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
         // result.type             = lic.type?.value
@@ -293,7 +293,7 @@ class ApiReader {
         result.breakable        = pkg.breakable?.value
         result.consistent       = pkg.consistent?.value
         result.fixed            = pkg.fixed?.value
-        result.isPublic         = pkg.isPublic?.value
+        result.isPublic         = pkg.isPublic ? 'Yes' : 'No'
         result.packageScope     = pkg.packageScope?.value
 
         // References
@@ -344,8 +344,8 @@ class ApiReader {
         // RefdataValues
 
         result.form         = sub.form?.value
-        result.isSlaved     = sub.isSlaved?.value
-        //result.isPublic     = sub.isPublic?.value // legacy
+        result.isSlaved     = sub.isSlaved ? 'Yes' : 'No'
+        //result.isPublic     = sub.isPublic ? 'Yes' : 'No'
         result.resource     = sub.resource?.value
         result.status       = sub.status?.value
         result.type         = sub.type?.value
@@ -393,7 +393,7 @@ class ApiReader {
         ) // com.k_int.kbplus.PersonRole
         */
 
-        // TODO: oaManager
+        // TODO: oaMonitor
         result.costItems    = ApiReaderHelper.retrieveCostItemCollection(sub.costItems) // com.k_int.kbplus.CostItem
 
         return ApiToolkit.cleanUp(result, true, true)

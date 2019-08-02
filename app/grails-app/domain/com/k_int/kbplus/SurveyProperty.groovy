@@ -24,7 +24,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     Date lastUpdated
 
     // indicates this object is created via current bootstrap
-    boolean hardData
+    boolean isHardData
 
     @Transient
     static def validTypes = [
@@ -41,7 +41,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         introduction(nullable: true, blank: false)
         comment(nullable: true, blank: false)
         explain(nullable: true, blank: false)
-        hardData(nullable: false, blank: false, default: false)
+        isHardData(nullable: false, blank: false, default: false)
         refdataCategory(nullable: true, blank: false)
     }
 

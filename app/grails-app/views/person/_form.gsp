@@ -118,7 +118,7 @@
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
                   optionKey="id"
                   optionValue="value"
-                  value="${personInstance?.isPublic?.id}" />
+                  value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>
 </div>
 
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">

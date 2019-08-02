@@ -12,8 +12,7 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
-import static de.laser.helper.RDStore.YN_NO
-import static de.laser.helper.RDStore.YN_YES
+import static de.laser.helper.RDStore.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
@@ -111,6 +110,11 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    private validateEmailAddress(String email) {
+        def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
+        return ( email ==~ mailPattern )
+    }
+
   @Secured(['ROLE_USER'])
   def updateProfile() {
     def user = User.get(springSecurityService.principal.id)
@@ -123,8 +127,7 @@ class ProfileController {
     }
 
     if ( user.email != params.email ) {
-      def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
-      if ( params.email ==~ mailPattern ) {
+      if ( validateEmailAddress(params.email) ) {
         user.email = params.email
         flash.message += message(code:'profile.updateProfile.updated.email', default:"User email address updated<br/>")
       }
@@ -191,12 +194,30 @@ class ProfileController {
     changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_TASKS, DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
 
-      if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO)) {
-          flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
-      } else {
-          changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
-      }
+    //Error: Emailreminder without Emailaddress
+    if ( (! user.email) && params.isRemindByEmail) {
+      flash.error += message(code:'profile.updateProfile.updated.isRemindByEmail.error')
+    } else {
+      changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                                             params.isRemindByEmail?:"N",                    'profile.updateProfile.updated.isRemindByEmail')
+    }
 
+    //Error: EmailCCReminder without EmailReminder
+    if (user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO) && params.isRemindCCByEmail){
+        flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.isRemindByEmailNotChecked')
+    } else {
+        if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
+            flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
+        } else {
+            if (params.remindCCEmailaddress){
+                if (validateEmailAddress(params.remindCCEmailaddress)){
+                    changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
+                } else {
+                    flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                }
+            }
+            changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),                   params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
+        }
+    }
 
     changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
     changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_NO),         params.isSubscriptionsEnddate?:"N",          'profile.updateProfile.updated.subscriptions.enddate')

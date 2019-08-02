@@ -116,7 +116,7 @@
                                     <g:textField name="validationRegex"/>
                                 </div>
 
-								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'unique', 'error')} ">
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'isUnique', 'error')} ">
 									<label for="unique">
 										<g:message code="identifierNamespace.unique.label" />
 									</label>

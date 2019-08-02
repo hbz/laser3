@@ -28,6 +28,8 @@ class UserSettings {
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),
         SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
         IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
+        REMIND_CC_EMAILADDRESS                      (String),
+        IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP     (RefdataValue, 'YN'),

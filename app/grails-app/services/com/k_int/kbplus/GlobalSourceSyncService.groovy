@@ -263,7 +263,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         def fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
         def paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
         def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
-        def isPublic = RefdataValue.loc('YN', [en: 'Yes', de: 'Ja'])
         def ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
 
         //we should now first setup the provider and then proceed to package
@@ -347,7 +346,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     breakable: breakable,
                     consistent: consistent,
                     fixed: fixed,
-                    isPublic: isPublic,
+                    isPublic: true,
                     packageScope: scope
             )
 

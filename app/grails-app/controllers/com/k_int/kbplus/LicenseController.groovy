@@ -78,7 +78,7 @@ class LicenseController extends AbstractDebugController {
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-            if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.license.isSlaved && pendingChanges) {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
@@ -153,7 +153,7 @@ class LicenseController extends AbstractDebugController {
 
             result.license.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix

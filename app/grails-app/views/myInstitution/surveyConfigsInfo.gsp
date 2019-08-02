@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataValue;de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -167,7 +167,7 @@ ${message(code: 'survey.label')} -
                                     ${message(code: 'license.details.linktoLicense.pendingChange', default: 'Automatically Accept Changes?')}
                                 </dt>
                                 <dd>
-                                    ${subscriptionInstance?.isSlaved?.getI10n('value')}
+                                    ${subscriptionInstance?.isSlaved ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                                 </dd>
                             </dl>
                         </g:if>

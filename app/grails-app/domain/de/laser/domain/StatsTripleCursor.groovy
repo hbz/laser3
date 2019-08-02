@@ -17,9 +17,9 @@ class StatsTripleCursor {
     RefdataValue factType
 
     static mapping = {
-        titleId column:'stats_title_id', index:'stats_cursor_idx'
-        supplierId column:'stats_supplier_id', index:'stats_cursor_idx'
-        customerId column:'stats_customer_id', index:'stats_cursor_idx'
+        titleId     column:'stats_title_id',    index:'stats_cursor_idx'
+        supplierId  column:'stats_supplier_id', index:'stats_cursor_idx'
+        customerId  column:'stats_customer_id', index:'stats_cursor_idx'
     }
 
     static constraints = {

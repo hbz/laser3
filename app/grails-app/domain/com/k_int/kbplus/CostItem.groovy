@@ -133,8 +133,8 @@ class CostItem
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
-        endDate         column: 'ci_end_date'
-        startDate       column: 'ci_start_date'
+        endDate         column: 'ci_end_date',    index:'ci_dates_idx'
+        startDate       column: 'ci_start_date',  index:'ci_dates_idx'
         copyBase        column: 'ci_copy_base'
         reference       column: 'ci_reference'
         autoTimestamp true

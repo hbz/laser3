@@ -1928,7 +1928,7 @@ class OrganisationService {
                         if(member)
                             memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER_CONS)
                         consRole = new OrgRole(org:consortium,sub:obj,roleType:RDStore.OR_SUBSCRIPTION_CONSORTIA)
-                        obj.isSlaved = RDStore.YN_YES
+                        obj.isSlaved = true
                         break
                     case RDStore.SUBSCRIPTION_TYPE_LOCAL:
                         memberRole = new OrgRole(org:member,sub:obj,roleType:RDStore.OR_SUBSCRIBER)

@@ -12,7 +12,7 @@ class Order {
                 id column:'ord_id'
            version column:'ord_version'
        orderNumber column:'ord_number'
-             owner column:'ord_owner'
+             owner column:'ord_owner', index: 'ord_owner_idx'
   }
 
   static constraints = {

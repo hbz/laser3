@@ -133,7 +133,7 @@ class SubscriptionController extends AbstractDebugController {
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
         def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
-        if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
+        if (result.subscriptionInstance?.isSlaved && pendingChanges) {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
@@ -1061,7 +1061,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = lic
                 if (sub.save(flush: true)) {
-                    changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                    changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
             if (changeAccepted) {
@@ -1077,7 +1077,7 @@ class SubscriptionController extends AbstractDebugController {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
                         if (sub.save(flush: true)) {
-                            changeAccepted << it?.dropdownNamingConvention(result.institution)
+                            changeAccepted << "${it?.name} (${message(code:'subscription.linkInstance.label')} ${it?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
                     }
                 }
@@ -1118,7 +1118,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = null
                 if (sub.save(flush: true)) {
-                    removeLic << subChild?.dropdownNamingConvention(result.institution)
+                    removeLic << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
             if (removeLic) {
@@ -1218,15 +1218,15 @@ class SubscriptionController extends AbstractDebugController {
                     if (params.withIssueEntitlements) {
 
                         pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                        changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
+                        changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                     } else {
                         pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                        changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                     }
                 } else {
-                    changeFailed << subChild?.dropdownNamingConvention(result.institution)
+                    changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
 
             }
@@ -1250,15 +1250,15 @@ class SubscriptionController extends AbstractDebugController {
                         if (params.withIssueEntitlements) {
 
                             pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                            changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
+                            changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                            changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         }
                     } else {
-                        changeFailed << subChild?.dropdownNamingConvention(result.institution)
+                        changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                     }
                 }
             }
@@ -1797,7 +1797,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
                     if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
 
                         if (subLicense) {
                             def subLicenseParams = [
@@ -1846,7 +1846,7 @@ class SubscriptionController extends AbstractDebugController {
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: YN_YES,
+                                isSlaved: true,
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: UUID.randomUUID().toString(),
                                 owner: licenseCopy,
@@ -2784,7 +2784,7 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("pc result is ${result.pendingChanges}")
 
-            if (result.subscription.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.subscription.isSlaved && pendingChanges) {
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
@@ -2859,7 +2859,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -3460,7 +3460,7 @@ class SubscriptionController extends AbstractDebugController {
 
             result.subscriptionInstance.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -4045,7 +4045,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.subscriptionInstance.prsLinks.each { pl ->
             if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
+                if (pl.prs.isPublic) {
                     result.visiblePrsLinks << pl
                 } else {
                     // nasty lazy loading fix

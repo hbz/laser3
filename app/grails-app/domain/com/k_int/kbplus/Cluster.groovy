@@ -26,6 +26,9 @@ class Cluster {
         name       column:'cl_name'
         definition column:'cl_definition'
         type       column:'cl_type_rv_fk'
+
+        orgs        batchSize: 10
+        prsLinks    batchSize: 10
     }
 
     static getAllRefdataValues() {

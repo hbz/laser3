@@ -21,7 +21,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     String group
 
     // indicates this object is created via current bootstrap
-    boolean hardData
+    boolean isHardData
 
     // if manual ordering is wanted
     Long order
@@ -33,11 +33,11 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static mapping = {
                     id column: 'rdv_id'
                version column: 'rdv_version'
-                 owner column: 'rdv_owner', index: 'rdv_entry_idx'
-                 value column: 'rdv_value', index: 'rdv_entry_idx'
+                 owner column: 'rdv_owner', index: 'rdv_owner_value_idx'
+                 value column: 'rdv_value', index: 'rdv_owner_value_idx'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
-              hardData column: 'rdv_hard_data'
+              isHardData column: 'rdv_hard_data'
               order    column: 'rdv_order'
 
     }
@@ -45,7 +45,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        hardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false, default:false)
         order    (nullable:true,  blank: false)
     }
 
@@ -77,7 +77,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         if (! result) {
             result = new RefdataValue(owner: cat, value: rdvValue)
         }
-        result.hardData = hardData
+        result.isHardData = hardData
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
