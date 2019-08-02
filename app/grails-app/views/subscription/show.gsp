@@ -129,7 +129,7 @@
                                         ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
                                     </dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                                        <semui:xEditableBoolean owner="${subscriptionInstance}" field="isSlaved" />
                                     </dd>
                                 </dl>
                             </g:if>
