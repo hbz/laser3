@@ -55,6 +55,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         comment column: 'surpro_comment', type: 'text'
         introduction column: 'surpro_introduction', type: 'text'
         refdataCategory column: 'surpro_refdata_category'
+        isHardData column: 'hard_data'
 
         owner column: 'surpro_org_fk'
 
