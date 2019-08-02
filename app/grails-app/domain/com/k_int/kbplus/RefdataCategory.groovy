@@ -46,7 +46,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
-        isHardData column: 'rdv_hard_data'
+        isHardData column: 'rdc_is_hard_data'
     }
 
     static constraints = {
