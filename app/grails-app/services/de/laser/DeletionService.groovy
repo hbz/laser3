@@ -364,7 +364,7 @@ class DeletionService {
         result
     }
 
-    static Map<String, Object> deleteOrganisation(Org org, boolean dryRun) {
+    static Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
 
@@ -476,7 +476,7 @@ class DeletionService {
         result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
 
         int count = 0
-        int workaround = 0
+        int constraint = 0
 
         result.info.each { it ->
             count += it.get(1).size()
@@ -485,22 +485,27 @@ class DeletionService {
                 result << [status: RESULT_SUBSTITUTE_NEEDED]
 
                 if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
-                    workaround = it.get(1).size()
+                    constraint = it.get(1).size()
                 }
             }
         }
 
         if (dryRun) {
-            result << [deletable: count == 0, mergeable: workaround == count]
+            result << [deletable: count == 0, mergeable: constraint == count]
         }
         else {
-            if (count == 0) {
+            if (constraint == count) {
                 Org.withTransaction { status ->
 
                     try {
                         // TODO delete routine
                         // TODO delete routine
                         // TODO delete routine
+
+                        tipsProviders.each { tmp ->
+                            tmp.provider = replacement
+                            tmp.save()
+                        }
 
                         org.delete()
                         status.flush()
@@ -517,7 +522,7 @@ class DeletionService {
             }
             else {
                 result = [status: RESULT_SUBSTITUTE_NEEDED]
-                result << [deletable: count == 0, mergeable: workaround == count]
+                result << [deletable: count == 0, mergeable: constraint == count]
             }
         }
 
@@ -575,13 +580,18 @@ class DeletionService {
         result.info << ['Tickets', systemTickets, FLAG_SUBSTITUTE]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
-        if (dryRun) {
+        int count = 0
 
-            result.info.each { it ->
-                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
-                    result << [status: RESULT_SUBSTITUTE_NEEDED]
-                }
+        result.info.each { it ->
+            count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result << [status: RESULT_SUBSTITUTE_NEEDED]
             }
+        }
+
+        if (dryRun) {
+            // TODO
         }
         else {
             User.withTransaction { status ->

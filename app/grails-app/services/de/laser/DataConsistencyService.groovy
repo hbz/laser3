@@ -135,11 +135,12 @@ class DataConsistencyService {
 
         if (key1 == 'Org') {
             result = Org.findAllWhere( "${key2}": value ).collect{ it ->
-                Map<String, Object> dryRunInfo = deletionService.deleteOrganisation(it, deletionService.DRY_RUN)
+                Map<String, Object> dryRunInfo = deletionService.deleteOrganisation(it, null, deletionService.DRY_RUN)
 
                 [
                     id: it.id,
                     name: it.name,
+                    class: it.class.simpleName,
                     link: g.createLink(controller:'organisation', action:'show', id: it.id),
                     created: sdfA.format( it.dateCreated ),
                     updated: sdfB.format( it.lastUpdated ),

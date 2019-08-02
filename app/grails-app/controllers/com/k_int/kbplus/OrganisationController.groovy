@@ -727,10 +727,10 @@ class OrganisationController extends AbstractDebugController {
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {
-                result.result = deletionService.deleteOrganisation(result.orgInstance, false)
+                result.result = deletionService.deleteOrganisation(result.orgInstance, null, false)
             }
             else {
-                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
             if (contextService.getUser().isAdmin()) {
