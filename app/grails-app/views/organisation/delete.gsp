@@ -33,9 +33,16 @@
         <g:if test="${editable}">
             <g:form controller="organisation" action="_delete" params="${[id: orgInstance.id, process: true]}">
                 <g:link controller="organisation" action="show" params="${[id: orgInstance.id]}" class="ui button">Vorgang abbrechen</g:link>
-                <input disabled type="submit" class="ui button red" value="Organisation löschen" />
+
+                <g:if test="${dryRun?.deletable}">
+                    <input type="submit" class="ui button red" value="Organisation löschen" />
+                </g:if>
+                <g:else>
+                    <input disabled type="submit" class="ui button red" value="Organisation löschen" />
+                </g:else>
 
                 <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+
                     <br /><br />
                     Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
 

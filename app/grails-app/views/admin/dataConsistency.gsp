@@ -141,11 +141,16 @@
                 $html.empty()
 
                 $.each( res, function( i, elem) {
-                    $html.append('<div class="item">' +
+                    var markup = '<div class="item">' +
                         '<div class="right floated content">' + elem.created + ' | ' + elem.updated + '</div>' +
-                        '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name + '</a>' +
-                        '</div>'
-                    )
+                        '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name
+
+                    if (elem.deletable) {
+                        markup += ' &nbsp; <i class="icon negative trash alternate"></i>'
+                    }
+                    markup += '</a></div>'
+
+                    $html.append( markup )
                 })
 
                 $('#modalConsistencyCheck').modal('show')

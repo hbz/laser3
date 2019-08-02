@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 class DataConsistencyService {
 
     def springSecurityService
+    def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
     Map<String, Object> checkImportIds() {
@@ -138,7 +139,8 @@ class DataConsistencyService {
                     name: it.name,
                     link: g.createLink(controller:'organisation', action:'show', id: it.id),
                     created: sdfA.format( it.dateCreated ),
-                    updated: sdfB.format( it.lastUpdated )
+                    updated: sdfB.format( it.lastUpdated ),
+                    deletable: (deletionService.deleteOrganisation(it, deletionService.DRY_RUN)).deletable
                 ]
             }
         }
