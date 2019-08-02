@@ -39,15 +39,15 @@ class IdentifierNamespace {
         id column:'idns_id'
         ns column:'idns_ns'
         nsType column:'idns_type'
-        isHidden column:'idns_hide'
+        isHidden    column:'idns_is_hidden'
+        isUnique    column:'idns_is_unique'
         validationRegex column:'idns_val_regex'
         family column:'idns_family'
-        isUnique column:'idns_unique'
     }
 
     static constraints = {
         nsType          nullable:true, blank:false
-        isHidden        nullable:true, blank:false
+        isHidden        nullable:false, blank:false, default: false
         validationRegex nullable:true, blank:false
         family          nullable:true, blank:false
         isUnique        nullable:false, blank:false, default: true

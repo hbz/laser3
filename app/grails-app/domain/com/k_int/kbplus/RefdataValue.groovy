@@ -37,7 +37,7 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
                  value column: 'rdv_value', index: 'rdv_owner_value_idx'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
-              isHardData column: 'rdv_hard_data'
+              isHardData column: 'rdv_is_hard_data'
               order    column: 'rdv_order'
 
     }
