@@ -36,20 +36,20 @@
 
                 <g:if test="${dryRun?.deletable}">
                     <input type="submit" class="ui button red" value="Organisation löschen" />
+
+                    <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
+
+                        <br /><br />
+                        Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
+
+                        <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
+                                  from="${substituteList.sort()}"
+                                  optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
+                    </g:if>
                 </g:if>
                 <g:else>
                     <input disabled type="submit" class="ui button red" value="Organisation löschen" />
                 </g:else>
-
-                <g:if test="${dryRun?.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-
-                    <br /><br />
-                    Die gekennzeichneten Daten dabei an folgende Organisation übertragen:
-
-                    <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
-                              from="${substituteList.sort()}"
-                              optionKey="${{'com.k_int.kbplus.auth.Org:' + it.id}}" optionValue="${{(it.sortname ?: it.shortname) + ' (' + it.name + ')'}}" />
-                </g:if>
             </g:form>
         </g:if>
 

@@ -443,7 +443,7 @@ class DeletionService {
         result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
         result.info << ['Platformen', platforms]
         result.info << ['TitleInstitutionProvider (inst)', tips]
-        result.info << ['TitleInstitutionProvider (provider)', tipsProviders]
+        result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_SUBSTITUTE]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -476,17 +476,22 @@ class DeletionService {
         result.info << ['Umfrageergebnisse (participant)', surveyResultsParts]
 
         int count = 0
+        int workaround = 0
+
         result.info.each { it ->
             count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result << [status: RESULT_SUBSTITUTE_NEEDED]
+
+                if (it.get(0).equals('TitleInstitutionProvider (provider)')) { // ERMS-1512 workaound for data cleanup
+                    workaround = it.get(1).size()
+                }
+            }
         }
 
         if (dryRun) {
-            result.info.each { it ->
-                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == 'blue') {
-                    result = [status: RESULT_SUBSTITUTE_NEEDED]
-                }
-            }
-            result << [deletable: count == 0]
+            result << [deletable: count == 0, mergeable: workaround == count]
         }
         else {
             if (count == 0) {
@@ -512,7 +517,7 @@ class DeletionService {
             }
             else {
                 result = [status: RESULT_SUBSTITUTE_NEEDED]
-                result << [deletable: count == 0]
+                result << [deletable: count == 0, mergeable: workaround == count]
             }
         }
 
@@ -562,8 +567,8 @@ class DeletionService {
 
         result.info << ['Kostenkonfigurationen', ciecs, FLAG_SUBSTITUTE]
         result.info << ['DashboardDueDate', ddds]
-        result.info << ['Dokumente', docs, 'blue']
-        result.info << ['Links', links, 'blue']
+        result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
+        result.info << ['Links', links, FLAG_SUBSTITUTE]
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_SUBSTITUTE]
         result.info << ['Reminder', reminders]
         result.info << ['Umfrageergebnisse', surveyResults, FLAG_SUBSTITUTE]
@@ -573,8 +578,8 @@ class DeletionService {
         if (dryRun) {
 
             result.info.each { it ->
-                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == 'blue') {
-                    result = [status: RESULT_SUBSTITUTE_NEEDED]
+                if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                    result << [status: RESULT_SUBSTITUTE_NEEDED]
                 }
             }
         }

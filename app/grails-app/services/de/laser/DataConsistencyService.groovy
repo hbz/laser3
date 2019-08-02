@@ -134,13 +134,17 @@ class DataConsistencyService {
         SimpleDateFormat sdfB = DateUtil.getSimpleDateFormat_NoZ()
 
         if (key1 == 'Org') {
-            result = Org.findAllWhere( "${key2}": value ).collect{ it -> [
+            result = Org.findAllWhere( "${key2}": value ).collect{ it ->
+                Map<String, Object> dryRunInfo = deletionService.deleteOrganisation(it, deletionService.DRY_RUN)
+
+                [
                     id: it.id,
                     name: it.name,
                     link: g.createLink(controller:'organisation', action:'show', id: it.id),
                     created: sdfA.format( it.dateCreated ),
                     updated: sdfB.format( it.lastUpdated ),
-                    deletable: (deletionService.deleteOrganisation(it, deletionService.DRY_RUN)).deletable
+                    deletable: dryRunInfo.deletable,
+                    mergeable: dryRunInfo.mergeable
                 ]
             }
         }

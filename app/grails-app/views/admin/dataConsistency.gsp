@@ -145,8 +145,11 @@
                         '<div class="right floated content">' + elem.created + ' | ' + elem.updated + '</div>' +
                         '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name
 
+                    if (elem.mergeable) {
+                        markup += ' <i class="icon recycle"></i> '
+                    }
                     if (elem.deletable) {
-                        markup += ' &nbsp; <i class="icon negative trash alternate"></i>'
+                        markup += ' <i class="icon trash alternate"></i> '
                     }
                     markup += '</a></div>'
 
