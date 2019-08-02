@@ -140,14 +140,37 @@
                 var $html = $('#modalConsistencyCheck form div')
                 $html.empty()
 
-                $.each( res, function( i, elem) {
-                    $html.append('<div class="item">' +
-                        '<div class="right floated content">' + elem.created + ' | ' + elem.updated + '</div>' +
-                        '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name + '</a>' +
-                        '</div>'
-                    )
-                })
+                var mergeables = []
+                var deletables = []
 
+                $.each( res, function( i, elem) {
+                    var markup = '<div class="item">' +
+                        '<div class="right floated content">' + elem.created + ' | ' + elem.updated + '</div>' +
+                        '<a target="_blank" href="' + elem.link + '">( ' + elem.id + ' ) &nbsp; ' + elem.name
+
+                    if (elem.mergeable) {
+                        markup += ' <i class="icon recycle positive"></i> '
+                        mergeables.push(elem.id)
+                    }
+                    if (elem.deletable) {
+                        markup += ' <i class="icon trash alternate negative"></i> '
+                        deletables.push(elem.id)
+                    }
+                    markup += '</a></div>'
+                    $html.append( markup )
+                })
+                $html.append('<br />')
+
+                if (mergeables.length > 0) {
+                    var mergeUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=merge&objType=Org";
+                    mergeUrl += '&objId=' + mergeables.join('&objId=')
+                    $html.append( '<a href="' + mergeUrl + '" class="ui button positive"><i class="icon recycle"></i> Zusammenführen</a>' )
+                }
+                if (deletables.length > 0) {
+                    var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
+                    deleteUrl += '&objId=' + deletables.join('&objId=')
+                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="icon trash alternate"></i> Löschen</a>' )
+                }
                 $('#modalConsistencyCheck').modal('show')
             }
         });

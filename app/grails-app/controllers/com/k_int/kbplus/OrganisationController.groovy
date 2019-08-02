@@ -722,15 +722,15 @@ class OrganisationController extends AbstractDebugController {
     def _delete() {
         def result = [:]
 
-        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")  // TODO
+        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_ORG_EDITOR,ROLE_ADMIN")
         result.orgInstance = Org.get(params.id)
 
         if (result.orgInstance) {
             if (params.process  && result.editable) {
-                //result.result = deletionService.deleteOrganisation(result.orgInstance, false) // TODO enable
+                result.result = deletionService.deleteOrganisation(result.orgInstance, null, false)
             }
             else {
-                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, DeletionService.DRY_RUN)
+                result.dryRun = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
             if (contextService.getUser().isAdmin()) {

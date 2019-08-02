@@ -29,6 +29,7 @@ class AdminController extends AbstractDebugController {
   def enrichmentService
   def sessionFactory
     def genericOIDService
+    def deletionService
 
     def contextService
     def refdataService
@@ -417,6 +418,31 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def dataConsistency() {
         Map result = [:]
+
+        if (params.task) {
+			List objIds = params.list('objId')
+
+          	if (params.task == 'merge' && params.objType == 'Org') {
+            	log.debug('dataConsistency( merge, ' + params.objType + ', ' + objIds + ' )')
+
+                Org replacement = Org.get(objIds.first())
+                for (def i = 1; i < objIds.size(); i++) {
+                    deletionService.deleteOrganisation( Org.get(objIds[i]), replacement, false )
+                }
+          	}
+          	if (params.task == 'delete' && params.objType == 'Org') {
+            	log.debug('dataConsistency( delete, ' + params.objType + ', ' + objIds + ' )')
+
+                for (def i = 0; i < objIds.size(); i++) {
+                    deletionService.deleteOrganisation( Org.get(objIds[i]), null, false )
+                }
+          	}
+            params.remove('task')
+            params.remove('objType')
+            params.remove('objId')
+
+            redirect controller: 'admin', action: 'dataConsistency'
+        }
 
         result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
