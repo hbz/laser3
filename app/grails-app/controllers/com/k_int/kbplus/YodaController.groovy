@@ -982,7 +982,7 @@ class YodaController {
                                     }
                                 }
                                 if(p.isPublic) {
-                                    isPublic { // ? ERMS-1562
+                                    isPublic { // ERMS-1562 ---> fixed in ERMS-1572
                                         'Yes'
                                     }
                                 }
