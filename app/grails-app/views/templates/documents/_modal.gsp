@@ -120,7 +120,7 @@
                             if(docctx) {
                                 value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
                             }
-                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.isHardData = true order by rdv.order asc")
                             List availableConfigs = []
                             if(!accessService.checkPerm("ORG_CONSORTIUM")){
                                 availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM

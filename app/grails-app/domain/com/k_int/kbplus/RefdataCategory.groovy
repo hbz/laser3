@@ -40,17 +40,17 @@ class RefdataCategory extends AbstractI10nTranslatable {
     String desc
 
     // indicates this object is created via current bootstrap
-    boolean hardData
+    boolean isHardData
 
     static mapping = {
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
-        hardData column: 'rdv_hard_data'
+        isHardData column: 'rdv_hard_data'
     }
 
     static constraints = {
-        hardData (nullable:false, blank:false, default:false)
+        isHardData (nullable:false, blank:false, default:false)
     }
 
     /**
@@ -69,7 +69,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
         if (! result) {
             result = new RefdataCategory(desc:category_name)
         }
-        result.hardData = hardData
+        result.isHardData = hardData
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)

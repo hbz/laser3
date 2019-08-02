@@ -165,7 +165,7 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
                             <g:link controller="organisation" action="show"
                                     id="${subscr.id}">${subscr}</g:link>
 
-                            <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
+                            <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
                                       data-tooltip="${message(code: 'license.details.isSlaved.tooltip')}">
                                     <i class="thumbtack blue icon"></i>

@@ -757,7 +757,7 @@ class ApiReaderHelper {
 
             // RefdataValues
             result.gender          = prs.gender?.value
-            result.isPublic        = prs.isPublic?.value
+            result.isPublic        = prs.isPublic ? 'Yes' : 'No'
 
             // References
             result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact

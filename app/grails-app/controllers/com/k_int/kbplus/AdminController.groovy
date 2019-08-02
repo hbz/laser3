@@ -926,7 +926,7 @@ class AdminController extends AbstractDebugController {
             def pd = genericOIDService.resolveOID(params.pd)
 
             if (pd) {
-                if (! pd.hardData) {
+                if (! pd.isHardData) {
                     try {
                         pd.delete(flush:true)
                         flash.message = "${params.pd} wurde gelöscht."
@@ -983,7 +983,7 @@ class AdminController extends AbstractDebugController {
       def pd = genericOIDService.resolveOID(params.pd)
 
       if (pd) {
-        if (! pd.hardData) {
+        if (! pd.isHardData) {
           try {
             pd.delete(flush:true)
             flash.message = "${params.pd} wurde gelöscht."
@@ -1118,7 +1118,7 @@ class AdminController extends AbstractDebugController {
             def rdv = genericOIDService.resolveOID(params.rdv)
 
             if (rdv) {
-                if (! rdv.hardData) {
+                if (! rdv.isHardData) {
                     try {
                         rdv.delete(flush:true)
                         flash.message = "${params.rdv} wurde gelöscht."

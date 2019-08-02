@@ -21,6 +21,7 @@ class User {
   String shibbScope
   String apikey
   String apisecret
+
   boolean enabled
   boolean accountExpired
   boolean accountLocked

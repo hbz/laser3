@@ -42,7 +42,7 @@
         <g:set var="emailsForFunction" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
-                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                <g:if test="${person.isPublic || (! person.isPublic && person.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
                         <%
                             def emailPF = email?.content?.trim()
@@ -61,7 +61,7 @@
         <g:set var="emailsForPosition" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
-                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                <g:if test="${person.isPublic || (! person.isPublic && person.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
                         <%
                             def emailPP = email?.content?.trim()

@@ -41,8 +41,9 @@ class ApiWriter {
                 license.endDate     = ApiWriterHelper.getValidDateFormat(data.endDate)
                 // todo: license.lastmod     = data.lastmod // long ????
 
+                ['Yes','yes']
                 // RefdataValues
-                license.isPublic         = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
+                license.isPublic         = data.isPublic in ['Yes','yes']
                 license.licenseCategory  = ApiWriterHelper.getRefdataValue(data.licenseCategory, "LicenseCategory")
                 license.status           = ApiWriterHelper.getRefdataValue(data.status, "License Status")
                 license.type             = ApiWriterHelper.getRefdataValue(data.type, "License Type")
@@ -156,10 +157,10 @@ class ApiWriter {
                 sub.manualRenewalDate = ApiWriterHelper.getValidDateFormat(data.manualRenewalDate)
 
                 // RefdataValues
-                sub.isSlaved  = ApiWriterHelper.getRefdataValue(data.isSlaved, "YN")
+                sub.isSlaved  =  data.isSlaved in ['Yes','yes']
                 //sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN") // legacy
-                sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
-                sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
+                //sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
+                //sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 
                 // References
                 def properties       = ApiWriterHelper.getProperties(data.properties, sub, context)

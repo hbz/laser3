@@ -200,7 +200,7 @@
             <td>
                 <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}"
                         var="personRole">
-                    <g:if test="${(personRole.prs?.isPublic?.value == 'Yes') || (personRole.prs?.isPublic?.value == 'No' && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
+                    <g:if test="${personRole.prs.isPublic || (! personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
                         ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}<br>
                         <g:each in="${Contact.findAllByPrsAndContentType(
                                 personRole.getPrs(),
@@ -244,7 +244,7 @@
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
             <td>
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
-                    <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value != 'No'}">
+                    <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
                         <g:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
                                 tmplShowDeleteButton: false,
@@ -260,7 +260,7 @@
         <g:if test="${tmplConfigShow?.contains('privateContacts')}">
             <td>
                 <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
-                    <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value == 'No' && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
                         <g:render template="/templates/cpa/person_details" model="${[
                                 personRole          : pl,
                                 tmplShowDeleteButton: false,

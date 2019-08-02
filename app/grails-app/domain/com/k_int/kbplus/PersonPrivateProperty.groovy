@@ -37,6 +37,6 @@ class PersonPrivateProperty extends PrivateProperty {
             [fromDate:dateValueFrom,
             toDate:dateValueTo,
             tenant: org,
-            public: RefdataValue.getByValueAndCategory('No', 'YN')])
+            public: false])
     }
 }

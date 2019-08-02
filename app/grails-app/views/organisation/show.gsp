@@ -452,7 +452,7 @@ ${orgInstance.name}
                             <dd>
 
                             <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic.value != 'No'",[org: orgInstance])}" var="prs">
+                                <g:each in="${PersonRole.executeQuery("select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo where oo = :org and prs.isPublic = true", [org: orgInstance])}" var="prs">
 
                                     <g:render template="/templates/cpa/person_full_details" model="${[
                                             person              : prs,

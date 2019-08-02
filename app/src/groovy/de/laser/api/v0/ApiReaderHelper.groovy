@@ -714,7 +714,7 @@ class ApiReaderHelper {
 
             // RefdataValues
             result.gender          = prs.gender?.value
-            result.isPublic        = prs.isPublic?.value
+            result.isPublic        = prs.isPublic ? 'Yes' : 'No'
             result.contactType     = prs.contactType?.value
             result.roleType        = prs.roleType?.value
 

@@ -49,9 +49,9 @@ class BootStrap {
 
         // Reset harddata flag for given refdata and properties
 
-        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.hardData =:reset', [reset: false])
-        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.hardData =:reset', [reset: false])
-        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.hardData =:reset', [reset: false])
+        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.isHardData =:reset', [reset: false])
+        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.isHardData =:reset', [reset: false])
+        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.isHardData =:reset', [reset: false])
 
         // Here we go ..
 
@@ -427,7 +427,7 @@ class BootStrap {
             pd.type  = prop.type
             pd.descr = prop.descr['en']
             //pd.softData = false
-            pd.hardData = BOOTSTRAP
+            pd.isHardData = BOOTSTRAP
             pd.save(failOnError: true)
 
             if (! SystemAdminCustomProperty.findByType(pd)) {
@@ -1530,7 +1530,7 @@ class BootStrap {
             prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
             //prop.softData = false
-            prop.hardData = BOOTSTRAP
+            prop.isHardData = BOOTSTRAP
             prop.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
@@ -1577,7 +1577,7 @@ class BootStrap {
 
             surveyProperty.type  = default_prop.type
             //prop.softData = false
-            surveyProperty.hardData = BOOTSTRAP
+            surveyProperty.isHardData = BOOTSTRAP
             surveyProperty.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
