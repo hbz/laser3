@@ -236,6 +236,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     static def refdataFind(params) {
         def result = []
 
+        /*
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
         EhcacheWrapper cache
 
@@ -249,7 +250,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             result = cache.get('propDefs')
             log.debug('load propertyDefinitions from cache')
         }
-        else {
+        else {*/
             def matches = I10nTranslation.refdataFindHelper(
                     params.baseClass,
                     'name',
@@ -270,8 +271,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                     }
                 }
             }
-            cache.put('propDefs', result)
-        }
+         /*   cache.put('propDefs', result)
+        }*/
         result
     }
 
