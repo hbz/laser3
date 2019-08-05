@@ -41,7 +41,7 @@
                     <td class="la-js-dont-hide-this-card">
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"  data-content="${prop.type.getI10n('expl')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
@@ -54,7 +54,6 @@
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                             }
                             */
-
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownobj.isSlaved) {
                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
