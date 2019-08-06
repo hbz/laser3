@@ -3,8 +3,11 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import de.laser.CacheService
 import de.laser.domain.I10nTranslation
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RefdataAnnotation
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
@@ -86,10 +89,42 @@ class PropertyDefinitionGroup {
         def result = []
 
         def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
-
         def currentObject = genericOIDService.resolveOID(params.oid)
-        def propDefs = currentObject.getPropertyDefinitions()
 
+        CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+        EhcacheWrapper cache
+
+        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}/")
+
+        if (! cache.get('propDefs')) {
+            def propDefs = currentObject.getPropertyDefinitions()
+
+            List matches = I10nTranslation.refdataFindHelper(
+                    'com.k_int.properties.PropertyDefinition',
+                    'name',
+                    '',
+                    LocaleContextHolder.getLocale()
+            ).collect{ it.id }
+
+            propDefs.each { it ->
+                if (it.id in matches) {
+                    if (it.getDescr() == params.desc) {
+                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                    }
+                }
+            }
+            cache.put('propDefs', result)
+        }
+        else {
+            log.debug ('reading from cache .. ')
+            cache.get('propDefs').each { it ->
+                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
+                    result.add(it)
+                }
+            }
+        }
+
+        /*
         def matches = I10nTranslation.refdataFindHelper(
                 'com.k_int.properties.PropertyDefinition',
                 'name',
@@ -108,7 +143,7 @@ class PropertyDefinitionGroup {
                 }
             }
         }
-
+        */
         result
     }
 }

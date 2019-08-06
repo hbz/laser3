@@ -4,6 +4,8 @@
 
 <%-- grouped custom properties --%>
 
+<% List<String> hiddenPropertiesMessages = [] %>
+
 <div class="ui card la-dl-no-table">
 
 <g:each in="${derivedPropDefGroups.global}" var="propDefGroup">
@@ -16,6 +18,14 @@
                 ownObj: license
         ]}"/>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "Die Merkmalsgruppe ${propDefGroup.name} beinhaltet <strong>${numberOfProperties.size()}</strong> Merkmale, ist aber ausgeblendet."
+            %>
+        </g:if>
+    </g:else>
 </g:each>
 
 <g:each in="${derivedPropDefGroups.local}" var="propDefGroup">
@@ -29,6 +39,14 @@
                 ownObj: license
         ]}"/>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefGroup[0].getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "Die Merkmalsgruppe <strong>${propDefGroup[0].name}</strong> beinhaltet ${numberOfProperties.size()} Merkmale, ist aber ausgeblendet."
+            %>
+        </g:if>
+    </g:else>
 </g:each>
 
 <g:each in="${derivedPropDefGroups.member}" var="propDefGroup">
@@ -45,24 +63,64 @@
             ]}"/>
         </g:if>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefGroup[0].getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "Die Merkmalsgruppe <strong>${propDefGroup[0].name}</strong> beinhaltet ${numberOfProperties.size()} Merkmale, ist aber ausgeblendet."
+            %>
+        </g:if>
+    </g:else>
 </g:each>
+
+<g:if test="${hiddenPropertiesMessages.size() > 0}">
+    <div class="content">
+        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+    </div>
+</g:if>
+
+<%-- orphaned properties --%>
+
+    <%--
+    <div class="content">
+        <h5 class="ui header">
+            <g:if test="${derivedPropDefGroups.global || derivedPropDefGroups.local || derivedPropDefGroups.member}">
+                ${message(code:'subscription.properties.orphaned')}
+            </g:if>
+            <g:else>
+                ${message(code:'license.properties')}
+            </g:else>
+        </h5>
+
+        <div id="custom_props_div_props">
+            <g:render template="/templates/properties/orphaned" model="${[
+                    prop_desc: PropertyDefinition.LIC_PROP,
+                    ownobj: license,
+                    orphanedProperties: derivedPropDefGroups.orphanedProperties,
+                    custom_props_div: "custom_props_div_props" ]}"/>
+        </div>
+    </div>
+    --%>
 
 <%-- custom properties --%>
 
-<g:if test="${derivedPropDefGroups.fallback}">
+<g:if test="${derivedPropDefGroups.orphanedProperties}">
 
     <div class="content">
         <h5 class="ui header">
-            <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
+            <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>
+            (${message(code:'subscription.properties')})
         </h5>
 
         <g:render template="/subscription/licPropGroup" model="${[
-                propList: license.customProperties,
+                propList: derivedPropDefGroups.orphanedProperties,
                 ownObj: license
         ]}"/>
     </div>
 
 </g:if>
+
+
 
 </div><!--.card-->
 

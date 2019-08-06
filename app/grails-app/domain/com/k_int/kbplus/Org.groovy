@@ -31,6 +31,8 @@ class Org
     def organisationService
     @Transient
     def accessService
+	@Transient
+	def propertyService
 
     String name
     String shortname
@@ -278,8 +280,8 @@ class Org
         result
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'fallback': true, 'orphanedProperties':[] ]
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
@@ -296,16 +298,8 @@ class Org
             }
         }
 
-        result.fallback = (result.global.size() == 0 && result.local.size() == 0)
-
         // storing properties without groups
-
-        def orph = customProperties.id
-
-        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
-        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
-
-        result.orphanedProperties = OrgCustomProperty.findAllByIdInList(orph)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
 
         result
     }
