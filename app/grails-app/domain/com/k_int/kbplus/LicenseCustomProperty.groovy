@@ -160,11 +160,13 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
 
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
-                def event = JSON.parse(pc.changeDoc)
-                if (event && event.changeDoc) {
-                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                    if (scp?.id == id) {
-                        pc.delete(flush: true)
+                if (pc.changeDoc) {
+                    def event = JSON.parse(pc.changeDoc)
+                    if (event.changeDoc) {
+                        def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                        if (scp?.id == id) {
+                            pc.delete(flush: true)
+                        }
                     }
                 }
             }
