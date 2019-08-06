@@ -97,14 +97,14 @@ class LicenseCompareController extends AbstractDebugController {
             switch(wrapperKey) {
               case "global":
                 groupKey = (PropertyDefinitionGroup) propDefGroup
-                if(groupKey.visible == RDStore.YN_YES)
+                if(groupKey.isVisible)
                   groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,lic))
                 break
               case "local":
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                  if(groupBinding.visible == RDStore.YN_YES) {
+                  if(groupBinding.isVisible) {
                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
                   }
                 }
@@ -117,7 +117,7 @@ class LicenseCompareController extends AbstractDebugController {
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                  if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
+                  if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
                   }
                 }

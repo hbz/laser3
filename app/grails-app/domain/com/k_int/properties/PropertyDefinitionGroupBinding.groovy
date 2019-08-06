@@ -10,11 +10,8 @@ import groovy.util.logging.Log4j
 @Log4j
 class PropertyDefinitionGroupBinding {
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue visible // default value: will overwrite existing groups
-
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue visibleForConsortiaMembers  // Subscriber_Consortial, Licensee_Consortial
+    boolean isVisible // default value: will overwrite existing groups
+    boolean isVisibleForConsortiaMembers  // Subscriber_Consortial, Licensee_Consortial
 
     static belongsTo = [
             lic:    License,
@@ -30,8 +27,8 @@ class PropertyDefinitionGroupBinding {
         org             column: 'pgb_org_fk'
         sub             column: 'pgb_sub_fk'
         propDefGroup    column: 'pgb_property_definition_group_fk'
-        visible         column: 'pbg_visible_rv_fk'
-        visibleForConsortiaMembers column: 'pbg_is_viewable_rv_fk'
+        isVisible       column: 'pbg_is_visible'
+        isVisibleForConsortiaMembers column: 'pbg_is_visible_for_cons_member'
     }
 
     static constraints = {
@@ -39,8 +36,8 @@ class PropertyDefinitionGroupBinding {
         org                         (nullable: true, unique: ['propDefGroup'])
         sub                         (nullable: true, unique: ['propDefGroup'])
         propDefGroup                (nullable: false, blank: false)
-        visible                     (nullable: true)
-        visibleForConsortiaMembers  (nullable: true)
+        isVisible                   (nullable: false, blank: false)
+        isVisibleForConsortiaMembers(nullable: false, blank: false)
     }
 }
 

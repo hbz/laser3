@@ -1239,10 +1239,10 @@ class AjaxController {
         def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup) {
-            if (params.visible in ['Yes', 'No']) {
+            if (params.isVisible in ['Yes', 'No']) {
                 def gb = new PropertyDefinitionGroupBinding(
                         propDefGroup: propDefGroup,
-                        visible: RefdataValue.getByValueAndCategory(params.visible, 'YN')
+                        isVisible: (params.isVisible == 'Yes')
                 )
                 if (ownobj.class.name == License.class.name) {
                     gb.lic = ownobj

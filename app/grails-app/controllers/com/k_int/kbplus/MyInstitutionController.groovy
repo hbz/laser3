@@ -31,7 +31,6 @@ import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
 import java.text.SimpleDateFormat
-import java.util.List
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController extends AbstractDebugController {
@@ -4741,7 +4740,7 @@ AND EXISTS (
                             description: params.description,
                             tenant: result.institution,
                             ownerType: ownerType,
-                            visible: RDStore.YN_YES
+                            visible: true
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

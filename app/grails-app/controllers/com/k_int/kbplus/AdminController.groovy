@@ -1107,7 +1107,7 @@ class AdminController extends AbstractDebugController {
                         description: params.description,
                         tenant: null,
                         ownerType: ownerType,
-                        visible: RDStore.YN_YES
+                        isVisible: true
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true
