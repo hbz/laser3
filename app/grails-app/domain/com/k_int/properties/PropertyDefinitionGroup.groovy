@@ -20,8 +20,7 @@ class PropertyDefinitionGroup {
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue visible // default value: will be overwritten by existing bindings
+    boolean isVisible // default value: will be overwritten by existing bindings
 
     static hasMany = [
             items: PropertyDefinitionGroupItem,
@@ -39,7 +38,7 @@ class PropertyDefinitionGroup {
         description column: 'pdg_description',  type: 'text'
         tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
         ownerType   column: 'pdg_owner_type'
-        visible     column: 'pdg_visible_rv_fk'
+        isVisible   column: 'pdg_is_visible'
 
         items       cascade: 'all', batchSize: 10
         bindings    cascade: 'all', batchSize: 10
@@ -50,7 +49,7 @@ class PropertyDefinitionGroup {
         description (nullable: true,  blank: true)
         tenant      (nullable: true, blank: false)
         ownerType   (nullable: false, blank: false)
-        visible     (nullable: true)
+        isVisible   (nullable: false, blank: false)
     }
 
     def getPropertyDefinitions() {

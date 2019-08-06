@@ -578,14 +578,14 @@ class SubscriptionService {
                         switch(wrapperKey) {
                             case "global":
                                 groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.visible == YN_YES)
+                                if(groupKey.isVisible)
                                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
                                 break
                             case "local":
                                 try {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == YN_YES) {
+                                    if(groupBinding.isVisible) {
                                         groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
                                     }
                                 }
@@ -598,7 +598,7 @@ class SubscriptionService {
                                 try {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.visible == YN_YES && groupBinding.visibleForConsortiaMembers == YN_YES) {
+                                    if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
                                         groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
                                     }
                                 }

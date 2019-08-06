@@ -25,7 +25,7 @@
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <%-- check visibility --%>
-    <g:if test="${propDefGroup.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup.isVisible}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefGroup,
@@ -47,7 +47,7 @@
 
 <g:each in="${allPropDefGroups.local}" var="propDefInfo">
     <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefInfo[1]?.isVisible}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefInfo[0],
@@ -69,9 +69,9 @@
 
 <g:each in="${allPropDefGroups.member}" var="propDefInfo">
     <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefInfo[1]?.isVisible}">
         <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
+        <g:if test="${propDefInfo[1]?.isVisibleForConsortiaMembers}">
 
             <g:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: propDefInfo[0],

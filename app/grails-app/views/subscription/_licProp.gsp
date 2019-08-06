@@ -9,7 +9,7 @@
 <div class="ui card la-dl-no-table">
 
 <g:each in="${derivedPropDefGroups.global}" var="propDefGroup">
-    <g:if test="${propDefGroup.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup.isVisible}">
 
         <!-- global -->
         <g:render template="/subscription/licPropGroupWrapper" model="${[
@@ -30,7 +30,7 @@
 
 <g:each in="${derivedPropDefGroups.local}" var="propDefGroup">
 <%-- check binding visibility --%>
-    <g:if test="${propDefGroup[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup[1]?.isVisible}">
 
         <!-- local -->
         <g:render template="/subscription/licPropGroupWrapper" model="${[
@@ -51,9 +51,9 @@
 
 <g:each in="${derivedPropDefGroups.member}" var="propDefGroup">
 <%-- check binding visibility --%>
-    <g:if test="${propDefGroup[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefGroup[1]?.isVisible}">
     <%-- check member visibility --%>
-        <g:if test="${propDefGroup[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
+        <g:if test="${propDefGroup[1]?.isVisibleForConsortiaMembers}">
 
             <!-- member -->
             <g:render template="/subscription/licPropGroupWrapper" model="${[

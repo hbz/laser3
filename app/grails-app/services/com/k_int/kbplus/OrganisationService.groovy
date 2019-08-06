@@ -433,32 +433,32 @@ class OrganisationService {
         }
         log.info("creating property definition groups ...")
         List propertyDefinitionGroups = [
-                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'Fernleihbedingungen', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'Fernleihbedingungen', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('ILL record keeping required'),
                         PropertyDefinition.findByName('ILL electronic'),
                         PropertyDefinition.findByName('ILL print or fax'),
                         PropertyDefinition.findByName('ILL secure electronic transmission'),
                         PropertyDefinition.findByName('ILL term note')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Archivrecht', description: 'Welches Archivrecht ist gegeben?', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Archivrecht', description: 'Welches Archivrecht ist gegeben?', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Archival Copy Content'),
                         PropertyDefinition.findByName('Archival Copy: Cost'),
                         PropertyDefinition.findByName('Archival Copy: Permission'),
                         PropertyDefinition.findByName('Archival Copy: Time'),
                         PropertyDefinition.findByName('Archiving rights')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Zugriffsbedingungen', description: 'Welche Zugriffsmöglichkeiten sind erlaubt?', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Zugriffsbedingungen', description: 'Welche Zugriffsmöglichkeiten sind erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Walk-in Access'),
                         PropertyDefinition.findByName('Walk-in User Term Note'),
                         PropertyDefinition.findByName('Wifi Access'),
                         PropertyDefinition.findByName('Remote Access')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Fremdsysteme', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('DBIS-Link'),
                         PropertyDefinition.findByName('EZB Gelbschaltung'),
                         PropertyDefinition.findByName('SFX-Eintrag')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Statistik', description: '', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Statistik'),
                         PropertyDefinition.findByName('Statistics Link'),
                         PropertyDefinition.findByName('Statistikzugang')]
@@ -832,24 +832,24 @@ class OrganisationService {
         }
         log.info("creating property definition groups ...")
         List propertyDefinitionGroups = [
-                [group:new PropertyDefinitionGroup(name: 'ausgeübtes Recht', description: 'Welches Recht wird angewandt?', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'ausgeübtes Recht', description: 'Welches Recht wird angewandt?', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Governing law'),
                         PropertyDefinition.findByName('Governing jurisdiction')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'ist eine Fernleihe erlaubt?', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Fernleihe', description: 'ist eine Fernleihe erlaubt?', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('ILL record keeping required'),
                         PropertyDefinition.findByName('ILL electronic'),
                         PropertyDefinition.findByName('ILL print or fax'),
                         PropertyDefinition.findByName('ILL secure electronic transmission'),
                         PropertyDefinition.findByName('ILL term note')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'GASCO', description: 'Merkmale, die den GASCO-Monitor steuern', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('GASCO Entry'),
                         PropertyDefinition.findByName('GASCO-Anzeigename'),
                         PropertyDefinition.findByName('GASCO-Verhandlername'),
                         PropertyDefinition.findByName('GASCO-Information-Link')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'meinKonsortium', description: 'alle für meine Konsortialstelle relevanten Merkmale', ownerType: Subscription.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('Bundesweit offen'),
                         PropertyDefinition.findByName('Eingeschränkter Benutzerkreis'),
                         PropertyDefinition.findByName('Mehrjahreslaufzeit'),
@@ -871,7 +871,7 @@ class OrganisationService {
                         PropertyDefinition.findByName('Testzeitraum'),
                         PropertyDefinition.findByName('Unterjähriger Einstieg')]
                 ],
-                [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, visible: RDStore.YN_YES),
+                [group:new PropertyDefinitionGroup(name: 'Open Access', description: 'Open Access vereinbart', ownerType: License.class.name, tenant: current, isVisible: true),
                  items:[PropertyDefinition.findByName('OA Note'),
                         PropertyDefinition.findByName('OA Last Date'),
                         PropertyDefinition.findByName('OA First Date'),
