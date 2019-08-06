@@ -48,7 +48,7 @@
 
 <g:each in="${allPropDefGroups.local}" var="propDefInfo">
     <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.isVisible'}">
+    <g:if test="${propDefInfo[1]?.isVisible}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefInfo[0],
