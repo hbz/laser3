@@ -1158,7 +1158,16 @@ class AjaxController {
             redirect(controller:"propertyDefinition", action:"create")
         }
         else {
-            render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error, message: msg])
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/custom", model: [
+                    ownobj: owner,
+                    customProperties: owner.customProperties,
+                    newProp: newProp,
+                    error: error,
+                    message: msg,
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
         }
     }
 
@@ -1200,30 +1209,21 @@ class AjaxController {
                 prop_desc       : type.descr // form data
         ])
       }
-      else if (params.onlyOrphaned) {
-          def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+      else {
+          Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
 
-          render(template: "/templates/properties/orphaned", model: [
-                ownobj          : owner,
-                newProp         : newProp,
-                showConsortiaFunctions: showConsortiaFunctions,
-                showCollectiveFunctions: showCollectiveFunctions,
-                error           : error,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc       : type.descr, // form data
-                orphanedProperties: allPropDefGroups.orphanedProperties
-        ])
-      }
-        else {
-          render(template: "/templates/properties/custom", model: [
-                  ownobj          : owner,
-                  newProp         : newProp,
+          Map<String, Object> modelMap =  [
+                  ownobj                : owner,
+                  newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
                   showCollectiveFunctions: showCollectiveFunctions,
-                  error           : error,
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : type.descr // form data
-          ])
+                  error                 : error,
+                  custom_props_div      : "${params.custom_props_div}", // JS markup id
+                  prop_desc             : type.descr, // form data
+                  orphanedProperties    : allPropDefGroups.orphanedProperties
+          ]
+
+          render(template: "/templates/properties/custom", model: modelMap)
       }
     }
     else {
@@ -1579,26 +1579,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
-        else if (params.onlyOrphaned) {
-            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/orphaned", model: [
-                    ownobj            : owner,
-                    newProp           : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
-                    custom_props_div: "${params.custom_props_div}", // JS markup id
-                    prop_desc         : prop_desc, // form data
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
         else {
-          render(template: "/templates/properties/custom", model: [
-                  ownobj                : owner,
-                  newProp               : property,
-                  showConsortiaFunctions: params.showConsortiaFunctions,
-                  custom_props_div      : "${params.custom_props_div}", // JS markup id
-                  prop_desc             : prop_desc // form data
-          ])
+            Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            Map<String, Object> modelMap =  [
+                    ownobj                : owner,
+                    newProp               : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div      : "${params.custom_props_div}", // JS markup id
+                    prop_desc             : prop_desc, // form data
+                    orphanedProperties    : allPropDefGroups.orphanedProperties
+            ]
+            render(template: "/templates/properties/custom", model: modelMap)
         }
     }
 
@@ -1639,26 +1631,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
-        else if (params.onlyOrphaned) {
-            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/orphaned", model: [
-                    ownobj            : owner,
-                    newProp           : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
-                    custom_props_div: "${params.custom_props_div}", // JS markup id
-                    prop_desc         : prop_desc, // form data
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
         else {
-          render(template: "/templates/properties/custom", model:[
-                  ownobj:owner,
-                  newProp:property,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc: prop_desc // form data
-          ])
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> modelMap =  [
+                    ownobj                : owner,
+                    newProp               : property,
+                    showConsortiaFunctions: showConsortiaFunctions,
+                    custom_props_div      : "${params.custom_props_div}", // JS markup id
+                    prop_desc             : prop_desc, // form data
+                    orphanedProperties    : allPropDefGroups.orphanedProperties
+            ]
+
+            render(template: "/templates/properties/custom", model: modelMap)
         }
     }
 

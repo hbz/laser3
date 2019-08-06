@@ -489,7 +489,7 @@ class License
         License.where{ instanceOf == this }
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings

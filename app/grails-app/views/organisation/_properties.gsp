@@ -90,7 +90,7 @@
         </h5>
 
         <div id="custom_props_div_props">
-            <g:render template="/templates/properties/orphaned" model="${[
+            <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.ORG_PROP,
                     ownobj: orgInstance,
                     orphanedProperties: allPropDefGroups.orphanedProperties,

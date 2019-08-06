@@ -114,7 +114,7 @@
         </h5>
 
         <div id="custom_props_div_props">
-            <g:render template="/templates/properties/orphaned" model="${[
+            <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
