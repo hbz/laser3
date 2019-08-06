@@ -236,41 +236,62 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     static def refdataFind(params) {
         def result = []
 
+        /*
+        def matches = I10nTranslation.refdataFindHelper(
+                params.baseClass,
+                'name',
+                params.q,
+                LocaleContextHolder.getLocale()
+        )
+        matches.each { it ->
+            // used for private properties
+            def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
+
+            if (tenantMatch) {
+                if (params.desc && params.desc != "*") {
+                    if (it.getDescr() == params.desc) {
+                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                    }
+                } else {
+                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+        }
+        return result
+        */
+
         CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
         EhcacheWrapper cache
 
         if (! params.tenant) {
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/")
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}/")
         } else {
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/private/${params.desc}/tenant/${params.tenant}/")
+            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/private/${params.desc}/tenant/${params.tenant}/${LocaleContextHolder.getLocale()}/")
         }
 
-        if (cache.get('propDefs')) {
-            result = cache.get('propDefs')
-            log.debug('load propertyDefinitions from cache')
-        }
-        else {
-            def matches = I10nTranslation.refdataFindHelper(
+        if (! cache.get('propDefs')) {
+            List propDefs = I10nTranslation.refdataFindHelper(
                     params.baseClass,
                     'name',
-                    params.q,
+                    '',
                     LocaleContextHolder.getLocale()
             )
-            matches.each { it ->
-                // used for private properties
+            propDefs.each { it ->
                 def tenantMatch = (params.tenant.equals(it.getTenant()?.id?.toString()))
-
-                if (tenantMatch) {
-                    if (params.desc && params.desc != "*") {
-                        if (it.getDescr() == params.desc) {
-                            result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                        }
-                    } else {
-                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
-                    }
+                if (tenantMatch && it.getDescr() == params.desc) {
+                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
                 }
             }
+
             cache.put('propDefs', result)
+        }
+        else {
+            log.debug ('reading from cache .. ')
+            cache.get('propDefs').each { it ->
+                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
+                    result.add(it)
+                }
+            }
         }
         result
     }

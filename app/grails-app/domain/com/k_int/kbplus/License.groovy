@@ -36,7 +36,8 @@ class License
     def pendingChangeService
     @Transient
     def changeNotificationService
-
+    @Transient
+    def propertyService
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
@@ -488,8 +489,8 @@ class License
         License.where{ instanceOf == this }
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
@@ -534,17 +535,8 @@ class License
             }
         }
 
-        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
-
         // storing properties without groups
-
-        def orph = customProperties.id
-
-        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
-        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
-        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
-
-        result.orphanedProperties = LicenseCustomProperty.findAllByIdInList(orph)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
 
         result
     }

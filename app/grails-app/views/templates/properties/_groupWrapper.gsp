@@ -6,11 +6,12 @@
 <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h5 class="ui header">
-            ${message(code: 'subscription.properties.public')} ${propDefGroup.name}
+            ${message(code: 'subscription.properties.public')}
+            (${propDefGroup.name})
 
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
-                    <g:if test="${! propDefGroupBinding || propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
+                    <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
                         <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                             <i class="ui icon eye orange"></i>
                         </span>

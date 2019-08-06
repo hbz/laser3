@@ -3618,7 +3618,7 @@ AND EXISTS (
                             description: params.description,
                             tenant: result.institution,
                             ownerType: ownerType,
-                            visible: RDStore.YN_YES
+                            visible: true
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true

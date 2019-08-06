@@ -6,24 +6,26 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: license,
             availPropDefGroups: availPropDefGroups
     ]}" />
-
 </semui:modal>
 
 <div class="ui card la-dl-no-table la-js-hideable">
 
 <%-- grouped custom properties --%>
 
-<g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
+
+    <% List<String> hiddenPropertiesMessages = [] %>
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <g:if test="${propDefGroup.visible?.value == 'Yes'}">
+    <%-- check visibility --%>
+    <g:if test="${propDefGroup.isVisible}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefGroup,
@@ -33,11 +35,19 @@
                 custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
         ]}"/>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
+            %>
+        </g:if>
+    </g:else>
 </g:each>
 
 <g:each in="${allPropDefGroups.local}" var="propDefInfo">
     <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefInfo[1]?.isVisible}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefInfo[0],
@@ -47,13 +57,21 @@
                 custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
         ]}"/>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
+            %>
+        </g:if>
+    </g:else>
 </g:each>
 
 <g:each in="${allPropDefGroups.member}" var="propDefInfo">
     <%-- check binding visibility --%>
-    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <g:if test="${propDefInfo[1]?.isVisible}">
         <%-- check member visibility --%>
-        <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
+        <g:if test="${propDefInfo[1]?.isVisibleForConsortiaMembers}">
 
             <g:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: propDefInfo[0],
@@ -64,26 +82,45 @@
             ]}"/>
         </g:if>
     </g:if>
+    <g:else>
+        <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(license)}" />
+        <g:if test="${numberOfProperties.size() > 0}">
+            <%
+                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
+            %>
+        </g:if>
+    </g:else>
 </g:each>
+
+<g:if test="${hiddenPropertiesMessages.size() > 0}">
+    <div class="content">
+        <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br/>')}" />
+    </div>
+</g:if>
 
 <%-- orphaned properties --%>
 
-<g:if test="${! allPropDefGroups.fallback}">
+<g:if test="${true}"><%-- todo: restrict? --%>
 
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
-        <div class="content">
-            <h5 class="ui header">
+    <div class="content">
+        <h5 class="ui header">
+            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
                 ${message(code:'subscription.properties.orphaned')}
-            </h5>
+            </g:if>
+            <g:else>
+                ${message(code:'license.properties')}
+            </g:else>
+        </h5>
 
-            <div id="custom_props_div_props">
-                <g:render template="/templates/properties/orphaned" model="${[
-                        prop_desc: PropertyDefinition.LIC_PROP,
-                        ownobj: license,
-                        orphanedProperties: allPropDefGroups.orphanedProperties,
-                        custom_props_div: "custom_props_div_props" ]}"/>
-            </div>
+        <div id="custom_props_div_props">
+            <g:render template="/templates/properties/custom" model="${[
+                    prop_desc: PropertyDefinition.LIC_PROP,
+                    ownobj: license,
+                    orphanedProperties: allPropDefGroups.orphanedProperties,
+                    custom_props_div: "custom_props_div_props" ]}"/>
         </div>
+    </div>
     <%--</div>--%>
 
     <r:script language="JavaScript">
@@ -93,33 +130,6 @@
     </r:script>
 
 </g:if>
-
-<g:else>
-
-<%-- custom properties --%>
-
-    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
-        <div class="content">
-            <h5 class="ui header">
-                ${message(code:'license.properties')}
-            </h5>
-
-            <div id="custom_props_div_props">
-                <g:render template="/templates/properties/custom" model="${[
-                        prop_desc: PropertyDefinition.LIC_PROP,
-                        ownobj: license,
-                        custom_props_div: "custom_props_div_props" ]}"/>
-            </div>
-        </div>
-    <%--</div>--%>
-
-    <r:script language="JavaScript">
-        $(document).ready(function(){
-            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-        });
-    </r:script>
-
-</g:else>
 
 </div><!-- .card -->
 
@@ -149,27 +159,5 @@
         </div><!--.card-->
     </g:if>
 </g:each>
-
-<%--<r:script>
-    $(function(){
-        $('#new-dynamic-properties-block a.xEditableValue').each( function(i, elem) {
-            $(elem).on('save', function(e, params){
-                $target = $(e.target)
-                $updates = $('#new-dynamic-properties-block a.xEditableValue[id="' + $target.attr('id') + '"]')
-                $updates.attr('data-oldvalue', params.newValue) // TODO BUGGY
-                $updates.text(params.response)
-            })
-        })
-        $('#new-dynamic-properties-block a.xEditableManyToOne').each( function(i, elem) {
-            $(elem).on('save', function(e, params){
-                $target = $(e.target)
-                $updates = $('#new-dynamic-properties-block a.xEditableManyToOne[id="' + $target.attr('id') + '"]')
-                $updates.attr('data-value', params.newValue) // TODO BUGGY
-                $updates.text(params.response.newValue)
-            })
-        })
-    })
-
-</r:script>--%>
 
 <!-- _properties -->

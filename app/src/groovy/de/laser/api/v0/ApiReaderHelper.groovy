@@ -361,17 +361,17 @@ class ApiReaderHelper {
             def tmp = []
 
             groups.global?.each { it ->
-                if (it.visible?.value == 'Yes') {
+                if (it.isVisible) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
             groups.local?.each { it ->
-                if (it.visible?.value == 'Yes') {
+                if (it.isVisible) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
             groups.members?.each { it ->
-                if (it.visibleForConsortiaMembers?.value == 'Yes') {
+                if (it.isVisibleForConsortiaMembers) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
