@@ -9,10 +9,10 @@
                 <tr>
                     <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>
                     <th></th>
-                    <th>Anzeigen<br />(Voreinstellung)</th>
-                    <th>Anzeigen<br />(Überschreiben)</th>
+                    <th>Voreinstellung</th>
+                    <th>Für dieses Objekt überschreiben</th>
                     <g:if test="${showConsortiaFunctions}">
-                        <th>Auch für Teilnehmer<br />anzeigen</th>
+                        <th>Für Teilnehmer anzeigen</th>
                     </g:if>
                     <th class="la-action-info">${message(code:'default.actions')}</th>
                 </tr>

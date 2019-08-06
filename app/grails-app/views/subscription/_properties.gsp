@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -40,7 +40,7 @@
         <g:set var="numberOfProperties" value="${propDefGroup.getCurrentProperties(subscriptionInstance)}" />
         <g:if test="${numberOfProperties.size() > 0}">
            <%
-               hiddenPropertiesMessages << "Die Merkmalsgruppe ${propDefGroup.name} beinhaltet <strong>${numberOfProperties.size()}</strong> Merkmale, ist aber ausgeblendet."
+               hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefGroup.name, numberOfProperties.size()])}"
            %>
         </g:if>
     </g:else>
@@ -62,7 +62,7 @@
         <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
         <g:if test="${numberOfProperties.size() > 0}">
             <%
-                hiddenPropertiesMessages << "Die Merkmalsgruppe <strong>${propDefInfo[0].name}</strong> beinhaltet ${numberOfProperties.size()} Merkmale, ist aber ausgeblendet."
+                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
             %>
         </g:if>
     </g:else>
@@ -87,7 +87,7 @@
         <g:set var="numberOfProperties" value="${propDefInfo[0].getCurrentProperties(subscriptionInstance)}" />
         <g:if test="${numberOfProperties.size() > 0}">
             <%
-                hiddenPropertiesMessages << "Die Merkmalsgruppe <strong>${propDefInfo[0].name}</strong> beinhaltet ${numberOfProperties.size()} Merkmale, ist aber ausgeblendet."
+                hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [propDefInfo[0].name, numberOfProperties.size()])}"
             %>
         </g:if>
     </g:else>

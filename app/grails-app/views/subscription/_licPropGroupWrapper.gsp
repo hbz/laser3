@@ -7,11 +7,12 @@
 <g:if test="${propList}">
     <div class="content">
         <h5 class="ui header">
-            <g:link controller="license" action="show" id="${ownObj.id}"><i class="balance scale icon"></i>${ownObj}</g:link>: ${propDefGroup.name}
+            <g:link controller="license" action="show" id="${ownObj.id}"><i class="balance scale icon"></i>${ownObj}</g:link>
+            (${propDefGroup.name})
 
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType == License.class.name}">
-                    <g:if test="${! propDefGroupBinding || propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
+                    <g:if test="${propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
                         <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                             <i class="ui icon eye orange"></i>
                         </span>

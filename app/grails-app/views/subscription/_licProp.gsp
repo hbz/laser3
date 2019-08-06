@@ -108,7 +108,8 @@
 
     <div class="content">
         <h5 class="ui header">
-            <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>: ${message(code:'subscription.properties')}
+            <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>
+            (${message(code:'subscription.properties')})
         </h5>
 
         <g:render template="/subscription/licPropGroup" model="${[
