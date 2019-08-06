@@ -111,14 +111,14 @@ class ApiService {
 
             if (inst.source == 'edb des hbz') {
                tenant = Org.findByShortnameIlike('hbz')
-               isPublic = RefdataValue.getByValueAndCategory('No','YN')
+               isPublic = false
             }
             //else if (inst.source == 'nationallizenzen.de') {
             //    tenant = Org.findByShortcode('NL')
             //}
             if (! tenant) {
                 tenant = org
-                isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
+                isPublic = true
             }
 
             // simple attributes

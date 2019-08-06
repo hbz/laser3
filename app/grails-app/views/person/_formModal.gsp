@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <laser:serviceInjection/>
 
 
@@ -83,7 +83,7 @@
 
         <g:if test="${contextService.getOrg()}">
             <input type="hidden" name="tenant.id" value="${contextService.getOrg().id}"/>
-            <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}"/>
+            <input id="isPublic" name="isPublic" type="hidden" value="${isPublic}"/>
         </g:if>
         <g:else>
             <div class="field">
@@ -102,8 +102,9 @@
                         <label for="isPublic">
                             <g:message code="person.isPublic.label" default="IsPublic"/>
                         </label>
-                        ${isPublic?.getI10n('value')}
-                        <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}"/>
+
+                        ${isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <input id="isPublic" name="isPublic" type="hidden" value="${isPublic}"/>
                     </div>
                 </div>
             </div>
