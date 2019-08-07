@@ -485,7 +485,7 @@ ${orgInstance.name}
                                             <g:render template="/person/formModal"
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
-                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              isPublic                         : true,
                                                               presetFunctionType               : RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
                                                               modalId                          : 'personFormModalGeneralContactPerson',
                                                               tmplHideFunctions: true]"/>
@@ -498,7 +498,7 @@ ${orgInstance.name}
                                             <g:render template="/person/formModal"
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
-                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              isPublic                         : true,
                                                               presetFunctionType               : RefdataValue.getByValueAndCategory('Responsible Admin', 'Person Function'),
                                                               modalId                          : 'personFormModalResponsibleContact',
                                                               tmplHideFunctions: true]"/>
@@ -515,7 +515,7 @@ ${orgInstance.name}
                                             <g:render template="/person/formModal"
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
-                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              isPublic                         : true,
                                                               presetFunctionType               : RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', 'Person Function'),
                                                               modalId                          : 'personFormModalBillingContact',
                                                               tmplHideFunctions: true]"/>
@@ -528,7 +528,7 @@ ${orgInstance.name}
                                             <g:render template="/person/formModal"
                                                       model="[tenant                           : contextOrg,
                                                               org                              : orgInstance,
-                                                              isPublic                         : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              isPublic                         : true,
                                                               presetFunctionType               : RefdataValue.getByValueAndCategory('Technichal Support', 'Person Function'),
                                                               modalId                          : 'personFormModalTechnichalSupport',
                                                               tmplHideFunctions: true]"/>
@@ -541,7 +541,7 @@ ${orgInstance.name}
                                             <g:render template="/person/formModal"
                                                       model="['tenant'            : contextOrg,
                                                               'org'               : orgInstance,
-                                                              'isPublic'          : RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                              'isPublic'          : true,
                                                               'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>--}%
 
                                         </div>

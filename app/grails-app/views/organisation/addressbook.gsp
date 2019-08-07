@@ -36,7 +36,7 @@
 
         <g:render template="/person/formModal" model="['tenant': contextOrg,
                                                        'org': orgInstance,
-                                                       'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
+                                                       'isPublic': false,
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
 
 		<g:if test="${visiblePersons}">

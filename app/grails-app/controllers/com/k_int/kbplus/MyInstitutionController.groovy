@@ -1123,8 +1123,6 @@ from License as l where (
 
         result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
 
-        def public_flag = RefdataValue.getByValueAndCategory('Yes','YN')
-
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -1256,7 +1254,7 @@ from License as l where (
                     status: status,
                     administrative: administrative,
                     identifier: params.newEmptySubId,
-                    isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                    isPublic: false,
                     impId: java.util.UUID.randomUUID().toString())
 
             if (new_sub.save()) {
@@ -3127,7 +3125,7 @@ AND EXISTS (
                 endDate: sub_endDate,
                 //previousSubscription: old_subOID ?: null, previousSubscription oberhauled by Links table entry as of ERMS-800 (ERMS-892) et al.
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                isPublic: false,
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null
