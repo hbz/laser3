@@ -486,7 +486,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                          addParams: [
                                  contact: [[contentType:RDStore.CCT_EMAIL,
@@ -504,7 +504,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Third Gender'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                            addParams: [
                                    contact: [[contentType: RDStore.CCT_PHONE,
@@ -522,7 +522,7 @@ class OrganisationService {
                 last_name: 'Technik',
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                        addParams: [
                                contact:[[contentType: RDStore.CCT_EMAIL,
@@ -551,7 +551,7 @@ class OrganisationService {
                              endDate: generalData.dates.endDateExpired,
                              status: RefdataValue.getByValueAndCategory('Test Access','Subscription Status'),
                              identifier: testDatenAChildIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              instanceOf: underConsiderationDatenAParent,
                              form: generalData.subscriptionForms.get('test')],
@@ -564,7 +564,7 @@ class OrganisationService {
                              endDate: generalData.dates.endDateCurrent,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentDatenAChildIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              instanceOf: currentDatenAParent,
                              form: generalData.subscriptionForms.get('license'),
@@ -592,7 +592,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: eBookPickChildIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              instanceOf: eBookPickParent,
                              form: generalData.subscriptionForms.get('singlePurchase'),
@@ -644,7 +644,7 @@ class OrganisationService {
                              manualCancellationDate: generalData.sdf.parse('2018-10-31'),
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredJournalPaketIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
@@ -660,7 +660,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentJournalPaketIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource')],
@@ -674,7 +674,7 @@ class OrganisationService {
                              endDate: generalData.dates.endDateCurrent,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: journalPaketExtremChildIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              form: RefdataValue.getByValueAndCategory('purchaseOngoing','Subscription Form'),
                              resource: RefdataValue.getByValueAndCategory('ejournalPackage','Subscription Resource'),
@@ -689,7 +689,7 @@ class OrganisationService {
                              manualCancellationDate: generalData.sdf.parse('2019-09-30'),
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: musterdatenbankIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('database')],
@@ -992,7 +992,7 @@ class OrganisationService {
                 last_name: 'Erwerbung',
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                          addParams: [
                                  contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1009,7 +1009,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                           addParams: [
                                   contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1029,7 +1029,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                           addParams: [
                                   contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1045,7 +1045,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Female'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                         addParams: [
                                 contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1061,7 +1061,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                            addParams: [
                                    contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1075,7 +1075,7 @@ class OrganisationService {
                 last_name: 'Rechnungsadresse',
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                                 addParams: [
                                         address: [[type:RefdataValue.getByValueAndCategory('Postal address','AddressType'),
@@ -1093,7 +1093,7 @@ class OrganisationService {
                 last_name: 'Technischer Support',
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                                   addParams: [
                                           contact:[[contentType: RDStore.CCT_EMAIL,
@@ -1108,7 +1108,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Third Gender'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                          addParams: [
                                  contact: [[contentType:RDStore.CCT_EMAIL,
@@ -1123,7 +1123,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Female'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                            addParams: [
                                    contact: [[contentType: RDStore.CCT_EMAIL,
@@ -1137,7 +1137,7 @@ class OrganisationService {
                 last_name: 'sales-team',
                 contactType: RDStore.CONTACT_TYPE_FUNCTIONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                          addParams: [
                                  contact:[[contentType: RDStore.CCT_EMAIL,
@@ -1152,7 +1152,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ], addParams: [
                 contact: [[contentType: RDStore.CCT_EMAIL,
                            type: generalData.contactTypes.get('Job-related'),
@@ -1228,7 +1228,7 @@ class OrganisationService {
                              manualCancellationDate: generalData.sdf.parse('2018-10-31'),
                              status: RDStore.SUBSCRIPTION_EXPIRED,
                              identifier: expiredDatenAIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('mixed'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1285,7 +1285,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentDatenAIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('mixed'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1386,7 +1386,7 @@ class OrganisationService {
                              name: 'Daten A (Test)',
                              status: RefdataValue.getByValueAndCategory('Test Access','Subscription Status'),
                              identifier: testDatenAIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              impId: UUID.randomUUID().toString(),
                              form: generalData.subscriptionForms.get('test')],
                 addParams: [subscriptionMembers:[[subMember:modelMember,
@@ -1412,7 +1412,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentDatenbankIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('database'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1522,7 +1522,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: currentDatenbank2Identifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('database'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1629,7 +1629,7 @@ class OrganisationService {
                              endDate: generalData.dates.nextYearRingEnd,
                              status: RDStore.SUBSCRIPTION_INTENDED,
                              identifier: intendedDatenbank2Identifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('license'),
                              resource: generalData.subscriptionResources.get('database'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1669,7 +1669,7 @@ class OrganisationService {
                              endDate: generalData.dates.defaultEndDate,
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: eBookPickIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('singlePurchase'),
                              resource: generalData.subscriptionResources.get('ebookSingle'),
                              owner: consortialLicenses.get('Rahmenvertrag eBook')],
@@ -1777,7 +1777,7 @@ class OrganisationService {
                              manualCancellationDate: generalData.sdf.parse('2019-10-31'),
                              status: RDStore.SUBSCRIPTION_CURRENT,
                              identifier: journalPaketExtremIdentifier,
-                             isPublic: RDStore.YN_NO,
+                             isPublic: false,
                              form: generalData.subscriptionForms.get('purchaseOngoing'),
                              resource: generalData.subscriptionResources.get('ejournalPackage'),
                              owner: consortialLicenses.get('Rahmenvertrag')],
@@ -1863,7 +1863,7 @@ class OrganisationService {
                 gender: generalData.gender.get('Male'),
                 contactType: RDStore.CONTACT_TYPE_PERSONAL,
                 tenant: current,
-                isPublic: RDStore.YN_NO
+                isPublic: false
         ],
                           addParams: [
                                   contact: [[contentType: RDStore.CCT_EMAIL,

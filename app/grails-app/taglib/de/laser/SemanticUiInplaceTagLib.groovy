@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import de.laser.helper.RDStore
 
 class SemanticUiInplaceTagLib {
 
@@ -196,22 +197,24 @@ class SemanticUiInplaceTagLib {
 
             if ( editable == true ) {
 
-                def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
-                def update_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
-                def data_link = createLink(controller:'ajax', action: 'generateBoolean').encodeAsHTML()
-                def id = attrs.id ?: "${oid}:${attrs.field}"
-                def default_empty = message(code:'default.button.edit.label')
-                def emptyText = attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+                def oid 			= "${attrs.owner.class.name}:${attrs.owner.id}"
+                def update_link 	= createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
+                def data_link 		= createLink(controller:'ajax', action: 'generateBoolean').encodeAsHTML()
+                def id 				= attrs.id ?: "${oid}:${attrs.field}"
+                def default_empty 	= message(code:'default.button.edit.label')
+                def emptyText 		= attrs?.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
+                int intValue = attrs.owner[attrs.field] ? 1 : 0
+                String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
+
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" data-value=\"${attrs.owner[attrs.field].encodeAsHTML()}\" "+
-                        "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " +
+                        " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
+                        " data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
-                out << attrs.owner[attrs.field]
-
-                out << "</a></span>"
+                out << "${strValue}</a></span>"
             }
             else {
                 out << attrs.owner[attrs.field]

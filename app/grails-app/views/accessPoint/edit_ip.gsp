@@ -51,7 +51,7 @@
                                 <div class="fields three">
                                   <div class="field">
                                     <div class="row">
-                                      <laser:select class="ui dropdown values" id="ipv4Format"
+                                      <laser:select class="ui fluid dropdown"  id="ipv4Format"
                                                     name="ipv4Format"
                                                     from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv4 Address Format')}"
                                                     value="${ipv4Format}"
@@ -69,7 +69,7 @@
                                   </div>
                                   <div class="field">
                                     <div class="row">
-                                      <laser:select class="ui dropdown values" id="ipv6Format"
+                                      <laser:select class="ui fluid dropdown" id="ipv6Format"
                                                     name="ipv6Format"
                                                     from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('IPv6 Address Format')}"
                                                     value="${ipv6Format}"
@@ -104,7 +104,7 @@
                         </div>
                     </div>
 
-                    <table  class="ui celled la-table table">
+                    <table  class="ui celled la-table table la-table-small">
                         <thead>
                         <tr>
                             <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')}" />

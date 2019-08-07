@@ -347,8 +347,8 @@ class AjaxController {
 
   def generateBoolean() {
     def result = [
-        [value: 'false', text: 'false'],
-        [value: 'true', text: 'true']
+        [value: 1, text: RDStore.YN_YES.getI10n('value')],
+        [value: 0, text: RDStore.YN_NO.getI10n('value')]
     ]
     render result as JSON
   }
@@ -2074,6 +2074,9 @@ class AjaxController {
                     def binding_properties = [:]
                     if (target_object."${params.name}" instanceof Double) {
                         params.value = Double.parseDouble(params.value)
+                    }
+                    if (target_object."${params.name}" instanceof Boolean) {
+                        params.value = params.value?.equals("1")
                     }
                     binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)

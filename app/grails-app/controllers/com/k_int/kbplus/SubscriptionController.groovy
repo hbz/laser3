@@ -3057,7 +3057,7 @@ class SubscriptionController extends AbstractDebugController {
                 startDate: sub_startDate,
                 endDate: sub_endDate,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: YN_NO,
+                isPublic: false,
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
                 resource: Subscription.get(old_subOID)?.resource ?: null,
                 form: Subscription.get(old_subOID)?.form ?: null
