@@ -211,7 +211,6 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />

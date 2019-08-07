@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -4793,6 +4794,31 @@ AND EXISTS (
                 message(code: "propertyDefinition.${a.descr}.label", args:[]) + '|' + a.name,
                 message(code: "propertyDefinition.${b.descr}.label", args:[]) + '|' + b.name
         )}
+
+        result.language = LocaleContextHolder.getLocale().toString()
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def managePropertyDefinitions() {
+        def result = setResultGenerics()
+
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs << ["${it}": itResult]
+        }
+
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+        result.editable = false
+        result.propertyDefinitions = propDefs
+        result.attrMap = attrMap
+        result.usedPdList = usedPdList
+
+        result.language = LocaleContextHolder.getLocale().toString()
         result
     }
 
