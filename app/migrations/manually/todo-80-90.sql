@@ -1,4 +1,4 @@
-
+﻿
 -- 2019-08-01
 -- migrate refdataValues (category='YN') to boolean
 

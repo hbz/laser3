@@ -72,7 +72,7 @@ class Identifier {
           }
       }
       else {
-          namespace = new IdentifierNamespace(ns:ns, unique: false)
+          namespace = new IdentifierNamespace(ns:ns, isUnique: false, isHidden: false)
           if(namespace.save()) {
               result = new Identifier(ns:namespace, value:value)
               if(result.save())

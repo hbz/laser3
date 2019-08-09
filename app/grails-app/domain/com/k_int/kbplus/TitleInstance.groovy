@@ -181,7 +181,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static def findByIdentifier(candidate_identifiers) {
     def matched = []
     candidate_identifiers.each { i ->
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
+      def id = Identifier.findByNsAndValue(i.namespace, i.value)
       def io = IdentifierOccurrence.findByIdentifier(id)
       if ( ( io != null ) && ( io.ti != null ) ) {
         if ( matched.contains(io.ti) ) {

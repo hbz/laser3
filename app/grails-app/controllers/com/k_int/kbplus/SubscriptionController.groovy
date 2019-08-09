@@ -6,7 +6,6 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
-import de.laser.RefdataService
 import de.laser.controller.AbstractDebugController
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
@@ -673,6 +672,9 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("addEntitlements .. params: ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        result.preselectValues = params.preselectValues
+        result.preselectCoverageDates = params.preselectCoverageDates
+        result.uploadPriceInfo = params.uploadPriceInfo
         if (!result) {
             response.sendError(401); return
         }
@@ -730,51 +732,105 @@ class SubscriptionController extends AbstractDebugController {
 
             log.debug("Query ${basequery} ${qry_params}");
 
-            result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + basequery, qry_params).size()
             List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.executeQuery("select tipp ${basequery}", qry_params)
+            result.num_tipp_rows = tipps.size()
             result.tipps = tipps.drop(result.offset).take(result.max)
-            LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
-
+            Map identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
+            Map<String,Map> issueEntitlementOverwrite = [:]
+            result.issueEntitlementOverwrite = [:]
             if(params.kbartPreselect && !params.pagination) {
                 CommonsMultipartFile kbartFile = params.kbartPreselect
                 identifiers.filename = kbartFile.originalFilename
                 InputStream stream = kbartFile.getInputStream()
                 ArrayList<String> rows = stream.text.split('\n')
-                int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
+                Map<String,Integer> colMap = [publicationTitleCol:-1,zdbCol:-1, onlineIdentifierCol:-1, printIdentifierCol:-1, dateFirstInPrintCol:-1, dateFirstOnlineCol:-1,
+                startDateCol:-1, startVolumeCol:-1, startIssueCol:-1,
+                endDateCol:-1, endVolumeCol:-1, endIssueCol:-1,
+                accessStartDateCol:-1, accessEndDateCol:-1, coverageDepthCol:-1, coverageNotesCol:-1, embargoCol:-1,
+                listPriceCol:-1, listPriceCurrencyCol:-1, localPriceCol:-1, localPriceCurrencyCol:-1, priceDateCol:-1]
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                    switch(headerCol.toLowerCase()) {
-                        case "zdb_id": zdbCol = c
+                    switch(headerCol.toLowerCase().trim()) {
+                        case "zdb_id": colMap.zdbCol = c
                             break
-                        case "print_identifier": printIdentifierCol = c
+                        case "print_identifier": colMap.printIdentifierCol = c
                             break
-                        case "online_identifier": onlineIdentifierCol = c
+                        case "online_identifier": colMap.onlineIdentifierCol = c
+                            break
+                        case "publication_title": colMap.publicationTitleCol = c
+                            break
+                        case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
+                            break
+                        case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
+                            break
+                        case "date_first_issue_online": colMap.startDateCol = c
+                            break
+                        case "num_first_vol_online": colMap.startVolumeCol = c
+                            break
+                        case "num_first_issue_online": colMap.startIssueCol = c
+                            break
+                        case "date_last_issue_online": colMap.endDateCol = c
+                            break
+                        case "num_last_vol_online": colMap.endVolumeCol = c
+                            break
+                        case "num_last_issue_online": colMap.endIssueCol = c
+                            break
+                        case "access_start_date": colMap.accessStartDateCol = c
+                            break
+                        case "access_end_date": colMap.accessEndDateCol = c
+                            break
+                        case "embargo_info": colMap.embargoCol = c
+                            break
+                        case "coverage_depth": colMap.coverageDepthCol = c
+                            break
+                        case "notes": colMap.coverageNotesCol = c
+                            break
+                        case "listprice_value": colMap.listPriceCol = c
+                            break
+                        case "listprice_currency": colMap.listPriceCurrencyCol = c
+                            break
+                        case "localprice_value": colMap.localPriceCol = c
+                            break
+                        case "localprice_currency": colMap.localPriceCurrencyCol = c
+                            break
+                        case "price_date": colMap.priceDateCol = c
                             break
                     }
                 }
                 //after having read off the header row, pop the first row
                 rows.remove(0)
                 //now, assemble the identifiers available to highlight
-                rows.each { row ->
+                Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
+                eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
+                issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn')]
+                rows.eachWithIndex { row, int i ->
+                    log.debug("now processing entitlement ${i}")
+                    Map ieCandidate = [:]
                     ArrayList<String> cols = row.split('\t')
                     List idCandidates = []
-                    if(zdbCol >= 0 && cols[zdbCol]) {
-                        identifiers.zdbIds.add(cols[zdbCol])
-                        idCandidates.add([namespace:'zdb',value:cols[zdbCol]])
+                    String ieCandIdentifier
+                    if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                        identifiers.zdbIds.add(cols[colMap.zdbCol])
+                        idCandidates.add([namespace:namespaces.zdb,value:cols[colMap.zdbCol]])
+                        ieCandIdentifier = cols[colMap.zdbCol]
                     }
-                    if(onlineIdentifierCol >= 0 && cols[onlineIdentifierCol]) {
-                        identifiers.onlineIds.add(cols[onlineIdentifierCol])
-                        idCandidates.add([namespace:'eissn',value:cols[onlineIdentifierCol]])
-                        idCandidates.add([namespace:'isbn',value:cols[onlineIdentifierCol]])
+                    if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                        identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
+                        idCandidates.add([namespace:namespaces.eissn,value:cols[colMap.onlineIdentifierCol]])
+                        idCandidates.add([namespace:namespaces.isbn,value:cols[colMap.onlineIdentifierCol]])
+                        if(ieCandIdentifier == null)
+                            ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                     }
-                    if(printIdentifierCol >= 0 && cols[printIdentifierCol]) {
-                        identifiers.printIds.add(cols[printIdentifierCol])
-                        idCandidates.add([namespace:'issn',value:cols[printIdentifierCol]])
-                        idCandidates.add([namespace:'pisbn',value:cols[printIdentifierCol]])
+                    if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                        identifiers.printIds.add(cols[colMap.printIdentifierCol])
+                        idCandidates.add([namespace:namespaces.issn,value:cols[colMap.printIdentifierCol]])
+                        idCandidates.add([namespace:namespaces.pisbn,value:cols[colMap.printIdentifierCol]])
+                        if(ieCandIdentifier == null)
+                            ieCandIdentifier = cols[colMap.printIdentifierCol]
                     }
-                    if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
-                       ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
-                       ((printIdentifierCol >= 0 && cols[printIdentifierCol].trim().isEmpty()) || printIdentifierCol < 0)) {
+                    if(((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                       ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                       ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
                         identifiers.unidentified.add('"'+cols[0]+'"')
                     }
                     else {
@@ -785,17 +841,74 @@ class SubscriptionController extends AbstractDebugController {
                         def tiObj = TitleInstance.findByIdentifier(idCandidates)
                         if(tiObj) {
                             //is title already added?
-                            List issueEntitlement = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipp and ie.subscription = :sub',[tipp:tiObj,sub:result.subscriptionInstance])
+                            List issueEntitlement = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.title in :tipp and ie.subscription = :sub',[tipp:tiObj,sub:result.subscriptionInstance])
                             if(issueEntitlement) {
-                                errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
+                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
                             }
                             /*else if(!issueEntitlement) {
                                 errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
                             }*/
                         }
                         else if(!tiObj) {
-                            errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
+                            errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
+                    }
+                    colMap.each { String colName, int colNo ->
+                        if(colNo > -1) {
+                            String cellEntry = cols[colNo].trim()
+                            if(result.preselectCoverageDates) {
+                                switch(colName) {
+                                    case "dateFirstInPrintCol": ieCandidate.dateFirstInPrint = cellEntry
+                                        break
+                                    case "dateFirstOnlineCol": ieCandidate.dateFirstOnline = cellEntry
+                                        break
+                                    case "startDateCol": ieCandidate.startDate = cellEntry
+                                        break
+                                    case "startVolumeCol": ieCandidate.startVolume = cellEntry
+                                        break
+                                    case "startIssueCol": ieCandidate.startIssue = cellEntry
+                                        break
+                                    case "endDateCol": ieCandidate.endDate = cellEntry
+                                        break
+                                    case "endVolumeCol": ieCandidate.endVolume = cellEntry
+                                        break
+                                    case "endIssueCol": ieCandidate.endIssue = cellEntry
+                                        break
+                                    case "accessStartDateCol": ieCandidate.accessStartDate = cellEntry
+                                        break
+                                    case "accessEndDateCol": ieCandidate.accessEndDate = cellEntry
+                                        break
+                                    case "embargoCol": ieCandidate.embargo = cellEntry
+                                        break
+                                    case "coverageDepthCol": ieCandidate.coverageDepth = cellEntry
+                                        break
+                                    case "coverageNotesCol": ieCandidate.coverageNote = cellEntry
+                                        break
+                                }
+                            }
+                            if(result.uploadPriceInfo) {
+                                try {
+                                    switch(colName) {
+                                        case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
+                                            break
+                                        case "listPriceCurrencyCol": ieCandidate.listPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                            break
+                                        case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                            break
+                                        case "localPriceCurrencyCol": ieCandidate.localPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                            break
+                                        case "priceDateCol": ieCandidate.priceDate = cellEntry
+                                            break
+                                    }
+                                }
+                                catch (NumberFormatException e) {
+                                    log.error("Unparseable number ${cellEntry}")
+                                }
+                            }
+                        }
+                    }
+                    if(ieCandIdentifier) {
+                        issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
                     }
                 }
                 result.identifiers = identifiers
@@ -817,14 +930,18 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
                         checked = "checked"
+                        result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[tipp.title.getIdentifierValue('zdb')]
                     }
                     else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
                         checked = "checked"
+                        result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[electronicSerial]
                     }
                     else if(result.identifiers?.printIds?.indexOf(serial) > -1) {
                         checked = "checked"
+                        result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[serial]
                     }
-                    result.checked[tipp.gokbId] = checked
+                    if(result.preselectValues)
+                        result.checked[tipp.gokbId] = checked
                 }
                 if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                     String unidentifiedTitles = result.identifiers.unidentified.join(", ")
@@ -839,6 +956,7 @@ class SubscriptionController extends AbstractDebugController {
                     errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
                 }
                 checkedCache.put('checked',result.checked)
+                checkedCache.put('issueEntitlementCandidates',issueEntitlementOverwrite)
             }
             else {
                 result.checked = checkedCache.get('checked')
@@ -849,6 +967,15 @@ class SubscriptionController extends AbstractDebugController {
         }
         if(errorList)
             flash.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>"+errorList.join("\n")+"</pre>"
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    Map renewEntitlements() {
+        params.id = params.targetSubscriptionId
+        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId).instanceOf.id
+        def result = loadDataFor_PackagesEntitlements()
+        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
     }
 
@@ -2054,8 +2181,8 @@ class SubscriptionController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         log.debug("addEntitlements....");
 
@@ -2070,14 +2197,15 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
 
         if (result.subscriptionInstance) {
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
-                EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
                 if(cache.get('checked')) {
                     Map checked = cache.get('checked')
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
-                                if(subscriptionService.addEntitlement(result.subscriptionInstance,k))
+                                if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k)))
                                     log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
                             }
                             catch (EntitlementCreationException e) {
@@ -2092,7 +2220,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             else if(params.singleTitle) {
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle))
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(k)))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
                 }
                 catch(EntitlementCreationException e) {
@@ -2106,8 +2234,8 @@ class SubscriptionController extends AbstractDebugController {
         redirect action: 'index', id: result.subscriptionInstance?.id
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
@@ -2115,6 +2243,69 @@ class SubscriptionController extends AbstractDebugController {
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processRemoveEntitlements() {
+        log.debug("removeEntitlements....");
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        if (result.subscriptionInstance && params.singleTitle) {
+            if(subscriptionService.deleteEntitlement(result.subscriptionInstance,params.singleTitle))
+                log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
+        } else {
+            log.error("Unable to locate subscription instance");
+        }
+
+        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance.id, packageId: params.packageId]
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processRenewEntitlements() {
+        log.debug("renewEntitlements ...")
+        params.id = Long.parseLong(params.id)
+        params.packageId = Long.parseLong(params.packageId)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        List tippsToAdd = params."tippsToAdd".split(",")
+        List tippsToDelete = params."tippsToDelete".split(",")
+
+        if(result.subscriptionInstance) {
+            tippsToAdd.each { tipp ->
+                try {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null))
+                        log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
+                }
+                catch (EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+            }
+            tippsToDelete.each { tipp ->
+                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
+                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+            }
+            if(params.process == "finalise") {
+                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
+                sp.finishDate = new Date()
+                if(!sp.save()) {
+                    flash.error = sp.getErrors()
+                }
+                else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
+            }
+        }
+        else {
+            log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'index', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

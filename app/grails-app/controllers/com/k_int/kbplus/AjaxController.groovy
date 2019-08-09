@@ -794,15 +794,28 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
-      EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${params.sub}")
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-          checked.eachWithIndex { e, int idx ->
+          List tipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = (select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub)',[sub:Long.parseLong(params.sub)])
+          tipps.each { idx ->
               checked[idx] = params.checked == 'true' ? 'checked' : null
           }
       }
       else checked[params.index] = params.checked == 'true' ? 'checked' : null
       cache.put('checked',checked)
+  }
+
+  @Secured(['ROLE_USER'])
+  def updateIssueEntitlementOverwrite() {
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      def ieCandidate = issueEntitlementCandidates.get(params.key)
+      if(!ieCandidate)
+          ieCandidate = [:]
+      ieCandidate[params.prop] = params.propValue
+      issueEntitlementCandidates.put(params.key,ieCandidate)
+      cache.put('issueEntitlementCandidates',issueEntitlementCandidates)
   }
 
   /**

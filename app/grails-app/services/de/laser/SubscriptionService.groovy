@@ -622,7 +622,7 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -631,17 +631,17 @@ class SubscriptionService {
             def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: tipp.accessStartDate,
-                    accessEndDate: tipp.accessEndDate,
-                    startDate: tipp.startDate,
-                    startVolume: tipp.startVolume,
-                    startIssue: tipp.startIssue,
-                    endDate: tipp.endDate,
-                    endVolume: tipp.endVolume,
-                    endIssue: tipp.endIssue,
-                    embargo: tipp.embargo,
-                    coverageDepth: tipp.coverageDepth,
-                    coverageNote: tipp.coverageNote,
+                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? issueEntitlementOverwrite.accessStartDate : tipp.accessStartDate,
+                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? issueEntitlementOverwrite.accessEndDate : tipp.accessEndDate,
+                    startDate: issueEntitlementOverwrite?.startDate ? issueEntitlementOverwrite.startDate : tipp.startDate,
+                    startVolume: issueEntitlementOverwrite?.startVolume ? issueEntitlementOverwrite.startVolume : tipp.startVolume,
+                    startIssue: issueEntitlementOverwrite?.startIssue ? issueEntitlementOverwrite.startIssue : tipp.startIssue,
+                    endDate: issueEntitlementOverwrite?.endDate ? issueEntitlementOverwrite.endDate : tipp.endDate,
+                    endVolume: issueEntitlementOverwrite?.endVolume ? issueEntitlementOverwrite.endVolume : tipp.endVolume,
+                    endIssue: issueEntitlementOverwrite?.endIssue ? issueEntitlementOverwrite.endIssue : tipp.endIssue,
+                    embargo: issueEntitlementOverwrite?.embargo ? issueEntitlementOverwrite.embargo : tipp.embargo,
+                    coverageDepth: issueEntitlementOverwrite?.coverageDepth ? issueEntitlementOverwrite.coverageDepth : tipp.coverageDepth,
+                    coverageNote: issueEntitlementOverwrite?.coverageNote ? issueEntitlementOverwrite.coverageNote : tipp.coverageNote,
                     ieReason: 'Manually Added by User')
             if (new_ie.save()) {
                 return true
@@ -649,6 +649,18 @@ class SubscriptionService {
                 throw new EntitlementCreationException(new_ie.errors)
                 return false
             }
+        }
+    }
+
+    boolean deleteEntitlement(sub, gokbId) {
+        IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
+        if(ie == null)
+            return false
+        else {
+            ie.status = TIPP_STATUS_DELETED
+            if(ie.save())
+                return true
+            else return false
         }
     }
 

@@ -75,14 +75,14 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label for="filter">${message(code: 'default.filter.label', default: 'Filter')}</label>
+                            <label for="filter">${message(code: 'default.filter.label')}</label>
                             <input name="filter" id="filter" value="${params.filter}"/>
                         </div>
 
                         <div class="field">
-                            <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                            <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                             <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
-                                <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
+                                <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
                                 <g:each in="${subscriptionInstance.packages}" var="sp">
                                     <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
                                 </g:each>
