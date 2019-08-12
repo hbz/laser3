@@ -40,8 +40,6 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
         ]"/>
 
-        <g:if test="${visiblePersons}">
-
             <semui:filter>
                 <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
                     <div class="four fields">
@@ -78,6 +76,5 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                             max="${max}"
                             total="${num_visiblePersons}"/>
 
-        </g:if>
     </body>
 </html>
