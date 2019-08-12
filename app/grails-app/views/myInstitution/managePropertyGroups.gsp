@@ -10,10 +10,12 @@
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
+            <semui:crumb message="menu.institutions.manage_props" class="active"/>
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.manage_prop_groups')}</h1>
+
+        <g:render template="nav" />
 
         <semui:messages data="${flash}" />
 
@@ -66,7 +68,7 @@
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
                     <td>
-                        <semui:xEditableRefData owner="${pdGroup}" field="visible" config="YN"/>
+                        <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
                     <td class="x">
                         <g:if test="${editable}">

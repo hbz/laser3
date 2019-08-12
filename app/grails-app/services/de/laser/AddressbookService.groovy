@@ -98,16 +98,16 @@ class AddressbookService {
         }
 
         if (params.prs) {
-            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
-            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
+            qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
+            qParams << [prsName: "${params.prs}"]
         }
         if (params.org && params.org instanceof Org) {
             qParts << "pr.org = :org"
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "(pr.org.name like :name or pr.org.shortname like :name or pr.org.sortname like :name)"
-            qParams << [name: "%${params.org}%"]
+            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.shortname, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+            qParams << [name: "${params.org}"]
         }
 
         def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")

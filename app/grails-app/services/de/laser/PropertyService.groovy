@@ -1,10 +1,18 @@
 package de.laser
 
-
+import com.k_int.kbplus.License
+import com.k_int.kbplus.LicenseCustomProperty
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SubscriptionCustomProperty
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
+import org.grails.datastore.mapping.model.types.Custom
 
 class PropertyService {
 
@@ -61,7 +69,7 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
-                            base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
+                            base_qry += " and genfunc_filter_matcher(gProp.stringValue, :prop) = true ) "
                             base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
                         }
                         break
@@ -85,7 +93,7 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.urlValue = null ) "
                         } else {
-                            base_qry += " and gProp.urlValue = :prop ) "
+                            base_qry += " and genfunc_filter_matcher(gProp.urlValue, :prop) = true ) "
                             base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
                         }
                         break
@@ -169,6 +177,39 @@ class PropertyService {
             count++
         }
         count
+    }
+
+    List<CustomProperty> getOrphanedProperties(Object obj,
+                                               List<PropertyDefinitionGroupBinding> globals,
+                                               List<PropertyDefinitionGroupBinding> locals,
+                                               List<PropertyDefinitionGroupBinding> members) {
+
+        List<CustomProperty> result = []
+
+        List orphanedIds = obj.customProperties.collect{ it.id }
+
+        globals.each{ gl -> orphanedIds.removeAll(gl.getCurrentProperties(obj).id) }
+        locals.each{  lc -> orphanedIds.removeAll(lc[0].getCurrentProperties(obj).id) }
+        members.each{  m -> orphanedIds.removeAll(m[0].getCurrentProperties(obj).id) }
+
+        switch (obj.class.simpleName) {
+
+            case License.class.simpleName:
+                result = LicenseCustomProperty.findAllByIdInList(orphanedIds)
+                break
+            case Subscription.class.simpleName:
+                result = SubscriptionCustomProperty.findAllByIdInList(orphanedIds)
+                break
+            case Org.class.simpleName:
+                result = OrgCustomProperty.findAllByIdInList(orphanedIds)
+                break
+        }
+
+        log.debug('object             : ' + obj.class.simpleName + ' - ' + obj)
+        log.debug('orphanedIds        : ' + orphanedIds)
+        log.debug('orphaned Properties: ' + result)
+
+        result
     }
 }
 

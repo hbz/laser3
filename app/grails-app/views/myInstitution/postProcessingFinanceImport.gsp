@@ -13,14 +13,13 @@
         <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.post.title')}</title>
     </head>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-        <semui:crumb message="menu.institutions.financeImport" class="active"/>
-    </semui:breadcrumbs>
-
-    <semui:messages data="${flash}" />
-
     <body>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <semui:crumb message="menu.institutions.financeImport" class="active"/>
+        </semui:breadcrumbs>
+
+        <semui:messages data="${flash}" />
         <h2>${message(code:'myinst.financeImport.post.header2')}</h2>
         <h3>${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="addCostItems" controller="finance" method="post">
@@ -74,18 +73,10 @@
                                     <li><g:message code="myinst.financeImport.dateTo"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.endDate}"/></li>
                                     <li>Fehler:
                                         <ul>
-                                            <%
-                                                boolean withCriticalErrors = false
-                                                List criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError',
-                                                                       'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
-                                                                       'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                                                       'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']
-                                            %>
                                             <g:each in="${errors}" var="error">
-                                                <%
-                                                    if(error.getKey() in criticalErrors)
-                                                        withCriticalErrors = true
-                                                %>
+                                                <g:if test="${error.getKey() in criticalErrors}">
+                                                    <g:set var="withCriticalErrors" value="true"/>
+                                                </g:if>
                                                 <li>${message(code:"myinst.financeImport.post.error.${error.getKey()}",args:[error.getValue()])}</li>
                                             </g:each>
                                         </ul>

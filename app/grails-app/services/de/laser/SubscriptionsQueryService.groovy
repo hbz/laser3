@@ -118,18 +118,19 @@ class SubscriptionsQueryService {
 
         if (params.q?.length() > 0) {
             base_qry += (
-                    " and ( lower(s.name) like :name_filter " // filter by subscription
-                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
-                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                            +  " ) "
+                    " and ( genfunc_filter_matcher(s.name, :name_filter) = true " // filter by subscription
+                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
+                            + " or exists ( select lic from License as lic where s.owner = lic and genfunc_filter_matcher(lic.reference, :name_filter) = true ) " // filter by license
+                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( "
+                                + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                                + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                                + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                            + " ) ) " // filter by Anbieter, Konsortium, Agency
+                        +  " ) "
             )
-
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%")
+            qry_params.put('name_filter', "${params.q}")
             filterSet = true
         }
-
         // eval property filter
 
         if (params.filterPropDef) {

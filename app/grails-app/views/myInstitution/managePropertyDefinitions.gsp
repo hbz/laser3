@@ -2,30 +2,37 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="semanticUI">
-		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
-	</head>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.prop_defs')}</title>
+    </head>
+    <body>
 
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.manageI10n" class="active"/>
-		</semui:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <semui:crumb message="menu.institutions.manage_props" class="active" />
+    </semui:breadcrumbs>
 
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.prop_defs')}<semui:headerIcon /></h1>
 
-        <h3 class="ui header">${message(code:'license.properties')}</h3>
+    <g:render template="nav" />
 
-		<semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
-            <div class="content ui form">
-                <div class="fields">
-                    <div class="field">
-                        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-                    </div>
+    <g:if test="${false}">
+        <div class="content ui form">
+            <div class="fields">
+                <div class="field">
+                    <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
                 </div>
             </div>
-
+        </div>
+    </g:if>
+    <g:else>
+        <br />
+        <br />
+    </g:else>
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
@@ -38,12 +45,19 @@
                         <tr>
                             <th></th>
                             <th>${message(code:'propertyDefinition.key.label')}</th>
-                            <th>DE</th>
-                            <th>EN</th>
-                            <th>Erklärung</th>
-                            <th>Explanation</th>
-                            <th></th>
-                            <th class="la-action-info">${message(code:'default.actions')}</th>
+
+                            <g:if test="${language?.toLowerCase() in ['de_de', 'de']}">
+                                <g:set var="value_SUBSTITUTE" value="valueDe" />
+                                <th>${message(code:'propertyDefinition.name.label')}</th>
+                                <th>${message(code:'propertyDefinition.expl.label')}</th>
+                            </g:if>
+                            <g:else>
+                                <g:set var="value_SUBSTITUTE" value="valueEn" />
+                                <th>${message(code:'propertyDefinition.name.label')}</th>
+                                <th>${message(code:'propertyDefinition.expl.label')}</th>
+                            </g:else>
+                            <th>${message(code:'propertyDefinition.type.label')}</th>
+                            <%--<th class="la-action-info">${message(code:'default.actions')}</th>--%>
                         </tr>
                         </thead>
                         <tbody>
@@ -53,23 +67,23 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
+                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span class="la-popup-tooltip la-delay" data-position="top left" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="ui icon orange cube"></i>
                                             </span>
                                         </g:if>
@@ -84,52 +98,39 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                            <semui:xEditable owner="${pdI10nName}" field="${value_SUBSTITUTE}" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nName?.valueDe}
+                                            ${pdI10nName?."${value_SUBSTITUTE}"}
                                         </g:else>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                            <semui:xEditable owner="${pdI10nExpl}" field="${value_SUBSTITUTE}" type="textarea" />
                                         </g:if>
                                         <g:else>
-                                            ${pdI10nName?.valueEn}
+                                            ${pdI10nExpl?."${value_SUBSTITUTE}"}
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
+                                        ${PropertyDefinition.getLocalizedValue(pd?.type)}
+                                        <g:if test="${pd?.type == 'class com.k_int.kbplus.RefdataValue'}">
+                                            <g:set var="refdataValues" value="${[]}"/>
+                                            <g:each in="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues(pd.refdataCategory)}"
+                                                    var="refdataValue">
+                                                <g:set var="refdataValues"
+                                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                                            </g:each>
+                                            <br>
+                                            (${refdataValues.join('/')})
                                         </g:if>
-                                        <g:else>
-                                            ${pdI10nExpl?.valueDe}
-                                        </g:else>
                                     </td>
-                                    <td>
-                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
-                                        </g:if>
-                                        <g:else>
-                                            ${pdI10nExpl?.valueEn}
-                                        </g:else>
-                                    </td>
-                                    <td>
-                                        <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
-                                        <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                            <span data-position="top right" data-tooltip="${pd.refdataCategory}">
-                                                <small>${pd.type?.split('\\.').last()}</small>
-                                            </span>
-                                        </g:if>
-                                        <g:else>
-                                            <small>${pd.type?.split('\\.').last()}</small>
-                                        </g:else>
-                                    </td>
-                                    <td class="x">
+                                    <%--<td class="x">
 
+                                        <g:if test="${false}">
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                     <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
@@ -146,7 +147,8 @@
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>
-                                    </td>
+                                        </g:if>
+                                    </td>--%>
 
                                 </tr>
                             </g:each>
@@ -157,7 +159,7 @@
 			</g:each>
         </div>
 
-
+        <g:if test="${false}">
         <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" editmodal="editmodal">
             <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
                 <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
@@ -317,6 +319,6 @@
 			});
 
 		</g:javascript>
-
+        </g:if>
 	</body>
 </html>

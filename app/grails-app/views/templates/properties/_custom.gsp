@@ -12,7 +12,7 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${ownobj.customProperties}">
+    <g:if test="${orphanedProperties}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
@@ -35,7 +35,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.customProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+        <g:each in="${orphanedProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-js-dont-hide-this-card">
@@ -109,7 +109,13 @@
                                     <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      params='[propClass: prop.getClass(),
+                                                               ownerId: "${ownobj.id}",
+                                                               ownerClass: "${ownobj.class}",
+                                                               custom_props_div: "${custom_props_div}",
+                                                               editable: "${editable}",
+                                                               showConsortiaFunctions: true
+                                                      ]'
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
@@ -127,7 +133,13 @@
 
                                     <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax" action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      params='[propClass: prop.getClass(),
+                                                               ownerId: "${ownobj.id}",
+                                                               ownerClass: "${ownobj.class}",
+                                                               custom_props_div: "${custom_props_div}",
+                                                               editable: "${editable}",
+                                                               showConsortiaFunctions: true
+                                                      ]'
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.on.tooltip')}"
                                                       data-confirm-term-what="property"
@@ -150,7 +162,13 @@
                                     <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="deleteCustomProperty"
-                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
+                                                      params='[propClass: prop.getClass(),
+                                                               ownerId: "${ownobj.id}",
+                                                               ownerClass: "${ownobj.class}",
+                                                               custom_props_div: "${custom_props_div}",
+                                                               editable: "${editable}",
+                                                               showConsortiaFunctions: "${showConsortiaFunctions}"
+                                                      ]'
                                                       id="${prop.id}"
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
@@ -200,7 +218,6 @@
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="showCollectiveFunctions" value="${showCollectiveFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>

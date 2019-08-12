@@ -1,4 +1,4 @@
-
+﻿
 -- 2019-08-01
 -- migrate refdataValues (category='YN') to boolean
 
@@ -37,6 +37,25 @@ ALTER TABLE refdata_value RENAME rdv_hard_data TO rdv_is_hard_data;
 
 ALTER TABLE identifier_namespace RENAME idns_hide TO idns_is_hidden;
 ALTER TABLE identifier_namespace RENAME idns_unique TO idns_is_unique;
+
+
+-- 2019-08-06
+-- migrate refdataValues (category='YN') to boolean
+
+ALTER TABLE property_definition_group_binding ALTER COLUMN pbg_visible_rv_fk DROP DEFAULT;
+ALTER TABLE property_definition_group_binding DROP CONSTRAINT fk3d279603de1d7a3a;
+ALTER TABLE property_definition_group_binding ALTER pbg_visible_rv_fk TYPE bool USING CASE WHEN pbg_visible_rv_fk=1 THEN TRUE ELSE FALSE END;
+ALTER TABLE property_definition_group_binding RENAME pbg_visible_rv_fk TO pbg_is_visible;
+
+ALTER TABLE property_definition_group_binding ALTER COLUMN pbg_is_viewable_rv_fk DROP DEFAULT;
+ALTER TABLE property_definition_group_binding DROP CONSTRAINT fk3d27960376a2fe3c;
+ALTER TABLE property_definition_group_binding ALTER pbg_is_viewable_rv_fk TYPE bool USING CASE WHEN pbg_is_viewable_rv_fk=1 THEN TRUE ELSE FALSE END;
+ALTER TABLE property_definition_group_binding RENAME pbg_is_viewable_rv_fk TO pbg_is_visible_for_cons_member;
+
+ALTER TABLE property_definition_group ALTER COLUMN pdg_visible_rv_fk DROP DEFAULT;
+ALTER TABLE property_definition_group DROP CONSTRAINT fked224dbda14135f8;
+ALTER TABLE property_definition_group ALTER pdg_visible_rv_fk TYPE bool USING CASE WHEN pdg_visible_rv_fk=1 THEN TRUE ELSE FALSE END;
+ALTER TABLE property_definition_group RENAME pdg_visible_rv_fk TO pdg_is_visible;
 
 
 

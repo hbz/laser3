@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.TemplateSupport; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.TemplateSupport; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
@@ -33,7 +33,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${params.filter || params.asAt}">
                     <g:link  class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok"
                             action="index"
                             id="${params.id}"
@@ -74,6 +74,23 @@
 
         <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${subscriptionInstance.instanceOf}">
+                <g:if test="${params.pkgfilter}">
+                    <g:set var="pkg" value="${SubscriptionPackage.get(params.pkgfilter)}"/>
+                    <g:if test="${!pkg.finishDate}">
+                        <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetSubscriptionId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
+                    </g:if>
+                    <g:else>
+                        <semui:actionsDropdownItemDisabled message="subscription.details.renewEntitlements.label" tooltip="${message(code:'subscription.details.renewEntitlements.packageRenewalAlreadySubmitted')}"/>
+                    </g:else>
+                </g:if>
+                <g:else>
+                    <semui:actionsDropdownItemDisabled message="subscription.details.renewEntitlements.label" tooltip="${message(code:'subscription.details.renewEntitlements.packageMissing')}"/>
+                </g:else>
+            </g:if>
+        </sec:ifAnyGranted>
 
         <g:if test="${(org.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id]) && !subscriptionInstance.instanceOf}">
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />

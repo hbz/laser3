@@ -36,11 +36,9 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         </g:if>
 
         <g:render template="/person/formModal" model="['org': institution,
-                                                       'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
+                                                       'isPublic': false,
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
         ]"/>
-
-        <g:if test="${visiblePersons}">
 
             <semui:filter>
                 <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
@@ -78,6 +76,5 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
                             max="${max}"
                             total="${num_visiblePersons}"/>
 
-        </g:if>
     </body>
 </html>

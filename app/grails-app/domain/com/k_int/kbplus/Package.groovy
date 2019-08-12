@@ -213,16 +213,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          add_entitlements,slaved) {
     // Create the header
     log.debug("Package: createSubscription called")
-    def isSlaved = slaved == "Yes" || slaved == true ? "Yes" : "No"
     def result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
                                    identifier:subidentifier,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
-                                   isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                                   isPublic: false,
                                    type: RefdataValue.findByValue(subtype),
-                                   isSlaved: RefdataValue.getByValueAndCategory(isSlaved,'YN'))
+                                   isSlaved: (slaved == "Yes" || slaved == true))
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {

@@ -1261,7 +1261,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             log.debug("Reset sync job haveUpTo");
             sync_job.haveUpTo = olddate
-            sync_job.save()
+            try {
+                sync_job.save()
+            }
+            catch (DuplicateKeyException dke) {
+                GlobalRecordSource merged = sync_job.merge()
+                merged.save()
+            }
         }
         finally {
             log.debug("internalOAISync completed for job ${sync_job_id}");

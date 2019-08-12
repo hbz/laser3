@@ -9,10 +9,10 @@
                 <tr>
                     <th class="la-js-dont-hide-this-card">Merkmalsgruppe</th>
                     <th></th>
-                    <th>Anzeigen<br />(Voreinstellung)</th>
-                    <th>Anzeigen<br />(Überschreiben)</th>
+                    <th>Voreinstellung</th>
+                    <th>Für dieses Objekt überschreiben</th>
                     <g:if test="${showConsortiaFunctions}">
-                        <th>Auch für Teilnehmer<br />anzeigen</th>
+                        <th>Für Teilnehmer anzeigen</th>
                     </g:if>
                     <th class="la-action-info">${message(code:'default.actions')}</th>
                 </tr>
@@ -31,7 +31,7 @@
                             ${propDefGroup.tenant ? '' : ' (global)'}
                         </td>
                         <td>
-                            ${propDefGroup.visible ? propDefGroup.visible.getI10n('value') : 'Nein'}
+                            ${propDefGroup.isVisible ? 'Ja' : 'Nein'}
                         </td>
                         <td>
                             <%
@@ -50,24 +50,24 @@
                                 }
                             %>
                             <g:if test="${editable && binding}">
-                                <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
+                                <semui:xEditableBoolean owner="${binding}" field="isVisible" />
                             </g:if>
                         </td>
                         <g:if test="${showConsortiaFunctions}">
                             <td>
                                 <g:if test="${editable && binding}">
-                                    <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
+                                    <semui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
                                 </g:if>
                             </td>
                         </g:if>
                         <td class="x la-js-editmode-container">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
-                                    <g:if test="${propDefGroup.visible?.value=='Yes'}">
+                                    <g:if test="${propDefGroup.isVisible}">
                                         <g:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
-                                                               visible:"No",
+                                                               isVisible:"No",
                                                                editable:"${editable}",
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                 ]'
@@ -81,7 +81,7 @@
                                         <g:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
-                                                               visible:"Yes",
+                                                               isVisible:"Yes",
                                                                editable:"${editable}",
                                                                showConsortiaFunctions:"${showConsortiaFunctions}"
                                                                ]'

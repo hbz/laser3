@@ -1,5 +1,8 @@
 package de.laser
 
+import com.k_int.kbplus.IssueEntitlement
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
@@ -66,6 +69,25 @@ class ComparisonService {
         else propertyList.add(prop)
         propertyMap.put(cmpObject,propertyList)
         result.put(prop.type.class.name+":"+prop.type.id,propertyMap)
+      }
+      result
+    }
+
+  /**
+   * Builds from a given {@link List} a {@link Map} of {@link TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
+   *
+   * @param lists - the unified list of {@link IssueEntitlement}s
+   * @return the {@link Map} containing each {@link TitleInstancePackagePlatform} with the {@link Subscription}s containing the entitlements
+   */
+    Map buildTIPPComparisonMap(List<IssueEntitlement> lists) {
+      Map<TitleInstancePackagePlatform, Set<Long>> result = [:]
+      lists.each { ie ->
+        Set<Subscription> subscriptionsContaining = result.get(ie.tipp)
+        if(!subscriptionsContaining) {
+          subscriptionsContaining = []
+        }
+        subscriptionsContaining << ie.subscription.id
+        result[ie.tipp] = subscriptionsContaining
       }
       result
     }

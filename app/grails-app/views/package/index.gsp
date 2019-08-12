@@ -41,10 +41,10 @@
 
     <div class="content">
         <div class="header">
-            ${message(code: 'message.attantion')}
+            ${message(code: 'message.attention')}
         </div>
 
-        <p>${message(code: 'message.attantion.needTime')}</p>
+        <p>${message(code: 'message.attention.needTime')}</p>
     </div>
 </div>
 
