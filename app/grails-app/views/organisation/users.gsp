@@ -150,13 +150,7 @@
 
                 <g:if test="${editable}">
                     <td class="x">
-                        <%
-                            boolean checkEditable = Org.executeQuery(
-                                    'SELECT DISTINCT uo.org from UserOrg uo where uo.user = :user',
-                                    [user: uo.user]
-                            ).size() == 1
-                        %>
-                        <g:if test="${checkEditable}">
+                        <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(uo.user, contextService.getUser())}">
                             <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
                                 <i class="icon write"></i>
                             </g:link>

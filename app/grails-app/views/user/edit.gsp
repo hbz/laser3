@@ -104,14 +104,24 @@
 
     <g:if test="${editable}">
         <div class="ui segment form">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserEdit: true]" />
+            <g:set var="orgLabel" value="Organisation" />
+
+            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
         </div>
 
-        <g:if test="${availableComboOrgs}">
+        <g:if test="${availableComboDeptOrgs}">
             <div class="ui segment form">
-                <g:set var="orgLabel" value="Für Konsorten, bzw. Einrichtung" />
+                <g:set var="orgLabel" value="Institute" />
 
-                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+            </div>
+        </g:if>
+
+        <g:if test="${availableComboConsOrgs}">
+            <div class="ui segment form">
+                <g:set var="orgLabel" value="Konsorten" />
+
+                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
             </div>
         </g:if>
     </g:if>
