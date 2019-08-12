@@ -4,10 +4,13 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -16,12 +19,13 @@ import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
     def contextService
-    def taskService
+    def accessService
     def subscriptionsQueryService
     def docstoreService
     def messageSource
+    def escapeService
+    def refdataService
     def locale
-    def accessService
 
     @javax.annotation.PostConstruct
     void init() {
@@ -619,7 +623,7 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -628,25 +632,333 @@ class SubscriptionService {
             def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: tipp.accessStartDate,
-                    accessEndDate: tipp.accessEndDate,
-                    startDate: tipp.startDate,
-                    startVolume: tipp.startVolume,
-                    startIssue: tipp.startIssue,
-                    endDate: tipp.endDate,
-                    endVolume: tipp.endVolume,
-                    endIssue: tipp.endIssue,
-                    embargo: tipp.embargo,
-                    coverageDepth: tipp.coverageDepth,
-                    coverageNote: tipp.coverageNote,
+                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
+                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
+                    startDate: issueEntitlementOverwrite?.startDate ? escapeService.parseDate(issueEntitlementOverwrite.startDate) : tipp.startDate,
+                    startVolume: issueEntitlementOverwrite?.startVolume ? issueEntitlementOverwrite.startVolume : tipp.startVolume,
+                    startIssue: issueEntitlementOverwrite?.startIssue ? issueEntitlementOverwrite.startIssue : tipp.startIssue,
+                    endDate: issueEntitlementOverwrite?.endDate ? escapeService.parseDate(issueEntitlementOverwrite.endDate) : tipp.endDate,
+                    endVolume: issueEntitlementOverwrite?.endVolume ? issueEntitlementOverwrite.endVolume : tipp.endVolume,
+                    endIssue: issueEntitlementOverwrite?.endIssue ? issueEntitlementOverwrite.endIssue : tipp.endIssue,
+                    embargo: issueEntitlementOverwrite?.embargo ? issueEntitlementOverwrite.embargo : tipp.embargo,
+                    coverageDepth: issueEntitlementOverwrite?.coverageDepth ? issueEntitlementOverwrite.coverageDepth : tipp.coverageDepth,
+                    coverageNote: issueEntitlementOverwrite?.coverageNote ? issueEntitlementOverwrite.coverageNote : tipp.coverageNote,
                     ieReason: 'Manually Added by User')
             if (new_ie.save()) {
-                return true
+                if(withPriceData) {
+                    PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
+                            listPrice: issueEntitlementOverwrite.listPrice,
+                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listPriceCurrency,'Currency'),
+                            localPrice: issueEntitlementOverwrite.localPrice,
+                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localPriceCurrency,'Currency'),
+                            issueEntitlement: new_ie
+                    )
+                    if(pi.save())
+                        return true
+                    else {
+                        throw new EntitlementCreationException(pi.errors)
+                        return false
+                    }
+                }
+                else return true
             } else {
                 throw new EntitlementCreationException(new_ie.errors)
                 return false
             }
         }
+    }
+
+    boolean deleteEntitlement(sub, gokbId) {
+        IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
+        if(ie == null)
+            return false
+        else {
+            ie.status = TIPP_STATUS_DELETED
+            if(ie.save())
+                return true
+            else return false
+        }
+    }
+
+    Map subscriptionImport(CommonsMultipartFile tsvFile) {
+        Org contextOrg = contextService.org
+        RefdataValue comboType
+        String[] parentSubType
+        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            comboType = COMBO_TYPE_CONSORTIUM
+            parentSubType = [SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')]
+        }
+        else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+            comboType = COMBO_TYPE_DEPARTMENT
+            parentSubType = [SUBSCRIPTION_TYPE_COLLECTIVE.getI10n('value')]
+        }
+        Map colMap = [:]
+        Map<String, Map<String, Integer>> propMap = [:]
+        Map candidates = [:]
+        InputStream fileContent = tsvFile.getInputStream()
+        List<String> rows = fileContent.text.split('\n')
+        List<String> ignoredColHeads = [], multiplePropDefs = []
+        rows[0].split('\t').eachWithIndex { String s, int c ->
+            String headerCol = s.trim()
+            //important: when processing column headers, grab those which are reserved; default case: check if it is a name of a property definition; if there is no result as well, reject.
+            switch(headerCol.toLowerCase()) {
+                case "name": colMap.name = c
+                    break
+                case "member":
+                case "teilnehmer": colMap.member = c
+                    break
+                case "vertrag":
+                case "license": colMap.owner = c
+                    break
+                case "elternlizenz":
+                case "konsortiallizenz":
+                case "kollektivlizenz":
+                case "parent subscription":
+                case "consortial subscription":
+                case "collective subscription": colMap.instanceOf = c
+                    break
+                case "status": colMap.status = c
+                    break
+                case "startdatum":
+                case "start date": colMap.startDate = c
+                    break
+                case "enddatum":
+                case "end date": colMap.endDate = c
+                    break
+                case "kündigungsdatum":
+                case "cancellation date":
+                case "manual cancellation date": colMap.manualCancellationDate = c
+                    break
+                case "lizenztyp":
+                case "subscription type":
+                case "type": colMap.type = c
+                    break
+                case "lizenzform":
+                case "subscription form":
+                case "form": colMap.form = c
+                    break
+                case "ressourcentyp":
+                case "subscription resource":
+                case "resource": colMap.resource = c
+                    break
+                default:
+                    //check if property definition
+                    Map queryParams = [propDef:"${headerCol.toLowerCase()}",pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
+                    List<PropertyDefinition> posiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    if(posiblePropDefs.size() == 1) {
+                        PropertyDefinition propDef = posiblePropDefs[0]
+                        String refCategory = ""
+                        if(propDef.type == RefdataValue.toString()) {
+                            refCategory = propDef.refdataCategory
+                        }
+                        Map<String,Integer> defPair = [colno:c,refCategory:refCategory]
+                        propMap[propDef.class.name+':'+propDef.id] = defPair
+                    }
+                    else if(posiblePropDefs.size() > 1)
+                        multiplePropDefs << headerCol
+                    else
+                        ignoredColHeads << headerCol
+                    break
+            }
+        }
+        Set<String> globalErrors = []
+        if(ignoredColHeads)
+            globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.colHeaderIgnored',[ignoredColHeads.join('</li><li>')].toArray(),locale)
+        if(multiplePropDefs)
+            globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
+        rows.remove(0)
+        rows.each { row ->
+            Map mappingErrorBag = [:], candidate = [properties: [:]]
+            List<String> cols = row.split('\t')
+            //check if we have some mandatory properties ...
+            //status(nullable:false, blank:false) -> to status, defaults to status not set
+            if(colMap.status != null) {
+                String statusKey = cols[colMap.status]
+                if(statusKey) {
+                    String status = refdataService.retrieveRefdataValueOID(statusKey,'Subscription Status')
+                    if(status) {
+                        candidate.status = status
+                    }
+                    else {
+                        //missing case one: invalid status key
+                        //default to subscription not set
+                        candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                        mappingErrorBag.noValidStatus = statusKey
+                    }
+                }
+                else {
+                    //missing case two: no status key set
+                    //default to subscription not set
+                    candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                    mappingErrorBag.statusNotSet = true
+                }
+            }
+            else {
+                //missing case three: the entire column is missing
+                //default to subscription not set
+                candidate.status = "${SUBSCRIPTION_NO_STATUS.class.name}:${SUBSCRIPTION_NO_STATUS.id}"
+                mappingErrorBag.statusNotSet = true
+            }
+            //moving on to optional attributes
+            //name(nullable:true, blank:false) -> to name
+            if(colMap.name != null) {
+                String name = cols[colMap.name]
+                if(name)
+                    candidate.name = name
+            }
+            //owner(nullable:true, blank:false) -> to license
+            if(colMap.owner != null) {
+                String ownerKey = cols[colMap.owner]
+                if(ownerKey) {
+                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
+                    if(licCandidates.size() == 1) {
+                        License owner = licCandidates[0]
+                        candidate.owner = "${owner.class.name}:${owner.id}"
+                    }
+                    else if(licCandidates.size() > 1)
+                        mappingErrorBag.multipleLicenseError = ownerKey
+                    else
+                        mappingErrorBag.noValidLicense = ownerKey
+                }
+            }
+            //type(nullable:true, blank:false) -> to type
+            if(colMap.type != null) {
+                String typeKey = cols[colMap.type]
+                if(typeKey) {
+                    String type = refdataService.retrieveRefdataValueOID(typeKey,'Subscription Type')
+                    if(type) {
+                        candidate.type = type
+                    }
+                    else {
+                        mappingErrorBag.noValidType = typeKey
+                    }
+                }
+            }
+            //form(nullable:true, blank:false) -> to form
+            if(colMap.form != null) {
+                String formKey = cols[colMap.form]
+                if(formKey) {
+                    String form = refdataService.retrieveRefdataValueOID(formKey,'Subscription Form')
+                    if(form) {
+                        candidate.form = form
+                    }
+                    else {
+                        mappingErrorBag.noValidForm = formKey
+                    }
+                }
+            }
+            //resource(nullable:true, blank:false) -> to resource
+            if(colMap.resource != null) {
+                String resourceKey = cols[colMap.resource]
+                if(resourceKey) {
+                    String resource = refdataService.retrieveRefdataValueOID(resourceKey,'Subscription Resource')
+                    if(resource) {
+                        candidate.resource = resource
+                    }
+                    else {
+                        mappingErrorBag.noValidResource = resourceKey
+                    }
+                }
+            }
+            /*
+            startDate(nullable:true, blank:false, validator: { val, obj ->
+                if(obj.startDate != null && obj.endDate != null) {
+                    if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
+                }
+            }) -> to startDate
+            */
+            Date startDate
+            if(colMap.startDate != null) {
+                startDate = escapeService.parseDate(cols[colMap.startDate])
+            }
+            /*
+            endDate(nullable:true, blank:false, validator: { val, obj ->
+                if(obj.startDate != null && obj.endDate != null) {
+                    if(obj.startDate > obj.endDate) return ['endDateBeforeStartDate']
+                }
+            }) -> to endDate
+            */
+            Date endDate
+            if(colMap.endDate != null) {
+                endDate = escapeService.parseDate(cols[colMap.endDate])
+            }
+            if(startDate && endDate) {
+                if(startDate <= endDate) {
+                    candidate.startDate = startDate
+                    candidate.endDate = endDate
+                }
+                else {
+                    mappingErrorBag.startDateBeforeEndDate = true
+                }
+            }
+            else if(startDate && !endDate)
+                candidate.startDate = startDate
+            else if(!startDate && endDate)
+                candidate.endDate = endDate
+            //manualCancellationDate(nullable:true, blank:false)
+            if(colMap.manualCancellationDate != null) {
+                Date manualCancellationDate = escapeService.parseDate(cols[colMap.manualCancellationDate])
+                if(manualCancellationDate)
+                    candidate.manualCancellationDate = manualCancellationDate
+            }
+            //instanceOf(nullable:true, blank:false)
+            if(colMap.instanceOf != null && colMap.member != null) {
+                String idCandidate = cols[colMap.instanceOf]
+                String memberIdCandidate = cols[colMap.member]
+                if(idCandidate && memberIdCandidate) {
+                    List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
+                    List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
+                    if(parentSubs.size() == 1) {
+                        Subscription instanceOf = parentSubs[0]
+                        candidate.instanceOf = "${instanceOf.class.name}:${instanceOf.id}"
+                        if(!candidate.name)
+                            candidate.name = instanceOf.name
+                    }
+                    else {
+                        mappingErrorBag.noValidSubscription = idCandidate
+                    }
+                    if(possibleOrgs.size() == 1) {
+                        //further check needed: is the subscriber linked per combo to the organisation?
+                        Org member = possibleOrgs[0]
+                        candidate.member = "${member.class.name}:${member.id}"
+                    }
+                    else if(possibleOrgs.size() > 1) {
+                        mappingErrorBag.multipleOrgsError = possibleOrgs.collect { org -> org.sortname ?: org.name }
+                    }
+                    else {
+                        mappingErrorBag.noValidOrg = memberIdCandidate
+                    }
+                }
+                else {
+                    if(!idCandidate && memberIdCandidate)
+                        mappingErrorBag.instanceOfWithoutMember = true
+                    if(idCandidate && !memberIdCandidate)
+                        mappingErrorBag.memberWithoutInstanceOf = true
+                }
+            }
+            else {
+                if(colMap.instanceOf == null && colMap.member != null)
+                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.memberWithoutInstanceOf',null,locale)
+                if(colMap.instanceOf != null && colMap.member == null)
+                    globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
+            }
+            //properties -> propMap
+            propMap.each { String k, Map defPair ->
+                if(cols[defPair.colno].trim()) {
+                    def v
+                    if(defPair.refCategory) {
+                        v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
+                        if(!v) {
+                            mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
+                        }
+                    }
+                    else v = cols[defPair.colno]
+                    candidate.properties[k] = v
+                }
+            }
+            candidates.put(candidate,mappingErrorBag)
+        }
+        [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
     }
 
 }

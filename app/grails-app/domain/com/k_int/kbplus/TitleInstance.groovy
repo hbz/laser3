@@ -181,14 +181,16 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static def findByIdentifier(candidate_identifiers) {
     def matched = []
     candidate_identifiers.each { i ->
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
-      def io = IdentifierOccurrence.findByIdentifier(id)
-      if ( ( io != null ) && ( io.ti != null ) ) {
-        if ( matched.contains(io.ti) ) {
-          // Already in the list
-        }
-        else {
-          matched.add(io.ti);
+      List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
+      if(ioList.size() > 0) {
+        IdentifierOccurrence io = ioList.get(0)
+        if ( ( io != null ) && ( io.ti != null ) ) {
+          if ( matched.contains(io.ti) ) {
+            // Already in the list
+          }
+          else {
+            matched.add(io.ti);
+          }
         }
       }
     }
@@ -392,13 +394,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
               (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
                       new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
-      result.save(flush:true, failOnError: true);
+      result.save(failOnError: true);
 
       result.ids=[]
 
       canonical_ids.each {
         def new_io = new IdentifierOccurrence(identifier:it, ti:result)
-        if ( new_io.save(flush:true) ) {
+        if ( new_io.save() ) {
           static_logger.debug("Created new IO");
         }
         else {
@@ -407,7 +409,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         // result.ids.add(new IdentifierOccurrence(identifier:it, ti:result));
       }
 
-      if ( ! result.save(flush:true) ) {
+      if ( ! result.save() ) {
         throw new RuntimeException("Problem creating title instance : ${result.errors?.toString()}");
       }
     }
@@ -431,7 +433,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         }
       }
       if ( modified ) {
-        result.save(flush:true, failOnError: true);
+        result.save(failOnError: true);
       }
     }
 
@@ -942,13 +944,13 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     }
 
     if ( !found ) {
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?", [id,this])
+      Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
+      List<IdentifierOccurrence> id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = :id and io.ti = :ti", [id:id,ti:this])
 
       static_logger.debug("Create new identifier occurrence for tid:${getId()} ns:${ns} value:${value}");
 
       if ( !id_occ || id_occ.size() == 0 ){
-        new IdentifierOccurrence(identifier:id, ti:this).save(flush:true)
+        new IdentifierOccurrence(identifier:id, ti:this).save()
       }
     }
   }

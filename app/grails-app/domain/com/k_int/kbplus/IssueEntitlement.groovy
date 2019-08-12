@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.PriceItem
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -34,6 +35,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   RefdataValue medium
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
+
+  static hasOne =    [priceItem: PriceItem]
 
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
@@ -89,6 +92,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     accessStartDate(nullable:true, blank:true)
     accessEndDate (nullable:true, blank:true)
     medium        (nullable:true, blank:true)
+    priceItem     (nullable:true, blank:true)
   }
 
   Date getDerivedAccessStartDate() {

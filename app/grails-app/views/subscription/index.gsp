@@ -75,14 +75,14 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label for="filter">${message(code: 'default.filter.label', default: 'Filter')}</label>
+                            <label for="filter">${message(code: 'default.filter.label')}</label>
                             <input name="filter" id="filter" value="${params.filter}"/>
                         </div>
 
                         <div class="field">
-                            <label for="pkgfilter">${message(code: 'subscription.details.from_pkg', default: 'From Package')}</label>
+                            <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
                             <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
-                                <option value="">${message(code: 'subscription.details.from_pkg.all', default: 'All')}</option>
+                                <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
                                 <g:each in="${subscriptionInstance.packages}" var="sp">
                                     <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
                                 </g:each>
@@ -127,7 +127,8 @@
                                           title="${message(code: 'title.label', default: 'Title')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
                         <th class="two wide">${message(code: 'subscription.details.coverage_dates')}</th>
-                        <th class="two wide">${message(code: 'subscription.details.access_dates', default: 'Access')}</th>
+                        <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
+                        <th class="two wide"><g:message code="subscription.details.prices" /></th>
                         <th class="one wide"></th>
                     </tr>
                     <tr>
@@ -199,6 +200,9 @@
                                                   placeholder="${message(code: 'default.to', default: 'Latest Date')}"
                                                   inputCssClass="la-input-small" id="bulk_access_end_date"
                                                   name="bulk_access_end_date"/>
+                            </th>
+                            <th>
+
                             </th>
                             <th>
 
@@ -370,6 +374,13 @@
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                                       date="${ie.accessEndDate}"/>
                                     </g:else>
+                                </td>
+                                <td>
+                                    <g:if test="${ie.priceItem}">
+                                        <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/><br>
+                                        <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>
+                                        (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
+                                    </g:if>
                                 </td>
                                 <td class="x">
                                     <g:if test="${editable}">
