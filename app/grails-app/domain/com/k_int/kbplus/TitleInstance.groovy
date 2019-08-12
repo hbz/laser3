@@ -181,14 +181,16 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static def findByIdentifier(candidate_identifiers) {
     def matched = []
     candidate_identifiers.each { i ->
-      def id = Identifier.findByNsAndValue(i.namespace, i.value)
-      def io = IdentifierOccurrence.findByIdentifier(id)
-      if ( ( io != null ) && ( io.ti != null ) ) {
-        if ( matched.contains(io.ti) ) {
-          // Already in the list
-        }
-        else {
-          matched.add(io.ti);
+      List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
+      if(ioList.size() > 0) {
+        IdentifierOccurrence io = ioList.get(0)
+        if ( ( io != null ) && ( io.ti != null ) ) {
+          if ( matched.contains(io.ti) ) {
+            // Already in the list
+          }
+          else {
+            matched.add(io.ti);
+          }
         }
       }
     }

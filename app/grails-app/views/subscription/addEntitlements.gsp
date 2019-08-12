@@ -75,11 +75,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 <g:if test="${flash.error}">
     <semui:messages data="${flash}"/>
 </g:if>
+<h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
+<semui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 <g:form class="ui form" controller="subscription" action="addEntitlements"
         params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
         method="post" enctype="multipart/form-data">
-    <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
-    <semui:msg class="warning" header="${message(code:"subscription.details.addEntitlements.warning")}" />
     <div class="three fields">
         <div class="field">
             <div class="ui fluid action input">
@@ -128,6 +128,8 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 </r:script>
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscriptionInstance.id}"/>
+    <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
+    <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
 
     <div class="three fields">
         <div class="field"></div>
@@ -297,70 +299,70 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
                     <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
+                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
                     <%--${tipp?.title?.dateFirstInPrint}--%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].dateFirstOnline : tipp.title?.dateFirstOnline}"/>
+                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
                     <%--${tipp?.title?.dateFirstOnline}--%>
                 </g:if>
                 <g:else>
                     <!-- von -->
-                    <semui:datepicker class="ieOverwrite" name="ieStartDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].startDate : tipp.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="ieStartDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startDate : tipp.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
                     <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                    <input name="ieStartVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].startVolume : tipp.startVolume}" placeholder="${message(code: 'tipp.volume')}">
+                    <input name="ieStartVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startVolume : tipp.startVolume}" placeholder="${message(code: 'tipp.volume')}">
                     <%--${tipp?.startVolume}--%><br>
                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                    <input name="ieStartIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].startIssue : tipp.startIssue}" placeholder="${message(code: 'tipp.issue')}">
+                    <input name="ieStartIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startIssue : tipp.startIssue}" placeholder="${message(code: 'tipp.issue')}">
                     <%--${tipp?.startIssue}--%>
                     <semui:dateDevider/>
                     <!-- bis -->
-                    <semui:datepicker class="ieOverwrite" name="ieEndDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].endDate : tipp.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="ieEndDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endDate : tipp.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
                     <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br>--%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                    <input name="ieEndVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].endVolume : tipp.endVolume}" placeholder="${message(code: 'tipp.volume')}">
+                    <input name="ieEndVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endVolume : tipp.endVolume}" placeholder="${message(code: 'tipp.volume')}">
                     <%--${tipp?.endVolume}--%><br>
                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                    <input name="ieEndIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].endIssue : tipp.endIssue}" placeholder="${message(code: 'tipp.issue')}">
+                    <input name="ieEndIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endIssue : tipp.endIssue}" placeholder="${message(code: 'tipp.issue')}">
                     <%--${tipp?.endIssue}--%>
                 </g:else>
             </td>
             <td>
                 <!-- von -->
-                <semui:datepicker class="ieOverwrite" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].accessStartDate : tipp.accessStartDate}" placeholder="${message(code:'tipp.accessStartDate')}"/>
+                <semui:datepicker class="ieOverwrite" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.accessStartDate : tipp.accessStartDate}" placeholder="${message(code:'tipp.accessStartDate')}"/>
                 <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessStartDate}"/>--%>
                 <semui:dateDevider/>
                 <!-- bis -->
-                <semui:datepicker class="ieOverwrite" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].accessEndDate : tipp.accessEndDate}" placeholder="${message(code:'tipp.accessEndDate')}"/>
+                <semui:datepicker class="ieOverwrite" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.accessEndDate : tipp.accessEndDate}" placeholder="${message(code:'tipp.accessEndDate')}"/>
                 <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessEndDate}"/>--%>
             </td>
             <td>
                 <%--${tipp.coverageDepth}--%>
-                <input class="ieOverwrite" name="coverageDepth" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].coverageDepth : tipp.coverageDepth}">
+                <input class="ieOverwrite" name="coverageDepth" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverageDepth : tipp.coverageDepth}">
             </td>
             </td>
             <td>
                 <%--${tipp.embargo}--%>
-                <input class="ieOverwrite" name="embargo" type="text" placeholder="${message(code:'tipp.embargo')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].embargo : tipp.embargo}">
+                <input class="ieOverwrite" name="embargo" type="text" placeholder="${message(code:'tipp.embargo')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.embargo : tipp.embargo}">
             </td>
             <td>
                 <%--${tipp.coverageNote}--%>
-                <input class="ieOverwrite" name="coverageNote" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId].coverageNote : tipp.coverageNote}">
+                <input class="ieOverwrite" name="coverageNote" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverageNote : tipp.coverageNote}">
             </td>
             <g:if test="${uploadPriceInfo}">
                 <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId].listPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId].listPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId].listPriceCurrency}"/>
+                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.listPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.listPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.listPriceCurrency}"/>
                 </td>
                 <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId].localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId].localPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId].localPriceCurrency}"/>
+                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localPriceCurrency}"/>
                 </td>
                 <td>
-                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId].priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
                 </td>
             </g:if>
             <td>
                 <g:link class="ui icon positive button" action="processAddEntitlements"
-                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
+                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                         data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
                     <i class="plus icon"></i>
                 </g:link>

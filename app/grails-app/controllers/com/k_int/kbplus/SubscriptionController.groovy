@@ -672,9 +672,9 @@ class SubscriptionController extends AbstractDebugController {
         log.debug("addEntitlements .. params: ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
-        result.preselectValues = params.preselectValues
-        result.preselectCoverageDates = params.preselectCoverageDates
-        result.uploadPriceInfo = params.uploadPriceInfo
+        result.preselectValues = params.preselectValues == 'on'
+        result.preselectCoverageDates = params.preselectCoverageDates == 'on'
+        result.uploadPriceInfo = params.uploadPriceInfo == 'on'
         if (!result) {
             response.sendError(401); return
         }
@@ -690,6 +690,11 @@ class SubscriptionController extends AbstractDebugController {
         List errorList = []
         if (result.subscriptionInstance) {
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
+            Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
+            result.subscriptionInstance.issueEntitlements.each { ie ->
+                if(ie instanceof IssueEntitlement)
+                    addedTipps[ie.tipp] = ie
+            }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
             def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
@@ -807,24 +812,22 @@ class SubscriptionController extends AbstractDebugController {
                     log.debug("now processing entitlement ${i}")
                     Map ieCandidate = [:]
                     ArrayList<String> cols = row.split('\t')
-                    List idCandidates = []
+                    Map idCandidate
                     String ieCandIdentifier
                     if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                         identifiers.zdbIds.add(cols[colMap.zdbCol])
-                        idCandidates.add([namespace:namespaces.zdb,value:cols[colMap.zdbCol]])
+                        idCandidate = [namespaces:[namespaces.zdb],value:cols[colMap.zdbCol]]
                         ieCandIdentifier = cols[colMap.zdbCol]
                     }
                     if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                         identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
-                        idCandidates.add([namespace:namespaces.eissn,value:cols[colMap.onlineIdentifierCol]])
-                        idCandidates.add([namespace:namespaces.isbn,value:cols[colMap.onlineIdentifierCol]])
+                        idCandidate = [namespaces:[namespaces.eissn,namespaces.isbn],value:cols[colMap.onlineIdentifierCol]]
                         if(ieCandIdentifier == null)
                             ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                     }
                     if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
                         identifiers.printIds.add(cols[colMap.printIdentifierCol])
-                        idCandidates.add([namespace:namespaces.issn,value:cols[colMap.printIdentifierCol]])
-                        idCandidates.add([namespace:namespaces.pisbn,value:cols[colMap.printIdentifierCol]])
+                        idCandidate = [namespaces:[namespaces.issn,namespaces.pisbn],value:cols[colMap.printIdentifierCol]]
                         if(ieCandIdentifier == null)
                             ieCandIdentifier = cols[colMap.printIdentifierCol]
                     }
@@ -838,11 +841,10 @@ class SubscriptionController extends AbstractDebugController {
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
                         //log.debug(idCandidates)
-                        def tiObj = TitleInstance.findByIdentifier(idCandidates)
+                        def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                         if(tiObj) {
                             //is title already added?
-                            List issueEntitlement = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.title in :tipp and ie.subscription = :sub',[tipp:tiObj,sub:result.subscriptionInstance])
-                            if(issueEntitlement) {
+                            if(addedTipps.get(tiObj)) {
                                 errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
                             }
                             /*else if(!issueEntitlement) {
@@ -956,10 +958,11 @@ class SubscriptionController extends AbstractDebugController {
                     errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
                 }
                 checkedCache.put('checked',result.checked)
-                checkedCache.put('issueEntitlementCandidates',issueEntitlementOverwrite)
+                checkedCache.put('issueEntitlementCandidates',result.issueEntitlementOverwrite)
             }
             else {
                 result.checked = checkedCache.get('checked')
+                result.issueEntitlementOverwrite = checkedCache.get('issueEntitlementCandidates')
             }
         } else {
             result.num_sub_rows = 0;
@@ -2205,8 +2208,12 @@ class SubscriptionController extends AbstractDebugController {
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
-                                if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k)))
-                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                    if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
+                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                                }
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false))
+                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
                             }
                             catch (EntitlementCreationException e) {
                                 flash.error = e.getMessage()
@@ -2220,7 +2227,11 @@ class SubscriptionController extends AbstractDebugController {
             }
             else if(params.singleTitle) {
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(k)))
+                    if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
+                        if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
+                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                    }
+                    else if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,null,false))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
                 }
                 catch(EntitlementCreationException e) {
@@ -2282,7 +2293,7 @@ class SubscriptionController extends AbstractDebugController {
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null))
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false))
                         log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
                 }
                 catch (EntitlementCreationException e) {

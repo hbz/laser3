@@ -794,6 +794,7 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
+      Map success = [success:false]
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
@@ -803,11 +804,14 @@ class AjaxController {
           }
       }
       else checked[params.index] = params.checked == 'true' ? 'checked' : null
-      cache.put('checked',checked)
+      if(cache.put('checked',checked))
+          success.success = true
+      render success as JSON
   }
 
   @Secured(['ROLE_USER'])
   def updateIssueEntitlementOverwrite() {
+      Map success = [success:false]
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       def ieCandidate = issueEntitlementCandidates.get(params.key)
@@ -815,7 +819,9 @@ class AjaxController {
           ieCandidate = [:]
       ieCandidate[params.prop] = params.propValue
       issueEntitlementCandidates.put(params.key,ieCandidate)
-      cache.put('issueEntitlementCandidates',issueEntitlementCandidates)
+      if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
+          success.success = true
+      render success as JSON
   }
 
   /**

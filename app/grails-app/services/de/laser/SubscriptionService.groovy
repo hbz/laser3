@@ -7,6 +7,7 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -622,7 +623,7 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -631,12 +632,12 @@ class SubscriptionService {
             def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
-                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? issueEntitlementOverwrite.accessStartDate : tipp.accessStartDate,
-                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? issueEntitlementOverwrite.accessEndDate : tipp.accessEndDate,
-                    startDate: issueEntitlementOverwrite?.startDate ? issueEntitlementOverwrite.startDate : tipp.startDate,
+                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
+                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
+                    startDate: issueEntitlementOverwrite?.startDate ? escapeService.parseDate(issueEntitlementOverwrite.startDate) : tipp.startDate,
                     startVolume: issueEntitlementOverwrite?.startVolume ? issueEntitlementOverwrite.startVolume : tipp.startVolume,
                     startIssue: issueEntitlementOverwrite?.startIssue ? issueEntitlementOverwrite.startIssue : tipp.startIssue,
-                    endDate: issueEntitlementOverwrite?.endDate ? issueEntitlementOverwrite.endDate : tipp.endDate,
+                    endDate: issueEntitlementOverwrite?.endDate ? escapeService.parseDate(issueEntitlementOverwrite.endDate) : tipp.endDate,
                     endVolume: issueEntitlementOverwrite?.endVolume ? issueEntitlementOverwrite.endVolume : tipp.endVolume,
                     endIssue: issueEntitlementOverwrite?.endIssue ? issueEntitlementOverwrite.endIssue : tipp.endIssue,
                     embargo: issueEntitlementOverwrite?.embargo ? issueEntitlementOverwrite.embargo : tipp.embargo,
@@ -644,7 +645,22 @@ class SubscriptionService {
                     coverageNote: issueEntitlementOverwrite?.coverageNote ? issueEntitlementOverwrite.coverageNote : tipp.coverageNote,
                     ieReason: 'Manually Added by User')
             if (new_ie.save()) {
-                return true
+                if(withPriceData) {
+                    PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
+                            listPrice: issueEntitlementOverwrite.listPrice,
+                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listPriceCurrency,'Currency'),
+                            localPrice: issueEntitlementOverwrite.localPrice,
+                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localPriceCurrency,'Currency'),
+                            issueEntitlement: new_ie
+                    )
+                    if(pi.save())
+                        return true
+                    else {
+                        throw new EntitlementCreationException(pi.errors)
+                        return false
+                    }
+                }
+                else return true
             } else {
                 throw new EntitlementCreationException(new_ie.errors)
                 return false
