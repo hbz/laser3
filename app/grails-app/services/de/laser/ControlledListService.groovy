@@ -29,8 +29,8 @@ class ControlledListService {
             Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
             String filterString = " "
             if(params.query && params.query.length() > 0) {
-                filter.put("query",'%'+params.query+'%')
-                filterString += "and lower(oo.org.name) like lower(:query) "
+                filter.put("query",params.query)
+                filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
             }
             List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
             providers.each { p ->
@@ -41,8 +41,8 @@ class ControlledListService {
             String queryString = 'select o from Org o where o.type = :provider '
             LinkedHashMap filter = [provider:RDStore.OT_PROVIDER]
             if(params.query && params.query.length() > 0) {
-                filter.put("query",'%'+params.query+'%')
-                queryString += " and lower(o.name) like lower(:query) "
+                filter.put("query",params.query)
+                queryString += " and genfunc_filter_matcher(o.name,:query) = true "
             }
             List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
             providers.each { p ->
@@ -65,7 +65,8 @@ class ControlledListService {
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
             filter.put("query",'%'+params.query+'%')
-            queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
+            //queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
+            queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
