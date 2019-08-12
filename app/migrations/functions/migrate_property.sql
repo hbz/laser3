@@ -2,6 +2,8 @@ CREATE OR REPLACE FUNCTION propertyMigration()
   RETURNS void AS $$
 
 DECLARE
+    VERSION CONSTANT NUMERIC = 1;
+
   old_prop_def  property_definition%ROWTYPE;
   old_rdc       refdata_category%ROWTYPE;
 

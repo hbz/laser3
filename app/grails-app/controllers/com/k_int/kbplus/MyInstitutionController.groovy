@@ -227,13 +227,16 @@ class MyInstitutionController extends AbstractDebugController {
                     tippDeleted    : RDStore.TIPP_DELETED
             ]
 
+            // ERMS-1592, ERMS-1596
             if (params.q?.length() > 0) {
                 qry3 += "and ("
-                qry3 += "   p.normname like :query"
-                qry3 += "   or p.primaryUrl like :query"
-                qry3 += "   or lower(o.name) like :query or lower(o.sortname) like :query or lower(o.shortname) like :query "
+                qry3 += "   genfunc_filter_matcher(p.normname, :query) = true"
+                qry3 += "   or genfunc_filter_matcher(p.primaryUrl, :query) = true"
+                qry3 += "   or genfunc_filter_matcher(o.name, :query) = true"
+                qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
+                qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
-                qryParams3.put('query', "%${params.q.trim().toLowerCase()}%")
+                qryParams3.put('query', "${params.q}")
             } else {
                 qry3 += "order by p.normname asc"
             }
@@ -372,9 +375,10 @@ from License as l where (
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += " and lower(l.reference) like :ref"
-            qry_params += [ref:"%${params['keyword-search'].toLowerCase()}%"]
-            result.keyWord = params['keyword-search'].toLowerCase()
+            // ERMS-1592, ERMS-1596
+            base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
+            qry_params += [ref:"${params['keyword-search']}"]
+            result.keyWord = params['keyword-search']
         }
 
         // eval property filter
@@ -1732,10 +1736,11 @@ from License as l where (
             qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
 
+        // ERMS-1592, ERMS-1596
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
-            sub_qry += " AND LOWER(ti.ti_title) like :titlestr"
-            qry_params.titlestr = "%${params.filter}%".toLowerCase();
+            sub_qry += " AND genfunc_filter_matcher(ti.ti_title, :titlestr) = true "
+            qry_params.titlestr = "${params.filter}"
 
         }
 
@@ -1782,9 +1787,10 @@ from License as l where (
                 queryParams.dateRestriction = date_restriction
             }
 
+            // ERMS-1592, ERMS-1596
             if ((params.filter) && (params.filter.length() > 0)) {
-                filterString += " and LOWER(ie.tipp.title.title) like LOWER(:title)"
-                queryParams.title = "%${params.filter}%"
+                filterString += " and genfunc_filter_matcher(ie.tipp.title.title, :title) = true "
+                queryParams.title = "${params.filter}"
             }
 
             if (filterSub) {
@@ -1814,8 +1820,13 @@ from License as l where (
             result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
         }
         else {
+
             qry_params.max = result.max
             qry_params.offset = result.offset
+
+            log.debug( "SELECT ${queryStr} ${order_by_clause} ${limits_clause}" )
+            log.debug( qry_params )
+
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(), qry_params).collect {
                 TitleInstance.get(it.tipp_ti_fk)
             }
