@@ -227,7 +227,6 @@ class MyInstitutionController extends AbstractDebugController {
                     tippDeleted    : RDStore.TIPP_DELETED
             ]
 
-            // ERMS-1592, ERMS-1596
             if (params.q?.length() > 0) {
                 qry3 += "and ("
                 qry3 += "   genfunc_filter_matcher(p.normname, :query) = true"
@@ -375,7 +374,6 @@ from License as l where (
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            // ERMS-1592, ERMS-1596
             base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
             qry_params += [ref:"${params['keyword-search']}"]
             result.keyWord = params['keyword-search']
@@ -1736,7 +1734,6 @@ from License as l where (
             qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
 
-        // ERMS-1592, ERMS-1596
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
             sub_qry += " AND genfunc_filter_matcher(ti.ti_title, :titlestr) = true "
@@ -1787,7 +1784,6 @@ from License as l where (
                 queryParams.dateRestriction = date_restriction
             }
 
-            // ERMS-1592, ERMS-1596
             if ((params.filter) && (params.filter.length() > 0)) {
                 filterString += " and genfunc_filter_matcher(ie.tipp.title.title, :title) = true "
                 queryParams.title = "${params.filter}"
