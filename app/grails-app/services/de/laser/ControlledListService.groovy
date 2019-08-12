@@ -64,8 +64,7 @@ class ControlledListService {
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            //queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
+            filter.put("query",params.query)
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
@@ -126,10 +125,9 @@ class ControlledListService {
                 return [results:[]]
             }
         }
-        filterParams.put('query','%'+params.query+'%')
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        filterParams.put('query',params.query)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and genfunc_filter_matcher(ie.tipp.title.title,:query) = true order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
-            log.debug("issue entitlements found")
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
                 issueEntitlements.results.add([name:"${res.tipp.title.title} (${res.tipp.title.type.getI10n('value')}) (${s.dropdownNamingConvention(org)})",value:res.class.name+":"+res.id])
@@ -150,8 +148,8 @@ class ControlledListService {
         String licFilter = ''
         LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
         if(params.query && params.query.length() > 0) {
-            licFilter = ' and l.reference like :query'
-            filterParams.put('query',"%"+params.query+"%")
+            licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
+            filterParams.put('query',params.query)
         }
         result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
@@ -173,12 +171,12 @@ class ControlledListService {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
-        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
+        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE,RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
-            filter.put("query","%"+params.query+"%")
-            queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
+            filter.put("query",params.query)
+            queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
@@ -213,8 +211,8 @@ class ControlledListService {
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " and lower(bc.value) like lower(:query)"
+            filter.put("query",params.query)
+            queryString += " and genfunc_filter_matcher(bc.value,:query) = true"
         }
         queryString += " order by bc.value asc"
         List budgetCodes = BudgetCode.executeQuery(queryString,filter)
@@ -230,8 +228,8 @@ class ControlledListService {
         String queryString = 'select i from Invoice i where i.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " and i.invoiceNumber like :query"
+            filter.put("query",params.query)
+            queryString += " and genfunc_filter_matcher(i.invoiceNumber,:query) = true"
         }
         queryString += " order by i.invoiceNumber asc"
         List invoiceNumbers = Invoice.executeQuery(queryString,filter)
@@ -247,8 +245,9 @@ class ControlledListService {
         String queryString = 'select ord from Order ord where ord.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " and ord.orderNumber like :query"
+            filter.put("query",params.query)
+            //queryString += " and ord.orderNumber like :query"
+            queryString += " and genfunc_filter_matcher(ord.orderNumber,:query) = true"
         }
         queryString += " order by ord.orderNumber asc"
         List orderNumbers = Order.executeQuery(queryString,filter)
@@ -264,8 +263,8 @@ class ControlledListService {
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " and lower(ci.reference) like lower(:query)"
+            filter.put("query",params.query)
+            queryString += " and genfunc_filter_matcher(ci.reference,:query) = true"
         }
         queryString += " order by ci.reference asc"
         List references = CostItem.executeQuery(queryString,filter)
@@ -280,13 +279,13 @@ class ControlledListService {
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         if(params.org == "true") {
-            List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
+            List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { it ->
                 result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:"${it[0].class.name}:${it[0].id}"])
             }
         }
         if(params.license == "true") {
-            List allLicenses = DocContext.executeQuery('select distinct dc.license,dc.license.reference from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and dc.license.status != :deleted and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,deleted:RDStore.LICENSE_DELETED,query:"%${params.query}%"])
+            List allLicenses = DocContext.executeQuery('select distinct dc.license,dc.license.reference from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and genfunc_filter_matcher(dc.license.reference,:query) = true order by dc.license.reference asc',[ctxOrg:org,query:params.query])
             allLicenses.each { it ->
                 License license = (License) it[0]
                 String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
@@ -295,7 +294,7 @@ class ControlledListService {
             }
         }
         if(params.subscription == "true") {
-            List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
+            List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and genfunc_filter_matcher(dc.subscription.name,:query) = true order by dc.subscription.name asc',[ctxOrg:org,query:params.query])
             allSubscriptions.each { it ->
                 Subscription subscription = (Subscription) it[0]
                 /*
@@ -324,7 +323,7 @@ class ControlledListService {
             }
         }
         if(params.package == "true") {
-            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
+            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
             allPackages.each { it ->
                 result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: "${it[0].class.name}:${it[0].id}"])
             }
