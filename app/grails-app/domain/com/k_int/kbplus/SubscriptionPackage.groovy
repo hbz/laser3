@@ -6,17 +6,20 @@ class SubscriptionPackage {
 
   Subscription subscription
   Package pkg
+  Date finishDate
 
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
       subscription column:'sp_sub_fk',  index: 'sp_sub_pkg_idx'
                pkg column:'sp_pkg_fk',  index: 'sp_sub_pkg_idx'
+        finishDate column:'sp_finish_date'
   }
 
   static constraints = {
     subscription(nullable:true, blank:false)
     pkg(nullable:true, blank:false)
+    finishDate(nullable:true, blank:false)
   }
 
   @Transient

@@ -211,7 +211,6 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
                             <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
@@ -285,8 +284,6 @@
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
                                 <g:link class="item" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
-                                <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
-                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
                                 <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
                                 <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>

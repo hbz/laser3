@@ -32,8 +32,8 @@ class SubscriptionImportController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def generateImportWorksheet() { 
 
-    log.debug("renewalsSearch : ${params}");
-    log.debug("Start year filters: ${params.startYear}");
+    com.k_int.kbplus.SubscriptionImportController.log.debug("renewalsSearch : ${params}");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Start year filters: ${params.startYear}");
 
     StringWriter sw = new StringWriter()
     def fq = null;
@@ -41,7 +41,7 @@ class SubscriptionImportController extends AbstractDebugController {
   
     params.each { p ->
       if ( p.key.startsWith('fct:') && p.value.equals("on") ) {
-        log.debug("start year ${p.key} : -${p.value}-");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("start year ${p.key} : -${p.value}-");
 
         if ( !has_filter )
           has_filter = true
@@ -77,7 +77,7 @@ class SubscriptionImportController extends AbstractDebugController {
 
     if ( has_filter ) {
       fq = sw.toString();
-      log.debug("Filter Query: ${fq}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Filter Query: ${fq}");
     }
 
     // Be mindful that the behavior of this controller is strongly influenced by the schema setup in ES.
@@ -93,18 +93,18 @@ class SubscriptionImportController extends AbstractDebugController {
     def shopping_basket = UserFolder.findByUserAndShortcode(result.user,'SubBasket') ?: new UserFolder(user:result.user, shortcode:'SubBasket').save();
 
     if ( params.addBtn ) {
-      log.debug("Add item ${params.addBtn} to basket");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Add item ${params.addBtn} to basket");
       def oid = "com.k_int.kbplus.Package:${params.addBtn}"
       shopping_basket.addIfNotPresent(oid)
       shopping_basket.save(flush:true);
     }
     else if ( params.clearBasket=='yes' ) {
-      log.debug("Clear basket....");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Clear basket....");
       shopping_basket.items?.clear();
       shopping_basket.save(flush:true)
     }
     else if ( params.generate=='yes' ) {
-      log.debug("Generate");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Generate");
       generate(materialiseFolder(shopping_basket.items), inst)
       return
     }
@@ -139,7 +139,7 @@ class SubscriptionImportController extends AbstractDebugController {
       exportWorkbook(m, inst);
     }
     catch ( Exception e ) {
-      log.error("Problem",e);
+      com.k_int.kbplus.SubscriptionImportController.log.error("Problem",e);
       response.sendError(500)
     }
   }
@@ -149,7 +149,7 @@ class SubscriptionImportController extends AbstractDebugController {
     def titleMap = [:]
     def subscriptionMap = [:]
 
-    log.debug("pre-pre-process");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("pre-pre-process");
 
     boolean first = true;
 
@@ -165,12 +165,12 @@ class SubscriptionImportController extends AbstractDebugController {
         sub_id : "${sub.class.name}:${sub.id}"
       ]
 
-      log.debug("Added sub entry ${sub_info}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Added sub entry ${sub_info}");
 
       subscriptionMap[sub.id] = sub_info
 
       if ( sub instanceof Package ) {
-        log.debug("Adding package into renewals worksheet");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Adding package into renewals worksheet");
         sub.tipps.each { tipp ->
           if ( ! (tipp.status?.value=='Deleted')  ) {
             def title_info = titleMap[tipp.title.id]
@@ -191,7 +191,7 @@ class SubscriptionImportController extends AbstractDebugController {
       first=false
     }
 
-    log.debug("Result will be a matrix of size ${titleMap.size()} by ${subscriptionMap.size()}");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Result will be a matrix of size ${titleMap.size()} by ${subscriptionMap.size()}");
 
     // Object[][] result = new Object[subscriptionMap.size()+1][titleMap.size()+1]
     Object[][] ti_info_arr = new Object[titleMap.size()][subscriptionMap.size()]
@@ -212,7 +212,7 @@ class SubscriptionImportController extends AbstractDebugController {
     plist.each { sub ->
       def sub_info = subscriptionMap[sub.id]
       if ( sub instanceof Package ) {
-        log.debug("Filling out renewal sheet column for a package");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Filling out renewal sheet column for a package");
         sub.tipps.each { tipp ->
           if ( ! (tipp.status?.value=='Deleted')  ) {
             def title_info = titleMap[tipp.title.id]
@@ -234,7 +234,7 @@ class SubscriptionImportController extends AbstractDebugController {
       }
     }
 
-    log.debug("Completed.. returning final result");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Completed.. returning final result");
 
     def final_result = [
                         ti_info:ti_info_arr,                      // A crosstab array of the packages where a title occours
@@ -245,7 +245,7 @@ class SubscriptionImportController extends AbstractDebugController {
 
   private def exportWorkbook(m, inst) {
     try {
-      log.debug("export workbook");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("export workbook");
   
       // read http://stackoverflow.com/questions/2824486/groovy-grails-how-do-you-stream-or-buffer-a-large-file-in-a-controllers-respon
   
@@ -320,12 +320,12 @@ class SubscriptionImportController extends AbstractDebugController {
       row = firstSheet.createRow(rc++);
       cc=11
       m.sub_info.each { sub ->
-        log.debug("Adding package OID to sheet: ${sub.sub_id}");
+          com.k_int.kbplus.SubscriptionImportController.log.debug("Adding package OID to sheet: ${sub.sub_id}");
         cell = row.createCell(cc++);
         cell.setCellValue(new HSSFRichTextString("${sub.sub_id}"));
       }
 
-      log.debug("Done adding package IDs to sheet.. rows..");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Done adding package IDs to sheet.. rows..");
       
       // headings
       row = firstSheet.createRow(rc++);
@@ -453,7 +453,7 @@ class SubscriptionImportController extends AbstractDebugController {
       response.outputStream.flush()
     }
     catch ( Exception e ) {
-      log.error("Problem",e);
+      com.k_int.kbplus.SubscriptionImportController.log.error("Problem",e);
       response.sendError(500)
     }
   }
@@ -480,7 +480,7 @@ class SubscriptionImportController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def importSubscriptionWorksheet() {
     def result = [:]
-    log.debug("importSubscriptionWorksheet :: ${params}")
+      com.k_int.kbplus.SubscriptionImportController.log.debug("importSubscriptionWorksheet :: ${params}")
     result.user = User.get(springSecurityService.principal.id)
     // result.institution = Org.findByShortcode(params.shortcode)
 
@@ -495,7 +495,7 @@ class SubscriptionImportController extends AbstractDebugController {
     if ( request.method == 'POST' ) {
       def upload_mime_type = request.getFile("renewalsWorksheet")?.contentType
       def upload_filename = request.getFile("renewalsWorksheet")?.getOriginalFilename()
-      log.debug("Uploaded worksheet type: ${upload_mime_type} filename was ${upload_filename} - Params.id=${params.id}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Uploaded worksheet type: ${upload_mime_type} filename was ${upload_filename} - Params.id=${params.id}");
       def input_stream = request.getFile("renewalsWorksheet")?.inputStream
       def so_start_col = 11 // ( ( params.id != null ) ? 21 : 11 )
       processRenewalUpload(input_stream, upload_filename, result, so_start_col)
@@ -511,7 +511,7 @@ class SubscriptionImportController extends AbstractDebugController {
     // int SO_START_COL=11
     // int SO_START_COL=21
     int SO_START_ROW=7
-    log.debug("processRenewalUpload - opening upload input stream as HSSFWorkbook");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("processRenewalUpload - opening upload input stream as HSSFWorkbook");
     if ( input_stream ) {
       HSSFWorkbook wb = new HSSFWorkbook(input_stream);
       HSSFSheet firstSheet = wb.getSheetAt(0);
@@ -521,7 +521,7 @@ class SubscriptionImportController extends AbstractDebugController {
       String org_name = org_details_row?.getCell(1)?.toString()
       String org_id = org_details_row?.getCell(0)?.toString()
       String org_shortcode = org_details_row?.getCell(2)?.toString()
-      log.debug("Worksheet upload on behalf of ${org_name}, ${org_id}, ${org_shortcode}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Worksheet upload on behalf of ${org_name}, ${org_id}, ${org_shortcode}");
       Double d = Double.parseDouble(org_id)
       result.subOrg = Org.get(d.intValue())
 
@@ -534,14 +534,14 @@ class SubscriptionImportController extends AbstractDebugController {
       // Step 2 - Row 5 (6, but 0 based) contains package identifiers starting in column 4(5)
       HSSFRow package_ids_row = firstSheet.getRow(5)
       for (int i=SO_START_COL;((i<package_ids_row.getLastCellNum())&&(package_ids_row.getCell(i)));i++) {
-        log.debug("Got package identifier: ${package_ids_row.getCell(i).toString()}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("Got package identifier: ${package_ids_row.getCell(i).toString()}");
         def sub_id = package_ids_row.getCell(i).toString()
         def sub_rec = genericOIDService.resolveOID(sub_id) // Subscription.get(sub_id);
         if ( sub_rec ) {
           sub_info.add(sub_rec);
         }
         else  {
-          log.error("Unable to resolve the package identifier in row 6 column ${i+5}, please check");
+          com.k_int.kbplus.SubscriptionImportController.log.error("Unable to resolve the package identifier in row 6 column ${i+5}, please check");
           return
         }
       }
@@ -551,30 +551,30 @@ class SubscriptionImportController extends AbstractDebugController {
       boolean processing = true
       // Step three, process each title row, starting at row 11(10)
       for (int i=SO_START_ROW;((i<firstSheet.getLastRowNum())&&(processing)); i++) {
-        log.debug("processing row ${i}... SO_START_COL=${SO_START_COL}");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("processing row ${i}... SO_START_COL=${SO_START_COL}");
 
         HSSFRow title_row = firstSheet.getRow(i)
         // Title ID
         def title_id = title_row.getCell(0).toString()
         if ( title_id == 'END' ) {
-          log.debug("Encountered END title, entitlements.size=${result.entitlements.size()}");
+          com.k_int.kbplus.SubscriptionImportController.log.debug("Encountered END title, entitlements.size=${result.entitlements.size()}");
           processing = false;
         }
         else {
-          log.debug("Upload Process title: ${title_id}, num subs=${sub_info.size()}, last cell=${title_row.getLastCellNum()}");
+          com.k_int.kbplus.SubscriptionImportController.log.debug("Upload Process title: ${title_id}, num subs=${sub_info.size()}, last cell=${title_row.getLastCellNum()}");
           def title_id_long = Long.parseLong(title_id)
           def title_rec = TitleInstance.get(title_id_long);
           for ( int j=0; ( ((j+SO_START_COL)<title_row.getLastCellNum()) && (j<=sub_info.size() ) ); j++ ) {
             def resp_cell = title_row.getCell(j+SO_START_COL)
             if ( resp_cell ) {
-              log.debug("  -> Testing col[${j+SO_START_COL}(${j}+${SO_START_COL})] val=${resp_cell.toString()}");
+              com.k_int.kbplus.SubscriptionImportController.log.debug("  -> Testing col[${j+SO_START_COL}(${j}+${SO_START_COL})] val=${resp_cell.toString()}");
 
               def subscribe=resp_cell.toString()
 
-              log.debug("Entry : sub:${subscribe}");
+                com.k_int.kbplus.SubscriptionImportController.log.debug("Entry : sub:${subscribe}");
                 
               if ( subscribe == 'Y' || subscribe == 'y' ) {
-                log.debug("Add an issue entitlement from subscription[${j}] for title ${title_id_long}");
+                com.k_int.kbplus.SubscriptionImportController.log.debug("Add an issue entitlement from subscription[${j}] for title ${title_id_long}");
 
                 def entitlement_info = [:]
                 entitlement_info.base_entitlement = extractEntitlement(sub_info[j], title_id_long)
@@ -587,17 +587,17 @@ class SubscriptionImportController extends AbstractDebugController {
                   entitlement_info.coverage = title_row.getCell(6)
                   entitlement_info.coverage_note = title_row.getCell(7)
                   entitlement_info.core_status = title_row.getCell(10) // moved from 8
-  
-                  log.debug("Added entitlement_info ${entitlement_info}");
+
+                    com.k_int.kbplus.SubscriptionImportController.log.debug("Added entitlement_info ${entitlement_info}");
                   result.entitlements.add(entitlement_info)
                 }
                 else {
-                  log.error("TIPP not found in package.");
+                  com.k_int.kbplus.SubscriptionImportController.log.error("TIPP not found in package.");
                   flash.error="You have selected an invalid title/package combination for title ${title_id_long}";
                 }
               }
               else {
-                log.debug("Subscribe=${subscribe} for row ${i} col ${j+SO_START_COL}");
+                com.k_int.kbplus.SubscriptionImportController.log.debug("Subscribe=${subscribe} for row ${i} col ${j+SO_START_COL}");
               }
             }
           }
@@ -605,9 +605,9 @@ class SubscriptionImportController extends AbstractDebugController {
       }
     }
     else {
-      log.error("Input stream is null");
+      com.k_int.kbplus.SubscriptionImportController.log.error("Input stream is null");
     }
-    log.debug("Done");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("Done");
 
     result
   }
@@ -615,7 +615,7 @@ class SubscriptionImportController extends AbstractDebugController {
   private def extractEntitlement(pkg, title_id) {
     def result = pkg.tipps.find { e -> e.title?.id == title_id }
     if ( result == null ) {
-      log.error("Failed to look up title ${title_id} in package ${pkg.name}");
+      com.k_int.kbplus.SubscriptionImportController.log.error("Failed to look up title ${title_id} in package ${pkg.name}");
     }
     result
   }
@@ -623,7 +623,7 @@ class SubscriptionImportController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def processSubscriptionImport() {
 
-    log.debug("processSubscriptionImport...");
+    com.k_int.kbplus.SubscriptionImportController.log.debug("processSubscriptionImport...");
 
     def result = [:]
 
@@ -640,9 +640,9 @@ class SubscriptionImportController extends AbstractDebugController {
     //   return;
     // }
 
-    log.debug("-> renewalsUpload params: ${params}");
+    com.k_int.kbplus.SubscriptionImportController.log.debug("-> renewalsUpload params: ${params}");
 
-    log.debug("entitlements...[${params.ecount}]");
+      com.k_int.kbplus.SubscriptionImportController.log.debug("entitlements...[${params.ecount}]");
 
     if ( params.ecount != null ) {
       int ent_count = Integer.parseInt(params.ecount);
@@ -676,7 +676,7 @@ class SubscriptionImportController extends AbstractDebugController {
         // }
       }
       else {
-        log.error("Problem saving new subscription, ${new_subscription.errors}");
+        com.k_int.kbplus.SubscriptionImportController.log.error("Problem saving new subscription, ${new_subscription.errors}");
       }
   
       new_subscription.save(flush:true);
@@ -688,7 +688,7 @@ class SubscriptionImportController extends AbstractDebugController {
   
       for ( int i=0; i<=ent_count; i++ ) {
         def entitlement = params.entitlements."${i}";
-        log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
+          com.k_int.kbplus.SubscriptionImportController.log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
   
         def dbtipp = TitleInstancePackagePlatform.get(entitlement.tipp_id)
   
@@ -755,19 +755,19 @@ class SubscriptionImportController extends AbstractDebugController {
                                              )
   
           if ( new_ie.save() ) {
-            log.debug("new ie saved");
+            com.k_int.kbplus.SubscriptionImportController.log.debug("new ie saved");
           }
           else {
             new_ie.errors.each{ e ->
-              log.error("Problem saving new ie : ${e}");
+                com.k_int.kbplus.SubscriptionImportController.log.error("Problem saving new ie : ${e}");
             }
           }
         }
         else {
-          log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
+          com.k_int.kbplus.SubscriptionImportController.log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
         }
       }
-      log.debug("done entitlements...");
+        com.k_int.kbplus.SubscriptionImportController.log.debug("done entitlements...");
   
       new_subscription.startDate = earliest_start_date
       new_subscription.endDate = latest_end_date

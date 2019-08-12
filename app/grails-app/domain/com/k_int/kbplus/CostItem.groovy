@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
@@ -10,7 +11,7 @@ import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain
-        implements DeleteFlag, TemplateSupport {
+        implements DeleteFlag, TemplateSupport  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7),
@@ -47,9 +48,6 @@ class CostItem
     @RefdataAnnotation(cat = 'CostItemCategory')
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = 'Currency')
-    RefdataValue billingCurrency    // GDP,USD,etc
-
     @RefdataAnnotation(cat = 'CostItemElement')
     RefdataValue costItemElement
 
@@ -58,6 +56,9 @@ class CostItem
 
     @RefdataAnnotation(cat = 'TaxType')
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
+
+    @RefdataAnnotation(cat = 'Currency')
+    RefdataValue billingCurrency
 
     Boolean includeInSubscription //include in sub details page
 
