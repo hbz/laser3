@@ -211,13 +211,4 @@ class AccessService {
         }
         result
     }
-
-    boolean checkIsEditableForAdmin(User toEdit, User editor, Org org) {
-
-        boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
-        boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-        boolean orgMatch  = checkUserIsMember(toEdit, contextService.getOrg())
-
-        roleAdmin || (instAdmin && orgMatch)
-    }
 }

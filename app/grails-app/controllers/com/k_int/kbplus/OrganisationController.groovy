@@ -667,8 +667,8 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') ||
+                          instAdmService.hasInstAdmPivileges(result.user, orgInstance, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
@@ -756,7 +756,7 @@ class OrganisationController extends AbstractDebugController {
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
 
-      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id))) {
+      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])) {
 
           if (params.cmd == 'approve') {
               uo.status = UserOrg.STATUS_APPROVED
