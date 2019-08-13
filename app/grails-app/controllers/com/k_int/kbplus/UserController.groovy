@@ -127,8 +127,6 @@ class UserController extends AbstractDebugController {
     def edit() {
         def result = setResultGenerics()
 
-        result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-
         if (! result.editable) {
             redirect action: 'list'
             return
@@ -185,8 +183,6 @@ class UserController extends AbstractDebugController {
     def newPassword() {
         def result = setResultGenerics()
 
-        result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
             redirect controller: 'user', action: 'edit', id: params.id
@@ -217,8 +213,6 @@ class UserController extends AbstractDebugController {
     })
     def addAffiliation(){
         def result = setResultGenerics()
-
-        result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
@@ -325,7 +319,10 @@ class UserController extends AbstractDebugController {
 
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = accessService.checkIsEditableForAdmin(result.user, result.editor, contextService.getOrg())
+			result.editable = result.editor.hasRole('ROLE_ADMIN') ||
+                    instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
+            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
             result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')

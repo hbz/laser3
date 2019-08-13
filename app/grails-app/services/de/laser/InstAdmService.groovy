@@ -20,12 +20,12 @@ class InstAdmService {
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
 
     // checking org and combo related orgs
-    boolean hasInstAdmPivileges(User user, Org org) {
+    boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
         boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
-                    org: org, types: [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM]
+                    org: org, types: types
             ]
         )
         topOrgs.each{ top ->
@@ -45,11 +45,22 @@ class InstAdmService {
             result = true
 
             userOrgs.each { org ->
-                result = result && hasInstAdmPivileges(editor, org)
+                result = result && hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
             }
         }
         result
     }
+
+	@Deprecated
+	// moved here from AccessService
+	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
+
+		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
+		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
+
+		roleAdmin || (instAdmin && orgMatch)
+	}
 
     void createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
 
