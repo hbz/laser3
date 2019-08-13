@@ -141,12 +141,14 @@ class UserController extends AbstractDebugController {
                 result.availableOrgs = contextService.getOrg()
 
                 result.availableComboConsOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
                         ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM
                 ]
                 )
                 result.availableComboDeptOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
                         ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_DEPARTMENT
                 ]
                 )
@@ -154,7 +156,7 @@ class UserController extends AbstractDebugController {
             }
             else {
                 result.availableOrgs = Org.executeQuery(
-                        'from Org o where o.sector.value = :sec and o.status.value != \'Deleted\' and o not in ( ' +
+                        'from Org o where o.sector.value = :sec and (o.status is null or o.status.value != \'Deleted\') and o not in ( ' +
                         'select c.fromOrg from Combo c where c.type = :type' +
                         ') ) order by o.sortname',
                         [sec: 'Higher Education', type: RDStore.COMBO_TYPE_DEPARTMENT]
