@@ -184,13 +184,18 @@
                                 </g:each>
                             </table>
                         </g:if>
+                        <g:else>
+                            <p>
+                                <g:message code="subscription.details.noLink"/>
+                            </p>
+                        </g:else>
                         <div class="ui la-vertical buttons">
                             <g:render template="/templates/links/subLinksModal"
                                       model="${[tmplText:message(code:'subscription.details.addLink'),
                                                 tmplID:'addLink',
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
-                                                editmode: editable,
+                                                editmode: accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR"),
                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>

@@ -303,8 +303,7 @@ class BootStrap {
         // TODO: refactoring: partOf
 
         def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
+        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
         // Global System Roles
 
