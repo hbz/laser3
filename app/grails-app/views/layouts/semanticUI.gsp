@@ -619,88 +619,95 @@
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
+                            </div>
+                        </g:if>
+
+                        <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
+
                             <r:script>
                                 $(function(){
-                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
-                                        deckSaver.configs.editMode  = true;
+                                    <g:if test="${editable}">
+                                        <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
+                                            deckSaver.configs.editMode  = true;
+                                        </g:if>
+                                        <g:else>
+                                            deckSaver.configs.editMode  = false;
+                                        </g:else>
                                     </g:if>
                                     <g:else>
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
+
+
                                     deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
                                         deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                          $.ajax({
                                             url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
-                                            data: {
-                                                showEditMode: deckSaver.configs.editMode
-                                            },
-                                            success: function(){
-                                                deckSaver.toggleEditableElements();
-                                            },
-                                            complete: function () {
-
-                                            }
-
-                                        })
+                                                        data: {
+                                                            showEditMode: deckSaver.configs.editMode
+                                                        },
+                                                        success: function(){
+                                                            deckSaver.toggleEditableElements();
+                                                        },
+                                                        complete: function () {
+                                                        }
+                                         })
                                     });
                                 })
                             </r:script>
-
-
-                            </div>
                         </g:if>
-                            <g:if test="${(params.mode)}">
-                                <div class="item">
-                                    <g:if test="${params.mode=='advanced'}">
-                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
-                                            <i class="icon plus square"></i>
-                                        </div>
-                                    </g:if>
-                                    <g:else>
-                                        <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
-                                            <i class="icon plus square green slash"></i>
-                                        </div>
-                                    </g:else>
-                                </div>
-                                <script>
-                                var LaToggle = {};
-                                LaToggle.advanced = {};
-                                LaToggle.advanced.button = {};
+                        <g:if test="${(params.mode)}">
+                            <div class="item">
+                                <g:if test="${params.mode=='advanced'}">
+                                    <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
+                                        <i class="icon plus square"></i>
+                                    </div>
+                                </g:if>
+                                <g:else>
+                                    <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
+                                        <i class="icon plus square green slash"></i>
+                                    </div>
+                                </g:else>
+                            </div>
+                            <script>
+                            var LaToggle = {};
+                            LaToggle.advanced = {};
+                            LaToggle.advanced.button = {};
 
-                                // ready event
-                                LaToggle.advanced.button.ready = function() {
+                            // ready event
+                            LaToggle.advanced.button.ready = function() {
 
-                                    // selector cache
-                                    var
-                                        $button = $('.button.la-toggle-advanced'),
+                                // selector cache
+                                var
+                                    $button = $('.button.la-toggle-advanced'),
 
-                                        // alias
-                                        handler = {
-                                            activate: function() {
-                                                $icon = $(this).find('.icon');
-                                                if ($icon.hasClass("slash")) {
-                                                    $icon.removeClass("slash");
-                                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
-                                                }
-                                                 else {
-                                                    $icon.addClass("slash");
-                                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
-                                                }
+                                    // alias
+                                    handler = {
+                                        activate: function() {
+                                            $icon = $(this).find('.icon');
+                                            if ($icon.hasClass("slash")) {
+                                                $icon.removeClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                            }
+                                             else {
+                                                $icon.addClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
                                             }
                                         }
-                                    ;
-                                    $button
-                                        .on('click', handler.activate)
-                                    ;
-                                };
-
-                                // attach ready event
-                                $(document)
-                                    .ready(LaToggle.advanced.button.ready)
+                                    }
                                 ;
-                            </script>
-                            </g:if>
+                                $button
+                                    .on('click', handler.activate)
+                                ;
+                            };
+
+                            // attach ready event
+                            $(document)
+                                .ready(LaToggle.advanced.button.ready)
+                            ;
+                        </script>
+                        </g:if>
                 </div>
 
             </div>
