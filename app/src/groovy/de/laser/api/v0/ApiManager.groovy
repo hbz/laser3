@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.64'
+    static final VERSION = '0.65'
     static final NOT_SUPPORTED = false
 
     /**
@@ -250,7 +250,7 @@ class ApiManager {
         result
     }
 
-    static buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
+    static List buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
         def response = []
 
@@ -270,15 +270,21 @@ class ApiManager {
 
             switch(result['result']) {
                 case Constants.HTTP_CREATED:
-                    response << new JSON( trimJson(["message": "resource successfully created", "debug": result['debug']]))
+                    response << new JSON( trimJson(["message": "resource successfully created",
+                                                    "debug": result['debug'],
+                                                    "status": HttpStatus.CREATED.value()]))
                     response << HttpStatus.CREATED.value()
                     break
                 case Constants.HTTP_CONFLICT:
-                    response << new JSON( trimJson(["message": "conflict with existing resource", "debug": result['debug']]))
+                    response << new JSON( trimJson(["message": "conflict with existing resource",
+                                                    "debug": result['debug'],
+                                                    "status": HttpStatus.CONFLICT.value()]))
                     response << HttpStatus.CONFLICT.value()
                     break
                 case Constants.HTTP_INTERNAL_SERVER_ERROR:
-                    response << new JSON( trimJson(["message": "resource not created", "debug": result['debug']]))
+                    response << new JSON( trimJson(["message": "resource not created",
+                                                    "debug": result['debug'],
+                                                    "status": HttpStatus.INTERNAL_SERVER_ERROR.value()]))
                     response << HttpStatus.INTERNAL_SERVER_ERROR.value()
                     break
             }
@@ -288,33 +294,47 @@ class ApiManager {
 
         else if (Constants.HTTP_FORBIDDEN == result) {
             if (contextOrg) {
-                response << new JSON( trimJson(["message": "forbidden", "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode]))
+                response << new JSON( trimJson(["message": "forbidden",
+                                                "obj": obj, "q": query, "v": value, "context": contextOrg.shortcode,
+                                                "status": HttpStatus.FORBIDDEN.value()]))
                 response << HttpStatus.FORBIDDEN.value()
             }
             else {
-                response << new JSON( trimJson(["message": "forbidden", "obj": obj, "context": context]))
+                response << new JSON( trimJson(["message": "forbidden",
+                                                "obj": obj, "context": context,
+                                                "status": HttpStatus.FORBIDDEN.value()]))
                 response << HttpStatus.FORBIDDEN.value()
             }
         }
         else if (Constants.HTTP_NOT_ACCEPTABLE == result) {
-            response << new JSON( trimJson(["message": "requested format not supported", "method": request.method, "accept": request.getHeader('accept'), "obj": obj]))
+            response << new JSON( trimJson(["message": "requested format not supported",
+                                            "method": request.method, "accept": request.getHeader('accept'), "obj": obj,
+                                            "status": HttpStatus.NOT_ACCEPTABLE.value()]))
             response << HttpStatus.NOT_ACCEPTABLE.value()
         }
         else if (Constants.HTTP_NOT_IMPLEMENTED == result) {
-            response << new JSON( trimJson(["message": "requested method not implemented", "method": request.method, "obj": obj]))
+            response << new JSON( trimJson(["message": "requested method not implemented",
+                                            "method": request.method, "obj": obj,
+                                            "status": HttpStatus.NOT_IMPLEMENTED.value()]))
             response << HttpStatus.NOT_IMPLEMENTED.value()
         }
         else if (Constants.HTTP_BAD_REQUEST == result) {
-            response << new JSON( trimJson(["message": "invalid/missing identifier or post body", "obj": obj, "q": query, "context": context]))
+            response << new JSON( trimJson(["message": "invalid/missing identifier or post body",
+                                            "obj": obj, "q": query, "context": context,
+                                            "status": HttpStatus.BAD_REQUEST.value()]))
             response << HttpStatus.BAD_REQUEST.value()
         }
         else if (Constants.HTTP_PRECONDITION_FAILED == result) {
-            response << new JSON( trimJson(["message": "precondition failed; multiple matches", "obj": obj, "q": query, "context": context]))
+            response << new JSON( trimJson(["message": "precondition failed; multiple matches",
+                                            "obj": obj, "q": query, "context": context,
+                                            "status": HttpStatus.PRECONDITION_FAILED.value()]))
             response << HttpStatus.PRECONDITION_FAILED.value()
         }
 
         if (! result) {
-            response << new JSON( trimJson(["message": "result not found", "obj": obj, "q": query, "v": value, "context": context]))
+            response << new JSON( trimJson(["message": "result not found",
+                                            "obj": obj, "q": query, "v": value, "context": context,
+                                            "status": HttpStatus.NOT_FOUND.value()]))
             response << HttpStatus.NOT_FOUND.value()
         }
         else {

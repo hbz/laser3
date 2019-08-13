@@ -105,6 +105,25 @@
     </defs>
   </svg>
 
+<pre style="margin-top:100px; display:none">
+    // calculation of hmac
+
+    var apiKey        = "&lt;apiKey&gt;"
+    var apiPassword   = "&lt;apiPassword&gt;"
+    var method        = "GET"
+    var path          = "/api/0/&lt;apiEndpoint&gt;"
+    var timestamp     = ""
+    var nounce        = ""
+    var q             = "&lt;q&gt;"
+    var v             = "&lt;v&gt;"
+    var context       = "&lt;context&gt;"
+    var query         = $.grep( [(q ? "q=" + q : null), (v ? "v=" + v : null), (context ? "context=" + context : null)], function(e, i){ return e }).join('&')
+    var body          = ""
+    var algorithm     = "hmac-sha256"
+    var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, apiPassword)
+    var authorization = "hmac " + apiKey + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+</pre>
+
     <div id="swagger-ui"></div>
 
     <script>
@@ -166,10 +185,10 @@
             }, 2000)
 
             function genDigist(div) {
-                var id      = jQuery('.topbar-wrapper input[name=apiKey]').val().trim()
-                var key     = jQuery('.topbar-wrapper input[name=apiPassword]').val().trim()
-                var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
-                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
+                var id        = jQuery('.topbar-wrapper input[name=apiKey]').val().trim()
+                var key       = jQuery('.topbar-wrapper input[name=apiPassword]').val().trim()
+                var method    = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
+                var path      = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""
                 var nounce    = ""
 
@@ -186,21 +205,15 @@
 
                 if(method == "GET") {
                     var q = jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]')
-                    q = q.length ? "q=" + q.val().trim() : ''
-
                     var v = jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]')
-                    v = v.length ? "v=" + v.val().trim() : ''
+
+                    q = (q.length && q.val().trim().length) ? "q=" + q.val().trim() : ''
+                    v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''
 
                     query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '')
 
                     console.log(query)
                 }
-                /*
-                if(method == "GET") {
-                    query = "q=" + jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]').val().trim()
-                            + "&v=" + jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]').val().trim()
-                            + (context ? "&context=" + context : '')
-                }*/
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')
                     body  = jQuery(div).find('.body-param > textarea').val().trim()
