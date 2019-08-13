@@ -7,6 +7,7 @@ import com.k_int.kbplus.auth.UserRole
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.validation.FieldError
 
@@ -126,8 +127,6 @@ class UserController extends AbstractDebugController {
     def edit() {
         def result = setResultGenerics()
 
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-
         if (! result.editable) {
             redirect action: 'list'
             return
@@ -140,13 +139,28 @@ class UserController extends AbstractDebugController {
         else {
             if (! result.editor.hasRole('ROLE_ADMIN')) {
                 result.availableOrgs = contextService.getOrg()
-                result.availableComboOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
+
+                result.availableComboConsOrgs = Combo.executeQuery(
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM
+                ]
+                )
+                result.availableComboDeptOrgs = Combo.executeQuery(
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_DEPARTMENT
+                ]
                 )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
             else {
-                result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.sortname', 'Higher Education')
+                result.availableOrgs = Org.executeQuery(
+                        'from Org o where o.sector.value = :sec and (o.status is null or o.status.value != \'Deleted\') and o not in ( ' +
+                        'select c.fromOrg from Combo c where c.type = :type' +
+                        ') ) order by o.sortname',
+                        [sec: 'Higher Education', type: RDStore.COMBO_TYPE_DEPARTMENT]
+                )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
         }
@@ -170,8 +184,6 @@ class UserController extends AbstractDebugController {
     })
     def newPassword() {
         def result = setResultGenerics()
-
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
@@ -203,8 +215,6 @@ class UserController extends AbstractDebugController {
     })
     def addAffiliation(){
         def result = setResultGenerics()
-
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
@@ -311,7 +321,10 @@ class UserController extends AbstractDebugController {
 
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = accessService.checkIsEditableForAdmin(result.user, result.editor, contextService.getOrg())
+			result.editable = result.editor.hasRole('ROLE_ADMIN') ||
+                    instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
+            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
             result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')

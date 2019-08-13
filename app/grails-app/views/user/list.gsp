@@ -121,7 +121,7 @@
                                 </sec:ifNotGranted>
                             </td>
                             <td class="x">
-                                <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
+                                <g:if test="${editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(us, contextService.getUser())}">
                                     <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
                                 </g:if>
                             </td>
