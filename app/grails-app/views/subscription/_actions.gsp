@@ -1,8 +1,11 @@
-<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.interfaces.TemplateSupport; com.k_int.kbplus.OrgRole; com.k_int.kbplus.Org; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription;com.k_int.kbplus.SubscriptionPackage" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
 
 <laser:serviceInjection />
+
+<g:set var="user" value="${contextService.user}"/>
+<g:set var="org" value="${contextService.org}"/>
 
 <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
@@ -30,7 +33,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${params.filter || params.asAt}">
                     <g:link  class="item js-open-confirm-modal"
-                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok"
                             action="index"
                             id="${params.id}"
@@ -49,14 +52,13 @@
         <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
     </g:if>
-    <g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR')}">
+    <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
         <div class="divider"></div>
         <%
             Subscription sub = Subscription.get(params.id)
-            Org org = contextService.getOrg()
             boolean isCopySubEnabled = sub?.orgRelations?.find{it.org.id == org.id && (it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id || it.roleType.id == RDStore.OR_SUBSCRIBER.id)}
         %>
         <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
@@ -72,8 +74,25 @@
 
         <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${subscriptionInstance.instanceOf}">
+                <g:if test="${params.pkgfilter}">
+                    <g:set var="pkg" value="${SubscriptionPackage.get(params.pkgfilter)}"/>
+                    <g:if test="${!pkg.finishDate}">
+                        <semui:actionsDropdownItem controller="subscription" action="renewEntitlements" params="${[targetSubscriptionId:params.id,packageId:params.pkgfilter]}" message="subscription.details.renewEntitlements.label"/>
+                    </g:if>
+                    <g:else>
+                        <semui:actionsDropdownItemDisabled message="subscription.details.renewEntitlements.label" tooltip="${message(code:'subscription.details.renewEntitlements.packageRenewalAlreadySubmitted')}"/>
+                    </g:else>
+                </g:if>
+                <g:else>
+                    <semui:actionsDropdownItemDisabled message="subscription.details.renewEntitlements.label" tooltip="${message(code:'subscription.details.renewEntitlements.packageMissing')}"/>
+                </g:else>
+            </g:if>
+        </sec:ifAnyGranted>
 
-        <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
+        <g:if test="${(org.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id]) && !subscriptionInstance.instanceOf}">
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
@@ -81,21 +100,21 @@
         <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
             <div class="divider">OLD:</div>
             <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
-            <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !previousSubscriptions}">
+            <g:if test="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && !previousSubscriptions}">
                 <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
                                        params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                        message="menu.institutions.imp_renew"/>
             </g:if>
 
-            <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
+            <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM") && !previousSubscriptions}">
                 <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
                                            params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
             </g:if>
             <div class="divider"></div>
         </sec:ifAnyGranted>
 
-        <g:if test="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL && (RDStore.OT_CONSORTIUM?.id in contextService.getOrg()?.getallOrgTypeIds())}">
+        <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
             <g:if test ="${previousSubscriptions}">
                 <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
                                                    params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
@@ -105,7 +124,7 @@
                                        params="${[id: params.id]}" message="subscription.details.renewals.label"/>
             </g:else>
         </g:if>
-        <g:if test ="${subscriptionInstance?.type == RDStore.SUBSCRIPTION_TYPE_LOCAL}">
+        <g:if test ="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL}">
             <g:if test ="${previousSubscriptions}">
                 <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Local"
                                                    params="${[id: params.id]}" message="subscription.details.renewals.label"/>
@@ -116,9 +135,9 @@
             </g:else>
         </g:if>
 
-          <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
+          <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
 
-              <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
+              <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                          params="${[id: params.id]}"
                                          message="subscription.details.subscriberManagement.label"/>
         </g:if>
@@ -131,7 +150,7 @@
         </g:if>
 
         <g:if test="${actionName == 'show'}">
-            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+            <g:if test="${accessService.checkMinUserOrgRole(user,org,"INST_EDITOR")}">
                 <div class="divider"></div>
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </g:if>
@@ -152,6 +171,6 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR')}">
+<g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>

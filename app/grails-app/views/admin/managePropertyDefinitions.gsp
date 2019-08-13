@@ -37,7 +37,7 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
+                            <th>${message(code:'propertyDefinition.key.label')}</th>
                             <th>DE</th>
                             <th>EN</th>
                             <th>Erklärung</th>
@@ -52,7 +52,7 @@
                                 <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.hardData}">
+                                        <g:if test="${pd.isHardData}">
                                             <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
@@ -83,7 +83,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nName}" field="valueDe" />
                                         </g:if>
                                         <g:else>
@@ -91,7 +91,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nName}" field="valueEn" />
                                         </g:if>
                                         <g:else>
@@ -99,7 +99,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
                                         </g:if>
                                         <g:else>
@@ -107,7 +107,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
                                         </g:if>
                                         <g:else>
@@ -140,7 +140,7 @@
                                             </g:if>
                                         </sec:ifAnyGranted>
 
-                                        <g:if test="${! pd.hardData && ! usedPdList?.contains(pd.id)}">
+                                        <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
                                                     params="${[cmd: 'deletePropertyDefinition', pd: 'com.k_int.properties.PropertyDefinition:' + pd.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>

@@ -1,16 +1,17 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
-import java.time.Year
 
 import javax.persistence.Transient
+import java.time.Year
 
 class CostItem
         extends AbstractBaseDomain
-        implements DeleteFlag, TemplateSupport {
+        implements DeleteFlag, TemplateSupport  {
 
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7),
@@ -47,9 +48,6 @@ class CostItem
     @RefdataAnnotation(cat = 'CostItemCategory')
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = 'Currency')
-    RefdataValue billingCurrency    // GDP,USD,etc
-
     @RefdataAnnotation(cat = 'CostItemElement')
     RefdataValue costItemElement
 
@@ -58,6 +56,9 @@ class CostItem
 
     @RefdataAnnotation(cat = 'TaxType')
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
+
+    @RefdataAnnotation(cat = 'Currency')
+    RefdataValue billingCurrency
 
     Boolean includeInSubscription //include in sub details page
 
@@ -133,8 +134,8 @@ class CostItem
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
-        endDate         column: 'ci_end_date'
-        startDate       column: 'ci_start_date'
+        endDate         column: 'ci_end_date',    index:'ci_dates_idx'
+        startDate       column: 'ci_start_date',  index:'ci_dates_idx'
         copyBase        column: 'ci_copy_base'
         reference       column: 'ci_reference'
         autoTimestamp true

@@ -1,11 +1,12 @@
 package com.k_int.kbplus
+
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import groovy.json.JsonSlurper
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
-import groovy.util.logging.*
+import groovy.json.JsonSlurper
+import groovy.util.logging.Log4j
 
 @Log4j
 class OrgAccessPoint extends AbstractBaseDomain {

@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import javax.persistence.Transient
-
 class IdentifierOccurrence {
 
     // TODO AuditTrail
@@ -26,7 +24,7 @@ class IdentifierOccurrence {
         org     column:'io_org_fk'
         pkg     column:'io_pkg_fk'
         sub     column:'io_sub_fk'
-        ti      column:'io_ti_fk'
+        ti      column:'io_ti_fk',      index:'io_title_idx'
         tipp    column:'io_tipp_fk'
         cre    column:'io_cre_fk'
 

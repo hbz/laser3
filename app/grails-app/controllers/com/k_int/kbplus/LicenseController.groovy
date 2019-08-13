@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.DeletionService
@@ -7,16 +10,10 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.converters.*
-import com.k_int.kbplus.auth.*;
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-
-import javax.servlet.ServletOutputStream
-
-import static grails.async.Promises.task
-import static grails.async.Promises.waitAll
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -81,7 +78,7 @@ class LicenseController extends AbstractDebugController {
             // refactoring: replace link table with instanceOf
             // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-            if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
+            if (result.license.isSlaved && pendingChanges) {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
@@ -156,7 +153,7 @@ class LicenseController extends AbstractDebugController {
 
             result.license.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
-                    if (pl.prs.isPublic?.value != 'No') {
+                    if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
@@ -263,7 +260,6 @@ class LicenseController extends AbstractDebugController {
         if (! result) {
             response.sendError(401); return
         }
-        result.institution = contextService.getOrg()
 
         if (result.license?.instanceOf?.instanceOf?.isTemplate()) {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf LParent.instanceOf LTemplate')
@@ -272,11 +268,11 @@ class LicenseController extends AbstractDebugController {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
 
                 def consMembers = Org.executeQuery(
-                        'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
-                        [inst:result.institution, cons:'Consortium']
+                        'select c.fromOrg from Combo as c where c.toOrg = :inst and c.type = :cons',
+                        [inst:result.institution, cons:RDStore.COMBO_TYPE_CONSORTIUM]
                 )
 
                 def memberSubs = Subscription.executeQuery(
@@ -287,8 +283,8 @@ class LicenseController extends AbstractDebugController {
                 def validOrgs = [[id:Long.parseLong('0')]] // erms-582
                 if (memberSubs) {
                     validOrgs = Org.executeQuery(
-                            'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
-                            [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs: memberSubs]
+                            'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',
+                            [orgs: consMembers, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], subs: memberSubs]
                     )
                 }
 
@@ -326,16 +322,16 @@ class LicenseController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        def orgType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
-            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        def orgType       = [RDStore.OT_INSTITUTION.id.toString()]
+        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
         }
         def role_lic      = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+            if (accessService.checkPerm("ORG_CONSORTIUM")) {
                 def cons_members = []
                 def licenseCopy
 
@@ -499,12 +495,11 @@ from Subscription as s where
         redirect controller: 'license', action: 'show', params: params
         return
 
-    def slaved = RefdataValue.getByValueAndCategory('Yes', 'YN')
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
          def orgaisation = Org.get(orgID)
-          def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:slaved]
+          def attrMap = [baselicense:params.baselicense,lic_name:params.lic_name,isSlaved:true]
           log.debug("Create slave license for ${orgaisation.name}")
           attrMap.copyStartEnd = true
           institutionsService.copyLicense(attrMap);

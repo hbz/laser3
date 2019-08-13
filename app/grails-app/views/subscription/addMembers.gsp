@@ -12,11 +12,11 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
+                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
-                 text="${message(code: 'subscription.details.addMembers.label', default: 'Add Members')}"/>
+                 text="${message(code: 'subscription.details.addMembers.label')}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -28,13 +28,12 @@
                class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
 </h1>
 
-<g:render template="nav" contextPath="."/>
+<g:render template="nav"/>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in institution?.getallOrgTypeIds())}">
+<g:if test="${consortialView || departmentalView}">
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow      : [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
@@ -48,41 +47,41 @@
             class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList          : cons_members,
-                          tmplDisableOrgIds: cons_members_disabled,
+                  model="[orgList          : members,
+                          tmplDisableOrgIds: members_disabled,
                           subInstance      : subscriptionInstance,
                           tmplShowCheckbox : true,
                           tmplConfigShow   : ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>
 
-        <g:if test="${cons_members}">
+        <g:if test="${members}">
             <div class="ui two fields">
                 <div class="field">
-                    <label for="subStatus">Lizenz kopieren</label>
+                    <label for="subStatus"><g:message code="myinst.copySubscription"/></label>
 
                     %{--ERMS-1155
                     <div class="ui checkbox">
                         <input class="hidden" type="checkbox" id="generateSlavedSubs" name="generateSlavedSubs" value="Y" checked="checked"
                                readonly="readonly">
-                        <label for="generateSlavedSubs">${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
+                        <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>--}%
 
-                    <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"
+                    <g:set value="${RefdataCategory.findByDesc('Subscription Status')}"
                            var="rdcSubStatus"/>
 
                     <br/>
                     <br/>
 
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                    <g:select from="${RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
                               id="subStatus"
-                              value="${com.k_int.kbplus.Subscription.get(params.id).status?.id.toString()}"/>
+                              value="${Subscription.get(params.id).status?.id.toString()}"/>
                 </div>
 
                 <div class="field">
-                    <label >Vertrag kopieren</label>
+                    <label><g:message code="myinst.copyLicense"/></label>
                     <g:if test="${subscriptionInstance.owner}">
                         <div class="ui radio checkbox">
                             <g:if test="${subscriptionInstance.owner.derivedLicenses}">
@@ -92,26 +91,26 @@
                                 <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no"
                                        checked="checked">
                             </g:else>
-                            <label for="generateSlavedLics">${message(code: 'myinst.emptySubscription.seperate_lics_no')}</label>
+                            <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                         </div>
 
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics"
                                    value="shared">
-                            <label for="generateSlavedLics1">${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_shared', args: superOrgType)}</label>
                         </div>
 
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics"
                                    value="explicit">
-                            <label for="generateSlavedLics2">${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
+                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_explicit', args: superOrgType)}</label>
                         </div>
 
                         <g:if test="${subscriptionInstance.owner.derivedLicenses}">
                             <div class="ui radio checkbox">
                                 <input class="hidden" type="radio" id="generateSlavedLics3" name="generateSlavedLics"
                                        value="reference" checked="checked">
-                                <label for="generateSlavedLics3">${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
+                                <label for="generateSlavedLics3">${message(code: 'myinst.separate_lics_reference')}</label>
                             </div>
 
                             <div class="generateSlavedLicsReference-wrapper hidden">
@@ -134,7 +133,7 @@
 
                     </g:if>
                     <g:else>
-                        <semui:msg class="info" text="Es ist kein Vertrag vorhanden."/>
+                        <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
                     </g:else>
                 </div>
             </div>
@@ -146,24 +145,33 @@
         </g:if>
 
         <br/>
-        <g:if test="${cons_members}">
+        <g:if test="${members}">
             <div class="field la-field-right-aligned">
                 <input type="submit" class="ui button js-click-control"
-                       value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+                       value="${message(code: 'default.button.create.label')}"/>
             </div>
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_INST_COLLECTIVE, ORG_CONSORTIUM","INST_ADM")}">
         <hr/>
 
         <div class="ui info message">
-            <div class="header">Konsorten verwalten</div>
-
+            <div class="header">
+                <g:if test="${consortialView}">
+                    <g:message code="myinst.noMembers.cons.header"/>
+                </g:if>
+                <g:elseif test="${departmentalView}">
+                    <g:message code="myinst.noMembers.dept.header"/>
+                </g:elseif>
+            </div>
             <p>
-                Sie können bei Bedarf über
-                <g:link controller="myInstitution" action="addMembers">diesen Link</g:link>
-                Ihre Konsorten verwalten ..
+                <g:if test="${consortialView}">
+                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
+                </g:if>
+                <g:elseif test="${departmentalView}">
+                    <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'collective.member.plural')]}"/>
+                </g:elseif>
             </p>
         </div>
     </g:if>

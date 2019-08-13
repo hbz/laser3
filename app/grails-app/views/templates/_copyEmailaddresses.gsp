@@ -1,28 +1,27 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="static de.laser.helper.RDStore.*" %>
 <laser:serviceInjection />
 
-<g:set var="modalID"               value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
+<g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
 <semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
 
-    <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
-    <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}" scope="request"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}" scope="request"/>
 
-    <div class="field">
-        <label><g:message code="person.function.label" default="Function"/></label>&nbsp
+    <div>
+    <label><g:message code="person.function.label" default="Function"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsFunctionMultiSelect"
                       multiple=""
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
-                      value="${rdvGeneralContactPrs.id}"/>
+                      value="${PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
     </div>
     <br>
-    <div class="field">
+    <div>
         <label><g:message code="person.position.label" default="Position"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsPositionMultiSelect"
@@ -32,49 +31,100 @@
                       optionValue="value"
                       />
     </div>
+    <br />
+    <div class="ui checkbox">
+        <input type="checkbox" id="publicContacts" checked/>
+        <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
+    </div>
+    <div class="ui checkbox">
+        <input type="checkbox" id="privateContacts" checked/>
+        <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
+    </div>
+
     <br><br>
     %{--Create Collections of EmailAdresses, that will be shown by javascript acconding to the dropdown selection--}%
     %{--Create a map with EmailAdresses for each Element in the dropdownmenu--}%
-    <g:set var="functionEmailsMap" value="${new HashMap()}"/>
+    <g:set var="functionPublicEmailsMap" value="${new HashMap()}"/>
+    <g:set var="functionPrivateEmailsMap" value="${new HashMap()}"/>
     %{--Create a set with all EmailAdresses, in case no dropdown Element is selected--}%
-    <g:set var="functionAllEmailsSet" value="${new HashSet()}"/>
+    <g:set var="functionAllPublicEmailsSet" value="${new HashSet()}"/>
+    <g:set var="functionAllPrivateEmailsSet" value="${new HashSet()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" >
-        <g:set var="emailsForFunction" value="${new HashSet()}"/>
+        <g:set var="publicEmailsForFunction" value="${new HashSet()}"/>
+        <g:set var="privateEmailsForFunction" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
-                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
-                    <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
+                <g:if test="${person?.isPublic}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             def emailPF = email?.content?.trim()
                             if (emailPF != null) {
-                                emailsForFunction.add( emailPF )
-                                functionAllEmailsSet.add( emailPF )
+                                publicEmailsForFunction.add( emailPF )
+                                functionAllPublicEmailsSet.add( emailPF )
                             }
                         %>
                     </g:each>
                 </g:if>
+                <g:elseif test="${(! person.isPublic) && (person.tenant?.id == contextService.getOrg()?.id)}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
+                        <%
+                            emailPF = email?.content?.trim()
+                            if (emailPF != null) {
+                                privateEmailsForFunction.add( emailPF )
+                                functionAllPrivateEmailsSet.add( emailPF )
+                            }
+                        %>
+                    </g:each>
+                </g:elseif>
             </g:each>
+ %{--comment in for control purposes--}%
+            %{--<g:if test="${privateEmailsForFunction || publicEmailsForFunction}">--}%
+                %{--<g:textArea id="test1" name="test1" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" >--}%
+                    %{--${"---------privateEmailsForFunction for Org "+org.sortname+" and function "+prsFunction?.getI10n('value')+"-----"}--}%
+                    %{--${privateEmailsForFunction}--}%
+                    %{--${"---------publiceEmailsForFunction for Org "+org.sortname+" and function "+prsFunction?.getI10n('value')+"-----"}--}%
+                    %{--${publicEmailsForFunction}--}%
+                %{--</g:textArea>--}%
+            %{--</g:if>--}%
         </g:each>
-        <% functionEmailsMap.put(prsFunction.id, emailsForFunction) %>
+        <%
+            functionPublicEmailsMap.put(prsFunction.id, publicEmailsForFunction)
+            functionPrivateEmailsMap.put(prsFunction.id, privateEmailsForFunction)
+        %>
     </g:each>
     <g:each in="${rdvAllPersonPositions}" var="prsPosition" >
-        <g:set var="emailsForPosition" value="${new HashSet()}"/>
+        <g:set var="publicEmailsForPosition" value="${new HashSet()}"/>
+        <g:set var="privateEmailsForPosition" value="${new HashSet()}"/>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
-                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
-                    <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
+                <g:if test="${person?.isPublic}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
                         <%
                             def emailPP = email?.content?.trim()
                             if (emailPP != null) {
-                                emailsForPosition.add(emailPP)
-                                functionAllEmailsSet.add(emailPP)
+                                publicEmailsForPosition.add(emailPP)
+                                functionAllPublicEmailsSet.add(emailPP)
                             }
                         %>
                     </g:each>
                 </g:if>
+                <g:elseif test="${(! person.isPublic) && person.tenant?.id == contextService.getOrg()?.id}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, CCT_EMAIL)}" var="email">
+                        <%
+                            emailPP = email?.content?.trim()
+                            if (emailPP != null) {
+                                privateEmailsForPosition.add(emailPP)
+                                functionAllPrivateEmailsSet.add(emailPP)
+                            }
+                        %>
+                    </g:each>
+                </g:elseif>
             </g:each>
         </g:each>
-        <% functionEmailsMap.put(prsPosition.id, emailsForPosition)%>
+        <%
+            functionPublicEmailsMap.put(prsPosition.id, publicEmailsForPosition)
+            functionPrivateEmailsMap.put(prsPosition.id, privateEmailsForPosition)
+        %>
     </g:each>
     <div class="ui form">
         <div class="field">
@@ -113,11 +163,15 @@
             }).modal('show')
         });
 
-        var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
-        var jsonAllEmailSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsSet)%>;
+        var jsonFunctionPublicEmailsMap = <%=groovy.json.JsonOutput.toJson((Map)functionPublicEmailsMap)%>;
+        var jsonFunctionPrivateEmailsMap = <%=groovy.json.JsonOutput.toJson((Map)functionPrivateEmailsMap)%>;
+        var jsonFunctionAllPublicEmailsSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllPublicEmailsSet)%>;
+        var jsonFunctionAllPrivateEmailsSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllPrivateEmailsSet)%>;
 
         $("#prsFunctionMultiSelect").change(function() { updateTextArea(); });
         $("#prsPositionMultiSelect").change(function() { updateTextArea(); });
+        $("#privateContacts").change(function() { updateTextArea(); });
+        $("#publicContacts").change(function() { updateTextArea(); });
 
         function copyToEmailProgram() {
             var emailAdresses = $("#emailAddressesTextArea").val();
@@ -130,19 +184,33 @@
         }
 
         function updateTextArea() {
+            var isPrivate = $("#privateContacts").is(":checked")
+            var isPublic = $("#publicContacts").is(":checked")
             $("#emailAddressesTextArea").val("")
             var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
             if (selectedRoleTypIds.length == 0) {
-                emailsForSelectedRoleTypes = jsonAllEmailSet;
+                if (isPrivate) emailsForSelectedRoleTypes.pushValues(jsonFunctionAllPrivateEmailsSet);
+                if (isPublic) emailsForSelectedRoleTypes.pushValues(jsonFunctionAllPublicEmailsSet);
             } else {
                 // Collect selected EmailAdresses from Map without duplicates
                 for (var i = 0; i<selectedRoleTypIds.length; i++) {
-                    var tmpEmailArray = jsonEmailMap[selectedRoleTypIds[i]];
-                    for (var j = 0; j<tmpEmailArray.length; j++) {
-                        var email = tmpEmailArray[j].trim();
-                        if ( ! emailsForSelectedRoleTypes.includes(email)) {
-                            emailsForSelectedRoleTypes.push(email);
+                    if (isPrivate){
+                        var tmpEmailArray = jsonFunctionPrivateEmailsMap[selectedRoleTypIds[i]];
+                        for (var j = 0; j<tmpEmailArray.length; j++) {
+                            var email = tmpEmailArray[j].trim();
+                            if ( ! emailsForSelectedRoleTypes.includes(email)) {
+                                emailsForSelectedRoleTypes.push(email);
+                            }
+                        }
+                    }
+                    if (isPublic){
+                        var tmpEmailArray = jsonFunctionPublicEmailsMap[selectedRoleTypIds[i]];
+                        for (var j = 0; j<tmpEmailArray.length; j++) {
+                            var email = tmpEmailArray[j].trim();
+                            if ( ! emailsForSelectedRoleTypes.includes(email)) {
+                                emailsForSelectedRoleTypes.push(email);
+                            }
                         }
                     }
                 }

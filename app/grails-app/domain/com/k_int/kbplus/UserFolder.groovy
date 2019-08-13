@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+
 import javax.persistence.Transient
 
 class UserFolder {
@@ -25,7 +26,7 @@ class UserFolder {
         user column:'uf_owner_id'
    shortcode column:'uf_shortcode'
         name column:'uf_name'
-       items cascade: 'all-delete-orphan'
+       items cascade: 'all-delete-orphan', batchSize: 10
       dateCreated column: 'uf_dateCreated'
       lastUpdated column: 'uf_lastUpdated'
   }

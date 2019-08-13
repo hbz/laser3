@@ -63,7 +63,7 @@
 						
 							<td>${fieldValue(bean: addressInstance, field: "org")}</td>
 							
-							<td>${addressInstance?.prs?.isPublic}</td>
+							<td>${addressInstance?.prs?.isPublic ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
 						
 							<td class="link">
 								<g:link action="show" id="${addressInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>

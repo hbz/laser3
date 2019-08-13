@@ -153,7 +153,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in context?.getallOrgTypeIds())) {
+        if (org.id == context?.id || (RDStore.OT_CONSORTIUM.id in context?.getallOrgTypeIds())) {
             hasAccess = true
         }
         if (hasAccess) {
@@ -757,7 +757,7 @@ class ApiReaderHelper {
 
             // RefdataValues
             result.gender          = prs.gender?.value
-            result.isPublic        = prs.isPublic?.value
+            result.isPublic        = prs.isPublic ? 'Yes' : 'No'
 
             // References
             result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact

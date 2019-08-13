@@ -1,13 +1,9 @@
 package com.k_int.oai
 
 import de.laser.controller.AbstractDebugController
-import grails.converters.*
-import grails.plugin.springsecurity.annotation.Secured
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.gokb.cred.*
 import groovy.xml.MarkupBuilder
 import groovy.xml.StreamingMarkupBuilder
-
+import org.gokb.cred.*
 
 // K-Int generic OAI Module, imported into KB+ 15/03/16 to support title data exchange.
 // Licensed under GPL

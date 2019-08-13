@@ -1,8 +1,7 @@
 package de.laser.helper
 
-import com.k_int.kbplus.RefdataCategory
+
 import com.k_int.kbplus.RefdataValue
-import de.laser.interfaces.Permissions
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -19,6 +18,8 @@ class RDStore {
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
     static final OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden','Organisational Role')
+    static final OR_SUBSCRIPTION_COLLECTIVE = getRefdataValue('Subscription Collective','Organisational Role')
+    static final OR_SUBSCRIBER_COLLECTIVE   = getRefdataValue('Subscriber_Collective','Organisational Role')
 
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
@@ -51,7 +52,7 @@ class RDStore {
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', 'Subscription Status')
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
-    static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('subscription.status.no.status.set.but.null','filter.fake.values')
+    static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', 'Subscription Status')
 
     static final SURVEY_READY               = getRefdataValue('Ready', 'Survey Status')
     static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', 'Survey Status')

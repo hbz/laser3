@@ -1,15 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.controller.AbstractDebugController
-import de.laser.domain.I10nTranslation
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.User
-import org.jfree.ui.about.Licences
-import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseCompareController extends AbstractDebugController {
@@ -100,14 +97,14 @@ class LicenseCompareController extends AbstractDebugController {
             switch(wrapperKey) {
               case "global":
                 groupKey = (PropertyDefinitionGroup) propDefGroup
-                if(groupKey.visible == RDStore.YN_YES)
+                if(groupKey.isVisible)
                   groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,lic))
                 break
               case "local":
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                  if(groupBinding.visible == RDStore.YN_YES) {
+                  if(groupBinding.isVisible) {
                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
                   }
                 }
@@ -120,7 +117,7 @@ class LicenseCompareController extends AbstractDebugController {
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                  if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
+                  if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
                     groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
                   }
                 }

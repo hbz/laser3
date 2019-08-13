@@ -70,7 +70,7 @@ ${usedRdvList.join(", ")}
                                 </td>
                                 <td></td>
                                 <td>
-                                    <g:if test="${!rdc.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                    <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                         <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
                                     </g:if>
                                     <g:else>
@@ -78,7 +78,7 @@ ${usedRdvList.join(", ")}
                                     </g:else>
                                 </td>
                                 <td>
-                                    <g:if test="${!rdc.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                    <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                         <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                     </g:if>
                                     <g:else>
@@ -92,7 +92,7 @@ ${usedRdvList.join(", ")}
                             <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                                 <tr>
                                     <td>
-                                        <g:if test="${rdv.hardData}">
+                                        <g:if test="${rdv.isHardData}">
                                             <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
@@ -108,7 +108,7 @@ ${usedRdvList.join(", ")}
                                         ${rdv.value}
                                     </td>
                                     <td>
-                                        <g:if test="${!rdv.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                         </g:if>
                                         <g:else>
@@ -116,7 +116,7 @@ ${usedRdvList.join(", ")}
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!rdv.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                         </g:if>
                                         <g:else>
@@ -136,7 +136,7 @@ ${usedRdvList.join(", ")}
                                             </g:if>
                                         </sec:ifAnyGranted>
 
-                                        <g:if test="${! rdv.hardData && ! usedRdvList?.contains(rdv.id)}">
+                                        <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
                                                     params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>

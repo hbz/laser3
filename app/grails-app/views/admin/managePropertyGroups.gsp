@@ -66,7 +66,7 @@
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
                     <td>
-                        <semui:xEditableRefData owner="${pdGroup}" field="visible" config="YN"/>
+                        <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
                     <td class="x">
                         <g:if test="${editable}">

@@ -1,24 +1,15 @@
 package de.laser
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
+
+import com.k_int.kbplus.EventLog
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
-import com.k_int.properties.PropertyDefinition
-import de.laser.domain.StatsTripleCursor
-import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import de.laser.helper.SqlDateUtils
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import grails.util.Holders
-import groovyx.gpars.GParsPool
-import groovyx.net.http.RESTClient
-import groovyx.net.http.URIBuilder
-import org.hibernate.Transaction
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
-
-import java.text.SimpleDateFormat
-
-import static groovyx.net.http.ContentType.ANY
 
 class DashboardDueDatesService {
 
@@ -101,15 +92,16 @@ class DashboardDueDatesService {
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
-            int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
             orgs.each {org ->
-                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user, reminderPeriod)
+                def dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
-                        if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {
+                        int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value
+                        if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate)) {
                             dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org))
                         }
-                        if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriod)) {
+                        int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value
+                        if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriodForSubsEnddate)) {
                             dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org))
                         }
                     } else {
@@ -165,7 +157,7 @@ class DashboardDueDatesService {
 
             def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
-                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
+                boolean userWantsEmailReminder = YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, YN_NO).rdValue)
                 if (userWantsEmailReminder) {
                     def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
                     orgs.each { org ->
@@ -197,14 +189,30 @@ class DashboardDueDatesService {
             } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
                 log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
             } else {
-
-                mailService.sendMail {
-                    to      emailReceiver
-                    from    from
-                    replyTo replyTo
-                    subject mailSubject
-                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                boolean isRemindCCbyEmail = user.getSetting(UserSettings.KEYS.IS_REMIND_CC_BY_EMAIL, YN_NO)?.rdValue == YN_YES
+                String ccAddress = null
+                if (isRemindCCbyEmail){
+                    ccAddress = user.getSetting(UserSettings.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
                 }
+                if (isRemindCCbyEmail && ccAddress) {
+                    mailService.sendMail {
+                        to      emailReceiver
+                        from    from
+                        cc      ccAddress
+                        replyTo replyTo
+                        subject mailSubject
+                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                    }
+                } else {
+                    mailService.sendMail {
+                        to      emailReceiver
+                        from    from
+                        replyTo replyTo
+                        subject mailSubject
+                        body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
+                    }
+                }
+
                 log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
             }
         } catch (Exception e) {

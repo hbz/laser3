@@ -23,6 +23,13 @@ class InstitutionsService {
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
         def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
+        boolean slavedBool = false // ERMS-1562
+        if (params.isSlaved) {
+            if (params.isSlaved in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
+                slavedBool = true
+            }
+        }
+
         def licenseInstance = new License(
                 reference: lic_name,
                 status: license_status,
@@ -34,7 +41,7 @@ class InstitutionsService {
                 endDate: base.endDate,
 
                 instanceOf: base,
-                isSlaved: params.isSlaved
+                isSlaved: slavedBool
         )
         if (params.copyStartEnd) {
             licenseInstance.startDate = base.startDate
@@ -129,7 +136,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
+            def rdvConsortiumOrgRole = RDStore.OT_CONSORTIUM.id.toString()
 
             if (params.asOrgType) {
                 if (rdvConsortiumOrgRole in params.asOrgType) {
@@ -156,6 +163,14 @@ class InstitutionsService {
         def license_type = RefdataValue.getByValueAndCategory('Actual','License Type')
         def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
         def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
+
+        boolean slavedBool = false // ERMS-1562
+        if (params.isSlaved) {
+            if (params.isSlaved.toString() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
+                slavedBool = true
+            }
+        }
+
         def licenseInstance = new License(reference: lic_name,
                 status: license_status,
                 type: license_type,
@@ -166,7 +181,7 @@ class InstitutionsService {
                 endDate: baseLicense?.endDate,
 
                 instanceOf: baseLicense,
-                isSlaved: params.isSlaved
+                isSlaved: slavedBool
         )
         if (params.copyStartEnd) {
             licenseInstance.startDate = baseLicense?.startDate

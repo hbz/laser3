@@ -16,7 +16,7 @@
         <semui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
-                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                        data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [format: 'csv']}">
                     ${message(code: 'default.button.exports.csv')}
@@ -50,7 +50,7 @@
             <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
-                            data-confirm-term-content="${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
                             data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                             params="${params + [format: 'xml', transformId: transkey]}">
                         ${transval.name}
@@ -198,35 +198,37 @@
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
                     <thead>
-                    <tr>
-                        <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
-                                          title="${message(code: 'title.label', default: 'Title')}"/>
-                        <th>${message(code: 'subscription.details.startDate', default: 'Earliest Date')}</th>
-                        <th>${message(code: 'subscription.details.endDate', default: 'Latest Date')}</th>
-                        <th style="width: 30%"><div class="ui two column grid">
-                            <div class="sixteen wide column">
-                                ${message(code: 'myinst.currentTitles.sub_content', default: 'Subscribed Content')}
-                            </div>
-                            <div class="eight wide column">
-                                ${message(code: 'subscription.details.coverage_dates')}
-                                <br>
-                                ${message(code: 'default.from')}
-                                <br>
-                                ${message(code: 'default.to')}
-                            </div>
-                            <div class="eight wide column">
-                                ${message(code: 'subscription.details.access_dates', default: 'Access')}
-                                <br>
-                                ${message(code: 'default.from')}
-                                <br>
-                                ${message(code: 'default.to')}
-                            </div>
-                        </div>
-                        </th>
-
-                    </tr>
-
+                        <tr>
+                            <th>${message(code: 'sidewide.number')}</th>
+                            <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
+                                              title="${message(code: 'title.label', default: 'Title')}"/>
+                            <th>${message(code: 'subscription.details.startDate', default: 'Earliest Date')}</th>
+                            <th>${message(code: 'subscription.details.endDate', default: 'Latest Date')}</th>
+                            <th style="width: 30%">
+                                <div class="ui three column grid">
+                                    <div class="sixteen wide column">
+                                        ${message(code: 'myinst.currentTitles.sub_content', default: 'Subscribed Content')}
+                                    </div>
+                                    <div class="eight wide column">
+                                        ${message(code: 'subscription.details.coverage_dates')}
+                                        <br>
+                                        ${message(code: 'default.from')}
+                                        <br>
+                                        ${message(code: 'default.to')}
+                                    </div>
+                                    <div class="eight wide column">
+                                        ${message(code: 'subscription.details.access_dates', default: 'Access')}
+                                        <br>
+                                        ${message(code: 'default.from')}
+                                        <br>
+                                        ${message(code: 'default.to')}
+                                    </div>
+                                    <div class="sixteen wide column">
+                                        <g:message code="subscription.details.prices"/>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
                     </thead>
                     <g:each in="${titles}" var="ti" status="jj">
                         <tr>
@@ -263,7 +265,7 @@
 
                                 <g:each in="${ti?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
                                     <g:if test="${id.identifier.ns.ns == 'originediturl'}">
-                                        <span class="ui small teal image label">
+                                        <%--<span class="ui small teal image label">
                                             ${id.identifier.ns.ns}: <div class="detail"><a
                                                 href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
                                         </div>
@@ -272,7 +274,7 @@
                                             ${id.identifier.ns.ns}: <div class="detail"><a
                                                 href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
                                         </div>
-                                        </span>
+                                        </span>--%>
                                     </g:if>
                                     <g:else>
                                         <span class="ui small teal image label">
@@ -322,7 +324,7 @@
                             <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current', default: 'To Current')}</td>
                             <td >
 
-                                <div class="ui two column grid">
+                                <div class="ui three column grid">
                                     <g:each in="${title_coverage_info.ies}" var="ie">
                                         <div class="sixteen wide column">
                                             <i class="icon folder open outline la-list-icon"></i>
@@ -393,7 +395,13 @@
                                                               date="${ie.accessEndDate}"/>
                                             </g:else>
                                         </div>
-
+                                        <div class="sixteen wide column">
+                                            <g:if test="${ie.priceItem}">
+                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/><br>
+                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>
+                                                (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
+                                            </g:if>
+                                        </div>
                                     </g:each>
                                 </div>
                             </td>

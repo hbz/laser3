@@ -2,8 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
-import org.hibernate.event.PostUpdateEvent // Hibernate 3
-//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
+import org.hibernate.event.PostUpdateEvent
 
 import javax.persistence.Transient
 
@@ -41,12 +40,12 @@ class DocContext implements ShareableTrait {
   static mapping = {
                id column:'dc_id'
           version column:'dc_version'
-            owner column:'dc_doc_fk', sort:'title', order:'asc'
+            owner column:'dc_doc_fk', sort:'title', order:'asc', index:'doc_owner_idx'
           doctype column:'dc_rv_doctype_fk'
-          license column:'dc_lic_fk'
-     subscription column:'dc_sub_fk'
+          license column:'dc_lic_fk', index:'doc_lic_idx'
+     subscription column:'dc_sub_fk', index:'doc_sub_idx'
               pkg column:'dc_pkg_fk'
-              org column:'dc_org_fk'
+              org column:'dc_org_fk', index:'doc_org_idx'
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'

@@ -52,7 +52,7 @@
                             }
                             */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
-                                if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                if (ownobj.isSlaved) {
                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                 }
                                 else {
@@ -107,7 +107,14 @@
                                     <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      params='[propClass: prop.getClass(),
+                                                               propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
+                                                               ownerId:"${ownobj.id}",
+                                                               ownerClass:"${ownobj.class}",
+                                                               custom_props_div:"${custom_props_div}",
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:true
+                                                      ]'
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
@@ -124,7 +131,14 @@
                                     <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                      params='[propClass: prop.getClass(),
+                                                               propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
+                                                               ownerId:"${ownobj.id}",
+                                                               ownerClass:"${ownobj.class}",
+                                                               custom_props_div:"${custom_props_div}",
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:true
+                                                      ]'
                                                       id="${prop.id}"
                                                       data-content="${message(code:'property.audit.on.tooltip')}"
                                                       data-confirm-term-what="property"
@@ -146,7 +160,14 @@
                                 <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
-                                                  params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
+                                                  params='[propClass: prop.getClass(),
+                                                           propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
+                                                           ownerId:"${ownobj.id}",
+                                                           ownerClass:"${ownobj.class}",
+                                                           custom_props_div:"${custom_props_div}",
+                                                           editable:"${editable}",
+                                                           showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                  ]'
                                                   id="${prop.id}"
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"
@@ -196,7 +217,6 @@
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
                         <input type="hidden" name="propDefGroup" value="${propDefGroup.class.name}:${propDefGroup.id}"/>
-
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>

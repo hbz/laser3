@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.User
 import de.laser.helper.DateUtil
 import grails.util.Holders
 import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
@@ -11,6 +10,7 @@ import java.text.SimpleDateFormat
 class DataConsistencyService {
 
     def springSecurityService
+    def deletionService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
     Map<String, Object> checkImportIds() {
@@ -134,12 +134,18 @@ class DataConsistencyService {
         SimpleDateFormat sdfB = DateUtil.getSimpleDateFormat_NoZ()
 
         if (key1 == 'Org') {
-            result = Org.findAllWhere( "${key2}": value ).collect{ it -> [
+            result = Org.findAllWhere( "${key2}": value ).collect{ it ->
+                Map<String, Object> dryRunInfo = deletionService.deleteOrganisation(it, null, deletionService.DRY_RUN)
+
+                [
                     id: it.id,
                     name: it.name,
+                    class: it.class.simpleName,
                     link: g.createLink(controller:'organisation', action:'show', id: it.id),
                     created: sdfA.format( it.dateCreated ),
-                    updated: sdfB.format( it.lastUpdated )
+                    updated: sdfB.format( it.lastUpdated ),
+                    deletable: dryRunInfo.deletable,
+                    mergeable: dryRunInfo.mergeable
                 ]
             }
         }

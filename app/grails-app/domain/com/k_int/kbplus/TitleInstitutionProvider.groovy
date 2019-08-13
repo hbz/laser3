@@ -17,11 +17,13 @@ class TitleInstitutionProvider {
   ]
 
   static mapping = {
-    id column:'tiinp_id'
-    title column:'tttnp_title', index:'tiinp_idx'
+    id          column:'tiinp_id'
+    title       column:'tttnp_title',       index:'tiinp_idx'
     institution column:'tttnp_inst_org_fk', index:'tiinp_idx'
-    provider column:'tttnp_prov_org_fk', index:'tiinp_idx'
-    version column:'title_inst_prov_ver'
+    provider    column:'tttnp_prov_org_fk', index:'tiinp_idx'
+    version     column:'title_inst_prov_ver'
+
+    coreDates   batchSize: 10
   }
 
   @Transient

@@ -4,11 +4,7 @@ import com.k_int.kbplus.Combo
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgSettings
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.auth.Perm
-import com.k_int.kbplus.auth.PermGrant
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.*
 
 class AccessService {
 
@@ -214,14 +210,5 @@ class AccessService {
             }
         }
         result
-    }
-
-    boolean checkIsEditableForAdmin(User toEdit, User editor, Org org) {
-
-        boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
-        boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-        boolean orgMatch  = checkUserIsMember(toEdit, contextService.getOrg())
-
-        roleAdmin || (instAdmin && orgMatch)
     }
 }

@@ -8,6 +8,7 @@ import javax.persistence.Transient
 class UserSettings {
 
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
+    transient final static DEFAULT_REMINDER_PERIOD = 14
 
     @Transient
     def genericOIDService
@@ -17,6 +18,8 @@ class UserSettings {
         DASHBOARD                                   (Org),
         THEME                                       (RefdataValue, 'User.Settings.Theme'),
         DASHBOARD_TAB                               (RefdataValue, 'User.Settings.Dashboard.Tab'),
+//        use REMIND_PERIOD_FOR... instead
+        @Deprecated
         DASHBOARD_REMINDER_PERIOD                   (Integer),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         LANGUAGE                                    (RefdataValue, 'Language'),
@@ -25,6 +28,8 @@ class UserSettings {
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),
         SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
         IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
+        REMIND_CC_EMAILADDRESS                      (String),
+        IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP     (RefdataValue, 'YN'),
@@ -34,7 +39,17 @@ class UserSettings {
         IS_REMIND_FOR_ORG_CUSTOM_PROP               (RefdataValue, 'YN'),
         IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, 'YN'),
         IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, 'YN'),
-        IS_REMIND_FOR_TASKS                         (RefdataValue, 'YN')
+        IS_REMIND_FOR_TASKS                         (RefdataValue, 'YN'),
+        REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD  (Integer),
+        REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE       (Integer),
+        REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP   (Integer),
+        REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP  (Integer),
+        REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP         (Integer),
+        REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP        (Integer),
+        REMIND_PERIOD_FOR_ORG_CUSTOM_PROP             (Integer),
+        REMIND_PERIOD_FOR_ORG_PRIVATE_PROP            (Integer),
+        REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP         (Integer),
+        REMIND_PERIOD_FOR_TASKS                       (Integer)
 
         KEYS(type, rdc) {
             this.type = type

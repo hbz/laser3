@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.uni_freiburg.ub.IpRange
+import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonOutput
 import org.springframework.dao.DataIntegrityViolationException
-import com.k_int.kbplus.auth.User
-import grails.plugin.springsecurity.annotation.Secured
 
 class AccessPointController extends AbstractDebugController {
 
@@ -147,8 +147,8 @@ class AccessPointController extends AbstractDebugController {
     def edit_ip() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
 
-        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4range'
-        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6range'
+        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'v4ranges'
+        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'v6ranges'
         Boolean autofocus = (params.autofocus) ? true : false
 
         //String ipv4Format = 'range'

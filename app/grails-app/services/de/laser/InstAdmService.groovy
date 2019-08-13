@@ -1,13 +1,13 @@
 package de.laser
 
-import com.k_int.kbplus.Combo
+
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import grails.plugin.springsecurity.SpringSecurityUtils
+import de.laser.helper.RDStore
 import grails.util.Holders
-import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -20,11 +20,13 @@ class InstAdmService {
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
 
     // checking org and combo related orgs
-    boolean hasInstAdmPivileges(User user, Org org) {
+    boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
         boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
-                'select c.toOrg from Combo c where c.fromOrg = :org', [org: org]
+                'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
+                    org: org, types: types
+            ]
         )
         topOrgs.each{ top ->
             if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
@@ -34,16 +36,31 @@ class InstAdmService {
         result
     }
 
-    // checking user.userOrg against editor.userOrg
+    // all user.userOrg must be accessible from editor as INST_ADMIN
     boolean isUserEditableForInstAdm(User user, User editor) {
         boolean result = false
         List<Org> userOrgs = user.getAuthorizedAffiliations().collect{ it.org }
 
-        userOrgs.each { org ->
-            result = result || hasInstAdmPivileges(editor, org)
+        if (! userOrgs.isEmpty()) {
+            result = true
+
+            userOrgs.each { org ->
+                result = result && hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+            }
         }
         result
     }
+
+	@Deprecated
+	// moved here from AccessService
+	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
+
+		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
+		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
+
+		roleAdmin || (instAdmin && orgMatch)
+	}
 
     void createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
 

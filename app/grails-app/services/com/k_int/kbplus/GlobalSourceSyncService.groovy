@@ -1,12 +1,14 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
+import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
-import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
-import org.springframework.transaction.annotation.*
-import de.laser.helper.RDStore
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.dao.DuplicateKeyException
 
 import java.text.SimpleDateFormat
 
@@ -261,7 +263,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         def fixed = RefdataValue.loc(RefdataCategory.PKG_FIXED, [en: (newpkg?.fixed) ?: 'Unknown']);
         def paymentType = RefdataValue.loc(RefdataCategory.PKG_PAYMENTTYPE, [en: (newpkg?.paymentType) ?: 'Unknown']);
         def global = RefdataValue.loc(RefdataCategory.PKG_GLOBAL, [en: (newpkg?.global) ?: 'Unknown']);
-        def isPublic = RefdataValue.loc('YN', [en: 'Yes', de: 'Ja'])
         def ref_pprovider = RefdataValue.loc('Organisational Role', [en: 'Content Provider', de: 'Anbieter']);
 
         //we should now first setup the provider and then proceed to package
@@ -345,7 +346,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     breakable: breakable,
                     consistent: consistent,
                     fixed: fixed,
-                    isPublic: isPublic,
+                    isPublic: true,
                     packageScope: scope
             )
 
@@ -662,7 +663,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     // }
                     currTIPP.hostPlatformURL = tipp.url
 
-                    currTIPP.save(failOnError: true)
+                    try {
+                        currTIPP.save()
+                    }
+                    catch (DuplicateKeyException e) {
+                        log.warn("duplicate object occurred, merging objects ...")
+                        TitleInstancePackagePlatform merged = currTIPP.merge()
+                        log.info("retry persisting ...")
+                        merged.save()
+                    }
 
                     if (tipp.tippId) {
                         def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
@@ -737,7 +746,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     db_tipp.status = tippStatus
-                    db_tipp.save()
+                    try{
+                        db_tipp.save()
+                    }
+                    catch (DuplicateKeyException e) {
+                        log.warn("Duplicate object occurred, force merging ...")
+                        TitleInstancePackagePlatform merged = db_tipp.merge()
+                        log.info("persisting merged object ...")
+                        merged.save()
+                    }
                     log.debug("deleted tipp w/o pending change")
                 }
             }
@@ -1152,7 +1169,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
 
                     existing_record_info.globalRecordInfoStatus = status
-                    existing_record_info.save()
+                    try {
+                        existing_record_info.save()
+                    }
+                    catch (DuplicateKeyException e) {
+                        log.warn("Duplicate key exception occurred, objects get merged ...")
+                        GlobalRecordInfo merged = existing_record_info.merge()
+                        log.debug("Retry persisting ...")
+                        merged.save()
+                    }
                 } else {
                     log.debug("First time we have seen this record - converting ${cfg.name}");
                     def parsed_rec = cfg.converter.call(rec.metadata, syncObj)
@@ -1221,19 +1246,28 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
                 cleanUpGorm()
             }
+            log.debug("Updating sync job max timestamp");
+            sync_job.haveUpTo = new Date(max_timestamp)
+            if(!sync_job.save())
+                log.error("Error on updating timestamp: ${sync_job.errors}")
         }
         catch (Exception e) {
             log.error("Problem", e);
             log.error("Problem running job ${sync_job_id}, conf=${cfg}", e);
             // TODO: remove due SystemEvent
-            new EventLog(event: 'kbplus.doOAISync', message: "Problem running job ${sync_job_id}, conf=${cfg}", tstp: new Date(System.currentTimeMillis())).save()
+            //new EventLog(event: 'kbplus.doOAISync', message: "Problem running job ${sync_job_id}, conf=${cfg}", tstp: new Date(System.currentTimeMillis())).save()
 
-            SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id, 'conf': cfg])?.save()
+            SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id])?.save()
 
             log.debug("Reset sync job haveUpTo");
-            def sync_object = GlobalRecordSource.get(sync_job_id)
-            sync_object.haveUpTo = olddate
-            sync_object.save()
+            sync_job.haveUpTo = olddate
+            try {
+                sync_job.save()
+            }
+            catch (DuplicateKeyException dke) {
+                GlobalRecordSource merged = sync_job.merge()
+                merged.save()
+            }
         }
         finally {
             log.debug("internalOAISync completed for job ${sync_job_id}");
@@ -1241,12 +1275,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             SystemEvent.createEvent('GSSS_OAI_COMPLETE', ['jobId': sync_job_id])
 
             // TODO: remove due SystemEvent
-            new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
+            //new EventLog(event: 'kbplus.doOAISync', message: "internalOAISync completed for job ${sync_job_id}", tstp: new Date(System.currentTimeMillis())).save()
         }
-        log.debug("Updating sync job max timestamp");
-        sync_job.haveUpTo = new Date(max_timestamp)
-        if(!sync_job.save())
-            log.error("Error on updating timestamp: ${sync_job.errors}")
     }
 
     def parseDate(datestr, possible_formats) {

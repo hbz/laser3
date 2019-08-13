@@ -1,8 +1,5 @@
 package com.k_int.kbplus
 
-import javax.persistence.Transient
- 
-
 class GlobalRecordTracker {
 
   GlobalRecordInfo owner
@@ -19,7 +16,7 @@ class GlobalRecordTracker {
   static mapping = {
                          id column:'grt_id'
                     version column:'grt_version'
-                      owner column:'grt_owner_fk'
+                      owner column:'grt_owner_fk',  index:'grt_owner_idx'
                  identifier column:'grt_identifier'
                        uuid column:'grt_uuid'
                    localOid column:'grt_local_oid'

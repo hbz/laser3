@@ -5,16 +5,18 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.manage_private_props')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.private_props')}</title>
     </head>
     <body>
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-        <semui:crumb message="menu.institutions.manage_private_props" class="active" />
+        <semui:crumb message="menu.institutions.manage_props" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_private_props')}<semui:headerIcon /></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.private_props')}<semui:headerIcon /></h1>
+
+    <g:render template="nav" />
 
     <semui:messages data="${flash}" />
 
@@ -74,7 +76,9 @@
                                             (${refdataValues.join('/')})
                                         </g:if>
                                     </td>
-                                    <td>${ppd.countUsages()}</td>
+                                    <td>
+                                        <span class="ui circular label">${ppd.countUsages()}</span>
+                                    </td>
                                     <td class="x">
                                         <g:if test="${ppd.countUsages()==0}">
                                             <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: ppd?.id]" class="ui icon negative button">

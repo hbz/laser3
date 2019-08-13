@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
+
+import com.k_int.kbplus.auth.User;
 
 class UserTransforms {
 	

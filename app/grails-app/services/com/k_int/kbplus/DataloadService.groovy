@@ -1,16 +1,15 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.*
+
 import de.laser.SystemEvent
 import de.laser.interfaces.TemplateSupport
-import org.hibernate.ScrollMode
-import java.nio.charset.Charset
-import java.util.GregorianCalendar
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
 import org.elasticsearch.client.Client
-import org.elasticsearch.action.admin.indices.create.*
+import org.hibernate.ScrollMode
 
 class DataloadService {
 
@@ -162,7 +161,7 @@ class DataloadService {
             }
 
             //result.identifiers = pkg.ids.collect{"${it?.identifier?.ns?.ns} : ${it?.identifier?.value}"}
-            result.isPublic = pkg?.isPublic?.value?:'No'
+            result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
             result.endDate = pkg.endDate
             def lastmod = pkg.lastUpdated ?: pkg.dateCreated
             if (lastmod != null) {

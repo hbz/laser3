@@ -1,12 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgSettings
-import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+
 import java.text.DateFormat
 
 class FilterService {
@@ -22,10 +19,10 @@ class FilterService {
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
-             queryParams << [orgNameContains1  : "%${params.orgNameContains.toLowerCase()}%"]
-             queryParams << [orgNameContains2  : "%${params.orgNameContains.toLowerCase()}%"]
-             queryParams << [orgNameContains3 : "%${params.orgNameContains.toLowerCase()}%"]
+            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
+             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
+             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
+             queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
         if (params.orgType?.length() > 0) {
             query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
@@ -89,11 +86,12 @@ class FilterService {
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
 
+        // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
-            query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
-             queryParams << [orgNameContains1 : "%${params.orgNameContains.toLowerCase()}%"]
-             queryParams << [orgNameContains2 : "%${params.orgNameContains.toLowerCase()}%"]
-             queryParams << [orgNameContains3 : "%${params.orgNameContains.toLowerCase()}%"]
+            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
+             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
+             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
+             queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
        /* if (params.orgType?.length() > 0) {
             query << "o.orgType.id = ?"
@@ -145,9 +143,10 @@ class FilterService {
         def query = []
         Map<String, Object> queryParams = [:]
 
+        // ERMS-1592, ERMS-1596
         if (params.taskName) {
-            query << "lower(t.title) like :taskName"
-            queryParams << [taskName : "%${params.taskName.toLowerCase()}%"]
+            query << "genfunc_filter_matcher(t.title, :taskName) = true "
+            queryParams << [taskName : "${params.taskName}"]
         }
         if (params.taskStatus) {
             if (params.taskStatus == 'not done') {

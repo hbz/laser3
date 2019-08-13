@@ -28,18 +28,18 @@
 <g:render template="navSubscriberManagement" />
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesConsortium.header')}
+${message(code: 'subscription.linkPackagesMembers.header')}
 </h3>
 
 <semui:messages data="${flash}"/>
 
 <h4>
-    ${message(code: 'subscription.linkPackagesConsortium.consortialSubscription')}: <g:link
+    <g:message code="subscription.linkPackagesMembers.subscription" args="${args.superOrgType}"/>: <g:link
         controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
     <g:if test="${parentPackages}">
-        ${message(code: 'subscription.linkPackagesConsortium.consortialPackages')}:
+        <g:message code="subscription.linkPackagesMembers.packages" args="${args.superOrgType}"/>
 
         <div class="ui middle aligned selection list">
             <g:each in="${parentPackages}" var="subPkg">
@@ -59,7 +59,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
     <div class="content">
         <div class="header">Info</div>
 
-        <p>${message(code: 'subscription.linkPackagesConsortium.package.info')}</p>
+        <p>${message(code: 'subscription.linkPackagesMembers.package.info')}</p>
     </div>
 </div>
 
@@ -72,24 +72,23 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkPackagesConsortium.info')}</h4>
+                <h4>${message(code: 'subscription.linkPackagesMembers.info')}</h4>
 
-                <label>${message(code: 'subscription.linkPackagesConsortium.package.label')}</label>
+                <label><g:message code="subscription.linkPackagesMembers.package.label" args="${args.superOrgType}"/></label>
                 <g:if test="${validPackages}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageName() }}"
                               from="${validPackages}" name="package_All" value=""
                               required=""
-                              noSelection='["": "${message(code: 'subscription.linkPackagesConsortium.noSelection')}"]'/>
+                              noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
                 </g:if><g:else>
-                    ${message(code: 'subscription.linkPackagesConsortium.noValidLicenses')}
+                    <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
                 </g:else>
             </div>
 
             <div class="field ">
-                <input type="checkbox" class="ui checkbox"
-                       name="withIssueEntitlements">${message(code: 'subscription.linkPackagesConsortium.linkwithIE')}
-
+                <input type="checkbox" class="ui checkbox" name="withIssueEntitlements">
+                <g:message code="subscription.linkPackagesMembers.linkwithIE" args="${args.superOrgType}"/>
             </div>
 
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
@@ -97,16 +96,16 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
     </div>
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.linkPackagesConsortium.unlinkInfo')}</h4>
+        <h4>${message(code: 'subscription.linkPackagesMembers.unlinkInfo')}</h4>
 
     <div class="ui buttons">
         <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage.confirm')}"
-                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: false]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.onlyPackage')}</g:link>
+                data-confirm-term-content = "${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: false]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</g:link>
         <div class="or"></div>
         <g:link class="ui button js-open-confirm-modal"
-                data-confirm-term-content = "${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE.confirm')}"
-                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: true]">${message(code: 'subscription.linkPackagesConsortium.unlinkInfo.withIE')}</g:link>
+                data-confirm-term-content = "${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
+                data-confirm-term-how="ok" action="processUnLinkPackagesConsortia" id="${params.id}" params="[withIE: true]">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</g:link>
     </div>
 
     </div>
@@ -141,7 +140,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
-                            <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
+                            <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
                                       data-tooltip="${message(code: 'license.details.isSlaved.tooltip')}">
                                     <i class="thumbtack blue icon"></i>
@@ -192,12 +191,12 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                                     <g:select class="ui search dropdown"
                                               optionKey="id" optionValue="${{ it.getPackageName() }}"
                                               from="${validPackages}" name="package_${sub.id}"
-                                              noSelection='["": "${message(code: 'subscription.linkPackagesConsortium.noSelection')}"]'/>
+                                              noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
                                 </div>
 
                                 <div class="field ">
-                                    <input type="checkbox" class="ui checkbox"
-                                           name="withIssueEntitlements">${message(code: 'subscription.linkPackagesConsortium.linkwithIE')}
+                                    <input type="checkbox" class="ui checkbox" name="withIssueEntitlements">
+                                    <g:message code="subscription.linkPackagesMembers.linkwithIE" args="${args.superOrgType}"/>
 
                                 </div>
                                 <button class="ui button"
@@ -206,7 +205,7 @@ ${message(code: 'subscription.linkPackagesConsortium.header')}
                             </g:form>
 
                         </g:if><g:else>
-                        ${message(code: 'subscription.linkPackagesConsortium.noValidLicenses')}
+                        ${message(code: 'subscription.linkPackagesMembers.noValidLicenses')}
                     </g:else>
                     </td>
 

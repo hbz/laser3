@@ -8,8 +8,9 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionsQueryService {
     def propertyService
+    def accessService
 
-    def myInstitutionCurrentSubscriptionsBaseQuery(def params, Org contextOrg) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
 
         def date_restriction
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -39,19 +40,24 @@ class SubscriptionsQueryService {
         }
         */
 
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
+        RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_subColl        = RDStore.OR_SUBSCRIBER_COLLECTIVE
+        RefdataValue role_sub_collective = RDStore.OR_SUBSCRIPTION_COLLECTIVE
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
-        def base_qry
-        def qry_params
+        String base_qry
+        Map qry_params
 
         if (! params.orgRole) {
-            if ((RDStore.OT_CONSORTIUM?.id in contextOrg?.getallOrgTypeIds())) {
+            if (accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.orgRole = 'Subscription Consortia'
+            }
+            else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+                params.orgRole = 'Subscription Collective'
             }
             else {
                 params.orgRole = 'Subscriber'
@@ -60,18 +66,9 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = """
-from Subscription as s where (
-    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-    AND (
-        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
-        or
-        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
-    )
-)
-"""
+            base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':contextOrg, 'scRoleType':role_sub_consortia]
+            qry_params = ['roleType1':role_sub, 'roleType2':[role_subCons,role_subColl], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia,role_sub_collective]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
@@ -90,6 +87,22 @@ from Subscription as s where (
                 }
             }
         }
+        else if (params.orgRole == 'Subscription Collective') {
+            if (params.actionName == 'manageMembers') {
+                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                        " AND s.instanceOf is not null "
+                qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+            } else {
+                if (params.showParentsAndChildsSubs) {
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                } else {//nur Parents
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                            " AND s.instanceOf is null "
+                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                }
+            }
+        }
 
         if (params.org) {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org = :org) ")
@@ -105,18 +118,19 @@ from Subscription as s where (
 
         if (params.q?.length() > 0) {
             base_qry += (
-                    " and ( lower(s.name) like :name_filter " // filter by subscription
-                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
-                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                            +  " ) "
+                    " and ( genfunc_filter_matcher(s.name, :name_filter) = true " // filter by subscription
+                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
+                            + " or exists ( select lic from License as lic where s.owner = lic and genfunc_filter_matcher(lic.reference, :name_filter) = true ) " // filter by license
+                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( "
+                                + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                                + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                                + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                            + " ) ) " // filter by Anbieter, Konsortium, Agency
+                        +  " ) "
             )
-
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%")
+            qry_params.put('name_filter', "${params.q}")
             filterSet = true
         }
-
         // eval property filter
 
         if (params.filterPropDef) {
@@ -186,10 +200,6 @@ from Subscription as s where (
 
             if (params.status == 'FETCH_ALL') {
                 base_qry += " AND ( s.status.value != 'Deleted' ) "
-            }
-            else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
-                base_qry += " AND s.status is null "
-                filterSet = true
             }
             else {
                 base_qry += " and s.status.id = :status "

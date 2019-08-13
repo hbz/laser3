@@ -57,10 +57,10 @@
                             <td>${accessPoint.name}</td>
                             <td>${accessPoint.accessMethod.getI10n('value')}</td>
                             <td>
-                                <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'cidr')}" var="ipv4Range">
+                                <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
                                     <div >${ipv4Range}</div>
                                 </g:each>
-                                <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'cidr')}" var="ipv6Range">
+                                <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
                                     <div >${ipv6Range}</div>
                                 </g:each>
                             </td>

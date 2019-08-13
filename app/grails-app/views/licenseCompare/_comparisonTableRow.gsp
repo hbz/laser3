@@ -6,7 +6,7 @@
 <tr>
     <th>${key}</th>
     <g:each in="${licenses}" var="l">
-        <g:if test="${propBinding && propBinding.get(l)?.visibleForConsortiaMembers}">
+        <g:if test="${propBinding && propBinding.get(l)?.isVisibleForConsortiaMembers}">
             <th>${l.reference}<span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span></th>
         </g:if>
         <g:else>

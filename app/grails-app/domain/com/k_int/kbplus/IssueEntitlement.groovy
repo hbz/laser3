@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.PriceItem
 import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
@@ -35,6 +36,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
+  static hasOne =    [priceItem: PriceItem]
+
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
 'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
@@ -51,12 +54,12 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
          globalUID column:'ie_guid'
            version column:'ie_version'
             status column:'ie_status_rv_fk'
-      subscription column:'ie_subscription_fk'
-              tipp column:'ie_tipp_fk'
-         startDate column:'ie_start_date'
+      subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
+              tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
+         startDate column:'ie_start_date',      index: 'ie_dates_idx'
        startVolume column:'ie_start_volume'
         startIssue column:'ie_start_issue'
-           endDate column:'ie_end_date'
+           endDate column:'ie_end_date',        index: 'ie_dates_idx'
          endVolume column:'ie_end_volume'
           endIssue column:'ie_end_issue'
            embargo column:'ie_embargo'
@@ -89,6 +92,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     accessStartDate(nullable:true, blank:true)
     accessEndDate (nullable:true, blank:true)
     medium        (nullable:true, blank:true)
+    priceItem     (nullable:true, blank:true)
   }
 
   Date getDerivedAccessStartDate() {

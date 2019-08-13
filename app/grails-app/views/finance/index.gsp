@@ -14,6 +14,7 @@
         <laser:serviceInjection />
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
+        <g:set var="coll" value="${financialData.coll}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
@@ -78,6 +79,9 @@
         <g:if test="${showView.equals("cons")}">
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.consortialCosts')}"/>
         </g:if>
+        <g:elseif test="${showView.equals("coll")}">
+            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')} / ${coll.count} ${message(code:'financials.header.collectiveCosts')}"/>
+        </g:elseif>
         <g:elseif test="${showView.equals("consAtSubscr")}">
             <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
         </g:elseif>
@@ -92,6 +96,6 @@
         </g:else>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${totalString}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,view:view,showView:showView,filterPresets:filterPresets]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,coll:coll,view:view,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>

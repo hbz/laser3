@@ -1,8 +1,9 @@
 package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
-import javax.persistence.Transient
 import org.apache.commons.lang.builder.HashCodeBuilder
+
+import javax.persistence.Transient
 
 class UserOrg implements Comparable {
 

@@ -1,20 +1,21 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+import au.com.bytecode.opencsv.CSVReader
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.SystemEvent
-import de.laser.api.v0.ApiManager
 import de.laser.api.v0.ApiToolkit
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import grails.plugin.springsecurity.SpringSecurityUtils;
+import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import au.com.bytecode.opencsv.CSVReader
-import com.k_int.properties.PropertyDefinition
-import org.apache.commons.lang.RandomStringUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -28,6 +29,7 @@ class AdminController extends AbstractDebugController {
   def enrichmentService
   def sessionFactory
     def genericOIDService
+    def deletionService
 
     def contextService
     def refdataService
@@ -416,6 +418,31 @@ class AdminController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def dataConsistency() {
         Map result = [:]
+
+        if (params.task) {
+			List objIds = params.list('objId')
+
+          	if (params.task == 'merge' && params.objType == 'Org') {
+            	log.debug('dataConsistency( merge, ' + params.objType + ', ' + objIds + ' )')
+
+                Org replacement = Org.get(objIds.first())
+                for (def i = 1; i < objIds.size(); i++) {
+                    deletionService.deleteOrganisation( Org.get(objIds[i]), replacement, false )
+                }
+          	}
+          	if (params.task == 'delete' && params.objType == 'Org') {
+            	log.debug('dataConsistency( delete, ' + params.objType + ', ' + objIds + ' )')
+
+                for (def i = 0; i < objIds.size(); i++) {
+                    deletionService.deleteOrganisation( Org.get(objIds[i]), null, false )
+                }
+          	}
+            params.remove('task')
+            params.remove('objType')
+            params.remove('objId')
+
+            redirect controller: 'admin', action: 'dataConsistency'
+        }
 
         result.importIds = dataConsistencyService.checkImportIds()
         result.titles    = dataConsistencyService.checkTitles()
@@ -925,7 +952,7 @@ class AdminController extends AbstractDebugController {
             def pd = genericOIDService.resolveOID(params.pd)
 
             if (pd) {
-                if (! pd.hardData) {
+                if (! pd.isHardData) {
                     try {
                         pd.delete(flush:true)
                         flash.message = "${params.pd} wurde gelöscht."
@@ -982,7 +1009,7 @@ class AdminController extends AbstractDebugController {
       def pd = genericOIDService.resolveOID(params.pd)
 
       if (pd) {
-        if (! pd.hardData) {
+        if (! pd.isHardData) {
           try {
             pd.delete(flush:true)
             flash.message = "${params.pd} wurde gelöscht."
@@ -1080,7 +1107,7 @@ class AdminController extends AbstractDebugController {
                         description: params.description,
                         tenant: null,
                         ownerType: ownerType,
-                        visible: RDStore.YN_YES
+                        isVisible: true
                     )
                     if (propDefGroup.save(flush:true)) {
                         valid = true
@@ -1117,7 +1144,7 @@ class AdminController extends AbstractDebugController {
             def rdv = genericOIDService.resolveOID(params.rdv)
 
             if (rdv) {
-                if (! rdv.hardData) {
+                if (! rdv.isHardData) {
                     try {
                         rdv.delete(flush:true)
                         flash.message = "${params.rdv} wurde gelöscht."

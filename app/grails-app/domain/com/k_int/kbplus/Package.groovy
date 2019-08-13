@@ -8,8 +8,8 @@ import de.laser.traits.ShareableTrait
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import java.text.Normalizer
 import javax.persistence.Transient
+import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class Package
@@ -51,8 +51,7 @@ class Package
     @RefdataAnnotation(cat = '?')
     RefdataValue fixed
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
+    boolean isPublic
 
     @RefdataAnnotation(cat = '?')
     RefdataValue packageScope
@@ -102,17 +101,22 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
               consistent column:'pkg_consistent_rv_fk'
                    fixed column:'pkg_fixed_rv_fk'
          nominalPlatform column:'pkg_nominal_platform_fk'
-               startDate column:'pkg_start_date'
-                 endDate column:'pkg_end_date'
+               startDate column:'pkg_start_date',   index:'pkg_dates_idx'
+                 endDate column:'pkg_end_date',     index:'pkg_dates_idx'
                  license column:'pkg_license_fk'
                 isPublic column:'pkg_is_public'
             packageScope column:'pkg_scope_rv_fk'
                vendorURL column:'pkg_vendor_url'
   cancellationAllowances column:'pkg_cancellation_allowances', type:'text'
                  forumId column:'pkg_forum_id'
-                     tipps sort:'title.title', order: 'asc'
-            pendingChanges sort:'ts', order: 'asc'
-//                 orgs sort:'org.name', order: 'asc'
+                     tipps sort:'title.title', order: 'asc', batchSize: 10
+            pendingChanges sort:'ts', order: 'asc', batchSize: 10
+
+            orgs            batchSize: 10
+            prsLinks        batchSize: 10
+            documents       batchSize: 10
+            subscriptions   batchSize: 10
+            ids             batchSize: 10
   }
 
   static constraints = {
@@ -127,7 +131,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate(nullable:true, blank:false)
                    endDate(nullable:true, blank:false)
                    license(nullable:true, blank:false)
-                  isPublic(nullable:true, blank:false)
+                  isPublic(nullable:false, blank:false)
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)
@@ -209,16 +213,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                          add_entitlements,slaved) {
     // Create the header
     log.debug("Package: createSubscription called")
-    def isSlaved = slaved == "Yes" || slaved == true ? "Yes" : "No"
     def result = new Subscription( name:subname,
                                    status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
                                    identifier:subidentifier,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
-                                   isPublic: RefdataValue.getByValueAndCategory('No','YN'),
+                                   isPublic: false,
                                    type: RefdataValue.findByValue(subtype),
-                                   isSlaved: RefdataValue.getByValueAndCategory(isSlaved,'YN'))
+                                   isSlaved: (slaved == "Yes" || slaved == true))
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {

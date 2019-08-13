@@ -1,5 +1,21 @@
-<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
+<%@page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
 <laser:serviceInjection/>
+<%
+    boolean parentAtChild = false
+
+    if(instance instanceof Subscription) {
+        //array is created and should be extended to collective view; not yet done because collective view is not merged yet
+        if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
+            parentAtChild = true
+        }
+    }
+    else if(instance instanceof License) {
+        if(contextService.org.id == instance.getLicensingConsortium()?.id && instance.instanceOf) {
+            parentAtChild = true
+        }
+    }
+%>
+
 <g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
 
     <table class="ui celled la-table table license-documents">
@@ -9,9 +25,9 @@
                 <th>${message(code:'license.docs.table.title', default:'Title')}</th>
                 <th>${message(code:'license.docs.table.fileName', default:'File Name')}</th>
                 <th>${message(code:'license.docs.table.type', default:'Type')}</th>
-                <th>${message(code:'org.docs.table.target')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName in ['myInstitution','organisation']}">
+                    <th>${message(code:'org.docs.table.target')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
                 <th>${message(code:'default.actions', default:'Actions')}</th>
@@ -20,7 +36,7 @@
         <tbody>
             <%
                 Set documentSet = instance.documents
-                if(instance instanceof Org && instance.id == contextService.org.id){
+                if(instance instanceof Org && inContextOrg){
                     documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
                 }
             %>
@@ -30,33 +46,41 @@
                     boolean inOwnerOrg = false
                     boolean inTargetOrg = false
                     boolean isCreator = false
-
-                    if(docctx.owner.owner?.id == contextService.org.id)
-                        inOwnerOrg = true
-                    else if(contextService.org.id == docctx.targetOrg?.id)
-                        inTargetOrg = true
-                    if(docctx.owner.creator?.id == user.id)
-                        isCreator = true
                     if(docctx.org) {
-                        switch(docctx.shareConf) {
-                            case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                                break
-                            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                                break
-                            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
-                                break
-                            case RDStore.SHARE_CONF_CONSORTIUM:
-                            case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                                break
-                            default:
-                                if(docctx.shareConf) log.debug(docctx.shareConf)
-                                else visible = true
-                                break
+
+                        if(docctx.owner.owner?.id == contextService.org.id)
+                            inOwnerOrg = true
+                        else if(contextService.org.id == docctx.targetOrg?.id)
+                            inTargetOrg = true
+                        if(docctx.owner.creator?.id == user.id)
+                            isCreator = true
+                        if(docctx.org) {
+                            switch(docctx.shareConf) {
+                                case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                                    break
+                                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                                    break
+                                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                                    break
+                                case RDStore.SHARE_CONF_CONSORTIUM:
+                                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                                    break
+                                default:
+                                    if(docctx.shareConf) log.debug(docctx.shareConf)
+                                    else visible = true
+                                    break
+                            }
+                        }
+                        else if(inOwnerOrg || docctx.sharedFrom) {
+                            visible = true
                         }
                     }
-                    else visible = true
+                    else {
+                        if((parentAtChild && docctx.sharedFrom) || !parentAtChild)
+                            visible = true
+                    }
                 %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted') && visible)}">
+                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_DELETED)}">
                     <tr>
                         <td>
                             ${docctx.owner.title}
@@ -67,9 +91,10 @@
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
-                        <td>
-                            ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
-                        </td>
+                        <g:if test="${instance instanceof Org}">
+                            <td>
+                                ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
+                            </td>
                         <%--
                             <td>
                                 <g:if test="${docctx.org}">
@@ -86,7 +111,6 @@
                                 </g:elseif>
                             </td>
                         --%>
-                        <g:if test="${instance instanceof Org}">
                             <td>
                                 ${docctx.shareConf?.getI10n("value")}
                             </td>
@@ -119,8 +143,10 @@
                                     </g:if>
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
-                                <g:if test="${editable && !docctx.sharedFrom && inOwnerOrg}">
+                                <g:if test="${contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
                                     <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                </g:if>
+                                <g:if test="${!docctx.sharedFrom && contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>

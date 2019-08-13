@@ -1,24 +1,23 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+
+import com.k_int.kbplus.auth.Perm
+import com.k_int.kbplus.auth.PermGrant
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
-import groovy.sql.Sql
+import grails.util.Holders
+import groovy.util.logging.Log4j
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
-import groovy.util.logging.*
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.Criteria
-import org.hibernate.event.PostUpdateEvent // Hibernate 3
-//import org.hibernate.event.spi.PostUpdateEvent // to Hibernate 4
 
 import javax.persistence.Transient
-import grails.util.Holders
 
 @Log4j
 class Org
@@ -29,6 +28,11 @@ class Org
     def sessionFactory // TODO: ugliest HOTFIX ever
     @Transient
     def contextService
+    def organisationService
+    @Transient
+    def accessService
+	@Transient
+	def propertyService
 
     String name
     String shortname
@@ -113,10 +117,10 @@ class Org
                 id          column:'org_id'
            version          column:'org_version'
          globalUID          column:'org_guid'
-             impId          column:'org_imp_id', index:'org_imp_id_idx'
-              name          column:'org_name', index:'org_name_idx'
+             impId          column:'org_imp_id',    index:'org_imp_id_idx'
+              name          column:'org_name',      index:'org_name_idx'
          shortname          column:'org_shortname', index:'org_shortname_idx'
-          sortname          column:'org_sortname', index:'org_sortname_idx'
+          sortname          column:'org_sortname',  index:'org_sortname_idx'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
            comment          column:'org_comment'
@@ -144,6 +148,17 @@ class Org
         ], lazy: false
         addresses   lazy: false
         contacts    lazy: false
+
+        ids                 batchSize: 10
+        outgoingCombos      batchSize: 10
+        incomingCombos      batchSize: 10
+        links               batchSize: 10
+        prsLinks            batchSize: 10
+        affiliations        batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        documents           batchSize: 10
+        platforms           batchSize: 10
     }
 
     static constraints = {
@@ -191,6 +206,10 @@ class Org
     @Override
     boolean isDeleted() {
         return RDStore.ORG_DELETED.id == status?.id
+    }
+
+    void afterInsert() {
+        organisationService.initMandatorySettings(this)
     }
 
     @Override
@@ -261,8 +280,8 @@ class Org
         result
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'fallback': true, 'orphanedProperties':[] ]
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
@@ -279,16 +298,8 @@ class Org
             }
         }
 
-        result.fallback = (result.global.size() == 0 && result.local.size() == 0)
-
         // storing properties without groups
-
-        def orph = customProperties.id
-
-        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
-        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
-
-        result.orphanedProperties = OrgCustomProperty.findAllByIdInList(orph)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
 
         result
     }
@@ -517,7 +528,12 @@ class Org
   }
 
     def getDesignation() {
-        return (shortname?:(sortname?:(name?:(globalUID?:id))))
+        String ret = ""
+        Org hasDept = Combo.findByFromOrgAndType(this,RDStore.COMBO_TYPE_DEPARTMENT)?.toOrg
+        if(hasDept)
+            ret = "${hasDept.shortname?:(hasDept.sortname?: hasDept.name)} – "
+        ret += shortname?:(sortname?:(name?:(globalUID?:id)))
+        return ret
     }
 
     boolean isEmpty() {
@@ -547,7 +563,7 @@ class Org
 
         if (onlyPublic) {
             Person.executeQuery(
-                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.functionType = :gcp",
+                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :gcp",
                     [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
             )
         }
@@ -555,7 +571,7 @@ class Org
             Org ctxOrg = contextService.getOrg()
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
-                    " and ( (p.isPublic.value = 'No' and p.tenant = :ctx) or (p.isPublic.value != 'No') )",
+                    " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
                     [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, ctx: ctxOrg]
             )
         }
@@ -563,7 +579,7 @@ class Org
 
     List<Person> getPublicPersons() {
         Person.executeQuery(
-                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
+                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org",
                 [org: this]
         )
     }
@@ -582,6 +598,20 @@ class Org
         List result = []
         orgType.collect{ it -> result.add(it.id) }
         result
+    }
+
+    boolean isInComboOfType(RefdataValue comboType) {
+        if(Combo.findByFromOrgAndType(this, comboType))
+            return true
+        return false
+    }
+
+    boolean isConsortiaMember() {
+        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM) && !accessService.checkPerm("ORG_INST")
+    }
+
+    boolean isDepartment() {
+        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !accessService.checkPerm("ORG_INST")
     }
 
     // Only for ISIL, EZB, WIBID
@@ -644,4 +674,5 @@ class Org
         }
         check
     }
+
 }

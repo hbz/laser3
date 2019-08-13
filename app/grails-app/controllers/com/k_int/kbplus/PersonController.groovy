@@ -1,15 +1,14 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
-import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
-import com.k_int.kbplus.auth.User
-import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PersonController extends AbstractDebugController {
@@ -76,7 +75,7 @@ class PersonController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
             return
         }
-        else if(personInstance && personInstance.isPublic.equals(RDStore.YN_NO)) {
+        else if(personInstance && ! personInstance.isPublic) {
             if(contextService.org?.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 flash.error = message(code: 'default.notAutorized.message')
                 redirect(url: request.getHeader('referer'))

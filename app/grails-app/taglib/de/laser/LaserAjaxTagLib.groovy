@@ -42,6 +42,5 @@ class LaserAjaxTagLib {
 
         out << '</a>'
 
-        println attrs
     }
 }

@@ -295,7 +295,7 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /oaManager:
+  /oaMonitor:
 
     get:
       tags:
@@ -322,7 +322,7 @@
           $ref: "#/components/responses/forbidden"
 
 
-  /oaManagerList:
+  /oaMonitorList:
 
     get:
       tags:

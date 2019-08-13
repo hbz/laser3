@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.ClassUtils
 import com.k_int.kbplus.auth.Role
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.DeleteFlag
-import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
@@ -15,8 +16,6 @@ import de.laser.traits.ShareableTrait
 
 import javax.persistence.Transient
 import java.text.Normalizer
-import com.k_int.properties.PropertyDefinition
-import com.k_int.ClassUtils
 
 class License
         extends AbstractBaseDomain
@@ -37,7 +36,8 @@ class License
     def pendingChangeService
     @Transient
     def changeNotificationService
-
+    @Transient
+    def propertyService
 
     // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
@@ -46,8 +46,8 @@ class License
     License instanceOf
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isSlaved
+    boolean isSlaved
+    boolean isPublic
 
     @RefdataAnnotation(cat = 'License Status')
     RefdataValue status
@@ -57,9 +57,6 @@ class License
 
     @RefdataAnnotation(cat = 'LicenseCategory')
     RefdataValue licenseCategory
-
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
 
   String reference
   String sortableReference
@@ -114,22 +111,29 @@ class License
                    type column:'lic_type_rv_fk'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
-               isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
+               isPublic column:'lic_is_public'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           //licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
-              documents sort:'owner.id', order:'desc'
+              documents sort:'owner.id', order:'desc', batchSize: 10
           onixplLicense column: 'lic_opl_fk'
         licenseCategory column: 'lic_category_rdv_fk'
-              startDate column: 'lic_start_date'
-                endDate column: 'lic_end_date'
-       customProperties sort:'type', order:'desc'
-      privateProperties sort:'type', order:'desc'
-         pendingChanges sort: 'ts', order: 'asc'
+              startDate column: 'lic_start_date',   index: 'lic_dates_idx'
+                endDate column: 'lic_end_date',     index: 'lic_dates_idx'
+       customProperties sort:'type', order:'desc', batchSize: 10
+      privateProperties sort:'type', order:'desc', batchSize: 10
+         pendingChanges sort: 'ts', order: 'asc', batchSize: 10
+
+              ids               batchSize: 10
+              pkgs              batchSize: 10
+              subscriptions     batchSize: 10
+              orgLinks          batchSize: 10
+              prsLinks          batchSize: 10
+              derivedLicenses   batchSize: 10
   }
 
     static constraints = {
@@ -139,11 +143,11 @@ class License
         impId(nullable:true, blank:false)
         reference(nullable:false, blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
-        isPublic(nullable:true, blank:true)
+        isPublic    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
         instanceOf(nullable:true, blank:false)
-        isSlaved(nullable:true, blank:false)
+        isSlaved    (nullable:false, blank:false)
         licenseType(nullable:true, blank:true)
         //licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
@@ -367,7 +371,7 @@ class License
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+        if (perm == 'view' && this.isPublic) {
             return true
         }
         def adm = Role.findByAuthority('ROLE_ADMIN')
@@ -469,7 +473,7 @@ class License
                     "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
             )
 
-            if (newPendingChange && dl.isSlaved?.value == "Yes") {
+            if (newPendingChange && dl.isSlaved) {
                 slavedPendingChanges << newPendingChange
             }
         }
@@ -485,8 +489,8 @@ class License
         License.where{ instanceOf == this }
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
@@ -531,17 +535,8 @@ class License
             }
         }
 
-        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
-
         // storing properties without groups
-
-        def orph = customProperties.id
-
-        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
-        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
-        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
-
-        result.orphanedProperties = LicenseCustomProperty.findAllByIdInList(orph)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
 
         result
     }
@@ -756,7 +751,7 @@ class License
 
       String INSTITUTIONAL_LICENSES_QUERY = """
  FROM License AS l WHERE
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS))
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic = (:publicBool))
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []
@@ -770,8 +765,15 @@ AND lower(l.reference) LIKE (:ref)
           roleTypes << params.roleType?.toLong()
       }
 
+      boolean publicBool = false // ERMS-1562
+      if (params.isPublic) {
+          if (params.isPublic.toString() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true']) { // todo tmp fallback; remove later
+              publicBool = true
+          }
+      }
+
       ql = License.executeQuery("select l ${INSTITUTIONAL_LICENSES_QUERY}",
-        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicS: params.isPublic?.toLong(), ref: "${params.q.toLowerCase()}"])
+        [orgId: params.inst?.toLong(), orgRoles: roleTypes, publicBool: publicBool, ref: "${params.q.toLowerCase()}"])
 
 
       if ( ql ) {

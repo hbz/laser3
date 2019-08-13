@@ -1,17 +1,15 @@
 package com.k_int.kbplus
 
-import de.laser.AccessService
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
+import com.k_int.kbplus.auth.UserRole
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
-import grails.gorm.*
-import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-
-import java.security.MessageDigest
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UserController extends AbstractDebugController {
@@ -37,33 +35,36 @@ class UserController extends AbstractDebugController {
     def _delete() {
         def result = setResultGenerics()
 
-        List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
-                [user: User.get(params.id), status: UserOrg.STATUS_APPROVED])
+        if (result.user) {
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
+                    [user: result.user, status: UserOrg.STATUS_APPROVED])
 
-        if (affils.size() > 1) {
-            flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
-            redirect action: 'edit', params: [id: params.id]
-            return
-        }
-        else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
-            flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
-            redirect action: 'edit', params: [id: params.id]
-            return
+            if (affils.size() > 1) {
+                flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                redirect action: 'edit', params: [id: params.id]
+                return
+            }
+            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+                flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                redirect action: 'edit', params: [id: params.id]
+                return
+            }
+
+            if (params.process && result.editable) {
+                User userReplacement = genericOIDService.resolveOID(params.userReplacement)
+
+                result.result = deletionService.deleteUser(result.user, userReplacement, false)
+            }
+            else {
+                result.dryRun = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            }
+
+            result.substituteList = User.executeQuery(
+                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg',
+                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg()]
+            )
         }
 
-        if (params.process && result.editable) {
-            User userReplacement = genericOIDService.resolveOID(params.userReplacement)
-
-            result.result = deletionService.deleteUser(result.user, userReplacement, false)
-        }
-        else {
-            result.dryRun = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
-        }
-
-        result.ctxOrgUserList = User.executeQuery(
-                'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg',
-                [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg()]
-        )
         render view: 'delete', model: result
     }
 
@@ -126,8 +127,6 @@ class UserController extends AbstractDebugController {
     def edit() {
         def result = setResultGenerics()
 
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-
         if (! result.editable) {
             redirect action: 'list'
             return
@@ -140,13 +139,28 @@ class UserController extends AbstractDebugController {
         else {
             if (! result.editor.hasRole('ROLE_ADMIN')) {
                 result.availableOrgs = contextService.getOrg()
-                result.availableComboOrgs = Combo.executeQuery(
-                        'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
+
+                result.availableComboConsOrgs = Combo.executeQuery(
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM
+                ]
+                )
+                result.availableComboDeptOrgs = Combo.executeQuery(
+                        'select c.fromOrg from Combo c where (c.fromOrg.status is null or c.fromOrg.status.value != \'Deleted\') ' +
+                                'and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name', [
+                        ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_DEPARTMENT
+                ]
                 )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
             else {
-                result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.sortname', 'Higher Education')
+                result.availableOrgs = Org.executeQuery(
+                        'from Org o where o.sector.value = :sec and (o.status is null or o.status.value != \'Deleted\') and o not in ( ' +
+                        'select c.fromOrg from Combo c where c.type = :type' +
+                        ') ) order by o.sortname',
+                        [sec: 'Higher Education', type: RDStore.COMBO_TYPE_DEPARTMENT]
+                )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
         }
@@ -170,8 +184,6 @@ class UserController extends AbstractDebugController {
     })
     def newPassword() {
         def result = setResultGenerics()
-
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
@@ -203,8 +215,6 @@ class UserController extends AbstractDebugController {
     })
     def addAffiliation(){
         def result = setResultGenerics()
-
-        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
 
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
@@ -311,7 +321,10 @@ class UserController extends AbstractDebugController {
 
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = accessService.checkIsEditableForAdmin(result.user, result.editor, contextService.getOrg())
+			result.editable = result.editor.hasRole('ROLE_ADMIN') ||
+                    instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
+            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
             result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')

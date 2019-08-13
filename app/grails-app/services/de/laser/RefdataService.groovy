@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.SystemAdmin
 import de.laser.helper.RefdataAnnotation
 
 class RefdataService {
@@ -37,7 +36,7 @@ class RefdataService {
             def dfMap = [:]
 
             dcFields.each { df ->
-                def rdvs = SystemAdmin.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
+                def rdvs = RefdataValue.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
 
                 dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
@@ -80,7 +79,7 @@ class RefdataService {
 
             dcFields.each { df ->
                 def hql = "select dummy from ${dcName} as dummy where dummy.${df.name} = :xfrom"
-                def result = SystemAdmin.executeQuery(hql, [xfrom: rdvFrom])
+                def result = RefdataValue.executeQuery(hql, [xfrom: rdvFrom])
 
                 //log.debug(hql + " @ " + rdvFrom.id + " -> " + result)
                 result.each { it ->
@@ -143,6 +142,24 @@ class RefdataService {
         log.debug(checkResult)
 
         checkResult.sort()
+    }
+
+    /**
+     * Retrieves for a given refdata value key and category description the OID representation of the RefdataValue.
+     * If not found, this method returns null
+     * @param key - the refdata value. May be an English or German string key
+     * @param categoryDescription - the {@link RefdataCategory}
+     * @return the OID of the result {@link RefdataValue} or null if no result is found
+     */
+    String retrieveRefdataValueOID(String key,String categoryDescription) {
+        RefdataValue result = RefdataValue.getByValueAndCategory(key,categoryDescription)
+        if(!result) {
+            result = RefdataValue.getByCategoryDescAndI10nValueDe(categoryDescription,key)
+        }
+        if(result)
+            "${result.class.name}:${result.id}"
+        else
+            null
     }
 
 }

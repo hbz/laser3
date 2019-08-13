@@ -10,6 +10,7 @@
 
 <%
     boolean fromConsortia = false
+    boolean fromCollective = false
 
     if (costItem) {
         if(mode && mode.equals("edit")) {
@@ -22,11 +23,9 @@
             if(costItem.owner == costItem.sub?.getConsortia() && org != costItem.sub?.getConsortia()) {
                 fromConsortia = true
             }
-        }
-
-        def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
-        if ( subscriberExists ) {
-         //   modalText = subscriberExists.org?.toString()
+            if(costItem.owner == costItem.sub?.getCollective() && org != costItem.sub?.getCollective()) {
+                fromCollective = true
+            }
         }
     }
 
@@ -64,9 +63,9 @@
         <div class="fields">
             <div class="nine wide field">
                 <%
-                    OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id}
+                    OrgRole consortialRole = sub?.orgRelations?.find{it.org.id == org.id && it.roleType.id in [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIPTION_COLLECTIVE.id]}
                 %>
-                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
+                <g:if test="${consortialRole && sub.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE && costItem?.sub != sub}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -192,7 +191,7 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="text" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
-                               value="<g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
+                               value="<g:formatNumber number="${fromConsortia ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
                         <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -208,7 +207,7 @@
                         <label>Endpreis</label>
                         <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="<g:formatNumber number="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
+                               value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -266,7 +265,7 @@
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.valueInEuro')}"
-                               value="<g:formatNumber number="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
+                               value="<g:formatNumber number="${fromConsortia ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
                         <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -276,7 +275,7 @@
                         <label>Endpreis (in EUR)</label>
                         <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="<g:formatNumber number="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
+                               value="<g:formatNumber number="${fromConsortia ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->
                 </div>
 
@@ -329,7 +328,7 @@
 
                 <div class="field">
 
-                    <g:if test="${tab == "cons" && (sub || (costItem && costItem.sub))}">
+                    <g:if test="${tab in ["cons","coll"] && (sub || (costItem && costItem.sub))}">
                         <%
                             def validSubChilds
                             Subscription contextSub

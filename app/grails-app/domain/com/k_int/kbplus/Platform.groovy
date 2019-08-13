@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
+import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
-import com.k_int.ClassUtils
-import org.apache.commons.logging.*
-import grails.util.Holders
 
 class Platform extends AbstractBaseDomain {
 
@@ -59,8 +60,9 @@ class Platform extends AbstractBaseDomain {
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
-              org  column: 'plat_org_fk'
-             tipps sort: 'title.title', order: 'asc'
+              org  column: 'plat_org_fk', index: 'plat_org_idx'
+             tipps sort: 'title.title', order: 'asc', batchSize: 10
+            oapp batchSize: 10
   }
 
   static constraints = {

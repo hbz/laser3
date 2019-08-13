@@ -1,7 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import de.laser.api.v0.entities.*
+import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
@@ -292,7 +293,7 @@ class ApiReaderHelper {
         result
     }
 
-    // TODO: oaManager
+    // TODO: oaMonitor
     static Collection<Object> retrieveCostItemCollection(Collection<CostItem> list) {
         def result = []
 
@@ -360,17 +361,17 @@ class ApiReaderHelper {
             def tmp = []
 
             groups.global?.each { it ->
-                if (it.visible?.value == 'Yes') {
+                if (it.isVisible) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
             groups.local?.each { it ->
-                if (it.visible?.value == 'Yes') {
+                if (it.isVisible) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
             groups.members?.each { it ->
-                if (it.visibleForConsortiaMembers?.value == 'Yes') {
+                if (it.isVisibleForConsortiaMembers) {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
@@ -713,7 +714,7 @@ class ApiReaderHelper {
 
             // RefdataValues
             result.gender          = prs.gender?.value
-            result.isPublic        = prs.isPublic?.value
+            result.isPublic        = prs.isPublic ? 'Yes' : 'No'
             result.contactType     = prs.contactType?.value
             result.roleType        = prs.roleType?.value
 

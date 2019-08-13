@@ -1,18 +1,11 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.*
-import de.laser.ContextService
-import org.hibernate.ScrollMode
-import java.nio.charset.Charset
-import java.util.GregorianCalendar
-import org.gokb.GOKbTextUtils
-import groovy.text.SimpleTemplateEngine
 
+import de.laser.ContextService
+import groovy.text.SimpleTemplateEngine
+import org.gokb.GOKbTextUtils
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import groovy.text.Template 
-import groovy.text.SimpleTemplateEngine
-
 
 class EnrichmentService implements ApplicationContextAware {
 

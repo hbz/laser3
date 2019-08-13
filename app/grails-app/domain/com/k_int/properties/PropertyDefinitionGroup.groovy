@@ -3,13 +3,14 @@ package com.k_int.properties
 import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import de.laser.CacheService
 import de.laser.domain.I10nTranslation
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RefdataAnnotation
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
-
-import javax.persistence.Transient
 
 @Log4j
 class PropertyDefinitionGroup {
@@ -19,8 +20,7 @@ class PropertyDefinitionGroup {
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue visible // default value: will be overwritten by existing bindings
+    boolean isVisible // default value: will be overwritten by existing bindings
 
     static hasMany = [
             items: PropertyDefinitionGroupItem,
@@ -35,13 +35,13 @@ class PropertyDefinitionGroup {
         id          column: 'pdg_id'
         version     column: 'pdg_version'
         name        column: 'pdg_name'
-        description column: 'pdg_description', type: 'text'
-        tenant      column: 'pdg_tenant_fk'
+        description column: 'pdg_description',  type: 'text'
+        tenant      column: 'pdg_tenant_fk',    index: 'pdg_tenant_idx'
         ownerType   column: 'pdg_owner_type'
-        visible     column: 'pdg_visible_rv_fk'
+        isVisible   column: 'pdg_is_visible'
 
-        items    cascade: 'all' // for deleting
-        bindings cascade: 'all' // for deleting
+        items       cascade: 'all', batchSize: 10
+        bindings    cascade: 'all', batchSize: 10
     }
 
     static constraints = {
@@ -49,7 +49,7 @@ class PropertyDefinitionGroup {
         description (nullable: true,  blank: true)
         tenant      (nullable: true, blank: false)
         ownerType   (nullable: false, blank: false)
-        visible     (nullable: true)
+        isVisible   (nullable: false, blank: false)
     }
 
     def getPropertyDefinitions() {
@@ -88,10 +88,42 @@ class PropertyDefinitionGroup {
         def result = []
 
         def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
-
         def currentObject = genericOIDService.resolveOID(params.oid)
-        def propDefs = currentObject.getPropertyDefinitions()
 
+        CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
+        EhcacheWrapper cache
+
+        cache = cacheService.getTTL300Cache("PropertyDefinitionGroup/refdataFind/${params.desc}/pdgid/${currentObject.id}/${LocaleContextHolder.getLocale()}/")
+
+        if (! cache.get('propDefs')) {
+            def propDefs = currentObject.getPropertyDefinitions()
+
+            List matches = I10nTranslation.refdataFindHelper(
+                    'com.k_int.properties.PropertyDefinition',
+                    'name',
+                    '',
+                    LocaleContextHolder.getLocale()
+            ).collect{ it.id }
+
+            propDefs.each { it ->
+                if (it.id in matches) {
+                    if (it.getDescr() == params.desc) {
+                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                    }
+                }
+            }
+            cache.put('propDefs', result)
+        }
+        else {
+            log.debug ('reading from cache .. ')
+            cache.get('propDefs').each { it ->
+                if (params.q == '*' || it.text?.toLowerCase()?.contains(params.q?.toLowerCase())) {
+                    result.add(it)
+                }
+            }
+        }
+
+        /*
         def matches = I10nTranslation.refdataFindHelper(
                 'com.k_int.properties.PropertyDefinition',
                 'name',
@@ -110,7 +142,7 @@ class PropertyDefinitionGroup {
                 }
             }
         }
-
+        */
         result
     }
 }

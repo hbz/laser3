@@ -62,11 +62,9 @@ class OrgTypeService {
         return Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
                 ( s = ogr.sub and ogr.org = :subOrg ) and
-                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
+                ( ogr.roleType in (:roleTypes) )
         """, [subOrg: context,
-              roleSub: RDStore.OR_SUBSCRIBER,
-              roleSubCons: RDStore.OR_SUBSCRIBER_CONS,
-              roleSubConsortia: RDStore.OR_SUBSCRIPTION_CONSORTIA]
+              roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_COLLECTIVE, RDStore.OR_SUBSCRIPTION_COLLECTIVE]]
         )
     }
 

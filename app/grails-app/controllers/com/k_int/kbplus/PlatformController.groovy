@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*
+import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController extends AbstractDebugController {
@@ -35,16 +35,17 @@ class PlatformController extends AbstractDebugController {
         def base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "
 
         if ( params.q?.length() > 0 ) {
-            //base_qry += "and p.normname like ?"
-            //qry_params.add("%${params.q.trim().toLowerCase()}%");
 
             base_qry += "and ("
-            base_qry += "  ( p.normname like :query ) or "
-            base_qry += "  ( p.primaryUrl like :query ) or "
-            base_qry += "  ( lower(o.name) like :query or lower(o.sortname) like :query or lower(o.shortname) like :query ) "
+            base_qry += "  genfunc_filter_matcher(p.normname, :query ) = true or "
+            base_qry += "  genfunc_filter_matcher(p.primaryUrl, :query) = true or ( "
+            base_qry += "    genfunc_filter_matcher(o.name, :query) = true or "
+            base_qry += "    genfunc_filter_matcher(o.sortname, :query) = true or "
+            base_qry += "    genfunc_filter_matcher(o.shortname, :query) = true "
+            base_qry += "  ) "
             base_qry += ")"
 
-            qry_params.put('query', "%${params.q.trim().toLowerCase()}%")
+            qry_params.put('query', "${params.q}")
         }
         else {
             base_qry += "order by p.normname asc"

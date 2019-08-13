@@ -26,7 +26,7 @@
 
 <g:render template="nav" />
 
-<g:if test="${license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
+<g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
@@ -38,7 +38,7 @@
     </div>
 </g:if>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
+<g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
 
     <div class="ui info message">
         <div class="header">
@@ -52,7 +52,7 @@
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+            <input type="hidden" name="shortcode" value="${institution.shortcode}"/>
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
@@ -78,7 +78,7 @@
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
                         <input class="hidden" type="radio" name="generateSlavedLics" value="shared" checked="checked">
-                        <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                        <label>${message(code: 'myinst.separate_lics_shared')}</label>
                     </div>
 
                     <div class="ui radio checkbox">
@@ -88,13 +88,13 @@
                         <g:else>
                             <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:else>
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
+                        <label>${message(code: 'myinst.separate_lics_explicit')}</label>
                     </div>
 
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
+                            <label>${message(code: 'myinst.separate_lics_reference')}</label>
                         </div>
 
                         <div class="generateSlavedLicsReference-wrapper hidden">
@@ -125,7 +125,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">
+    <g:if test="${accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN")}">
         <hr />
 
         <div class="ui info message">

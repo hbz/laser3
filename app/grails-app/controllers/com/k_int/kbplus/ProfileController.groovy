@@ -1,13 +1,17 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import com.k_int.kbplus.auth.*
+
 import static com.k_int.kbplus.UserSettings.KEYS.*
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
 import static de.laser.helper.RDStore.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -106,6 +110,11 @@ class ProfileController {
         redirect(action: "index")
     }
 
+    private validateEmailAddress(String email) {
+        def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
+        return ( email ==~ mailPattern )
+    }
+
   @Secured(['ROLE_USER'])
   def updateProfile() {
     def user = User.get(springSecurityService.principal.id)
@@ -118,8 +127,7 @@ class ProfileController {
     }
 
     if ( user.email != params.email ) {
-      def mailPattern = /[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})/
-      if ( params.email ==~ mailPattern ) {
+      if ( validateEmailAddress(params.email) ) {
         user.email = params.email
         flash.message += message(code:'profile.updateProfile.updated.email', default:"User email address updated<br/>")
       }
@@ -174,14 +182,42 @@ class ProfileController {
 
     flash.message = ""
     flash.error = ""
-    changeValue(user.getSetting(DASHBOARD_REMINDER_PERIOD, 14),    params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
 
-      if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO)) {
-          flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
-      } else {
-          changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
-      }
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD),         params.remindPeriodForLicensePrivateProp,       'profile.updateProfile.updated.remindPeriodForLicensePrivateProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD),          params.remindPeriodForLicenseCustomProp,        'profile.updateProfile.updated.remindPeriodForLicenseCustomProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD),              params.remindPeriodForOrgCustomProp,            'profile.updateProfile.updated.remindPeriodForOrgCustomProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD),             params.remindPeriodForOrgPrivateProp,           'profile.updateProfile.updated.remindPeriodForOrgPrivateProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD),          params.remindPeriodForPersonPrivateProp,        'profile.updateProfile.updated.remindPeriodForPersonPrivateProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, DEFAULT_REMINDER_PERIOD),    params.remindPeriodForSubscriptionsCustomProp,  'profile.updateProfile.updated.remindPeriodForSubscriptionsCustomProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionsPrivateProp, 'profile.updateProfile.updated.remindPeriodForSubscriptionsPrivateProp')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_TASKS, DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
 
+    //Error: Emailreminder without Emailaddress
+    if ( (! user.email) && params.isRemindByEmail) {
+      flash.error += message(code:'profile.updateProfile.updated.isRemindByEmail.error')
+    } else {
+      changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                                             params.isRemindByEmail?:"N",                    'profile.updateProfile.updated.isRemindByEmail')
+    }
+
+    //Error: EmailCCReminder without EmailReminder
+    if (user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO) && params.isRemindCCByEmail){
+        flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.isRemindByEmailNotChecked')
+    } else {
+        if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
+            flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
+        } else {
+            if (params.remindCCEmailaddress){
+                if (validateEmailAddress(params.remindCCEmailaddress)){
+                    changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
+                } else {
+                    flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                }
+            }
+            changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),                   params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
+        }
+    }
 
     changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
     changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_NO),         params.isSubscriptionsEnddate?:"N",          'profile.updateProfile.updated.subscriptions.enddate')
@@ -217,7 +253,17 @@ class ProfileController {
                 flash.message += (message(code: messageSuccessfull) + "<br/>")
             }
         } else {
-            if (DASHBOARD_REMINDER_PERIOD == userSetting.key) {
+            if (    REMIND_PERIOD_FOR_TASKS == userSetting.key ||
+                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD == userSetting.key ||
+                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE == userSetting.key ||
+                    REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_ORG_PRIVATE_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_ORG_CUSTOM_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key
+            ) {
                 flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error.dashboardReminderPeriod') + "<br/>")
             } else {
                 flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error') + "<br/>")
@@ -374,7 +420,6 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def properties() {
 
-        // def ctxCache = contextService.getCache('ProfileController/properties/')
         EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties/')
 
         def propDefs = [:]

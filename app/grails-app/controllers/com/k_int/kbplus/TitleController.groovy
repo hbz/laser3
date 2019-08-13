@@ -1,9 +1,9 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
-import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController extends AbstractDebugController {

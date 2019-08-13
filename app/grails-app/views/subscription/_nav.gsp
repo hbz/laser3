@@ -11,7 +11,7 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${showConsortiaFunctions}">
+    <g:if test="${showConsortiaFunctions || showCollectiveFunctions}">
         <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />

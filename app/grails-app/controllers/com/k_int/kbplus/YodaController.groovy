@@ -16,9 +16,13 @@ import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.springframework.transaction.TransactionStatus
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+
+import static com.k_int.kbplus.UserSettings.DEFAULT_REMINDER_PERIOD
+import static com.k_int.kbplus.UserSettings.KEYS.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
@@ -107,11 +111,11 @@ class YodaController {
     def appConfig() {
         Map result = [:]
         //SystemAdmin should only be created once in BootStrap
-        result.adminObj = SystemAdmin.list().first()
+        //result.adminObj = SystemAdmin.list().first()
         result.editable = true
-        if (request.method == "POST") {
-            result.adminObj.refresh()
-        }
+        //if (request.method == "POST") {
+        //    result.adminObj.refresh()
+        //}
         result.currentconf = grails.util.Holders.config
 
         result
@@ -978,9 +982,8 @@ class YodaController {
                                     }
                                 }
                                 if(p.isPublic) {
-                                    isPublic {
-                                        rdc(p.isPublic.owner.desc)
-                                        rdv(p.isPublic.value)
+                                    isPublic { // ERMS-1562 ---> fixed in ERMS-1572
+                                        'Yes'
                                     }
                                 }
                                 if(p.contactType) {
@@ -1192,6 +1195,40 @@ class YodaController {
         result.subscriptions = subList
         result.licenses = licList
 
+        result
+    }
+    @Secured(['ROLE_YODA'])
+    def replaceUserSettingDashboardReminderPeriod() {
+        Map<String, Object> result = [:]
+        User.withTransaction { TransactionStatus status ->
+            try {
+                def users = User.findAll()
+                print users
+                users.each { user ->
+                    UserSettings userSettingDashboardReminderPeriod = user.getSetting(DASHBOARD_REMINDER_PERIOD, DEFAULT_REMINDER_PERIOD)
+                    int oldPeriod = userSettingDashboardReminderPeriod.value
+                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_ORG_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_ORG_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, oldPeriod)
+                    user.getSetting(REMIND_PERIOD_FOR_TASKS, oldPeriod)
+
+                    println '-----> deleting userSetting: ' + userSettingDashboardReminderPeriod.id + ", " + userSettingDashboardReminderPeriod.key
+                    userSettingDashboardReminderPeriod.delete()
+                }
+                result.users = users
+                flash.message = 'Das Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD für alle Benutzer im System war erfolgreich.'
+            } catch (Exception ex) {
+                status.setRollbackOnly()
+                flash.error = 'Es ist ein Fehler aufgetreten beim Ersetzen des Usersettings DASHBOARD_REMINDER_PERIOD: ' + ex.message
+                flash.error += '<br /><br /><b>Es wurde ein Rollback durchgeführt!</b>'
+            }
+        }
         result
     }
 

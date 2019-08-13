@@ -14,12 +14,50 @@
     }
 
     boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    Set<DocContext> documentSet = ownobj.documents
 
-    ownobj.documents.sort{it.owner?.title}.each{ it ->
-        if (it.sharedFrom) {
+    if(ownobj instanceof Org && ownobj.id == contextService.org.id) {
+        documentSet.addAll(orgDocumentService.getTargettedDocuments(ownobj))
+    }
+
+    documentSet.sort{it.owner?.title}.each{ it ->
+        boolean visible = false
+        boolean inOwnerOrg = false
+        boolean inTargetOrg = false
+        boolean isCreator = false
+        if(it.org) {
+
+            if(it.owner.owner?.id == contextService.org.id){
+                inOwnerOrg = true
+            }
+
+            else if(contextService.org.id == it.targetOrg?.id) {
+                inTargetOrg = true
+            }
+
+            if(it.owner.creator?.id == user.id)
+                isCreator = true
+
+            switch(it.shareConf) {
+                case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                    break
+                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                    break
+                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                    break
+                case RDStore.SHARE_CONF_CONSORTIUM:
+                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                    break
+                default:
+                    if (!it.shareConf) visible = true
+                    break
+            }
+        }
+        else visible = true
+        if ((it.sharedFrom || inTargetOrg) && visible) {
             sharedItems << it
         }
-        else {
+        else if(visible) {
             baseItems << it
         }
     }
@@ -29,42 +67,7 @@
 <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM") && !parentAtChild}">
     <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
-            <%
-                boolean visible = false
-                if(docctx.org) {
-                    boolean inOwnerOrg = false
-
-                    boolean inTargetOrg = false
-
-                    boolean isCreator = false
-
-                    if(docctx.owner.owner?.id == contextService.org.id)
-                        inOwnerOrg = true
-
-                    else if(contextService.org.id == docctx.org?.id)
-                        inTargetOrg = true
-
-                    if(docctx.owner.creator?.id == user.id)
-                        isCreator = true
-
-                    switch(docctx.shareConf) {
-                        case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                            break
-                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                            break
-                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
-                            break
-                        case RDStore.SHARE_CONF_CONSORTIUM:
-                        case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                            break
-                        default:
-                            if (!docctx.shareConf) visible = true
-                            break
-                    }
-                }
-                else visible = true
-            %>
-            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted') && visible)}">
+            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="ten wide column">
@@ -80,7 +83,7 @@
                                 </g:else>
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
-                        <g:if test="${docctx.owner.owner.id == contextService.org.id}">
+                        <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
                             <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
@@ -135,19 +138,27 @@
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
 
-                    <div class="summary">
-                        <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
-                            <g:if test="${docctx.owner?.title}">
-                                ${docctx.owner.title}
-                            </g:if>
-                            <g:elseif test="${docctx.owner?.filename}">
-                                ${docctx.owner.filename}
-                            </g:elseif>
-                            <g:else>
-                                ${message(code:'template.documents.missing', default: 'Missing title and filename')}
-                            </g:else>
+                    <div class="ui grid summary">
+                        <div class="twelve wide column">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                                <g:if test="${docctx.owner?.title}">
+                                    ${docctx.owner.title}
+                                </g:if>
+                                <g:elseif test="${docctx.owner?.filename}">
+                                    ${docctx.owner.filename}
+                                </g:elseif>
+                                <g:else>
+                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                </g:else>
 
-                        </g:link>(${docctx.owner?.type?.getI10n("value")})
+                            </g:link>(${docctx.owner?.type?.getI10n("value")})
+                        </div>
+                        <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
+                            <div class="two wide column">
+                                <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
+                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                            </div>
+                        </g:if>
                     </div>
                 </div>
             </g:if>

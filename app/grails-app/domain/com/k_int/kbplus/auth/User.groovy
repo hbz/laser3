@@ -1,21 +1,18 @@
 package com.k_int.kbplus.auth
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
-import de.laser.interfaces.Permissions
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataValue
-
-import java.nio.charset.Charset
 
 class User {
 
-  transient springSecurityService
-  def contextService
-  def yodaService
-  def grailsApplication
+    transient springSecurityService
+    def contextService
+    def yodaService
+    def userService
+    def grailsApplication
 
   String username
   String display
@@ -24,6 +21,7 @@ class User {
   String shibbScope
   String apikey
   String apisecret
+
   boolean enabled
   boolean accountExpired
   boolean accountLocked
@@ -48,21 +46,29 @@ class User {
   static mapping = {
       table (name: '`user`')
       password column: '`password`'
+
+      affiliations  batchSize: 10
+      roles         batchSize: 10
+      reminders     batchSize: 10
   }
 
   Set<Role> getAuthorities() {
     UserRole.findAllByUser(this).collect { it.role } as Set
   }
 
-  void beforeInsert() {
-    encodePassword()
-  }
-
-  void beforeUpdate() {
-    if (isDirty('password')) {
-      encodePassword()
+    void afterInsert() {
+        userService.initMandatorySettings(this)
     }
-  }
+
+    void beforeInsert() {
+        encodePassword()
+    }
+
+    void beforeUpdate() {
+        if (isDirty('password')) {
+            encodePassword()
+        }
+    }
 
     /*
         gets UserSetting

@@ -1,4 +1,5 @@
 <%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore;"%>
+<laser:serviceInjection/>
 <%
     String modalText
     String submitButtonLabel
@@ -98,7 +99,11 @@
                             <label>${message(code:'template.addDocument.target')}</label>
                         </dt>
                         <dd>
-                            <g:select name="targetOrg" id="targetOrg" from="${Org.executeQuery("select o from Org o where (o.status = null or o.status != :deleted) and o != :contextOrg order by o.sortname asc",[contextOrg:institution,deleted:RDStore.O_STATUS_DELETED])}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${[null:'']}"/>
+                            <%
+                                //Germans would say 'Durch das Knie in's Auge und zurück' ...
+                                List<Org> orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and o != :contextOrg and not (c.toOrg != :contextOrg and c.type = :department) order by o.sortname asc, o.name asc",[contextOrg:institution,deleted:RDStore.O_STATUS_DELETED,department:RDStore.COMBO_TYPE_DEPARTMENT])
+                            %>
+                            <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${[null:'']}"/>
                         </dd>
                     </dl>
                 </g:if>
@@ -115,9 +120,9 @@
                             if(docctx) {
                                 value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
                             }
-                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.isHardData = true order by rdv.order asc")
                             List availableConfigs = []
-                            if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
+                            if(!accessService.checkPerm("ORG_CONSORTIUM")){
                                 availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
                             }
                             else availableConfigs = allConfigs

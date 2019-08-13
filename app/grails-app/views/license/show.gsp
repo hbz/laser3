@@ -127,7 +127,7 @@
                                             ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
                                         </dt>
                                         <dd>
-                                            <semui:xEditableRefData owner="${license}" field="isSlaved" config='YN'/>
+                                            <semui:xEditableBoolean owner="${license}" field="isSlaved" />
                                         </dd>
                                     </dl>
                                 </g:if>
@@ -141,7 +141,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && (contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds()))}">
+                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && (contextOrg?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM"))}">
                                         <table class="ui three column table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
@@ -293,7 +293,7 @@
             $(document).ready(function() {
               $("#subscription").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?localOnly=true&query={query}",
+                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}",
                     cache: false
                 },
                 clearable: true,

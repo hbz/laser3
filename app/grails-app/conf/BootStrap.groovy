@@ -49,9 +49,9 @@ class BootStrap {
 
         // Reset harddata flag for given refdata and properties
 
-        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.hardData =:reset', [reset: false])
-        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.hardData =:reset', [reset: false])
-        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.hardData =:reset', [reset: false])
+        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.isHardData =:reset', [reset: false])
+        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.isHardData =:reset', [reset: false])
+        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.isHardData =:reset', [reset: false])
 
         // Here we go ..
 
@@ -224,8 +224,8 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        log.debug("addDefaultJasperReports ..")
-        addDefaultJasperReports()
+        //log.debug("addDefaultJasperReports ..")
+        //addDefaultJasperReports()
 
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
@@ -256,8 +256,8 @@ class BootStrap {
             apiService.setupBasicData()
         }
 
-        log.debug("initializeDefaultSettings ..")
-        initializeDefaultSettings()
+        //log.debug("initializeDefaultSettings ..")
+        //initializeDefaultSettings()
 
 //        log.debug("setESGOKB ..")
 //        setESGOKB()
@@ -294,6 +294,8 @@ class BootStrap {
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
         def or_subscr_cons_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial', en: 'Consortial subscriber', de: 'Konsortialteilnehmer'], BOOTSTRAP)
         def or_subscr_cons_hidden = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Consortial_Hidden', en: 'Consortial subscriber (hidden)', de: 'Konsortialteilnehmer (versteckt)'], BOOTSTRAP)
+        def or_scoll_role         = RefdataValue.loc('Organisational Role', [key: 'Subscription Collective',en: 'Subscription Collective', de:'Kollektivlizenzverwalter'], BOOTSTRAP)
+        def or_subscr_coll_role   = RefdataValue.loc('Organisational Role', [key: 'Subscriber_Collective', en: 'Collective subscriber', de: 'Kollektivteilnehmer'], BOOTSTRAP)
 
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
@@ -301,8 +303,7 @@ class BootStrap {
         // TODO: refactoring: partOf
 
         def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
+        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Institut'], BOOTSTRAP)
 
         // Global System Roles
 
@@ -374,8 +375,9 @@ class BootStrap {
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
     }
 
+    @Deprecated
     def initializeDefaultSettings(){
-
+        /*
         def admObj = SystemAdmin.list()
         if (! admObj) {
             log.debug("no SystemAdmin object found, creating new")
@@ -387,10 +389,12 @@ class BootStrap {
         createDefaultSysProps(admObj)
         admObj.refresh()
         log.debug("finished updating config from SystemAdmin")
+        */
     }
 
+    @Deprecated
     def createDefaultSysProps(admObj){
-
+        /*
         def allDescr = [en: PropertyDefinition.SYS_CONF, de: PropertyDefinition.SYS_CONF]
 
         def requiredProps = [
@@ -422,7 +426,7 @@ class BootStrap {
             pd.type  = prop.type
             pd.descr = prop.descr['en']
             //pd.softData = false
-            pd.hardData = BOOTSTRAP
+            pd.isHardData = BOOTSTRAP
             pd.save(failOnError: true)
 
             if (! SystemAdminCustomProperty.findByType(pd)) {
@@ -430,6 +434,7 @@ class BootStrap {
                 newProp.save()
             }
         }
+        */
     }
 
     def createOrgConfig() {
@@ -641,6 +646,21 @@ class BootStrap {
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
+                    name: [key: "Ill ZETA code", en: "Ill ZETA code", de: "Fernleihindikator: Lieferweg"],
+                    expl: [en: "", de: "Fernleihindikator gemäß ZETA/RDA, 1. Position: Bestellaufgabe und Lieferweg"],
+                    descr:allDescr, type: OT.Rdv, cat:'Ill code', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "Ill ZETA inland only", en: "Ill ZETA inland only", de: "Fernleihindikator: Inland"],
+                    expl: [en: "", de: "Fernleihindikator gemäß ZETA/RDA, 2. Position: Nur Inland"],
+                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "Ill ZETA electronic fobidden", en: "Ill ZETA electronic fobidden", de: "Fernleihindikator: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
+                    expl: [en: "", de:"Fernleihindikator gemäß ZETA/RDA, 3. Position: Elektronische Übertragung zwischen Bibliotheken ausgeschlossen"],
+                    descr:allDescr,type: OT.Rdv, cat:'YN', isUsedForLogic: false
+            ],
+            [
                     name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"],
                     expl: [en: "A clause by which the licensor agrees to indemnify the licensee against a legal claim. This may specifically include intellectual property claims (third party rights), or may be broader in application.", de: "Aussage darüber, inwiefern der Lizenzgeber den Lizenznehmer von juristischen Ansprüchen schadlos hält."],
                     descr:allDescr, type: OT.Rdv, cat:'Indemnification', isUsedForLogic: false
@@ -730,9 +750,27 @@ class BootStrap {
                     expl: [en: "Information which qualifies a permissions statement on Digitally Copy", de: "Bedingungen der dititalen Kopie."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
+            // change contents in DB per Script
+            /*
             [
                     name: [en: "Datamining", de: "Datamining"],
                     expl: [en: "", de: "Aussagen darüber, ob bzw. wie das Material im Kontext des Datamining zu Verfügung steht, ferner Informationen über weiter zu berücksichtigende Aspekte wie Nutzungsbedingungen, Sicherheitserklärungen und Datenvernichtung."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            */
+            [
+                    name: [key: "TextDataMining", en: "Text- and Datamining", de: "Text- and Datamining"],
+                    expl: [en: "", de: "Aussagen darüber, ob das Material im Kontext des Datamining zu Verfügung steht."],
+                    descr:allDescr, type:  OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "TextDataMiningCharacters", en: "Text- and Datamining Character Count", de: "Text- and Datamining Zeichenzahl"],
+                    expl: [en: "", de: "Zahl der Zeichen, die im Rahmen eines Text- und Dataminings erlaubt sind."],
+                    descr:allDescr, type: OT.Int, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "TextDataMiningRestrictions", en: "Text- and Datamining Restrictions", de: "Text- and Datamining Einschränkungen."],
+                    expl: [en: "", de: "Aussagen darüber, welchen Einschränkungen das Text- und Datamining unterliegt, sowie Informationen über weiter zu berücksichtigende Aspekte wie Nutzungsbedingungen, Sicherheitserklärungen und Datenvernichtung."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
@@ -1491,7 +1529,7 @@ class BootStrap {
             prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
             //prop.softData = false
-            prop.hardData = BOOTSTRAP
+            prop.isHardData = BOOTSTRAP
             prop.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
@@ -1538,7 +1576,7 @@ class BootStrap {
 
             surveyProperty.type  = default_prop.type
             //prop.softData = false
-            surveyProperty.hardData = BOOTSTRAP
+            surveyProperty.isHardData = BOOTSTRAP
             surveyProperty.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
@@ -1564,9 +1602,11 @@ class BootStrap {
         }
     }
 
+    @Deprecated
     def addDefaultJasperReports() {
         //Add default Jasper reports, if there are currently no reports in DB
 
+        /*
         def reportsFound = JasperReportFile.findAll()
         def defaultReports = ["floating_titles", "match_coverage", "no_identifiers", "title_no_url",
                               "previous_expected_sub", "previous_expected_pkg", "duplicate_titles"]
@@ -1589,7 +1629,8 @@ class BootStrap {
                 }
             }
         }
-  }
+        */
+    }
 
     def ensurePermGrant(role, perm) {
         def existingPermGrant = PermGrant.findByRoleAndPerm(role,perm)
@@ -1657,6 +1698,7 @@ class BootStrap {
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'], BOOTSTRAP)
         RefdataCategory.loc('Permissions',                                  [en: 'Permissions', de: 'Berechtigungen'], BOOTSTRAP)
         RefdataCategory.loc('Existence',                                    [en: 'Existence', de: 'Vorliegen'], BOOTSTRAP)
+        RefdataCategory.loc('Ill code',                                     [en: 'Ill code', de:'Fernleihindikator'], BOOTSTRAP)
         RefdataCategory.loc('Indemnification',                              [en: 'Indemnification Choice', de: 'Entschädigung Auswahl'], BOOTSTRAP)
         RefdataCategory.loc('Confidentiality',                              [en: 'Confidentiality Choice', de: 'Vertraulichkeit Auswahl'], BOOTSTRAP)
         RefdataCategory.loc('Termination Condition',                        [en: 'Termination Condition', de: 'Kündigung Voraussetzung'], BOOTSTRAP)
@@ -1747,6 +1789,12 @@ class BootStrap {
 
         RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'], BOOTSTRAP)
         RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'], BOOTSTRAP)
+
+        RefdataValue.loc('Ill code',   [key: 'a', en: 'a - Ill (loan only)', de: 'a - Fernleihe (Ausleihe)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'b', en: 'b - Ill (copy only)', de: 'b - Fernleihe (Papierkopie an Endnutzer)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'c', en: 'c - Ill (loan and copy)', de: 'c - Fernleihe (Papierkopie und Ausleihe)'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'd', en: 'd - Ill forbidden', de: 'd - keine Fernleihe'], BOOTSTRAP)
+        RefdataValue.loc('Ill code',   [key: 'e', en: 'e - Ill (electronic delivery)', de: 'e - Fernleihe (Elektronischer Versand an Endnutzer)'], BOOTSTRAP)
 
         RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'], BOOTSTRAP)
@@ -2155,6 +2203,7 @@ class BootStrap {
         RefdataValue.loc('OrgRoleType',      [en: 'Platform Provider', de: 'Plattformanbieter'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Issuing Body'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Imprint'], BOOTSTRAP)
+        RefdataValue.loc('OrgRoleType',      [en: 'Library Service', de: 'Bibliotheksservice'], BOOTSTRAP)
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)

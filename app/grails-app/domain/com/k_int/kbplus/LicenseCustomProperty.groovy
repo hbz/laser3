@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
+import com.k_int.properties.PropertyDefinition
 import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 
@@ -145,7 +145,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
                         msgParams,
                         "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
                 )
-                if (newPendingChange && lcp.owner.isSlaved?.value == "Yes") {
+                if (newPendingChange && lcp.owner.isSlaved) {
                     slavedPendingChanges << newPendingChange
                 }
             }
@@ -160,11 +160,13 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
 
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
-                def event = JSON.parse(pc.changeDoc)
-                if (event && event.changeDoc) {
-                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                    if (scp?.id == id) {
-                        pc.delete(flush: true)
+                if (pc.changeDoc) {
+                    def event = JSON.parse(pc.changeDoc)
+                    if (event.changeDoc) {
+                        def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                        if (scp?.id == id) {
+                            pc.delete(flush: true)
+                        }
                     }
                 }
             }

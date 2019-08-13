@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
@@ -10,12 +11,12 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import com.k_int.properties.PropertyDefinition
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
+
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -346,8 +347,8 @@ class AjaxController {
 
   def generateBoolean() {
     def result = [
-        [value: 'false', text: 'false'],
-        [value: 'true', text: 'true']
+        [value: 1, text: RDStore.YN_YES.getI10n('value')],
+        [value: 0, text: RDStore.YN_NO.getI10n('value')]
     ]
     render result as JSON
   }
@@ -549,57 +550,57 @@ class AjaxController {
 
     def getPropValues() {
         Set result = []
-        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-        if(propDef) {
-            List<AbstractProperty> values
-            if(propDef.tenant) {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
-                        break
-                    case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
-                        break
-                }
-            }
-            else {
-                switch(params.domain) {
-                    case 'currentSubscriptions':
-                    case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.findAllByType(propDef)
-                        break
-                    case 'currentLicenses': values = LicenseCustomProperty.findAllByType(propDef)
-                        break
-                    case 'listProvider':
-                    case 'currentProviders':
-                    case 'manageMembers': values = OrgCustomProperty.findAllByType(propDef)
-                        break
-                }
-            }
-
-            if(values) {
-                if(propDef.type == Integer.toString()) {
-                    values.each { v ->
-                        if(v.intValue != null)
-                            result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+        if(params.oid != "undefined") {
+            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
+            if(propDef) {
+                List<AbstractProperty> values
+                if(propDef.tenant) {
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'currentLicenses': values = LicensePrivateProperty.findAllByType(propDef)
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgPrivateProperty.findAllByType(propDef)
+                            break
+                        case 'addressbook': values = PersonPrivateProperty.findAllByType(propDef)
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareTo y.text}
                 }
                 else {
-                    values.each { v ->
-                        if(v.getValue() != null)
-                            result.add([value:v.getValue(),text:v.getValue()])
+                    switch(params.domain) {
+                        case 'currentSubscriptions':
+                        case 'manageConsortiaSubscriptions': values = SubscriptionCustomProperty.executeQuery('select scp from SubscriptionCustomProperty scp join scp.owner s join s.orgRelations oo where scp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'currentLicenses': values = LicenseCustomProperty.executeQuery('select lcp from LicenseCustomProperty lcp join lcp.owner l join l.orgLinks oo where lcp.type = :propDef and oo.org = :tenant',[propDef:propDef,tenant:contextService.org])
+                            break
+                        case 'listProvider':
+                        case 'currentProviders':
+                        case 'manageMembers': values = OrgCustomProperty.executeQuery('select ocp from OrgCustomProperty ocp where ocp.type = :propDef',[propDef:propDef])
+                            break
                     }
-                    result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                }
+
+                if(values) {
+                    if(propDef.type == Integer.toString()) {
+                        values.each { v ->
+                            if(v.intValue != null)
+                                result.add([value:v.intValue.toInteger(),text:v.intValue.toInteger()])
+                        }
+                        result = result.sort { x, y -> x.text.compareTo y.text}
+                    }
+                    else {
+                        values.each { v ->
+                            if(v.getValue() != null)
+                                result.add([value:v.getValue(),text:v.getValue()])
+                        }
+                        result = result.sort { x, y -> x.text.compareToIgnoreCase y.text}
+                    }
                 }
             }
         }
-
-
         //excepted structure: [[value:,text:],[value:,text:]]
         withFormat {
             json {
@@ -793,15 +794,34 @@ class AjaxController {
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
-      EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${params.sub}")
+      Map success = [success:false]
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-          checked.eachWithIndex { e, int idx ->
+          List tipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = (select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub)',[sub:Long.parseLong(params.sub)])
+          tipps.each { idx ->
               checked[idx] = params.checked == 'true' ? 'checked' : null
           }
       }
       else checked[params.index] = params.checked == 'true' ? 'checked' : null
-      cache.put('checked',checked)
+      if(cache.put('checked',checked))
+          success.success = true
+      render success as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def updateIssueEntitlementOverwrite() {
+      Map success = [success:false]
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+      def ieCandidate = issueEntitlementCandidates.get(params.key)
+      if(!ieCandidate)
+          ieCandidate = [:]
+      ieCandidate[params.prop] = params.propValue
+      issueEntitlementCandidates.put(params.key,ieCandidate)
+      if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
+          success.success = true
+      render success as JSON
   }
 
   /**
@@ -1157,7 +1177,16 @@ class AjaxController {
             redirect(controller:"propertyDefinition", action:"create")
         }
         else {
-            render(template: "/templates/properties/custom", model:[ownobj:owner, newProp:newProp, error:error, message: msg])
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/custom", model: [
+                    ownobj: owner,
+                    customProperties: owner.customProperties,
+                    newProp: newProp,
+                    error: error,
+                    message: msg,
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
         }
     }
 
@@ -1186,39 +1215,34 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+      boolean showCollectiveFunctions = Boolean.parseBoolean(params.showCollectiveFunctions)
       if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
                 newProp         : newProp,
                 error           : error,
                 showConsortiaFunctions: showConsortiaFunctions,
+                showCollectiveFunctions: showCollectiveFunctions,
                 propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc       : type.descr // form data
         ])
       }
-      else if (params.onlyOrphaned) {
-          def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+      else {
+          Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
 
-          render(template: "/templates/properties/orphaned", model: [
-                ownobj          : owner,
-                newProp         : newProp,
-                showConsortiaFunctions: showConsortiaFunctions,
-                error           : error,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc       : type.descr, // form data
-                orphanedProperties: allPropDefGroups.orphanedProperties
-        ])
-      }
-        else {
-          render(template: "/templates/properties/custom", model: [
-                  ownobj          : owner,
-                  newProp         : newProp,
+          Map<String, Object> modelMap =  [
+                  ownobj                : owner,
+                  newProp               : newProp,
                   showConsortiaFunctions: showConsortiaFunctions,
-                  error           : error,
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : type.descr // form data
-          ])
+                  showCollectiveFunctions: showCollectiveFunctions,
+                  error                 : error,
+                  custom_props_div      : "${params.custom_props_div}", // JS markup id
+                  prop_desc             : type.descr, // form data
+                  orphanedProperties    : allPropDefGroups.orphanedProperties
+          ]
+
+          render(template: "/templates/properties/custom", model: modelMap)
       }
     }
     else {
@@ -1234,10 +1258,10 @@ class AjaxController {
         def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup) {
-            if (params.visible in ['Yes', 'No']) {
+            if (params.isVisible in ['Yes', 'No']) {
                 def gb = new PropertyDefinitionGroupBinding(
                         propDefGroup: propDefGroup,
-                        visible: RefdataValue.getByValueAndCategory(params.visible, 'YN')
+                        isVisible: (params.isVisible == 'Yes')
                 )
                 if (ownobj.class.name == License.class.name) {
                     gb.lic = ownobj
@@ -1257,7 +1281,8 @@ class AjaxController {
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
                 editable: params.editable,
-                showConsortiaFunctions: params.showConsortiaFunctions
+                showConsortiaFunctions: params.showConsortiaFunctions,
+                showCollectiveFunctions: params.showCollectiveFunctions
         ])
     }
 
@@ -1390,13 +1415,15 @@ class AjaxController {
                     // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
                     openPD.each { pc ->
-                        def event = JSON.parse(pc.changeDoc)
-                        if (event && event.changeDoc) {
-                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                            def eventProp = event.changeDoc.prop
+                        if (pc.changeDoc) {
+                            def event = JSON.parse(pc.changeDoc)
+                            if (event.changeDoc) {
+                                def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                                def eventProp = event.changeDoc.prop
 
-                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
-                                pc.delete(flush: true)
+                                if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                    pc.delete(flush: true)
+                                }
                             }
                         }
                     }
@@ -1516,11 +1543,13 @@ class AjaxController {
 
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
-                def event = JSON.parse(pc.changeDoc)
-                if (event && event.changeDoc) {
-                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                    if (scp?.id == property.id) {
-                        pc.delete(flush: true)
+                if (pc.changeDoc) {
+                    def event = JSON.parse(pc.changeDoc)
+                    if (event.changeDoc) {
+                        def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                        if (scp?.id == property.id) {
+                            pc.delete(flush: true)
+                        }
                     }
                 }
             }
@@ -1573,26 +1602,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
-        else if (params.onlyOrphaned) {
-            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/orphaned", model: [
-                    ownobj            : owner,
-                    newProp           : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
-                    custom_props_div: "${params.custom_props_div}", // JS markup id
-                    prop_desc         : prop_desc, // form data
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
         else {
-          render(template: "/templates/properties/custom", model: [
-                  ownobj                : owner,
-                  newProp               : property,
-                  showConsortiaFunctions: params.showConsortiaFunctions,
-                  custom_props_div      : "${params.custom_props_div}", // JS markup id
-                  prop_desc             : prop_desc // form data
-          ])
+            Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            Map<String, Object> modelMap =  [
+                    ownobj                : owner,
+                    newProp               : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div      : "${params.custom_props_div}", // JS markup id
+                    prop_desc             : prop_desc, // form data
+                    orphanedProperties    : allPropDefGroups.orphanedProperties
+            ]
+            render(template: "/templates/properties/custom", model: modelMap)
         }
     }
 
@@ -1633,26 +1654,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
-        else if (params.onlyOrphaned) {
-            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/orphaned", model: [
-                    ownobj            : owner,
-                    newProp           : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
-                    custom_props_div: "${params.custom_props_div}", // JS markup id
-                    prop_desc         : prop_desc, // form data
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
         else {
-          render(template: "/templates/properties/custom", model:[
-                  ownobj:owner,
-                  newProp:property,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc: prop_desc // form data
-          ])
+            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+            Map<String, Object> modelMap =  [
+                    ownobj                : owner,
+                    newProp               : property,
+                    showConsortiaFunctions: showConsortiaFunctions,
+                    custom_props_div      : "${params.custom_props_div}", // JS markup id
+                    prop_desc             : prop_desc, // form data
+                    orphanedProperties    : allPropDefGroups.orphanedProperties
+            ]
+
+            render(template: "/templates/properties/custom", model: modelMap)
         }
     }
 
@@ -2080,6 +2093,9 @@ class AjaxController {
                     def binding_properties = [:]
                     if (target_object."${params.name}" instanceof Double) {
                         params.value = Double.parseDouble(params.value)
+                    }
+                    if (target_object."${params.name}" instanceof Boolean) {
+                        params.value = params.value?.equals("1")
                     }
                     binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)

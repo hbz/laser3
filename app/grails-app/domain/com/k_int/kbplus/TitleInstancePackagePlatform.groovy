@@ -1,16 +1,16 @@
 package com.k_int.kbplus
 
-import de.laser.domain.*
+import com.k_int.ClassUtils
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
+import groovy.time.TimeCategory
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
-
-import com.k_int.ClassUtils
-import org.springframework.context.i18n.LocaleContextHolder
-import org.apache.commons.logging.*
-import groovy.time.TimeCategory
 
 class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditableTrait {
   @Transient
@@ -99,20 +99,20 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
          globalUID column:'tipp_guid'
            rectype column:'tipp_rectype'
            version column:'tipp_version'
-               pkg column:'tipp_pkg_fk', index: 'tipp_idx'
-          platform column:'tipp_plat_fk', index: 'tipp_idx'
-             title column:'tipp_ti_fk', index: 'tipp_idx'
-         startDate column:'tipp_start_date'
+               pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
+          platform column:'tipp_plat_fk',   index: 'tipp_idx'
+             title column:'tipp_ti_fk',     index: 'tipp_idx'
+         startDate column:'tipp_start_date',    index: 'tipp_dates_idx'
        startVolume column:'tipp_start_volume'
         startIssue column:'tipp_start_issue'
-           endDate column:'tipp_end_date'
+           endDate column:'tipp_end_date',      index: 'tipp_dates_idx'
          endVolume column:'tipp_end_volume'
           endIssue column:'tipp_end_issue'
            embargo column:'tipp_embargo'
      coverageDepth column:'tipp_coverage_depth'
-      coverageNote column:'tipp_coverage_note',type: 'text'
-             impId column:'tipp_imp_id', index: 'tipp_imp_id_idx'
-            gokbId column:'tipp_gokb_id', type:'text'
+      coverageNote column:'tipp_coverage_note', type: 'text'
+             impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
+            gokbId column:'tipp_gokb_id',       type:'text'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -126,6 +126,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
      coreStatusEnd column:'tipp_core_status_end_date'
    accessStartDate column:'tipp_access_start_date'
      accessEndDate column:'tipp_access_end_date'
+
+      ids                   batchSize: 10
+      additionalPlatforms   batchSize: 10
   }
 
     static constraints = {

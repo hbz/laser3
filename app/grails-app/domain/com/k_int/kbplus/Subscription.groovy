@@ -1,13 +1,13 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*
+
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import de.laser.helper.DateUtil
+import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.DeleteFlag
-import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
@@ -15,6 +15,7 @@ import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.dao.TransientDataAccessResourceException
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -42,6 +43,8 @@ class Subscription
     def springSecurityService
     @Transient
     def accessService
+    @Transient
+    def propertyService
 
     @RefdataAnnotation(cat = 'Subscription Status')
     RefdataValue status
@@ -55,12 +58,9 @@ class Subscription
     @RefdataAnnotation(cat = 'Subscription Resource')
     RefdataValue resource
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
-
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isSlaved
+    boolean isSlaved
+	boolean isPublic
 
   String name
   String identifier
@@ -121,24 +121,36 @@ class Subscription
         version     column:'sub_version'
         globalUID   column:'sub_guid'
         status      column:'sub_status_rv_fk'
-        type        column:'sub_type_rv_fk'
-        owner       column:'sub_owner_license_fk'
+        type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
+        owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
         identifier  column:'sub_identifier'
         impId       column:'sub_imp_id', index:'sub_imp_id_idx'
-        startDate   column:'sub_start_date'
-        endDate     column:'sub_end_date'
+        startDate   column:'sub_start_date',        index: 'sub_dates_idx'
+        endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
         previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
-        noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
-        pendingChanges  sort: 'ts', order: 'asc'
+        noticePeriod    column:'sub_notice_period'
+        pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
+
+        ids                 batchSize: 10
+        packages            batchSize: 10
+        issueEntitlements   batchSize: 10
+        documents           batchSize: 10
+        orgRelations        batchSize: 10
+        prsLinks            batchSize: 10
+        derivedSubscriptions    batchSize: 10
+        customProperties    batchSize: 10
+        privateProperties   batchSize: 10
+        costItems           batchSize: 10
+        oapl                batchSize: 10
     }
 
     static constraints = {
@@ -164,9 +176,9 @@ class Subscription
         instanceOf(nullable:true, blank:false)
         administrative(nullable:false, blank:false, default: false)
         previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
-        isSlaved(nullable:true, blank:false)
+        isSlaved    (nullable:false, blank:false)
         noticePeriod(nullable:true, blank:true)
-        isPublic(nullable:true, blank:true)
+        isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
     }
@@ -196,7 +208,7 @@ class Subscription
 
     @Override
     boolean showUIShareButton() {
-        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE]
     }
 
     @Override
@@ -282,14 +294,19 @@ class Subscription
         if (isTemplate()) {
             result = CALCULATED_TYPE_TEMPLATE
         }
+        else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
+            result = CALCULATED_TYPE_COLLECTIVE
+        }
+        else if(getCollective() && instanceOf) {
+            result = CALCULATED_TYPE_PARTICIPATION
+        }
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             if(administrative)
                 result = CALCULATED_TYPE_ADMINISTRATIVE
             else
                 result = CALCULATED_TYPE_CONSORTIAL
         }
-        else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
-            // current and deleted member subscriptions
+        else if(getConsortia() && instanceOf) {
             if(administrative)
                 result = CALCULATED_TYPE_ADMINISTRATIVE
             else
@@ -327,23 +344,29 @@ class Subscription
     }
 
   def getIsSlavedAsString() {
-    isSlaved?.value == "Yes" ? "Yes" : "No"
+    isSlaved ? "Yes" : "No"
   }
 
-  def getSubscriber() {
-    def result = null;
-    def cons = null;
+  Org getSubscriber() {
+    Org result = null
+    Org cons = null
+    Org coll = null
     
     orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial'] )
-        result = or.org;
+      if ( or?.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id, RDStore.OR_SUBSCRIBER_COLLECTIVE.id] )
+        result = or.org
         
-      if ( or?.roleType?.value=='Subscription Consortia' )
-        cons = or.org;
+      if ( or?.roleType?.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+        cons = or.org
+      else if(or?.roleType?.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)
+        coll = or.org
     }
     
     if ( !result && cons ) {
       result = cons
+    }
+    else if(!result && coll) {
+        result = coll
     }
     
     result
@@ -352,7 +375,7 @@ class Subscription
   def getAllSubscribers() {
     def result = [];
     orgRelations.each { or ->
-      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] )
+      if ( or?.roleType?.value in ['Subscriber', 'Subscriber_Consortial', 'Subscriber_Consortial_Hidden', 'Subscriber_Collective'] )
         result.add(or.org)
     }
     result
@@ -373,6 +396,14 @@ class Subscription
             if ( or?.roleType?.value=='Subscription Consortia' )
                 result = or.org
         }
+        result
+    }
+
+    Org getCollective() {
+        Org result = null
+        result = orgRelations.find { OrgRole or ->
+            or.roleType.id == RDStore.OR_SUBSCRIPTION_COLLECTIVE.id
+        }?.org
         result
     }
 
@@ -418,7 +449,7 @@ class Subscription
     }
 
     boolean hasPerm(perm, user) {
-        if (perm == 'view' && this.isPublic?.value == 'Yes') {
+        if (perm == 'view' && this.isPublic) {
             return true
         }
         def adm = Role.findByAuthority('ROLE_ADMIN')
@@ -433,19 +464,25 @@ class Subscription
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
+            OrgRole coll = OrgRole.findBySubAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_SUBSCRIPTION_COLLECTIVE
+            )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_CONS
+            )
+            OrgRole subscrColl = OrgRole.findBySubAndOrgAndRoleType(
+                    this, contextService.getOrg(), RDStore.OR_SUBSCRIBER_COLLECTIVE
             )
             OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_SUBSCRIBER
             )
 
             if (perm == 'view') {
-                return cons || subscrCons || subscr
+                return cons || subscrCons || coll || subscrColl || subscr
             }
             if (perm == 'edit') {
                 if(accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                    return cons || subscr
+                    return cons || coll || subscr
             }
         }
 
@@ -504,7 +541,7 @@ class Subscription
                     "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
             )
 
-            if (newPendingChange && ds.isSlaved?.value == "Yes") {
+            if (newPendingChange && ds.isSlaved) {
                 slavedPendingChanges << newPendingChange
             }
         }
@@ -517,11 +554,11 @@ class Subscription
     }
 
     def getNonDeletedDerivedSubscriptions() {
-        return executeQuery('select s from Subscription s where s.instanceOf = :instance and (s.status != :deleted or s.status = null)',[instance:this,deleted:RDStore.SUBSCRIPTION_DELETED])
+        Subscription.where { instanceOf == this }
     }
 
-    def getCalculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
@@ -566,17 +603,8 @@ class Subscription
             }
         }
 
-        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
-
         // storing properties without groups
-
-        def orph = customProperties.id
-
-        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
-        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
-        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
-
-        result.orphanedProperties = SubscriptionCustomProperty.findAllByIdInList(orph)
+        result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, result.member)
 
         result
     }
@@ -738,13 +766,16 @@ class Subscription
            orgRelations.each { or ->
                orgRelationsMap.put(or.roleType.id,or.org)
            }
-           //log.debug(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id))
-           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
                if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id).sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id).sortname
-           }else{
+           }
+           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
+               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id).sortname
+           }
+           else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
            }
 

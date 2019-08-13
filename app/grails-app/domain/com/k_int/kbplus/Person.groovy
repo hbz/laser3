@@ -3,9 +3,7 @@ package com.k_int.kbplus
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import groovy.util.logging.*
-
-import javax.persistence.Transient
+import groovy.util.logging.Log4j
 
 @Log4j
 class Person extends AbstractBaseDomain {
@@ -19,8 +17,7 @@ class Person extends AbstractBaseDomain {
     @RefdataAnnotation(cat = 'Gender')
     RefdataValue gender
 
-    @RefdataAnnotation(cat = 'YN')
-    RefdataValue isPublic
+    boolean isPublic
 
     @RefdataAnnotation(cat = 'Person Contact Type')
     RefdataValue contactType
@@ -38,14 +35,14 @@ class Person extends AbstractBaseDomain {
         last_name       column:'prs_last_name'
         gender          column:'prs_gender_rv_fk'
         tenant          column:'prs_tenant_fk'
-        isPublic        column:'prs_is_public_rv_fk'
+        isPublic        column:'prs_is_public'
         contactType     column:'prs_contact_type_rv_fk'
         roleType        column:'prs_role_type_rv_fk'
 
-        roleLinks   cascade: 'all'
-        addresses   cascade: 'all', lazy: false
-        contacts    cascade: 'all', lazy: false
-        privateProperties   cascade: 'all'
+        roleLinks           cascade: 'all', batchSize: 10
+        addresses           cascade: 'all', lazy: false
+        contacts            cascade: 'all', lazy: false
+        privateProperties   cascade: 'all', batchSize: 10
     }
     
     static mappedBy = [
@@ -70,7 +67,7 @@ class Person extends AbstractBaseDomain {
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
         tenant      (nullable:true)
-        isPublic    (nullable:true)
+        isPublic    (nullable:false, blank:false)
         contactType (nullable:true)
         roleType    (nullable:true)
     }
@@ -126,7 +123,7 @@ class Person extends AbstractBaseDomain {
 
     static def getPublicByOrgAndFunc(Org org, String func) {
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = ? and pr.functionType.value = ?",
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = ? and pr.functionType.value = ?",
                 [org, func]
         )
         result
@@ -138,7 +135,7 @@ class Person extends AbstractBaseDomain {
         allPersons.each { row ->
             Person p = (Person) row[0]
             PersonRole pr = (PersonRole) row[1]
-            if(p.isPublic == RDStore.YN_YES) {
+            if(p.isPublic) {
                 p.contacts.each { c ->
                     if(c.contentType == RDStore.CCT_EMAIL) {
                         if(publicContactMap[pr.org])
@@ -150,7 +147,7 @@ class Person extends AbstractBaseDomain {
                     }
                 }
             }
-            else if(p.isPublic == RDStore.YN_NO) {
+            else {
                 p.contacts.each { c ->
                     if(c.contentType == RDStore.CCT_EMAIL && p.tenant == contextOrg) {
                         if(privateContactMap[pr.org])
@@ -166,9 +163,10 @@ class Person extends AbstractBaseDomain {
         [publicContacts: publicContactMap, privateContacts: privateContactMap]
     }
 
+    // if org is null, get ALL public responsibilities
     static def getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
         def q = ''
-        def p = ['org': org, 'resp': resp]
+        def p = org ? ['org': org, 'resp': resp] : ['resp': resp]
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
@@ -192,7 +190,9 @@ class Person extends AbstractBaseDomain {
         }
 
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.responsibilityType.value = :resp " + q,
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true " +
+                        (org ? "and pr.org = :org " : "" ) +
+                        "and pr.responsibilityType.value = :resp " + q,
                 p
         )
         result
@@ -200,7 +200,7 @@ class Person extends AbstractBaseDomain {
 
     static def getPrivateByOrgAndFuncFromAddressbook(Org org, String func, Org tenant) {
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = ? and pr.functionType.value = ? and p.tenant = ?",
                 [org, func, tenant]
         )
         result
@@ -232,7 +232,7 @@ class Person extends AbstractBaseDomain {
         }
 
         def result = Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic.value = 'No' and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = false and pr.org = :org and pr.responsibilityType.value = :resp and p.tenant = :tnt " + q,
                 p
         )
         result

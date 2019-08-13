@@ -4,8 +4,6 @@ import com.k_int.kbplus.Address
 import com.k_int.kbplus.Contact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Person
-import com.k_int.kbplus.PersonRole
-import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -40,7 +38,7 @@ class AddressbookService {
         def visiblePersons = []
         orgs.each { org ->
             org.prsLinks.each { pl ->
-                if (pl.prs?.isPublic?.value == 'No') {
+                if (pl.prs && ! pl.prs.isPublic) {
                     if (pl.prs?.tenant?.id && membershipOrgIds.contains(pl.prs?.tenant?.id)) {
                         if (! visiblePersons.contains(pl.prs)) {
                             visiblePersons << pl.prs
@@ -56,7 +54,7 @@ class AddressbookService {
         def result = []
 
         Person.findAllByTenant(tenant)?.each{ prs ->
-            if (prs.isPublic?.value == 'No') {
+            if (! prs.isPublic) {
                 if (! result.contains(prs)) {
                     result << prs
                 }
@@ -90,26 +88,26 @@ class AddressbookService {
         def qParams = [:]
         switch(fromSite) {
             case "addressbook":
-                qParams.public = RDStore.YN_NO
+                qParams.public = false
                 qParts << 'p.tenant = :tenant'
                 qParams.tenant = contextService.org
                 break
             case "myPublicContacts":
-                qParams.public = RDStore.YN_YES
+                qParams.public = true
                 break
         }
 
         if (params.prs) {
-            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
-            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
+            qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
+            qParams << [prsName: "${params.prs}"]
         }
         if (params.org && params.org instanceof Org) {
             qParts << "pr.org = :org"
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "(pr.org.name like :name or pr.org.shortname like :name or pr.org.sortname like :name)"
-            qParams << [name: "%${params.org}%"]
+            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.shortname, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+            qParams << [name: "${params.org}"]
         }
 
         def query = "SELECT distinct p FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")

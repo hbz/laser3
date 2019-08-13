@@ -2,8 +2,6 @@ package com.k_int.kbplus
 
 import de.laser.helper.RefdataAnnotation
 
-import javax.persistence.Transient
-
 class GlobalRecordInfo {
 
   GlobalRecordSource source
@@ -39,6 +37,8 @@ class GlobalRecordInfo {
                record column:'gri_record', length:(1024*1024*64)// , type:'blob' // , length:(1024*1024*64)
       kbplusCompliant column:'gri_kbplus_compliant'
       globalRecordInfoStatus column: 'gri_status_rv_fk'
+
+            trackers  batchSize: 10
   }
 
   static constraints = {
