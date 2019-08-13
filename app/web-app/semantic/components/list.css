@@ -986,3 +986,19 @@ ol.ui.horizontal.list li:before,
 .la-border-selected {
   border: 1px solid #bb1600;
 }
+.la-icon-list {
+  margin-top: 10px;
+}
+.la-icon-list .item {
+  display: table-row;
+}
+.la-icon-list .item > .ui.icon {
+  display: table-cell;
+  padding: 0 0 .2em .5em;
+  vertical-align: middle;
+}
+.la-icon-list .item .content {
+  display: table-cell;
+  width: 100%;
+  padding: 0 0 .2em .5em;
+}

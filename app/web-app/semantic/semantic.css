@@ -5765,6 +5765,12 @@ aside.ui.accordion .title:not(.ui) {
 .ui.button.la-audit-button {
   vertical-align: super;
 }
+
+.la-tipp-button-area .la-title {
+  color: #767676;
+  font-size: .8rem;
+  text-transform: uppercase;
+}
 /*!
  * # Semantic UI 2.3.1 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -14621,7 +14627,7 @@ i.icon.la-gokb {
   font-family: 'icomoon';
 }
 
-i.icon.la-gokb.square {
+i.icon.la-laser {
   font-family: 'icomoon';
 }
 
@@ -14689,7 +14695,7 @@ i.icon.la-gokb:before {
   content: "\e90e";
 }
 
-i.icon.la-gokb.square:before {
+i.icon.la-laser:before {
   content: "\e90f";
 }
 
@@ -18310,6 +18316,26 @@ ol.ui.horizontal.list li:before,
 
 .la-border-selected {
   border: 1px solid #bb1600;
+}
+
+.la-icon-list {
+  margin-top: 10px;
+}
+
+.la-icon-list .item {
+  display: table-row;
+}
+
+.la-icon-list .item > .ui.icon {
+  display: table-cell;
+  padding: 0 0 .2em .5em;
+  vertical-align: middle;
+}
+
+.la-icon-list .item .content {
+  display: table-cell;
+  width: 100%;
+  padding: 0 0 .2em .5em;
 }
 /*!
  * # Semantic UI 2.3.1 - Loader

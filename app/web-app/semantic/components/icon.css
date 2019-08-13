@@ -4826,7 +4826,7 @@ i.icon.la-noChange {
 i.icon.la-gokb {
   font-family: 'icomoon';
 }
-i.icon.la-gokb.square {
+i.icon.la-laser {
   font-family: 'icomoon';
 }
 i.icon.hand.pointer.outline.slash:before {
@@ -4876,7 +4876,7 @@ i.icon.la-replace:before {
 i.icon.la-gokb:before {
   content: "\e90e";
 }
-i.icon.la-gokb.square:before {
+i.icon.la-laser:before {
   content: "\e90f";
 }
 
