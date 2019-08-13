@@ -1,6 +1,12 @@
+0.19.2
+
+- fixed: missing package linkage
+- fixed: contact compare function
+- fixed: sync problem
+
 0.19.1
 
-- fixed null pointer exception
+- fixed: null pointer exception
 
 0.19
 
