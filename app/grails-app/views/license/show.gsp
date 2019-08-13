@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
 <!doctype html>
 <r:require module="annotations" />
 <laser:serviceInjection />
@@ -293,7 +293,9 @@
             $(document).ready(function() {
               $("#subscription").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}",
+                    url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>" +
+                            "?ctype=${TemplateSupport.CALCULATED_TYPE_CONSORTIAL}" +
+                            "&ctype=${TemplateSupport.CALCULATED_TYPE_COLLECTIVE}",
                     cache: false
                 },
                 clearable: true,

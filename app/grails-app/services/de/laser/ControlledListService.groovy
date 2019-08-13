@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.*
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -89,10 +90,20 @@ class ControlledListService {
         else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
             filter.orgRoles.addAll([RDStore.OR_SUBSCRIBER_COLLECTIVE,RDStore.OR_SUBSCRIPTION_COLLECTIVE])
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
+
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
-            result.results.add([name:s.dropdownNamingConvention(org),value:s.class.name + ":" + s.id])
+
+            if (params.ctype) {
+                if (s.getCalculatedType() in params.list('ctype')) {
+                    result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                }
+            }
+            else {
+                result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+            }
         }
+		log.debug ("getSubscriptions(): ${result.results.size()} Matches")
         result
     }
 
