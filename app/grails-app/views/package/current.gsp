@@ -72,40 +72,11 @@
         </div>
         <div class="row">
             <div class="column">
-                <semui:filter>
-            <g:form action="current" params="${params}" method="get" class="ui form">
-                <input type="hidden" name="sort" value="${params.sort}">
-                <input type="hidden" name="order" value="${params.order}">
-                <div class="fields two">
-                    <div class="field">
-                        <label for="filter">${message(code:'package.compare.filter.title', default:'Filters - Title')}</label>
-                        <input id="filter" name="filter" value="${params.filter}"/>
-                    </div>
-                    <div class="field">
-                        <label for="coverageNoteFilter">${message(code:'tipp.coverageNote', default:'Coverage note')}</label>
-                        <input id="coverageNoteFilter" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
-                    </div>
-                </div>
-                <div class="three fields">
-                    <div class="field">
-                        <semui:datepicker label="package.compare.filter.coverage_startsBefore" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
-                    </div>
-                    <div class="field">
-                        <semui:datepicker label="package.compare.filter.coverage_endsAfter" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
-                    </div>
-                    <div class="field la-field-right-aligned">
-
-                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
-                    </div>
-                </div>
-
-
-            </g:form>
-        </semui:filter>
+                <g:render template="filter" model="${[params: params]}"/>
             </div>
         </div>
 
+        <%-- as far as I understood, package information must not be edited from LAS:eR - this is GOKb's matter
         <g:if test="${editable}">
           <div class="row">
               <div class="column">
@@ -135,10 +106,10 @@
                   </semui:form>
               </div>
           </div>
-        </g:if>
+        </g:if>--%>
         <div class="row">
             <div class="column">
-                <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+                <%--<g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
@@ -198,9 +169,9 @@
                 <tbody></tbody>
           </table>
             </g:if>
-            <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: true]"/>
 
-        </g:form>
+        </g:form>--%>
+                <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: false]"/>
             </div>
         </div>
     </div>
@@ -212,10 +183,10 @@
 
 
 
-    <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
+    <%-- <g:render template="enhanced_select" contextPath="../templates" />
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
-              model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
+              model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
     <r:script language="JavaScript">
       $(function(){
