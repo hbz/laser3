@@ -295,7 +295,8 @@
                 apiSettings: {
                     url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>" +
                             "?ctype=${TemplateSupport.CALCULATED_TYPE_CONSORTIAL}" +
-                            "&ctype=${TemplateSupport.CALCULATED_TYPE_COLLECTIVE}",
+                            "&ctype=${TemplateSupport.CALCULATED_TYPE_COLLECTIVE}" +
+                            "&query={query}",
                     cache: false
                 },
                 clearable: true,
