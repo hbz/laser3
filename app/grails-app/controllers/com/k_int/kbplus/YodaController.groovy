@@ -682,6 +682,37 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    Map checkIssueEntitlementPackages() {
+        Map<String,List<IssueEntitlement>> result = [:]
+        result.ieList = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp.pkg tp where not exists (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription and sp.pkg = tp)')
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def createSubscriptionPackagesFromIssueEntitlements() {
+        List<IssueEntitlement> toLink = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp.pkg tp where not exists (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription and sp.pkg = tp)')
+        Set<Map> entries = []
+        toLink.each { issueEntitlement ->
+            entries << [subscription: issueEntitlement.subscription,pkg: issueEntitlement.tipp.pkg]
+        }
+        if(params.doIt == 'true') {
+            List<String> errorMsg = []
+            entries.each { entry ->
+                SubscriptionPackage sp = new SubscriptionPackage(entry)
+                if(!sp.save())
+                    errorMsg << sp.getErrors()
+            }
+            if(errorMsg)
+                flash.error = "Folgende Fehler sind aufgetreten: <ul><li>${errorMsg.join('</li><li>')}</li></ul>"
+            else flash.message = "Lizenzen wurden erfolgreich mit Paketen verknüpft"
+        }
+        else {
+            flash.message = "Folgende Lizenzen und Pakete hätte es getroffen: <ul><li>${entries.join('</li><li>')}</li></ul>"
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
     def updateCustomerType(){
         RefdataValue cons = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
         RefdataValue inst = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')
