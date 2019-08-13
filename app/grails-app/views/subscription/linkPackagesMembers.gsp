@@ -81,7 +81,8 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
                               from="${validPackages}" name="package_All" value=""
                               required=""
                               noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
-                </g:if><g:else>
+                </g:if>
+                <g:else>
                     <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
                 </g:else>
             </div>
