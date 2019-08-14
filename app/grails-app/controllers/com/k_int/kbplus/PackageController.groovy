@@ -34,7 +34,7 @@ class PackageController extends AbstractDebugController {
     def globalSourceSyncService
     def dataloadService
     def escapeService
-    def deletionService
+    def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -457,8 +457,8 @@ class PackageController extends AbstractDebugController {
 
         def queryParams = [packageInstance]
 
-        def query = generateBasePackageQuery(params, queryParams, true, date)
-        def list = TitleInstancePackagePlatform.executeQuery("select tipp " + query, queryParams);
+        def query = filterService.generateBasePackageQuery(params, queryParams, true, date, "Platform")
+        def list = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
 
         return list
     }
@@ -530,7 +530,7 @@ class PackageController extends AbstractDebugController {
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        def qry_params = [packageInstance]
+        def qry_params = [pkgInstance: packageInstance]
 
         def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
         def today = new Date()
@@ -551,11 +551,11 @@ class PackageController extends AbstractDebugController {
             date_filter = today
         }
 
-        def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
+        def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
 
         // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits);
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params, limits)
+        //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
         result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
                 "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
 
@@ -627,23 +627,22 @@ class PackageController extends AbstractDebugController {
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
         params.max = result.max
         def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
         // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        def qry_params = [packageInstance]
-        def date_filter = params.mode == 'advanced' ? null : new Date();
+        def qry_params = [pkgInstance: packageInstance]
+        def date_filter = params.mode == 'advanced' ? null : new Date()
 
-        def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
+        def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
 
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+query.base_qry, query.qry_params)
+        result.titlesList = titlesList.drop(result.offset).take(result.max)
+        result.num_tipp_rows = titlesList.size()
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
+        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
 
         result
@@ -727,58 +726,6 @@ class PackageController extends AbstractDebugController {
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
         result
-    }
-
-
-    private def generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt) {
-
-        def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-
-        if (params.mode != 'advanced') {
-            base_qry += "and tipp.status.value = 'Current' "
-        }
-        else if (params.mode == 'advanced' && showDeletedTipps != true) {
-            base_qry += "and tipp.status.value != 'Deleted' "
-        }
-
-        if (asAt != null) {
-            base_qry += " and ( ( ( ? >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) or ( tipp.accessEndDate is null ) ) and ( ( ? <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
-            qry_params.add(asAt);
-            qry_params.add(asAt);
-        }
-
-        if (params.filter) {
-            base_qry += " and ( ( lower(tipp.title.title) like ? ) or ( exists ( from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) )"
-            qry_params.add("%${params.filter.trim().toLowerCase()}%")
-            qry_params.add("%${params.filter}%")
-        }
-
-        if (params.coverageNoteFilter) {
-            base_qry += "and lower(tipp.coverageNote) like ?"
-            qry_params.add("%${params.coverageNoteFilter?.toLowerCase()}%")
-        }
-
-        if (params.endsAfter && params.endsAfter.length() > 0) {
-            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
-            def d = sdf.parse(params.endsAfter)
-            base_qry += " and tipp.endDate >= ?"
-            qry_params.add(d)
-        }
-
-        if (params.startsBefore && params.startsBefore.length() > 0) {
-            def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
-            def d = sdf.parse(params.startsBefore)
-            base_qry += " and tipp.startDate <= ?"
-            qry_params.add(d)
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by lower(${params.sort}) ${params.order}"
-        } else {
-            base_qry += " order by lower(tipp.title.title) asc"
-        }
-
-        return base_qry
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -1061,9 +1008,9 @@ class PackageController extends AbstractDebugController {
             }
         } else if (params.BatchAllBtn == 'on') {
             log.debug("Batch process all filtered by: " + params.filter);
-            def qry_params = [packageInstance]
-            def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, new Date())
-            def tipplist = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params)
+            def qry_params = [pkgInstance: packageInstance]
+            def query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, new Date(),"Package")
+            def tipplist = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
             tipplist.each { tipp_to_bulk_edit ->
                 boolean changed = false
                 log.debug("update tipp ${tipp_to_bulk_edit.id}");

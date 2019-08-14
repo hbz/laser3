@@ -351,7 +351,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         long startTimeMillis = System.currentTimeMillis()
 
         String obj     = params.get('obj')
-        String query   = params.get('q')
+        String query   = params.get('q', '')
         String value   = params.get('v', '')
         String context = params.get('context')
         String format

@@ -1875,6 +1875,7 @@ class SubscriptionController extends AbstractDebugController {
                     result.members_disabled << it.id
                 }
             }
+            result.validPackages = result.subscriptionInstance.packages?.sort { it.pkg.name }
         }
 
         result
@@ -1922,6 +1923,21 @@ class SubscriptionController extends AbstractDebugController {
                 def subLicense = result.subscriptionInstance.owner
 
                 List<Subscription> synShareTargetList = []
+
+                Set<Package> packagesToProcess = []
+
+                //copy package data
+                if(params.linkAllPackages) {
+                    result.subscriptionInstance.packages.each { sp ->
+                        packagesToProcess << sp.pkg
+                    }
+                }
+                else if(params.packageSelection) {
+                    List packageIds = params.list("packageSelection")
+                    packageIds.each { spId ->
+                        packagesToProcess << SubscriptionPackage.get(spId).pkg
+                    }
+                }
 
                 members.each { cm ->
 
@@ -2006,9 +2022,6 @@ class SubscriptionController extends AbstractDebugController {
                             }
 
                             synShareTargetList.add(memberSub)
-                        }
-
-                        if (memberSub) {
 
                             SubscriptionCustomProperty.findAllByOwner(result.subscriptionInstance).each { scp ->
                                 AuditConfig ac = AuditConfig.getConfig(scp)
@@ -2030,6 +2043,14 @@ class SubscriptionController extends AbstractDebugController {
                                     }
                                 }
                             }
+
+                            packagesToProcess.each { pkg ->
+                                if(params.linkWithEntitlements)
+                                    pkg.addToSubscriptionCurrentStock(memberSub, result.subscriptionInstance)
+                                else
+                                    pkg.addToSubscription(memberSub, false)
+                            }
+
                         }
                     //}
                 }

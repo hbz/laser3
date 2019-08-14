@@ -31,9 +31,11 @@
     <g:else>${platformInstance.name}</g:else>
 </h1>
 
-<g:render template="nav" contextPath="."/>
+<g:render template="nav"/>
 
 <semui:messages data="${flash}"/>
+
+<g:render template="/package/filter" model="${[params:params]}"/>
 
 <fieldset class="inline-lists">
     <dl>
@@ -41,7 +43,7 @@
         <dt>${message(code: 'platform.name', default: 'Platform Name')}</dt>
         <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
 
-        <dt>${message(code: 'platform.gokbId', default: 'GOKb ID')}</dt>
+        <dt>GOKb ID</dt>
         <dd>
             ${platformInstance?.gokbId}
 
@@ -101,6 +103,10 @@
 
 <g:render template="/templates/tipps/table"
           model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
+
+<g:if test="${tipps}" >
+    <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+</g:if>
 
 </body>
 </html>
