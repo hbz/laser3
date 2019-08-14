@@ -698,8 +698,8 @@ class OrganisationController extends AbstractDebugController {
         }
 
         if (params.name && params.name != '' ) {
-            whereQuery.add('(lower(u.username) like :name or lower(u.display) like :name)')
-            queryParams.put('name', "%${params.name.toLowerCase()}%")
+            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
+            queryParams.put('name', "${params.name}")
         }
 
         result.users = User.executeQuery(

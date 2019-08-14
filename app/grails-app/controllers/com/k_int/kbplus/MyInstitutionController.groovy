@@ -1737,8 +1737,7 @@ from License as l where (
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
             sub_qry += " AND genfunc_filter_matcher(ti.ti_title, :titlestr) = true "
-            qry_params.titlestr = "${params.filter}"
-
+            qry_params.titlestr = params.get('filter').toString()
         }
 
         if (filterSub) {
