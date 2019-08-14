@@ -65,30 +65,32 @@ class ApiPkg {
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 
 		result.globalUID        	= pkg.globalUID
-		result.autoAccept       	= pkg.autoAccept
+		result.gokbId           	= pkg.gokbId
+		result.impId            	= pkg.impId
+		result.name             	= pkg.name
+		result.sortName         	= pkg.sortName
+
+		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
 		result.cancellationAllowances = pkg.cancellationAllowances
 		result.dateCreated      	= pkg.dateCreated
 		result.endDate          	= pkg.endDate
-		result.forumId          	= pkg.forumId
+		//result.forumId          	= pkg.forumId
 		//result.identifier       = pkg.identifier - TODO refactoring legacy
-		result.impId            	= pkg.impId
-		result.gokbId           	= pkg.gokbId
+
 		result.lastUpdated      	= pkg.lastUpdated
-		result.name             	= pkg.name
 		result.vendorURL        	= pkg.vendorURL
-		result.sortName         	= pkg.sortName
 		result.startDate        	= pkg.startDate
 
 		// RefdataValues
 
-		result.packageType      	= pkg.packageType?.value
-		result.packageStatus    	= pkg.packageStatus?.value
 		result.packageListStatus 	= pkg.packageListStatus?.value
+		result.packageType      	= pkg.packageType?.value
+		result.packageScope     	= pkg.packageScope?.value
+		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
 		result.consistent       	= pkg.consistent?.value
 		result.fixed            	= pkg.fixed?.value
 		result.isPublic         	= pkg.isPublic ? 'Yes' : 'No'
-		result.packageScope     	= pkg.packageScope?.value
 
 		// References
 
