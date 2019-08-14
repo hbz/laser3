@@ -138,9 +138,33 @@
                 </div>
             </div>
             <div class="two fields">
-                <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
+                <div class="field">
+                    <label><g:message code="myinst.addMembers.linkPackages"/></label>
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="linkAllPackages" name="linkAllPackages">
+                        <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages" args="${superOrgType}"/></label>
+                    </div>
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements">
+                        <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                    </div>
+                    <div class="field">
+                        <g:if test="${validPackages}">
+                            <g:select class="ui search multiple dropdown"
+                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                      from="${validPackages}" name="packageSelection" value=""
+                                      noSelection='["": "${message(code: 'subscription.linkPackagesMembers.noSelection')}"]'/>
+                        </g:if>
+                        <g:else>
+                            <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${superOrgType}"/>
+                        </g:else>
+                    </div>
+                </div>
+                <div class="field">
+                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
 
-                <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                </div>
             </div>
         </g:if>
 

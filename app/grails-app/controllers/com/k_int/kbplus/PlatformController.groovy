@@ -13,6 +13,7 @@ class PlatformController extends AbstractDebugController {
 
     def springSecurityService
     def contextService
+    def filterService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -94,7 +95,7 @@ class PlatformController extends AbstractDebugController {
       }
 
       editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-
+        Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
      /*// Build up a crosstab array of title-platforms under this package
       def packages = [:]
       def package_list = []
@@ -145,13 +146,17 @@ class PlatformController extends AbstractDebugController {
       [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
       */
 
-        List<TitleInstancePackagePlatform> plattformTipps = []
-        platformInstance.tipps.each { TitleInstancePackagePlatform tipp ->
-            if(tipp.status != RDStore.TIPP_STATUS_DELETED)
-                plattformTipps << tipp
-        }
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
+        params.max = result.max
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
-        [platformInstance: platformInstance, editable: editable, tipps: plattformTipps]
+        def qry_params = [platInstance: platformInstance]
+        def date_filter = params.mode == 'advanced' ? null : new Date()
+        def query = filterService.generateBasePackageQuery(params, qry_params, false, date_filter, "Platform")
+        List<TitleInstancePackagePlatform> platformTipps = TitleInstancePackagePlatform.executeQuery("select tipp ${query.base_qry}",query.qry_params)
+        result.tipps = platformTipps.drop(result.offset).take(result.max)
+
+        result
 
     }
 

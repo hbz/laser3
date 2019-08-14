@@ -3,8 +3,11 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
+import org.springframework.context.i18n.LocaleContextHolder
 
+import javax.annotation.PostConstruct
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 class FilterService {
 
@@ -12,6 +15,13 @@ class FilterService {
     def springSecurityService
     def genericOIDService
     def contextService
+    def messageSource
+    def locale
+
+    @PostConstruct
+    void init() {
+        locale = LocaleContextHolder.getLocale()
+    }
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -348,5 +358,65 @@ class FilterService {
 
         result.queryParams = queryParams
         result
+    }
+
+    Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
+        String base_qry
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
+        if(forBase == 'Package')
+            base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
+        else if(forBase == 'Platform')
+            base_qry = "from TitleInstancePackagePlatform as tipp where tipp.platform = :platInstance "
+
+        if (params.mode != 'advanced') {
+            base_qry += "and tipp.status.value = 'Current' "
+        }
+        else if (params.mode == 'advanced' && showDeletedTipps != true) {
+            base_qry += "and tipp.status.value != 'Deleted' "
+        }
+
+        if (asAt != null) {
+            base_qry += " and ( ( ( :startDate >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) or ( tipp.accessEndDate is null ) ) and ( ( :endDate <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
+            qry_params.startDate = asAt
+            qry_params.endDate = asAt
+        }
+
+        if (params.filter) {
+            base_qry += " and ( ( genfunc_filter_matcher(tipp.title.title,:title) = true ) or ( exists ( from IdentifierOccurrence io where io.ti.id = tipp.title.id and genfunc_filter_matcher(io.identifier.value,:title) = true ) ) )"
+            qry_params.title = params.filter
+        }
+
+        if (params.coverageNoteFilter) {
+            base_qry += "and genfunc_filter_matcher(tipp.coverageNote,:coverageNote) = true"
+            qry_params.coverageNote = params.coverageNoteFilter
+        }
+
+        if (params.endsAfter) {
+            base_qry += " and tipp.endDate >= :endDate"
+            qry_params.endDate = sdf.parse(params.endsAfter)
+        }
+
+        if (params.startsBefore) {
+            base_qry += " and tipp.startDate <= :startDate"
+            qry_params.startDate = sdf.parse(params.startsBefore)
+        }
+
+        if (params.accessStartDate) {
+            base_qry += " and tipp.accessStartDate <= :accessStartDate"
+            qry_params.accessStartDate = sdf.parse(params.accessStartDate)
+        }
+
+        if (params.accessEndDate) {
+            base_qry += " and tipp.accessEndDate >= :accessEndDate"
+            qry_params.accessEndDate = sdf.parse(params.accessEndDate)
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            base_qry += " order by lower(${params.sort}) ${params.order}"
+        } else {
+            base_qry += " order by lower(tipp.title.title) asc"
+        }
+
+        return [base_qry:base_qry,qry_params:qry_params]
     }
 }
