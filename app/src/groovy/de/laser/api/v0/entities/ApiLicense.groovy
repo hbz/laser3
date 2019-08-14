@@ -11,6 +11,7 @@ import de.laser.helper.Constants
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiLicense {
@@ -71,7 +72,7 @@ class ApiLicense {
         hasAccess = calculateAccess(lic, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.retrieveLicenseMap(lic, ApiReaderHelper.IGNORE_NONE, context)
+            result = retrieveLicenseMap(lic, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -84,11 +85,10 @@ class ApiLicense {
         Collection<Object> result = []
 
         List<License> available = License.executeQuery(
-                'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND lic.status != :del' ,
+                'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
-                        roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE],
-                        del:   RDStore.LICENSE_DELETED
+                        roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
                 ]
         )
 
@@ -101,5 +101,95 @@ class ApiLicense {
         }
 
         return (result ? new JSON(result) : null)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveLicenseMap(License lic, def ignoreRelation, Org context){
+        def result = [:]
+
+        lic = GrailsHibernateUtil.unwrapIfProxy(lic)
+
+        result.globalUID        = lic.globalUID
+        // removed - result.contact          = lic.contact
+        result.dateCreated      = lic.dateCreated
+        result.endDate          = lic.endDate
+        result.impId            = lic.impId
+        // result.lastmod          = lic.lastmod // legacy ?
+        result.lastUpdated      = lic.lastUpdated
+        // result.licenseUrl       = lic.licenseUrl
+        // removed - result.licensorRef      = lic.licensorRef
+        // removed - result.licenseeRef      = lic.licenseeRef
+        result.licenseType      = lic.licenseType
+        //result.noticePeriod     = lic.noticePeriod
+        result.reference        = lic.reference
+        result.startDate        = lic.startDate
+        result.normReference= lic.sortableReference
+
+        // erms-888
+        result.calculatedType   = lic.getCalculatedType()
+
+        // RefdataValues
+
+        result.isPublic         = lic.isPublic ? 'Yes' : 'No'
+        // result.licenseCategory  = lic.licenseCategory?.value // legacy
+        result.status           = lic.status?.value
+        // result.type             = lic.type?.value
+
+        // References
+
+        result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf       = ApiReaderHelper.requestLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
+        result.properties       = ApiReaderHelper.retrievePropertyCollection(lic, context, ApiReaderHelper.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
+        result.documents        = ApiReaderHelper.retrieveDocumentCollection(lic.documents) // com.k_int.kbplus.DocContext
+        result.onixplLicense    = ApiReaderHelper.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+
+        if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
+            if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
+                result.subscriptions = ApiReaderHelper.retrieveStubCollection(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+            }
+            if (ignoreRelation != ApiReaderHelper.IGNORE_LICENSE) {
+                def allOrgRoles = []
+
+                def licenseeConsortial = OrgRole.findByOrgAndLicAndRoleType(context, lic, RDStore.OR_LICENSEE_CONS)
+                // restrict, if context is OR_LICENSEE_CONS for current license
+                if (licenseeConsortial) {
+                    allOrgRoles.add(licenseeConsortial)
+                    allOrgRoles.addAll(
+                            OrgRole.executeQuery(
+                                    "select oo from OrgRole oo where oo.lic = :lic and oo.roleType not in (:roles)",
+                                    [lic: lic, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                            )
+                    )
+                }
+                else {
+                    allOrgRoles.addAll(lic.orgLinks)
+
+                    // add derived licenses org roles
+                    if (lic.derivedLicenses) {
+                        allOrgRoles.addAll(
+                                OrgRole.executeQuery(
+                                        "select oo from OrgRole oo where oo.lic in (:derived) and oo.roleType in (:roles)",
+                                        [derived: lic.derivedLicenses, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                                )
+                        )
+                    }
+
+                }
+                allOrgRoles = allOrgRoles.unique()
+
+                result.organisations = ApiReaderHelper.retrieveOrgLinkCollection(allOrgRoles, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+            }
+        }
+
+        // Ignored
+
+        //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
+        /*result.persons          = exportHelperService.resolvePrsLinks(
+                lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
+        ) // com.k_int.kbplus.PersonRole
+        */
+        return ApiToolkit.cleanUp(result, true, true)
     }
 }

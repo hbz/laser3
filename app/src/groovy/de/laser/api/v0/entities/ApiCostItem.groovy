@@ -3,9 +3,11 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.sql.Timestamp
 
@@ -46,7 +48,7 @@ class ApiCostItem {
             }
         }
         if (hasAccess) {
-            result = ApiReader.retrieveCostItemMap(costItem, context)
+            result = retrieveCostItemMap(costItem, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -93,6 +95,60 @@ class ApiCostItem {
         }
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveCostItemMap(CostItem costItem, Org context){
+        def result = [:]
+
+        costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
+
+        result.globalUID           = costItem.globalUID
+
+        result.costInBillingCurrency            = costItem.costInBillingCurrency
+        result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax
+        result.costInLocalCurrency              = costItem.costInLocalCurrency
+        result.costInLocalCurrencyAfterTax      = costItem.costInLocalCurrencyAfterTax
+
+        result.costTitle           = costItem.costTitle
+        result.costDescription     = costItem.costDescription
+        result.currencyRate        = costItem.currencyRate
+        result.dateCreated         = costItem.dateCreated
+        result.datePaid            = costItem.datePaid
+        result.endDate             = costItem.endDate
+        result.finalCostRounding   = costItem.finalCostRounding
+        result.invoiceDate         = costItem.invoiceDate
+        result.lastUpdated         = costItem.lastUpdated
+
+        result.reference           = costItem.reference
+        result.startDate           = costItem.startDate
+        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
+
+        // erms-888
+        result.calculatedType      = costItem.getCalculatedType()
+
+        // RefdataValues
+
+        result.costItemStatus      = costItem.costItemStatus?.value
+        result.costItemCategory    = costItem.costItemCategory?.value
+        result.billingCurrency     = costItem.billingCurrency?.value
+        result.costItemElement     = costItem.costItemElement?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
+        result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
+
+        // References
+
+        result.owner    = ApiReaderHelper.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
+        result.sub      = ApiReaderHelper.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        result.issueEntitlement = ApiReaderHelper.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order    = ApiReaderHelper.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
+        result.invoice  = ApiReaderHelper.retrieveInvoiceMap(costItem.invoice)
+        result.surveyOrg = costItem?.surveyOrg ?: null
+
+        return ApiToolkit.cleanUp(result, true, true)
     }
 }
 

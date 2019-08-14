@@ -261,8 +261,8 @@ class FilterService {
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "lower(si.name) like lower(:name)"
-            queryParams << [name:"%${params.name}%"]
+            query << "genfunc_filter_matcher(si.name, :name) = true"
+            queryParams << [name:"${params.name}"]
         }
         if(params.status) {
             query << "si.status = :status"
@@ -305,8 +305,8 @@ class FilterService {
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "lower(surveyConfig.surveyInfo.name) like lower(:name)"
-            queryParams << [name:"%${params.name}%"]
+            query << "genfunc_filter_matcher(surveyConfig.surveyInfo.name, :name) = true"
+            queryParams << [name:"${params.name}"]
         }
         if(params.status) {
             query << "surveyConfig.surveyInfo.status = :status"

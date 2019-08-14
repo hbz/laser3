@@ -204,6 +204,41 @@
           $ref: "#/components/responses/preconditionFailed"
 
 
+  /package:
+
+    get:
+      tags:
+        - Objects
+      summary: Retrieving packge by identifier
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Package"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but package not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
+
   /refdataList:
 
     get:
