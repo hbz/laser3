@@ -47,6 +47,7 @@ class ApiPkg {
      */
     static getPackage(Package pkg, Org context, boolean hasAccess) {
         Map<String, Object> result = [:]
+        /*
         // TODO
         if (! hasAccess) {
             pkg.orgs.each { orgRole ->
@@ -59,6 +60,8 @@ class ApiPkg {
         if (hasAccess) {
             result = ApiReader.retrievePackageMap(pkg, context) // TODO check orgRole.roleType
         }
+        */
+        result = ApiReader.retrievePackageMap(pkg, context)
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }

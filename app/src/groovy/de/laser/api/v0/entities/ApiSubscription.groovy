@@ -83,11 +83,10 @@ class ApiSubscription {
         Collection<Object> result = []
 
         List<Subscription> available = Subscription.executeQuery(
-                'SELECT sub FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND sub.status != :del' ,
+                'SELECT sub FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
-                        roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER],
-                        del:   RDStore.SUBSCRIPTION_DELETED
+                        roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
 

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.65'
+    static final VERSION = '0.66'
     static final NOT_SUPPORTED = false
 
     /**
@@ -140,7 +140,7 @@ class ApiManager {
                 result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
             }
         }
-        else if (NOT_SUPPORTED && 'package'.equalsIgnoreCase(obj)) {
+        else if (resolve('package', ApiReader.SUPPORTED_FORMATS.package) == Constants.VALID_REQUEST) {
 
             result = ApiPkg.findPackageBy(query, value)
 
