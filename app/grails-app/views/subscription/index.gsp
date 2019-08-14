@@ -1,4 +1,6 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
+
 <r:require module="annotations"/>
 
 <!doctype html>
@@ -222,97 +224,17 @@
                     <tbody>
 
                     <g:if test="${entitlements}">
+
                         <g:each in="${entitlements}" var="ie">
                             <tr>
                                 <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}"
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
-                                    <g:link controller="issueEntitlement" id="${ie.id}"
-                                            action="show"><strong>${ie.tipp.title.title}</strong></g:link>
+                                    <!-- START TEMPLATE -->
 
-                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && ie?.tipp?.title?.volume}">
-                                        (${message(code: 'title.volume.label')} ${ie?.tipp?.title?.volume})
-                                    </g:if>
-
-                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && (ie?.tipp?.title?.firstAuthor || ie?.tipp?.title?.firstEditor)}">
-                                        <br><b>${ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
-                                    </g:if>
-
-                                    <br>
-                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ie?.tipp?.title?.editionStatement}
-                                        </div>
-                                    </g:if>
-
-                                    <g:if test="${ie.tipp?.hostPlatformURL}">
-                                        <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
-                                           target="_blank"><i class="share square icon"></i></a>
-                                    </g:if>
-
-                                    <g:each in="${ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="title_id">
-                                        <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
-                                            <span class="ui small teal image label">
-                                                ${title_id.identifier.ns.ns}: <div
-                                                    class="detail">${title_id.identifier.value}</div>
-                                            </span>
-                                        </g:if>
-                                    </g:each>
-                                    <br/>
-                                    <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
-                                    <div class="ui list">
-                                        <div class="item"><b>${message(code: 'default.access.label', default: 'Access')}:</b> ${ie.availabilityStatus?.getI10n('value')}
-                                        </div>
-
-                                        <div class="item"><b>${message(code: 'tipp.coverageNote', default: 'Coverage Note')}:</b> ${ie.coverageNote ?: (ie.tipp?.coverageNote ?: '')}
-                                        </div>
-
-                                        <div class="item"><b>${message(code: 'tipp.package', default: 'Package')}:</b>
-
-                                            <div class="la-flexbox">
-                                                <i class="icon gift scale la-list-icon"></i>
-                                                <g:link controller="package" action="show"
-                                                        id="${ie?.tipp?.pkg?.id}">${ie?.tipp?.pkg?.name}</g:link>
-                                            </div>
-                                        </div>
-
-                                        <div class="item"><b>${message(code: 'tipp.platform', default: 'Platform')}:</b>
-                                            <g:if test="${ie.tipp?.platform.name}">
-                                                ${ie.tipp?.platform.name}
-                                            </g:if>
-                                            <g:else>${message(code: 'default.unknown')}</g:else>
-
-                                            <g:if test="${ie.tipp?.platform.name}">
-                                                <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                                        data-content="${message(code: 'tipp.tooltip.changePlattform')}"
-                                                        controller="platform" action="show"
-                                                        id="${ie.tipp?.platform.id}"><i
-                                                        class="pencil alternate icon"></i></g:link>
-                                            </g:if>
-                                            <g:if test="${ie.tipp?.platform?.primaryUrl}">
-                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${ie.tipp?.platform?.primaryUrl?.contains('http') ? ie.tipp?.platform?.primaryUrl : 'http://' + ie.tipp?.platform?.primaryUrl}"
-                                                   target="_blank"><i class="share square icon"></i></a>
-                                            </g:if>
-
-                                            <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
-                                                ${message(code: 'default.on', default: 'on')} <g:formatDate
-                                                    format="${message(code: 'default.date.format.notime')}"
-                                                    date="${ie.accessStartDate}"/>
-                                            </g:if>
-                                            <g:if test="${ie.availabilityStatus?.value == 'Expired'}">
-                                                ${message(code: 'default.on', default: 'on')} <g:formatDate
-                                                    format="${message(code: 'default.date.format.notime')}"
-                                                    date="${ie.accessEndDate}"/>
-                                            </g:if>
-                                        </div>
-
-                                    </div>
+                                    <g:render template="../templates/title" model="${[ie: ie, apisources: com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <!-- END TEMPLATE -->
                                 </td>
 
                                 <td>

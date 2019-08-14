@@ -1756,7 +1756,7 @@ i.icon.la-noChange {
 i.icon.la-gokb {
   font-family: 'icomoon';
 }
-i.icon.la-gokb.square {
+i.icon.la-laser {
   font-family: 'icomoon';
 }
 // to turn off all the buttons on a side
@@ -1780,7 +1780,7 @@ i.icon.la-append:before { content: "\e90c"; }
 i.icon.la-replace:before { content: "\e90d"; }
 /**/
 i.icon.la-gokb:before { content: "\e90e"; }
-i.icon.la-gokb.square:before { content: "\e90f"; }
+i.icon.la-laser:before { content: "\e90f"; }
 
 /*******************************
            Laser Icons
