@@ -58,21 +58,21 @@ class PublicController {
                 query += " and ("
                 query += "    exists "
                 query += "          ( select scp1 from s.customProperties as scp1 where "
-                query += "               scp1.type = :gascoAnzeigenname and lower(scp1.stringValue) like :q"
+                query += "               scp1.type = :gascoAnzeigenname and genfunc_filter_matcher(scp1.stringValue, :q) = true"
                 query += "           )"
 
                 query += " or "
-                query += "    ((lower(s.name) like :q) "
+                query += "    ( genfunc_filter_matcher(s.name, :q) = true  "
 
                 query += " or exists ("
                 query += "    select ogr from s.orgRelations as ogr where ("
-                query += "          lower(ogr.org.name) like :q or lower(ogr.org.shortname) like :q or lower(ogr.org.sortname) like :q"
+                query += "          genfunc_filter_matcher(ogr.org.name, :q) = true or genfunc_filter_matcher(ogr.org.shortname, :q) = true or genfunc_filter_matcher(ogr.org.sortname, :q) = true "
                 query += "      ) and ogr.roleType.value = 'Provider'"
                 query += "    )"
                 query += " ))"
 
                 queryParams.put('gascoAnzeigenname', PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename'))
-                queryParams.put('q', '%' + q.toLowerCase() + '%')
+                queryParams.put('q', q)
             }
 
             def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
