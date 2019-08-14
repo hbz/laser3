@@ -914,7 +914,7 @@ from License as l where (
         allCostItems.each { row ->
             costItemCounts.put(row[1],row[0])
         }
-        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null and s.status != :deleted group by s.instanceOf.id',[deleted:RDStore.SUBSCRIPTION_DELETED])
+        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null group by s.instanceOf.id')
         Map subscriptionMembers = [:]
         membershipCounts.each { row ->
             subscriptionMembers.put(row[1],row[0])
