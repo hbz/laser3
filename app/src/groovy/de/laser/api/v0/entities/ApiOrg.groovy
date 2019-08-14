@@ -3,10 +3,12 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiOrg {
@@ -62,9 +64,59 @@ class ApiOrg {
         hasAccess = calculateAccess(org, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.retrieveOrganisationMap(org, context)
+            result = retrieveOrganisationMap(org, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveOrganisationMap(Org org, Org context) {
+        def result = [:]
+
+        org = GrailsHibernateUtil.unwrapIfProxy(org)
+
+        result.globalUID    = org.globalUID
+        result.gokbId       = org.gokbId
+        result.comment      = org.comment
+        result.name         = org.name
+        result.scope        = org.scope
+        result.shortname    = org.shortname
+        result.sortname     = org.sortname
+        result.federalState = org.federalState?.value
+        result.country      = org.country?.value
+        result.libraryType  = org.libraryType?.value
+
+        //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
+        //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
+
+        // RefdataValues
+
+        result.sector       = org.sector?.value
+        result.type         = org.orgType?.collect{ it -> it.value }
+        result.status       = org.status?.value
+
+        // References
+
+        result.addresses    = ApiReaderHelper.retrieveAddressCollection(org.addresses, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Address
+        result.contacts     = ApiReaderHelper.retrieveContactCollection(org.contacts, ApiReaderHelper.NO_CONSTRAINT) // com.k_int.kbplus.Contact
+        result.identifiers  = ApiReaderHelper.retrieveIdentifierCollection(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.persons      = ApiReaderHelper.retrievePrsLinkCollection(
+                org.prsLinks, ApiReaderHelper.NO_CONSTRAINT, ApiReaderHelper.NO_CONSTRAINT, context
+        ) // com.k_int.kbplus.PersonRole
+
+        result.properties   = ApiReaderHelper.retrievePropertyCollection(org, context, ApiReaderHelper.IGNORE_NONE) // com.k_int.kbplus.(OrgCustomProperty, OrgPrivateProperty)
+
+        // Ignored
+
+        //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrg
+        //result.incomingCombos       = org.incomingCombos // com.k_int.kbplus.Combo
+        //result.links                = exportHelperService.resolveOrgLinks(org.links) // com.k_int.kbplus.OrgRole
+        //result.membership           = org.membership?.value // RefdataValue
+        //result.outgoingCombos       = org.outgoingCombos // com.k_int.kbplus.Combo
+
+        return ApiToolkit.cleanUp(result, true, true)
     }
 }

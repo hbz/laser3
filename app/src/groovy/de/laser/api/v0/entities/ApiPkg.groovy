@@ -4,10 +4,12 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiPkg {
@@ -47,22 +49,63 @@ class ApiPkg {
      */
     static getPackage(Package pkg, Org context, boolean hasAccess) {
         Map<String, Object> result = [:]
-        /*
-        // TODO
-        if (! hasAccess) {
-            pkg.orgs.each { orgRole ->
-                if (orgRole.getOrg().id == context?.id) {
-                    hasAccess = true
-                }
-            }
-        }
 
-        if (hasAccess) {
-            result = ApiReader.retrievePackageMap(pkg, context) // TODO check orgRole.roleType
-        }
-        */
-        result = ApiReader.retrievePackageMap(pkg, context)
+		// TODO check hasAccess
+        result = retrievePackageMap(pkg, context)
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
+
+	/**
+	 * @return Map<String, Object>
+	 */
+	static Map<String, Object> retrievePackageMap(com.k_int.kbplus.Package pkg, Org context) {
+		def result = [:]
+
+		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
+
+		result.globalUID        	= pkg.globalUID
+		result.autoAccept       	= pkg.autoAccept
+		result.cancellationAllowances = pkg.cancellationAllowances
+		result.dateCreated      	= pkg.dateCreated
+		result.endDate          	= pkg.endDate
+		result.forumId          	= pkg.forumId
+		//result.identifier       = pkg.identifier - TODO refactoring legacy
+		result.impId            	= pkg.impId
+		result.gokbId           	= pkg.gokbId
+		result.lastUpdated      	= pkg.lastUpdated
+		result.name             	= pkg.name
+		result.vendorURL        	= pkg.vendorURL
+		result.sortName         	= pkg.sortName
+		result.startDate        	= pkg.startDate
+
+		// RefdataValues
+
+		result.packageType      	= pkg.packageType?.value
+		result.packageStatus    	= pkg.packageStatus?.value
+		result.packageListStatus 	= pkg.packageListStatus?.value
+		result.breakable        	= pkg.breakable?.value
+		result.consistent       	= pkg.consistent?.value
+		result.fixed            	= pkg.fixed?.value
+		result.isPublic         	= pkg.isPublic ? 'Yes' : 'No'
+		result.packageScope     	= pkg.packageScope?.value
+
+		// References
+
+		//result.documents        = ApiReaderHelper.retrieveDocumentCollection(pkg.documents) // com.k_int.kbplus.DocContext
+		result.identifiers      = ApiReaderHelper.retrieveIdentifierCollection(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+		//result.license          = ApiReaderHelper.requestLicenseStub(pkg.license, context) // com.k_int.kbplus.License
+		result.nominalPlatform  = ApiReaderHelper.retrievePlatformMap(pkg.nominalPlatform) // com.k_int.kbplus.Platform
+		result.organisations    = ApiReaderHelper.retrieveOrgLinkCollection(pkg.orgs, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.OrgRole
+		//result.subscriptions    = ApiReaderHelper.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiReaderHelper.IGNORE_PACKAGE, context) // com.k_int.kbplus.SubscriptionPackage
+		result.tipps            = ApiReaderHelper.retrieveTippCollection(pkg.tipps, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+
+		// Ignored
+		/*
+		result.persons          = exportHelperService.resolvePrsLinks(
+				pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
+		) // com.k_int.kbplus.PersonRole
+		*/
+		return ApiToolkit.cleanUp(result, true, true)
+	}
 }

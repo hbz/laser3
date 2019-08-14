@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
@@ -59,11 +60,61 @@ class ApiIssueEntitlement {
         }
 
         if (hasAccess) {
-            result = ApiReader.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReaderHelper.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
         }
 
         // this is different to other Api<x>.get<x>-methods;
         // result may be null here
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
+        def result = [:]
+        if (! ie) {
+            return null
+        }
+
+        result.globalUID        = ie.globalUID
+        result.accessStartDate  = ie.accessStartDate
+        result.accessEndDate    = ie.accessEndDate
+        result.startDate        = ie.startDate
+        result.startVolume      = ie.startVolume
+        result.startIssue       = ie.startIssue
+        result.endDate          = ie.endDate
+        result.endVolume        = ie.endVolume
+        result.endIssue         = ie.endIssue
+        result.embargo          = ie.embargo
+        result.coverageDepth    = ie.coverageDepth
+        result.coverageNote     = ie.coverageNote
+        result.ieReason         = ie.ieReason
+        result.coreStatusStart  = ie.coreStatusStart
+        result.coreStatusEnd    = ie.coreStatusEnd
+
+        // RefdataValues
+        result.coreStatus       = ie.coreStatus?.value
+        result.medium           = ie.medium?.value
+        //result.status           = ie.status?.value // legacy; not needed ?
+
+        // References
+        if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
+            if (ignoreRelation == ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
+                result.tipp = ApiReaderHelper.retrieveTippMap(ie.tipp, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
+            }
+            else {
+                if (ignoreRelation != ApiReaderHelper.IGNORE_TIPP) {
+                    result.tipp = ApiReaderHelper.retrieveTippMap(ie.tipp, ApiReaderHelper.IGNORE_NONE, context)
+                    // com.k_int.kbplus.TitleInstancePackagePlatform
+                }
+                if (ignoreRelation != ApiReaderHelper.IGNORE_SUBSCRIPTION) {
+                    result.subscription = ApiReaderHelper.requestSubscriptionStub(ie.subscription, context)
+                    // com.k_int.kbplus.Subscription
+                }
+            }
+        }
+
+        return ApiToolkit.cleanUp(result, true, true)
     }
 }
