@@ -11,10 +11,7 @@
 </head>
 
 <body>
-<g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-        var="gokbAPI">
 
-</g:each>
 <g:render template="breadcrumb" model="${[params: params]}"/>
 <semui:controlButtons>
     <g:render template="actions"/>
