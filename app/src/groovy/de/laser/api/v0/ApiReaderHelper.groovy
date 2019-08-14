@@ -1,6 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.api.v0.entities.ApiDoc
+import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.helper.Constants
@@ -339,7 +341,7 @@ class ApiReaderHelper {
             tmp.budgetCodes         = CostItemGroup.findAllByCostItem(it).collect{ it.budgetCode?.value }.unique()
             tmp.copyBase            = it.copyBase?.globalUID
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // com.k_int.kbplus.Invoice
-            // tmp.issueEntitlement    = retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+            // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // com.k_int.kbplus.Order
             // tmp.owner               = retrieveOrganisationStubMap(it.owner, context) // com.k_int.kbplus.Org
             // tmp.sub                 = requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
@@ -406,33 +408,10 @@ class ApiReaderHelper {
         result
     }
 
-    /**
-     * Access rights due wrapping resource
-     *
-     * @param com.k_int.kbplus.Doc doc
-     * @return Map<String, Object>
-     */
-    static Map<String, Object> retrieveDocumentMap(Doc doc) {
-        def result = [:]
-
-        if (doc) {
-            result.content  = doc.content
-            result.filename = doc.filename
-            result.mimeType = doc.mimeType
-            result.title    = doc.title
-            result.uuid     = doc.uuid
-
-            // RefdataValues
-            result.type     = doc.type?.value
-        }
-
-        return ApiToolkit.cleanUp(result, true, true)
-    }
-
     static Collection<Object> retrieveDocumentCollection(Collection<DocContext> list) {
         def result = []
         list?.each { it -> // com.k_int.kbplus.DocContext
-            result << retrieveDocumentMap(it.owner)
+            result << ApiDoc.retrieveDocumentMap(it.owner)
         }
         result
     }
@@ -471,56 +450,31 @@ class ApiReaderHelper {
     }
 
     /**
-     * Access rights due wrapping object
-     *
-     * @param com.k_int.kbplus.IssueEntitlement ie
+     * @param com.k_int.kbplus.SubscriptionPackage subPkg
      * @param ignoreRelation
      * @param com.k_int.kbplus.Org context
-     * @return Map<String, Object>
+     * @return Collection<Object>
      */
-    static Map<String, Object> retrieveIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
-        def result = [:]
-        if (! ie) {
-            return null
+    static Collection<Object> retrieveIssueEntitlementCollection(SubscriptionPackage subPkg, ignoreRelation, Org context){
+        def result = []
+
+        List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
+                'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
+                        ' where sub = :sub and pkg = :pkg', [sub: subPkg.subscription, pkg: subPkg.pkg]
+        )
+        ieList.each{ ie ->
+            result << ApiIssueEntitlement.retrieveIssueEntitlementMap(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
         }
 
-        result.globalUID        = ie.globalUID
-        result.accessStartDate  = ie.accessStartDate
-        result.accessEndDate    = ie.accessEndDate
-        result.startDate        = ie.startDate
-        result.startVolume      = ie.startVolume
-        result.startIssue       = ie.startIssue
-        result.endDate          = ie.endDate
-        result.endVolume        = ie.endVolume
-        result.endIssue         = ie.endIssue
-        result.embargo          = ie.embargo
-        result.coverageDepth    = ie.coverageDepth
-        result.coverageNote     = ie.coverageNote
-        result.ieReason         = ie.ieReason
-        result.coreStatusStart  = ie.coreStatusStart
-        result.coreStatusEnd    = ie.coreStatusEnd
-
-        // RefdataValues
-        result.coreStatus       = ie.coreStatus?.value
-        result.medium           = ie.medium?.value
-        //result.status           = ie.status?.value // legacy; not needed ?
-
-        // References
-        if (ignoreRelation != IGNORE_ALL) {
-            if (ignoreRelation == IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = retrieveTippMap(ie.tipp, IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
-            }
-            else {
-                if (ignoreRelation != IGNORE_TIPP) {
-                    result.tipp = retrieveTippMap(ie.tipp, IGNORE_NONE, context)
-                    // com.k_int.kbplus.TitleInstancePackagePlatform
-                }
-                if (ignoreRelation != IGNORE_SUBSCRIPTION) {
-                    result.subscription = requestSubscriptionStub(ie.subscription, context)
-                    // com.k_int.kbplus.Subscription
-                }
+        /* 0.51
+        def tipps = TitleInstancePackagePlatform.findAllByPkg(subPkg.pkg)
+        tipps.each{ tipp ->
+            def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
+            if (ie) {
+                result << ApiReaderHelper.resolveIssueEntitlement(ie, ignoreRelation, context) // com.k_int.kbplus.IssueEntitlement
             }
         }
+        */
 
         return ApiToolkit.cleanUp(result, true, true)
     }
@@ -555,7 +509,7 @@ class ApiReaderHelper {
             result << pkg
 
             if (pkg != Constants.HTTP_FORBIDDEN) {
-                pkg.issueEntitlements = ApiReader.retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
+                pkg.issueEntitlements = retrieveIssueEntitlementCollection(subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
             }
         }
 
@@ -575,7 +529,7 @@ class ApiReaderHelper {
             return null
         }
 
-        return ApiReader.retrieveLicenseMap(lic, ignoreRelation, context)
+        return ApiLicense.retrieveLicenseMap(lic, ignoreRelation, context)
     }
 
     /* not used
@@ -642,7 +596,7 @@ class ApiReaderHelper {
             result.title    = opl.title
 
             // References
-            result.document = retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
+            result.document = ApiDoc.retrieveDocumentMap(opl.doc) // com.k_int.kbplus.Doc
             //result.licenses = resolveLicenseStubs(opl.licenses) // com.k_int.kbplus.License
             //result.xml = opl.xml // XMLDoc // TODO
             result = ApiToolkit.cleanUp(result, true, true)

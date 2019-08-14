@@ -51,11 +51,11 @@
           description: Mapping RefdataCategory "CostItemStatus"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemStatus').collect{ it.value }.join(', ') }]
-      #  costItemCategory:
-      #    type: string
-      #    description: Mapping RefdataCategory "CostItemCategory"
-      #    enum:
-      #      [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemCategory').collect{ it.value }.join(', ') }]
+<%--    costItemCategory:
+          type: string
+          description: Mapping RefdataCategory "CostItemCategory"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemCategory').collect{ it.value }.join(', ') }] --%>
         costTitle:
           type: string
         costDescription:
@@ -94,8 +94,8 @@
           format: date-time
         sub:
           $ref: "#/components/schemas/SubscriptionStub"
-      #  subPkg:
-      #    $ref: "#/components/schemas/PackageStub"
+<%--    subPkg:
+         $ref: "#/components/schemas/PackageStub" --%>
         taxCode:
           type: string
           description: Mapping RefdataCategory "TaxType"
@@ -315,10 +315,10 @@
           description: Mapping RefdataCategory "FederalState"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('FederalState').collect{ it.value }.join(', ') }]
-        #fteStudents:
-        #  type: integer
-        #fteStaff:
-        #  type: integer
+<%--    fteStudents:
+          type: integer
+        fteStaff:
+          type: integer --%>
         impId:
           type: string
           example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
@@ -365,6 +365,138 @@
           description: Mapping RefdataCategory "OrgType"
           enum:
             [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+
+    Package:
+      allOf:
+      - $ref: "#components/schemas/PackageStub"
+      - type: object
+        properties:
+          autoAccept:
+            type: string #mapped to boolean
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          breakable:
+            type: string
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          cancellationAllowances:
+            type: string
+          consistent:
+            type: string
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          dateCreated:
+            type: string
+            format: date
+<%--          documents:
+            type: array
+            items:
+              $ref: "#/definitions/Document" # resolved DocContext--%>
+          endDate:
+            type: string
+            format: date
+          fixed:
+            type: string
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          forumId:
+            type: string
+          isPublic:
+            type: string #mapped to boolean
+            description: Mapping RefdataCategory "YN"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+          lastUpdated:
+            type: string
+            format: date
+<%--          license:
+            $ref: "#/definitions/LicenseStub" --%>
+          nominalPlatform:
+            $ref: "#/components/schemas/Platform"
+          organisations: # mapping attr orgs
+            type: array
+            items:
+              $ref: "#/components/schemas/OrganisationRole_Virtual"
+          packageListStatus:
+            type: string
+            description: Mapping RefdataCategory "Package.ListStatus"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Package.ListStatus').collect{ it.value }.join(', ') }]
+          packageScope:
+            type: string
+            description: Mapping RefdataCategory
+            enum:
+              [""]
+          packageStatus:
+            type: string
+            description: Mapping RefdataCategory "Package Status"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Package Status').collect{ it.value }.join(', ') }]
+          packageType:
+            type: string
+            description: Mapping RefdataCategory
+            enum:
+              [""]
+<%--     persons: # mapping attr prsLinks
+           type: array
+           items:
+             $ref: "#/definitions/Person" # resolved PersonRole --%>
+          sortName:
+            type: string
+          startDate:
+            type: string
+            format: date
+<%--          subscriptions:
+            type: array
+            items:
+              $ref: "#/definitions/SubscriptionStub" # resolved subscriptionPackages --%>
+          tipps:
+            type: array
+            items:
+              $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Package"
+          vendorURL:
+            type: string
+
+
+    Platform:
+      allOf:
+        - $ref: "#/components/schemas/PlatformStub"
+        - type: object
+          properties:
+            dateCreated:
+              type: string
+              format: date
+            lastUpdated:
+              type: string
+              format: date
+            primaryUrl:
+              type: string
+            provenance:
+              type: string
+            serviceProvider:
+              type: string
+              description: Mapping RefdataCategory
+              enum:
+                [""]
+            softwareProvider:
+              type: string
+              description: Mapping RefdataCategory
+              enum:
+                [""]
+            status:
+              type: stringRefdataCategory
+              description: Mapping RefdataCategory "Platform Status"
+              enum:
+                [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Platform Status').collect{ it.value }.join(', ') }]
+            type:
+              type: string
+              description: Mapping RefdataCategory
+              enum:
+                [""]
 
 
     Property:
@@ -545,8 +677,8 @@
           endDate:
             type: string
             format: date-time
-        #  finalCostRounding:
-        #    type: string
+<%--      finalCostRounding:
+            type: string --%>
           financialYear:
             type: string
           invoiceDate:
@@ -554,30 +686,30 @@
             format: date-time
           invoiceNumber:
             type: string
-          #invoice:
-          #  $ref: "#/components/schemas/Invoice"
-          #issueEntitlement:
-          #  $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
+<%--      invoice:
+            $ref: "#/components/schemas/Invoice"
+          issueEntitlement:
+            $ref: "#/components/schemas/IssueEntitlement_in_Subscription" --%>
           lastUpdated:
             type: string
             format: date-time
           orderNumber:
             type: string
-          #order:
-          #  $ref: "#/components/schemas/Order"
-          #owner:
-          #  $ref: "#/components/schemas/OrganisationStub"
-          #package:
-          #  $ref: "#/components/schemas/PackageStub"
+<%--      order:
+            $ref: "#/components/schemas/Order"
+          owner:
+            $ref: "#/components/schemas/OrganisationStub"
+          package:
+            $ref: "#/components/schemas/PackageStub" --%>
           reference:
             type: string
           startDate:
             type: string
             format: date-time
-          #sub:
-          #  $ref: "#/components/schemas/SubscriptionStub"
-        #  subPkg:
-        #    $ref: "#/components/schemas/PackageStub"
+<%--      sub:
+            $ref: "#/components/schemas/SubscriptionStub"
+          subPkg:
+            $ref: "#/components/schemas/PackageStub" --%>
           taxCode:
             type: string
             description: Mapping RefdataCategory "TaxType"
@@ -716,6 +848,11 @@
 
     Statistic_Virtual:
       type: object
+
+
+    TitleInstancePackagePlatform_in_Package:
+      allOf:
+        - $ref: "#/components/schemas/TitleInstancePackagePlatformStub"
 
 
     TitleInstancePackagePlatform_in_Subscription:

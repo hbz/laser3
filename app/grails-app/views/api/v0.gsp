@@ -105,13 +105,13 @@
     </defs>
   </svg>
 
-<pre style="margin-top:100px; display:none">
+<!--
     // calculation of hmac
 
     var apiKey        = "&lt;apiKey&gt;"
     var apiPassword   = "&lt;apiPassword&gt;"
     var method        = "GET"
-    var path          = "/api/0/&lt;apiEndpoint&gt;"
+    var path          = "/api/v0/&lt;apiEndpoint&gt;"
     var timestamp     = ""
     var nounce        = ""
     var q             = "&lt;q&gt;"
@@ -122,7 +122,10 @@
     var algorithm     = "hmac-sha256"
     var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, apiPassword)
     var authorization = "hmac " + apiKey + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
-</pre>
+
+    console.log('authorization: ' + authorization)
+
+-->
 
     <div id="swagger-ui"></div>
 
@@ -160,13 +163,6 @@
             }, 1000)
 
             setTimeout(function(){
-                //jQuery('.opblock').delegate('input, textarea', 'change', function() {
-                //    var div = jQuery(this).parents('.parameters').first()
-                //    var auth = genDigist(div)
-                //
-                //    jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
-                //})
-
                 jQuery('.topbar-wrapper input').on('focus', function(){
                     jQuery(this).select()
                 })
@@ -211,8 +207,6 @@
                     v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''
 
                     query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '')
-
-                    console.log(query)
                 }
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')
@@ -223,6 +217,20 @@
                 var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
                 var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
+                /*if (debug) {
+                    console.log('id:            ' + id)
+                    console.log('key:           ' + key)
+                    console.log('method:        ' + method)
+                    console.log('path:          ' + path)
+                    console.log('timestamp:     ' + timestamp)
+                    console.log('nounce:        ' + nounce)
+                    console.log('context:       ' + context)
+                    console.log('query:         ' + query)
+                    console.log('body:          ' + body)
+                    console.log('algorithm:     ' + algorithm)
+                    console.log('digest:        ' + digest)
+                    console.log('authorization: ' + authorization)
+                }*/
                 return authorization
             }
         }

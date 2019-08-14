@@ -93,4 +93,24 @@ class ApiDoc {
         }
         return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
     }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveDocumentMap(Doc doc) {
+        def result = [:]
+
+        if (doc) {
+            result.content  = doc.content
+            result.filename = doc.filename
+            result.mimeType = doc.mimeType
+            result.title    = doc.title
+            result.uuid     = doc.uuid
+
+            // RefdataValues
+            result.type     = doc.type?.value
+        }
+
+        return ApiToolkit.cleanUp(result, true, true)
+    }
 }
