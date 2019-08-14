@@ -403,8 +403,8 @@
             description: Mapping RefdataCategory "YN"
             enum:
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
-          forumId:
-            type: string
+<%--          forumId:
+            type: string --%>
           isPublic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "YN"
@@ -962,6 +962,8 @@
           type: string
           example: "e6b41905-f1aa-4d0c-8533-e39f30220f65"
         name:
+          type: string
+        sortName:
           type: string
 
 
