@@ -54,7 +54,9 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues('License Status'))
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
                 %>
-                <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
+                <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                              noSelection="${['' : message(code:'accessMethod.all')]}"
+                              value="${['':'']}"/>
             </div>
 
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">

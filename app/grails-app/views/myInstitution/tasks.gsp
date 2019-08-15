@@ -39,7 +39,7 @@
                                   name="taskStatus"
                                   value="${params.taskStatus}"
                                   from="${RefdataCategory.getAllRefdataValues('Task Status')}"
-                                  noSelection="${['' : 'Alle']}"
+                                  noSelection="${['' : message(code:'accessMethod.all')]}"
                                   optionKey="id"
                                   optionValue="value" />
                     </div>

@@ -143,7 +143,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
-                <laser:select class="ui dropdown" name="form"
+                <laser:select class="ui fluid dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
                               optionKey="id"
                               optionValue="value"
@@ -153,7 +153,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
-                <laser:select class="ui dropdown" name="resource"
+                <laser:select class="ui fluid dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
                               optionKey="id"
                               optionValue="value"

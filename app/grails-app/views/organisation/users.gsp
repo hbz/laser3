@@ -31,12 +31,14 @@
             <div class="three fields">
                 <div class="field">
                     <label for="name">${message(code:'default.search.text')}</label>
-                    <input type="text" id="name" name="name" value="${params.name}"/>
+                    <input type="text" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" id="name" name="name" value="${params.name}"/>
                 </div>
 
                 <div class="field">
                     <label for="authority">${message(code:'user.role')}</label>
-                    <g:select from="${Role.findAllByRoleType('user')}" noSelection="${['':'Any']}" class="ui dropdown"
+                    <g:select from="${Role.findAllByRoleType('user')}"
+                              noSelection="${['' : message(code:'accessMethod.all')]}"
+                              class="ui dropdown"
                               value="${params.authority}" optionKey="id" optionValue="${{message(code:'cv.roles.' + it.authority)}}"
                               id="authority" name="authority" />
                 </div>
