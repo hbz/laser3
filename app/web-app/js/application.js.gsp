@@ -364,12 +364,18 @@ r2d2 = {
             }
         });
 
+        $( document ).ready(function() {
+
+            $( '.la-filter .ui.dropdown' ).each(function( index ) {
+                toggleFilterDropdown(this)
+            });
+
+        });
         function toggleFilterDropdown(that) {
+
             $( that ).find("div.text").hasClass("default")? $(that).removeClass("la-filter-dropdown-selected") : $(that).addClass("la-filter-dropdown-selected");
         }
-        $( '.la-filter .ui.dropdown' ).each(function( index ) {
-            toggleFilterDropdown(this)
-        });
+
 
         // SEM UI DROPDOWN CHANGE
         $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
