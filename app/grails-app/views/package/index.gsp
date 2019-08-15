@@ -25,7 +25,7 @@
 
         <div class="field">
             <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name', default: 'Package Name')}, ${message(code: 'package.content_provider')}</label>
-            <input name="q" placeholder="" value="${params.q}"/>
+            <input name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}"/>
         </div>
 
         <div class="field la-field-right-aligned">
