@@ -9,6 +9,7 @@ import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
+import org.hibernate.type.TextType
 
 import java.text.SimpleDateFormat
 
@@ -18,6 +19,7 @@ class BootStrap {
     def dataloadService
     def apiService
     def refdataReorderService
+    def sessionFactory
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -54,6 +56,9 @@ class BootStrap {
         PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.isHardData =:reset', [reset: false])
 
         // Here we go ..
+
+        log.debug("updatePsqlRoutines ..")
+        updatePsqlRoutines()
 
         log.debug("setupRefdata ..")
         setupRefdata()
@@ -373,6 +378,38 @@ class BootStrap {
         createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
         createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
         createOrgPerms(orgConsortiumSurveyRole,     ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'])
+    }
+
+    def updatePsqlRoutines() {
+        String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
+        File dir = new File(dirPath)
+
+        if (dir.exists()) {
+            dir.listFiles().each { file ->
+                String fileName = file.getName()
+                if (fileName.endsWith('.sql')) {
+                    String fileSql     = file.readLines().join(System.getProperty("line.separator")).trim()
+                    String validateSql = "SELECT proname, REGEXP_MATCH(prosrc, 'VERSION CONSTANT NUMERIC = [0-9]*') FROM pg_proc WHERE proname = '" +
+                            fileName.replace('.sql', '') + "'"
+
+                    if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
+
+                        try {
+                            org.hibernate.SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
+                            org.hibernate.SQLQuery validate = sessionFactory.currentSession
+                                    .createSQLQuery(validateSql)
+                                    .addScalar("REGEXP_MATCH", new TextType())
+
+                            query.executeUpdate()
+                            log.debug("  -> ${fileName} : " + validate.list()?.get(0))
+                        }
+                        catch(Exception e) {
+                            log.error(e)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Deprecated

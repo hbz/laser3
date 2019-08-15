@@ -1,5 +1,7 @@
-CREATE OR REPLACE FUNCTION propertyMigration()
-  RETURNS void AS $$
+CREATE OR REPLACE FUNCTION PROPERTY_MIGRATION()
+    RETURNS void
+    LANGUAGE plpgsql
+    AS $$
 
 DECLARE
     VERSION CONSTANT NUMERIC = 1;
@@ -27,11 +29,11 @@ DECLARE
   todo RECORD;
 
 BEGIN
-  -- old refdata category
+  /* -- old refdata category -- */
   select into strict old_rdc * from public.refdata_category where rdc_description = 'YNO';
-  -- old property definition
+  /* -- old property definition -- */
   select into strict old_prop_def * from public.property_definition where pd_name = 'Walk In Access' and pd_rdc = old_rdc.rdc_description;
-  -- old refdata values
+  /* -- old refdata values -- */
   select into strict old_rdv1 * from public.refdata_value where rdv_value = 'Yes' and rdv_owner = old_rdc.rdc_id;
   select into strict old_rdv2 * from public.refdata_value where rdv_value = 'No' and rdv_owner = old_rdc.rdc_id;
   select into strict old_rdv3 * from public.refdata_value where rdv_value = 'Other' and rdv_owner = old_rdc.rdc_id;
@@ -39,11 +41,11 @@ BEGIN
   select into strict old_rdv5 * from public.refdata_value where rdv_value = 'Unknown' and rdv_owner = old_rdc.rdc_id;
   select into strict old_rdv6 * from public.refdata_value where rdv_value = 'Planed' and rdv_owner = old_rdc.rdc_id;
 
-  -- new refdata category
+  /* -- new refdata category -- */
   select into strict new_rdc * from public.refdata_category where rdc_description = 'Permissions';
-  -- new property definition
+  /* -- new property definition -- */
   select into strict new_prop_def * from public.property_definition where pd_name = 'Walk-in Access' and pd_rdc = new_rdc.rdc_description;
-  -- new refdata values
+  /* -- new refdata values -- */
   select into strict new_rdv1 * from public.refdata_value where rdv_value = 'Permitted (explicit)' and rdv_owner = new_rdc.rdc_id;
   select into strict new_rdv2 * from public.refdata_value where rdv_value = 'Prohibited (explicit)' and rdv_owner = new_rdc.rdc_id;
   select into strict new_rdv3 * from public.refdata_value where rdv_value = 'Unknown' and rdv_owner = new_rdc.rdc_id;
@@ -96,6 +98,4 @@ BEGIN
   END LOOP;
 
 END;
-$$ LANGUAGE 'plpgsql';
-
-select * from propertyMigration();
+$$;
