@@ -20,7 +20,7 @@
 
     <h1 class="ui left aligned icon header">
         <semui:headerIcon />
-        ${orgInstance.name}
+        ${orgInstance.name} - ${message(code:'org.nav.users')}
     </h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>

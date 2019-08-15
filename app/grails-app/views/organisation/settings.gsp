@@ -17,7 +17,7 @@
             <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
         </semui:controlButtons>--%>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name} - ${message(code:'org.nav.options')}</h1>
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
