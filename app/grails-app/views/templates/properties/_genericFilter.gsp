@@ -25,6 +25,19 @@
                     }}"
                     optionValue="${{ it.getI10n('name') }}"
                     noSelection="${message(code: 'default.select.choose.label', default: 'Please Choose...')}"/>
+    <r:script>
+        $(function() {
+            $.each($(".la-filterPropDef"), function(i, dropdown) {
+                var val = $(dropdown).find(".item.active").data("value");
+                var text = $(dropdown).find(".item.active").html();
+                if (val != undefined) {
+                    $(dropdown)
+                            .dropdown("set value", val)
+                            .dropdown("set text", text);
+                }
+            });
+        });
+    </r:script>
 </div>
 
 <g:if test="${!hideFilterProp}">

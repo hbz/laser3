@@ -1,5 +1,7 @@
 CREATE OR REPLACE FUNCTION GENFUNC_FILTER_MATCHER(content TEXT, test TEXT)
-    RETURNS boolean AS $$
+    RETURNS BOOLEAN
+    LANGUAGE plpgsql
+    AS $$
 
 DECLARE
     VERSION CONSTANT NUMERIC = 1;
@@ -10,18 +12,18 @@ DECLARE
     tmp_phrases BOOLEAN = false;
     tmp_terms BOOLEAN = false;
 
-    phrases text[];
-    terms text[];
+    phrases TEXT[];
+    terms TEXT[];
 
-    rm_cursor text[];
+    rm_cursor TEXT[];
 
-    char_phrase CHARACTER VARYING;
-    char_term CHARACTER VARYING;
+    char_phrase TEXT;
+    char_term TEXT;
 
 BEGIN
     RAISE NOTICE 'Query: [%] contains [%]', content, test;
 
-    -- find phrase with quotes
+    /* -- find phrase with quotes -- */
 
     FOR rm_cursor IN SELECT regexp_matches(trim(test), '("(\w|\d|\s|[[:punct:]])+")', 'g')
         LOOP
@@ -30,12 +32,12 @@ BEGIN
 
     RAISE NOTICE 'phrases[] ----> %', phrases;
 
-    -- process phrases
+    /* -- process phrases -- */
 
     if array_length(phrases, 1) > 0 THEN
         FOREACH char_phrase IN ARRAY phrases
             LOOP
-                test = replace(test, char_phrase, ''); -- remove match from test
+                test = replace(test, char_phrase, ''); /* -- remove match from test -- */
 
                 char_phrase = trim(both '"' from char_phrase);
 
@@ -50,13 +52,13 @@ BEGIN
         RAISE NOTICE 'result_phrases --> %', result_phrases;
     END IF;
 
-    -- find multiple terms divided by spaces
+    /* -- find multiple terms divided by spaces -- */
 
     SELECT * INTO terms FROM regexp_split_to_array(trim(test), '\s+');
 
     RAISE NOTICE 'terms[]   ----> %', terms;
 
-    -- process terms
+    /* -- process terms -- */
 
     if array_length(terms, 1) > 0 THEN
         FOREACH char_term IN ARRAY terms
@@ -72,4 +74,4 @@ BEGIN
 
     RETURN bool_or(result_phrases OR result_terms);
 END;
-$$ LANGUAGE 'plpgsql';
+$$;
