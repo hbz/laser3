@@ -88,7 +88,6 @@ class OrganisationController extends AbstractDebugController {
         }
 
         result.settings = OrgSettings.findAllByOrg(result.orgInstance)
-
         result
     }
 
