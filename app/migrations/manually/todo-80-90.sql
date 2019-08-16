@@ -58,5 +58,10 @@
 --ALTER TABLE property_definition_group RENAME pdg_visible_rv_fk TO pdg_is_visible;
 
 
+-- 2019-08-16
+-- migrate org settings
+
+UPDATE org_settings SET os_key_enum = 'OAMONITOR_SERVER_ACCESS' WHERE os_key_enum = 'OA2020_SERVER_ACCESS';
+
 
 
