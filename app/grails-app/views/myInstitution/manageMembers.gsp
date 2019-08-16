@@ -62,7 +62,7 @@
     </g:if>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${title}menu.my.consortia
+<h1 class="ui left aligned icon header"><semui:headerIcon />${title}
 <semui:totalNumber total="${membersCount}"/>
 </h1>
 
