@@ -103,7 +103,7 @@
                     Merkmal
                     <i class="question circle icon la-popup"></i>
                     <div class="ui  popup ">
-                        <i class="shield alternate icon"></i> = Meine Merkmal
+                        <i class="shield alternate icon"></i> = Mein Merkmal
                     </div>
                 </label>
                 <div class="ui search selection dropdown ">
