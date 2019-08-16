@@ -233,7 +233,7 @@
                                 <td>
                                     <!-- START TEMPLATE -->
 
-                                    <g:render template="../templates/title" model="${[ie: ie, apisources: com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <g:render template="../templates/title" model="${[ie: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 

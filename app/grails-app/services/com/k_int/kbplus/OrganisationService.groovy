@@ -34,10 +34,11 @@ class OrganisationService {
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
-        log.debug('initMandatorySettings for org #' + org.id)
+        log.debug('initMandatorySettings for new org') //org.id call crashes when called from sync
 
         // called after
         // new Org.save()
+        // does not work unless session is not flushed what causes crashes in sync
     }
 
     /**

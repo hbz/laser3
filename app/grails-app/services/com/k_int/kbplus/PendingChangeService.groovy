@@ -64,7 +64,7 @@ class PendingChangeService extends AbstractLockableService {
                         def tipp = genericOIDService.resolveOID(event.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
+                            ie_to_update.status = RDStore.TIPP_DELETED
 
                             if( ie_to_update.save())
                             {

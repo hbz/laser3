@@ -30,6 +30,7 @@ class Package
   String sortName
   String impId
   String gokbId
+     URL originEditUrl
   String vendorURL
   String cancellationAllowances
 
@@ -94,6 +95,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
                   gokbId column:'pkg_gokb_id', type:'text'
+           originEditUrl column:'pkg_origin_edit_url'
              packageType column:'pkg_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
@@ -136,6 +138,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)
                     gokbId(nullable:true, blank:false)
+             originEditUrl(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
@@ -294,7 +297,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               subscription: subscription,
                                               tipp: tipp,
                                               accessStartDate:tipp.accessStartDate,
-                                              accessEndDate:tipp.accessEndDate,
+                                              accessEndDate:tipp.accessEndDate).save()
+              /*
+
                                               startDate:tipp.startDate,
                                               startVolume:tipp.startVolume,
                                               startIssue:tipp.startIssue,
@@ -303,7 +308,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               endIssue:tipp.endIssue,
                                               embargo:tipp.embargo,
                                               coverageDepth:tipp.coverageDepth,
-                                              coverageNote:tipp.coverageNote).save()
+                                              coverageNote:tipp.coverageNote
+               */
           }
         }
       }
@@ -338,7 +344,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         tipp: tipp,
                         accessStartDate: tipp.accessStartDate,
                         accessEndDate: tipp.accessEndDate,
-                        startDate: tipp.startDate,
+                        /*startDate: tipp.startDate,
                         startVolume: tipp.startVolume,
                         startIssue: tipp.startIssue,
                         endDate: tipp.endDate,
@@ -346,7 +352,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         endIssue: tipp.endIssue,
                         embargo: tipp.embargo,
                         coverageDepth: tipp.coverageDepth,
-                        coverageNote: tipp.coverageNote
+                        coverageNote: tipp.coverageNote*/
                 ).save()
             }
         }
@@ -474,7 +480,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     this.tipps.each { tip ->
         println "Now processing TIPP ${tip}"
       //NO DELETED TIPPS because from only come no deleted tipps
-      if(tip.status?.id != RDStore.TIPP_STATUS_DELETED.id){
+      if(tip.status?.id != RDStore.TIPP_DELETED.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
           println "getting identifier value of title ..."
@@ -508,17 +514,19 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
           println "adding coverage ..."
       // Need to format these dates using correct mask
-      newtip.coverage.add([
-                        startDate:tip.startDate ?: null,
-                        endDate:tip.endDate ?: null,
-                        startVolume:tip.startVolume ?: '',
-                        endVolume:tip.endVolume ?: '',
-                        startIssue:tip.startIssue ?: '',
-                        endIssue:tip.endIssue ?: '',
-                        coverageDepth:tip.coverageDepth ?: '',
-                        coverageNote:tip.coverageNote ?: '',
-                        embargo: tip.embargo ?: ''
-                      ]);
+          tip.coverages.each { tc ->
+              newtip.coverage.add([
+                      startDate:tc.startDate ?: null,
+                      endDate:tc.endDate ?: null,
+                      startVolume:tc.startVolume ?: '',
+                      endVolume:tc.endVolume ?: '',
+                      startIssue:tc.startIssue ?: '',
+                      endIssue:tc.endIssue ?: '',
+                      coverageDepth:tc.coverageDepth ?: '',
+                      coverageNote:tc.coverageNote ?: '',
+                      embargo: tc.embargo ?: ''
+              ])
+          }
 
           println "processing IDs ..."
       tip?.title?.ids.each { id ->

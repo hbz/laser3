@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.domain.TIPPCoverage
+import de.laser.helper.RDStore
 import grails.util.Holders
 
 public class GokbDiffEngine {
@@ -99,9 +101,14 @@ public class GokbDiffEngine {
             result.add([field: 'hostPlatformURL', newValue: tippb.url, oldValue: tippa.url])
         }
 
+        /* This is the boss enemy when refactoring coverage statements ...
+        Expect ERMS-1607
         if ((tippa.coverage ?: '').toString().compareTo((tippb.coverage ?: '').toString()) != 0) {
             result.add([field: 'coverage', newValue: tippb.coverage, oldValue: tippa.coverage])
-        }
+        }*/
+        Map coverageDiffs = getCoverageDiffs(tippa.coverage,tippb.coverage)
+        if(coverageDiffs)
+            result.add(coverageDiffs)
 
         if ((tippa.accessStart ?: '').toString().compareTo((tippb.accessStart ?: '').toString()) != 0) {
             result.add([field: 'accessStart', newValue: tippb.accessStart, oldValue: tippa.accessStart])
@@ -182,7 +189,7 @@ public class GokbDiffEngine {
             {
 
                     //Temporary
-                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])])
+                    def localDuplicateTippEntries = TitleInstancePackagePlatform.executeQuery("from TitleInstancePackagePlatform as tipp where tipp.gokbId = :tippUuid and tipp.status != :status ", [tippUuid: tippnew.tippUuid, status: RDStore.TIPP_DELETED])
                     def newAuto_accept = (localDuplicateTippEntries.size() > 1) ? true : false
                     newAuto_accept = auto_accept ?: newAuto_accept
                     if(localDuplicateTippEntries.size() > 1 && tippnew.status != 'Deleted') {
@@ -213,8 +220,7 @@ public class GokbDiffEngine {
                                 updatedTippClosure(ctx, tippnew, tippold, tipp_diff, auto_accept, db_tipp)
                             }
                             catch (Exception e) {
-                                System.err.println("Error on executing updated TIPP closure! Please verify logs:")
-                                e.printStackTrace()
+                                System.err.println("Error on executing updated TIPP closure! Please verify logs: ${e.getMessage()}")
                             }
                         }
                     }
@@ -240,5 +246,34 @@ public class GokbDiffEngine {
             }
         }
     }
+
+    static Map getCoverageDiffs(List<Map> covListA,List<Map> covListB) {
+        boolean isDifferent = false
+        covListA.each { covA ->
+            Map equivalentCoverageEntry
+            //several attempts ... take dates! Where are the unique identifiers when we REALLY need them??!!
+            equivalentCoverageEntry = covListB.find { covB ->
+                covA.startDate == covB.startDate || covA.endDate == covB.endDate
+            }
+            if(equivalentCoverageEntry) {
+                TIPPCoverage.controlledProperties.each { cp ->
+                    if(covA[cp] != equivalentCoverageEntry[cp])
+                        isDifferent = true
+                }
+            }
+            else {
+                //there are coverage statements removed ...
+                isDifferent = true
+            }
+        }
+        if(covListB.size() > covListA.size()) {
+            //there are new coverage statements ...
+            isDifferent = true
+        }
+        if(isDifferent)
+            [field: 'coverage', newValue: covListB, oldValue: covListA]
+        else null
+    }
+
 
 }

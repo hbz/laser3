@@ -498,6 +498,7 @@
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
+                                    <g:link class="item" controller="yoda" action="remapCoverages">Remap Coverage Data</g:link>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"

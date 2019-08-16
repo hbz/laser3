@@ -5,7 +5,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import de.laser.SystemEvent
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -332,7 +334,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_STATUS_DELETED)
+        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_DELETED)
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
         Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
         issueEntitlementsAffected.each { IssueEntitlement ie ->
@@ -362,6 +364,47 @@ class YodaController {
             flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete}"
             redirect action: 'getTIPPsWithoutGOKBId'
         }
+    }
+
+    @Secured(['ROLE_YODA'])
+    def remapCoverages() {
+        List<TitleInstancePackagePlatform> allTIPPs = TitleInstancePackagePlatform.findAll()
+        allTIPPs.each { tipp ->
+            log.debug("Now processing ${tipp}")
+            TIPPCoverage coverageStatement = new TIPPCoverage()
+            coverageStatement.startDate = tipp.startDate ?: null
+            coverageStatement.startVolume = tipp.startVolume ?: null
+            coverageStatement.startIssue = tipp.startIssue ?: null
+            coverageStatement.endDate = tipp.endDate ?: null
+            coverageStatement.endVolume = tipp.endVolume ?: null
+            coverageStatement.endIssue = tipp.endIssue ?: null
+            coverageStatement.embargo = tipp.embargo ?: null
+            coverageStatement.coverageDepth = tipp.coverageDepth ?: null
+            coverageStatement.coverageNote = tipp.coverageNote
+            coverageStatement.coreStatusStart = tipp.coreStatusStart ?: null
+            coverageStatement.coreStatusEnd = tipp.coreStatusEnd ?: null
+            coverageStatement.tipp = tipp
+            coverageStatement.save()
+        }
+        List<IssueEntitlement> allIssueEntitlements = IssueEntitlement.findAll()
+        allIssueEntitlements.each { ie ->
+            log.debug("Now processing ${ie}")
+            IssueEntitlementCoverage coverageStatement = new IssueEntitlementCoverage()
+            coverageStatement.startDate = ie.startDate ?: null
+            coverageStatement.startVolume = ie.startVolume ?: null
+            coverageStatement.startIssue = ie.startIssue ?: null
+            coverageStatement.endDate = ie.endDate ?: null
+            coverageStatement.endVolume = ie.endVolume ?: null
+            coverageStatement.endIssue = ie.endIssue ?: null
+            coverageStatement.embargo = ie.embargo ?: null
+            coverageStatement.coverageDepth = ie.coverageDepth ?: null
+            coverageStatement.coverageNote = ie.coverageNote
+            coverageStatement.coreStatusStart = ie.coreStatusStart ?: null
+            coverageStatement.coreStatusEnd = ie.coreStatusEnd ?: null
+            coverageStatement.issueEntitlement = ie
+            coverageStatement.save()
+        }
+        redirect controller: 'home'
     }
 
     @Secured(['ROLE_ADMIN'])

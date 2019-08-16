@@ -24,6 +24,7 @@ class RDStore {
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
+    static final OR_PUBLISHER               = getRefdataValue('Publisher', 'Organisational Role')
     static final OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', 'Organisational Role')
 
     static final OT_CONSORTIUM              = getRefdataValue('Consortium', 'OrgRoleType')
@@ -99,6 +100,10 @@ class RDStore {
     static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
     static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
 
+    static final TITLE_STATUS_CURRENT       = getRefdataValue('Current','TitleInstanceStatus')
+    static final TITLE_STATUS_RETIRED       = getRefdataValue('Retired','TitleInstanceStatus')
+    static final TITLE_STATUS_DELETED       = getRefdataValue('Deleted','TitleInstanceStatus')
+
     static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium','Combo Type')
     static final COMBO_TYPE_DEPARTMENT      = getRefdataValue('Department','Combo Type')
 
@@ -117,10 +122,11 @@ class RDStore {
     static final TIPP_PAYMENT_UNKNOWN           = getRefdataValue('Unknown','TitleInstancePackagePlatform.PaymentType')
 
     static final TIPP_STATUS_CURRENT            = getRefdataValue('Current', 'TIPP Status')
+    static final TIPP_STATUS_RETIRED            = getRefdataValue('Retired', 'TIPP Status')
     static final TIPP_STATUS_EXPECTED           = getRefdataValue('Expected','TIPP Status')
-    static final TIPP_STATUS_DELETED            = getRefdataValue('Deleted', 'TIPP Status')
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
+    //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')

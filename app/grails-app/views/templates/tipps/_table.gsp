@@ -3,26 +3,16 @@
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>
     <tr>
-        <g:if test="${showBulkFlag}">
-            <th></th>
-        </g:if>
         <th></th>
         <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
                           title="${message(code: 'title.label', default: 'Title')}"/>
-        <th class="two wide">${message(code: 'tipp.coverage')}</th>
         <th class="two wide">${message(code: 'tipp.access')}</th>
-        <th class="two wide">${message(code: 'tipp.coverageDepth', default: 'Coverage Depth')}</th>
+        <th class="two wide">${message(code: 'tipp.coverage')}</th>
     </tr>
     <tr>
-        <g:if test="${showBulkFlag}">
-            <th colspan="3" rowspan="2"></th>
-        </g:if>
-        <g:else>
-            <th colspan="2" rowspan="2"></th>
-        </g:else>
+        <th colspan="2" rowspan="2"></th>
         <th>${message(code: 'default.from')}</th>
         <th>${message(code: 'default.from')}</th>
-        <th rowspan="2"></th>
     </tr>
     <tr>
         <th>${message(code: 'default.to')}</th>
@@ -33,16 +23,8 @@
 
     <g:set var="counter" value="${(offset ?: 0) + 1}"/>
     <g:each in="${tipps}" var="tipp">
-        <g:set var="hasCoverageNote" value="${tipp.coverageNote?.length() > 0}"/>
         <tr>
-            <g:if test="${showBulkFlag}">
-                <td ${hasCoverageNote == true ? 'rowspan="2"' : ''}>
-                    <g:if test="${editable}">
-                        <input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck"/>
-                    </g:if>
-                </td>
-            </g:if>
-            <td ${hasCoverageNote == true ? 'rowspan="2"' : ''}>${counter++}</td>
+            <td>${counter++}</td>
             <td>
                 <semui:listIcon type="${tipp.title?.type?.value}"/>
                 <strong><g:link controller="title" action="show"
@@ -109,8 +91,7 @@
                     </div>
 
 
-                    <div class="item"><b>${message(code: 'default.status.label', default: 'Status')}:</b>  <semui:xEditableRefData
-                            owner="${tipp}" field="status" config="TIPP Status"/></div>
+                    <div class="item"><b>${message(code: 'default.status.label', default: 'Status')}:</b>  ${tipp.status.getI10n("value")}</div>
 
                     <g:if test="${showPackage}">
                         <div class="item"><b>${message(code: 'tipp.package', default: 'Package')}:</b>
@@ -159,43 +140,33 @@
 
                 </g:if>
                 <g:else>
-                <!-- von -->
-                <semui:xEditable owner="${tipp}" type="date" field="startDate"/><br/>
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.volume')}"></i>
-                <semui:xEditable owner="${tipp}" field="startVolume"/><br>
-                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.issue')}"></i>
-                <semui:xEditable owner="${tipp}" field="startIssue"/>
-                <semui:dateDevider/>
-                <!-- bis -->
-                <semui:xEditable owner="${tipp}" type="date" field="endDate"/><br/>
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.volume')}"></i>
-                <semui:xEditable owner="${tipp}" field="endVolume"/><br>
-                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.issue')}"></i>
-                <semui:xEditable owner="${tipp}" field="endIssue"/>
+                    <g:each in="${tipp.coverages}" var="coverage">
+                        <!-- von -->
+                        <g:formatDate date="${coverage.startDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                        ${coverage.startVolume}<br>
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                        ${coverage.startIssue}
+                        <semui:dateDevider/>
+                        <!-- bis -->
+                        <g:formatDate date="${coverage.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                        ${coverage.endVolume}<br>
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                        ${coverage.endIssue}<br>
+                        <g:message code="tipp.coverageDepth"/>: ${coverage.coverageDepth}<br>
+                        <g:message code="tipp.coverageNote"/>: ${coverage.coverageNote}
+                    </g:each>
                 </g:else>
             </td>
             <td>
                 <!-- von -->
-                <semui:xEditable owner="${tipp}" type="date" field="accessStartDate"/>
+                ${tipp.accessStartDate}
                 <semui:dateDevider/>
                 <!-- bis -->
-                <semui:xEditable owner="${tipp}" type="date" field="accessEndDate"/>
-            </td>
-            <td>
-                <semui:xEditable owner="${tipp}" field="coverageDepth"/>
+                ${tipp.accessEndDate}
             </td>
         </tr>
-
-        <g:if test="${hasCoverageNote == true}">
-            <tr>
-                <td colspan="6"><b>${message(code: 'tipp.coverageNote', default: 'Coverage Note')}:</b> ${tipp.coverageNote}
-                </td>
-            </tr>
-        </g:if>
 
     </g:each>
 
