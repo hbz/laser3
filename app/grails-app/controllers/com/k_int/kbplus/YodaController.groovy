@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
+import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -17,6 +18,7 @@ import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
+import com.k_int.kbplus.OrgSettings
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -485,6 +487,41 @@ class YodaController {
         result.newSource.save()
 
         redirect action:'manageGlobalSources'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def migrateNatStatSettings() {
+        Map result = [:]
+
+        List<OrgCustomProperty> ocpList = OrgCustomProperty.executeQuery(
+                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf', [
+                orgConf: PropertyDefinition.ORG_CONF
+        ])
+
+        ocpList.each { ocp ->
+            if (ocp.type.name == 'API Key') {
+                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)
+
+                if (oss == OrgSettings.SETTING_NOT_FOUND) {
+                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY, ocp.getValue())
+                }
+                else {
+                    oss.setValue(ocp)
+                }
+            }
+            else if (ocp.type.name == 'RequestorID') {
+                def oss = OrgSettings.get(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+
+                if (oss == OrgSettings.SETTING_NOT_FOUND) {
+                    OrgSettings.add(ocp.owner, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ocp.getValue())
+                }
+                else {
+                    oss.setValue(ocp)
+                }
+            }
+        }
+
+        redirect action:'dashboard'
     }
 
     @Secured(['ROLE_YODA'])

@@ -95,7 +95,7 @@
 
                 <div class="field">
                     <label>${message(code: 'license.status')}</label>
-                    <laser:select class="ui dropdown" name="status"
+                    <laser:select class="ui fluid dropdown" name="status"
                                   from="${ fakeList }"
                                   optionKey="id"
                                   optionValue="value"

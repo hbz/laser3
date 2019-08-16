@@ -62,6 +62,7 @@
 -- migrate org settings
 
 UPDATE org_settings SET os_key_enum = 'OAMONITOR_SERVER_ACCESS' WHERE os_key_enum = 'OA2020_SERVER_ACCESS';
+UPDATE org_settings SET os_key_enum = 'NATSTAT_SERVER_ACCESS' WHERE os_key_enum = 'STATISTICS_SERVER_ACCESS';
 
 
 

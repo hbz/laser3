@@ -21,7 +21,6 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
             <g:render template="actions" />
         </semui:controlButtons>
 
-
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.publicContacts')}</h1>
 
         <semui:messages data="${flash}" />

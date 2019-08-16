@@ -42,7 +42,7 @@
 </g:if>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>
-${orgInstance.name}
+${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
 </h1>
 
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>

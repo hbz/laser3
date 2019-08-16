@@ -31,7 +31,9 @@
 
                         <div class="field">
                             <label for="authority">${message(code:'user.role')}</label>
-                            <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
+                            <g:select from="${auth_values}"
+                                      noSelection="${['' : message(code:'accessMethod.all')]}"
+                                      class="ui dropdown"
                                       value="${params.authority}" optionKey="id" optionValue="authority" id="authority" name="authority" />
                         </div>
 
@@ -39,7 +41,9 @@
                             <label for="org">${message(code:'user.org')}</label>
 
                             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
+                                <g:select from="${availableComboOrgs}"
+                                          noSelection="${['' : message(code:'accessMethod.all')]}"
+                                          class="ui search dropdown"
                                       value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
                             </sec:ifAnyGranted>
                             <sec:ifNotGranted roles="ROLE_ADMIN">

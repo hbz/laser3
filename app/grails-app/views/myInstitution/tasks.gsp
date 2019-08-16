@@ -16,7 +16,9 @@
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h1>
-
+        <g:if test="${editable}">
+            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+        </g:if>
         <semui:filter>
             <form class="ui form">
                 <div class="four fields">
@@ -35,11 +37,11 @@
 
                     <div class="field">
                         <label>${message(code: 'task.status.label', default: 'Status')}</label>
-                        <laser:select class="ui dropdown"
+                        <laser:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
                                   from="${RefdataCategory.getAllRefdataValues('Task Status')}"
-                                  noSelection="${['' : 'Alle']}"
+                                  noSelection="${['' : message(code:'accessMethod.all')]}"
                                   optionKey="id"
                                   optionValue="value" />
                     </div>
@@ -55,13 +57,13 @@
 
         <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
-        <g:if test="${editable}">
-            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
-        </g:if>
+
 
         <g:render template="/templates/tasks/modal_create" />
 
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
+
+
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 

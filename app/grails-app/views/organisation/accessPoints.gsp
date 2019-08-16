@@ -12,7 +12,7 @@
     <body>
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-        ${orgInstance.name}
+        ${orgInstance.name} - ${message(code:'org.nav.accessPoints')}</h1>
     </h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
