@@ -4,13 +4,11 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
-import de.laser.AccessService
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
 import de.laser.helper.RDStore
@@ -66,23 +64,30 @@ class OrganisationController extends AbstractDebugController {
         }
 
         // adding default settings
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(
-                    result.orgInstance,
-                    OrgSettings.KEYS.STATISTICS_SERVER_ACCESS,
+                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
                     RefdataValue.getByValueAndCategory('No', 'YN')
             )
         }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.OA2020_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(
-                    result.orgInstance,
-                    OrgSettings.KEYS.OA2020_SERVER_ACCESS,
+                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,''
+            )
+        }
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ''
+            )
+        }
+        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(
+                    result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                     RefdataValue.getByValueAndCategory('No', 'YN')
             )
         }
 
         result.settings = OrgSettings.findAllByOrg(result.orgInstance)
-
         result
     }
 

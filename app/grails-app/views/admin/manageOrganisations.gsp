@@ -156,17 +156,17 @@
                                 println '<div>' + apiLevel.getValue() + '</div>'
                             }
 
-                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSettings.SETTING_NOT_FOUND) {
                                 if (accessStatistics.getValue()?.value == 'Yes') {
                                     println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
                                 }
                             }
 
-                            def accessOA2020 = OrgSettings.get(org, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
-                            if (accessOA2020 != OrgSettings.SETTING_NOT_FOUND) {
-                                if (accessOA2020.getValue()?.value == 'Yes') {
-                                    println '<div><i class="ui icon lock open"></i> OA2020</div>'
+                            def accessOA = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
+                            if (accessOA!= OrgSettings.SETTING_NOT_FOUND) {
+                                if (accessOA.getValue()?.value == 'Yes') {
+                                    println '<div><i class="ui icon lock open"></i> OAMontior</div>'
                                 }
                             }
                         %>
