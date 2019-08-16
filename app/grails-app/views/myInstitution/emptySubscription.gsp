@@ -45,7 +45,10 @@
                         fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}" class="ui select dropdown"/>
+                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                                  noSelection="${['' : message(code:'accessMethod.all')]}"
+                                  value="${['':'']}"
+                                  class="ui select dropdown"/>
                 </div>
 
                 <div class="field">

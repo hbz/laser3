@@ -13,6 +13,7 @@
         </g:if>
         --%>
 
+<g:if test="${taskInstanceList}">
         <table class="ui sortable celled la-table table">
             <thead>
             <tr>
@@ -85,6 +86,7 @@
             </g:each>
             </tbody>
         </table>
+</g:if>
 
         <semui:paginate total="${taskInstanceCount}" />
 
