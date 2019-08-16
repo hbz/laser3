@@ -16,7 +16,9 @@
         </semui:breadcrumbs>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'task.plural', default:'Tasks')}</h1>
-
+        <g:if test="${editable}">
+            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+        </g:if>
         <semui:filter>
             <form class="ui form">
                 <div class="four fields">
@@ -52,9 +54,7 @@
         </semui:filter>
 
         <semui:messages data="${flash}" />
-        <g:if test="${editable}">
-            <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
-        </g:if>
+
         <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
 
