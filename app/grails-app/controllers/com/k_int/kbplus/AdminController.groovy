@@ -875,6 +875,12 @@ class AdminController extends AbstractDebugController {
                 def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
 
                 if (oss != OrgSettings.SETTING_NOT_FOUND) {
+
+                    // ERMS-1615
+                    if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
+                        log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
+                    }
+
                     oss.roleValue = customerType
                     oss.save(flush:true)
                 }
