@@ -179,7 +179,7 @@
                           <g:if test="${sub.status?.value == 'Current'}">
                                   <g:if test="${institution?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM")}">
                                   <div class="la-flexbox">
-                                      <i class="icon folder open outline la-list-icon"></i>
+                                      <i class="icon clipboard outline outline la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                   </div>
                                   </g:if>
