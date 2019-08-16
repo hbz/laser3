@@ -156,7 +156,7 @@
                                 println '<div>' + apiLevel.getValue() + '</div>'
                             }
 
-                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.STATISTICS_SERVER_ACCESS)
+                            def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSettings.SETTING_NOT_FOUND) {
                                 if (accessStatistics.getValue()?.value == 'Yes') {
                                     println '<div><i class="ui icon lock open"></i> Statistikserver</div>'

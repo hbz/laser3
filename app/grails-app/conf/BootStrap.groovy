@@ -497,9 +497,7 @@ class BootStrap {
             ],
 
         ]
-
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
-
     }
 
     def createLicenseProperties() {
