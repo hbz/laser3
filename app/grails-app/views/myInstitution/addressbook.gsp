@@ -22,7 +22,9 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.myAddressbook')}
+            <semui:totalNumber total="${num_visiblePersons}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
 
