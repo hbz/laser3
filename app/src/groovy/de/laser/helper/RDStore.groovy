@@ -69,9 +69,9 @@ class RDStore {
     static final SUBSCRIPTION_TYPE_LOCAL            = getRefdataValue('Local Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_CONSORTIAL       = getRefdataValue('Consortial Licence', 'Subscription Type')
     static final SUBSCRIPTION_TYPE_ADMINISTRATIVE   = getRefdataValue('Administrative Subscription','Subscription Type')
-    static final SUBSCRIPTION_TYPE_ALLIANCE   = getRefdataValue('Alliance Licence','Subscription Type')
-    static final SUBSCRIPTION_TYPE_NATIONAL   = getRefdataValue('National Licence','Subscription Type')
-    static final SUBSCRIPTION_TYPE_COLLECTIVE   = getRefdataValue('Collective Subscription','Subscription Type')
+    static final SUBSCRIPTION_TYPE_ALLIANCE   		= getRefdataValue('Alliance Licence','Subscription Type')
+    static final SUBSCRIPTION_TYPE_NATIONAL   		= getRefdataValue('National Licence','Subscription Type')
+    static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 

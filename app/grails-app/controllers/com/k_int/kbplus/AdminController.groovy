@@ -879,6 +879,44 @@ class AdminController extends AbstractDebugController {
                     // ERMS-1615
                     if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                         log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
+
+						// orgRole = subscriber
+						List<OrgRole> subscriberRoles = OrgRole.executeQuery(
+								'select ro from OrgRole ro ' +
+								'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber\'',
+								[ org: target ]
+						)
+
+						List<OrgRole> conSubscriberRoles = OrgRole.executeQuery(
+								'select ro from OrgRole ro ' +
+								'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber_Consortial\'',
+								[ org: target ]
+						)
+
+
+                        subscriberRoles.each{ role ->
+                            if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+                                role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
+                                role.save()
+
+                                role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                role.sub.save()
+                            }
+                        }
+                        conSubscriberRoles.each{ role ->
+                            if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                                OrgRole newRole = new OrgRole(
+                                      org: role.org,
+                                      sub: role.sub,
+                                      roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                                )
+                                newRole.save()
+
+                                // keep consortia type
+                                //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                //role.sub.save()
+                            }
+                        }
                     }
 
                     oss.roleValue = customerType

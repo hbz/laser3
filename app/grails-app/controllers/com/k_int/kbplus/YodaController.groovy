@@ -535,21 +535,27 @@ class YodaController {
     def migrateCollectiveSubscriptions() {
         Map<String, Object> result = [:]
 
-        // orgRole = subscriber
-        result.subs1 = Subscription.executeQuery(
-            'select sub from Subscription sub join sub.orgRelations role, OrgSettings os ' +
+        result.subRoles = Subscription.executeQuery(
+            'select sub, role from Subscription sub join sub.orgRelations role, OrgSettings os ' +
             '  where os.org = role.org ' +
             '  and role.roleType.value like \'Subscriber\' ' +
             '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
         )
 
-        // sub.type = collective subscription
-        result.subs2 = Subscription.executeQuery(
-                'select sub from Subscription sub join sub.orgRelations role, OrgSettings os ' +
-                        '  where os.org = role.org ' +
-                        '  and sub.type.value like \'Collective Subscription\' ' +
-                        '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
-        )
+        if (params.cmd == 'migrate') {
+            result.subRoles.each{ so ->
+                Subscription sub = so[0]
+				OrgRole role 	 = so[1]
+
+				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
+					role.save()
+
+					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+					sub.save()
+				}
+            }
+        }
 
         result
     }

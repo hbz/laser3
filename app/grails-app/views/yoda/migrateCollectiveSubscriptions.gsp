@@ -14,24 +14,27 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />Migrate Collective Subscriptions</h1>
 
-    <h4>Gefunden (OrgRole=Subscriber): ${subs1.size()}</h4>
+    <h4>Gefunden (OrgRole=Subscriber): ${subRoles.size()}</h4>
 
-    <g:each in="${subs1}" var="${c}">
-        <g:link controller="subscription" action="show" id="${c.id}">${c}</g:link> -- ${c.getCalculatedType()}<br />
+    <table class="ui table">
+        <thead>
+        <tr>
+            <th>Lizenz</th>
+            <th>Typ</th>
+            <th>Org</th>
+        </tr>
+        </thead>
+    <g:each in="${subRoles}" var="${c}">
+        <tr>
+            <td><g:link controller="subscription" action="show" id="${c[0].id}">${c[0]}</g:link></td>
+            <td>${c[0].getCalculatedType()}</td>
+            <td><g:link controller="organisation" action="show" id="${c[1].org.id}">${c[1].org}</g:link></td>
+        </tr>
     </g:each>
+    </table>
 
     <br />
-    <g:link class="ui button red" controller="yoda" action="migrateCollectiveSubscriptions" params="${[cmd:'migrateOrgRoles']}">Migriere 'Subscriber' zu 'Subscription Collective'</g:link>
-
-    <h4>Gefunden (Subscription.Type=Collective Subscription): ${subs2.size()}</h4>
-
-    <g:each in="${subs2}" var="${c}">
-        <g:link controller="subscription" action="show" id="${c.id}">${c}</g:link> -- ${c.getCalculatedType()}<br />
-    </g:each>
-
-    <br />
-    <g:link class="ui button red" controller="yoda" action="migrateCollectiveSubscriptions" params="${[cmd:'migrateSubscriptionType']}">Migriere 'Collective Subscription' zu 'Local license'</g:link>
-
+    <g:link class="ui button red" controller="yoda" action="migrateCollectiveSubscriptions" params="${[cmd:'migrate']}">Migriere 'Subscriber' zu 'Subscription Collective'</g:link>
 
 </body>
 </html>
