@@ -312,17 +312,6 @@
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>
-
-                                <!-- Review for use in LAS:eR
-                  <g:if test="${institutional_usage_identifier}">
-                                    <g:if test="${ie?.tipp?.title?.getIdentifierValue('ISSN')}">
-                                        | <a href="https://www.jusp.mimas.ac.uk/secure/v2/ijsu/?id=${institutional_usage_identifier.value}&issn=${ie?.tipp?.title?.getIdentifierValue('ISSN')}">ISSN Usage</a>
-                                    </g:if>
-                                    <g:if test="${ie?.tipp?.title?.getIdentifierValue('eISSN')}">
-                                        | <a href="https://www.jusp.mimas.ac.uk/secure/v2/ijsu/?id=${institutional_usage_identifier.value}&issn=${ie?.tipp?.title?.getIdentifierValue('eISSN')}">eISSN Usage</a>
-                                    </g:if>
-                                </g:if>
-                                -->
                                 </td>
                             </tr>
                         </g:each>

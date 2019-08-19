@@ -489,11 +489,10 @@ class FactService {
 
   def institutionsWithRequestorIDAndAPIKey()
   {
-    def hql = "select o from Org as o" +
-        " join o.customProperties as cp" +
-        " where cp.type.name = 'RequestorID'" +
-        " and exists (select 1 from o.customProperties as icp where icp.type.name = 'API Key')"
-    return Org.executeQuery(hql)
+    def hql = "select os.org from OrgSettings as os" +
+        " where os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}'" +
+        " and exists (select 1 from OrgSettings as inneros where inneros.key = '${OrgSettings.KEYS.NATSTAT_SERVER_API_KEY}' and inneros.org=os.org)"
+    return OrgSettings.executeQuery(hql)
   }
 
   def providersWithStatssid()
