@@ -955,6 +955,14 @@ aside.ui.accordion .title:not(.ui) {
   color: #544e48!important;
   font-weight: 400!important;
   width: 100%;
+  /* Inside Link */
+}
+
+.ui.la-eye-catcher .label.la-eye-catcher-txt a {
+  cursor: pointer;
+  color: inherit;
+  opacity: 1;
+  text-decoration: underline!important;
 }
 
 .ui.la-eye-catcher .la-eye-catcher-header {

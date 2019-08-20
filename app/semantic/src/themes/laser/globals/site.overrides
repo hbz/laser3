@@ -185,6 +185,13 @@ aside.ui.accordion .title:not(.ui) {
             color:#544e48!important;
             font-weight:400!important;
             width: 100%;
+            /* Inside Link */
+             a {
+                cursor: pointer;
+                color: inherit;
+                opacity: 1;
+                 text-decoration: underline!important;
+            }
         }
         .la-eye-catcher-header {
             display: flex!important;
