@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter
 
 class StatsSyncService {
 
-    static final THREAD_POOL_SIZE = 1
+    static final THREAD_POOL_SIZE = 3
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
@@ -72,7 +72,7 @@ class StatsSyncService {
             "and po.roleType.value='Content Provider' "+
             "and exists ( select oid from po.org.ids as oid where oid.identifier.ns.ns = 'statssid' ) " +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
-            "and exists ( select rid from orgrel.org.customProperties as rid where rid.type.name = 'RequestorID' ) "
+            "and exists (select 1 from OrgSettings as os where os.org=orgrel.org and os.key='${OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' ) "
         if (queryParams['supplier'] != null){
             hql += "and po.org.id =:supplier "
         }

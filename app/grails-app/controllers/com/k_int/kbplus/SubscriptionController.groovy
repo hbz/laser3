@@ -155,12 +155,6 @@ class SubscriptionController extends AbstractDebugController {
             redirect action: 'currentTitles', params: params
         }
 
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
-        }
-
         if (params.mode == "advanced") {
             params.asAt = null
         }
@@ -2728,10 +2722,10 @@ class SubscriptionController extends AbstractDebugController {
             log.debug("Subscription has no linked packages yet")
         }
 
+        // TODO can we remove this block? Was it used for usage in renewal process?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
@@ -2873,11 +2867,10 @@ class SubscriptionController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
-
+        // Can we remove this block?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         // Get a unique list of invoices
@@ -2956,8 +2949,7 @@ class SubscriptionController extends AbstractDebugController {
         //}
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         du.setBenchMark('links')
@@ -3110,13 +3102,11 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     def supplier_id = suppliers[0]
                     result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
-                    result.institutional_usage_identifier =
-                            OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+                    result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
-
                         def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
                         if (!holdingTypes) {
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
