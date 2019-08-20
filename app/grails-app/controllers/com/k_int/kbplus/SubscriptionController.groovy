@@ -2004,11 +2004,17 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (memberSub) {
                             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
-                                else
+                                }
+                                else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+
+                                if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
+                                }
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()

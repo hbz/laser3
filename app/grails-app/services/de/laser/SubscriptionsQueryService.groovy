@@ -96,10 +96,10 @@ class SubscriptionsQueryService {
                 if (params.showParentsAndChildsSubs) {
                     base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
-                } else {//nur Parents
+                } else { //nur Parents
                     base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                            " AND s.instanceOf is null "
-                    qry_params = ['roleType':role_sub_collective, 'activeInst':contextOrg]
+                            " AND ( s.instanceOf is null or exists ( select o2 from s.orgRelations as o2 where ( o2.roleType = :roleType2 AND o2.org = :activeInst ) ) )"
+                    qry_params = ['roleType':role_sub_collective, 'roleType2': role_subCons, 'activeInst':contextOrg]
                 }
             }
         }
