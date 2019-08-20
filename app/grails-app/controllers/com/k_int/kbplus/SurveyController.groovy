@@ -45,6 +45,8 @@ class SurveyController {
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
+        params.max = result.max
+        params.offset = result.offset
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)

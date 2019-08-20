@@ -54,7 +54,7 @@ body[class*="subscription"]  {
     background-color: @subscription;
     border-color: @subscription;
     &:before {
-      content: "\f07c";
+      content: "\f328";
     }
   }
 }
@@ -65,7 +65,7 @@ body[class*="subscription"]  {
     background-color: @subscription;
     border-color: @subscription;
     &:before {
-      content: "\f07c";
+      content: "\f328";
     }
   }
 }

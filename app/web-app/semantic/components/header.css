@@ -772,7 +772,7 @@ body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
 }
 body[class*="Subscription"] .ui.icon.header .circular.icon.la-object:before,
 body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
-  content: "\f07c";
+  content: "\f328";
 }
 body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
@@ -780,7 +780,7 @@ body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
   border-color: #fa820a;
 }
 body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
-  content: "\f07c";
+  content: "\f328";
 }
 body[class*="Title"] .ui.icon.header .circular.icon.la-object,
 body[class*="title"] .ui.icon.header .circular.icon.la-object {

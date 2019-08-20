@@ -2486,8 +2486,8 @@ AND EXISTS (
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
 
-        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
-        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id, result)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id).size()
 
         result
     }
