@@ -889,8 +889,8 @@ class AdminController extends AbstractDebugController {
 
 						List<OrgRole> conSubscriberRoles = OrgRole.executeQuery(
 								'select ro from OrgRole ro ' +
-								'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber_Consortial\'',
-								[ org: target ]
+								'where ro.org = :org and ro.sub is not null and ro.roleType.value in (:roleTypes)',
+								[ org: target, roleTypes: ['Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] ]
 						)
 
 
