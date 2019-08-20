@@ -526,14 +526,43 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def settings() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.settings = Setting.list();
         result
     }
 
     @Secured(['ROLE_YODA'])
+    def migrateCollectiveSubscriptions() {
+        Map<String, Object> result = [:]
+
+        result.subRoles = Subscription.executeQuery(
+            'select sub, role from Subscription sub join sub.orgRelations role, OrgSettings os ' +
+            '  where os.org = role.org ' +
+            '  and role.roleType.value like \'Subscriber\' ' +
+            '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
+        )
+
+        if (params.cmd == 'migrate') {
+            result.subRoles.each{ so ->
+                Subscription sub = so[0]
+				OrgRole role 	 = so[1]
+
+				if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+					role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
+					role.save()
+
+					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+					sub.save()
+				}
+            }
+        }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def toggleBoolSetting() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         def s = Setting.findByName(params.setting)
         if (s) {
             if (s.tp == Setting.CONTENT_TYPE_BOOLEAN) {
@@ -629,7 +658,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageSystemMessage() {
-        Map result = [:]
+        Map<String, Object> result = [:]
         result.user = springSecurityService.currentUser
 
         if(params.create)
@@ -779,7 +808,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def showOldDocumentOwners(){
         List currentDocuments = DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null order by dc.owner.creator.display asc')
-        Map result = [currentDocuments:currentDocuments]
+        Map<String, Object> result = [currentDocuments:currentDocuments]
         result
     }
 
@@ -1302,7 +1331,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def correctCostsInLocalCurrency() {
-        Map result = ["costItems":costItemUpdateService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
+        Map<String, Object> result = ["costItems":costItemUpdateService.correctCostsInLocalCurrency(Boolean.valueOf(params.dryRun))]
         result
     }
 
@@ -1376,7 +1405,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def frontend() {
-        Map result = [test:123]
+        Map<String, Object> result = [test:123]
         result
     }
 

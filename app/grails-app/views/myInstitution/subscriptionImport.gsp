@@ -41,7 +41,7 @@
                             if(accessService.checkPerm("ORG_CONSORTIUM"))
                                 parentSubscriptionType << SUBSCRIPTION_TYPE_CONSORTIAL.getI10n('value')
                             else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                                parentSubscriptionType << SUBSCRIPTION_TYPE_COLLECTIVE.getI10n('value')
+                                parentSubscriptionType << SUBSCRIPTION_TYPE_LOCAL.getI10n('value')
                             args.addAll(parentSubscriptionType)
                             break
                         case 'type': args.addAll(RefdataCategory.getAllRefdataValues('Subscription Type').collect { it -> it.getI10n('value') })
