@@ -230,11 +230,6 @@
 </div>
 
 
-
-<style type="text/css">
-
-
-    </style>
     <script>
         $(document)
             .ready(function () {
