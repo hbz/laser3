@@ -57,7 +57,7 @@
                     %>
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes.minus([RDStore.SUBSCRIPTION_TYPE_COLLECTIVE])}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
                 <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
@@ -143,7 +143,7 @@
 
                 $('#asOrgType').change(function() {
                     var selVal = $(this).val();
-                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_COLLECTIVE.id}'].indexOf(selVal) > -1) {
+                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}'].indexOf(selVal) > -1) {
                         $('.cons-options').show()
                     }
                     else {

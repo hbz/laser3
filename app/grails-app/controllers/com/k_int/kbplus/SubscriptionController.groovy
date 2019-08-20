@@ -3864,8 +3864,7 @@ class SubscriptionController extends AbstractDebugController {
         List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
                                                 SUBSCRIPTION_TYPE_ADMINISTRATIVE,
                                                 SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL,
-                                                SUBSCRIPTION_TYPE_COLLECTIVE]
+                                                SUBSCRIPTION_TYPE_NATIONAL]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
@@ -4503,16 +4502,22 @@ class SubscriptionController extends AbstractDebugController {
                     switch(sub.type) {
                         case SUBSCRIPTION_TYPE_CONSORTIAL:
                         case SUBSCRIPTION_TYPE_NATIONAL:
-                        case SUBSCRIPTION_TYPE_ALLIANCE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        case SUBSCRIPTION_TYPE_ALLIANCE:
+                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS
                             break
-                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE:
+                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
                             break
-                        case SUBSCRIPTION_TYPE_COLLECTIVE: parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
-                            memberRoleType = OR_SUBSCRIBER_COLLECTIVE
-                            break
-                        default: parentRoleType = OR_SUBSCRIBER
+                        default:
+                            if (contextOrg.getCustomerType() == 'ORG_INST_COLLECTIVE') {
+                                parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
+                                memberRoleType = OR_SUBSCRIBER_COLLECTIVE
+                            }
+                            else {
+                                parentRoleType = OR_SUBSCRIBER
+                            }
                             break
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)

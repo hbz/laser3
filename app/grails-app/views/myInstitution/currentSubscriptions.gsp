@@ -176,7 +176,6 @@
                             if(!accessService.checkPerm("ORG_CONSORTIUM")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             }
-                            subTypes -= RDStore.SUBSCRIPTION_TYPE_COLLECTIVE // TODO
                         %>
                         <g:each in="${subTypes}" var="subType">
                             <div class="inline field">
