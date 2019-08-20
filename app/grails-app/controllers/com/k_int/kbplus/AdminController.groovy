@@ -875,6 +875,50 @@ class AdminController extends AbstractDebugController {
                 def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
 
                 if (oss != OrgSettings.SETTING_NOT_FOUND) {
+
+                    // ERMS-1615
+                    if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
+                        log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
+
+						// orgRole = subscriber
+						List<OrgRole> subscriberRoles = OrgRole.executeQuery(
+								'select ro from OrgRole ro ' +
+								'where ro.org = :org and ro.sub is not null and ro.roleType.value like \'Subscriber\'',
+								[ org: target ]
+						)
+
+						List<OrgRole> conSubscriberRoles = OrgRole.executeQuery(
+								'select ro from OrgRole ro ' +
+								'where ro.org = :org and ro.sub is not null and ro.roleType.value in (:roleTypes)',
+								[ org: target, roleTypes: ['Subscriber_Consortial', 'Subscriber_Consortial_Hidden'] ]
+						)
+
+
+                        subscriberRoles.each{ role ->
+                            if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_LOCAL) {
+                                role.setRoleType(RDStore.OR_SUBSCRIPTION_COLLECTIVE)
+                                role.save()
+
+                                role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                role.sub.save()
+                            }
+                        }
+                        conSubscriberRoles.each{ role ->
+                            if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                                OrgRole newRole = new OrgRole(
+                                      org: role.org,
+                                      sub: role.sub,
+                                      roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                                )
+                                newRole.save()
+
+                                // keep consortia type
+                                //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                                //role.sub.save()
+                            }
+                        }
+                    }
+
                     oss.roleValue = customerType
                     oss.save(flush:true)
                 }
