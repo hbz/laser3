@@ -2,7 +2,7 @@
 
 <laser:serviceInjection />
 
-<semui:modal id="audit_config_modal" message="property.audit.menu" editmodal="editmodal">
+<semui:modal id="audit_config_modal" message="property.audit.menu" isEditModal="isEditModal">
 
     <g:form id="audit_config_form" class="ui form" url="[controller:'ajax', action:'processAuditConfigManager']" method="post">
         <g:hiddenField name="target" value="${target}"/>

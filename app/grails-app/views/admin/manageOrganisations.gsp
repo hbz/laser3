@@ -215,7 +215,7 @@
 
     <%-- changing gasco entry --%>
 
-    <semui:modal id="gascoEntryModal" message="org.gascoEntry.label" editmodal="editmodal">
+    <semui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeGascoEntry"/>
@@ -249,9 +249,10 @@
 
     <%-- changing customer type --%>
 
-    <semui:modal id="customerTypeModal" message="org.customerType.label" editmodal="editmodal">
+    <semui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
+                 showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
             <input type="hidden" name="target" value="" />
 
@@ -271,6 +272,11 @@
             </div>
         </g:form>
 
+        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="deleteCustomerType"/>
+            <input type="hidden" name="target" value=""/>
+        </g:form>
+
         <r:script>
             $('button[data-ctTarget]').on('click', function(){
 
@@ -283,7 +289,7 @@
 
     <%-- changing api access --%>
 
-    <semui:modal id="apiLevelModal" message="org.apiLevel.label" editmodal="editmodal">
+    <semui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeApiLevel"/>

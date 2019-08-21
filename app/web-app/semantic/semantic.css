@@ -647,7 +647,7 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #4183C4;
+  color: #275480;
   text-decoration: none;
 }
 
@@ -873,6 +873,10 @@ aside.ui.accordion .title:not(.ui) {
   margin: 0 0 2rem 0;
 }
 
+.landingpage .ui.segment.masthead h2 {
+  color: white!important;
+}
+
 .landingpage .ui.segment.footer {
   padding: 3rem 0 0 0;
 }
@@ -955,6 +959,14 @@ aside.ui.accordion .title:not(.ui) {
   color: #544e48!important;
   font-weight: 400!important;
   width: 100%;
+  /* Inside Link */
+}
+
+.ui.la-eye-catcher .label.la-eye-catcher-txt a {
+  cursor: pointer;
+  color: inherit;
+  opacity: 1;
+  text-decoration: underline!important;
 }
 
 .ui.la-eye-catcher .la-eye-catcher-header {
@@ -17394,7 +17406,7 @@ ol.ui.list ol li,
 .ui.list .list > a.item,
 .ui.list > a.item {
   cursor: pointer;
-  color: #4183C4;
+  color: #275480;
 }
 
 .ui.list .list > a.item:hover,
@@ -17414,7 +17426,7 @@ ol.ui.list ol li,
 .ui.list .list > .item a.header,
 .ui.list > .item a.header {
   cursor: pointer;
-  color: #4183C4 !important;
+  color: #275480 !important;
 }
 
 .ui.list .list > .item a.header:hover,
@@ -20568,7 +20580,7 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.steps .step.active .title {
-  color: #4183C4;
+  color: #275480;
 }
 
 .ui.ordered.steps .step.active:before,
@@ -20919,7 +20931,7 @@ ol.ui.horizontal.list li:before,
 /* Link */
 
 .ui.breadcrumb a {
-  color: #4183C4;
+  color: #275480;
 }
 
 .ui.breadcrumb a:hover {
@@ -30647,12 +30659,12 @@ a.ui.card:hover,
 
 .ui.card > .extra a:not(.ui),
 .ui.cards > .card > .extra a:not(.ui) {
-  color: #4183C4;
+  color: #275480;
 }
 
 .ui.card > .content > a.header,
 .ui.cards > .card > .content > a.header {
-  color: #4183C4;
+  color: #275480;
 }
 
 .la-sidekick .hidden + .ui.card {
