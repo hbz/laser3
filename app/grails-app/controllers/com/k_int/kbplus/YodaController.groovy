@@ -542,6 +542,15 @@ class YodaController {
             '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' '
         )
 
+        result.subConsRoles = Subscription.executeQuery(
+                'select sub, role from Subscription sub join sub.orgRelations role, OrgSettings os ' +
+                        '  where os.org = role.org ' +
+                        '  and role.roleType.value like \'Subscriber_Consortial\' ' +
+                        '  and os.key like \'CUSTOMER_TYPE\' and os.roleValue.authority like \'ORG_INST_COLLECTIVE\' ' +
+                        '    and not exists (select check from OrgRole check where check.org = role.org and check.sub = sub ' +
+                        '    and check.roleType.value like \'Subscription Collective\' )'
+        )
+
         if (params.cmd == 'migrate') {
             result.subRoles.each{ so ->
                 Subscription sub = so[0]
@@ -554,6 +563,20 @@ class YodaController {
 					sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
 					sub.save()
 				}
+            }
+
+            result.subConsRoles.each{ so ->
+                Subscription sub = so[0]
+                OrgRole role 	 = so[1]
+
+                if (sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                    OrgRole newRole = new OrgRole(
+                            org: role.org,
+                            sub: sub,
+                            roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                    )
+                    newRole.save()
+                }
             }
         }
 
