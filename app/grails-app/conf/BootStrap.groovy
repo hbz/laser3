@@ -366,13 +366,14 @@ class BootStrap {
             }
         }
 
-        def fakeRole                = locOrgRole('FAKE',                   'fake', [de: 'Keine Zuweisung', en: 'Nothing'])
+        def fakeRole                = locOrgRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
         def orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
         def orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
         def orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         def orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'])
         def orgConsortiumSurveyRole = locOrgRole('ORG_CONSORTIUM_SURVEY',  'org', [en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'])
 
+        createOrgPerms(fakeRole,                    ['FAKE'])
         createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
         createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
         createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
@@ -1765,7 +1766,6 @@ class BootStrap {
         RefdataCategory.loc('Subscription Form',          	                [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
         RefdataCategory.loc('Subscription Resource',          	            [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
         RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
-        //RefdataCategory.loc('system.customer.type',          	            [en: 'Customer Type', de: 'Kundentyp'], BOOTSTRAP)
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'], BOOTSTRAP)
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
@@ -2345,12 +2345,6 @@ class BootStrap {
 		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
         RefdataValue.loc('Subscription Type',      [en: 'Administrative Subscription', de: 'Verwaltungslizenz'], BOOTSTRAP)
         //RefdataValue.loc('Subscription Type',      [en: 'Collective Subscription', de: 'Kollektivlizenz'], BOOTSTRAP)
-
-        //RefdataValue.loc('system.customer.type',    [key:'scp.basic',           en: 'Institution basic', de: 'Singlenutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.collective',      en: 'Institution collective', de: 'Kollektivnutzer'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.member',          en: 'Institution consortium member', de: 'Konsorte'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium',      en: 'Consortium basic', de: 'Konsortium ohne Umfragefunktion'], BOOTSTRAP)
-        //RefdataValue.loc('system.customer.type',    [key:'scp.consortium.survey', en: 'Consortium survey', de: 'Konsortium mit Umfragefunktion'], BOOTSTRAP)
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'], BOOTSTRAP)
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'], BOOTSTRAP)

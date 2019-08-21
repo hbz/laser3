@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.helper.RefdataAnnotation
 
@@ -8,21 +9,23 @@ import javax.persistence.Transient
 
 class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
+    /*
+    Date startDate
+    String startVolume
+    String startIssue
+    Date endDate
+    String endVolume
+    String endIssue
+    String embargo
+    String coverageDepth
+    String coverageNote
+     */
+  Date coreStatusStart
+  Date coreStatusEnd
   Date accessStartDate
   Date accessEndDate
 
-  Date startDate
-  String startVolume
-  String startIssue
-  Date endDate
-  String endVolume
-  String endIssue
-  String embargo
-  String coverageDepth
-  String coverageNote
   String ieReason
-  Date coreStatusStart
-  Date coreStatusEnd
 
   //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
   @RefdataAnnotation(cat = 'TIPP Status')
@@ -37,6 +40,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
   static hasOne =    [priceItem: PriceItem]
+
+  static hasMany = [coverages: IssueEntitlementCoverage]
 
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
@@ -56,43 +61,48 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
             status column:'ie_status_rv_fk'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
-         startDate column:'ie_start_date',      index: 'ie_dates_idx'
-       startVolume column:'ie_start_volume'
-        startIssue column:'ie_start_issue'
-           endDate column:'ie_end_date',        index: 'ie_dates_idx'
-         endVolume column:'ie_end_volume'
-          endIssue column:'ie_end_issue'
-           embargo column:'ie_embargo'
-     coverageDepth column:'ie_coverage_depth'
-      coverageNote column:'ie_coverage_note',type: 'text'
           ieReason column:'ie_reason'
+            medium column:'ie_medium_rv_fk'
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
-            medium column:'ie_medium_rv_fk'
+         coverages sort: 'startDate', order: 'asc'
+      /*
+      startDate column:'ie_start_date',      index: 'ie_dates_idx'
+      startVolume column:'ie_start_volume'
+      startIssue column:'ie_start_issue'
+      endDate column:'ie_end_date',        index: 'ie_dates_idx'
+      endVolume column:'ie_end_volume'
+      endIssue column:'ie_end_issue'
+      embargo column:'ie_embargo'
+      coverageDepth column:'ie_coverage_depth'
+      coverageNote column:'ie_coverage_note',type: 'text'
+      */
   }
 
   static constraints = {
-    globalUID     (nullable:true, blank:false, unique:true, maxSize:255)
-    status        (nullable:true, blank:false)
-    subscription  (nullable:true, blank:false)
-    tipp          (nullable:true, blank:false)
-    startDate     (nullable:true, blank:true)
-    startVolume   (nullable:true, blank:true)
-    startIssue    (nullable:true, blank:true)
-    endDate       (nullable:true, blank:true)
-    endVolume     (nullable:true, blank:true)
-    endIssue      (nullable:true, blank:true)
-    embargo       (nullable:true, blank:true)
-    coverageDepth (nullable:true, blank:true)
-    coverageNote  (nullable:true, blank:true)
-    ieReason      (nullable:true, blank:true)
-    coreStatusStart(nullable:true, blank:true)
-    coreStatusEnd (nullable:true, blank:true)
-    coreStatus    (nullable:true, blank:true)
+    globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
+    status         (nullable:true, blank:false)
+    subscription   (nullable:true, blank:false)
+    tipp           (nullable:true, blank:false)
+    ieReason       (nullable:true, blank:true)
+    medium         (nullable:true, blank:true)
+    priceItem      (nullable:true, blank:true)
     accessStartDate(nullable:true, blank:true)
-    accessEndDate (nullable:true, blank:true)
-    medium        (nullable:true, blank:true)
-    priceItem     (nullable:true, blank:true)
+    accessEndDate  (nullable:true, blank:true)
+    coreStatus     (nullable:true, blank:true)
+    coreStatusStart(nullable:true, blank:true)
+    coreStatusEnd  (nullable:true, blank:true)
+      /*
+      startDate     (nullable:true, blank:true)
+      startVolume   (nullable:true, blank:true)
+      startIssue    (nullable:true, blank:true)
+      endDate       (nullable:true, blank:true)
+      endVolume     (nullable:true, blank:true)
+      endIssue      (nullable:true, blank:true)
+      embargo       (nullable:true, blank:true)
+      coverageDepth (nullable:true, blank:true)
+      coverageNote  (nullable:true, blank:true)
+       */
   }
 
   Date getDerivedAccessStartDate() {

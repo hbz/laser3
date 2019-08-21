@@ -1,4 +1,4 @@
-<semui:modal id="modalEditNote" text="${message(code:'template.editNote')}" editmodal="true">
+<semui:modal id="modalEditNote" text="${message(code:'template.editNote')}" isEditModal="true">
 
     <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'editNote', id:noteInstance?.id]" method="post">
 

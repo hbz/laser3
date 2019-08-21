@@ -32,6 +32,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String sortTitle
   String impId
   String gokbId
+  URL originEditUrl
 
   @RefdataAnnotation(cat = 'TitleInstanceStatus')
   RefdataValue status
@@ -59,18 +60,19 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
                     ]
 
   static mapping = {
-           id column:'ti_id'
-    globalUID column:'ti_guid'
-        title column:'ti_title', type:'text'
-    normTitle column:'ti_norm_title', type:'text'
-     keyTitle column:'ti_key_title', type:'text'
-      version column:'ti_version'
-        impId column:'ti_imp_id', index:'ti_imp_id_idx'
-        gokbId column:'ti_gokb_id', type:'text'
-       status column:'ti_status_rv_fk'
-         type column:'ti_type_rv_fk'
-        tipps sort:'startDate', order: 'asc', batchSize: 10
-    sortTitle column:'sort_title', type:'text'
+               id column:'ti_id'
+        globalUID column:'ti_guid'
+            title column:'ti_title', type:'text'
+        normTitle column:'ti_norm_title', type:'text'
+         keyTitle column:'ti_key_title', type:'text'
+          version column:'ti_version'
+            impId column:'ti_imp_id', index:'ti_imp_id_idx'
+           gokbId column:'ti_gokb_id', type:'text'
+    originEditUrl column:'ti_origin_edit_url'
+           status column:'ti_status_rv_fk'
+             type column:'ti_type_rv_fk'
+            //tipps sort:'startDate', order: 'asc', batchSize: 10
+        sortTitle column:'sort_title', type:'text'
 
       ids           batchSize: 10
       orgs          batchSize: 10
@@ -81,14 +83,15 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        status(nullable:true, blank:false);
-        type(nullable:true, blank:false);
-        title(nullable:true, blank:false,maxSize:2048);
-        normTitle(nullable:true, blank:false,maxSize:2048);
-        sortTitle(nullable:true, blank:false,maxSize:2048);
-        keyTitle(nullable:true, blank:false,maxSize:2048);
-        creators(nullable:true, blank:false);
-        gokbId (nullable:true, blank:false);
+        status(nullable:true, blank:false)
+        type(nullable:true, blank:false)
+        title(nullable:true, blank:false,maxSize:2048)
+        normTitle(nullable:true, blank:false,maxSize:2048)
+        sortTitle(nullable:true, blank:false,maxSize:2048)
+        keyTitle(nullable:true, blank:false,maxSize:2048)
+        creators(nullable:true, blank:false)
+        gokbId (nullable:true, blank:false)
+        originEditUrl(nullable:true, blank:false)
     }
 
   String getIdentifierValue(idtype) {
@@ -133,10 +136,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     switch ( idstr_components.size() ) {
       case 1:
-        qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ?',[idstr_components[0]])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ?',[idstr_components[0]])
         break;
       case 2:
-        qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ? and lower(io.identifier.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+        qr = executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ? and lower(io.identifier.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
         break;
       default:
         // static_logger.debug("Unable to split");
@@ -151,10 +154,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             static_logger.debug("No matches - trying to locate via identifier group");
           switch ( idstr_components.size() ) {
             case 1:
-              qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier where i.value = ? and i.ig = io.identifier.ig )',[idstr_components[0]])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ig = io.identifier.ig )',[idstr_components[0]])
               break;
             case 2:
-              qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier where i.value = ? and i.ns.ns = ? and i.ig = io.identifier.ig )',[idstr_components[1],idstr_components[0]?.toLowerCase()])
+              qr = executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier i where i.value = ? and i.ns.ns = ? and i.ig = io.identifier.ig )',[idstr_components[1],idstr_components[0]?.toLowerCase()])
               break;
             default:
               // static_logger.debug("Unable to split");
@@ -231,12 +234,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid)
     }
 
-  static def lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
-    def result = null;
+  static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
+    def result = null
     def origin_uri = null
+    URL originEditUrl = null
     def skip_creation = false
     def valid_match = false
-    def ti_candidates = []
+    List<TitleInstance> ti_candidates = []
     def canonical_ids = []
 
     if(imp_uuid?.length() == 0) {
@@ -244,9 +248,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     }
 
     if (imp_uuid) {
-      result = TitleInstance.findByImpId(imp_uuid)
+      result = findByImpId(imp_uuid)
 
-      def newresult = TitleInstance.findByGokbId(imp_uuid)
+      def newresult = findByGokbId(imp_uuid)
 
       result = newresult ?: result
 
@@ -256,29 +260,38 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     if(!result){
 
       candidate_identifiers.each { i ->
-        if(i.namespace.toLowerCase() == 'uri'){
-          origin_uri = i.value
+        if(i.namespace == 'originEditUrl') {
+          originEditUrl = new URL(i.value)
+          //the qualified reference is needed here, we should normally deploy this method into a service ...
+          TitleInstance ti_candidate = TitleInstance.findByOriginEditUrl(originEditUrl)
+          if(ti_candidate)
+            ti_candidates << ti_candidate
         }
+        else {
+          if(i.namespace.toLowerCase() == 'uri'){
+            origin_uri = i.value
+          }
 
-        def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
+          def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
 
-        if(id && id.ns.ns && id.value){
-          canonical_ids.add(id)
-          static_logger.debug("processing candidate identifier ${i} as ${id}");
+          if(id && id.ns.ns && id.value){
+            canonical_ids.add(id)
+            static_logger.debug("processing candidate identifier ${i} as ${id}");
 
-          def io = IdentifierOccurrence.findAllByIdentifier(id)
+            def io = IdentifierOccurrence.findAllByIdentifier(id)
 
-          if ( io.size() > 0 ) {
-            static_logger.debug("located existing title(s)");
-            io.each { occ ->
-              if(occ.ti && occ.ti.status?.value == 'Current' && !ti_candidates.contains(occ.ti)){
-                ti_candidates.add(occ.ti)
+            if ( io.size() > 0 ) {
+              static_logger.debug("located existing title(s)");
+              io.each { occ ->
+                if(occ.ti && occ.ti.status?.value == 'Current' && !ti_candidates.contains(occ.ti)){
+                  ti_candidates.add(occ.ti)
+                }
               }
             }
           }
-        }
-        else {
-          static_logger.debug("error processing candidate identifier ${i}");
+          else {
+            static_logger.debug("error processing candidate identifier ${i}");
+          }
         }
       }
     }
@@ -293,16 +306,17 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       ti_candidates.each { cti ->
         def intersection = 0
         boolean full_match = true
-        boolean name_match = (cti.title == title ? true : false)
+        boolean name_match = (cti.title == title)
         boolean origin_match = false
         boolean origin_uri_match = false
 
+        if ( cti.originEditUrl == originEditUrl ){
+          origin_match = true
+        }
+
         cti.ids.each { ctio ->
 
-          if ( ctio.identifier.ns.ns == 'originediturl' && canonical_ids.contains(ctio.identifier) ){
-            origin_match = true
-          }
-          else if ( !canonical_ids.contains(ctio.identifier) ){
+          if ( !canonical_ids.contains(ctio.identifier) ){
             if ( ctio.identifier.ns.ns != 'originediturl' && ctio.identifier.ns.ns != 'uri'){
               full_match = false
             }
