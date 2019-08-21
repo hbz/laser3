@@ -138,7 +138,7 @@
        Links
 --------------------*/
 
-@linkColor           : @blue
+@linkColor           : #275480;
 @linkUnderline       : none;
 @linkHoverColor      : @lightBlue;
 @linkHoverUnderline  : none;

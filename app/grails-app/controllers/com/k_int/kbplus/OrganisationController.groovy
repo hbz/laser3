@@ -39,28 +39,33 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
-        Map result = setResultGenericsAndCheckAccess(params)
-        if(!result) {
-            response.sendError(401)
-            return
+
+        User user = User.get(springSecurityService.principal.id)
+        Org org   = Org.get(params.id)
+
+        Map result = [
+                user:           user,
+                orgInstance:    org,
+                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+                inContextOrg:   contextService.getOrg().id == params.int('id')
+        ]
+
+        result.editable = result.editable || (result.inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+
+        // forbidden access
+        if (! result.editable) {
+            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
         }
 
         if (! result.orgInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'list'
             return
-        }
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-
-        // forbidden access
-        if (! result.editable && result.orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
         }
 
         // adding default settings

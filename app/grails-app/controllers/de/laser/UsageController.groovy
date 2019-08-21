@@ -136,10 +136,7 @@ class UsageController extends AbstractDebugController {
 
         def hql = "select io.org, i from IdentifierOccurrence as io join io.identifier as i where i.value in (${institutionsForQuery})"
         result.natstatInstitutions = institutionsForQuery ? Org.executeQuery(hql) : []
-
         result.cursorCount = factService.getSupplierCursorCount()
-        result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
-        result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
 
         if (statsSyncService.getErrors()) {
             flash.error = statsSyncService.errors.join('</br>')

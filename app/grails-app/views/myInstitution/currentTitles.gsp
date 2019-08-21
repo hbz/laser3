@@ -327,7 +327,7 @@
                                 <div class="ui three column grid">
                                     <g:each in="${title_coverage_info.ies}" var="ie">
                                         <div class="sixteen wide column">
-                                            <i class="icon folder open outline la-list-icon"></i>
+                                            <i class="icon clipboard outline outline la-list-icon"></i>
                                             <g:link controller="subscription" action="index"
                                                     id="${ie.subscription.id}">${ie.subscription.name}</g:link>
                                             &nbsp;

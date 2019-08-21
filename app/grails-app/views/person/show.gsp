@@ -240,7 +240,7 @@ ${personInstance}
                                                 </g:if>
                                                 <g:if test="${link.sub}">
                                                     <span data-tooltip="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
-                                                        <i class="ui icon folder open la-list-icon"></i>
+                                                        <i class="ui icon clipboard outline la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">

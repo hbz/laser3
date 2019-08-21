@@ -51,18 +51,18 @@
                                   class="ui select dropdown"/>
                 </div>
 
-                <div class="field">
+                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
                     %>
-                    <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes.minus([RDStore.SUBSCRIPTION_TYPE_COLLECTIVE])}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
-                    </g:if>
-                    <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
-                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes.minus([RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,RDStore.SUBSCRIPTION_TYPE_ALLIANCE,RDStore.SUBSCRIPTION_TYPE_NATIONAL])}" value="${RDStore.SUBSCRIPTION_TYPE_COLLECTIVE.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
-                    </g:elseif>
-                </div>
+                    <div class="field">
+                        <label>${message(code:'myinst.emptySubscription.create_as')}</label>
+                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                    </div>
+                </g:if>
+                <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
+                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
+                </g:elseif>
 
                 <br/>
                 <div id="dynHiddenValues"></div>
@@ -143,7 +143,7 @@
 
                 $('#asOrgType').change(function() {
                     var selVal = $(this).val();
-                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_COLLECTIVE.id}'].indexOf(selVal) > -1) {
+                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}'].indexOf(selVal) > -1) {
                         $('.cons-options').show()
                     }
                     else {

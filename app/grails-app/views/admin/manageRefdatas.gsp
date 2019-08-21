@@ -152,7 +152,7 @@ ${usedRdvList.join(", ")}
             </g:each>
         </div>
 
-        <semui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" editmodal="editmodal">
+        <semui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" isEditModal="isEditModal">
             <g:form class="ui form" url="[controller: 'admin', action: 'manageRefdatas']">
                 <input type="hidden" name="cmd" value="replaceRefdataValue"/>
                 <input type="hidden" name="xcgRdvFrom" value=""/>

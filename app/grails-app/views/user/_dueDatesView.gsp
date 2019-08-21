@@ -55,7 +55,7 @@
                         <td>
                             <div class="la-flexbox">
                                 <g:if test="${obj instanceof Subscription}">
-                                    <i class="icon folder open la-list-icon"></i>
+                                    <i class="icon clipboard outline la-list-icon"></i>
                                     <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${obj instanceof License}">
@@ -79,7 +79,7 @@
                                         <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp;${obj.owner?.last_name}</g:link>
                                     </g:if>
                                     <g:elseif test="${obj.owner instanceof Subscription}">
-                                        <i class="icon folder open la-list-icon"></i>
+                                        <i class="icon clipboard outline la-list-icon"></i>
                                         <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof License}">
