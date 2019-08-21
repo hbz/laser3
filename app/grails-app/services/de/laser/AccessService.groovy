@@ -39,6 +39,9 @@ class AccessService {
     boolean checkPerm(String orgPerms) {
         checkOrgPerm(orgPerms.split(','))
     }
+    boolean checkPerm(Org ctxOrg, String orgPerms) {
+        checkOrgPerm(ctxOrg, orgPerms.split(','))
+    }
     boolean checkPermType(String orgPerms, String orgTypes) {
         checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
     }
@@ -108,11 +111,11 @@ class AccessService {
     // --- for action closures: implementations ---
     // --- checking current user and context org
 
-    private boolean checkOrgPerm(String[] orgPerms) {
+    private boolean checkOrgPerm(Org contextOrg, String[] orgPerms) {
         boolean check = false
 
         if (orgPerms) {
-            Org ctx = contextService.getOrg()
+            Org ctx = contextOrg
             def oss = OrgSettings.get(ctx, OrgSettings.KEYS.CUSTOMER_TYPE)
 
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
@@ -120,6 +123,18 @@ class AccessService {
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) oss.getValue())
                 }
             }
+        } else {
+            check = true
+        }
+        check
+    }
+
+    private boolean checkOrgPerm(String[] orgPerms) {
+        boolean check = false
+
+        if (orgPerms) {
+            Org ctx = contextService.getOrg()
+            checkOrgPerm(ctx, orgPerms)
         } else {
             check = true
         }
