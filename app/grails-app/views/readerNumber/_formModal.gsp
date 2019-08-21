@@ -3,7 +3,7 @@
 <%
     SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
 %>
-<semui:modal id="${formId ?: 'create_number'}" text="${message(code: 'readerNumber.create.label')}" editmodal="${formId ?: null}">
+<semui:modal id="${formId ?: 'create_number'}" text="${message(code: 'readerNumber.create.label')}" isEditModal="${formId ?: null}">
 
     <g:form class="ui form create_number" url="[controller: 'readerNumber', action: formId ? 'edit' : 'create', id: numbersInstance ? numbersInstance.id : null]" method="POST">
     <g:hiddenField name="orgid" value="${params.id}"/>

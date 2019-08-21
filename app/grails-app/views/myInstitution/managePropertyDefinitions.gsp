@@ -160,7 +160,7 @@
         </div>
 
         <g:if test="${false}">
-        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" editmodal="editmodal">
+        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
             <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
                 <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
                 <input type="hidden" name="xcgPdFrom" value=""/>
