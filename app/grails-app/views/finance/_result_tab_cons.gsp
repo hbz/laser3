@@ -173,7 +173,7 @@
                         <semui:xEditable owner="${ci}" type="date" field="endDate" />
                     </td>
                     <td>
-                        <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
+                        ${ci.costItemElement.getI10n("value")}
                     </td>
                     <td class="x">
                         <g:if test="${editable}">

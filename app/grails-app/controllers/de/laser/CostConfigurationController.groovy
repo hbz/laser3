@@ -86,7 +86,9 @@ class CostConfigurationController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def deleteCostConfiguration() {
         if(params.ciec) {
-
+            CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
+            if(ciec)
+                ciec.delete()
         }
         else {
             flash.error = message(code: 'costConfiguration.delete.noCiec')
