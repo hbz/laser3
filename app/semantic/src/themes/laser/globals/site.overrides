@@ -102,6 +102,9 @@ aside.ui.accordion .title:not(.ui) {
         border-radius: 0;
 
         &.masthead {
+            h2{
+                color: white!important;
+            }
             background-image: url('../images/landingpage/hero.jpg') !important;
             background-repeat: no-repeat !important;
             background-position: top center !important;

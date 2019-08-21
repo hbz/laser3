@@ -101,7 +101,7 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #4183C4;
+  color: #275480;
   text-decoration: none;
 }
 a:hover {
@@ -308,6 +308,9 @@ aside.ui.accordion .title:not(.ui) {
   min-height: 450px;
   padding: 0 0 3rem 0em;
   margin: 0 0 2rem 0;
+}
+.landingpage .ui.segment.masthead h2 {
+  color: white!important;
 }
 .landingpage .ui.segment.footer {
   padding: 3rem 0 0 0;
