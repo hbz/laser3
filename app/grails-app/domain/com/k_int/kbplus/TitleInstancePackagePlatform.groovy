@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
@@ -22,40 +24,34 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   @Transient
   def messageSource
 
+  @Transient
+  def changeNotificationService
+
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
     // AuditableTrait
     static auditable = true
-    static controlledProperties = ['status',
-                                     'startDate',
-                                     'startVolume',
-                                     'startIssue',
-                                     'endDate',
-                                     'endVolume',
-                                     'endIssue',
-                                     'embargo',
-                                     'coverageDepth',
-                                     'coverageNote',
-                                     'accessStartDate',
-                                     'accessEndDate',
-                                     'platform'
-    ]
+    static controlledProperties = ['status', 'platform','accessStartDate','accessEndDate','coverages']
 
-
-  Date accessStartDate
-  Date accessEndDate
-  Date startDate
-  String rectype="so"
-  String startVolume
-  String startIssue
-  Date endDate
-  String endVolume
-  String endIssue
-  String embargo
-  String coverageDepth
-  String coverageNote
+    /*
+    Date startDate
+    String startVolume
+    String startIssue
+    Date endDate
+    String endVolume
+    String endIssue
+    String embargo
+    String coverageDepth
+    String coverageNote
+     */
+    Date accessStartDate
+    Date accessEndDate
+    Date coreStatusStart
+    Date coreStatusEnd
+    String rectype="so"
   String impId
   String gokbId
+     URL originEditUrl
 
     @RefdataAnnotation(cat = 'TIPP Status')
     RefdataValue status
@@ -76,15 +72,14 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     RefdataValue payment
 
     String hostPlatformURL
-  Date coreStatusStart
-  Date coreStatusEnd
 
-  TitleInstancePackagePlatform derivedFrom
-  TitleInstancePackagePlatform masterTipp
+  //TitleInstancePackagePlatform derivedFrom
+  //TitleInstancePackagePlatform masterTipp
 
   static mappedBy = [ids: 'tipp', additionalPlatforms: 'tipp']
   static hasMany = [ids: IdentifierOccurrence, 
-                    additionalPlatforms: PlatformTIPP]
+                    additionalPlatforms: PlatformTIPP,
+                    coverages: TIPPCoverage]
 
 
   static belongsTo = [
@@ -102,17 +97,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
              title column:'tipp_ti_fk',     index: 'tipp_idx'
-         startDate column:'tipp_start_date',    index: 'tipp_dates_idx'
-       startVolume column:'tipp_start_volume'
-        startIssue column:'tipp_start_issue'
-           endDate column:'tipp_end_date',      index: 'tipp_dates_idx'
-         endVolume column:'tipp_end_volume'
-          endIssue column:'tipp_end_issue'
-           embargo column:'tipp_embargo'
-     coverageDepth column:'tipp_coverage_depth'
-      coverageNote column:'tipp_coverage_note', type: 'text'
              impId column:'tipp_imp_id',        index: 'tipp_imp_id_idx'
             gokbId column:'tipp_gokb_id',       type:'text'
+     originEditUrl column:'tipp_origin_edit_url'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -121,42 +108,55 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
             option column:'tipp_option_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
                sub column:'tipp_sub_fk'
-       derivedFrom column:'tipp_derived_from'
-   coreStatusStart column:'tipp_core_status_start_date'
-     coreStatusEnd column:'tipp_core_status_end_date'
-   accessStartDate column:'tipp_access_start_date'
-     accessEndDate column:'tipp_access_end_date'
+       //derivedFrom column:'tipp_derived_from'
+      accessStartDate column:'tipp_access_start_date'
+      accessEndDate column:'tipp_access_end_date'
+      coreStatusStart column:'tipp_core_status_start_date'
+      coreStatusEnd column:'tipp_core_status_end_date'
+      /*startDate column:'tipp_start_date',    index: 'tipp_dates_idx'
+      startVolume column:'tipp_start_volume'
+      startIssue column:'tipp_start_issue'
+      endDate column:'tipp_end_date',      index: 'tipp_dates_idx'
+      endVolume column:'tipp_end_volume'
+      endIssue column:'tipp_end_issue'
+      embargo column:'tipp_embargo'
+      coverageDepth column:'tipp_coverage_depth'
+      coverageNote column:'tipp_coverage_note', type: 'text'*/
 
       ids                   batchSize: 10
       additionalPlatforms   batchSize: 10
+      coverages             batchSize: 10, sort: 'startDate', order: 'asc'
   }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        startDate(nullable:true, blank:true);
-        startVolume(nullable:true, blank:true);
-        startIssue(nullable:true, blank:true);
-        endDate(nullable:true, blank:true);
-        endVolume(nullable:true, blank:true);
-        endIssue(nullable:true, blank:true);
-        embargo(nullable:true, blank:true);
-        coverageDepth(nullable:true, blank:true);
-        coverageNote(nullable:true, blank:true);
-        impId(nullable:true, blank:true);
-        gokbId (nullable:true, blank:false);
-        status(nullable:true, blank:false);
-        delayedOA(nullable:true, blank:false);
-        hybridOA(nullable:true, blank:false);
-        statusReason(nullable:true, blank:false);
-        payment(nullable:true, blank:false);
-        option(nullable:true, blank:false);
-        sub(nullable:true, blank:false);
-        hostPlatformURL(nullable:true, blank:true, maxSize:2048);
-        derivedFrom(nullable:true, blank:true);
-        coreStatusStart(nullable:true, blank:true);
-        coreStatusEnd(nullable:true, blank:true);
-        accessStartDate(nullable:true, blank:true);
-        accessEndDate(nullable:true, blank:true);
+        impId(nullable:true, blank:true)
+        gokbId (nullable:true, blank:false)
+        originEditUrl(nullable:true, blank:false)
+        status(nullable:true, blank:false)
+        delayedOA(nullable:true, blank:false)
+        hybridOA(nullable:true, blank:false)
+        statusReason(nullable:true, blank:false)
+        payment(nullable:true, blank:false)
+        option(nullable:true, blank:false)
+        sub(nullable:true, blank:false)
+        hostPlatformURL(nullable:true, blank:true, maxSize:2048)
+        //derivedFrom(nullable:true, blank:true)
+        accessStartDate(nullable:true, blank:true)
+        accessEndDate(nullable:true, blank:true)
+        coreStatusStart(nullable:true, blank:true)
+        coreStatusEnd(nullable:true, blank:true)
+        /*
+        startDate(nullable:true, blank:true)
+        startVolume(nullable:true, blank:true)
+        startIssue(nullable:true, blank:true)
+        endDate(nullable:true, blank:true)
+        endVolume(nullable:true, blank:true)
+        endIssue(nullable:true, blank:true)
+        embargo(nullable:true, blank:true)
+        coverageDepth(nullable:true, blank:true)
+        coverageNote(nullable:true, blank:true)
+         */
     }
 
     @Override
@@ -206,41 +206,41 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
     log.debug("onChange Tipp")
 
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform');
-
     controlledProperties.each { cp ->
       log.debug("checking ${cp}")
-      
-     
-
-      if ( oldMap[cp] != newMap[cp] ) {
-        def prop_info = domain_class.getPersistentProperty(cp)
-
-        def oldLabel = stringify(oldMap[cp])
-        def newLabel = stringify(newMap[cp])
-       
-
-        if ( prop_info.isAssociation() ) {
-          log.debug("Convert object reference into OID");
-          oldMap[cp]= oldMap[cp] != null ? "${ClassUtils.deproxy(oldMap[cp]).class.name}:${oldMap[cp].id}" : null;
-          newMap[cp]= newMap[cp] != null ? "${ClassUtils.deproxy(newMap[cp]).class.name}:${newMap[cp].id}" : null;
+        if(cp != 'coverages') {
+            if ( oldMap[cp] != newMap[cp] ) {
+                raisePendingChange(oldMap,newMap,cp)
+            }
         }
-
-        log.debug("notify change event")
-        changeNotificationService.fireEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'TitleInstancePackagePlatform.updated',
-                                                     prop:cp, 
-                                                     old:oldMap[cp], 
-                                                     oldLabel:oldLabel,
-                                                     new:newMap[cp],
-                                                     newLabel:newLabel
-                                                    ])
-      }
     }
     log.debug("onChange completed")
+  }
+
+  void raisePendingChange(oldMap,newMap,cp) {
+      def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
+      def prop_info = domain_class.getPersistentProperty(cp)
+
+      def oldLabel = stringify(oldMap[cp])
+      def newLabel = stringify(newMap[cp])
+
+
+      if ( prop_info.isAssociation() ) {
+          log.debug("Convert object reference into OID")
+          oldMap[cp]= oldMap[cp] != null ? "${ClassUtils.deproxy(oldMap[cp]).class.name}:${oldMap[cp].id}" : null
+          newMap[cp]= newMap[cp] != null ? "${ClassUtils.deproxy(newMap[cp]).class.name}:${newMap[cp].id}" : null
+      }
+
+      log.debug("notify change event")
+      changeNotificationService.fireEvent([
+              OID:"${this.class.name}:${this.id}",
+              event:'TitleInstancePackagePlatform.updated',
+              prop:cp,
+              old:oldMap[cp],
+              oldLabel:oldLabel,
+              new:newMap[cp],
+              newLabel:newLabel
+      ])
   }
 
   private def stringify(obj) {
@@ -291,22 +291,21 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
   @Transient
   def notifyDependencies_trait(changeDocument) {
-    log.debug("notifyDependencies_trait(${changeDocument})");
+    log.debug("notifyDependencies_trait(${changeDocument})")
+    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument)
+    changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
+    Locale locale = LocaleContextHolder.getLocale()
 
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument);
-    changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument);
-
-    def deleted_tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Deleted');
-    def deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    RefdataValue deleted_tipp_status = RDStore.TIPP_DELETED
+    String deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    // Tipp Property Change Event.. notify any dependent IEs
+    List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
 
     if ( ( changeDocument.event=='TitleInstancePackagePlatform.updated' ) && 
          ( changeDocument.prop == 'status' ) && 
          ( changeDocument.new == deleted_tipp_status_oid ) ) {
 
       log.debug("TIPP STATUS CHANGE:: Broadcast pending change to IEs based on this tipp new status: ${changeDocument.new}");
-
-      def dep_ies = IssueEntitlement.findAllByTipp(this)
       dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         log.debug("Notify dependent ie ${dep_ie.id} whos sub is ${sub.id} and subscriber is ${sub.getSubscriber()}");
@@ -330,10 +329,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
       }
     }
     else if ( (changeDocument.event=='TitleInstancePackagePlatform.updated') && ( changeDocument.new != changeDocument.old ) ) {
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.tipp."+changeDocument.prop, locale.toString())
-        def loc = LocaleContextHolder.locale
-        def description = messageSource.getMessage('default.accept.change.ie',null,loc)
+        def description = messageSource.getMessage('default.accept.change.ie',null,locale)
         if(contentItemDesc){
             description = contentItemDesc.content
         }else{
@@ -341,8 +338,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
             if(defaultMsg)
                 description = defaultMsg.content
         }
-        // Tipp Property Change Event.. notify any dependent IEs
-        def dep_ies = IssueEntitlement.findAllByTipp(this)
         dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         if(dep_ie.subscription && sub) {
@@ -367,7 +362,53 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         }
       }
     }
-
+    else if(changeDocument.event.contains('TitleInstancePackagePlatform.coverage')) {
+        String coverageEvent = changeDocument.event.split('.coverage.')[1]
+        String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id,absolute:true)
+        String pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
+        dep_ies.each { ie ->
+            if(changeDocument.affectedCoverage) {
+                IssueEntitlementCoverage equivalentIECoverage = changeDocument.affectedCoverage.findEquivalent(ie.coverages)
+                if(equivalentIECoverage) {
+                    switch(coverageEvent) {
+                        case 'deleted': String coverageRangeString = "${equivalentIECoverage.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.startVolume}, Ausgabe ${equivalentIECoverage.startIssue}) - ${equivalentIECoverage.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.endVolume}, Ausgabe ${equivalentIECoverage.endIssue})"
+                            changeNotificationService.registerPendingChange(
+                                    PendingChange.PROP_SUBSCRIPTION,
+                                    ie.subscription,
+                                    "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde gelöscht: ${coverageRangeString}",
+                                    ie.subscription.getSubscriber(),
+                                    [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
+                                     changeType: PendingChangeService.EVENT_COVERAGE_DELETE,
+                                     changeDoc: changeDocument])
+                            break
+                        case 'updated': changeNotificationService.registerPendingChange(
+                                PendingChange.PROP_SUBSCRIPTION,
+                                ie.subscription,
+                                "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde geändert. Das Feld <strong>${changeDocument.propLabel}</strong> wurde geändert von ${changeDocument.old} in ${changeDocument.new}",
+                                ie.subscription.getSubscriber(),
+                                [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
+                                 changeType: PendingChangeService.EVENT_COVERAGE_UPDATE,
+                                 changeDoc: changeDocument])
+                            break
+                    }
+                }
+            }
+            else if(changeDocument.coverageData) {
+                Map newCov = changeDocument.coverageData
+                String newCovStart = "${newCov.startDate} (Band ${newCov.startVolume}, Ausgabe ${newCov.startIssue})"
+                String newCovEnd = "${newCov.endDate} (Band ${newCov.endVolume}, Ausgabe ${newCov.endIssue})"
+                String newCovNotes = "(Umfang: ${newCov.coverageDepth}, Anmerkung: ${newCov.coverageNotes}, Embargo: ${newCov.embargo})"
+                changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
+                        ie.subscription,
+                        "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde hinzugefügt: ${newCovStart} - ${newCovEnd} ${newCovNotes}",
+                        ie.subscription.getSubscriber(),
+                        [changeTarget: "${ie.class.name}:${ie.id}",
+                         changeType: PendingChangeService.EVENT_COVERAGE_ADD,
+                         changeDoc: newCov])
+            }
+        }
+    }
     //If the change is in a controller property, store it up and note it against subs
   }
 
@@ -459,7 +500,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   static def expunge(tipp_id) {
     try {
       static_logger.debug("  -> TIPPs");
-      def deleted_ie = RDStore.TIPP_STATUS_DELETED
+      def deleted_ie = RDStore.TIPP_DELETED
       IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.tipp.id=:tipp_id and ie.status=:ie_del",[tipp_id:tipp_id,ie_del:deleted_ie])
       TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp.id = ?',[tipp_id])
     }
