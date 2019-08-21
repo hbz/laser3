@@ -518,15 +518,15 @@ class SemanticUiTagLib {
 
     def modal = { attrs, body ->
 
-        String id = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
         String modalSize = attrs.modalSize ? attrs.modalSize  : ''
-        String text = attrs.text ? attrs.text : ''
-        String message = attrs.message ? "${message(code: attrs.message)}" : ''
-        String title = (text && message) ? text + " - " + message : text + message
-        String editmodal = attrs.editmodal
+        String text      = attrs.text ? attrs.text : ''
+        String message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        String title     = (text && message) ? text + " - " + message : text + message
+        String isEditModal = attrs.isEditModal
 
         String msgClose    = attrs.msgClose ?: "Schließen"
-        String msgSave     = attrs.msgSave ?: (editmodal ? "Änderungen speichern" : "Anlegen")
+        String msgSave     = attrs.msgSave ?: (isEditModal ? "Änderungen speichern" : "Anlegen")
         String msgDelete   = attrs.msgDelete ?: "Löschen"
 
         out << '<div class="ui modal ' + modalSize + '"' + id + '>'
@@ -537,6 +537,13 @@ class SemanticUiTagLib {
         out << '<div class="actions">'
         out << '<a href="#" class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
 
+        if (attrs.showDeleteButton) {
+
+            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
+            out << 'return confirm(\'Wollen Sie den Löschvorgang wirklich durchführen?\')?'
+            out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
+            out << '"/>'
+        }
 
         if (attrs.hideSubmitButton == null) {
             if (attrs.formID) {
@@ -545,13 +552,7 @@ class SemanticUiTagLib {
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
             }
         }
-        if (attrs.deletebutton) {
-            if (attrs.formdeleteID) {
-                out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '"onclick="'
-                out << 'return confirm(\'Sind Sie sicher, dass Sie dies löschen wollen?\')?$(\'#' + attrs.id + '\').find(\'#' + attrs.formdeleteID + '\').submit():$(\'#' + attrs.id + '\').modal(\'show\')'
-                out << '"/>'
-            }
-        }
+
         out << '</div>'
         out << '</div>'
     }
