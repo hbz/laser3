@@ -379,8 +379,8 @@
             }
         }).done(function(response) {
             $("#coverageStatements").append(response);
-        }).fail(function() {
-          console.log("AJAX error! Please check logs!");
+        }).fail(function(response) {
+          console.log("AJAX error! Please check logs! Error is: "+response);
         });
     });
 
@@ -393,8 +393,8 @@
             }
         }).done(function(response) {
             $("#coverageStatements").append(response);
-        }).fail(function() {
-          console.log("AJAX error! Please check logs!");
+        }).fail(function(response) {
+          console.log("AJAX error! Please check logs! Error is: "+response);
         });
     });
 </r:script>
