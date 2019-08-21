@@ -41,6 +41,17 @@ class QueryService {
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_ENDDATE)==YN_YES) {
+
+            def surveys = SurveyInfo.executeQuery("SELECT sr.surveyConfig.surveyInfo FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL ",
+                    [org: contextOrg,
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE)])
+
+            surveys = surveys?.unique { a, b -> a?.id <=> b?.id }
+
+            dueObjects.addAll(surveys)
+        }
+
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
             dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)))
         }
