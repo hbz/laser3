@@ -53,10 +53,10 @@ class SubscriptionsQueryService {
         Map qry_params
 
         if (! params.orgRole) {
-            if (accessService.checkPerm('ORG_CONSORTIUM')) {
+            if (accessService.checkPerm(contextOrg,'ORG_CONSORTIUM')) {
                 params.orgRole = 'Subscription Consortia'
             }
-            else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+            else if(accessService.checkPerm(contextOrg,'ORG_INST_COLLECTIVE')) {
                 params.orgRole = 'Subscription Collective'
             }
             else {

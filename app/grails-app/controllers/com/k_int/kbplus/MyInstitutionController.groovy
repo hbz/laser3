@@ -400,8 +400,6 @@ from License as l where (
             qry_params += [status:RefdataValue.get(params.status)]
         }
         else if(params.status == '') {
-            base_qry += " and l.status != :deleted "
-            qry_params += [deleted: RDStore.LICENSE_DELETED]
             result.filterSet = false
         }
         else {

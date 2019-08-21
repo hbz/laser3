@@ -192,7 +192,7 @@ class License
 
         if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
             if (sharedObject.isShared) {
-                List<License> newTargets = License.findAllByInstanceOfAndStatusNotEqual(this, RDStore.LICENSE_DELETED)
+                List<License> newTargets = License.findAllByInstanceOf(this)
                 log.debug('found targets: ' + newTargets)
 
                 newTargets.each{ lic ->
