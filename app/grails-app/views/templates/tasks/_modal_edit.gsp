@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Task" %>
 <laser:serviceInjection />
 
-<semui:modal id="modalEditTask" message="task.edit" editmodal="true" >
+<semui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
     <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
         <g:hiddenField name="version" value="${taskInstance?.version}" />
