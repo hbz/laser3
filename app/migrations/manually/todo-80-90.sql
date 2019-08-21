@@ -1,4 +1,4 @@
-﻿
+
 -- 2019-08-01
 -- migrate refdataValues (category='YN') to boolean
 
@@ -56,6 +56,34 @@
 --ALTER TABLE property_definition_group DROP CONSTRAINT fked224dbda14135f8;
 --ALTER TABLE property_definition_group ALTER pdg_visible_rv_fk TYPE bool USING CASE WHEN pdg_visible_rv_fk=1 THEN TRUE ELSE FALSE END;
 --ALTER TABLE property_definition_group RENAME pdg_visible_rv_fk TO pdg_is_visible;
+
+
+-- 2019-08-14
+-- migrate coverage dates from main TIPP/IssueEntitlement object into deployed TIPPCoverage/IssueEntitlementCoverage objects
+
+insert into tippcoverage (tc_version,tc_start_date,tc_start_volume,tc_start_issue,tc_end_date,tc_end_volume,tc_end_issue,tc_coverage_depth,tc_coverage_note,tc_embargo,tc_tipp_fk)
+select tipp_version,tipp_start_date,tipp_start_volume,tipp_start_issue,tipp_end_date,tipp_end_volume,tipp_end_issue,tipp_coverage_depth,tipp_coverage_note,tipp_embargo,tipp_id from title_instance_package_platform;
+alter table title_instance_package_platform drop column tipp_start_date;
+alter table title_instance_package_platform drop column tipp_start_volume;
+alter table title_instance_package_platform drop column tipp_start_issue;
+alter table title_instance_package_platform drop column tipp_end_date;
+alter table title_instance_package_platform drop column tipp_end_volume;
+alter table title_instance_package_platform drop column tipp_end_issue;
+alter table title_instance_package_platform drop column tipp_coverage_depth;
+alter table title_instance_package_platform drop column tipp_coverage_note;
+alter table title_instance_package_platform drop column tipp_embargo;
+
+insert into issue_entitlement_coverage (ic_version,ic_start_date,ic_start_volume,ic_start_issue,ic_end_date,ic_end_volume,ic_end_issue,ic_coverage_depth,ic_coverage_note,ic_embargo,ic_ie_fk)
+select ie_version,ie_start_date,ie_start_volume,ie_start_issue,ie_end_date,ie_end_volume,ie_end_issue,ie_coverage_depth,ie_coverage_note,ie_embargo,ie_id from issue_entitlement;
+alter table issue_entitlement drop column ie_start_date;
+alter table issue_entitlement drop column ie_start_volume;
+alter table issue_entitlement drop column ie_start_issue;
+alter table issue_entitlement drop column ie_end_date;
+alter table issue_entitlement drop column ie_end_volume;
+alter table issue_entitlement drop column ie_end_issue;
+alter table issue_entitlement drop column ie_coverage_depth;
+alter table issue_entitlement drop column ie_coverage_note;
+alter table issue_entitlement drop column ie_embargo;
 
 
 -- 2019-08-16

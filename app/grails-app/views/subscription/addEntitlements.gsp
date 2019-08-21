@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform;com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -157,11 +157,8 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
             <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label', default: 'Title')}"/>
-            <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
-            <th><g:message code="tipp.coverageDepth"/></th>
-            <th><g:message code="tipp.embargo"/></th>
-            <th><g:message code="tipp.coverageNote"/></th>
+            <th><g:message code="tipp.coverage"/></th>
             <g:if test="${uploadPriceInfo}">
                 <th><g:message code="tipp.listPrice"/></th>
                 <th><g:message code="tipp.localPrice"/></th>
@@ -186,7 +183,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         <tbody>
         <g:each in="${tipps}" var="tipp">
             <tr data-index="${tipp.gokbId}">
-                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checked[tipp.gokbId]}></td>
+                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checked ? checked[tipp.gokbId] : ''}></td>
             <td>${counter++}</td>
 
             <td>
@@ -194,11 +191,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
                 (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
             </g:if>
 
-            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+            <g:if test="${tipp?.title instanceof BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
                 <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
             </g:if>
 
@@ -206,7 +203,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <g:link controller="tipp" action="show"
                     id="${tipp.id}">${message(code: 'platform.show.full_tipp', default: 'Full TIPP Details')}</g:link>
             &nbsp;&nbsp;&nbsp;
-            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                     var="gokbAPI">
                 <g:if test="${tipp?.gokbId}">
                     <a target="_blank"
@@ -229,23 +226,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             </g:if>
 
             <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
-                <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
-                    <%--<span class="ui small teal image label">
-                        ${id.identifier.ns.ns}: <div class="detail"><a
-                            href="${id.identifier.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                    </div>
-                    </span>
-                    <span class="ui small teal image label">
-                        ${id.identifier.ns.ns}: <div class="detail"><a
-                            href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
-                    </div>
-                    </span>--%>
-                </g:if>
-                <g:else>
+                <g:if test="${id.identifier.ns.ns != 'originEditUrl'}">
                     <span class="ui small teal image label">
                         ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
                     </span>
-                </g:else>
+                </g:if>
             </g:each>
 
 
@@ -289,44 +274,8 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                        target="_blank"><i class="share square icon"></i></a>
                 </g:if>
             </div>
-
-
-
-            </div>
         </td>
 
-            <td>
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                    <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
-                    <%--${tipp?.title?.dateFirstInPrint}--%>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
-                    <%--${tipp?.title?.dateFirstOnline}--%>
-                </g:if>
-                <g:else>
-                    <!-- von -->
-                    <semui:datepicker class="ieOverwrite" name="ieStartDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startDate : tipp.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
-                    <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                    <input name="ieStartVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startVolume : tipp.startVolume}" placeholder="${message(code: 'tipp.volume')}">
-                    <%--${tipp?.startVolume}--%><br>
-                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                    <input name="ieStartIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.startIssue : tipp.startIssue}" placeholder="${message(code: 'tipp.issue')}">
-                    <%--${tipp?.startIssue}--%>
-                    <semui:dateDevider/>
-                    <!-- bis -->
-                    <semui:datepicker class="ieOverwrite" name="ieEndDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endDate : tipp.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
-                    <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br>--%>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                    <input name="ieEndVolume" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endVolume : tipp.endVolume}" placeholder="${message(code: 'tipp.volume')}">
-                    <%--${tipp?.endVolume}--%><br>
-                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                    <input name="ieEndIssue" type="text" class="ui input ieOverwrite" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.endIssue : tipp.endIssue}" placeholder="${message(code: 'tipp.issue')}">
-                    <%--${tipp?.endIssue}--%>
-                </g:else>
-            </td>
             <td>
                 <!-- von -->
                 <semui:datepicker class="ieOverwrite" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.accessStartDate : tipp.accessStartDate}" placeholder="${message(code:'tipp.accessStartDate')}"/>
@@ -337,17 +286,48 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessEndDate}"/>--%>
             </td>
             <td>
-                <%--${tipp.coverageDepth}--%>
-                <input class="ieOverwrite" name="coverageDepth" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverageDepth : tipp.coverageDepth}">
-            </td>
-            </td>
-            <td>
-                <%--${tipp.embargo}--%>
-                <input class="ieOverwrite" name="embargo" type="text" placeholder="${message(code:'tipp.embargo')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.embargo : tipp.embargo}">
-            </td>
-            <td>
-                <%--${tipp.coverageNote}--%>
-                <input class="ieOverwrite" name="coverageNote" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverageNote : tipp.coverageNote}">
+                <g:if test="${tipp?.title instanceof BookInstance}">
+                    <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
+                    <%--${tipp?.title?.dateFirstInPrint}--%>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                    <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
+                    <%--${tipp?.title?.dateFirstOnline}--%>
+                </g:if>
+                <g:else>
+                    <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
+                        In order to define and initialise the list, it is mandatory that the foresaid flag is set to true. Compare with SubscriptionController.addEntitlements()
+                     --%>
+                    <g:set var="coverageStatements" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : tipp.coverages}"/>
+                    <g:each in="${coverageStatements}" var="covStmt" status="key">
+                        <!-- von -->
+                        <semui:datepicker class="ieOverwrite" name="ieStartDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
+                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br>
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                        <input name="ieStartVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <%--${tipp?.startVolume}--%><br>
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                        <input name="ieStartIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <%--${tipp?.startIssue}--%>
+                        <semui:dateDevider/>
+                        <!-- bis -->
+                        <semui:datepicker class="ieOverwrite" name="ieEndDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
+                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br>--%>
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                        <input name="ieEndVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <%--${tipp?.endVolume}--%><br>
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                        <input name="ieEndIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <%--${tipp?.endIssue}--%><br>
+                        <%--${tipp.coverageDepth}--%>
+                        <input class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br>
+                        <%--${tipp.embargo}--%>
+                        <input class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br>
+                        <%--${tipp.coverageNote}--%>
+                        <input class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br>
+                    </g:each>
+                </g:else>
             </td>
             <g:if test="${uploadPriceInfo}">
                 <td>
@@ -426,6 +406,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 sub: ${subscriptionInstance.id},
                 key: $(this).parents("tr").attr("data-index"),
                 referer: "${actionName}",
+                coverage: $(this).attr("data-coverage") === "true",
                 prop: $(this).attr("name"),
                 propValue: $(this).val()
             }

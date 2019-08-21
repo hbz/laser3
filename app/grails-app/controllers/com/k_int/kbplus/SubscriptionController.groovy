@@ -206,7 +206,7 @@ class SubscriptionController extends AbstractDebugController {
         }
         else {
             base_qry += " and ie.status != :deleted "
-            qry_params.deleted = TIPP_STATUS_DELETED
+            qry_params.deleted = TIPP_DELETED
         }
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
@@ -648,7 +648,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
-                    def deleted_ie = TIPP_STATUS_DELETED
+                    def deleted_ie = TIPP_DELETED
                     ie.status = deleted_ie;
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
@@ -676,8 +676,8 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def tipp_deleted = TIPP_STATUS_DELETED
-        def ie_deleted = TIPP_STATUS_DELETED
+        def tipp_deleted = TIPP_DELETED
+        def ie_deleted = TIPP_DELETED
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -811,19 +811,25 @@ class SubscriptionController extends AbstractDebugController {
                     if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                         identifiers.zdbIds.add(cols[colMap.zdbCol])
                         idCandidate = [namespaces:[namespaces.zdb],value:cols[colMap.zdbCol]]
-                        ieCandIdentifier = cols[colMap.zdbCol]
+                        if(issueEntitlementOverwrite[cols[colMap.zdbCol]])
+                            ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
+                        else ieCandIdentifier = cols[colMap.zdbCol]
                     }
                     if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                         identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                         idCandidate = [namespaces:[namespaces.eissn,namespaces.isbn],value:cols[colMap.onlineIdentifierCol]]
-                        if(ieCandIdentifier == null)
+                        if(ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                             ieCandIdentifier = cols[colMap.onlineIdentifierCol]
+                        else if(issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
+                            ieCandidate = issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]]
                     }
                     if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
                         identifiers.printIds.add(cols[colMap.printIdentifierCol])
                         idCandidate = [namespaces:[namespaces.issn,namespaces.pisbn],value:cols[colMap.printIdentifierCol]]
-                        if(ieCandIdentifier == null)
+                        if(ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                             ieCandIdentifier = cols[colMap.printIdentifierCol]
+                        else if(issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
+                            ieCandidate = issueEntitlementOverwrite[cols[colMap.printIdentifierCol]]
                     }
                     if(((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
@@ -849,6 +855,11 @@ class SubscriptionController extends AbstractDebugController {
                             errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
                     }
+                    List<Map> ieCoverages
+                    if(ieCandidate.coverages)
+                        ieCoverages = ieCandidate.coverages
+                    else ieCoverages = []
+                    Map covStmt = [:]
                     colMap.each { String colName, int colNo ->
                         if(colNo > -1) {
                             String cellEntry = cols[colNo].trim()
@@ -858,27 +869,27 @@ class SubscriptionController extends AbstractDebugController {
                                         break
                                     case "dateFirstOnlineCol": ieCandidate.dateFirstOnline = cellEntry
                                         break
-                                    case "startDateCol": ieCandidate.startDate = cellEntry
+                                    case "startDateCol": covStmt.startDate = cellEntry
                                         break
-                                    case "startVolumeCol": ieCandidate.startVolume = cellEntry
+                                    case "startVolumeCol": covStmt.startVolume = cellEntry
                                         break
-                                    case "startIssueCol": ieCandidate.startIssue = cellEntry
+                                    case "startIssueCol": covStmt.startIssue = cellEntry
                                         break
-                                    case "endDateCol": ieCandidate.endDate = cellEntry
+                                    case "endDateCol": covStmt.endDate = cellEntry
                                         break
-                                    case "endVolumeCol": ieCandidate.endVolume = cellEntry
+                                    case "endVolumeCol": covStmt.endVolume = cellEntry
                                         break
-                                    case "endIssueCol": ieCandidate.endIssue = cellEntry
+                                    case "endIssueCol": covStmt.endIssue = cellEntry
                                         break
-                                    case "accessStartDateCol": ieCandidate.accessStartDate = cellEntry
+                                    case "accessStartDateCol": covStmt.accessStartDate = cellEntry
                                         break
-                                    case "accessEndDateCol": ieCandidate.accessEndDate = cellEntry
+                                    case "accessEndDateCol": covStmt.accessEndDate = cellEntry
                                         break
-                                    case "embargoCol": ieCandidate.embargo = cellEntry
+                                    case "embargoCol": covStmt.embargo = cellEntry
                                         break
-                                    case "coverageDepthCol": ieCandidate.coverageDepth = cellEntry
+                                    case "coverageDepthCol": covStmt.coverageDepth = cellEntry
                                         break
-                                    case "coverageNotesCol": ieCandidate.coverageNote = cellEntry
+                                    case "coverageNotesCol": covStmt.coverageNote = cellEntry
                                         break
                                 }
                             }
@@ -904,6 +915,8 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                     if(ieCandIdentifier) {
+                        ieCoverages.add(covStmt)
+                        ieCandidate.coverages = ieCoverages
                         issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
                     }
                 }
@@ -2271,7 +2284,7 @@ class SubscriptionController extends AbstractDebugController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = TIPP_STATUS_DELETED
+        def deleted_ie = TIPP_DELETED
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -3414,7 +3427,7 @@ class SubscriptionController extends AbstractDebugController {
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != TIPP_STATUS_DELETED) {
+                                if (ie.status != TIPP_DELETED) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -3607,7 +3620,7 @@ class SubscriptionController extends AbstractDebugController {
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != TIPP_STATUS_DELETED) {
+                                    if (ie.status != TIPP_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -4418,7 +4431,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != TIPP_STATUS_DELETED) {
+                        if (ie.status != TIPP_DELETED) {
                             def properties = ie.properties
                             properties.globalUID = null
 

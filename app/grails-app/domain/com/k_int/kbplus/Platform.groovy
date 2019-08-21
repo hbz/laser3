@@ -20,6 +20,7 @@ class Platform extends AbstractBaseDomain {
   String name
   String normname
   String primaryUrl
+  URL originEditUrl
   String provenance
 
   @RefdataAnnotation(cat = '?')
@@ -56,6 +57,7 @@ class Platform extends AbstractBaseDomain {
           normname column:'plat_normalised_name'
         provenance column:'plat_data_provenance'
         primaryUrl column:'plat_primary_url'
+     originEditUrl column:'plat_origin_edit_url'
               type column:'plat_type_rv_fk'
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
@@ -69,6 +71,7 @@ class Platform extends AbstractBaseDomain {
     globalUID(nullable:true, blank:false, unique:true, maxSize:255)
     impId(nullable:true, blank:false)
     primaryUrl(nullable:true, blank:false)
+    originEditUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     type(nullable:true, blank:false)
     status(nullable:true, blank:false)

@@ -2,10 +2,13 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
+import org.springframework.context.i18n.LocaleContext
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.dao.DuplicateKeyException
@@ -208,7 +211,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.parsed_rec.publishers.add(publisher)
         }
         md.gokb.title.identifiers.identifier.each { id ->
-            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            if(id.'@namespace'.text() == 'originEditUrl')
+                result.parsed_rec.originEditUrl = id.'@value'.text()
+            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         result.parsed_rec.identifiers.add([namespace: 'uri', value: md.gokb.title.'@id'.text()]);
 
@@ -400,7 +405,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     origin_uri = i.value
                 }
             }
-            println "before updatedTitleafterPckageReconcile"
+            println "before updatedTitleafterPackageReconcile"
             updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
@@ -409,32 +414,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (auto_accept) {
                 TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
-                new_tipp.pkg = ctx;
-                new_tipp.platform = plat_instance;
-                new_tipp.title = title_instance;
-                new_tipp.status = tipp_status;
-                new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
-                new_tipp.gokbId = tipp.tippUuid ?: null;
-                new_tipp.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
-                new_tipp.accessEndDate = ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
-
+                new_tipp.pkg = ctx
+                new_tipp.platform = plat_instance
+                new_tipp.title = title_instance
+                new_tipp.status = tipp_status
+                new_tipp.impId = tipp.tippUuid ?: tipp.tippId
+                new_tipp.gokbId = tipp.tippUuid ?: null
+                new_tipp.accessStartDate = tipp.accessStart ?: null
+                new_tipp.accessEndDate = tipp.accessEnd ?: null
+                new_tipp.coverages = []
                 // We rely upon there only being 1 coverage statement for now, it seems likely this will need
                 // to change in the future.
-                // tipp.coverage.each { cov ->
-                def cov = tipp.coverage[0]
-                new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null
-                new_tipp.startVolume = cov.startVolume;
-                new_tipp.startIssue = cov.startIssue;
-                new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null
-                new_tipp.endVolume = cov.endVolume;
-                new_tipp.endIssue = cov.endIssue;
-                new_tipp.embargo = cov.embargo;
-                new_tipp.coverageDepth = cov.coverageDepth;
-                new_tipp.coverageNote = cov.coverageNote;
-                // }
-                new_tipp.hostPlatformURL = tipp.url;
+                // YAY, Mr. Ibbotson! Your inheritants have to do so!!!!!!!!! See ERMS-1581!!!!!
+                tipp.coverage.each { cov ->
+                //def cov = tipp.coverage[0]
+                    TIPPCoverage newTippCoverage = new TIPPCoverage()
+                    newTippCoverage.startDate = cov.startDate ?: null
+                    newTippCoverage.startVolume = cov.startVolume
+                    newTippCoverage.startIssue = cov.startIssue
+                    newTippCoverage.endDate = cov.endDate ?: null
+                    newTippCoverage.endVolume = cov.endVolume
+                    newTippCoverage.endIssue = cov.endIssue
+                    newTippCoverage.embargo = cov.embargo
+                    newTippCoverage.coverageDepth = cov.coverageDepth
+                    newTippCoverage.coverageNote = cov.coverageNote
+                    newTippCoverage.tipp = new_tipp
+                    new_tipp.coverages.add(newTippCoverage)
+                }
+                new_tipp.hostPlatformURL = tipp.url
 
-                new_tipp.save(failOnError: true);
+                new_tipp.save(failOnError: true)
 
                 if (tipp.tippId) {
                     def tipp_id = Identifier.lookupOrCreateCanonicalIdentifier('uri', tipp.tippId)
@@ -455,7 +464,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             ie.tipp = new_tipp
                             ie.save()
                         }
-                        oldtipp.status = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+                        oldtipp.status = RDStore.TIPP_DELETED
                         oldtipp.save()
                     }
                 }
@@ -552,12 +561,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             if (db_tipp != null) {
 
-                def tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+                def tippStatus = RDStore.TIPP_DELETED
 
                 if (tipp.status == 'Current') {
-                    tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
+                    tippStatus = RDStore.TIPP_STATUS_CURRENT
                 } else if (tipp.status == 'Retired') {
-                    tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+                    tippStatus = RDStore.TIPP_STATUS_RETIRED
                 }
                 if(!auto_accept) {
                     def changetext
@@ -643,24 +652,97 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     currTIPP.status = tipp.status ? RefdataValue.getByValueAndCategory(tipp.status.capitalize(),'TIPP Status') : RDStore.TIPP_STATUS_CURRENT
                     currTIPP.impId = tipp.tippUuid ?: tipp.tippId
                     currTIPP.gokbId = tipp.tippUuid ?: null
-                    currTIPP.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
-                    currTIPP.accessEndDate = ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
                     currTIPP.platform = tipp.platformUuid != null ? Platform.findByGokbId(tipp.platformUuid) : currTIPP.platform
+                    currTIPP.accessStartDate = tipp.accessStart ?: null
+                    currTIPP.accessEndDate = tipp.accessEnd ?: null
+                    // We rely upon there only being 1 coverage statement for now, it seems likely this will need to change in the future.
+                    // Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014. But now, we need to change it.
+                    if(tipp.coverage.size() < currTIPP.coverages.size()) {
+                        currTIPP.coverages.eachWithIndex { cov, int i ->
+                            if(tipp.coverage[i] && tipp.coverage[i] instanceof Map) {
+                                println "processing statement ${i}"
+                                Map gokbCoverage = (Map) tipp.coverage[i]
+                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(cov,gokbCoverage)
+                                coverageDiffs.each { diff ->
+                                    changeNotificationService.fireEvent([
+                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                            event: 'TitleInstancePackagePlatform.coverage.updated',
+                                            affectedCoverage: cov,
+                                            prop: diff.prop,
+                                            old: diff.old,
+                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
+                                            new: diff.new
+                                    ])
+                                }
+                                cov.startDate = gokbCoverage.startDate ?: null
+                                cov.startVolume = gokbCoverage.startVolume
+                                cov.startIssue = gokbCoverage.startIssue
+                                cov.endDate = gokbCoverage.endDate ?: null
+                                cov.endVolume = gokbCoverage.endVolume
+                                cov.endIssue = gokbCoverage.endIssue
+                                cov.embargo = gokbCoverage.embargo
+                                cov.coverageDepth = gokbCoverage.coverageDepth
+                                cov.coverageNote = gokbCoverage.coverageNote
+                                if(!cov.tipp)
+                                    cov.tipp = currTIPP
+                                if(!cov.save())
+                                    println("Error on saving coverage data: ${cov.getErrors()}")
+                            }
+                            else {
+                                currTIPP.coverages.remove(cov)
+                                changeNotificationService.fireEvent([
+                                        OID:"${currTIPP.class.name}:${currTIPP.id}",
+                                        event:'TitleInstancePackagePlatform.coverage.deleted',
+                                        affectedCoverage: cov
+                                ])
+                            }
+                        }
+                    }
+                    else {
+                        tipp.coverage.eachWithIndex { cov, int i ->
+                            TIPPCoverage dbCoverage
+                            if(currTIPP.coverages[i]) {
+                                println "processing coverage statement ${i}"
+                                dbCoverage = currTIPP.coverages[i]
+                                TIPPCoverage oldCoverage = currTIPP.coverages[i]
+                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(oldCoverage,cov)
+                                coverageDiffs.each { diff ->
+                                    changeNotificationService.fireEvent([
+                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                            event: 'TitleInstancePackagePlatform.coverage.updated',
+                                            affectedCoverage: dbCoverage,
+                                            prop: diff.prop,
+                                            old: diff.old,
+                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
+                                            new: diff.new
+                                    ])
+                                }
+                            }
+                            else {
+                                dbCoverage = new TIPPCoverage()
+                                changeNotificationService.fireEvent([
+                                        OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                        event: 'TitleInstancePackagePlatform.coverage.added',
+                                        coverageData: cov
+                                ])
+                            }
+                            dbCoverage.startDate = cov.startDate ?: null
+                            dbCoverage.startVolume = cov.startVolume
+                            dbCoverage.startIssue = cov.startIssue
+                            dbCoverage.endDate = cov.endDate ?: null
+                            dbCoverage.endVolume = cov.endVolume
+                            dbCoverage.endIssue = cov.endIssue
+                            dbCoverage.embargo = cov.embargo
+                            dbCoverage.coverageDepth = cov.coverageDepth
+                            dbCoverage.coverageNote = cov.coverageNote
+                            if(!dbCoverage.tipp)
+                                dbCoverage.tipp = currTIPP
+                            if(!dbCoverage.save()){
+                                println("Error on saving coverage data: ${dbCoverage.getErrors()}")
+                            }
+                        }
+                    }
 
-                    // We rely upon there only being 1 coverage statement for now, it seems likely this will need
-                    // to change in the future. Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014
-                    // tipp.coverage.each { cov ->
-                    def cov = tipp.coverage[0]
-                    currTIPP.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null
-                    currTIPP.startVolume = cov.startVolume
-                    currTIPP.startIssue = cov.startIssue
-                    currTIPP.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null
-                    currTIPP.endVolume = cov.endVolume
-                    currTIPP.endIssue = cov.endIssue
-                    currTIPP.embargo = cov.embargo
-                    currTIPP.coverageDepth = cov.coverageDepth
-                    currTIPP.coverageNote = cov.coverageNote
-                    // }
                     currTIPP.hostPlatformURL = tipp.url
 
                     try {
@@ -802,10 +884,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
     def testTitleCompliance = { json_record ->
         log.debug("testTitleCompliance:: ${json_record}");
 
-        def result = RefdataValue.loc('YNO', [en: 'No', de: 'Nein'])
+        def result = RDStore.YNO_NO
 
         if (json_record.identifiers?.size() > 0) {
-            result = RefdataValue.loc('YNO', [en: 'Yes', de: 'Ja'])
+            result = RDStore.YNO_YES
         }
 
         result
@@ -841,9 +923,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         if (error) {
-            result = RefdataValue.loc('YNO', [en: 'No', de: 'Nein'])
+            result = RDStore.YNO_NO
         } else {
-            result = RefdataValue.loc('YNO', [en: 'Yes', de: 'Ja'])
+            result = RDStore.YNO_YES
         }
 
         result
@@ -877,7 +959,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result.parsed_rec.nominalPlatformPrimaryUrl = md.gokb.package.nominalPlatform.primaryUrl.text() ?: null
 
         md.gokb.package.identifiers.identifier.each { id ->
-            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            if(id.'@namespace'.text() == 'originEditUrl')
+                result.parsed_rec.originEditUrl = id.'@value'.text()
+            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         int ctr = 0
@@ -905,15 +989,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     identifiers : [],
                     tippId      : tip.'@id'.text(),
                     tippUuid    : tip.'@uuid'?.text() ?: '',
-                    accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
-                    accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+                    accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()) : null,
+                    accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()) : null,
                     medium      : tip.medium.text()
             ];
 
             tip.coverage.each { cov ->
                 newtip.coverage.add([
-                        startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
-                        endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+                        startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()) : null,
+                        endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()) : null,
                         startVolume  : cov.'@startVolume'.text() ?: '',
                         endVolume    : cov.'@endVolume'.text() ?: '',
                         startIssue   : cov.'@startIssue'.text() ?: '',
@@ -921,11 +1005,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         coverageDepth: cov.'@coverageDepth'.text() ?: '',
                         coverageNote : cov.'@coverageNote'.text() ?: '',
                         embargo      : cov.'@embargo'.text() ?: ''
-                ]);
+                ])
             }
+            newtip.coverage = newtip.coverage.toSorted { a, b -> a.startDate <=> b.startDate }
 
             tip.title.identifiers.identifier.each { id ->
-                newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()]);
+                if(id.'@namespace'.text() == 'originEditUrl')
+                    newtip.title.originEditUrl = id.'@value'.text()
+                else newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
             }
             newtip.title.identifiers.add([namespace: 'uri', value: newtip.titleId]);
 
@@ -969,7 +1056,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // merge in any new identifiers we have
             newtitle.identifiers.each {
                 log.debug("Checking title has ${it.namespace}:${it.value}");
-                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
+                if(it.namespace == 'originEditUrl')
+                    title_instance.originEditUrl = new URL(it.value)
+                else title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
             }
             title_instance.save()
 
@@ -1160,12 +1249,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     existing_record_info.desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
 
 
-                    def status = RefdataValue.loc("${cfg.name} Status", [en: 'Deleted', de: 'Gelöscht'])
+                    def status = RefdataValue.getByValueAndCategory('Deleted',"${cfg.name} Status")
 
                     if (parsed_rec.parsed_rec.status == 'Current') {
-                        status = RefdataValue.loc("${cfg.name} Status", [en: 'Current', de: 'Aktuell'])
+                        status = RefdataValue.getByValueAndCategory('Current',"${cfg.name} Status")
                     } else if (parsed_rec.parsed_rec.status == 'Retired') {
-                        status = RefdataValue.loc("${cfg.name} Status", [en: 'Retired', de: 'im Ruhestand'])
+                        status = RefdataValue.getByValueAndCategory('Retired',"${cfg.name} Status")
                     }
 
                     existing_record_info.globalRecordInfoStatus = status
@@ -1438,16 +1527,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
 
             if (titleinfo.status == 'Current') {
-                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
+                title_instance.status = RDStore.TITLE_STATUS_CURRENT
             } else if (titleinfo.status == 'Retired') {
-                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+                title_instance.status = RDStore.TITLE_STATUS_RETIRED
             } else if (titleinfo.status == 'Deleted') {
-                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+                title_instance.status = RDStore.TITLE_STATUS_DELETED
             }
 
             titleinfo.identifiers.each {
-                log.debug("Checking title has ${it.namespace}:${it.value}");
-                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
+                log.debug("Checking title has ${it.namespace}:${it.value}")
+                if(it.namespace == 'originEditUrl')
+                    title_instance.originEditUrl = new URL(it.value)
+                else
+                    title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
             }
             title_instance.save();
 
@@ -1455,9 +1547,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 titleinfo.publishers.each { pub ->
 
                     def publisher_identifiers = []
-                    def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
+                    def orgSector = RDStore.O_SECTOR_PUBLISHER
                     def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
-                    def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
+                    def pub_role = RDStore.OR_PUBLISHER
                     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     def start_date
                     def end_date
