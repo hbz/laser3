@@ -178,7 +178,7 @@
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <td>
+            <td class="la-main-object" >
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                     ${fieldValue(bean: org, field: "name")} <br>
                     <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
@@ -186,7 +186,7 @@
                     </g:if>
                 </g:if>
                 <g:else>
-                    <g:link controller="organisation" action="show" id="${org.id}">
+                    <g:link controller="organisation"  action="show" id="${org.id}">
                         ${fieldValue(bean: org, field: "name")} <br>
                         <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
                             (${fieldValue(bean: org, field: "shortname")})
