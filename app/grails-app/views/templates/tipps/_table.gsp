@@ -155,7 +155,8 @@
                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
                         ${coverage.endIssue}<br>
                         <g:message code="tipp.coverageDepth"/>: ${coverage.coverageDepth}<br>
-                        <g:message code="tipp.coverageNote"/>: ${coverage.coverageNote}
+                        <g:message code="tipp.coverageNote"/>: ${coverage.coverageNote}<br>
+                        <g:message code="tipp.embargo"/>: ${coverage.embargo}
                     </g:each>
                 </g:else>
             </td>

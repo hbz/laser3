@@ -367,42 +367,26 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def remapCoverages() {
-        List<TitleInstancePackagePlatform> allTIPPs = TitleInstancePackagePlatform.findAll()
-        allTIPPs.each { tipp ->
-            log.debug("Now processing ${tipp}")
-            TIPPCoverage coverageStatement = new TIPPCoverage()
-            coverageStatement.startDate = tipp.startDate ?: null
-            coverageStatement.startVolume = tipp.startVolume ?: null
-            coverageStatement.startIssue = tipp.startIssue ?: null
-            coverageStatement.endDate = tipp.endDate ?: null
-            coverageStatement.endVolume = tipp.endVolume ?: null
-            coverageStatement.endIssue = tipp.endIssue ?: null
-            coverageStatement.embargo = tipp.embargo ?: null
-            coverageStatement.coverageDepth = tipp.coverageDepth ?: null
-            coverageStatement.coverageNote = tipp.coverageNote
-            coverageStatement.coreStatusStart = tipp.coreStatusStart ?: null
-            coverageStatement.coreStatusEnd = tipp.coreStatusEnd ?: null
-            coverageStatement.tipp = tipp
-            coverageStatement.save()
-        }
-        List<IssueEntitlement> allIssueEntitlements = IssueEntitlement.findAll()
-        allIssueEntitlements.each { ie ->
-            log.debug("Now processing ${ie}")
-            IssueEntitlementCoverage coverageStatement = new IssueEntitlementCoverage()
-            coverageStatement.startDate = ie.startDate ?: null
-            coverageStatement.startVolume = ie.startVolume ?: null
-            coverageStatement.startIssue = ie.startIssue ?: null
-            coverageStatement.endDate = ie.endDate ?: null
-            coverageStatement.endVolume = ie.endVolume ?: null
-            coverageStatement.endIssue = ie.endIssue ?: null
-            coverageStatement.embargo = ie.embargo ?: null
-            coverageStatement.coverageDepth = ie.coverageDepth ?: null
-            coverageStatement.coverageNote = ie.coverageNote
-            coverageStatement.coreStatusStart = ie.coreStatusStart ?: null
-            coverageStatement.coreStatusEnd = ie.coreStatusEnd ?: null
-            coverageStatement.issueEntitlement = ie
-            coverageStatement.save()
+    def remapOriginEditUrl() {
+        List<IdentifierOccurrence> originEditUrls = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence io join io.identifier id where lower(id.ns.ns) = 'originediturl'")
+        originEditUrls.each { originEditUrl ->
+            def obj
+            if(originEditUrl.tipp) {
+                obj = originEditUrl.tipp
+            }
+            else if(originEditUrl.ti) {
+                obj = originEditUrl.ti
+            }
+            else if(originEditUrl.pkg) {
+                obj = originEditUrl.pkg
+            }
+            else if(originEditUrl.org) {
+                obj = originEditUrl.org
+            }
+            if(!obj.originEditUrl) {
+                obj.originEditUrl = new URL(originEditUrl.identifier.value)
+                obj.save()
+            }
         }
         redirect controller: 'home'
     }

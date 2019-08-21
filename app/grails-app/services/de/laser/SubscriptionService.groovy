@@ -7,6 +7,7 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
@@ -629,23 +630,38 @@ class SubscriptionService {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
         } else {
-            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
+            IssueEntitlement new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
                     accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
-                    /*startDate: issueEntitlementOverwrite?.startDate ? escapeService.parseDate(issueEntitlementOverwrite.startDate) : tipp.startDate,
-                    startVolume: issueEntitlementOverwrite?.startVolume ? issueEntitlementOverwrite.startVolume : tipp.startVolume,
-                    startIssue: issueEntitlementOverwrite?.startIssue ? issueEntitlementOverwrite.startIssue : tipp.startIssue,
-                    endDate: issueEntitlementOverwrite?.endDate ? escapeService.parseDate(issueEntitlementOverwrite.endDate) : tipp.endDate,
-                    endVolume: issueEntitlementOverwrite?.endVolume ? issueEntitlementOverwrite.endVolume : tipp.endVolume,
-                    endIssue: issueEntitlementOverwrite?.endIssue ? issueEntitlementOverwrite.endIssue : tipp.endIssue,
-                    embargo: issueEntitlementOverwrite?.embargo ? issueEntitlementOverwrite.embargo : tipp.embargo,
-                    coverageDepth: issueEntitlementOverwrite?.coverageDepth ? issueEntitlementOverwrite.coverageDepth : tipp.coverageDepth,
-                    coverageNote: issueEntitlementOverwrite?.coverageNote ? issueEntitlementOverwrite.coverageNote : tipp.coverageNote,*/
                     ieReason: 'Manually Added by User')
             if (new_ie.save()) {
-
+                Set coverageStatements
+                if(issueEntitlementOverwrite?.coverages) {
+                    coverageStatements = issueEntitlementOverwrite.coverages
+                }
+                else {
+                    coverageStatements = tipp.coverages
+                }
+                coverageStatements.each { covStmt ->
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                            startDate: covStmt.startDate,
+                            startVolume: covStmt.startVolume,
+                            startIssue: covStmt.startIssue,
+                            endDate: covStmt.endDate,
+                            endVolume: covStmt.endVolume,
+                            endIssue: covStmt.endIssue,
+                            coverageDepth: covStmt.coverageDepth,
+                            coverageNote: covStmt.coverageNote,
+                            embargo: covStmt.embargo,
+                            issueEntitlement: new_ie
+                    )
+                    if(!ieCoverage.save()) {
+                        throw new EntitlementCreationException(ieCoverage.getErrors())
+                        return false
+                    }
+                }
                 if(withPriceData) {
                     PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
                             listPrice: issueEntitlementOverwrite.listPrice,

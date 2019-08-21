@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.ClassUtils
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.TIPPCoverage
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
@@ -207,10 +208,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
     controlledProperties.each { cp ->
       log.debug("checking ${cp}")
-        if(cp == 'coverages') {
-            TIPPCoverage.checkCoverageChanges(oldMap[cp],newMap[cp])
-        }
-        else {
+        if(cp != 'coverages') {
             if ( oldMap[cp] != newMap[cp] ) {
                 raisePendingChange(oldMap,newMap,cp)
             }
@@ -219,7 +217,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     log.debug("onChange completed")
   }
 
-  private void raisePendingChange(oldMap,newMap,cp) {
+  void raisePendingChange(oldMap,newMap,cp) {
       def domain_class = grailsApplication.getArtefact('Domain','com.k_int.kbplus.TitleInstancePackagePlatform')
       def prop_info = domain_class.getPersistentProperty(cp)
 
@@ -293,22 +291,21 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
 
   @Transient
   def notifyDependencies_trait(changeDocument) {
-    log.debug("notifyDependencies_trait(${changeDocument})");
+    log.debug("notifyDependencies_trait(${changeDocument})")
+    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument)
+    changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
+    Locale locale = LocaleContextHolder.getLocale()
 
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument);
-    changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument);
-
-    def deleted_tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,'Deleted');
-    def deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    RefdataValue deleted_tipp_status = RDStore.TIPP_DELETED
+    String deleted_tipp_status_oid = "com.k_int.kbplus.RefdataValue:${deleted_tipp_status.id}".toString()
+    // Tipp Property Change Event.. notify any dependent IEs
+    List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
 
     if ( ( changeDocument.event=='TitleInstancePackagePlatform.updated' ) && 
          ( changeDocument.prop == 'status' ) && 
          ( changeDocument.new == deleted_tipp_status_oid ) ) {
 
       log.debug("TIPP STATUS CHANGE:: Broadcast pending change to IEs based on this tipp new status: ${changeDocument.new}");
-
-      def dep_ies = IssueEntitlement.findAllByTipp(this)
       dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         log.debug("Notify dependent ie ${dep_ie.id} whos sub is ${sub.id} and subscriber is ${sub.getSubscriber()}");
@@ -332,10 +329,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
       }
     }
     else if ( (changeDocument.event=='TitleInstancePackagePlatform.updated') && ( changeDocument.new != changeDocument.old ) ) {
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.tipp."+changeDocument.prop, locale.toString())
-        def loc = LocaleContextHolder.locale
-        def description = messageSource.getMessage('default.accept.change.ie',null,loc)
+        def description = messageSource.getMessage('default.accept.change.ie',null,locale)
         if(contentItemDesc){
             description = contentItemDesc.content
         }else{
@@ -343,8 +338,6 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
             if(defaultMsg)
                 description = defaultMsg.content
         }
-        // Tipp Property Change Event.. notify any dependent IEs
-        def dep_ies = IssueEntitlement.findAllByTipp(this)
         dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         if(dep_ie.subscription && sub) {
@@ -369,7 +362,53 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         }
       }
     }
-
+    else if(changeDocument.event.contains('TitleInstancePackagePlatform.coverage')) {
+        String coverageEvent = changeDocument.event.split('.coverage.')[1]
+        String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id,absolute:true)
+        String pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
+        dep_ies.each { ie ->
+            if(changeDocument.affectedCoverage) {
+                IssueEntitlementCoverage equivalentIECoverage = changeDocument.affectedCoverage.findEquivalent(ie.coverages)
+                if(equivalentIECoverage) {
+                    switch(coverageEvent) {
+                        case 'deleted': String coverageRangeString = "${equivalentIECoverage.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.startVolume}, Ausgabe ${equivalentIECoverage.startIssue}) - ${equivalentIECoverage.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.endVolume}, Ausgabe ${equivalentIECoverage.endIssue})"
+                            changeNotificationService.registerPendingChange(
+                                    PendingChange.PROP_SUBSCRIPTION,
+                                    ie.subscription,
+                                    "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde gelöscht: ${coverageRangeString}",
+                                    ie.subscription.getSubscriber(),
+                                    [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
+                                     changeType: PendingChangeService.EVENT_COVERAGE_DELETE,
+                                     changeDoc: changeDocument])
+                            break
+                        case 'updated': changeNotificationService.registerPendingChange(
+                                PendingChange.PROP_SUBSCRIPTION,
+                                ie.subscription,
+                                "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde geändert. Das Feld <strong>${changeDocument.propLabel}</strong> wurde geändert von ${changeDocument.old} in ${changeDocument.new}",
+                                ie.subscription.getSubscriber(),
+                                [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
+                                 changeType: PendingChangeService.EVENT_COVERAGE_UPDATE,
+                                 changeDoc: changeDocument])
+                            break
+                    }
+                }
+            }
+            else if(changeDocument.coverageData) {
+                Map newCov = changeDocument.coverageData
+                String newCovStart = "${newCov.startDate} (Band ${newCov.startVolume}, Ausgabe ${newCov.startIssue})"
+                String newCovEnd = "${newCov.endDate} (Band ${newCov.endVolume}, Ausgabe ${newCov.endIssue})"
+                String newCovNotes = "(Umfang: ${newCov.coverageDepth}, Anmerkung: ${newCov.coverageNotes}, Embargo: ${newCov.embargo})"
+                changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
+                        ie.subscription,
+                        "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde hinzugefügt: ${newCovStart} - ${newCovEnd} ${newCovNotes}",
+                        ie.subscription.getSubscriber(),
+                        [changeTarget: "${ie.class.name}:${ie.id}",
+                         changeType: PendingChangeService.EVENT_COVERAGE_ADD,
+                         changeDoc: newCov])
+            }
+        }
+    }
     //If the change is in a controller property, store it up and note it against subs
   }
 

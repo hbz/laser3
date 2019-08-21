@@ -3,8 +3,6 @@ package de.laser.domain
 import com.k_int.kbplus.TitleInstancePackagePlatform
 import de.laser.traits.AuditableTrait
 
-import javax.persistence.Transient
-
 class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
 
     static belongsTo = [tipp: TitleInstancePackagePlatform]
@@ -49,22 +47,18 @@ class TIPPCoverage extends AbstractCoverage implements AuditableTrait {
             'coverageNote',
     ]
 
-    @Transient
-    def onChange = { oldMap,newMap ->
-        log.debug("onChange Tipp coverage")
-        checkCoverageChanges(oldMap,newMap)
-        log.debug("onChange coverage completed")
-    }
-
-    static checkCoverageChanges(oldMap, newMap) {
+    static Set<Map> checkCoverageChanges(oldMap, newMap) {
+        Set<Map> diffs = []
         if(oldMap && newMap) {
             controlledProperties.each { cp ->
                 log.debug("checking ${cp}")
                 if ( oldMap[cp] != newMap[cp] ) {
-                    tipp.raisePendingChange(oldMap,newMap,cp)
+                    log.debug("got coverage diffs, processing ... ${oldMap[cp]} vs. ${newMap[cp]}")
+                    diffs << [prop:cp,old:oldMap[cp],new:newMap[cp]]
                 }
             }
         }
+        diffs
     }
 
 }

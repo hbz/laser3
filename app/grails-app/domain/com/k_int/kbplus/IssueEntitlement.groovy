@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.helper.RefdataAnnotation
 
@@ -40,6 +41,8 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   static hasOne =    [priceItem: PriceItem]
 
+  static hasMany = [coverages: IssueEntitlementCoverage]
+
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
 'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
@@ -62,6 +65,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
             medium column:'ie_medium_rv_fk'
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
+         coverages sort: 'startDate', order: 'asc'
       /*
       startDate column:'ie_start_date',      index: 'ie_dates_idx'
       startVolume column:'ie_start_volume'
@@ -85,8 +89,9 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     priceItem      (nullable:true, blank:true)
     accessStartDate(nullable:true, blank:true)
     accessEndDate  (nullable:true, blank:true)
-      coreStatusStart(nullable:true, blank:true)
-      coreStatusEnd (nullable:true, blank:true)
+    coreStatus     (nullable:true, blank:true)
+    coreStatusStart(nullable:true, blank:true)
+    coreStatusEnd  (nullable:true, blank:true)
       /*
       startDate     (nullable:true, blank:true)
       startVolume   (nullable:true, blank:true)

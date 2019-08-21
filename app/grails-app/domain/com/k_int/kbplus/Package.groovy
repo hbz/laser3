@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
@@ -297,19 +298,24 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               subscription: subscription,
                                               tipp: tipp,
                                               accessStartDate:tipp.accessStartDate,
-                                              accessEndDate:tipp.accessEndDate).save()
-              /*
-
-                                              startDate:tipp.startDate,
-                                              startVolume:tipp.startVolume,
-                                              startIssue:tipp.startIssue,
-                                              endDate:tipp.endDate,
-                                              endVolume:tipp.endVolume,
-                                              endIssue:tipp.endIssue,
-                                              embargo:tipp.embargo,
-                                              coverageDepth:tipp.coverageDepth,
-                                              coverageNote:tipp.coverageNote
-               */
+                                              accessEndDate:tipp.accessEndDate)
+              if(new_ie.save()) {
+                  tipp.coverages.each { covStmt ->
+                      IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                              startDate:covStmt.startDate,
+                              startVolume:covStmt.startVolume,
+                              startIssue:covStmt.startIssue,
+                              endDate:covStmt.endDate,
+                              endVolume:covStmt.endVolume,
+                              endIssue:covStmt.endIssue,
+                              embargo:covStmt.embargo,
+                              coverageDepth:covStmt.coverageDepth,
+                              coverageNote:covStmt.coverageNote,
+                              issueEntitlement: new_ie
+                      )
+                      ieCoverage.save()
+                  }
+              }
           }
         }
       }
@@ -336,24 +342,31 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                 "where tipp.pkg = :pkg and tipp.status = :current and ie.subscription = :consortia ", [
                       pkg: this, current: statusCurrent, consortia: consortia
 
-            ]).each { tipp ->
-
-                new IssueEntitlement(
+            ]).each { TitleInstancePackagePlatform tipp ->
+                IssueEntitlement newIe = new IssueEntitlement(
                         status: statusCurrent,
                         subscription: target,
                         tipp: tipp,
                         accessStartDate: tipp.accessStartDate,
-                        accessEndDate: tipp.accessEndDate,
-                        /*startDate: tipp.startDate,
-                        startVolume: tipp.startVolume,
-                        startIssue: tipp.startIssue,
-                        endDate: tipp.endDate,
-                        endVolume: tipp.endVolume,
-                        endIssue: tipp.endIssue,
-                        embargo: tipp.embargo,
-                        coverageDepth: tipp.coverageDepth,
-                        coverageNote: tipp.coverageNote*/
-                ).save()
+                        accessEndDate: tipp.accessEndDate
+                )
+                if(newIe.save()) {
+                    tipp.coverages.each { covStmt ->
+                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                                startDate: covStmt.startDate,
+                                startVolume: covStmt.startVolume,
+                                startIssue: covStmt.startIssue,
+                                endDate: covStmt.endDate,
+                                endVolume: covStmt.endVolume,
+                                endIssue: covStmt.endIssue,
+                                embargo: covStmt.embargo,
+                                coverageDepth: covStmt.coverageDepth,
+                                coverageNote: covStmt.coverageNote,
+                                issueEntitlement: newIe
+                        )
+                        ieCoverage.save()
+                    }
+                }
             }
         }
     }

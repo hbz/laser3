@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
+<%@ page import="grails.converters.JSON; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform;com.k_int.kbplus.BookInstance" %>
 <!doctype html>
 <html>
 <head>
@@ -183,7 +183,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         <tbody>
         <g:each in="${tipps}" var="tipp">
             <tr data-index="${tipp.gokbId}">
-                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checked[tipp.gokbId]}></td>
+                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checked ? checked[tipp.gokbId] : ''}></td>
             <td>${counter++}</td>
 
             <td>
@@ -191,11 +191,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
                 (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
             </g:if>
 
-            <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+            <g:if test="${tipp?.title instanceof BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
                 <br><b>${tipp?.title?.getEbookFirstAutorOrFirstEditor()}</b>
             </g:if>
 
@@ -203,7 +203,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <g:link controller="tipp" action="show"
                     id="${tipp.id}">${message(code: 'platform.show.full_tipp', default: 'Full TIPP Details')}</g:link>
             &nbsp;&nbsp;&nbsp;
-            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                     var="gokbAPI">
                 <g:if test="${tipp?.gokbId}">
                     <a target="_blank"
@@ -286,7 +286,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessEndDate}"/>--%>
             </td>
             <td>
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                <g:if test="${tipp?.title instanceof BookInstance}">
                     <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                     <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
@@ -299,7 +299,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                     <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
                         In order to define and initialise the list, it is mandatory that the foresaid flag is set to true. Compare with SubscriptionController.addEntitlements()
                      --%>
-                    <g:set var="coverageStatements" value="${issueEntitlementOverwrite[tipp.gokbId]?.coverages ?: tipp.coverages}"/>
+                    <g:set var="coverageStatements" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : tipp.coverages}"/>
                     <g:each in="${coverageStatements}" var="covStmt" status="key">
                         <!-- von -->
                         <semui:datepicker class="ieOverwrite" name="ieStartDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>

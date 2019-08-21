@@ -140,7 +140,7 @@
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate"
                                           title="${message(code: 'default.from', default: 'Earliest date')}"/>
 
-                        <th rowspan="2"></th>
+                        <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" property="endDate"
@@ -240,7 +240,7 @@
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td>
+                                <td id="coverageStatements">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
@@ -252,26 +252,12 @@
 
                                     </g:if>
                                     <g:else>
-
-                                        <!-- von --->
-                                        <semui:xEditable owner="${ie}" type="date" field="startDate"/><br>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.volume')}"></i>
-                                        <semui:xEditable owner="${ie}" field="startVolume"/><br>
-
-                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.issue')}"></i>
-                                        <semui:xEditable owner="${ie}" field="startIssue"/>
-                                        <semui:dateDevider/>
-                                        <!-- bis -->
-                                        <semui:xEditable owner="${ie}" type="date" field="endDate"/><br>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.volume')}"></i>
-                                        <semui:xEditable owner="${ie}" field="endVolume"/><br>
-
-                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.issue')}"></i>
-                                        <semui:xEditable owner="${ie}" field="endIssue"/>
+                                        <g:each in="${ie.coverages}" var="covStmt">
+                                            <p>
+                                                <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
+                                            </p>
+                                        </g:each>
+                                        <button data-entitlement="${ie.id}" class="ui button positive tiny addCoverage"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></button>
                                     </g:else>
                                 </td>
                                 <td>
@@ -386,7 +372,7 @@
             hide: 0
         }
       });
-    ;
+
     $('.la-notebook.icon')
       .popup({
         delay: {
@@ -394,7 +380,34 @@
             hide: 0
         }
       });
-    ;
+
+    $('.addCoverage').on('click',function(){
+        var ieId = $(this).attr("data-entitlement");
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="addCoverage"/>",
+            data: {
+                issueEntitlement: ieId
+            }
+        }).done(function(response) {
+            $("#coverageStatements").append(response);
+        }).fail(function() {
+          console.log("AJAX error! Please check logs!");
+        });
+    });
+
+    $('.removeCoverage').on('click',function(){
+        var ieId = $(this).attr("data-entitlement");
+        $.ajax({
+            url: "<g:createLink controller="ajax" action="removeCoverage"/>",
+            data: {
+                ieCoverage: ieId
+            }
+        }).done(function(response) {
+            $("#coverageStatements").append(response);
+        }).fail(function() {
+          console.log("AJAX error! Please check logs!");
+        });
+    });
 </r:script>
 </body>
 </html>

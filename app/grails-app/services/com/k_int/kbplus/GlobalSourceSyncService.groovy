@@ -7,6 +7,8 @@ import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.oai.OaiClient
 import de.laser.oai.OaiClientLaser
+import org.springframework.context.i18n.LocaleContext
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.dao.DuplicateKeyException
@@ -403,7 +405,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     origin_uri = i.value
                 }
             }
-            println "before updatedTitleafterPckageReconcile"
+            println "before updatedTitleafterPackageReconcile"
             updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: tipp.platform, gokbId: tipp.platformUuid]);
@@ -657,33 +659,73 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     // Whereas ... this did not change for five years (this line was initially inserted by Mr. Ibbotson on February 13th, 2014. But now, we need to change it.
                     if(tipp.coverage.size() < currTIPP.coverages.size()) {
                         currTIPP.coverages.eachWithIndex { cov, int i ->
-                            TIPPCoverage dbCoverage
-                            if(tipp.coverage[i])
-                                dbCoverage = tipp.coverage[i]
-                            else
-                                cov.delete()
-                            dbCoverage.startDate = cov.startDate ?: null
-                            dbCoverage.startVolume = cov.startVolume
-                            dbCoverage.startIssue = cov.startIssue
-                            dbCoverage.endDate = cov.endDate ?: null
-                            dbCoverage.endVolume = cov.endVolume
-                            dbCoverage.endIssue = cov.endIssue
-                            dbCoverage.embargo = cov.embargo
-                            dbCoverage.coverageDepth = cov.coverageDepth
-                            dbCoverage.coverageNote = cov.coverageNote
-                            if(!dbCoverage.tipp)
-                                dbCoverage.tipp = currTIPP
-                            if(!dbCoverage.save())
-                                log.error("Error on saving coverage data: ${dbCoverage.getErrors()}")
+                            if(tipp.coverage[i] && tipp.coverage[i] instanceof Map) {
+                                println "processing statement ${i}"
+                                Map gokbCoverage = (Map) tipp.coverage[i]
+                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(cov,gokbCoverage)
+                                coverageDiffs.each { diff ->
+                                    changeNotificationService.fireEvent([
+                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                            event: 'TitleInstancePackagePlatform.coverage.updated',
+                                            affectedCoverage: cov,
+                                            prop: diff.prop,
+                                            old: diff.old,
+                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
+                                            new: diff.new
+                                    ])
+                                }
+                                cov.startDate = gokbCoverage.startDate ?: null
+                                cov.startVolume = gokbCoverage.startVolume
+                                cov.startIssue = gokbCoverage.startIssue
+                                cov.endDate = gokbCoverage.endDate ?: null
+                                cov.endVolume = gokbCoverage.endVolume
+                                cov.endIssue = gokbCoverage.endIssue
+                                cov.embargo = gokbCoverage.embargo
+                                cov.coverageDepth = gokbCoverage.coverageDepth
+                                cov.coverageNote = gokbCoverage.coverageNote
+                                if(!cov.tipp)
+                                    cov.tipp = currTIPP
+                                if(!cov.save())
+                                    println("Error on saving coverage data: ${cov.getErrors()}")
+                            }
+                            else {
+                                currTIPP.coverages.remove(cov)
+                                changeNotificationService.fireEvent([
+                                        OID:"${currTIPP.class.name}:${currTIPP.id}",
+                                        event:'TitleInstancePackagePlatform.coverage.deleted',
+                                        affectedCoverage: cov
+                                ])
+                            }
                         }
                     }
                     else {
                         tipp.coverage.eachWithIndex { cov, int i ->
                             TIPPCoverage dbCoverage
-                            if(currTIPP.coverages[i])
+                            if(currTIPP.coverages[i]) {
+                                println "processing coverage statement ${i}"
                                 dbCoverage = currTIPP.coverages[i]
-                            else
+                                TIPPCoverage oldCoverage = currTIPP.coverages[i]
+                                Set<Map> coverageDiffs = TIPPCoverage.checkCoverageChanges(oldCoverage,cov)
+                                coverageDiffs.each { diff ->
+                                    changeNotificationService.fireEvent([
+                                            OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                            event: 'TitleInstancePackagePlatform.coverage.updated',
+                                            affectedCoverage: dbCoverage,
+                                            prop: diff.prop,
+                                            old: diff.old,
+                                            propLabel: messageSource.getMessage("tipp.${diff.prop}",null, LocaleContextHolder.locale),
+                                            new: diff.new
+                                    ])
+                                }
+                            }
+                            else {
                                 dbCoverage = new TIPPCoverage()
+                                changeNotificationService.fireEvent([
+                                        OID: "${currTIPP.class.name}:${currTIPP.id}",
+                                        event: 'TitleInstancePackagePlatform.coverage.added',
+                                        coverageData: cov
+                                ])
+                            }
                             dbCoverage.startDate = cov.startDate ?: null
                             dbCoverage.startVolume = cov.startVolume
                             dbCoverage.startIssue = cov.startIssue
@@ -695,8 +737,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             dbCoverage.coverageNote = cov.coverageNote
                             if(!dbCoverage.tipp)
                                 dbCoverage.tipp = currTIPP
-                            if(!dbCoverage.save())
-                                log.error("Error on saving coverage data: ${dbCoverage.getErrors()}")
+                            if(!dbCoverage.save()){
+                                println("Error on saving coverage data: ${dbCoverage.getErrors()}")
+                            }
                         }
                     }
 
@@ -962,8 +1005,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         coverageDepth: cov.'@coverageDepth'.text() ?: '',
                         coverageNote : cov.'@coverageNote'.text() ?: '',
                         embargo      : cov.'@embargo'.text() ?: ''
-                ]);
+                ])
             }
+            newtip.coverage = newtip.coverage.toSorted { a, b -> a.startDate <=> b.startDate }
 
             tip.title.identifiers.identifier.each { id ->
                 if(id.'@namespace'.text() == 'originEditUrl')

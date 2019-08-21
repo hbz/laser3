@@ -861,15 +861,15 @@ class SubscriptionController extends AbstractDebugController {
                             errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
                     }
+                    List<Map> ieCoverages
+                    if(ieCandidate.coverages)
+                        ieCoverages = ieCandidate.coverages
+                    else ieCoverages = []
+                    Map covStmt = [:]
                     colMap.each { String colName, int colNo ->
                         if(colNo > -1) {
                             String cellEntry = cols[colNo].trim()
                             if(result.preselectCoverageDates) {
-                                List<Map> ieCoverages
-                                if(ieCandidate.coverages) //continue here
-                                    ieCoverages = ieCandidate.coverages
-                                else ieCoverages = []
-                                Map covStmt = [:]
                                 switch(colName) {
                                     case "dateFirstInPrintCol": ieCandidate.dateFirstInPrint = cellEntry
                                         break
@@ -898,8 +898,6 @@ class SubscriptionController extends AbstractDebugController {
                                     case "coverageNotesCol": covStmt.coverageNote = cellEntry
                                         break
                                 }
-                                ieCoverages.add(covStmt)
-                                ieCandidate.coverages = ieCoverages
                             }
                             if(result.uploadPriceInfo) {
                                 try {
@@ -923,6 +921,8 @@ class SubscriptionController extends AbstractDebugController {
                         }
                     }
                     if(ieCandIdentifier) {
+                        ieCoverages.add(covStmt)
+                        ieCandidate.coverages = ieCoverages
                         issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
                     }
                 }

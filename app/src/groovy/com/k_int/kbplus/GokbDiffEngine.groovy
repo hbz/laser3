@@ -252,8 +252,13 @@ public class GokbDiffEngine {
         covListA.each { covA ->
             Map equivalentCoverageEntry
             //several attempts ... take dates! Where are the unique identifiers when we REALLY need them??!!
-            equivalentCoverageEntry = covListB.find { covB ->
-                covA.startDate == covB.startDate || covA.endDate == covB.endDate
+            //here is the culprit
+            for(def k: covA) {
+                equivalentCoverageEntry = covListB.find { covB ->
+                    covB[k] == covA[k]
+                }
+                if(equivalentCoverageEntry)
+                    break
             }
             if(equivalentCoverageEntry) {
                 TIPPCoverage.controlledProperties.each { cp ->
