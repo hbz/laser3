@@ -155,12 +155,6 @@ class SubscriptionController extends AbstractDebugController {
             redirect action: 'currentTitles', params: params
         }
 
-        if (result.institution) {
-            result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
-        }
-
         if (params.mode == "advanced") {
             params.asAt = null
         }
@@ -2023,11 +2017,17 @@ class SubscriptionController extends AbstractDebugController {
 
                         if (memberSub) {
                             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE)
+                                if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE) {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_hidden).save()
-                                else
+                                }
+                                else {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub).save()
+                                }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
+
+                                if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
+                                    new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
+                                }
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -2741,10 +2741,10 @@ class SubscriptionController extends AbstractDebugController {
             log.debug("Subscription has no linked packages yet")
         }
 
+        // TODO can we remove this block? Was it used for usage in renewal process?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
         log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
@@ -2886,11 +2886,10 @@ class SubscriptionController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
-
+        // Can we remove this block?
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         // Get a unique list of invoices
@@ -2969,8 +2968,7 @@ class SubscriptionController extends AbstractDebugController {
         //}
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
-            result.institutional_usage_identifier =
-                    OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+            result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
         }
 
         du.setBenchMark('links')
@@ -3123,13 +3121,11 @@ class SubscriptionController extends AbstractDebugController {
                 } else {
                     def supplier_id = suppliers[0]
                     result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
-                    result.institutional_usage_identifier =
-                            OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+                    result.institutional_usage_identifier = OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
                     if (result.institutional_usage_identifier) {
 
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
-
                         def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
                         if (!holdingTypes) {
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
@@ -3877,8 +3873,7 @@ class SubscriptionController extends AbstractDebugController {
         List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
                                                 SUBSCRIPTION_TYPE_ADMINISTRATIVE,
                                                 SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL,
-                                                SUBSCRIPTION_TYPE_COLLECTIVE]
+                                                SUBSCRIPTION_TYPE_NATIONAL]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                 result.targetSubscription &&
@@ -4516,16 +4511,22 @@ class SubscriptionController extends AbstractDebugController {
                     switch(sub.type) {
                         case SUBSCRIPTION_TYPE_CONSORTIAL:
                         case SUBSCRIPTION_TYPE_NATIONAL:
-                        case SUBSCRIPTION_TYPE_ALLIANCE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        case SUBSCRIPTION_TYPE_ALLIANCE:
+                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS
                             break
-                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE: parentRoleType = OR_SUBSCRIPTION_CONSORTIA
+                        case SUBSCRIPTION_TYPE_ADMINISTRATIVE:
+                            parentRoleType = OR_SUBSCRIPTION_CONSORTIA
                             memberRoleType = OR_SUBSCRIBER_CONS_HIDDEN
                             break
-                        case SUBSCRIPTION_TYPE_COLLECTIVE: parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
-                            memberRoleType = OR_SUBSCRIBER_COLLECTIVE
-                            break
-                        default: parentRoleType = OR_SUBSCRIBER
+                        default:
+                            if (contextOrg.getCustomerType() == 'ORG_INST_COLLECTIVE') {
+                                parentRoleType = OR_SUBSCRIPTION_COLLECTIVE
+                                memberRoleType = OR_SUBSCRIBER_COLLECTIVE
+                            }
+                            else {
+                                parentRoleType = OR_SUBSCRIBER
+                            }
                             break
                     }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)

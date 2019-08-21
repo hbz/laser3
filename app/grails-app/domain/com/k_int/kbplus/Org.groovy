@@ -240,6 +240,17 @@ class Org
         false
     }
 
+    String getCustomerType() {
+        String result
+
+        def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
+
+        if (oss != OrgSettings.SETTING_NOT_FOUND) {
+            result = oss.roleValue?.authority
+        }
+        result
+    }
+
     @Override
     def beforeUpdate() {
         if ( !shortcode ) {

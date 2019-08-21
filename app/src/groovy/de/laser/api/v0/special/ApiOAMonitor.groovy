@@ -21,7 +21,7 @@ class ApiOAMonitor {
         // maybe changed later into a lesser accessRole like API_LEVEL_OA2020
 
         if (! hasAccess) {
-            def resultSetting = OrgSettings.get(result, OrgSettings.KEYS.OA2020_SERVER_ACCESS)
+            def resultSetting = OrgSettings.get(result, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
 
             if (resultSetting != OrgSettings.SETTING_NOT_FOUND && resultSetting.getValue()?.value == 'Yes') {
                 hasAccess = true
@@ -39,7 +39,7 @@ class ApiOAMonitor {
         List<Org> orgs = OrgSettings.executeQuery(
                 "select o from OrgSettings os join os.org o where os.key = :key and os.rdValue = :rdValue " +
                         "and (o.status is null or o.status != :deleted)", [
-                key    : OrgSettings.KEYS.OA2020_SERVER_ACCESS,
+                key    : OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                 rdValue: RefdataValue.getByValueAndCategory('Yes', 'YN'),
                 deleted: RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
         ])

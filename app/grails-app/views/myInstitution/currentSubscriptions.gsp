@@ -176,9 +176,6 @@
                             if(!accessService.checkPerm("ORG_CONSORTIUM")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             }
-                            else if(!accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                                subTypes -= RDStore.SUBSCRIPTION_TYPE_COLLECTIVE
-                            }
                         %>
                         <g:each in="${subTypes}" var="subType">
                             <div class="inline field">
@@ -196,7 +193,7 @@
 
         <div class="two fields">
             <div class="field">
-                <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <%--
                 <g:if test="${params.orgRole == 'Subscriber'}">
                     <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -219,18 +216,10 @@
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                                <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                       <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                                >
-                                <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                            </g:if>
-                            <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
-                                <input id="radioKollektiv" type="radio" value="Subscription Collective" name="orgRole" tabindex="0" class="hidden"
-                                       <g:if test="${params.orgRole == 'Subscription Collective'}">checked=""</g:if>
-                                >
-                                <label for="radioKollektiv">${message(code: 'myinst.currentSubscriptions.filter.collective.label')}</label>
-                            </g:elseif>
+                            <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
+                                   <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
+                            >
+                            <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
                         </div>
                     </div>
                 </div>

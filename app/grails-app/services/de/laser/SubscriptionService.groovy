@@ -707,7 +707,7 @@ class SubscriptionService {
         }
         else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
             comboType = COMBO_TYPE_DEPARTMENT
-            parentSubType = [SUBSCRIPTION_TYPE_COLLECTIVE.getI10n('value')]
+            parentSubType = [SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
         }
         Map colMap = [:]
         Map<String, Map<String, Integer>> propMap = [:]

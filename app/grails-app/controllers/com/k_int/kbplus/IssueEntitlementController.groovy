@@ -76,9 +76,8 @@ class IssueEntitlementController extends AbstractDebugController {
           result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
-          result.institutional_usage_identifier =
-                  OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
-          if (result.institutional_usage_identifier && fsresult.usage) {
+          result.institutional_usage_identifier = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
+          if (result.institutional_usage_identifier instanceof OrgSettings && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
               result.usageMode = org.hasPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
               result.usage = fsresult?.usage

@@ -17,9 +17,11 @@ class OrgSettings {
         API_KEY         (String),
         API_PASSWORD    (String),
         CUSTOMER_TYPE   (Role),
-        GASCO_ENTRY              (RefdataValue, 'YN'),
-        OA2020_SERVER_ACCESS     (RefdataValue, 'YN'),
-        STATISTICS_SERVER_ACCESS (RefdataValue, 'YN')
+        GASCO_ENTRY                     (RefdataValue, 'YN'),
+        OAMONITOR_SERVER_ACCESS         (RefdataValue, 'YN'),
+        NATSTAT_SERVER_ACCESS           (RefdataValue, 'YN'),
+        NATSTAT_SERVER_API_KEY          (String),
+        NATSTAT_SERVER_REQUESTOR_ID     (String)
 
         KEYS(type, rdc) {
             this.type = type
@@ -61,7 +63,12 @@ class OrgSettings {
 
     static List<OrgSettings.KEYS> getEditableSettings() {
 
-        [OrgSettings.KEYS.STATISTICS_SERVER_ACCESS, OrgSettings.KEYS.OA2020_SERVER_ACCESS]
+        [
+                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+        ]
     }
 
     /*

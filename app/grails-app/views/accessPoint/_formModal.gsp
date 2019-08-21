@@ -12,7 +12,7 @@
                 </dt>
                 <dd> 
                     <g:select id="name" name='name'
-                        noSelection="${['null':'Select...']}"
+                        noSelection="${['' : message(code:'accessMethod.all')]}"
                         from="${['campus','wlan','vpn']}"></g:select>
                 </dd>
                 <br /><br />

@@ -75,8 +75,8 @@ class StatsSyncServiceOptions {
     LinkedHashMap getQueryParams(org_inst, supplier_inst) {
         def platform = supplier_inst.getIdentifierByType('statssid').value
         def customer = org_inst.getIdentifierByType('wibid').value
-        def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
-        def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"),org_inst)
+        def apiKey = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY)?.getValue()
+        def requestor = OrgSettings.get(org_inst, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID)?.getValue()
         [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
     }
 

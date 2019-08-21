@@ -798,8 +798,7 @@ from License as l where (
 
         result.date_restriction = date_restriction;
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-
-        if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
+        if (OrgSettings.get(result.institution, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSettings){
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
@@ -1220,19 +1219,25 @@ from License as l where (
         RefdataValue orgRole
         RefdataValue memberRole
         RefdataValue subType = RefdataValue.get(params.type)
+
         switch(subType) {
             case RDStore.SUBSCRIPTION_TYPE_CONSORTIAL:
             case RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE:
             case RDStore.SUBSCRIPTION_TYPE_NATIONAL:
-            case RDStore.SUBSCRIPTION_TYPE_ALLIANCE: orgRole = role_cons
+            case RDStore.SUBSCRIPTION_TYPE_ALLIANCE:
+				orgRole = role_cons
                 memberRole = role_sub_cons
                 break
-            case RDStore.SUBSCRIPTION_TYPE_COLLECTIVE: orgRole = role_coll
-                memberRole = role_sub_coll
-                break
-            default: orgRole = role_sub
-                if(!subType)
-                    subType = RDStore.SUBSCRIPTION_TYPE_LOCAL
+            default:
+                if (result.institution.getCustomerType() == 'ORG_INST_COLLECTIVE') {
+                    orgRole = role_coll
+                    memberRole = role_sub_coll
+                }
+                else {
+                    orgRole = role_sub
+                    if (! subType)
+                        subType = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                }
                 break
         }
 
@@ -1266,7 +1271,9 @@ from License as l where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if(accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL) {
+                if (accessService.checkPerm('ORG_INST_COLLECTIVE') ||
+                        (accessService.checkPerm('ORG_CONSORTIUM') && subType != RDStore.SUBSCRIPTION_TYPE_LOCAL)
+                ){
                     
                     def cons_members = []
 
@@ -2486,8 +2493,8 @@ AND EXISTS (
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
 
-        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
-        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id, result)
+        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id).size()
 
         result
     }

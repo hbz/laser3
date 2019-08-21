@@ -17,7 +17,7 @@
             <g:render template="actions" model="${[ org:orgInstance, user:user ]}"/>
         </semui:controlButtons>--%>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${orgInstance.name} - ${message(code:'org.nav.options')}</h1>
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
@@ -69,7 +69,15 @@
                                 <tbody>
                                 <g:each in="${settings}" var="os">
                                     <tr>
-                                        <td>${os.key}</td>
+                                        <td>
+                                            ${message(code:"org.setting.${os.key}", default: "${os.key}")}
+
+                                            <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
+                                                    <i class="question circle icon"></i>
+                                                </span>
+                                            </g:if>
+                                        </td>
                                         <td>
                                             <g:if test="${os.key in OrgSettings.getEditableSettings()}">
                                                 <g:if test="${os.rdValue}">

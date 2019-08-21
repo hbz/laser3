@@ -62,7 +62,9 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
                         fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
                         fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value" noSelection="${['':'']}" value="${['':'']}"/>
+                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                                  noSelection="${['' : message(code:'accessMethod.all')]}"
+                                  value="${['':'']}"/>
                 </div>
 
                 <div class="field">
