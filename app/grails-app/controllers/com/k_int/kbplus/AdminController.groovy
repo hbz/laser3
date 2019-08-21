@@ -587,16 +587,17 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def orgsExport() {
-    response.setHeader("Content-disposition", "attachment; filename=\"orgsExport.csv\"")
-    response.contentType = "text/csv"
-    def out = response.outputStream
-    out << "org.name,sector,consortia,id.jusplogin,id.JC,id.Ringold,id.UKAMF,id.ISIL,iprange\n"
-    Org.list().each { org ->
-      def consortium = org.outgoingCombos.find{it.type.value=='Consortium'}.collect{it.toOrg.name}.join(':')
-
-      out << "\"${org.name}\",\"${org.sector?:''}\",\"${consortium}\",\"${org.getIdentifierByType('jusplogin')?.value?:''}\",\"${org.getIdentifierByType('JC')?.value?:''}\",\"${org.getIdentifierByType('Ringold')?.value?:''}\",\"${org.getIdentifierByType('UKAMF')?.value?:''}\",\"${org.getIdentifierByType('ISIL')?.value?:''}\",\"${org.ipRange?:''}\"\n"
+    Date now = new Date()
+    File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+    if(f.exists()) {
+      //complicated way - determine most recent org and user creation dates
+      def oldBase = new XmlSlurper().parse(f)
+      List orgDateStrings = oldBase.organisations.org.findAll { node ->
+        node.name() == 'dateCreated'
+      }
+      log.debug(orgDateStrings)
     }
-    out.close()
+    //now.format(message(code:'default.date.format.notime'))
   }
 
   @Secured(['ROLE_ADMIN'])

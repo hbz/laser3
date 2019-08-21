@@ -141,6 +141,8 @@ class Org
        libraryType          column:'org_library_type_rv_fk'
       importSource          column:'org_import_source'
     lastImportDate          column:'org_last_import_date'
+       dateCreated          column:'org_date_created'
+       lastUpdated          column:'org_last_created'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [
