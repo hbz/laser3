@@ -183,7 +183,7 @@ ol.ui.list ol li,
 .ui.list .list > a.item,
 .ui.list > a.item {
   cursor: pointer;
-  color: #4183C4;
+  color: #275480;
 }
 .ui.list .list > a.item:hover,
 .ui.list > a.item:hover {
@@ -200,7 +200,7 @@ ol.ui.list ol li,
 .ui.list .list > .item a.header,
 .ui.list > .item a.header {
   cursor: pointer;
-  color: #4183C4 !important;
+  color: #275480 !important;
 }
 .ui.list .list > .item a.header:hover,
 .ui.list > .item a.header:hover {
