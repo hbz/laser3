@@ -51,13 +51,40 @@ class Identifier {
 
   }
 
-  static def lookupOrCreateCanonicalIdentifier(ns, value) {
+  static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
       println "loc canonical identifier"
-    value = value?.trim()
-    ns = ns?.trim()
-    // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-    def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
-    Identifier.findByNsAndValue(namespace,value) ?: new Identifier(ns:namespace, value:value).save()
+      value = value?.trim()
+      ns = ns?.trim()
+      // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
+      IdentifierNamespace namespace
+      Identifier result
+      if(IdentifierNamespace.findByNsIlike(ns)) {
+          namespace = IdentifierNamespace.findByNsIlike(ns)
+          if(Identifier.findByNsAndValue(namespace,value)) {
+              Identifier.findByNsAndValue(namespace,value)
+          }
+          else {
+              result = new Identifier(ns:namespace, value:value)
+              if(result.save())
+                  result
+          }
+      }
+      else {
+          namespace = new IdentifierNamespace(ns:ns, unique: false)
+          if(namespace.save()) {
+              result = new Identifier(ns:namespace, value:value)
+              if(result.save())
+                  result
+              else {
+                  println "error saving identifier"
+                  println result.getErrors()
+              }
+          }
+          else {
+              println "error saving namespace"
+              println namespace.getErrors()
+          }
+      }
   }
 
   static def refdataFind(params) {

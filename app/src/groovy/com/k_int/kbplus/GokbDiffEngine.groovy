@@ -168,9 +168,9 @@ public class GokbDiffEngine {
     {
         //oldpkg?.nominalPlatformPrimaryUrl always null
         def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
-        println oldpkg
-        println "---------------------------------------------------------------------------------------------------------------------------------------"
-        println newpkg
+        //println oldpkg
+        //println "---------------------------------------------------------------------------------------------------------------------------------------"
+        //println newpkg
         def oldpkgTippsTippUuid = oldpkg.tipps.collect{it.tippUuid}
         def newpkgTippsTippUuid = newpkg.tipps.collect{it.tippUuid}
 

@@ -1,30 +1,45 @@
-0.19-RC
+0.19.2
+
+- fixed: missing package linkage
+- fixed: contact compare function
+- fixed: sync problem
+
+0.19.1
+
+- fixed: null pointer exception
+
+0.19
 
 - TODO
 
 0.18.9
 
-- TODO
+- ERMS-1534
 
 0.18.8
 
-- TODO
+- gasco view: removed invalid subscriptions
+- ERMS-1522, ERMS-1523, ERMS-1524, ERMS-1530
+- minor survey changes
 
-0.18.7
+0.18.7 / 0.18.6
 
-- TODO
-
-0.18.6
-
-- TODO
+- multiple survey bugfixes
+- missing combo type
+- service refactorings
+- cronjob refactorings
+- fixed translations
 
 0.18.5
 
-- TODO
+- bugfix: copying subscriptions
 
 0.18.4
 
-- TODO
+- bugfixes: copying subscriptions
+- bugfixes: copying licenses
+- minor survey bugfixes
+- api changes
 
 0.18.3
 

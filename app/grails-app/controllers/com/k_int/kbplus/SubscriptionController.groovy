@@ -1060,7 +1060,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = lic
                 if (sub.save(flush: true)) {
-                    changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                    changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
             if (changeAccepted) {
@@ -1076,7 +1076,7 @@ class SubscriptionController extends AbstractDebugController {
                         def sub = Subscription.get(it.id)
                         sub.owner = newLicense
                         if (sub.save(flush: true)) {
-                            changeAccepted << it?.dropdownNamingConvention(result.institution)
+                            changeAccepted << "${it?.name} (${message(code:'subscription.linkInstance.label')} ${it?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                         }
                     }
                 }
@@ -1117,7 +1117,7 @@ class SubscriptionController extends AbstractDebugController {
                 def sub = Subscription.get(subChild.id)
                 sub.owner = null
                 if (sub.save(flush: true)) {
-                    removeLic << subChild?.dropdownNamingConvention(result.institution)
+                    removeLic << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
             }
             if (removeLic) {
@@ -1217,15 +1217,15 @@ class SubscriptionController extends AbstractDebugController {
                     if (params.withIssueEntitlements) {
 
                         pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                        changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
+                        changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                     } else {
                         pkg_to_link.addToSubscription(subChild, false)
-                        changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                        changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                     }
                 } else {
-                    changeFailed << subChild?.dropdownNamingConvention(result.institution)
+                    changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                 }
 
             }
@@ -1249,15 +1249,15 @@ class SubscriptionController extends AbstractDebugController {
                         if (params.withIssueEntitlements) {
 
                             pkg_to_link.addToSubscriptionCurrentStock(subChild, result.parentSub)
-                            changeAcceptedwithIE << subChild?.dropdownNamingConvention(result.institution)
+                            changeAcceptedwithIE << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         } else {
                             pkg_to_link.addToSubscription(subChild, false)
-                            changeAccepted << subChild?.dropdownNamingConvention(result.institution)
+                            changeAccepted << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
 
                         }
                     } else {
-                        changeFailed << subChild?.dropdownNamingConvention(result.institution)
+                        changeFailed << "${subChild?.name} (${message(code:'subscription.linkInstance.label')} ${subChild?.orgRelations.find { it.roleType in [OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_COLLECTIVE] }.org.sortname})"
                     }
                 }
             }
@@ -1726,11 +1726,16 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        result.superOrgType = []
         if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
-            if(accessService.checkPerm('ORG_CONSORTIUM'))
+            if(accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.comboType = COMBO_TYPE_CONSORTIUM.value
-            if(accessService.checkPerm('ORG_INST_COLLECTIVE'))
+                result.superOrgType << message(code:'consortium.superOrgType')
+            }
+            if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
                 params.comboType = COMBO_TYPE_DEPARTMENT.value
+                result.superOrgType << message(code:'collective.superOrgType')
+            }
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = []
@@ -1791,7 +1796,7 @@ class SubscriptionController extends AbstractDebugController {
 
                     //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
                     if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                        def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
 
                         if (subLicense) {
                             def subLicenseParams = [
