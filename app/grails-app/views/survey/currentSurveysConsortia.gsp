@@ -122,7 +122,7 @@
                 <td class="center aligned">
                     ${(params.int('offset') ?: 0) + i + 1}
                 </td>
-                <td>
+                <td class="la-main-object" >
                     ${s.name}
                 </td>
                 <td>

@@ -65,7 +65,7 @@ ${orgInstance.name} - ${message(code:'menu.institutions.readerNumbers')}
 
         <tr>
             <td>${i + 1}</td>
-            <td>${numbersInstance.referenceGroup}</td>
+            <td class="la-main-object">${numbersInstance.referenceGroup}</td>
             <td><g:formatNumber number="${numbersInstance.value}" type="number"/></td>
             <td>${sdf.format(numbersInstance.dueDate)}</td>
             <td>${RefdataValue.findByValue(numbersInstance.semester)?.getI10n('value')}</td>

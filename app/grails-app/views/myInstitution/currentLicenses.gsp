@@ -171,7 +171,7 @@
                 <tr>
                     <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                   <td>
-                    <g:link action="show" controller="license" id="${l.id}">
+                    <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
