@@ -51,6 +51,7 @@
                 <th>${message(code: 'surveyProperty.plural.label')}</th>
                 <th>${message(code: 'surveyConfig.documents.label')}</th>
                 <th>${message(code: 'surveyConfig.orgs.label')}</th>
+                <th>${message(code: 'surveyCostItems.label')}</th>
                 <th></th>
 
             </tr>
@@ -58,7 +59,15 @@
             </thead>
         <g:set var="surveySubConfigs" value="${surveyConfigs.findAll{it?.type == 'Subscription'}}"/>
             <g:each in="${surveySubConfigs}" var="config" status="i">
-                    <tr style="${config?.configFinish ? 'background-color: green' : ''}">
+
+
+                <g:set var="participantsFinish"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(config)}"/>
+
+                <g:set var="participantsparticipantsTotal"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(config)}"/>
+
+                    <tr>
                         <td class="center aligned" >
                             %{--<div class="ui label large la-annual-rings">
                                 <g:if test="${config?.configOrder > 1}">
@@ -97,7 +106,7 @@
                             <g:if test="${config?.type == 'Subscription'}">
                                 <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id]" class="ui icon">
-                                    <div class="ui circular label">${config?.surveyProperties?.size()}</div>
+                                    <div class="ui circular label ${config?.configFinish ? 'background-color: green' : ''}">${config?.surveyProperties?.size()}</div>
                                 </g:link>
                             </g:if>
 
@@ -111,9 +120,21 @@
                         <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon">
-                                <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : config?.configFinish ? "yellow" : ""} label">
+                                    ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}/${config?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size()}
+                                </div>
                             </g:link>
                         </td>
+
+                        <td class="center aligned">
+                            <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
+                                    params="[surveyConfigID: config?.id]" class="ui icon">
+                                <div class="ui circular ${config?.costItemsFinish ? "green" : ""} label">
+                                    ${config?.getSurveyConfigCostItems()?.size()}
+                                </div>
+                            </g:link>
+                        </td>
+
                         <td>
 
                             <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"

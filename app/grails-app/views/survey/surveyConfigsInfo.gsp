@@ -13,8 +13,8 @@
 <body>
 
 <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
@@ -24,8 +24,6 @@
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-
-<br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
@@ -69,10 +67,9 @@
     </div>
 </g:if>--}%
 
-<br>
-
 <g:if test="${surveyConfig?.type == 'Subscription'}">
     <h2 class="ui icon header"><semui:headerIcon/>
+        <i class="icon clipboard outline la-list-icon"></i>
     <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
         ${surveyConfig?.subscription?.name}
     </g:link>
@@ -480,8 +477,8 @@
                                 <input type="submit" class="ui button"
                                        value="${message(code: 'surveyConfigsInfo.add.button')}"/>
 
-                                <input type="submit" name="addtoallSubs" class="ui button"
-                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
+                                %{--<input type="submit" name="addtoallSubs" class="ui button"
+                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>--}%
                             </g:form>
                         </td>
                     </g:if>
@@ -507,6 +504,10 @@
     </div>
 
 </g:form>
+
+<br>
+<br>
+<br>
 
 <g:javascript>
     $(".la-popup").popup({});
