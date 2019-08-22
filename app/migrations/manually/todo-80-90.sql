@@ -104,5 +104,9 @@ DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
 DELETE FROM laser.public.refdata_value WHERE rdv_value = 'Collective Subscription';
 
+-- 2019-08-22
+-- set by all surveyConfigs evaluationFinish to false
+UPDATE survey_config SET surconf_evaluation_finish = false;
+
 
 
