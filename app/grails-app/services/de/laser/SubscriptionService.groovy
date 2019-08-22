@@ -7,6 +7,7 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
@@ -122,7 +123,7 @@ class SubscriptionService {
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: TIPP_STATUS_DELETED])
+                        [sub: subscription, del: TIPP_DELETED])
                 : []
         ies.sort {it.tipp.title.title}
         ies
@@ -201,7 +202,7 @@ class SubscriptionService {
 //        targetSub.issueEntitlements.each{ ie ->
         getIssueEntitlements(targetSub).each{ ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id } ) {
-                ie.status = TIPP_STATUS_DELETED
+                ie.status = TIPP_DELETED
                 save(ie, flash)
             }
         }
@@ -234,7 +235,7 @@ class SubscriptionService {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Subscription targetSub, def flash) {
         entitlementsToDelete.each {
-            it.status = TIPP_STATUS_DELETED
+            it.status = TIPP_DELETED
             save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -246,8 +247,8 @@ class SubscriptionService {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub, def flash) {
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != TIPP_STATUS_DELETED) {
-                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_STATUS_DELETED}
+            if (ieToTake.status != TIPP_DELETED) {
+                def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != TIPP_DELETED}
                 if (list?.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.tipp.title.title]
@@ -629,22 +630,38 @@ class SubscriptionService {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
         } else {
-            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
+            IssueEntitlement new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
                     accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
-                    startDate: issueEntitlementOverwrite?.startDate ? escapeService.parseDate(issueEntitlementOverwrite.startDate) : tipp.startDate,
-                    startVolume: issueEntitlementOverwrite?.startVolume ? issueEntitlementOverwrite.startVolume : tipp.startVolume,
-                    startIssue: issueEntitlementOverwrite?.startIssue ? issueEntitlementOverwrite.startIssue : tipp.startIssue,
-                    endDate: issueEntitlementOverwrite?.endDate ? escapeService.parseDate(issueEntitlementOverwrite.endDate) : tipp.endDate,
-                    endVolume: issueEntitlementOverwrite?.endVolume ? issueEntitlementOverwrite.endVolume : tipp.endVolume,
-                    endIssue: issueEntitlementOverwrite?.endIssue ? issueEntitlementOverwrite.endIssue : tipp.endIssue,
-                    embargo: issueEntitlementOverwrite?.embargo ? issueEntitlementOverwrite.embargo : tipp.embargo,
-                    coverageDepth: issueEntitlementOverwrite?.coverageDepth ? issueEntitlementOverwrite.coverageDepth : tipp.coverageDepth,
-                    coverageNote: issueEntitlementOverwrite?.coverageNote ? issueEntitlementOverwrite.coverageNote : tipp.coverageNote,
                     ieReason: 'Manually Added by User')
             if (new_ie.save()) {
+                Set coverageStatements
+                if(issueEntitlementOverwrite?.coverages) {
+                    coverageStatements = issueEntitlementOverwrite.coverages
+                }
+                else {
+                    coverageStatements = tipp.coverages
+                }
+                coverageStatements.each { covStmt ->
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                            startDate: covStmt.startDate,
+                            startVolume: covStmt.startVolume,
+                            startIssue: covStmt.startIssue,
+                            endDate: covStmt.endDate,
+                            endVolume: covStmt.endVolume,
+                            endIssue: covStmt.endIssue,
+                            coverageDepth: covStmt.coverageDepth,
+                            coverageNote: covStmt.coverageNote,
+                            embargo: covStmt.embargo,
+                            issueEntitlement: new_ie
+                    )
+                    if(!ieCoverage.save()) {
+                        throw new EntitlementCreationException(ieCoverage.getErrors())
+                        return false
+                    }
+                }
                 if(withPriceData) {
                     PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
                             listPrice: issueEntitlementOverwrite.listPrice,
@@ -673,7 +690,7 @@ class SubscriptionService {
         if(ie == null)
             return false
         else {
-            ie.status = TIPP_STATUS_DELETED
+            ie.status = TIPP_DELETED
             if(ie.save())
                 return true
             else return false

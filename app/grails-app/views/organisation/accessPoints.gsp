@@ -54,7 +54,7 @@
                 <tbody>
                     <g:each in="${orgAccessPointList}" var="accessPoint">
                         <tr>
-                            <td>${accessPoint.name}</td>
+                            <td class="la-main-object" >${accessPoint.name}</td>
                             <td>${accessPoint.accessMethod.getI10n('value')}</td>
                             <td>
                                 <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">

@@ -113,11 +113,11 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
                 <th><g:checkBox name="subscription.copyEntitlements" value="${true}"/></th>
                 <th>${message(code: 'subscription.copyEntitlements', default: 'Copy Current Entitlements from Subscription')}</th>
                 <td><b>${message(code: 'issueEntitlement.countSubscription')}</b> ${subscription.issueEntitlements.findAll {
-                    it.status != RDStore.TIPP_STATUS_DELETED
+                    it.status != RDStore.TIPP_DELETED
                 }.size()}
 
                     %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">
-                                                <g:if test="${ie.status != RDStore.TIPP_STATUS_DELETED}">
+                                                <g:if test="${ie.status != RDStore.TIPP_DELETED}">
                     ${ie.tipp.title.title}
                 </g:if>
                 </g:each>--}%

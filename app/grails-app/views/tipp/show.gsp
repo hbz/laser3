@@ -3,17 +3,17 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}</title>
+    <title><g:message code="tipp.show.label" args="${[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name]}"/></title>
   </head>
   <body>
 
     <semui:breadcrumbs>
       <semui:crumb controller="package" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
-      <semui:crumb text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" class="active" />
+      <semui:crumb text="${tipp.title.title} [${message(code:'title.label')}]" class="active" />
     </semui:breadcrumbs>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-      ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
+      <g:message code="tipp.show.label" args="${[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name]}"/>
     </h1>
 
     <g:render template="/templates/meta/identifier" model="${[object: titleInstanceInstance, editable: editable]}" />
@@ -23,70 +23,80 @@
     <div class="inline-lists">
 
         <dl>
-          <dt>${message(code:'tipp.show.avStatus', default:'Availability Status')}</dt>
+          <dt><g:message code="tipp.show.avStatus" /></dt>
           <dd><span title="${tipp.availabilityStatusExplanation}">${tipp.availabilityStatus?.getI10n("value")}</span></dd>
 
-          <dt>${message(code:'tipp.show.accessStart', default:'Access Start Date (Enters Package)')}</dt>
-          <dd><semui:xEditable owner="${tipp}" type="date" field="accessStartDate" /></dd>
+          <dt><g:message code="tipp.show.accessStart"/></dt>
+          <dd>${tipp.accessStartDate}</dd>
 
-          <dt>${message(code:'tipp.show.accessEnd', default:'Access End Date (Leaves Package)')}</dt>
-          <dd><semui:xEditable owner="${tipp}" type="date" field="accessEndDate" /></dd>
+          <dt><g:message code="tipp.show.accessEnd"/></dt>
+          <dd>${tipp.accessEndDate}</dd>
 
-          <dt>${message(code:'tipp.show.tippStartDate', default:'TIPP Start Date')}</dt>
-          <dd><semui:xEditable owner="${tipp}" type="date" field="startDate"/></dd>
+          <dt><g:message code="tipp.coverage"/></dt>
+          <dd>
+            <dl>
+              <g:each in="${tipp.coverages}" var="covStmt">
+                <dt><g:message code="tipp.show.tippStartDate"/></dt>
+                <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/></dd>
 
-          <dt>${message(code:'tipp.show.tippStartVol', default:'TIPP Start Volume')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="startVolume"/></dd>
+                <dt><g:message code="tipp.show.tippStartVol"/></dt>
+                <dd>${covStmt.startVolume}</dd>
 
-          <dt>${message(code:'tipp.show.tippStartIss', default:'TIPP Start Issue')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="startIssue"/></dd>
+                <dt><g:message code="tipp.show.tippStartIss"/></dt>
+                <dd>${covStmt.startIssue}</dd>
 
-          <dt>${message(code:'tipp.show.tippEndDate', default:'TIPP End Date')}</dt>
-          <dd><semui:xEditable owner="${tipp}"  type="date" field="endDate"/></dd>
+                <dt><g:message code="tipp.show.tippEndDate"/></dt>
+                <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/></dd>
 
-          <dt>${message(code:'tipp.show.tippEndVol', default:'TIPP End Volume')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="endVolume"/></dd>
+                <dt><g:message code="tipp.show.tippEndVol"/></dt>
+                <dd>${covStmt.endVolume}</dd>
 
-          <dt>${message(code:'tipp.show.tippEndIss', default:'TIPP End Issue')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="endIssue"/></dd>
+                <dt><g:message code="tipp.show.tippEndIss"/></dt>
+                <dd>${covStmt.endIssue}</dd>
 
-          <dt>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="coverageDepth"/></dd>
+                <dt><g:message code="tipp.coverageDepth"/></dt>
+                <dd>${covStmt.coverageDepth}</dd>
 
-          <dt>${message(code:'tipp.coverageNote', default:'Coverage Note')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="coverageNote"/></dd>
+                <dt><g:message code="tipp.coverageNote"/></dt>
+                <dd>${covStmt.coverageNote}</dd>
 
-          <dt>${message(code:'tipp.embargo', default:'Embargo')}</dt>
-          <dd><semui:xEditable owner="${tipp}" field="embargo"/></dd>
+                <dt><g:message code="tipp.embargo"/></dt>
+                <dd>${covStmt.embargo}</dd>
+              </g:each>
+            </dl>
+          </dd>
 
-          <dt>${message(code:'tipp.hostPlatformURL', default:'Host Platform URL')}</dt>
-          <dd><semui:xEditable type="text" owner="${tipp}" field="hostPlatformURL"/></dd>
+          <dt><g:message code="tipp.hostPlatformURL"/></dt>
+          <dd>${tipp.hostPlatformURL}</dd>
 
-          <dt>${message(code:'default.status.label', default:'Status')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="status" config='TIPP Status'/></dd>
+          <dt><g:message code="default.status.label"/></dt>
+          <dd>${tipp.status.getI10n("value")}</dd>
 
-          <dt>${message(code:'tipp.show.statusReason', default:'Status Reason')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="statusReason" config="Tipp.StatusReason"/></dd>
+          <dt><g:message code="tipp.show.statusReason"/></dt>
+          <dd>${tipp.statusReason?.getI10n("value")}</dd>
 
-          <dt>${message(code:'tipp.delayedOA', default:'Delayed OA')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="delayedOA" config='TitleInstancePackagePlatform.DelayedOA'/></dd>
+          <dt><g:message code="tipp.delayedOA"/></dt>
+          <dd>${tipp.delayedOA?.getI10n("value")}"</dd>
 
-          <dt>${message(code:'tipp.hybridOA', default:'Hybrid OA')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="hybridOA" config='TitleInstancePackagePlatform.HybridOA'/></dd>
+          <dt><g:message code="tipp.hybridOA"/></dt>
+          <dd>${tipp.hybridOA?.getI10n("value")}"</dd>
 
-          <dt>${message(code:'tipp.paymentType', default:'Payment')}</dt>
-          <dd><semui:xEditableRefData owner="${tipp}" field="payment" config='TitleInstancePackagePlatform.PaymentType'/></dd>
+          <dt><g:message code="tipp.paymentType"/></dt>
+          <dd>${tipp.payment?.getI10n("value")}"</dd>
 
-          <dt>${message(code:'tipp.host_platform', default:'Host Platform')}</dt>
+          <dt><g:message code="tipp.host_platform"/></dt>
           <dd>${tipp.platform.name}</dd>
         </dl>
 
         <dl>
-          <dt style="margin-top:10px">${message(code:'tipp.additionalPlatforms', default:'Additional Platforms')}</dt>
+          <dt style="margin-top:10px"><g:message code="tipp.additionalPlatforms"/></dt>
           <dd>
             <table class="ui celled la-table table">
               <thead>
-                <tr><th>${message(code:'default.relation.label', default:'Relation')}</th><th>${message(code:'tipp.show.platformName', default:'Platform Name')}</th><th>${message(code:'platform.primaryURL', default:'Primary URL')}</th></tr>
+                <tr>
+                  <th><g:message code="default.relation.label"/></th>
+                  <th><g:message code="tipp.show.platformName"/></th>
+                  <th><g:message code="platform.primaryURL"/></th></tr>
               </thead>
               <tbody>
                 <g:each in="${tipp.additionalPlatforms}" var="ap">
@@ -132,43 +142,49 @@
             <table class="ui celled la-table table">
               <thead>
               <tr>
-                <th>${message(code:'tipp.coverage_start')}</th>
-                <th>${message(code:'tipp.coverage_end')}</th>
-                <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                <th>${message(code:'platform.label', default:'Platform')}</th>
-                <th>${message(code:'package.label', default:'Package')}</th>
-                <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                <th><g:message code="tipp.coverageStatements"/></th>
+                <th><g:message code="platform.label"/></th>
+                <th><g:message code="package.label"/></th>
               </tr>
               </thead>
               <tbody>
               <g:each in="${tippList}" var="t">
                 <tr>
                   <td>
-                    <div>
-                      <span>${message(code:'default.date.label', default:'Date')}: <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.startDate}"/></span>
-                    </div>
-                    <div>
-                      <span>${message(code:'tipp.volume', default:'Volume')}: ${t.startVolume}</span>
-                    </div>
-                    <div>
-                      <span>${message(code:'tipp.issue', default:'Issue')}: ${t.startIssue}</span>
-                    </div>
+                    <g:each in="${t.coverages}" var="covStmt">
+                      <p>
+                        <div>
+                          <span><g:message code="default.date.label"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/></span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.volume"/>: ${covStmt.startVolume}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.issue"/>: ${covStmt.startIssue}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="default.date.label"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/></span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.volume"/>: ${covStmt.endVolume}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.issue"/>: ${covStmt.endIssue}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.coverageDepth"/>: ${covStmt.coverageDepth}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.coverageNote"/>: ${covStmt.coverageNote}</span>
+                        </div>
+                        <div>
+                          <span><g:message code="tipp.embargo"/>: ${covStmt.embargo}</span>
+                        </div>
+                      </p>
+                    </g:each>
                   </td>
-                  <td>
-                    <div>
-                      <span>${message(code:'default.date.label', default:'Date')}: <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${t.endDate}"/></span>
-                    </div>
-                    <div>
-                      <span>${message(code:'tipp.volume', default:'Volume')}: ${t.endVolume}</span>
-                    </div>
-                    <div>
-                      <span>${message(code:'tipp.issue', default:'Issue')}: ${t.endIssue}</span>
-                    </div>
-                  </td>
-                  <td>${t.coverageDepth}</td>
                   <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                   <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
-                  <td></td>
                 </tr>
               </g:each>
               </tbody>

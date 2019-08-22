@@ -2,11 +2,14 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.springframework.transaction.TransactionStatus
+
+import java.text.SimpleDateFormat
 
 class PendingChangeService extends AbstractLockableService {
 
@@ -19,6 +22,10 @@ class PendingChangeService extends AbstractLockableService {
 
     final static EVENT_TIPP_EDIT = 'TIPPEdit'
     final static EVENT_TIPP_DELETE = 'TIPPDeleted'
+
+    final static EVENT_COVERAGE_ADD = 'CoverageAdd'
+    final static EVENT_COVERAGE_UPDATE = 'CoverageUpdate'
+    final static EVENT_COVERAGE_DELETE = 'CoverageDeleted'
 
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
@@ -49,9 +56,9 @@ class PendingChangeService extends AbstractLockableService {
         def result = true
 
         PendingChange.withNewTransaction { TransactionStatus status ->
-            def pendingChange = (change instanceof PendingChange) ? change : PendingChange.get(change)
+            PendingChange pendingChange = (change instanceof PendingChange) ? change : PendingChange.get(change)
 
-            def saveWithoutError = false
+            boolean saveWithoutError = false
 
             try {
                 def event = JSON.parse(pendingChange.changeDoc)
@@ -64,7 +71,7 @@ class PendingChangeService extends AbstractLockableService {
                         def tipp = genericOIDService.resolveOID(event.tippId)
                         def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
-                            ie_to_update.status = RDStore.TIPP_STATUS_DELETED
+                            ie_to_update.status = RDStore.TIPP_DELETED
 
                             if( ie_to_update.save())
                             {
@@ -101,7 +108,7 @@ class PendingChangeService extends AbstractLockableService {
                                     log.debug("Date processing.... parse \"${event.changeDoc.new}\"");
                                     if ( ( event.changeDoc.new != null ) && ( event.changeDoc.new.toString() != 'null' ) ) {
                                         //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
-                                        def df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
+                                        def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
                                         def d = df.parse(event.changeDoc.new)
                                         target_object[event.changeDoc.prop] = d
                                     }
@@ -191,7 +198,43 @@ class PendingChangeService extends AbstractLockableService {
                                 }
                             }
                         }
-                        break;
+                        break
+
+                    case EVENT_COVERAGE_ADD: IssueEntitlement target = genericOIDService.resolveOID(event.changeTarget)
+                        if(target) {
+                            Map newCovData = event.changeDoc
+                            IssueEntitlementCoverage cov = new IssueEntitlementCoverage(newCovData)
+                            cov.issueEntitlement = target
+                            if(cov.save())
+                                saveWithoutError = true
+                            else log.error(cov.getErrors())
+                        }
+                        else {
+                            log.error("Target issue entitlement with OID ${event.changeTarget} not found")
+                        }
+                        break
+                    case EVENT_COVERAGE_UPDATE: SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        IssueEntitlementCoverage target = genericOIDService.resolveOID(event.changeTarget)
+                        Map changeAttrs = event.changeDoc
+                        if(target) {
+                            if(changeAttrs.prop in ['startDate','endDate'])
+                                target[changeAttrs.prop] = sdf.parse(changeAttrs.new)
+                            else
+                                target[changeAttrs.prop] = changeAttrs.new
+                            if(target.save())
+                                saveWithoutError = true
+                            else log.error(target.getErrors())
+                        }
+                        else log.error("Target coverage object does not exist! The erroneous OID is: ${event.changeTarget}")
+                        break
+                    case EVENT_COVERAGE_DELETE: IssueEntitlementCoverage cov = genericOIDService.resolveOID(event.changeTarget)
+                        if(cov) {
+                            if(cov.delete())
+                                saveWithoutError = true
+                            else log.error("Error on deleting issue entitlement coverage statement with id ${cov.id}")
+                        }
+                        else log.error("Target coverage object does not exist! The erroneous OID is: ${event.changeTarget}")
+                        break
 
                     default:
                         log.error("Unhandled change type : ${pc.changeDoc}");
@@ -208,14 +251,14 @@ class PendingChangeService extends AbstractLockableService {
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user
-                    pendingChange.save(flush: true);
+                    pendingChange.save()
                     def x = pendingChange
                     log.debug("Pending change accepted and saved")
                 }
             }
             catch ( Exception e ) {
-                log.error("Problem accepting change",e);
-                result = false;
+                log.error("Problem accepting change",e)
+                result = false
             }
             return result
         }
@@ -231,7 +274,7 @@ class PendingChangeService extends AbstractLockableService {
             change.actionDate = new Date()
             change.user = user
             change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
-            change.save(flush:true)
+            change.save()
            /* def change_audit_object = null
             if ( change.license ) change_audit_object = change.license;
             if ( change.subscription ) change_audit_object = change.subscription;

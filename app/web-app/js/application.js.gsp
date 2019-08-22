@@ -552,6 +552,9 @@ r2d2 = {
                         case "user":
                             var messageWhat = "den Benutzer";
                             break;
+                        case "costItemElementConfiguration":
+                            var messageWhat = "die Kostenkonfiguration für";
+                            break;
                         default:
                             var messageWhat = what;
                     }

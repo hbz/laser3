@@ -37,7 +37,7 @@ class SurveyUpdateService extends AbstractLockableService {
     }
 
     boolean surveyCheck() {
-        if(true) {
+        if(!running) {
             running = true
             def currentDate = new Date(System.currentTimeMillis())
 
