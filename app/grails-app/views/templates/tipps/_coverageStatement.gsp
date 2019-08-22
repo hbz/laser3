@@ -20,4 +20,4 @@
 <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
 <semui:xEditable owner="${covStmt}" field="embargo"/>
 
-<button data-entitlement="${covStmt.id}" class="ui button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></button>
+<g:link controller="subscription" action="removeCoverage" params="${[ieCoverage: covStmt.id]}" class="ui button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></g:link>
