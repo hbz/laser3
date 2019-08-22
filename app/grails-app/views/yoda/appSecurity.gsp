@@ -50,7 +50,8 @@
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
             <span class="ROLE_USER">ORG_BASIC_MEMBER</span> |
             <span class="ROLE_ADMIN">ORG_CONSORTIUM_SURVEY</span> &rArr;
-            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span>
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span> |
+            <span class="ROLE_API">FAKE</span>
         </div>
     </div>
 </div>

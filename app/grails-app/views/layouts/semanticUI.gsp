@@ -426,7 +426,7 @@
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
                             <div class="ui dropdown item">
-                                Dagobah
+                                Into the Wild ..
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
@@ -487,32 +487,34 @@
                                 ${message(code:'menu.admin.dataMigration')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions</g:link>
+                                    <g:link class="item" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</g:link>
+                                    <g:link class="item" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</g:link>
+                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</g:link>
+                                    <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
-                                    <g:link class="item" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings</g:link>
+                                    <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
+                                    <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
+
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
                                     <%--<g:link class="item" controller="yoda" action="updateCustomerType">Kundentyp für alle Einrichtungen setzen</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
-                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl</g:link>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
                                             data-confirm-term-how="ok"
                                             controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
-                                    <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/></g:link>
+
                                 </div>
                             </div>
 
                             <div class="divider"></div>
-                            <g:link class="item" controller="yoda" action="frontend" >Frontend für Entwickler</g:link>
+                            <g:link class="item" controller="yoda" action="frontend">Frontend für Entwickler</g:link>
 
                         </div>
 
