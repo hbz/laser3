@@ -380,7 +380,7 @@
         }).done(function(response) {
             $("#coverageStatements").append(response);
         }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+response);
+          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
         });
     });
 
@@ -394,7 +394,7 @@
         }).done(function(response) {
             $("#coverageStatements").append(response);
         }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+response);
+          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
         });
     });
 </r:script>
