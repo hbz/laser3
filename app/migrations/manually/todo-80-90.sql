@@ -92,8 +92,15 @@
 --UPDATE org_settings SET os_key_enum = 'OAMONITOR_SERVER_ACCESS' WHERE os_key_enum = 'OA2020_SERVER_ACCESS';
 --UPDATE org_settings SET os_key_enum = 'NATSTAT_SERVER_ACCESS' WHERE os_key_enum = 'STATISTICS_SERVER_ACCESS';
 
+
 -- 2019-08-20
 -- ERMS-1615
 -- remove subscription type collective (AFTER yoda-triggered migration)
 
 DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
+
+
+-- 2019-08-22
+-- set by all surveyConfigs evaluationFinish to false
+
+UPDATE survey_config SET surconf_evaluation_finish = false WHERE surconf_evaluation_finish is null;
