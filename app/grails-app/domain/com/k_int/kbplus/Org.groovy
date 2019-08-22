@@ -142,7 +142,7 @@ class Org
       importSource          column:'org_import_source'
     lastImportDate          column:'org_last_import_date'
        dateCreated          column:'org_date_created'
-       lastUpdated          column:'org_last_created'
+       lastUpdated          column:'org_last_updated'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [

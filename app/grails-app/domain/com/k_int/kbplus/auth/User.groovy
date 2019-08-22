@@ -23,6 +23,7 @@ class User {
   String apikey
   String apisecret
   Date dateCreated
+  Date lastUpdated
 
   boolean enabled
   boolean accountExpired

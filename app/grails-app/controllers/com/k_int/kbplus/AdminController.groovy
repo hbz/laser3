@@ -16,6 +16,10 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.util.slurpersupport.FilteredNodeChildren
+import groovy.util.slurpersupport.GPathResult
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -588,16 +592,73 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def orgsExport() {
     Date now = new Date()
-    File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
-    if(f.exists()) {
-      //complicated way - determine most recent org and user creation dates
-      def oldBase = new XmlSlurper().parse(f)
-      List orgDateStrings = oldBase.organisations.org.findAll { node ->
-        node.name() == 'dateCreated'
+    File basicDataDir = new File(grailsApplication.config.basicDataPath)
+    if(basicDataDir) {
+      GPathResult oldBase
+      XmlSlurper slurper = new XmlSlurper()
+      Date lastDumpDate
+      List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+        @Override
+        boolean accept(File dir, String name) {
+          return name.matches(grailsApplication.config.orgDumpFileNamePattern)
+        }
+      })
+      if(dumpFiles.size() > 0) {
+        dumpFiles.toSorted { f1, f2 ->
+          f1.lastModified() <=> f2.lastModified()
+        }
+        File lastDump = dumpFiles.last()
+        lastDumpDate = new Date(lastDump.lastModified())
+        oldBase = slurper.parse(lastDump)
       }
-      log.debug(orgDateStrings)
+      else {
+        File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+        lastDumpDate = new Date(f.lastModified())
+        if(f.exists()) {
+          //complicated way - determine most recent org and user creation dates
+          oldBase = slurper.parse(f)
+        }
+      }
+      if(oldBase) {
+        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+        Set<Org> newOrgData = []
+        Set<User> newUserData = []
+        Org.getAll().each { Org dbOrg ->
+          def correspOrg = oldBase.organisations.org.find { orgNode ->
+            orgNode.globalUID == dbOrg.globalUID
+          }
+          if(correspOrg) {
+            if(sdf.parse(correspOrg.lastUpdated.text()) > lastDumpDate) {
+              newOrgData << dbOrg
+            }
+          }
+          else if(dbOrg.dateCreated > lastDumpDate) {
+            newOrgData << dbOrg
+          }
+        }
+        User.getAll().each { User dbUser ->
+          def correspUser = oldBase.users.user.find { userNode ->
+            userNode.username == dbUser.username
+          }
+          if(correspUser) {
+            if(sdf.parse(correspUser.lastUpdated.text()) > lastDumpDate) {
+              newUserData << dbUser
+            }
+          }
+          else if(dbUser.dateCreated > lastDumpDate) {
+            newUserData << dbUser
+          }
+        }
+        flash.message = newOrgData
+        flash.message += newUserData
+        //now.format(message(code:'default.date.format.notime'))
+      }
     }
-    //now.format(message(code:'default.date.format.notime'))
+    else {
+      log.error("Basic data dump directory missing - PANIC!")
+      flash.error = "Das Verzeichnis der Exportdaten fehlt! Bitte anlegen und Datenbestand kontrollieren, ggf. neuen Basisdatensatz anlegen"
+    }
+    redirect controller: 'myInstitution', action: 'dashboard'
   }
 
   @Secured(['ROLE_ADMIN'])
