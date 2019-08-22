@@ -17,6 +17,7 @@ class SurveyResult extends AbstractProperty {
     Date endDate
 
     String comment
+    String participantComment
 
     SurveyProperty type
     SurveyConfig surveyConfig
@@ -31,6 +32,7 @@ class SurveyResult extends AbstractProperty {
         resultValues (nullable:true, blank:false)
         startDate  (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
+        participantComment (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -58,6 +60,8 @@ class SurveyResult extends AbstractProperty {
 
 
         comment column: 'surre_comment'
+        participantComment column: 'surre_participant_comment'
+
 
     }
 

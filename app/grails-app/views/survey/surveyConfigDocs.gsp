@@ -32,14 +32,10 @@
 
 <semui:messages data="${flash}" />
 
-
-
 <br>
-
 
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
-
 
 <br>
 
@@ -50,7 +46,7 @@
 <g:if test="${surveyConfigs}">
 
     <div class="ui grid">
-        <div class="four wide column">
+        %{--<div class="four wide column">
             <div class="ui vertical fluid menu">
                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
@@ -67,8 +63,8 @@
                 </g:each>
             </div>
         </div>
-
-        <div class="twelve wide stretched column">
+        --}%
+        <div class="sixteen wide stretched column">
 
             <semui:form>
 
@@ -143,7 +139,7 @@
             </semui:form>
         </div>
 
-    </div>
+
 
 </g:if>
 <g:else>

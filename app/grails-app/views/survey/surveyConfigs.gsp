@@ -21,23 +21,18 @@
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
-
 <g:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 <semui:messages data="${flash}"/>
 
-
 <br>
-
 
 <h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
         total="${surveyConfigs.size()}"/></h2>
 
 <div>
-
     <semui:form>
 
         <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.subscriptions')} <semui:totalNumber
@@ -63,9 +58,9 @@
             </thead>
         <g:set var="surveySubConfigs" value="${surveyConfigs.findAll{it?.type == 'Subscription'}}"/>
             <g:each in="${surveySubConfigs}" var="config" status="i">
-                    <tr style="${config?.configFinish ? 'background-color: Lime' : ''}">
+                    <tr style="${config?.configFinish ? 'background-color: green' : ''}">
                         <td class="center aligned" >
-                            <div class="ui label large la-annual-rings">
+                            %{--<div class="ui label large la-annual-rings">
                                 <g:if test="${config?.configOrder > 1}">
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
                                         params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
@@ -82,7 +77,8 @@
                                 <g:else>
                                     <i class="icon"></i>
                                 </g:else>
-                            </div>
+                            </div>--}%
+                            ${i+1}
                         </td>
                         <td>
                             <g:link controller="subscription" action="show"

@@ -98,5 +98,11 @@
 
 DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
+-- 2019-08-20
+-- ERMS-1615
+-- remove subscription type collective (after yoda-triggered migration)
+
+DELETE FROM laser.public.refdata_value WHERE rdv_value = 'Collective Subscription';
+
 
 

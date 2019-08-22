@@ -151,6 +151,7 @@
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
                                 <g:else>
+                                <div class="divider"></div>
                                 <semui:securedMainNavItem orgPerm="FAKE" affiliation="INST_EDITOR" controller="myInstitution" action="" message="menu.my.surveys" />
                                 </g:else>
 
