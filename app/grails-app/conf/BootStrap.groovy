@@ -36,6 +36,7 @@ class BootStrap {
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
+        log.info("Database: ${grailsApplication.config.dataSource.url}")
 
         if (grailsApplication.config.laserSystemId != null) {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
