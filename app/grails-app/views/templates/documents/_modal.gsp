@@ -17,7 +17,7 @@
         submitButtonLabel = message(code:'default.button.create_new.label')
         formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
         modalId = "modalCreateDocument"
-        docForAll = true
+        docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')

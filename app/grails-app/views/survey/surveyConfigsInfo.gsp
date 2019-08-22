@@ -37,7 +37,7 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<g:if test="${navigation}">
+%{--<g:if test="${navigation}">
     <br>
 
     <div class="ui center aligned grid">
@@ -67,7 +67,7 @@
             </g:else>
         </div>
     </div>
-</g:if>
+</g:if>--}%
 
 <br>
 
