@@ -1196,7 +1196,8 @@ class YodaController {
                                 accountExpired(u.accountExpired)
                                 accountLocked(u.accountLocked)
                                 passwordExpired(u.passwordExpired)
-
+                                dateCreated(u.dateCreated)
+                                lastUpdated(u.lastUpdated)
                                 //affiliations done already on organisations
                                 roles {
                                     u.roles.each { rObj ->

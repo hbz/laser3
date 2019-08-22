@@ -398,13 +398,12 @@ class ApiService {
     }
 
     /*
-        hic codex data pro organisationibus atque utilisatoribus leget et in repositorium datium scribit si hoc repositorium datium nulla data continet. In casis altris codex nihil facet
-        We should not think in Latin - this code reads off data from an existing dump and writes them into the database
+        hic codex data pro organisationibus atque utilisatoribus ex fons datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
+        We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the entire datasource or a part of it; in latter case, this is an increment
     */
-    void setupBasicData() {
-        log.debug("database is probably empty; setting up essential data ..")
+    void setupBasicData(File baseFile) {
         try {
-            def orgBase = new XmlSlurper().parse(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
+            def orgBase = new XmlSlurper().parse(baseFile)
             //insert all organisations
             orgBase.organisations.org.each { orgData ->
                 //filter out probably deleted orgs
@@ -642,8 +641,8 @@ class ApiService {
                         person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
                     }
 
-                    if(personData.isPublic.text() == 'true' ) {
-                        //log.debug("isPublic: ${RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(),personData.isPublic.rdc.text())}")
+                    if(personData.isPublic.text() == 'Yes' ) {
+                        //log.debug("isPublic: ${personData.isPublic.text()")
                         person.isPublic = true
                     }
                     if(personData.contactType.rdv.size() && personData.contactType.rdc.size()) {

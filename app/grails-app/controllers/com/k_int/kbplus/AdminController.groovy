@@ -18,6 +18,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
+import groovy.xml.MarkupBuilder
 
 import java.text.SimpleDateFormat
 
@@ -641,7 +642,7 @@ class AdminController extends AbstractDebugController {
             userNode.username == dbUser.username
           }
           if(correspUser) {
-            if(sdf.parse(correspUser.lastUpdated.text()) > lastDumpDate) {
+            if(correspUser.lastUpdated.text() && sdf.parse(correspUser.lastUpdated.text()) > lastDumpDate) {
               newUserData << dbUser
             }
           }
@@ -649,9 +650,361 @@ class AdminController extends AbstractDebugController {
             newUserData << dbUser
           }
         }
-        flash.message = newOrgData
-        flash.message += newUserData
-        //now.format(message(code:'default.date.format.notime'))
+        //data collected: prepare export!
+        if(newOrgData || newUserData) {
+          List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
+          File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+          StringBuilder exportReport = new StringBuilder()
+          exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
+          newDump.withWriter { writer ->
+            MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
+            orgDataBuilder.data {
+              organisations {
+                newOrgData.each { Org o ->
+                  org {
+                    globalUID(o.globalUID)
+                    name(o.name)
+                    shortname(o.shortname)
+                    shortcode(o.shortcode)
+                    sortname(o.sortname)
+                    url(o.url)
+                    urlGov(o.urlGov)
+                    importSource(o.importSource)
+                    lastImportDate(o.lastImportDate)
+                    impId(o.impId)
+                    gokbId(o.gokbId)
+                    comment(o.comment)
+                    ipRange(o.ipRange)
+                    scope(o.scope)
+                    dateCreated(o.dateCreated)
+                    lastUpdated(o.lastUpdated)
+                    categoryId(o.categoryId)
+                    sector {
+                      if(o.sector) {
+                        rdc(o.sector.owner.desc)
+                        rdv(o.sector.value)
+                      }
+                    }
+                    status {
+                      if(o.status) {
+                        rdc(o.status.owner.desc)
+                        rdv(o.status.value)
+                      }
+                    }
+                    membership {
+                      if(o.membership) {
+                        rdc(o.membership.owner.desc)
+                        rdv(o.membership.value)
+                      }
+                    }
+                    countryElem {
+                      if(o.country) {
+                        rdc(o.country.owner.desc)
+                        rdv(o.country.value)
+                      }
+                    }
+                    federalState {
+                      if(o.federalState) {
+                        rdc(o.federalState.owner.desc)
+                        rdv(o.federalState.value)
+                      }
+                    }
+                    libraryNetwork {
+                      if(o.libraryNetwork) {
+                        rdc(o.libraryNetwork.owner.desc)
+                        rdv(o.libraryNetwork.value)
+                      }
+                    }
+                    funderType {
+                      if(o.funderType) {
+                        rdc(o.funderType.owner.desc)
+                        rdv(o.funderType.value)
+                      }
+                    }
+                    libraryType {
+                      if(o.libraryType) {
+                        rdc(o.libraryType.owner.desc)
+                        rdv(o.libraryType.value)
+                      }
+                    }
+                    costConfigurations {
+                      CostItemElementConfiguration.findAllByForOrganisation(o).each { ciecObj ->
+                        CostItemElementConfiguration ciec = (CostItemElementConfiguration) ciecObj
+                        costConfiguration {
+                          rdc(ciec.costItemElement.owner.desc)
+                          rdv(ciec.costItemElement.value)
+                          elementSign {
+                            rdc(ciec.elementSign.owner.desc)
+                            rdv(ciec.elementSign.value)
+                          }
+                        }
+                      }
+                    }
+                    ids {
+                      o.ids.each { idObj ->
+                        IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                        id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                      }
+                    }
+                    //outgoing/ingoingCombos: assembled in branch combos
+                    //prsLinks, affiliations, contacts and addresses done on own branches respectively
+                    orgTypes {
+                      o.orgType.each { ot ->
+                        orgType {
+                          rdc(ot.owner.desc)
+                          rdv(ot.value)
+                        }
+                      }
+                    }
+                    settings {
+                      List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                      os.each { st ->
+                        switch(st.key.type) {
+                          case RefdataValue:
+                            if(st.rdValue) {
+                              setting {
+                                name(st.key)
+                                rdValue {
+                                  rdc(st.rdValue.owner.desc)
+                                  rdv(st.rdValue.value)
+                                }
+                              }
+                            }
+                            break
+                          case Role:
+                            if(st.roleValue) {
+                              setting {
+                                name(st.key)
+                                roleValue(st.roleValue.authority)
+                              }
+                            }
+                            break
+                          default: setting{
+                            name(st.key)
+                            value(st.getValue())
+                            }
+                            break
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              affiliations {
+                UserOrg.findAllByUserInList(newUserData.toList()).each { userOrg ->
+                  affiliation {
+                    user(userOrg.user.username)
+                    org(userOrg.org.globalUID)
+                    status(userOrg.status)
+                    if(userOrg.formalRole) {
+                      formalRole(userOrg.formalRole.authority)
+                    }
+                    if(userOrg.dateActioned) {
+                      dateActioned(userOrg.dateActioned)
+                    }
+                    if(userOrg.dateRequested) {
+                      dateRequested(userOrg.dateRequested)
+                    }
+                  }
+                }
+              }
+              combos {
+                Combo.executeQuery('select c from Combo c where c.fromOrg in :fromOrg or c.toOrg in :toOrg',[fromOrg: newOrgData.toList(),toOrg: newOrgData.toList()]).each { c ->
+                  if(c.type) {
+                    combo {
+                      status {
+                        if (c.status) {
+                          rdc(c.status.owner.desc)
+                          rdv(c.status.value)
+                        }
+                      }
+                      type{
+                        rdc(c.type.owner.desc)
+                        rdv(c.type.value)
+                      }
+                      fromOrg(c.fromOrg.globalUID)
+                      toOrg(c.toOrg.globalUID)
+                    }
+                  }
+                }
+              }
+              persons {
+                newPersonData.each { Person p ->
+                  person {
+                    log.debug("now processing ${p.id}")
+                    globalUID(p.globalUID)
+                    title(p.title)
+                    firstName(p.first_name)
+                    middleName(p.middle_name)
+                    lastName(p.last_name)
+                    if(p.tenant)
+                      tenant(p.tenant.globalUID)
+                    if(p.gender) {
+                      gender {
+                        rdc(p.gender.owner.desc)
+                        rdv(p.gender.value)
+                      }
+                    }
+                    if(p.isPublic) {
+                      isPublic {
+                        'Yes'
+                      }
+                    }
+                    if(p.contactType) {
+                      contactType {
+                        rdc(p.contactType.owner.desc)
+                        rdv(p.contactType.value)
+                      }
+                    }
+                    if(p.roleType) {
+                      roleType {
+                        rdc(p.roleType.owner.desc)
+                        rdv(p.roleType.value)
+                      }
+                    }
+                  }
+                }
+              }
+              personRoles {
+                PersonRole.findAllByOrgInList(newOrgData.toList()).each { link ->
+                  personRole {
+                    org(link.org.globalUID)
+                    prs(link.prs.globalUID)
+                    if(link.positionType) {
+                      positionType {
+                        rdc(link.positionType.owner.desc)
+                        rdv(link.positionType.value)
+                      }
+                    }
+                    if(link.functionType) {
+                      functionType {
+                        rdc(link.functionType.owner.desc)
+                        rdv(link.functionType.value)
+                      }
+                    }
+                    if(link.responsibilityType) {
+                      responsibilityType {
+                        rdc(link.responsibilityType.owner.desc)
+                        rdv(link.responsibilityType.value)
+                      }
+                    }
+                  }
+                }
+              }
+              users {
+                newUserData.each { User u ->
+                  user {
+                    username(u.username)
+                    display(u.display)
+                    password(u.password)
+                    email(u.email)
+                    shibbScope(u.shibbScope)
+                    apikey(u.apikey)
+                    apisecret(u.apisecret)
+                    enabled(u.enabled)
+                    accountExpired(u.accountExpired)
+                    accountLocked(u.accountLocked)
+                    passwordExpired(u.passwordExpired)
+                    dateCreated(u.dateCreated)
+                    lastUpdated(u.lastUpdated)
+                    //affiliations done already on organisations
+                    roles {
+                      u.roles.each { rObj ->
+                        UserRole r = (UserRole) rObj
+                        role(r.role.authority)
+                      }
+                    }
+                    settings {
+                      List<UserSettings> us = UserSettings.findAllByUser(u)
+                      us.each { st ->
+                        switch(st.key.type) {
+                          case Org: setting{
+                            name(st.key)
+                            org(st.orgValue ? st.orgValue.globalUID : ' ')
+                          }
+                            break
+                          case RefdataValue:
+                            if(st.rdValue) {
+                              setting {
+                                name(st.key)
+                                rdValue {
+                                  rdc(st.rdValue.owner.desc)
+                                  rdv(st.rdValue.value)
+                                }
+                              }
+                            }
+                            break
+                          default: setting{
+                            name(st.key)
+                            value(st.getValue())
+                            }
+                            break
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              addresses {
+                Address.executeQuery('select a from Address a where a.prs in :prsList or a.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { a ->
+                  address {
+                    if(a.org) org(a.org.globalUID)
+                    if(a.prs) prs(a.prs.globalUID)
+                    street1(a.street_1)
+                    street2(a.street_2)
+                    zipcode(a.zipcode)
+                    city(a.city)
+                    pob(a.pob)
+                    pobZipcode(a.pobZipcode)
+                    pobCity(a.pobCity)
+                    if(a.state) {
+                      state {
+                        rdc(a.state.owner.desc)
+                        rdv(a.state.value)
+                      }
+                    }
+                    if(a.country) {
+                      countryElem {
+                        rdc(a.country.owner.desc)
+                        rdv(a.country.value)
+                      }
+                    }
+                    type {
+                      rdc(a.type.owner.desc)
+                      rdv(a.type.value)
+                    }
+                    if(a.name) name(a.name)
+                    if(a.additionFirst) additionFirst(a.additionFirst)
+                    if(a.additionSecond) additionSecond(a.additionSecond)
+                  }
+                }
+              }
+              contacts {
+                Contact.executeQuery('select c from Contact c where c.prs in :prsList or c.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { c ->
+                  contact {
+                    if(c.org) org(c.org.globalUID)
+                    if(c.prs) prs(c.prs.globalUID)
+                    content(c.content)
+                    contentType {
+                      rdc(c.contentType.owner.desc)
+                      rdv(c.contentType.value)
+                    }
+                    type {
+                      rdc(c.type.owner.desc)
+                      rdv(c.type.value)
+                    }
+                  }
+                }
+              }
+            }
+          }
+          exportReport.append(newOrgData.join("</li><li>")+"</ul></p>")
+          exportReport.append("<p>Folgende Nutzer wurden erfolgreich exportiert: <ul><li>"+newUserData.join("</li><li>")+"</ul></p>")
+          flash.message = exportReport.toString()
+        }
+        else {
+          flash.error = "Es liegen keine Daten zum Export vor!"
+        }
       }
     }
     else {
