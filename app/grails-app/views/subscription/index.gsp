@@ -180,7 +180,7 @@
                                 <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
                             </th>
                             <th>
-                                <semui:datepicker hideLabel="true"
+                                <%--<semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from', default: 'Earliest date')}"
                                                   inputCssClass="la-input-small" id="bulk_start_date"
                                                   name="bulk_start_date"/>
@@ -189,7 +189,7 @@
                                 <semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.to', default: 'Latest Date')}"
                                                   inputCssClass="la-input-small" id="bulk_end_date"
-                                                  name="bulk_end_date"/>
+                                                  name="bulk_end_date"/>--%>
                             </th>
                             <th>
                                 <semui:datepicker hideLabel="true"
@@ -240,7 +240,7 @@
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td id="coverageStatements">
+                                <td class="coverageStatements" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
@@ -257,7 +257,7 @@
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
                                             </p>
                                         </g:each>
-                                        <button data-entitlement="${ie.id}" class="ui button positive tiny addCoverage"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></button>
+                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
                                     </g:else>
                                 </td>
                                 <td>
@@ -369,34 +369,6 @@
             hide: 0
         }
       });
-
-    $('.addCoverage').on('click',function(){
-        var ieId = $(this).attr("data-entitlement");
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="addCoverage"/>",
-            data: {
-                issueEntitlement: ieId
-            }
-        }).done(function(response) {
-            $("#coverageStatements").append(response);
-        }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
-        });
-    });
-
-    $('.removeCoverage').on('click',function(){
-        var ieId = $(this).attr("data-entitlement");
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="removeCoverage"/>",
-            data: {
-                ieCoverage: ieId
-            }
-        }).done(function(response) {
-            $("#coverageStatements").append(response);
-        }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
-        });
-    });
 </r:script>
 </body>
 </html>
