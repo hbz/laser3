@@ -18,7 +18,7 @@
         <tbody>
             <g:each in="${ies.sourceIEs}" var="ie">
                 <g:set var="tipp" value="${ie.tipp}"/>
-                <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_STATUS_DELETED}}" />
+                <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_DELETED}}" />
                 <g:if test="${side == 'source' || (side == 'target' && isContainedByTarget)}">
                     <tr data-gokbId="${tipp.gokbId}" data-index="${counter}">
                         <td><input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck"></td>
@@ -106,7 +106,11 @@
                             </div>
                         </td>
                         <td>
-                            Preisinformation, kommt mit ERMS-1104
+                            <g:if test="${ie.priceItem}">
+                                <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencySymbol="${ie.priceItem.listPriceCurrency}" currencyCode="${ie.priceItem.listPriceCurrency}"/><br>
+                                <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencySymbol="${ie.priceItem.localPriceCurrency}" currencyCode="${ie.priceItem.localPriceCurrency}"/><br>
+                                <semui:datepicker class="ieOverwrite" name="priceDate" value="${ie.priceItem.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                            </g:if>
                         </td>
                         <td>
                             <g:if test="${side == 'target' && isContainedByTarget}">

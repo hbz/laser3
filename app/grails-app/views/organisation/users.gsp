@@ -72,7 +72,7 @@
 
             <g:each in="${pendingRequests}" var="uo">
                 <tr>
-                    <td>
+                    <td class="la-main-object">
                         ${uo.user.username}
                     </td>
                     <td>
@@ -131,7 +131,7 @@
 
         <g:each in="${users}" var="uo">
             <tr>
-                <td>
+                <td class="la-main-object">
                     ${uo.user.username}
 
                     <g:if test="${! uo.user.enabled}">

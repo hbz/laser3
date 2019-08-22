@@ -289,7 +289,7 @@
                     ${ (params.int('offset') ?: 0)  + i + 1 }
                 </td>
                 <td>
-                    <g:link controller="subscription" action="show" id="${s.id}">
+                    <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                         <g:if test="${s.name}">
                             ${s.name}
                         </g:if>

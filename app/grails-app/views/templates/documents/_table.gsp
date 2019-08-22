@@ -82,7 +82,7 @@
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_DELETED)}">
                     <tr>
-                        <td>
+                        <td class="la-main-object" >
                             ${docctx.owner.title}
                         </td>
                         <td>

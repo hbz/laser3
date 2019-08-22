@@ -56,6 +56,7 @@
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
+
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>

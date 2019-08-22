@@ -6,7 +6,9 @@ import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import com.k_int.properties.PropertyDefinition
 import de.laser.SystemEvent
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.domain.SystemProfiler
+import de.laser.domain.TIPPCoverage
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -334,13 +336,13 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def getTIPPsWithoutGOKBId() {
         log.debug("delete TIPPs without GOKb-ID")
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_STATUS_DELETED)
+        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullAndStatusNotEqual(RDStore.TIPP_DELETED)
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
         Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
         issueEntitlementsAffected.each { IssueEntitlement ie ->
-            if(ieTippMap.get(ie.tipp))
+            if (ieTippMap.get(ie.tipp)) {
                 ieTippMap[ie.tipp] << ie
-            else {
+            } else {
                 Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
                 ies.add(ie)
                 ieTippMap[ie.tipp] = ies
@@ -364,6 +366,31 @@ class YodaController {
             flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete}"
             redirect action: 'getTIPPsWithoutGOKBId'
         }
+    }
+
+    @Secured(['ROLE_YODA'])
+    def remapOriginEditUrl() {
+        List<IdentifierOccurrence> originEditUrls = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence io join io.identifier id where lower(id.ns.ns) = 'originediturl'")
+        originEditUrls.each { originEditUrl ->
+            def obj
+            if(originEditUrl.tipp) {
+                obj = originEditUrl.tipp
+            }
+            else if(originEditUrl.ti) {
+                obj = originEditUrl.ti
+            }
+            else if(originEditUrl.pkg) {
+                obj = originEditUrl.pkg
+            }
+            else if(originEditUrl.org) {
+                obj = originEditUrl.org
+            }
+            if(!obj.originEditUrl) {
+                obj.originEditUrl = new URL(originEditUrl.identifier.value)
+                obj.save()
+            }
+        }
+        redirect controller: 'home'
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -520,6 +547,12 @@ class YodaController {
                 }
             }
         }
+
+        OrgCustomProperty.executeQuery(
+                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf '
+                + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' )',
+                [orgConf: PropertyDefinition.ORG_CONF]
+        ).each{ it.delete() }
 
         redirect action:'dashboard'
     }

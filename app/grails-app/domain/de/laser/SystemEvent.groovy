@@ -127,7 +127,7 @@ class SystemEvent {
             result.token = token
             result.payload = payload ? (new JSON(payload)).toString(false) : null
 
-            result.save(flush:true)
+            result.save()
         }
 
         result

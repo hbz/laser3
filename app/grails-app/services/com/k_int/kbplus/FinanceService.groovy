@@ -88,7 +88,7 @@ class FinanceService {
                     consSort = " order by ${params.sort} ${params.order}"
                 else
                     consSort = " order by sortname asc "
-                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIPTION_COLLECTIVE,OR_SUBSCRIPTION_CONSORTIA]]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE,OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())

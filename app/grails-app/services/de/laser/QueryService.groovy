@@ -165,7 +165,7 @@ class QueryService {
         def result = [:]
         def base_qry
         def qry_params
-        boolean isLicensingConsortium = ((OT_CONSORTIUM?.id in institution?.getallOrgTypeIds()))
+        boolean isLicensingConsortium = (institution?.hasPerm("ORG_CONSORTIUM"))
         boolean isLicensee = ! isLicensingConsortium
 
         if (isLicensee) {

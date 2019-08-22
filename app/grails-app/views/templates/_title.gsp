@@ -55,15 +55,6 @@
       </div>
     </g:if>
 
-      <g:if test="${ie.coverageNote ?: (ie.tipp?.coverageNote ?: '')}">
-      <div class="item">
-        <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote', default: 'Coverage Note')}"></i>
-        <div class="content">
-          ${ie.coverageNote ?: (ie.tipp?.coverageNote ?: '')}
-        </div>
-      </div>
-    </g:if>
-
       <g:if test="${ie?.tipp?.pkg?.id}">
       <div class="item">
         <i class="grey icon gift scale la-popup-tooltip la-delay" data-content="${message(code: 'tipp.package', default: 'Package')}"></i>
@@ -118,9 +109,7 @@
         <i class="book icon"></i>
       </g:link>
     </g:if>
-<%-- TODO Link to tipp in GOKb
-    <g:each in="${apisources}"
-            var="gokbAPI">
+    <g:each in="${apisources}" var="gokbAPI">
       <g:if test="${ie?.tipp?.gokbId}">
         <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
            data-content="${message(code: 'gokb')}"
@@ -129,8 +118,6 @@
         </a>
       </g:if>
     </g:each>
---%>
-    <br><br>
     <g:if test="${ie.tipp?.hostPlatformURL}">
       <div class="la-title">${message(code: 'platform')}</div>
       <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
