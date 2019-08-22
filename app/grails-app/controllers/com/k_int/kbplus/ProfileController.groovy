@@ -193,6 +193,7 @@ class ProfileController {
     changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD),   params.remindPeriodForSubscriptionNoticeperiod, 'profile.updateProfile.updated.remindPeriodForSubscriptionNoticeperiod')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD),        params.remindPeriodForSubscriptionEnddate,      'profile.updateProfile.updated.remindPeriodForSubscriptionEnddate')
     changeValue(user.getSetting(REMIND_PERIOD_FOR_TASKS, DEFAULT_REMINDER_PERIOD),                        params.remindPeriodForTasks,                    'profile.updateProfile.updated.remindPeriodForTasks')
+    changeValue(user.getSetting(REMIND_PERIOD_FOR_SURVEYS_ENDDATE, DEFAULT_REMINDER_PERIOD),              params.remindPeriodForSurveysEndDate,           'profile.updateProfile.updated.remindPeriodForSurveyEndDate')
 
     //Error: Emailreminder without Emailaddress
     if ( (! user.email) && params.isRemindByEmail) {
@@ -229,11 +230,52 @@ class ProfileController {
     changeValue(user.getSetting(IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_NO),              params.isOrgPrivateProp?:"N",                'profile.updateProfile.updated.org.privateProperty')
     changeValue(user.getSetting(IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_NO),           params.isPersonPrivateProp?:"N",             'profile.updateProfile.updated.person.privateProperty')
     changeValue(user.getSetting(IS_REMIND_FOR_TASKS, YN_NO),                         params.isTasks?:"N",                         'profile.updateProfile.updated.tasks')
+    changeValue(user.getSetting(IS_REMIND_FOR_SURVEYS_ENDDATE, YN_NO),               params.isSurveysEndDate?:"N",      'profile.updateProfile.updated.surveysEndDate')
 
     user.save();
 
     redirect(action: "index")
   }
+    @Secured(['ROLE_USER'])
+    def updateNotificationSettings() {
+        def user = User.get(springSecurityService.principal.id)
+
+        flash.message = ""
+        flash.error = ""
+
+        //Error: Emailreminder without Emailaddress
+        if ( (! user.email) && params.isNotificationByEmail) {
+            flash.error += message(code:'profile.updateProfile.updated.isNotificationByEmail.error')
+        } else {
+            changeValue(user.getSetting(IS_NOTIFICATION_BY_EMAIL, YN_NO),                                             params.isNotificationByEmail?:"N",                    'profile.updateProfile.updated.isNotificationByEmail')
+        }
+
+        //Error: EmailCCReminder without EmailReminder
+        if (user.getSetting(IS_NOTIFICATION_BY_EMAIL, YN_NO).equals(YN_NO) && params.isNotificationCCByEmail){
+            flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.isNotificationByEmailNotChecked')
+        } else {
+            if ( params.isNotificationCCByEmail && ( ! params.notificationCCEmailaddress) ) {
+                flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.noCCEmailAddressError')
+            } else {
+                if (params.notificationCCEmailaddress){
+                    if (validateEmailAddress(params.notificationCCEmailaddress)){
+                        changeValue(user.getSetting(NOTIFICATION_CC_EMAILADDRESS, null),       params.notificationCCEmailaddress,     'profile.updateProfile.updated.notificationCCEmailaddress')
+                    } else {
+                        flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
+                    }
+                }
+                changeValue(user.getSetting(IS_NOTIFICATION_CC_BY_EMAIL, YN_NO),                   params.isNotificationCCByEmail?:"N",     'profile.updateProfile.updated.isNotificationCCByEmail')
+            }
+        }
+
+        changeValue(user.getSetting(IS_NOTIFICATION_FOR_SURVEYS_START, YN_NO),    params.isNotificationForSurveysStart?:"N",     'profile.updateProfile.updated.surveysStart')
+        changeValue(user.getSetting(IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_NO),    params.isNotificationForSystemMessages?:"N",     'profile.updateProfile.updated.systemMessages')
+
+        user.save();
+
+        redirect(action: "index")
+    }
+
     private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
         def oldValue = userSetting.value
         if (newValue) {
@@ -262,7 +304,8 @@ class ProfileController {
                     REMIND_PERIOD_FOR_ORG_PRIVATE_PROP == userSetting.key ||
                     REMIND_PERIOD_FOR_ORG_CUSTOM_PROP == userSetting.key ||
                     REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key
+                    REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key ||
+                    REMIND_PERIOD_FOR_SURVEYS_ENDDATE == userSetting.key
             ) {
                 flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error.dashboardReminderPeriod') + "<br/>")
             } else {

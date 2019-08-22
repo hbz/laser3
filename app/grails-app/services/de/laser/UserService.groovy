@@ -10,9 +10,9 @@ class UserService {
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
-        // called after
-        // new User.save()
-        // or
-        // every successful login
-    }
+// called after
+// new User.save()
+// or
+// every successful login
+}
 }

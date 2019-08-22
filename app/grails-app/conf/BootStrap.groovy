@@ -229,14 +229,11 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        //log.debug("addDefaultJasperReports ..")
-        //addDefaultJasperReports()
-
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
-        log.debug("createOrgConfig ..")
-        createOrgConfig()
+        //log.debug("createOrgConfig ..")
+        //createOrgConfig()
 
         log.debug("createOrgProperties ..")
         createOrgProperties()

@@ -35,7 +35,7 @@
                 <td>
                     ${c + 1 + (offset?:0)}
                 </td>
-				<td>
+				<td class="la-main-object" >
                     ${person?.first_name? person?.last_name + ', ' + person?.first_name : person?.last_name}
                     ${person?.middle_name}
 				</td>
