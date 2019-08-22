@@ -1,5 +1,5 @@
 <br>
-<g:if test="${surveyConfig?.type == 'Subscription'}">
+%{--<g:if test="${surveyConfig?.type == 'Subscription'}">
     <h3 class="ui icon header"><semui:headerIcon/>
     <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
         ${surveyConfig?.subscription?.name}
@@ -8,7 +8,7 @@
 </g:if>
 <g:else>
     <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-</g:else>
+</g:else>--}%
 
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"

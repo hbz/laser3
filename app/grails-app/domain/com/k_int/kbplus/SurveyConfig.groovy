@@ -40,6 +40,7 @@ class SurveyConfig {
     boolean pickAndChoose
     boolean configFinish
     boolean costItemsFinish
+    boolean evaluationFinish
 
     static hasMany = [
             documents       : DocContext,
@@ -61,6 +62,7 @@ class SurveyConfig {
         scheduledStartDate (nullable: true, blank: false)
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
+        evaluationFinish (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -74,6 +76,7 @@ class SurveyConfig {
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish', default: false
         costItemsFinish column: 'surconf_costitems_finish', default: false
+        evaluationFinish column: 'surconf_evaluation_finish', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -235,6 +238,12 @@ class SurveyConfig {
 
     boolean showUIShareButton() {
         return false
+    }
+
+    def getSurveyConfigCostItems(){
+
+        return CostItem.findAllBySurveyOrgInList(this.orgs)
+
     }
 
 

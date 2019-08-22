@@ -48,6 +48,33 @@ class SurveyController {
         params.max = result.max
         params.offset = result.offset
 
+        params.tab = params.tab ?: 'created'
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
+
+        result.surveyConfigs = SurveyConfig.executeQuery(fsq.query, fsq.queryParams, params)
+        result.countSurveyConfigs = getSurveyConfigCounts()
+
+        result
+    }
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def currentSurveysConsortia_OLD() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+        params.max = result.max
+        params.offset = result.offset
+
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
 
@@ -2123,6 +2150,29 @@ class SurveyController {
                 sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
                 return exportService.generateXLSXWorkbook(sheetData)
         }
+    }
+
+    private def getSurveyConfigCounts(){
+        def result = [:]
+
+        def contextOrg = contextService.getOrg()
+
+        result.created = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status and surInfo.status = :status2",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+
+        result.active = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+
+        result.finish = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+
+        result.inEvaluation = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+
+        result.completed = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_COMPLETED]).size()
+
+        return result
     }
 
 }

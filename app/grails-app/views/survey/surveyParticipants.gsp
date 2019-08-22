@@ -31,34 +31,41 @@
 
 <br>
 
-<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
-        total="${surveyConfigs.size()}"/></h2>
+<h2 class="ui left aligned icon header">
+    <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+            ${surveyConfig?.subscription?.name}
+        </g:link>
+    </g:if>
+    <g:else>
+        ${surveyConfig?.getConfigNameShort()}
+    </g:else>
+</h2>
 
 <br>
 
 
-
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
-        <div class="four wide column">
-            <div class="ui vertical fluid menu">
-                <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
+        %{-- <div class="four wide column">
+             <div class="ui vertical fluid menu">
+                 <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
-                    <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                            controller="survey" action="surveyParticipants"
-                            id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
+                     <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
+                             controller="survey" action="surveyParticipants"
+                             id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-                        <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-                        ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+                         <h5 class="ui header">${config?.getConfigNameShort()}</h5>
+                         ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                        <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
-                    </g:link>
-                </g:each>
-            </div>
-        </div>
+                         <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
+                     </g:link>
+                 </g:each>
+             </div>
+         </div>--}%
 
-        <div class="twelve wide stretched column">
+        <div class="sixteen wide stretched column">
             <div class="ui top attached tabular menu">
 
                 <g:if test="${surveyConfig?.type == 'Subscription'}">
