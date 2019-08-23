@@ -2,14 +2,13 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import de.laser.OrgTypeService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.hibernate.type.TextType
+import groovy.sql.Sql
 
 import java.text.SimpleDateFormat
 
@@ -20,6 +19,7 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def dataSource
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -274,6 +274,9 @@ class BootStrap {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
+        log.debug("adjustDatabasePermissions ..")
+        adjustDatabasePermissions()
+
         log.debug("here we go ..")
     }
 
@@ -427,6 +430,13 @@ class BootStrap {
                 }
             }
         }
+
+    }
+
+    def adjustDatabasePermissions() {
+
+        Sql sql = new Sql(dataSource)
+        sql.rows("SELECT * FROM grants_for_backup()")
     }
 
     @Deprecated
