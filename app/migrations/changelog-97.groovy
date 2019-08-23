@@ -16,7 +16,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1566540202427-3") {
+	changeSet(author: "kloberd (modified)", id: "1566540202427-3") {
 		grailsChange {
 			change {
 				sql.execute("ALTER TABLE org RENAME date_created TO org_date_created")
@@ -25,7 +25,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1566540202427-4") {
+	changeSet(author: "kloberd (modified)", id: "1566540202427-4") {
 		grailsChange {
 			change {
 				sql.execute("ALTER TABLE org RENAME last_updated TO org_last_updated")
