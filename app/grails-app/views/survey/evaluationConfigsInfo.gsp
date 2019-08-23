@@ -78,7 +78,7 @@
                         <dd>
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular label">${surveyConfig?.documents?.size()}</div>
+                                <div class="ui circular label">${surveyConfig?.getCurrentDocs()?.size()}</div>
                             </g:link>
                         </dd>
 

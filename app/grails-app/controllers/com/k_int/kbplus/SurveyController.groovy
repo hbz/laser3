@@ -53,7 +53,7 @@ class SurveyController {
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
-        result.surveys = SurveyConfig.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
 
         result
@@ -1882,7 +1882,7 @@ class SurveyController {
             }
             surveyOrgsDo.each { surveyOrg ->
 
-                if(!surveyOrg?.checkPerennialTerm()) {
+                if(!surveyOrg?.existsMultiYearTerm()) {
 
                     if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                         newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -2072,6 +2072,12 @@ class SurveyController {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
+                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)
+
+                    if (surveyOrg?.existsMultiYearTerm()){
+                        value = g.message(code: "surveyOrg.perennialTerm.available")
+                    }
+
                     row.add([field: value ?: '', style: null])
                     row.add([field: result.comment ?: '', style: null])
                     row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
@@ -2130,7 +2136,7 @@ class SurveyController {
 
             def costItem = CostItem.findBySurveyOrg(surveyOrg)
 
-            if (!surveyOrg?.checkPerennialTerm()) {
+            if (!surveyOrg?.existsMultiYearTerm()) {
                 if (costItem) {
                     row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }
