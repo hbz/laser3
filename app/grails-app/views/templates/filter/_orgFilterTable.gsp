@@ -450,7 +450,7 @@
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
-            <td class="center aligned">
+            <td class="center aligned x">
                 <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}"
                         var="costItem">
 
@@ -460,6 +460,11 @@
                                         maxFractionDigits="2" type="number"/>
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
+                        <g:link controller="finance" action="editCostItem" params='[sub:"${costItem.sub?.id}", id:"${costItem.id}", tab:"cons"]' class="ui icon button trigger-modal">
+                            <i class="write icon"></i>
+                        </g:link>
+
                     </g:if>
                 </g:each>
 
@@ -485,13 +490,13 @@
                         </g:if>
 
                             <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})"
-                                    class="ui icon button right floated trigger-modal">
+                                    class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                     </g:if>
                     <g:else>
                         <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${null})"
-                                class="ui icon button right floated trigger-modal">
+                                class="ui icon circular button right floated trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                     </g:else>
@@ -550,6 +555,34 @@
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
     <r:script>
+   $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: $(this).attr('href')
+                    }).done( function(data) {
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty().html(data);
+
+                        $('#dynamicModalContainer .ui.modal').modal({
+                            onVisible: function () {
+                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                                ajaxPostFunc();
+                                setupCalendar();
+                            },
+                            detachable: true,
+                            closable: false,
+                            transition: 'scale',
+                            onApprove : function() {
+                                $(this).find('.ui.form').submit();
+                                return false;
+                            }
+                        }).modal('show');
+                    })
+                });
+
         function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
             event.preventDefault();
             $.ajax({

@@ -39,9 +39,7 @@ grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 grails.plugin.databasemigration.changelogLocation = "./migrations"
 
-System.out.println("\n")
-System.out.println("~ local config override: ${grails.config.locations}")
-System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
+System.out.println("!  local config override: ${grails.config.locations}")
 
 getCurrentServer = {
     // laserSystemId mapping for runtime check; do not delete
@@ -505,7 +503,7 @@ if (!base) {
 // Log file variable.
 def logFile = logWatchFile.canonicalPath
 
-System.out.println("~ using log file location: ${logFile}")
+//System.out.println("~ using log file location: ${logFile}")
 
 // Also add it as config value too.
 log_location = logFile

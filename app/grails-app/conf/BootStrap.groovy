@@ -36,6 +36,11 @@ class BootStrap {
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
+        log.info("Database: ${grailsApplication.config.dataSource.url}")
+        log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
+        log.info("Documents: ${grailsApplication.config.documentStorageLocation}")
+
+        log.info("--------------------------------------------------------------------------------")
 
         if (grailsApplication.config.laserSystemId != null) {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
@@ -380,10 +385,24 @@ class BootStrap {
     }
 
     def updatePsqlRoutines() {
-        String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
-        File dir = new File(dirPath)
+
+        File dir
+
+        try {
+            def folder = this.class.classLoader.getResource('./migrations/functions')
+            dir = new File(folder.file)
+        }
+        catch (Exception e) {
+            log.warn(e)
+            log.warn('fallback ..')
+
+            String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
+            dir = new File(dirPath)
+        }
 
         if (dir.exists()) {
+            log.debug('scanning ' + dir.getAbsolutePath())
+
             dir.listFiles().each { file ->
                 String fileName = file.getName()
                 if (fileName.endsWith('.sql')) {

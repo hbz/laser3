@@ -7,6 +7,7 @@ import de.laser.AccessService
 import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -311,6 +312,32 @@ class SubscriptionController extends AbstractDebugController {
 
     }
 
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def addCoverage() {
+        IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
+        if(base) {
+            IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
+            if(ieCoverage.save())
+                redirect action: 'index', id: base.subscription.id
+            else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
+        }
+        else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def removeCoverage() {
+        IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
+        Long subId = ieCoverage.issueEntitlement.subscription.id
+        if(ieCoverage) {
+            ieCoverage.delete()
+            redirect action: 'index', id: subId
+        }
+        else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -613,13 +640,13 @@ class SubscriptionController extends AbstractDebugController {
 
                 if (params.bulkOperation == "edit") {
 
-                    if (params.bulk_start_date && (params.bulk_start_date.trim().length() > 0)) {
+                    /*if (params.bulk_start_date && (params.bulk_start_date.trim().length() > 0)) {
                         ie.startDate = formatter.parse(params.bulk_start_date)
                     }
 
                     if (params.bulk_end_date && (params.bulk_end_date.trim().length() > 0)) {
                         ie.endDate = formatter.parse(params.bulk_end_date)
-                    }
+                    }*/
 
                     if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
                         ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
@@ -647,9 +674,9 @@ class SubscriptionController extends AbstractDebugController {
                         log.error("Problem saving ${ie.errors}")
                     }
                 } else if (params.bulkOperation == "remove") {
-                    log.debug("Updating ie ${ie.id} status to deleted");
+                    log.debug("Updating ie ${ie.id} status to deleted")
                     def deleted_ie = TIPP_DELETED
-                    ie.status = deleted_ie;
+                    ie.status = deleted_ie
                     if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
                     }
