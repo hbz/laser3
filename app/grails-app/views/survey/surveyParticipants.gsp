@@ -10,7 +10,17 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}" />
+    </g:if>
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}" />
+    </g:if>
+    <semui:crumb message="surveyParticipants.label" class="active"/>
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <g:render template="actions"/>
@@ -20,8 +30,6 @@
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
-
-
 
 <g:render template="nav"/>
 
@@ -33,6 +41,7 @@
 
 <h2 class="ui left aligned icon header">
     <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
             ${surveyConfig?.subscription?.name}
         </g:link>
@@ -40,10 +49,10 @@
     <g:else>
         ${surveyConfig?.getConfigNameShort()}
     </g:else>
+    : ${message(code: 'surveyParticipants.label')}
 </h2>
 
 <br>
-
 
 <g:if test="${surveyConfigs}">
     <div class="ui grid">

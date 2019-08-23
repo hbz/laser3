@@ -99,7 +99,6 @@
 
 DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
-
 -- 2019-08-22
 -- set by all surveyConfigs evaluationFinish to false
 ALTER TABLE public.survey_config ADD surconf_evaluation_finish boolean DEFAULT false  NULL;

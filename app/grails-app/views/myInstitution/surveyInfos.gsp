@@ -163,11 +163,13 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
                     <td>
                         <g:if test="${participantSubscription}">
+                            <i class="icon clipboard outline la-list-icon"></i>
                             <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]">
                                 ${participantSubscription?.name}
                             </g:link>
                         </g:if>
                         <g:else>
+                            <i class="icon clipboard outline la-list-icon"></i>
                             <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
                                 ${surveyConfig?.subscription?.name}
                             </g:link>
