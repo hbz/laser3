@@ -41,6 +41,17 @@ class QueryService {
                                   endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
+        if (contextUser.getSettingsValue(IS_REMIND_FOR_SURVEYS_ENDDATE)==YN_YES) {
+
+            def surveys = SurveyInfo.executeQuery("SELECT sr.surveyConfig.surveyInfo FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL ",
+                    [org: contextOrg,
+                     endDate: computeInfoDate(contextUser, REMIND_PERIOD_FOR_SURVEYS_ENDDATE)])
+
+            surveys = surveys?.unique { a, b -> a?.id <=> b?.id }
+
+            dueObjects.addAll(surveys)
+        }
+
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
             dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)))
         }
@@ -161,11 +172,10 @@ class QueryService {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, deleted:LICENSE_DELETED, template: template_license_type]
+            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, template: template_license_type]
         }
 
         if (isLicensingConsortium) {
@@ -179,11 +189,10 @@ from License as l where (
                 )
             )
         )) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, deleted:LICENSE_DELETED, template:template_license_type]
+            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, template:template_license_type]
         }
 
         result.query = "select l ${base_qry}"

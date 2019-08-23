@@ -2,14 +2,13 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import de.laser.OrgTypeService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.hibernate.type.TextType
+import groovy.sql.Sql
 
 import java.text.SimpleDateFormat
 
@@ -20,6 +19,7 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def dataSource
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -36,6 +36,11 @@ class BootStrap {
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
+        log.info("Database: ${grailsApplication.config.dataSource.url}")
+        log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
+        log.info("Documents: ${grailsApplication.config.documentStorageLocation}")
+
+        log.info("--------------------------------------------------------------------------------")
 
         if (grailsApplication.config.laserSystemId != null) {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
@@ -229,14 +234,11 @@ class BootStrap {
         log.debug("setupContentItems ..")
         setupContentItems()
 
-        //log.debug("addDefaultJasperReports ..")
-        //addDefaultJasperReports()
-
         log.debug("addDefaultPageMappings ..")
         addDefaultPageMappings()
 
-        log.debug("createOrgConfig ..")
-        createOrgConfig()
+        //log.debug("createOrgConfig ..")
+        //createOrgConfig()
 
         log.debug("createOrgProperties ..")
         createOrgProperties()
@@ -271,6 +273,9 @@ class BootStrap {
         JSON.registerObjectMarshaller(Date) {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
+
+        log.debug("adjustDatabasePermissions ..")
+        adjustDatabasePermissions()
 
         log.debug("here we go ..")
     }
@@ -382,10 +387,24 @@ class BootStrap {
     }
 
     def updatePsqlRoutines() {
-        String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
-        File dir = new File(dirPath)
+
+        File dir
+
+        try {
+            def folder = this.class.classLoader.getResource('./migrations/functions')
+            dir = new File(folder.file)
+        }
+        catch (Exception e) {
+            log.warn(e)
+            log.warn('fallback ..')
+
+            String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
+            dir = new File(dirPath)
+        }
 
         if (dir.exists()) {
+            log.debug('scanning ' + dir.getAbsolutePath())
+
             dir.listFiles().each { file ->
                 String fileName = file.getName()
                 if (fileName.endsWith('.sql')) {
@@ -411,6 +430,13 @@ class BootStrap {
                 }
             }
         }
+
+    }
+
+    def adjustDatabasePermissions() {
+
+        Sql sql = new Sql(dataSource)
+        sql.rows("SELECT * FROM grants_for_backup()")
     }
 
     @Deprecated

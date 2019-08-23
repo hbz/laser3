@@ -10,7 +10,18 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+    </g:if>
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}"/>
+    </g:if>
+    <semui:crumb message="surveyCostItems.label" class="active"/>
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <semui:exportDropdown>
@@ -37,29 +48,45 @@
 
 <br>
 
+<h2 class="ui left aligned icon header">
+    <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+            ${surveyConfig?.subscription?.name}
+        </g:link>
+
+    </g:if>
+    <g:else>
+        ${surveyConfig?.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyCostItems.label')}
+</h2>
+
+<br>
+
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
-        <div class="four wide column">
-            <div class="ui vertical fluid menu">
-    <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
+%{--<div class="four wide column">
+    <div class="ui vertical fluid menu">
+<g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
-        <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
-                controller="survey" action="surveyCostItems"
-                id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
+<g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
+        style="${config?.costItemsFinish ? 'background-color: Lime' : ''}"
+        controller="survey" action="surveyCostItems"
+        id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
 
-            <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-            ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
+    <h5 class="ui header">${config?.getConfigNameShort()}</h5>
+    ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
 
-            <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
-        </g:link>
-    </g:each>
-    </div>
+    <div class="ui floating circular label">${config?.orgs?.size() ?: 0}</div>
+</g:link>
+</g:each>
 </div>
+</div>--}%
 
-<div class="twelve wide stretched column">
-    <div class="ui top attached tabular menu">
+    <div class="sixteen wide stretched column">
+        <div class="ui top attached tabular menu">
     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
             controller="survey" action="surveyCostItems"
             id="${surveyConfig?.surveyInfo?.id}"
@@ -81,30 +108,19 @@
     <g:if test="${params.tab == 'selectedSubParticipants'}">
 
         <div class="ui bottom attached tab segment active">
-            <br>
-        <g:if test="${surveyConfig?.type == 'Subscription'}">
-            <h3 class="ui icon header"><semui:headerIcon/>
-            <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-                ${surveyConfig?.subscription?.name}
-            </g:link>
-            </h3>
-        </g:if>
-        <g:else>
-            <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-        </g:else>
 
         <div class="four wide column">
 
-        %{--<button type="button" class="ui icon button right floated" data-semui="modal"
-                data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
+    %{--<button type="button" class="ui icon button right floated" data-semui="modal"
+            data-href="#modalCostItemAllSub"><i class="plus icon"></i></button>
 
 
-        <g:render template="/survey/costItemModal"
-                  model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
+    <g:render template="/survey/costItemModal"
+              model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-            <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
-                <i class="plus icon"></i>
-            </g:link>
+        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+            <i class="plus icon"></i>
+        </g:link>
         </div>
 
         <br>
@@ -178,17 +194,6 @@
     <g:if test="${params.tab == 'selectedParticipants'}">
 
         <div class="ui bottom attached tab segment active">
-            <br>
-            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                <h3 class="ui icon header"><semui:headerIcon/>
-                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-                    ${surveyConfig?.subscription?.name}
-                </g:link>
-                </h3>
-            </g:if>
-            <g:else>
-                <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-            </g:else>
 
             <div class="four wide column">
 
@@ -282,6 +287,9 @@
         </div>
 
     </g:if>
+
+    <br>
+    <br>
 
     <g:form action="surveyCostItemsFinish" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">

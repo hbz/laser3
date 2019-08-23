@@ -131,6 +131,9 @@ aside.ui.accordion .title:not(.ui) {
             padding: 0 0 3rem 0em;
             margin:0 0 2rem 0;
         }
+        &.footer {
+            padding: 3rem 0 0 0;
+        }
     }
     .la-hero {
         padding-top: 7rem !important;
@@ -443,8 +446,4 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
     display: none;
-}
-/* Footer */
-.ui.segment.footer.la-footer {
-    padding: 2em 1em;
 }

@@ -50,7 +50,7 @@
                 ${ (params.int('offset') ?: 0)  + jj + 1 }
             </td>
             <td>
-                <g:link controller="platform" action="show" id="${platformInstance.id}">${fieldValue(bean: platformInstance, field: "name")}</g:link>
+                <g:link class="la-main-object"  controller="platform" action="show" id="${platformInstance.id}">${fieldValue(bean: platformInstance, field: "name")}</g:link>
             </td>
             <td>
                 <g:if test="${platformInstance.org}">

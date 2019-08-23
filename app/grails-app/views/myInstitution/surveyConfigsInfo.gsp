@@ -107,6 +107,8 @@ ${message(code: 'survey.label')} -
     <g:if test="${!subscriptionInstance}">
         <g:set var="gascoView" value="true"/>
         <h2 class="ui icon header"><semui:headerIcon/>
+
+            <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
             ${surveyConfig?.subscription?.name}
         </g:link>

@@ -886,4 +886,34 @@ class SemanticUiTagLib {
     }
     public SemanticUiTagLib() {}
 
+    def tabs = { attrs, body ->
+
+        out << '<div class="ui top attached tabular menu">'
+        out << body()
+        out << '</div>'
+    }
+
+    def tabsItem = { attrs, body ->
+
+        def text = attrs.text ? attrs.text : ''
+        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody = (text && message) ? text + " - " + message : text + message
+        def aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
+        def counts = (attrs.counts >= 0) ? '<div class="ui floating blue circular label">' + attrs.counts + '</div>' : null
+
+        linkBody = counts ? linkBody + counts : linkBody
+
+        if (attrs.controller) {
+            out << g.link(linkBody,
+                    class: aClass,
+                    controller: attrs.controller,
+                    action: attrs.action,
+                    params: attrs.params
+            )
+        } else {
+            out << linkBody
+        }
+    }
+
 }

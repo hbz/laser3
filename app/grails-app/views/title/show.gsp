@@ -5,7 +5,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'titleInstance.label', default: 'Title Instance')}"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.edit.label" args="[entityName]"/></title>
+    <title><g:message code="laser"/> : <g:message code="default.edit.label" args="[entityName]"/></title>
 </head>
   <body>
 
@@ -42,19 +42,19 @@
 
             <div class="twelve wide column">
 
-                  <div class="item"><b>${message(code:'title.type.label')}:</b> ${ti.type.getI10n('value')}</div>
+                  <div class="item"><b><g:message code="title.type.label"/>:</b> ${ti.type.getI10n('value')}</div>
 
                 <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
-                    <div class="item"><b>${message(code:'title.firstAuthor.label')}:</b> ${ti?.firstAuthor}</div>
-                    <div class="item"><b>${message(code:'title.firstEditor.label')}:</b> ${ti?.firstEditor}</div>
-                    <div class="item"><b>${message(code:'title.editionNumber.label')}:</b> ${ti?.editionNumber}</div>
-                    <div class="item"><b>${message(code:'title.editionStatement.label')}:</b> ${ti?.editionStatement}</div>
-                    <div class="item"><b>${message(code:'title.volume.label')}:</b> ${ti?.volume}</div>
-                    <div class="item"><b>${message(code:'title.dateFirstInPrint.label')}:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
-                    <div class="item"><b>${message(code:'title.dateFirstOnline.label')}:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
+                    <div class="item"><b><g:message code="title.firstAuthor.label"/>:</b> ${ti?.firstAuthor}</div>
+                    <div class="item"><b><g:message code="title.firstEditor.label"/>:</b> ${ti?.firstEditor}</div>
+                    <div class="item"><b><g:message code="title.editionNumber.label"/>:</b> ${ti?.editionNumber}</div>
+                    <div class="item"><b><g:message code="title.editionStatement.label"/>:</b> ${ti?.editionStatement}</div>
+                    <div class="item"><b><g:message code="title.volume.label"/>:</b> ${ti?.volume}</div>
+                    <div class="item"><b><g:message code="title.dateFirstInPrint.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
+                    <div class="item"><b><g:message code="title.dateFirstOnline.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
                 </g:if>
 
-                <div class="item"><b>${message(code:'default.status.label')}:</b> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></div>
+                <div class="item"><b><g:message code="default.status.label"/>:</b> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></div>
 
             </div><!-- .twelve -->
 
@@ -74,16 +74,16 @@
             </div><!-- .twelve -->
         </div><!-- .grid -->
 
-          <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
+          <h3 class="ui header"><g:message code="title.edit.orglink"/></h3>
 
             <table class="ui celled la-table table ">
               <thead>
                 <tr>
-                  %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
-                  <th>${message(code:'template.orgLinks.name')}</th>
-                  <th>${message(code:'template.orgLinks.role')}</th>
-                  <th>${message(code:'title.edit.orglink.from')}</th>
-                  <th>${message(code:'title.edit.orglink.to')}</th>
+                  %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
+                  <th><g:message code="template.orgLinks.name"/></th>
+                  <th><g:message code="template.orgLinks.role"/></th>
+                  <th><g:message code="title.edit.orglink.from"/></th>
+                  <th><g:message code="title.edit.orglink.to"/></th>
                 </tr>
               </thead>
               <tbody>
@@ -148,22 +148,29 @@
               </span>
             </g:if>
 
-  <h3 class="ui left aligned icon header">${message(code:'title.edit.tipp')}
+  <h3 class="ui left aligned icon header"><g:message code="title.edit.tipp"/>
   <semui:totalNumber total="${ti.tipps.size()}"/>
   </h3>
 %{--<% /*
               <table class="ui celled la-table table">
                   <thead>
                   <tr>
-                      <th>${message(code:'tipp.startDate')}</th><th>${message(code:'tipp.startVolume')}</th><th>${message(code:'tipp.startIssue')}</th>
-                      <th>${message(code:'tipp.endDate')}</th><th>${message(code:'tipp.endVolume')}</th><th>${message(code:'tipp.endIssue')}</th><th>${message(code:'tipp.coverageDepth')}</th>
-                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th><th class="la-action-info">${message(code:'default.actions')}</th>
+                      <th><g:message code="tipp.startDate"/></th>
+                      <th><g:message code="tipp.startVolume"/></th>
+                      <th><g:message code="tipp.startIssue"/></th>
+                      <th><g:message code="tipp.endDate"/></th>
+                      <th><g:message code="tipp.endVolume"/></th>
+                      <th><g:message code="tipp.endIssue"/></th>
+                      <th><g:message code="tipp.coverageDepth"/></th>
+                      <th><g:message code="tipp.platform"/></th>
+                      <th><g:message code="tipp.package"/></th>
+                      <th class="la-action-info"><g:message code="default.actions"/></th>
                   </tr>
                   </thead>
                   <tbody>
                   <g:each in="${ti.tipps}" var="t">
                       <tr>
-                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/></td>
+                          <td><g:formatDate format="<g:message code="default.date.format.notime"/>" date="${t.startDate}"/></td>
                           <td>${t.startVolume}</td>
                           <td>${t.startIssue}</td>
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/></td>
@@ -172,7 +179,7 @@
                           <td>${t.coverageDepth}</td>
                           <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                           <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
-                          <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show', default:'Full TIPP record')}</g:link></td>
+                          <td><g:link controller="tipp" action="show" id="${t.id}"><g:message code="title.edit.tipp.show"/></g:link></td>
                       </tr>
                   </g:each>
                   </tbody>
@@ -184,16 +191,17 @@
                   <thead>
                     <tr>
                   --}%%{--<th rowspan="2"></th> BULK_REMOVE --}%%{--
-                      <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
-                      <th>${message(code:'tipp.start')}</th>
-                      <th>${message(code:'tipp.end')}</th>
-                      <th>${message(code:'tipp.start')}</th>
-                      <th>${message(code:'tipp.end')}</th>
-                      <th>${message(code:'tipp.coverageDepth')}</th>
-                      <th class="la-action-info">${message(code:'default.actions')}</th>
+                      <th><g:message code="tipp.platform"/></th>
+                      <th><g:message code="tipp.package"/></th>
+                      <th><g:message code="tipp.start"/></th>
+                      <th><g:message code="tipp.end"/></th>
+                      <th><g:message code="tipp.start"/></th>
+                      <th><g:message code="tipp.end"/></th>
+                      <th><g:message code="tipp.coverageDepth"/></th>
+                      <th class="la-action-info"><g:message code="default.actions"/></th>
                     </tr>
                     <tr>
-                      <th colspan="6">${message(code:'tipp.coverageNote')}</th>
+                      <th colspan="6"><g:message code="tipp.coverageNote"/></th>
                     </tr>
                   </thead>
 
@@ -201,41 +209,41 @@
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
-                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit">${message(code:'default.button.apply_batch.label')}</button></td>
+                    <td colspan="2"><button class="ui button" type="submit" value="Go" name="BatchEdit"><g:message code="default.button.apply_batch.label"/></button></td>
                     <td>
 
                         <semui:datepicker label="title.show.history.date" id="bulk_start_date" name="bulk_start_date" value="${params.bulk_start_date}" />
-                       - <input type="checkbox" id="clear_start_date" name="clear_start_date"/> (${message(code:'title.edit.tipp.clear')})
+                       - <input type="checkbox" id="clear_start_date" name="clear_start_date"/> (<g:message code="title.edit.tipp.clear"/>)
 
                         <div class="field">
-                            <label>${message(code:'tipp.volume')}</label>
+                            <label><g:message code="tipp.volume"/></label>
                             <semui:simpleHiddenValue id="bulk_start_volume" name="bulk_start_volume"/>
-                            - <input type="checkbox" name="clear_start_volume"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_start_volume"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
 
                         <div class="field">
-                            <label>${message(code:'tipp.issue')}</label>
+                            <label><g:message code="tipp.issue"/></label>
                             <semui:simpleHiddenValue id="bulk_start_issue" name="bulk_start_issue"/>
-                            - <input type="checkbox" name="clear_start_issue"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_start_issue"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
                     </td>
                     <td>
 
                         <semui:datepicker label="title.show.history.date" id="bulk_end_date" name="bulk_end_date" value="${params.bulk_end_date}" />
-                       - <input type="checkbox" id="clear_end_date" name="clear_end_date"/> (${message(code:'title.edit.tipp.clear')})
+                       - <input type="checkbox" id="clear_end_date" name="clear_end_date"/> (<g:message code="title.edit.tipp.clear"/>)
 
                         <br/>
 
                         <div class="field">
-                            <label>${message(code:'tipp.volume')}</label>
+                            <label><g:message code="tipp.volume"/></label>
                             <semui:simpleHiddenValue id="bulk_end_volume" name="bulk_end_volume"/>
-                            - <input type="checkbox" name="clear_end_volume"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_end_volume"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
 
                         <div class="field">
-                            <label>${message(code:'tipp.issue')}</label>
+                            <label><g:message code="tipp.issue"/></label>
                             <semui:simpleHiddenValue id="bulk_end_issue" name="bulk_end_issue"/>
-                            - <input type="checkbox" name="clear_end_issue"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_end_issue"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
 
                     </td>
@@ -243,7 +251,7 @@
                         <div class="field">
                             <label>&nbsp;</label>
                             <semui:simpleHiddenValue id="bulk_coverage_depth" name="bulk_coverage_depth"/>
-                            - <input type="checkbox" name="clear_coverage_depth"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_coverage_depth"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
                     </td>
                     <td/>
@@ -251,14 +259,14 @@
                   <tr>
                     <td colspan="6">
                         <div class="field">
-                            <label>${message(code:'title.edit.tipp.bulk_notes_change')}</label>
+                            <label><g:message code="title.edit.tipp.bulk_notes_change"/></label>
                             <semui:simpleHiddenValue id="bulk_coverage_note" name="bulk_coverage_note"/>
-                            - <input type="checkbox" name="clear_coverage_note"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_coverage_note"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
                         <div class="field">
-                            <label>${message(code:'title.edit.tipp.bulk_platform_change')}</label>
+                            <label><g:message code="title.edit.tipp.bulk_platform_change"/></label>
                             <semui:simpleHiddenValue id="bulk_hostPlatformURL" name="bulk_hostPlatformURL"/>
-                            - <input type="checkbox" name="clear_hostPlatformURL"/> (${message(code:'title.edit.tipp.clear')})
+                            - <input type="checkbox" name="clear_hostPlatformURL"/> (<g:message code="title.edit.tipp.clear"/>)
                         </div>
                     </td>
                   </tr>
@@ -276,18 +284,18 @@
                         </div>
                     </td>
   
-                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
-                    ${message(code:'tipp.volume')}: ${t.startVolume}<br/>
-                    ${message(code:'tipp.issue')}: ${t.startIssue}</td>
-                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/><br/>
-                    ${message(code:'tipp.volume')}: ${t.endVolume}<br/>
-                    ${message(code:'tipp.issue')}: ${t.endIssue}</td>
+                    <td><g:message code="title.show.history.date"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
+                    <g:message code="tipp.volume"/>: ${t.startVolume}<br/>
+                    <g:message code="tipp.issue"/>: ${t.startIssue}</td>
+                    <td><g:message code="title.show.history.date"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/><br/>
+                    <g:message code="tipp.volume"/>: ${t.endVolume}<br/>
+                    <g:message code="tipp.issue"/>: ${t.endIssue}</td>
                     <td>${t.coverageDepth}</td>
-                    <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show')}</g:link></td>
+                    <td><g:link controller="tipp" action="show" id="${t.id}"><g:message code="title.edit.tipp.show"/></g:link></td>
                   </tr>
                   <tr>
-                    <td colspan="6">${message(code:'tipp.coverageNote')}: ${t.coverageNote?:"${message(code:'title.edit.tipp.no_note', default: 'No coverage note')}"}<br/>
-                                    ${message(code:'tipp.hostPlatformURL')}: ${t.hostPlatformURL?:"${message(code:'title.edit.tipp.no_url', default: 'No Host Platform URL')}"}</td>
+                    <td colspan="6"><g:message code="tipp.coverageNote"/>: ${t.coverageNote?:"${message(code:'title.edit.tipp.no_note')}"}<br/>
+                                    <g:message code="tipp.hostPlatformURL"/>:" ${t.hostPlatformURL?:"${message(code:'title.edit.tipp.no_url')"}</td>
                   </tr>
                 </g:each>
               </table>
@@ -299,36 +307,33 @@
       <thead>
       <tr>
           <th></th>
-          <th>${message(code:'package')}</th>
-          <th class="two wide">${message(code:'tipp.coverage')}</th>
-          <th class="two wide">${message(code:'tipp.access')}</th>
-          <th class="two wide">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+          <th><g:message code="package"/></th>
+          <th class="two wide">${message(code: 'tipp.coverage')}</th>
+          <th class="two wide">${message(code: 'tipp.access')}</th>
       </tr>
       <tr>
           <th colspan="2" rowspan="2"></th>
-          <th>${message(code:'default.from')}</th>
-          <th>${message(code:'default.from')}</th>
-          <th rowspan="2"></th>
+          <th><g:message code="default.from"/></th>
+          <th><g:message code="default.from"/></th>
       </tr>
       <tr>
-          <th>${message(code:'default.to')}</th>
-          <th>${message(code:'default.to')}</th>
+          <th><g:message code="default.to"/></th>
+          <th><g:message code="default.to"/></th>
       </tr>
       </thead>
       <tbody>
 
       <g:set var="counter" value="${1}" />
       <g:each in="${ti.tipps.sort{it?.pkg?.name}}" var="t">
-          <g:set var="hasCoverageNote" value="${t.coverageNote?.length() > 0}" />
           <tr>
-              <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
+              <td>${counter++}</td>
               <td>
                       <div class="la-flexbox">
                           <i class="icon gift scale la-list-icon"></i>
                           <g:link controller="package" action="show" id="${t?.pkg?.id}">${t?.pkg?.name}</g:link>
                       </div>
                   <br>
-                  <g:link controller="tipp" action="show" id="${t.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP Details')}</g:link>
+                  <g:link controller="tipp" action="show" id="${t.id}"><g:message code="platform.show.full_tipp"/></g:link>
               &nbsp;&nbsp;&nbsp;
                   <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                           var="gokbAPI">
@@ -340,17 +345,17 @@
                   <br>
 
                   <g:if test="${t.hostPlatformURL}">
-                      <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                      <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="<g:message code="tipp.tooltip.callUrl"/>" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
-                      <g:if test="${id.identifier.ns.ns == 'originediturl'}">
-                          <span class="ui small teal image label">
-                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                      <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
+                          <%--<span class="ui small teal image label">
+                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}"><g:message code="package.show.openLink"/></a></div>
                           </span>
                           <span class="ui small teal image label">
-                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
-                          </span>
+                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}"><g:message code="package.show.openLink"/></a></div>
+                          </span>--%>
                       </g:if>
                       <g:else>
                           <span class="ui small teal image label">
@@ -361,13 +366,13 @@
 
 
                   <div class="ui list">
-                      <div class="item"  title="${t.availabilityStatusExplanation}"><b>${message(code:'default.access.label', default:'Access')}:</b> ${t.availabilityStatus?.getI10n('value')}</div>
-                      <div class="item"><b>${message(code:'default.status.label', default:'Status')}:</b>  <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></div>
-                      <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}: </b>
+                      <div class="item"  title="${t.availabilityStatusExplanation}"><b><g:message code="default.access.label"/>:</b> ${t.availabilityStatus?.getI10n('value')}</div>
+                      <div class="item"><b><g:message code="default.status.label"/>:</b>  <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></div>
+                      <div class="item"><b><g:message code="tipp.platform"/>: </b>
                           <g:if test="${t?.platform.name}">
                               ${t?.platform.name}
                           </g:if>
-                          <g:else>${message(code:'default.unknown')}</g:else>
+                          <g:else><g:message code="default.unknown"/></g:else>
                           <g:if test="${t?.platform.name}">
                               <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
                           </g:if>
@@ -379,19 +384,22 @@
               </td>
 
               <td>
-                  <!-- von -->
-                  <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
-                  <semui:xEditable owner="${t}" field="startVolume" /><br>
-                  <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
-                  <semui:xEditable owner="${t}" field="startIssue" />
-                  <semui:dateDevider/>
-                  <!-- bis -->
-                  <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                  <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
-                  <semui:xEditable owner="${t}" field="endVolume" /><br>
-                  <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
-                  <semui:xEditable owner="${t}" field="endIssue" />
+                  <g:each in="${t.coverages}" var="covStmt">
+                      <p>
+                          <!-- von -->
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br>
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.startVolume}<br>
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.startIssue}<br>
+                          <semui:dateDevider/>
+                          <!-- bis -->
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br>
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.endVolume}<br>
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.endIssue}<br>
+                          <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br>
+                          <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br>
+                          <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br>
+                      </p>
+                  </g:each>
               </td>
               <td>
                   <!-- von -->
@@ -400,16 +408,7 @@
                   <!-- bis -->
                   <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
               </td>
-              <td>
-                  <semui:xEditable owner="${t}" field="coverageDepth" />
-              </td>
           </tr>
-
-          <g:if test="${hasCoverageNote==true}">
-              <tr>
-                  <td colspan="6"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${t.coverageNote}</td>
-              </tr>
-          </g:if>
 
       </g:each>
 
@@ -421,7 +420,7 @@
 
             <br><br>
 
-  <r:script language="JavaScript">
+  <%--<r:script language="JavaScript">
 
     $(function(){
       <g:if test="${editable}">
@@ -430,7 +429,7 @@
         placeholder: "Search for an org...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+            return "<g:message code="select2.minChars.note"/>";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -452,7 +451,7 @@
         placeholder: "Search for an role...",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+            return "<g:message code="select2.minChars.note"/>";
         },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
           url: "<g:createLink controller='ajax' action='lookup'/>",
@@ -481,7 +480,7 @@
         }
         return true;
       }
-  </r:script>
+  </r:script>--%>
 
   </body>
 </html>

@@ -45,9 +45,10 @@
             <table class="ui celled la-table la-table-small table">
                 <thead>
                     <tr>
-                        <th>${message(code:'financials.costItemElement')}</th>
-                        <th>${message(code:'financials.costItemConfiguration')}</th>
-                        <th>${message(code:'financials.setAll')}</th>
+                        <th><g:message code="financials.costItemElement"/></th>
+                        <th><g:message code="financials.costItemConfiguration"/></th>
+                        <th><g:message code="financials.setAll"/></th>
+                        <th><g:message code="default.actions.label"/></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,6 +64,16 @@
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
                                         ${message(code:'costConfiguration.configureAllCostItems')}
+                                </g:link>
+                            </td>
+                            <td>
+                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="costItemElementConfiguration"
+                                        data-confirm-term-what-detail="${ciec.costItemElement.getI10n("value")}"
+                                        data-confirm-term-how="delete"
+                                        controller="costConfiguration" action="deleteCostConfiguration"
+                                        params="${[ciec: ciec.id]}">
+                                    <i class="trash alternate icon"></i>
                                 </g:link>
                             </td>
                         </tr>
