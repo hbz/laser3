@@ -15,7 +15,7 @@
                 allSubscriptions_readRights: allSubscriptions_readRights,
                 allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
         <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-                params="[workFlowPart: WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
+                params="[workFlowPart: WORKFLOW_PROPERTIES, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
 
                 <%
                     List subscriptions = [Subscription.get(sourceSubscriptionId)]
