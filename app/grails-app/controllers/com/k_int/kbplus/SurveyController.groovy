@@ -53,7 +53,7 @@ class SurveyController {
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
-        result.surveyConfigs = SurveyConfig.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyConfig.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
 
         result
@@ -2157,19 +2157,19 @@ class SurveyController {
 
         def contextOrg = contextService.getOrg()
 
-        result.created = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status and surInfo.status = :status2",
+        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
 
-        result.active = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
 
-        result.finish = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
 
-        result.inEvaluation = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
 
-        result.completed = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.completed = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_COMPLETED]).size()
 
         return result
