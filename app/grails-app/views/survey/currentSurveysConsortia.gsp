@@ -89,7 +89,7 @@
                 <g:set var="participantsFinish"
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
-                <g:set var="participantsparticipantsTotal"
+                <g:set var="participantsTotal"
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)}"/>
 
                 <tr>
@@ -106,7 +106,7 @@
                         </g:if>
                         <g:else>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyInfo?.name}
+                                ${surveyConfig?.getConfigNameShort()}
                             </g:link>
                         </g:else>
                     </g:if>
@@ -117,7 +117,7 @@
                             </g:if>
                             <g:else>
                                 <i class="icon chart bar la-list-icon"></i>
-                                ${surveyInfo?.name}
+                                ${surveyConfig?.getConfigNameShort()}
                             </g:else>
                         </g:else>
                         <div class="la-flexbox">
@@ -189,7 +189,7 @@
                             <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui icon">
-                                <div class="ui circular ${surveyConfig?.evaluationFinish ? "green" : ""} label">
+                                <div class="ui circular ${surveyConfig?.evaluationFinish ? "green" : (participantsFinish.size() == participantsTotal.size()) ? "yellow" :""} label">
                                     <g:if
                                         test="${participantsFinish && participantsTotal}">
                                     <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"

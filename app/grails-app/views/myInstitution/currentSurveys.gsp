@@ -54,16 +54,6 @@
 
         <div class="four fields">
 
-            <div class="field fieldcontain">
-                <label>${message(code: 'surveyInfo.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
-                              from="${RefdataCategory.getAllRefdataValues('Survey Status')}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.status}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <laser:select class="ui dropdown" name="type"
@@ -90,6 +80,19 @@
 </semui:filter>
 
 <div>
+<semui:form>
+
+    <semui:tabs actionName="${actionName}">
+        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+                        params="${[id: params.id, tab: 'active']}" text="Aktiv" tab="active"
+                        counts="${countSurveyConfigs?.active}"/>
+        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+                        params="${[id: params.id, tab: 'finish']}" text="Beendet" tab="finish"
+                        counts="${countSurveyConfigs?.finish}"/>
+    </semui:tabs>
+
+    <div class="ui bottom attached tab segment active">
+
     <table class="ui celled sortable table la-table">
         <thead>
         <tr>
@@ -189,6 +192,8 @@
 
         </g:each>
     </table>
+    </div>
+</semui:form>
 </div>
 
 <g:if test="${surveys}">

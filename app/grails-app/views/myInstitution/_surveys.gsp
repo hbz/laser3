@@ -37,11 +37,21 @@
                 </div>
 
                 <div class="extra">
-                    <div class="ui label">${surveyInfo?.status.getI10n('value')}</div>
+                    <g:set var="surveyResults" value="${com.k_int.kbplus.SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, surveyInfo?.surveyConfigs)}" />
+
+                    <div class="ui label">
+                        ${surveyInfo?.status.getI10n('value')}
+                    </div>
 
                     <div class="ui label survey-${surveyInfo?.type.value}">
-                    <g:link controller="myInstitution" action="surveyInfos"
-                            id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}</g:link></div>
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}
+                        </g:link>
+                    </div>
+
+                    <g:if test="${surveyResults && !surveyResults?.finishDate?.contains(null) ? "green" : ""}">
+                            <i class="check big green icon"></i>
+                    </g:if>
                 </div>
             </div>
         </div>
