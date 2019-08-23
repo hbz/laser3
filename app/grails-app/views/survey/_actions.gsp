@@ -40,9 +40,17 @@
                                        href="#copyEmailaddresses_static"
                                        message="survey.copyEmailaddresses.participants"/>
 
-            <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
 
-            <g:render template="copyEmailaddresses" model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
+            <g:if test="${surveyConfig}">
+                <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyConfig?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
+                <g:render template="copyEmailaddresses" model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
+            </g:if>
+            <g:else>
+                <g:set var="orgs" value="${com.k_int.kbplus.Org.findAllByIdInList(surveyInfo?.surveyConfigs?.orgs?.org?.flatten().unique { a, b -> a?.id <=> b?.id }.id)?.sort {it.sortname}}"/>
+
+                <g:render template="copyEmailaddresses" model="[modalID: 'copyEmailaddresses_static', orgList: orgs ?: null]"/>
+            </g:else>
 
         </g:else>
 
