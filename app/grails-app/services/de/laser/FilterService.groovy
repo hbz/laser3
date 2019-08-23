@@ -333,9 +333,8 @@ class FilterService {
         }
 
         if(params.tab == "created"){
-            query << "surInfo.status = :status"
+            query << "(surInfo.status = :status or surInfo.status = :status2)"
             queryParams << [status: RDStore.SURVEY_IN_PROCESSING]
-            query << "surInfo.status = :status2"
             queryParams << [status2: RDStore.SURVEY_READY]
         }
 
@@ -359,13 +358,20 @@ class FilterService {
             queryParams << [status: RDStore.SURVEY_COMPLETED]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC, LOWER(surConfig.subscription.name), LOWER(surInfo.name)") + " " + (params.order ?: "asc")
+        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC") + " " + (params.order ?: "asc")
 
-        if (query.size() > 0) {
+        /*if (query.size() > 0) {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
         } else {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg" + defaultOrder
         }
+*/
+        if (query.size() > 0) {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg" + defaultOrder
+        }
+
         queryParams << [contextOrg : contextOrg]
 
 
