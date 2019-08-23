@@ -522,7 +522,7 @@ class ApiService {
                         }
                     } else if (org.hasErrors()) {
                         log.error("Error on saving org: ${org.getErrors()}")
-                        System.exit(46)
+                        //System.exit(46)
                     }
                 }
             }
@@ -556,7 +556,7 @@ class ApiService {
                         user.apisecret = userData.apisecret.text()
                     //log.debug("password: ${userData.password.text()}")
                     user.password = "bob" //temp, we will override it with the correct hash
-                    if (user.save(flush: true)) {
+                    if (user.save()) {
                         //data to be processed after save()
                         userData.roles.role.each { uRole ->
                             //log.debug("role: ${Role.findByAuthority(uRole.text())}")
@@ -579,7 +579,7 @@ class ApiService {
                         User.executeUpdate('update User u set u.password = :password where u.username = :username', [password: userData.password.text(), username: userData.username.text()])
                     } else if (user.hasErrors()) {
                         log.error("error on saving user: ${user.getErrors()}")
-                        System.exit(47)
+                        //System.exit(47)
                     }
                 }
             }
@@ -596,9 +596,9 @@ class ApiService {
                 if (affData.dateRequested.text()) {
                     affiliation.dateRequested = Long.parseLong(affData.dateRequested.text())
                 }
-                if (!affiliation.save(flash: true) && affiliation.hasErrors()) {
+                if (!affiliation.save() && affiliation.hasErrors()) {
                     log.error("error on saving affiliation: ${affiliation.getErrors()}")
-                    System.exit(47)
+                    //System.exit(47)
                 }
             }
             //insert all combos
@@ -606,9 +606,9 @@ class ApiService {
                 log.debug("----- processing combo ${comboData.fromOrg.text()} -> ${comboData.toOrg.text()} -----")
                 //log.debug("type: ${RefdataValue.getByValueAndCategory(comboData.type.rdv.text(),comboData.type.rdc.text())}, fromOrg: ${comboData.fromOrg.text()}, toOrg: ${comboData.toOrg.text()}")
                 Combo combo = new Combo(type: RefdataValue.getByValueAndCategory(comboData.type.rdv.text(), comboData.type.rdc.text()), fromOrg: Org.findByGlobalUID(comboData.fromOrg.text()), toOrg: Org.findByGlobalUID(comboData.toOrg.text()))
-                if (!combo.save(flush: true) && combo.hasErrors()) {
+                if (!combo.save() && combo.hasErrors()) {
                     log.error("error on saving combo: ${combo.getErrors()}")
-                    System.exit(47)
+                    //System.exit(47)
                 }
             }
             //insert all persons
@@ -651,7 +651,7 @@ class ApiService {
                     }
                     if (!person.save(flash: true) && person.hasErrors()) {
                         log.error("error on saving person: ${person.getErrors()}")
-                        System.exit(47)
+                        //System.exit(47)
                     }
                 } else {
                     log.info("person with ${personData.globalUID.text()} already in the database, skipping ...")
@@ -663,7 +663,7 @@ class ApiService {
                 PersonRole role = new PersonRole(org: Org.findByGlobalUID(prData.org.text()), prs: Person.findByGlobalUID(prData.prs.text()), functionType: RefdataValue.getByValueAndCategory(prData.functionType.rdv.text(), prData.functionType.rdc.text()))
                 if (!role.save(flush: true) && role.hasErrors()) {
                     log.error("error on saving person role: ${role.getErrors()}")
-                    System.exit(47)
+                    //System.exit(47)
                 }
             }
             //insert all addresses
@@ -715,7 +715,7 @@ class ApiService {
                 }
                 if (!address.save(flash: true) && address.hasErrors()) {
                     log.error("error on saving address: ${address.getErrors()}")
-                    System.exit(47)
+                    //System.exit(47)
                 }
             }
             //insert all contacts
@@ -737,14 +737,14 @@ class ApiService {
                 contact.type = RefdataValue.getByValueAndCategory(contactData.type.rdv.text(), contactData.type.rdc.text())
                 if (!contact.save(flash: true) && contact.hasErrors()) {
                     log.error("error on saving contact: ${contact.getErrors()}")
-                    System.exit(47)
+                    //System.exit(47)
                 }
             }
             //System.exit(45)
         }
         catch (FileNotFoundException e) {
             log.error("Data not found - PANIC!")
-            System.exit(48)
+            //System.exit(48)
         }
     }
 

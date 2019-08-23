@@ -46,7 +46,7 @@ class AdminController extends AbstractDebugController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
   def ESSearchService
-  def GOKbService
+  def apiService
 
   @Secured(['ROLE_ADMIN'])
   def index() { }
@@ -1016,37 +1016,25 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def orgsImport() {
-
-    if ( request.method=="POST" ) {
-      def upload_mime_type = request.getFile("orgs_file")?.contentType
-      def upload_filename = request.getFile("orgs_file")?.getOriginalFilename()
-      def input_stream = request.getFile("orgs_file")?.inputStream
-
-      CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
-      String[] nl;
-      def first = true
-      while ((nl = r.readNext()) != null) {
-        if ( first ) {
-          first = false; // Skip header
-        }
-        else {
-          
-          def candidate_identifiers = [
-            'jusplogin':nl[3],
-            'JC':nl[4],
-            'Ringold':nl[5],
-            'UKAMF':nl[6],
-            'ISIL':nl[7]
-          ]
-          log.debug("Load ${nl[0]}, ${nl[1]}, ${nl[2]} ${candidate_identifiers} ${nl[8]}");
-          Org.lookupOrCreate(nl[0],
-                             nl[1],
-                             nl[2],
-                             candidate_identifiers,
-                             nl[8].replace('-', ','))
-        }
+    File basicDataDir = new File(grailsApplication.config.basicDataPath)
+    List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+      @Override
+      boolean accept(File dir, String name) {
+        return name.matches(grailsApplication.config.orgDumpFileNamePattern)
       }
+    })
+    if(dumpFiles.size() > 0) {
+      dumpFiles.toSorted { f1, f2 ->
+        f1.lastModified() <=> f2.lastModified()
+      }
+      File lastDump = dumpFiles.last()
+      apiService.setupBasicData(lastDump)
+      flash.message = "Daten wurden erfolgreich aufgesetzt!"
     }
+    else {
+      flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
+    }
+    redirect controller: 'myInstitution', action: 'dashboard'
   }
 
   @Secured(['ROLE_ADMIN'])
