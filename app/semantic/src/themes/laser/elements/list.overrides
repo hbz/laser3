@@ -55,3 +55,6 @@
     }
   }
 }
+.ui.inverted.list .item a:not(.ui):hover {
+
+}
