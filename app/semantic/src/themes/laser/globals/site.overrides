@@ -32,6 +32,23 @@
 }
 
 /*******************************
+        Sticky Footer
+        see
+        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
+*******************************/
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 .la-float-right{
@@ -113,9 +130,6 @@ aside.ui.accordion .title:not(.ui) {
             min-height: 450px;
             padding: 0 0 3rem 0em;
             margin:0 0 2rem 0;
-        }
-        &.footer {
-            padding: 3rem 0 0 0;
         }
     }
     .la-hero {
@@ -429,4 +443,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
     display: none;
+}
+/* Footer */
+.ui.segment.footer.la-footer {
+    padding: 2em 1em;
 }

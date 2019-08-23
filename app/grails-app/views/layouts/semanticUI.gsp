@@ -724,12 +724,10 @@
             <g:layoutBody/>
         </main><!-- .main -->
 
-        <footer id="Footer">
-            <div class="clearfix"></div>
-            <div class="footer-links container">
-                <div class="row"></div>
-            </div>
-        </footer>
+        <!-- Footer -->
+    <g:render template="/public/templates/footer" />
+
+        <!-- Footer End -->
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>

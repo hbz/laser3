@@ -785,6 +785,29 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        Sticky Footer
+        see
+        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
+*******************************/
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 100vh;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+main {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
@@ -875,10 +898,6 @@ aside.ui.accordion .title:not(.ui) {
 
 .landingpage .ui.segment.masthead h2 {
   color: white!important;
-}
-
-.landingpage .ui.segment.footer {
-  padding: 3rem 0 0 0;
 }
 
 .landingpage .la-hero {
@@ -1250,6 +1269,12 @@ aside.ui.accordion .title:not(.ui) {
 
 .js-gost {
   display: none;
+}
+
+/* Footer */
+
+.ui.segment.footer.la-footer {
+  padding: 2em 1em;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
