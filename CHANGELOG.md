@@ -2,6 +2,10 @@
 
 - TODO
 
+0.19.4
+
+- hotfix: permissions
+
 0.19.3
 
 - fixed dashboard cronjob
