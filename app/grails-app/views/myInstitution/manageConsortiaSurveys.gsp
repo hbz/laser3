@@ -131,19 +131,19 @@
     <semui:form>
 
         <semui:tabs actionName="${actionName}">
-            <semui:tabsItem controller="survey" action="manageConsortiaSurveys"
+            <semui:tabsItem controller="myInstitution" action="manageConsortiaSurveys"
                             params="${[id: params.id, tab: 'created']}" text="Erstellt" tab="created"
                             counts="${countSurveyConfigs?.created}"/>
-            <semui:tabsItem controller="survey" action="manageConsortiaSurveys"
+            <semui:tabsItem controller="myInstitution" action="manageConsortiaSurveys"
                             params="${[id: params.id, tab: 'active']}" text="Aktiv" tab="active"
                             counts="${countSurveyConfigs?.active}"/>
-            <semui:tabsItem controller="survey" action="manageConsortiaSurveys"
+            <semui:tabsItem controller="myInstitution" action="manageConsortiaSurveys"
                             params="${[id: params.id, tab: 'finish']}" text="Beendet" tab="finish"
                             counts="${countSurveyConfigs?.finish}"/>
-            <semui:tabsItem controller="survey" action="manageConsortiaSurveys"
+            <semui:tabsItem controller="myInstitution" action="manageConsortiaSurveys"
                             params="${[id: params.id, tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
                             counts="${countSurveyConfigs?.inEvaluation}"/>
-            <semui:tabsItem controller="survey" action="manageConsortiaSurveys"
+            <semui:tabsItem controller="myInstitution" action="manageConsortiaSurveys"
                             params="${[id: params.id, tab: 'completed']}" text="Abgeschlossen" tab="completed"
                             counts="${countSurveyConfigs?.completed}"/>
         </semui:tabs>
