@@ -2,8 +2,11 @@ import org.springframework.security.web.authentication.session.ConcurrentSession
 import org.springframework.security.web.session.ConcurrentSessionFilter
 import org.springframework.security.core.session.SessionRegistryImpl
 import grails.plugin.springsecurity.SpringSecurityUtils
+import de.laser.dbm.MigrationCallbacks
 
 beans = {
+
+    //migrationCallbacks(MigrationCallbacks)
 
     // [ user counter ..
     sessionRegistry(SessionRegistryImpl)
