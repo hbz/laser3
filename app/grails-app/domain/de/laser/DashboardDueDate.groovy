@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
@@ -34,6 +35,9 @@ class DashboardDueDate {
     }
     DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg){
         this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg)
+    }
+    DashboardDueDate(SurveyInfo obj, User responsibleUser, Org responsibleOrg){
+        this('Enddatum', obj.endDate, obj, responsibleUser, responsibleOrg)
     }
     private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg){
         this.attribut = attribut

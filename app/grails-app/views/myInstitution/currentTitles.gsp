@@ -253,7 +253,7 @@
                                 </g:if>
 
 
-                                <g:each in="${ti?.tipps?.sort { it?.platform?.name }}" var="tipp">
+                                <g:each in="${ti?.tipps?.unique { a, b -> a?.platform?.id <=> b?.platform?.id }.sort { it?.platform?.name }}" var="tipp">
 
                                         <g:if test="${tipp?.hostPlatformURL}">
                                             <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"

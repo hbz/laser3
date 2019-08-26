@@ -62,6 +62,10 @@
                                     <i class="icon balance scale la-list-icon"></i>
                                     <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:elseif>
+                                <g:elseif test="${obj instanceof SurveyInfo}">
+                                    <i class="icon chart bar la-list-icon"></i>
+                                    <g:link controller="myInstitution" action="surveyInfos" id="${obj.id}">${obj.name}</g:link>
+                                </g:elseif>
                                 <g:elseif test="${obj instanceof Task}">
                                     <span data-position="top right" data-tooltip="Aufgabe">
                                         <i class="icon checked calendar la-list-icon"></i>

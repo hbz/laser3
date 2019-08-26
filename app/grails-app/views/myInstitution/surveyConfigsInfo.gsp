@@ -107,6 +107,8 @@ ${message(code: 'survey.label')} -
     <g:if test="${!subscriptionInstance}">
         <g:set var="gascoView" value="true"/>
         <h2 class="ui icon header"><semui:headerIcon/>
+
+            <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
             ${surveyConfig?.subscription?.name}
         </g:link>
@@ -478,7 +480,7 @@ ${message(code: 'survey.label')} -
                 <g:set var="surveyOrg"
                        value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
 
-                <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                     <td>
                         <g:if test="${surveyResult?.type?.type == Integer.toString()}">

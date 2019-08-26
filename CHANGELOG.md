@@ -1,3 +1,15 @@
+0.20-RC
+
+- TODO
+
+0.19.4
+
+- hotfix: permissions
+
+0.19.3
+
+- fixed dashboard cronjob
+
 0.19.2
 
 - fixed: missing package linkage

@@ -300,6 +300,85 @@ class FilterService {
         result.queryParams = queryParams
         result
     }
+
+    Map<String,Object> getSurveyConfigQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.name) {
+            query << "genfunc_filter_matcher(surInfo.name, :name) = true"
+            queryParams << [name:"${params.name}"]
+        }
+        if(params.status) {
+            query << "surInfo.status = :status"
+            queryParams << [status: RefdataValue.get(params.status)]
+        }
+        if(params.type) {
+            query << "surInfo.type = :type"
+            queryParams << [type: RefdataValue.get(params.type)]
+        }
+        if (params.startDate && sdFormat) {
+            query << "surInfo.startDate >= :startDate"
+            queryParams << [startDate : sdFormat.parse(params.startDate)]
+        }
+        if (params.endDate && sdFormat) {
+            query << "surInfo.endDate <= :endDate"
+            queryParams << [endDate : sdFormat.parse(params.endDate)]
+        }
+
+        if (params.participant) {
+            query << "" +
+                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
+            queryParams << [participant : params.participant]
+        }
+
+        if(params.tab == "created"){
+            query << "(surInfo.status = :status or surInfo.status = :status2)"
+            queryParams << [status: RDStore.SURVEY_IN_PROCESSING]
+            queryParams << [status2: RDStore.SURVEY_READY]
+        }
+
+        if(params.tab == "active"){
+            query << "surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "finish"){
+            query << "surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
+        }
+
+        if(params.tab == "inEvaluation"){
+            query << "surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_IN_EVALUATION]
+        }
+
+        if(params.tab == "completed"){
+            query << "surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_COMPLETED]
+        }
+
+        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC") + " " + (params.order ?: "asc")
+
+        /*if (query.size() > 0) {
+            result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg" + defaultOrder
+        }
+*/
+        if (query.size() > 0) {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg" + defaultOrder
+        }
+
+        queryParams << [contextOrg : contextOrg]
+
+
+        result.queryParams = queryParams
+        result
+    }
+
     Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org contextOrg) {
         Map result = [:]
         List query = []
@@ -344,6 +423,16 @@ class FilterService {
 
             query << "(surveyConfig.surveyInfo.endDate <= :endDate or surveyConfig.surveyInfo.endDate is null)"
             queryParams << [endDate : params.endDate]
+        }
+
+        if(params.tab == "active"){
+            query << "surveyConfig.surveyInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "finish"){
+            query << "surveyConfig.surveyInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
         }
 
         def defaultOrder = " order by " + (params.sort ?: " LOWER(surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")

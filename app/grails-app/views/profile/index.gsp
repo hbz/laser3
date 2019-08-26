@@ -279,6 +279,18 @@
                                 <input type="number" name="remindPeriodForTasks" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_TASKS, defaultRemindPeriod)?.strValue}"/>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <div class="ui checkbox">
+                                    <g:set var="isSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_FOR_SURVEYS_ENDDATE, YN_YES).rdValue==YN_YES}"/>
+                                    <input type="checkbox" name="isSurveysEndDate" class="hidden" value="Y" ${isSurveysEndDate?'checked':''}/>
+                                </div>
+                            </td>
+                            <td>${message(code: 'profile.reminder.for.surveys.endDate')}</td>
+                            <td>
+                                <input type="number" name="remindPeriodForSurveysEndDate" value="${user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SURVEYS_ENDDATE, defaultRemindPeriod)?.strValue}"/>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -349,6 +361,70 @@
             </div>
         </div><!-- .segment -->
     </div><!-- .column -->
+
+    <div class="column wide eight">
+        <div class="ui segment">
+
+            <g:form action="updateNotificationSettings" class="ui form updateNotificationSettings">
+
+                <h4 class="ui dividing header">
+                    ${message(code: 'profile.notification.label')}
+                </h4>
+
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <g:set var="isNotificationByEmail" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <input type="checkbox" name="isNotificationByEmail" id="isNotificationByEmail" class="hidden" value="Y" ${isNotificationByEmail?'checked':''}/>
+                        <label>${message(code: 'profile.isNotificationByEmail')}</label>
+                    </div>
+                </div>
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <g:set var="isNotificationCCByEmail" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, YN_NO).rdValue == YN_YES}"/>
+                        <input type="checkbox" name="isNotificationCCByEmail" id="isNotificationCCByEmail" class="hidden" value="Y" ${isNotificationCCByEmail?'checked':''}/>
+                        <label>${message(code: 'profile.isNotificationCCByEmail')}</label>
+                    </div>
+                    <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(UserSettings.KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
+                    <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
+                </div>
+
+
+                <table class="ui celled la-table table">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>${message(code: 'profile.notification.for.label')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="ui checkbox">
+                                <g:set var="isNotificationForSurveysStart" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, YN_YES).rdValue==YN_YES}"/>
+                                <input type="checkbox" name="isNotificationForSurveysStart" class="hidden" value="Y" ${isNotificationForSurveysStart?'checked':''}/>
+                            </div>
+                        </td>
+                        <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ui checkbox">
+                                <g:set var="isNotificationForSystemMessages" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_YES).rdValue==YN_YES}"/>
+                                <input type="checkbox" name="isNotificationForSystemMessages" class="hidden" value="Y" ${isNotificationForSystemMessages?'checked':''}/>
+                            </div>
+                        </td>
+                        <td>${message(code: 'profile.notification.for.SystemMessages')}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="inline field">
+                    <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
+                </div>
+            </g:form>
+        </div><!-- .segment -->
+    </div>
+
 
 
     <%--

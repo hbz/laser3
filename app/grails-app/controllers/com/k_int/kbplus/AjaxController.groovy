@@ -782,35 +782,6 @@ class AjaxController {
       render result as JSON
   }
 
-  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-  def addCoverage() {
-      IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
-      if(base) {
-          IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
-          if(ieCoverage.save())
-            render template: '/templates/tipps/coverageStatement', model: [covStmt: ieCoverage]
-          else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
-      }
-      else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
-  }
-
-  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-  def removeCoverage() {
-      IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
-      if(ieCoverage) {
-          if(!ieCoverage.delete()) {
-              log.error("Error on deleting coverage statement: ${ieCoverage.getErrors()}")
-          }
-          else{
-              Map<String, Boolean> result = [success: true]
-              render result as JSON
-          }
-      }
-      else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
-  }
-
   @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
   @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
   def verifyUserInput() {

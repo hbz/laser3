@@ -84,6 +84,20 @@ class CostConfigurationController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def deleteCostConfiguration() {
+        if(params.ciec) {
+            CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
+            if(ciec)
+                ciec.delete()
+        }
+        else {
+            flash.error = message(code: 'costConfiguration.delete.noCiec')
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         def org = contextService.org

@@ -398,8 +398,6 @@ from License as l where (
             qry_params += [status:RefdataValue.get(params.status)]
         }
         else if(params.status == '') {
-            base_qry += " and l.status != :deleted "
-            qry_params += [deleted: RDStore.LICENSE_DELETED]
             result.filterSet = false
         }
         else {
@@ -1075,6 +1073,12 @@ from License as l where (
                     else if (result?.type?.type == RefdataValue.toString())
                     {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
+                    }
+
+                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org)
+
+                    if (surveyOrg?.existsMultiYearTerm()){
+                        value = g.message(code: "surveyOrg.perennialTerm.available")
                     }
 
                     row.add([field: value ?: '', style: null])
@@ -2489,6 +2493,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
+        params.tab = params.tab ?: 'active'
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
@@ -2671,7 +2676,7 @@ AND EXISTS (
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
             SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.getFinish() && !surorg.checkPerennialTerm())
+            if(!surre.getFinish() && !surorg.existsMultiYearTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {
@@ -3563,17 +3568,41 @@ AND EXISTS (
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
 
-        result.participant = Org.get(Long.parseLong(params.participant))
+        result.participant = Org.get(Long.parseLong(params.id))
 
         //For Filter
-        params.participant = params.participant ? Org.get(Long.parseLong(params.participant)) : null
+        params.participant = params.id ? Org.get(Long.parseLong(params.id)) : null
 
-        def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
+        params.tab = params.tab ?: 'active'
 
-        result.surveys = SurveyInfo.findAll(fsq.query, fsq.queryParams, params)
-        result.countSurvey = SurveyInfo.executeQuery("select si.id ${fsq.query}", fsq.queryParams).size()
+        def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
-        result
+        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.countSurveyConfigs = getSurveyParticipantCounts(result.participant)
+
+        //def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.participant, result.surveys.surveyConfigs).sort { it?.surveyConfig?.configOrder }
+
+        if ( params.exportXLS ) {
+            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String filename = "${datetoday}_" + g.message(code: "survey.label")
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }else {
+            withFormat {
+                html {
+                    result
+                }
+            }
+        }
 
     }
 
@@ -3932,5 +3961,38 @@ AND EXISTS (
 
         result
 
+    }
+    private def getSurveyParticipantCounts(Org participant){
+        def result = [:]
+
+        def contextOrg = contextService.getOrg()
+
+        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and (surInfo.status = :status or surInfo.status = :status2)",
+                [contextOrg: contextOrg,
+                 status: RDStore.SURVEY_READY,
+                 status2: RDStore.SURVEY_IN_PROCESSING,
+                 participant: participant]).size()
+
+        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
+                [contextOrg: contextOrg,
+                 status: RDStore.SURVEY_SURVEY_STARTED,
+                participant: participant]).size()
+
+        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
+                [contextOrg: contextOrg,
+                 status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 participant: participant]).size()
+
+        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
+                [contextOrg: contextOrg,
+                 status: RDStore.SURVEY_IN_EVALUATION,
+                 participant: participant]).size()
+
+        result.completed = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
+                [contextOrg: contextOrg,
+                 status: RDStore.SURVEY_COMPLETED,
+                 participant: participant]).size()
+
+        return result
     }
 }

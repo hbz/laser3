@@ -340,9 +340,9 @@ class YodaController {
         List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
         Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
         issueEntitlementsAffected.each { IssueEntitlement ie ->
-            if(ieTippMap.get(ie.tipp))
+            if (ieTippMap.get(ie.tipp)) {
                 ieTippMap[ie.tipp] << ie
-            else {
+            } else {
                 Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
                 ies.add(ie)
                 ieTippMap[ie.tipp] = ies
@@ -547,6 +547,12 @@ class YodaController {
                 }
             }
         }
+
+        OrgCustomProperty.executeQuery(
+                'select ocp from OrgCustomProperty ocp join ocp.type pd where pd.descr = :orgConf '
+                + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' )',
+                [orgConf: PropertyDefinition.ORG_CONF]
+        ).each{ it.delete() }
 
         redirect action:'dashboard'
     }

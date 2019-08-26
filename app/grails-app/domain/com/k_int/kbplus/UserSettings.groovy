@@ -27,8 +27,16 @@ class UserSettings {
         SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
         SHOW_INFO_ICON                              (RefdataValue, 'YN'),
         SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
-        IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
+
         REMIND_CC_EMAILADDRESS                      (String),
+        NOTIFICATION_CC_EMAILADDRESS                 (String),
+
+        IS_NOTIFICATION_BY_EMAIL                     (RefdataValue, 'YN'),
+        IS_NOTIFICATION_CC_BY_EMAIL                  (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SURVEYS_START            (RefdataValue, 'YN'),
+        IS_NOTIFICATION_FOR_SYSTEM_MESSAGES          (RefdataValue, 'YN'),
+
+        IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
         IS_REMIND_CC_BY_EMAIL                       (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, 'YN'),
         IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, 'YN'),
@@ -40,6 +48,8 @@ class UserSettings {
         IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, 'YN'),
         IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, 'YN'),
         IS_REMIND_FOR_TASKS                         (RefdataValue, 'YN'),
+        IS_REMIND_FOR_SURVEYS_ENDDATE               (RefdataValue, 'YN'),
+
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD  (Integer),
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE       (Integer),
         REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP   (Integer),
@@ -49,7 +59,8 @@ class UserSettings {
         REMIND_PERIOD_FOR_ORG_CUSTOM_PROP             (Integer),
         REMIND_PERIOD_FOR_ORG_PRIVATE_PROP            (Integer),
         REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP         (Integer),
-        REMIND_PERIOD_FOR_TASKS                       (Integer)
+        REMIND_PERIOD_FOR_TASKS                       (Integer),
+        REMIND_PERIOD_FOR_SURVEYS_ENDDATE              (Integer)
 
         KEYS(type, rdc) {
             this.type = type

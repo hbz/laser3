@@ -48,6 +48,33 @@ class SurveyController {
         params.max = result.max
         params.offset = result.offset
 
+        params.tab = params.tab ?: 'created'
+
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
+
+        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
+        result.countSurveyConfigs = getSurveyConfigCounts()
+
+        result
+    }
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def currentSurveysConsortia_OLD() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+        params.max = result.max
+        params.offset = result.offset
+
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyQueryConsortia(params, sdFormat, result.institution)
 
@@ -1855,7 +1882,7 @@ class SurveyController {
             }
             surveyOrgsDo.each { surveyOrg ->
 
-                if(!surveyOrg?.checkPerennialTerm()) {
+                if(!surveyOrg?.existsMultiYearTerm()) {
 
                     if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                         newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -2045,6 +2072,12 @@ class SurveyController {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
+                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)
+
+                    if (surveyOrg?.existsMultiYearTerm()){
+                        value = g.message(code: "surveyOrg.perennialTerm.available")
+                    }
+
                     row.add([field: value ?: '', style: null])
                     row.add([field: result.comment ?: '', style: null])
                     row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
@@ -2103,7 +2136,7 @@ class SurveyController {
 
             def costItem = CostItem.findBySurveyOrg(surveyOrg)
 
-            if (!surveyOrg?.checkPerennialTerm()) {
+            if (!surveyOrg?.existsMultiYearTerm()) {
                 if (costItem) {
                     row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }
@@ -2123,6 +2156,29 @@ class SurveyController {
                 sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
                 return exportService.generateXLSXWorkbook(sheetData)
         }
+    }
+
+    private def getSurveyConfigCounts(){
+        def result = [:]
+
+        def contextOrg = contextService.getOrg()
+
+        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+
+        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+
+        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+
+        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+
+        result.completed = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
+                [contextOrg: contextOrg, status: RDStore.SURVEY_COMPLETED]).size()
+
+        return result
     }
 
 }

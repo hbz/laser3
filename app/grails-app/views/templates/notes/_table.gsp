@@ -18,7 +18,7 @@
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK --%>
 
-                    <td>
+                    <td class="la-main-object" >
                         ${docctx.owner.title}
                     </td>
                     <td>

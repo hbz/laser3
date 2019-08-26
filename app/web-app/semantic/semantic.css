@@ -1251,6 +1251,14 @@ aside.ui.accordion .title:not(.ui) {
 .js-gost {
   display: none;
 }
+
+a .la-main-object {
+  color: #183551;
+}
+
+.la-main-object {
+  font-weight: bold;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
