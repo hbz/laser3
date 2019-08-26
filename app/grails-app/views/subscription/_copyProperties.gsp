@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.SubscriptionController; com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService");
    def contextOrg = contextService.org%>
@@ -9,7 +9,8 @@
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
+            params="${params << [workFlowPart: com.k_int.kbplus.SubscriptionController.WORKFLOW_END]}"
+            method="post" class="ui form newLicence">
         <table class="ui celled table" style="table-layout: fixed; width: 100%">
             <tbody>
                 <tr>

@@ -2,7 +2,9 @@
 <g:if test="${! (sourceSubscription && targetSubscription)}">
     <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
                 workFlowPart: workFlowPart,
-                workFlowPartNext: workFlowPartNext
+                workFlowPartNext: workFlowPartNext,
+                isRenewSub: isRenewSub,
+                isCopyAuditOn: isCopyAuditOn
             ]" method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field">

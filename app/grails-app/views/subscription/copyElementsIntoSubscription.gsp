@@ -20,13 +20,20 @@
             ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
         </g:else>
     </h1>
-
+        Mein WF-Part: ${workFlowPart}<br>
+Ist DatesOwnerRel-Reiter? ${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS}<br>
+Ist PckEnt-Reiter? ${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS}<br>
+Ist Dok-Reiter? ${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}<br>
+Ist TN-Reiter? ${workFlowPart == WORKFLOW_SUBSCRIBER}<br>
+Ist Prop-Reiter? ${workFlowPart == WORKFLOW_PROPERTIES}<br>
+Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];
         if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId];
         if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
-        if (isRenewSub) params << [isRenewSub: isRenewSub];
+        if (isRenewSub)           params << [isRenewSub: isRenewSub];
+        if (isCopyAuditOn)        params << [isCopyAuditOn: isCopyAuditOn];
     %>
     <g:if test="${isRenewSub}">
         <div class="ui tablet stackable steps">
@@ -178,6 +185,8 @@
     <g:else>
         <g:render template="copyElements" />
     </g:else>
+    ************** Das sind meine Params ${params} **************
+
     <r:script>
         function jsConfirmation() {
             if ($( "td input[data-action='delete']" ).is( ":checked" )){
