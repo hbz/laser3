@@ -20,13 +20,6 @@
             ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
         </g:else>
     </h1>
-        Mein WF-Part: ${workFlowPart}<br>
-Ist DatesOwnerRel-Reiter? ${workFlowPart == WORKFLOW_DATES_OWNER_RELATIONS}<br>
-Ist PckEnt-Reiter? ${workFlowPart == WORKFLOW_PACKAGES_ENTITLEMENTS}<br>
-Ist Dok-Reiter? ${workFlowPart == WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}<br>
-Ist TN-Reiter? ${workFlowPart == WORKFLOW_SUBSCRIBER}<br>
-Ist Prop-Reiter? ${workFlowPart == WORKFLOW_PROPERTIES}<br>
-Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
     <semui:messages data="${flash}"/>
 
     <% Map params = [id: params.id];
@@ -42,7 +35,7 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                     <div class="content" >
                         <div class="title">
                             <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: null]}">
-                                Rahmendaten
+                                ${message(code: 'subscription.details.copyElementsIntoSubscription.general_data.label')}
                             </g:link>
                         </div>
                         <div class="description">
@@ -57,7 +50,7 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                 <div class="content" >
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}">
-                            Bestand
+                            ${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}
                         </g:link>
                     </div>
                     <div class="description">
@@ -70,7 +63,7 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                 <div class="content">
                     <div class="title">
                         <g:link controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}">
-                            Anhänge
+                            ${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}
                         </g:link>
                     </div>
                     <div class="description">
@@ -111,9 +104,9 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
     </g:if>
     <g:else>
         <semui:subNav>
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}" workFlowPart="${WORKFLOW_DATES_OWNER_RELATIONS}" >
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
-                    <div class="title">Rahmendaten</div>
+                    <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.general_data.label')}</div>
                     <div class="description">
                         <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                         <i class="balance scale icon"></i>${message(code: 'license')}
@@ -122,9 +115,9 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" workFlowPart="${WORKFLOW_PACKAGES_ENTITLEMENTS}" >
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
                 <div class="content" >
-                    <div class="title">Bestand</div>
+                    <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.inventory.label')}</div>
                     <div class="description">
                         <i class="gift icon"></i>${message(code: 'package')}
                         <i class="book icon"></i>${message(code: 'title')}
@@ -132,9 +125,9 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                 </div>
             </semui:complexSubNavItem>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}"  workFlowPart="${WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
                 <div class="content">
-                    <div class="title">Anhänge</div>
+                    <div class="title">${message(code: 'subscription.details.copyElementsIntoSubscription.attachements.label')}</div>
                     <div class="description">
                         <i class="file outline icon"></i>${message(code: 'default.documents.label')}
                         <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
@@ -144,7 +137,7 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
             </semui:complexSubNavItem>
 
             <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_SURVEY,ORG_CONSORTIUM,ORG_INST_COLLECTIVE", "INST_USER")}">
-                <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}"  workFlowPart="${WORKFLOW_SUBSCRIBER}">
+                <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
                             ${message(code: 'consortium.subscriber')}
@@ -156,7 +149,7 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
                 </semui:complexSubNavItem>
             </g:if>
 
-            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}"  workFlowPart="${WORKFLOW_PROPERTIES}">
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: WORKFLOW_PROPERTIES]}" >
                 <div class="content">
                     <div class="title">${message(code: 'properties')}</div>
                     <div class="description">
@@ -185,7 +178,6 @@ Ist ENDE-Reiter? ${workFlowPart == WORKFLOW_END}<br>
     <g:else>
         <g:render template="copyElements" />
     </g:else>
-    ************** Das sind meine Params ${params} **************
 
     <r:script>
         function jsConfirmation() {
