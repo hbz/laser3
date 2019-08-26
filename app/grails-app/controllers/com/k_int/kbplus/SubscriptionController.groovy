@@ -3897,7 +3897,8 @@ class SubscriptionController extends AbstractDebugController {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.isRenewSub = params.isRenewSub ?: null
+        if (params?.isRenewSub) {result.isRenewSub = params?.isRenewSub}
+
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
@@ -3985,8 +3986,8 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.isCopyAuditOn = params?.isCopyAuditOn ?: null
-        result.isRenewSub = params?.isRenewSub ?: null
+        if (params?.isCopyAuditOn) {result.isCopyAuditOn = params?.isCopyAuditOn}
+        if (params?.isRenewSub) {result.isRenewSub = params?.isRenewSub}
         result
     }
 
