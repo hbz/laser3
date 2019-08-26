@@ -8,8 +8,12 @@
         <div class="item">
 
             <div class="content">
-                <a class="header"><g:link controller="myInstitution" action="surveyInfos"
-                                          id="${surveyInfo.id}">${surveyInfo?.name}</g:link></a>
+                <a class="header">
+                        <i class="icon chart bar la-list-icon"></i>
+
+                    <g:link controller="myInstitution" action="surveyInfos"
+                                          id="${surveyInfo.id}">${surveyInfo?.name}</g:link>
+                </a>
 
                 <div class="meta">
                     <span><g:message code="surveyInfo.owner.label"/>: ${surveyInfo?.owner}</span>

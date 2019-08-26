@@ -563,9 +563,11 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
-        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).groupBy {
-            it.type.id
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
+            it.participant?.sortname
         }
+
 
         result
 
