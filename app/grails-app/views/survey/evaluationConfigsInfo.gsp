@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -22,6 +22,12 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                    params="[exportXLS: true, surveyConfigID: params.surveyConfigID]">${message(code: 'survey.exportResultsOrgs')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -78,7 +84,7 @@
                         <dd>
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular label">${surveyConfig?.documents?.size()}</div>
+                                <div class="ui circular label">${surveyConfig?.getCurrentDocs()?.size()}</div>
                             </g:link>
                         </dd>
 
@@ -112,61 +118,268 @@
 
 <br>
 <g:if test="${surveyConfig?.type == 'Subscription'}">
+    <semui:form>
+        <h4 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
+                total="${surveyResult?.groupBy { it?.participant.id }?.size()}"/></h4>
 
-    <div>
-        <semui:form>
+        <h4><g:message code="surveyParticipants.hasAccess"/></h4>
 
-            <h3 class="ui left aligned icon header">${message(code: 'surveyProperty.label')} <semui:totalNumber
-                    total="${surveyResult?.size()}"/></h3>
-            <table class="ui celled sortable table la-table">
-                <thead>
-                <tr>
-                    <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                    <th>${message(code: 'surveyProperty.name')}</th>
-                    <th>${message(code: 'surveyProperty.type.label')}</th>
-                    <th>${message(code: 'surveyParticipants.label')}</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <g:each in="${surveyResult}" var="prop" status="i">
 
-                    <g:set var="surveyProperty" value="${com.k_int.kbplus.SurveyProperty.get(prop.key)}"/>
+        <g:set var="surveyParticipantsHasAccess"
+               value="${surveyResult?.findAll { it.participant.hasAccessOrg() }.sort {
+                   it?.participant.sortname
+               }}"/>
+        <div class="four wide column">
+            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
+                    class="ui icon button right floated trigger-modal">
+                <g:message
+                        code="survey.copyEmailaddresses.participantsHasAccess"/>
+            </g:link>
+        </div>
 
-                    <tr>
-                        <td class="center aligned">
-                            ${i + 1}
-                        </td>
-                        <td>
-                            ${surveyProperty?.getI10n('name')}
+        <br>
+        <br>
 
-                            <g:if test="${surveyProperty?.getI10n('explain')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${surveyProperty?.getI10n('explain')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </g:if>
+        <table class="ui celled sortable table la-table">
+            <thead>
+            <tr>
+                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                <th>${message(code: 'org.name.label')}</th>
 
-                        </td>
-                        <td>
-                            ${surveyProperty?.getLocalizedType()}
+                <g:each in="${surveyParticipantsHasAccess.groupBy {
+                    it?.type.id
+                }}" var="property">
+                    <th>
+                        <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
+                        ${surveyProperty?.getI10n('name')}
 
-                        </td>
-                        <td>
-                            ${prop?.value?.size()}
-                        </td>
-                        <td>
-                            <g:link controller="survey" action="evaluationConfigResult" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig?.id, prop: prop.key]"
-                                    class="ui icon button"><i
-                                    class="chart bar icon"></i></g:link>
-
-                        </td>
-                    </tr>
+                        <g:if test="${surveyProperty?.getI10n('explain')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${surveyProperty?.getI10n('explain')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                    </th>
                 </g:each>
-            </table>
-        </semui:form>
-    </div>
+            </tr>
+            </thead>
+            <g:each in="${surveyParticipantsHasAccess.groupBy { it?.participant.id }}" var="result" status="i">
+
+                <g:set var="participant" value="${Org.get(result?.key)}"/>
+
+                <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
+                    <td>
+                        ${participant?.sortname}<br>
+                        <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
+                    </td>
+
+                    <g:each in="${result.value}" var="resultProperty">
+                        <td>
+                            <g:set var="surveyOrg"
+                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
+
+                            <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+
+                                <g:if test="${resultProperty?.type?.type == Integer.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
+                                </g:if>
+                                <g:elseif test="${resultProperty?.type?.type == String.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
+                                                     overwriteEditable="${overwriteEditable}"
+                                                     class="la-overflow la-ellipsis"/>
+                                    <g:if test="${resultProperty.value}">
+                                        <semui:linkIcon/>
+                                    </g:if>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
+                                    <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
+                                                            config="${resultProperty.type?.refdataCategory}"/>
+                                </g:elseif>
+                                <g:if test="${resultProperty?.comment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${resultProperty?.comment}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+                            </g:if>
+                            <g:else>
+
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+
+                                <g:if test="${resultProperty?.comment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${resultProperty?.comment}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+
+                            </g:else>
+                        </td>
+                    </g:each>
+                </tr>
+            </g:each>
+        </table>
+
+
+        <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+
+        <g:set var="surveyParticipantsHasNotAccess"
+               value="${surveyResult?.findAll { !it.participant.hasAccessOrg() }.sort {
+                   it?.participant.sortname
+               }}"/>
+
+        <div class="four wide column">
+            <g:link onclick="copyEmailAdresses(${surveyParticipantsHasNotAccess?.participant?.id})"
+                    class="ui icon button right floated trigger-modal">
+                <g:message
+                        code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+            </g:link>
+        </div>
+
+        <br>
+        <br>
+
+        <table class="ui celled sortable table la-table">
+            <thead>
+            <tr>
+                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                <th>${message(code: 'org.name.label')}</th>
+                <g:each in="${surveyParticipantsHasNotAccess.groupBy {
+                    it?.type.id
+                }}" var="property">
+                    <th>
+                        <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
+                        ${surveyProperty?.getI10n('name')}
+
+                        <g:if test="${surveyProperty?.getI10n('explain')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${surveyProperty?.getI10n('explain')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                    </th>
+                </g:each>
+            </tr>
+            </thead>
+            <g:each in="${surveyParticipantsHasNotAccess.groupBy { it?.participant.id }}" var="result" status="i">
+
+                <g:set var="participant" value="${Org.get(result?.key)}"/>
+
+                <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
+                    <td>
+                        ${participant?.sortname}
+                        <br>
+                        <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
+                    </td>
+
+                    <g:each in="${result.value}" var="resultProperty">
+                        <td>
+                            <g:set var="surveyOrg"
+                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
+
+                            <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+
+                                <g:if test="${resultProperty?.type?.type == Integer.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
+                                </g:if>
+                                <g:elseif test="${resultProperty?.type?.type == String.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="stringValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == BigDecimal.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="text" field="decValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == Date.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="date" field="dateValue"/>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == URL.toString()}">
+                                    <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
+                                                     overwriteEditable="${overwriteEditable}"
+                                                     class="la-overflow la-ellipsis"/>
+                                    <g:if test="${resultProperty.value}">
+                                        <semui:linkIcon/>
+                                    </g:if>
+                                </g:elseif>
+                                <g:elseif test="${resultProperty?.type?.type == RefdataValue.toString()}">
+                                    <semui:xEditableRefData owner="${resultProperty}" type="text" field="refValue"
+                                                            config="${resultProperty.type?.refdataCategory}"/>
+                                </g:elseif>
+                                <g:if test="${resultProperty?.comment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${resultProperty?.comment}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+                            </g:if>
+                            <g:else>
+
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+
+                                <g:if test="${resultProperty?.comment}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${resultProperty?.comment}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+
+                            </g:else>
+                        </td>
+                    </g:each>
+                </tr>
+            </g:each>
+        </table>
+    </semui:form>
+
 </g:if>
+
+<g:javascript>
+
+var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(','),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+</g:javascript>
 
 </body>
 </html>
