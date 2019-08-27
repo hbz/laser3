@@ -72,7 +72,7 @@
             <semui:xEditable owner="${ci}" type="date" field="endDate" />
         </td>
         <td>
-            ${ci.costItemElement.getI10n("value")}
+            ${ci.costItemElement?.getI10n("value")}
         </td>
         <td class="x">
             <g:if test="${editable}">
