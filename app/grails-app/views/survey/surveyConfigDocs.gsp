@@ -121,7 +121,7 @@
 
                         <td class="x">
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                            <span data-tooltip="${message(code: 'property.share.tooltip.on')}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -129,9 +129,9 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon button" data-semui="modal"
+                                    <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
                                             href="#modalEditDocument_${docctx.id}"
-                                            data-tooltip="${message(code: "template.documents.edit")}"><i
+                                            data-content="${message(code: "template.documents.edit")}"><i
                                             class="pencil icon"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
                                             class="ui icon negative button js-open-confirm-modal"

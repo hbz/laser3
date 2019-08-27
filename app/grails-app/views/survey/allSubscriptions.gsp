@@ -60,7 +60,7 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"
-                          data-tooltip="${message(code: 'default.search.tooltip.subscription')}">
+                           class="la-popup-tooltip la-delay" data-content="${message(code: 'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -296,16 +296,16 @@
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
                                 <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
-                                    <g:link class="ui icon positive button"
-                                            data-tooltip="${message(code: 'survey.toggleSurveySub.add.label')}"
+                                    <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                                            data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
                                             controller="survey" action="toggleSurveySub"
                                             params="${params + [direction: 'add', sub: s.id]}">
                                         <i class="plus icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
-                                    <g:link class="ui icon negative button"
-                                            data-tooltip="${message(code: 'survey.toggleSurveySub.remove.label')}"
+                                    <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                                            data-content="${message(code: 'survey.toggleSurveySub.remove.label')}"
                                             controller="survey" action="toggleSurveySub"
                                             params="${params + [direction: 'remove', sub: s.id]}">
                                         <i class="minus icon"></i>

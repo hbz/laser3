@@ -74,9 +74,9 @@ ${orgInstance.name} - ${message(code:'menu.institutions.readerNumbers')}
 
                     <g:form controller="readerNumber" action="delete">
 
-                        <button type="button" class="ui icon button" data-semui="modal"
+                        <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
                                 href="#numbersFormModal_${numbersInstance.id}"
-                                data-tooltip="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
+                                data-content="${message(code: "readerNumber.edit.label")}"><i class="pencil icon"></i>
                         </button>
                         <g:hiddenField name="id" value="${numbersInstance?.id}"/>
                         <button class="ui icon negative button" type="submit" name="_action_delete">

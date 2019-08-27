@@ -295,7 +295,7 @@
                             <g:if test="${tsk.getObjects()}">
                                 <g:each in="${tsk.getObjects()}" var="tskObj">
                                     <div class="item">
-                                        <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>

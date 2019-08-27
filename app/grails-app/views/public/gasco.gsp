@@ -139,7 +139,7 @@
                         <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
                         <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
                         <g:if test="${gascoInfoLink}">
-                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
+                            <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gascoInfoLink}">
                                 <a href="${gascoInfoLink}" target="_blank">${anzeigeName ?: sub}</a>
                             </span>
                         </g:if>
@@ -182,7 +182,7 @@
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="icon globe"></i>
-                                                <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${prsContact?.content}">
+                                                <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
 
@@ -194,7 +194,7 @@
                                         )}" var="prsContact">
                                             <div class="description">
                                                 <i class="ui icon envelope outline"></i>
-                                                <span data-position="right center" data-tooltip="Mail senden an ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}">
                                                     <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>

@@ -341,9 +341,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 </td>
             </g:if>
             <td>
-                <g:link class="ui icon positive button" action="processAddEntitlements"
+                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
-                        data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                     <i class="plus icon"></i>
                 </g:link>
             </td>

@@ -39,7 +39,7 @@
 
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                            <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
                         </div>
@@ -49,14 +49,14 @@
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                     <g:if test="${docctx?.isShared}">
 
-                                        <g:remoteLink class="ui mini icon button green js-no-wait-wheel"
+                                        <g:remoteLink class="ui mini icon button green js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
                                                       onComplete=""
                                                       update="container-documents"
                                                       data-position="top right"
-                                                      data-tooltip="${message(code: 'property.share.tooltip.on')}">
+                                                      data-content="${message(code: 'property.share.tooltip.on')}">
                                             <i class="la-share icon"></i>
                                         </g:remoteLink>
 
@@ -65,14 +65,14 @@
                                         <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
                                             <i class="la-share slash icon"></i>
                                         </button>
-                                        <g:remoteLink class="js-gost"
+                                        <g:remoteLink class="js-gost la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
                                                       onComplete=""
                                                       update="container-documents"
                                                       data-position="top right"
-                                                      data-tooltip="${message(code: 'property.share.tooltip.off')}"
+                                                      data-content="${message(code: 'property.share.tooltip.off')}"
 
                                                       data-confirm-term-what="element"
                                                       data-confirm-term-what-detail="${docctx.owner.title}"

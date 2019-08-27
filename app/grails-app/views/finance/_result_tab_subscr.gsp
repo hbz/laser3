@@ -8,7 +8,7 @@
         <tr>
             <g:if test="${fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
-                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <th><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
@@ -18,7 +18,7 @@
             </g:if>
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
-                <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
+                <th><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.valueInEuro')}" params="[subscrSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[subscrSort: true]"/>
@@ -76,7 +76,7 @@
                         ${ jj + 1 + offset }
                     </td>
                     <td>
-                        <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+                        <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}" />
@@ -97,7 +97,7 @@
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${fixedSubscription}">
-                                    <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
                                         <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
 
                                             <i class="la-copySend icon"></i>
@@ -108,7 +108,7 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
                                         <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
 
                                             <i class="la-copySend icon"></i>
