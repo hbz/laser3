@@ -1,58 +1,33 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
-<laser:serviceInjection/>
+<%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
+<laser:serviceInjection />
+
 <!doctype html>
-
-<r:require module="annotations"/>
-
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'currentSurveys.label', default: 'Current Surveys')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.surveys.label')}</title>
 </head>
-
 <body>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb message="currentSurveys.label" class="active"/>
-</semui:breadcrumbs>
+    <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
-
-
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurveyConfigs.values().sum { it }}"/>
-</h1>
-
-<semui:messages data="${flash}"/>
+    <h1 class="ui icon header"><semui:headerIcon />
+        <semui:xEditable owner="${subscriptionInstance}" field="name" />
+        <semui:totalNumber total="${surveys.size() ?: 0}"/>
+    </h1>
+    <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveys" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
+    <g:render template="nav" />
 
-<semui:form>
 
-    <semui:tabs actionName="${actionName}">
-        <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'created']}" text="Erstellt" tab="created"
-                        counts="${countSurveyConfigs?.created}"/>
-        <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'active']}" text="Aktiv" tab="active"
-                        counts="${countSurveyConfigs?.active}"/>
-        <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'finish']}" text="Beendet" tab="finish"
-                        counts="${countSurveyConfigs?.finish}"/>
-        <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
-                        counts="${countSurveyConfigs?.inEvaluation}"/>
-        <semui:tabsItem controller="survey" action="currentSurveysConsortia"
-                        params="${[id: params.id, tab: 'completed']}" text="Abgeschlossen" tab="completed"
-                        counts="${countSurveyConfigs?.completed}"/>
-    </semui:tabs>
+    <semui:messages data="${flash}" />
 
-    <div class="ui bottom attached tab segment active">
-
+    <g:if test="${surveys}">
         <table class="ui celled sortable table la-table">
             <thead>
             <tr>
@@ -77,13 +52,10 @@
             </tr>
 
             </thead>
-            <g:each in="${surveys}" var="survey" status="i">
+            <g:each in="${surveys}" var="surveyConfig" status="i">
 
                 <g:set var="surveyInfo"
-                       value="${survey[0]}"/>
-
-                <g:set var="surveyConfig"
-                       value="${survey[1]}"/>
+                       value="${surveyConfig?.surveyInfo}"/>
 
 
                 <g:set var="participantsFinish"
@@ -155,11 +127,11 @@
                     <td class="center aligned">
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo?.id}"
-                                             params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                            <div class="ui circular label">
-                                ${surveyConfig?.getCurrentDocs()?.size() ?: 0}
-                            </div>
-                        </g:link>
+                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                                <div class="ui circular label">
+                                    ${surveyConfig?.getCurrentDocs()?.size() ?: 0}
+                                </div>
+                            </g:link>
                         </g:if>
                     </td>
 
@@ -193,13 +165,13 @@
                                     class="ui icon">
                                 <div class="ui circular ${surveyConfig?.evaluationFinish ? "green" : (participantsFinish.size() == participantsTotal.size()) ? "yellow" :""} label">
                                     <g:if
-                                        test="${participantsFinish && participantsTotal}">
-                                    <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
-                                                    maxFractionDigits="2"/>%
-                                </g:if>
-                                <g:else>
-                                    0%
-                                </g:else>
+                                            test="${participantsFinish && participantsTotal}">
+                                        <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
+                                                        maxFractionDigits="2"/>%
+                                    </g:if>
+                                    <g:else>
+                                        0%
+                                    </g:else>
                                 </div>
                             </g:link>
                         </g:if>
@@ -208,15 +180,7 @@
 
             </g:each>
         </table>
-    </div>
-</semui:form>
+    </g:if>
+        </body>
+        </html>
 
-<g:if test="${countSurveyConfigs}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next', default: 'Next')}"
-                    prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${countSurveyConfigs."${params.tab}"}"/>
-</g:if>
-
-</body>
-</html>

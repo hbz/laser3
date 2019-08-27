@@ -454,6 +454,13 @@ ${message(code: 'survey.label')} -
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
+            <th>
+                ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                    <i class="question circle icon"></i>
+                </span>
+            </th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -511,10 +518,16 @@ ${message(code: 'survey.label')} -
                     <td>
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
+                    <td>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                    </td>
                 </g:if>
                 <g:else>
                     <td>
                         <g:message code="surveyOrg.perennialTerm.available"/>
+                    </td>
+                    <td>
+
                     </td>
                     <td>
 

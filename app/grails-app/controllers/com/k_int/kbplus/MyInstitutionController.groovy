@@ -3953,11 +3953,13 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
 
-        result.participant = Org.get(params.participant)
+        result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+        result.participant = Org.get(params.id)
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfig(result.institution, result.participant, result.surveyConfig).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
 
         result
 

@@ -26,13 +26,13 @@
 
 <h1 class="ui left aligned icon header">
     <semui:headerIcon/>${message(code: 'manageConsortiaSurveys.header')}
-    <semui:totalNumber total="${countSurvey}"/>
+    <semui:totalNumber total="${countSurveyConfigs.values().sum { it }}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="manageConsortiaSurveys" controller="myInstitution" method="get" id="${params.id}" class="form-inline ui small form">
+    <g:form action="manageConsortiaSurveys" controller="myInstitution" method="get" id="${params.id}" params="[tab: params.tab]" class="form-inline ui small form">
 
         <div class="three fields">
             <div class="field">
@@ -61,16 +61,6 @@
         </div>
 
         <div class="four fields">
-
-            <div class="field fieldcontain">
-                <label>${message(code: 'surveyInfo.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
-                              from="${RefdataCategory.getAllRefdataValues('Survey Status')}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.status}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -164,7 +154,7 @@
                                   title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
                 <g:sortableColumn params="${params}" property="si.status"
                                   title="${message(code: 'surveyInfo.status.label')}"/>
-                <th>${message(code: 'surveyInfo.property')}</th>
+                <th>${message(code: 'surveyProperty.plural.label')}</th>
                 <th><g:message code="surveyInfo.finished"/></th>
                 <th>${message(code: 'surveyInfo.evaluation')}</th>
             </tr>
@@ -194,7 +184,9 @@
                         </g:else>
                         <div class="la-flexbox">
                         <i class="icon chart bar la-list-icon"></i>
-                            ${surveyInfo?.name}
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
+                                        ${surveyInfo?.name}
+                            </g:link>
                         </div>
                     </td>
                     <td>
@@ -215,15 +207,21 @@
 
                     <td class="center aligned">
 
-                        <g:set var="surveyConfigsOfParticipant"
-                               value="${SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(contextService.org, Org.get(params.id), surveyInfo?.surveyConfigs)}"/>
-
-                        ${surveyConfigsOfParticipant?.groupBy { it.surveyConfig.id }.size()}
+                        <g:if test="${surveyConfig}">
+                            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                                <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
+                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
+                                    <div class="ui circular label">
+                                        ${surveyConfig?.surveyProperties?.size() ?: 0}
+                                    </div>
+                                </g:link>
+                            </g:if>
+                        </g:if>
                     </td>
 
-                    <td>
+                    <td class="center aligned">
                         <g:set var="surveyResults"
-                               value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(Org.get(params.id), surveyInfo?.surveyConfigs)}"/>
+                               value="${SurveyResult.findAllByParticipantAndSurveyConfig(Org.get(params.id), surveyConfig)}"/>
 
                         <g:if test="${surveyResults}">
                             <g:if test="${surveyResults?.finishDate?.contains(null)}">
@@ -235,7 +233,7 @@
                             <g:else>
 
                                 <span class="la-long-tooltip" data-position="top right" data-variation="tiny"
-                                      data-tooltip="${message(code: 'surveyResult.finish.info')}">
+                                      data-tooltip="${message(code: 'surveyResult.finish.info.consortia')}">
                                     <i class="check big green icon"></i>
                                 </span>
                             </g:else>
@@ -244,10 +242,10 @@
 
                     <td>
                         <g:set var="finish"
-                               value="${SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
+                               value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
                         <g:set var="total"
-                               value="${SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
-                        <g:link action="surveyParticipantConsortia" id="${surveyInfo.id}" params="[participant: participant?.id]"
+                               value="${SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
+                        <g:link action="surveyParticipantConsortia" id="${participant?.id}" params="[surveyConfig: surveyConfig?.id]"
                                 class="ui icon button">
                             <g:if test="${finish != 0 && total != 0}">
                                 <g:formatNumber number="${(finish / total) * 100}" minFractionDigits="2"
