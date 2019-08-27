@@ -180,7 +180,7 @@
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
@@ -272,7 +272,7 @@
                     <g:set var="surveyOrg"
                            value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
