@@ -101,7 +101,7 @@
                     </td>
 
 
-                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, surveyResult?.participant)}"/>
 
                     <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 

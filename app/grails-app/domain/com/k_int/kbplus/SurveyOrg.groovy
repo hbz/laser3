@@ -28,9 +28,9 @@ class SurveyOrg {
         lastUpdated column: 'surorg_last_updated'
     }
 
-    def existsMultiYearTerm()
+    boolean existsMultiYearTerm()
     {
-        def existsMultiYearTerm = false
+        boolean existsMultiYearTerm = false
         if(surveyConfig.subscription)
         {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
