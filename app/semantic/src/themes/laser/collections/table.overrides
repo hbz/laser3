@@ -227,10 +227,14 @@
 }
 
 // Fixed Table Header
-.ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table:not(.ignore-floatThead) thead tr:first-child > th,
+.ui.table:not(.ignore-floatThead) thead tr:nth-child(2) > th {
   position: sticky !important;
   z-index: 2;
+}
+// Table Header
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   background-color: #F4F8F9;
 }
 .ui.table thead tr:first-child > th {
@@ -238,33 +242,4 @@
 }
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
-}
-
-element.style {
-}
-.ui.table thead tr:first-child>th:last-child {
-  border-radius: 0;
-}
-.ui.table thead tr:first-child>th {
-  top: 90px;
-}
-.ui.table thead tr:first-child>th, .ui.table thead tr:nth-child(2)>th {
-  position: -webkit-sticky!important;
-  position: sticky!important;
-  z-index: 2;
-  background-color: #f4f8f9;
-}
-.ui.table.la-table-inCard tr th {
-  background-color: #f4f8f9;
-  padding-top: 1.5em;
-  padding-bottom: 1.5em;
-}
-.ui.table tr th {
-  color: gray;
-  font-size: .8rem;
-  text-transform: uppercase;
-}
-.ui.table tr td, .ui.table tr th {
-  padding-left: .9rem;
-  padding-right: .9rem;
 }
