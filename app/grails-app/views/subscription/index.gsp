@@ -120,7 +120,7 @@
                 <g:hiddenField name="offset" value="${params.offset}"/>
                 <g:hiddenField name="max" value="${params.max}"/>
 
-                <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th></th>

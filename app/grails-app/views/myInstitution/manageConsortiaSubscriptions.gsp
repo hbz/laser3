@@ -192,7 +192,7 @@
     </table>
 </g:if>
 
-<table class="ui celled sortable table table-tworow la-table ignore-floatThead">
+<table class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>

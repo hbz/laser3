@@ -1330,8 +1330,8 @@
 .ui.la-table.table tr td.la-exposed-bg {
   background-color: #fffaf5;
 }
-.ui.table:not(.ignore-floatThead) thead tr:first-child > th,
-.ui.table:not(.ignore-floatThead) thead tr:nth-child(2) > th {
+.ui.table:not(.la-ignore-fixed) thead tr:first-child > th,
+.ui.table:not(.la-ignore-fixed) thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
   z-index: 2;
