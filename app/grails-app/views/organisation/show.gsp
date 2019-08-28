@@ -251,76 +251,76 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div>
             </g:if>
 
-
-            <div class="ui card">
-                <div class="content">
-                    <g:if test="${orgInstance.hasPerm("ORG_INST")}">
-                        <dl>
-                            <dt>
-                                <g:message code="org.libraryType.label" default="Library Type"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                        config='Library Type'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.libraryNetwork.label" default="Library Network"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                        config='Library Network'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.funderType.label" default="Funder Type"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.federalState.label" default="Federal State"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.federalState.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                        config='Federal State'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.country.label" default="Country"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.country.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
-                            </dd>
-                        </dl>
-                    </div>
+            <g:if test="${orgInstance.hasPerm("ORG_INST")}">
+                <div class="ui card">
+                    <div class="content">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.libraryType.label" default="Library Type"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.libraryType.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
+                                                            config='Library Type'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.libraryNetwork.label" default="Library Network"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.libraryNetwork.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                                            config='Library Network'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.funderType.label" default="Funder Type"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.funderType.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.federalState.label" default="Federal State"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.federalState.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="federalState"
+                                                            config='Federal State'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.country.label" default="Country"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.country.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
+                                </dd>
+                            </dl>
+                        </div>
                 </div><!-- .card -->
             </g:if>
+
 
             <g:if test="${(OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
@@ -671,8 +671,6 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                       model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
         </g:if>
     </aside>
-</div>
-</div>
 </div>
 </body>
 </html>
