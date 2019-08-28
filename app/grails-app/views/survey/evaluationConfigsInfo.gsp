@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Org;com.k_int.kbplus.SurveyOrg" %>
 <laser:serviceInjection/>
 <!doctype html>
 
@@ -22,6 +22,12 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
+                    params="[exportXLS: true, surveyConfigID: params.surveyConfigID]">${message(code: 'survey.exportResultsOrgs')}</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -123,7 +129,6 @@
                value="${surveyResult?.findAll { it.participant.hasAccessOrg() }.sort {
                    it?.participant.sortname
                }}"/>
-
         <div class="four wide column">
             <g:link onclick="copyEmailAdresses(${surveyParticipantsHasAccess?.participant?.id})"
                     class="ui icon button right floated trigger-modal">
@@ -174,7 +179,7 @@
                     <g:each in="${result.value}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
-                                   value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, institution)}"/>
+                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
                             <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
@@ -251,8 +256,21 @@
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'org.name.label')}</th>
-                <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <g:each in="${surveyParticipantsHasNotAccess.groupBy {
+                    it?.type.id
+                }}" var="property">
+                    <th>
+                        <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
+                        ${surveyProperty?.getI10n('name')}
+
+                        <g:if test="${surveyProperty?.getI10n('explain')}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${surveyProperty?.getI10n('explain')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                    </th>
+                </g:each>
             </tr>
             </thead>
             <g:each in="${surveyParticipantsHasNotAccess.groupBy { it?.participant.id }}" var="result" status="i">
@@ -272,7 +290,7 @@
                     <g:each in="${result.value}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
-                                   value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, institution)}"/>
+                                   value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
                             <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
@@ -327,6 +345,41 @@
     </semui:form>
 
 </g:if>
+
+<g:javascript>
+
+var isClicked = false;
+
+function copyEmailAdresses(orgListIDs) {
+            event.preventDefault();
+            $.ajax({
+                url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
+                                data: {
+                                    orgListIDs: orgListIDs.join(','),
+                                }
+            }).done( function(data) {
+                $('.ui.dimmer.modals > #copyEmailaddresses_ajaxModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#copyEmailaddresses_ajaxModal');
+                        r2d2.initDynamicXEditableStuff('#copyEmailaddresses_ajaxModal');
+                    }
+                    ,
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        };
+
+</g:javascript>
 
 </body>
 </html>

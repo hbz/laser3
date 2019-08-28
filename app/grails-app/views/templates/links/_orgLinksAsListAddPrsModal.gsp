@@ -16,7 +16,7 @@
                     <g:if test="${true}">
                         <tr>
                             <td>
-                                <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
                                     <i class="address card icon"></i>
                                 </span>
                                 ${p}
@@ -44,7 +44,7 @@
                     <g:if test="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
-                                <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                     <i class="address card outline icon"></i>
                                 </span>
                                 ${p}

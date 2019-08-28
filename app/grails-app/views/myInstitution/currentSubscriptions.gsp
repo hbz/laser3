@@ -65,7 +65,7 @@
             <!-- 1-1 -->
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
-                    <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -409,7 +409,7 @@
                         <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
-                                <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
+                                <span data-position="top right" data-content="${message(code:'subscription.delete.existingCostItems')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>

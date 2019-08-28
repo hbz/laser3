@@ -181,7 +181,7 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <span data-tooltip="${message(code:'surveyInfo.toSurveyInfos')}">
+                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyInfo.toSurveyInfos')}">
                             <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button">
                                 <i class="write icon"></i>
                             </g:link>
