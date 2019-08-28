@@ -110,20 +110,6 @@ r2d2 = {
         $('.metaboxToggle').click(function() {
             $(this).next('.metaboxContent').slideToggle();
         })
-
-        // stickies
-        $('.ui.sticky').sticky({offset: 120});
-
-/*        // sticky table header
-        $('.table').floatThead({
-            position: 'fixed',
-            top: 90,
-            zIndex: 1
-        });*/
-
-        $('.modal .table').floatThead('destroy');
-        $('.table.ignore-floatThead').floatThead('destroy');
-
     },
 
 
@@ -280,7 +266,7 @@ r2d2 = {
             inline     : true,
             lastResort: true
         });*/
-        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
 

@@ -232,7 +232,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
 
                     <td>
-                        <span data-tooltip="${message(code: 'surveyConfig.editResult')}">
+                        <span  class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfig.editResult')}">
                             <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui icon button">
                                 <i class="pencil icon"></i>
                             </g:link>

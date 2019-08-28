@@ -293,8 +293,8 @@
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                    <div class="ui icon la-popup-tooltip la-delay"
+                                         data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
@@ -305,8 +305,8 @@
                             </dl>
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                    <div class="ui icon la-popup-tooltip la-delay"
+                                         data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
@@ -317,7 +317,7 @@
                         </g:if>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay" data-content="${message(code: "surveyConfig.header.comment")}">
                                     ${message(code: 'surveyConfig.header.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
@@ -327,7 +327,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay" data-content="${message(code: "surveyConfig.comment.comment")}">
                                     ${message(code: 'surveyConfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
@@ -337,8 +337,8 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.internalComment.comment")}">
                                     ${message(code: 'surveyConfig.internalComment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>

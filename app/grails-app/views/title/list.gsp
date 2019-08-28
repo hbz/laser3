@@ -53,7 +53,9 @@
                   </g:else>
                 </div><!-- .paginateButtons -->
 
-               <div class="ui icon negative message">
+               <semui:messages data="${flash}" />
+
+               <div class="ui icon info message">
                  <i class="exclamation triangle icon"></i>
                  <i class="close icon"></i>
                  <div class="content">

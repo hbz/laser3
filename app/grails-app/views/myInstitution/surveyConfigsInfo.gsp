@@ -304,8 +304,8 @@ ${message(code: 'survey.label')} -
 
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                 </div>
                             </dt>
@@ -314,8 +314,8 @@ ${message(code: 'survey.label')} -
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                 </div>
                             </dt>
@@ -413,8 +413,8 @@ ${message(code: 'survey.label')} -
                                         <g:if test="${costItem?.costDescription}">
                                             <br>
 
-                                            <div class="ui icon" data-position="right center" data-variation="tiny"
-                                                 data-tooltip="${costItem?.costDescription}">
+                                            <div class="ui icon la-popup-tooltip la-delay" data-position="right center" data-variation="tiny"
+                                                 data-content="${costItem?.costDescription}">
                                                 <i class="question small circular inverted icon"></i>
                                             </div>
                                         </g:if>
@@ -454,6 +454,13 @@ ${message(code: 'survey.label')} -
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
+            <th>
+                ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                    <i class="question circle icon"></i>
+                </span>
+            </th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -511,10 +518,16 @@ ${message(code: 'survey.label')} -
                     <td>
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
+                    <td>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                    </td>
                 </g:if>
                 <g:else>
                     <td>
                         <g:message code="surveyOrg.perennialTerm.available"/>
+                    </td>
+                    <td>
+
                     </td>
                     <td>
 

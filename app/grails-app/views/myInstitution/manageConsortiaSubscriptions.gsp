@@ -66,7 +66,7 @@
             <div class="field">
                 <%--
                <label>${message(code: 'default.search.text', default: 'Search text')}
-                   <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                   <span data-position="right center" data-variation="tiny" data-content="${message(code:'default.search.tooltip.subscription')}">
                        <i class="question circle icon"></i>
                    </span>
                </label>
@@ -203,10 +203,10 @@
             <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.runningTimes')}</th>
             <th rowspan="2">${message(code:'financials.amountFinal')}</th>
             <th rowspan="2">
-                <span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center">
+                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="top center">
                     <i class="money bill alternate icon"></i>
                 </span>&nbsp;/&nbsp;
-                <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                     <i class="ui icon eye orange"></i>
                 </span>
             </th>
@@ -239,7 +239,7 @@
                         <i class="icon clipboard outline outline la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
-                            <span data-position="top left" data-tooltip="${message(code:'subscription.hasPreviousSubscription')}">
+                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
                             </span>
                         </g:if>
@@ -314,11 +314,11 @@
 
                 <td>
                     <g:if test="${ci.id}">
-                        <span data-position="top left" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${dataTooltip}">${raw(icon)}</span>
                     </g:if>
 
                     <g:if test="${ci.isVisibleForSubscriber}">
-                        <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                             <i class="ui icon eye orange"></i>
                         </span>
                     </g:if>

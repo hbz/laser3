@@ -93,13 +93,13 @@ ${usedRdvList.join(", ")}
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
@@ -126,7 +126,7 @@ ${usedRdvList.join(", ")}
                                     <td class="x">
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                                <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
+                                                <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
                                                     <button class="ui icon button" data-href="#replaceRefdataValueModal" data-semui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"

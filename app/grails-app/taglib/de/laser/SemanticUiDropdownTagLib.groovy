@@ -127,7 +127,7 @@ class SemanticUiDropdownTagLib {
         def message = attrs.message ? "${message(code: attrs.message)}" : ''
         def tooltip = attrs.tooltip ?: "Die Funktion \'"+message+"\' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item"><div class="disabled" data-tooltip="'+tooltip+'">'+message+'</div></a>'
+        out << '<a href="#" class="item la-popup-tooltip la-delay"><div class="disabled" data-content="'+tooltip+'">'+message+'</div></a>'
 
     }
 

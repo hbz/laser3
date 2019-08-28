@@ -58,7 +58,6 @@ modules = {
         resource url:'js/libs/moment.min.js'
 
         resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
-        resource url:'js/libs/jquery.floatThead.min.js'     // new stuff
 
         resource url:'semantic/semantic.min.js'         // new stuff
         resource url:'semantic/semantic.min.css'        // new stuff

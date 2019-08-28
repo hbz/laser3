@@ -42,7 +42,7 @@
                     <g:link controller="license" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
 
                     <g:if test="${lic.isSlaved}">
-                        <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
+                        <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                             <i class="thumbtack blue icon"></i>
                         </span>
                     </g:if>
