@@ -19,6 +19,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import static de.laser.helper.RDStore.*
 
 class SubscriptionService {
+    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -508,9 +509,10 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
         def contextOrg = contextService.getOrg()
         def targetProp
+        boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
 
         properties?.each { sourceProp ->
             if (sourceProp instanceof CustomProperty) {
@@ -526,15 +528,32 @@ class SubscriptionService {
                 } else {
                     targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
+                targetProp = sourceProp.copyInto(targetProp)
+                save(targetProp, flash)
+                if (doCopyAudit && targetProp instanceof CustomProperty) {
+                    //copy audit
+                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                    auditConfigs.each {
+                        AuditConfig ac ->
+                            //All ReferenceFields were copied!
+                            AuditConfig.addConfig(targetProp, ac.referenceField)
+                    }
+                }
+            } else {
+                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
-            targetProp = sourceProp.copyInto(targetProp)
-            save(targetProp, flash)
         }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
+        if (isCopyAuditOn){
+            properties.each { AbstractProperty prop ->
+                AuditConfig.removeAllConfigs(prop)
+            }
+        }
         int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
     }

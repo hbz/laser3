@@ -15,33 +15,17 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-
-    <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-        <semui:crumb controller="survey" action="surveyConfigs" id="${surveyInfo.id}" message="surveyConfigs.label"/>
-    </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
+<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
 
-<br>
-
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</h1>
-
-<g:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 
 
 <div class="ui icon info message">
     <i class="info icon"></i>
-
     ${message(code: 'allSubscriptions.info')}
 </div>
 
@@ -158,7 +142,7 @@
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>
-                <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}"
+                <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'subscription.slash.name')}"
                                   rowspan="2"/>
                 <th rowspan="2">
                     ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
@@ -294,7 +278,14 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
+
+                            <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                                    data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
+                                    controller="survey" action="addSubtoSurvey"
+                                    params="[sub: s.id]">
+                                <g:message code="createSubscriptionSurvey.selectButton"/>
+                            </g:link>
+                          %{--  <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
                                 <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
@@ -311,7 +302,7 @@
                                         <i class="minus icon"></i>
                                     </g:link>
                                 </g:elseif>
-                            </g:if>
+                            </g:if>--}%
                         </td>
                     </tr>
                 </g:if>

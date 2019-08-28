@@ -88,7 +88,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def createSurvey() {
+    def createGeneralSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -107,7 +107,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def processCreateSurvey() {
+    def processCreateGeneralSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -126,7 +126,44 @@ class SurveyController {
                 type: params.type,
                 owner: contextService.getOrg(),
                 status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
-                comment: params.comment ?: null
+                comment: params.comment ?: null,
+                isSubscriptionSurvey: false
+        )
+
+        if (!(surveyInfo.save(flush: true))) {
+            flash.error = g.message(code: "createSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+        flash.message = g.message(code: "createSurvey.create.successfull")
+        redirect action: 'show', id: surveyInfo.id
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCreateSubscriptionSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+        def surveyInfo = new SurveyInfo(
+                name: params.name,
+                startDate: params.startDate ? sdf.parse(params.startDate) : null,
+                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                type: params.type,
+                owner: contextService.getOrg(),
+                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                comment: params.comment ?: null,
+                isSubscriptionSurvey: true
         )
 
         if (!(surveyInfo.save(flush: true))) {
@@ -200,12 +237,12 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def allSubscriptions() {
+    def createSubscriptionSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def date_restriction = null;
@@ -224,10 +261,6 @@ class SurveyController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
-
-        result.surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -1459,7 +1492,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
-    def toggleSurveySub() {
+    def addSubtoSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -1471,63 +1504,13 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-
-        def surveyInfo = SurveyInfo.get(params.id) ?: null
-
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
-        if( result.editable){
-            switch (params.direction) {
-                case 'add':
-                    if (surveyInfo) {
-                        if (params.sub) {
-                            def subscription = Subscription.get(Long.parseLong(params.sub))
-                            def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
-                            if (!surveyConfig && subscription) {
-                                surveyConfig = new SurveyConfig(
-                                        subscription: subscription,
-                                        configOrder: surveyInfo.surveyConfigs.size() + 1,
-                                        type: 'Subscription',
-                                        surveyInfo: surveyInfo
-
-                                )
-
-                                surveyConfig.save(flush: true)
-
-                                addSubMembers(surveyConfig)
-
-                                flash.message = g.message(code: "survey.toggleSurveySub.add.success", args: [subscription.name])
-                            } else {
-                                flash.error = g.message(code: "survey.toggleSurveySub.add.fail", args: [subscription.name])
-                            }
-                        }
-                    }
-                    break
-                case 'remove':
-
-                    if (surveyInfo) {
-                        def subscription = Subscription.get(Long.parseLong(params.sub))
-                        def surveyConfig = subscription ? SurveyConfig.findBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
-                        if (surveyConfig && subscription) {
-                            try {
-
-                                SurveyConfigProperties.findAllBySurveyConfig(surveyConfig).each {
-                                    it.delete(flush: true)
-                                }
-
-                                deleteSubMembers(surveyConfig)
-
-                                surveyConfig.delete(flush: true)
-                                flash.message = g.message(code: "survey.toggleSurveySub.remove.success", args: [subscription.name])
-                            }
-                            catch (DataIntegrityViolationException e) {
-                                flash.error = g.message(code: "survey.toggleSurveySub.remove.fail", args: [subscription.name])
-                            }
-                        }
-                    }
-                    break
-            }
+        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        if (!result.subscription) {
+            redirect action: 'createSubscriptionSurvey'
         }
-        redirect action: 'allSubscriptions', id: params.id, params: params
+
+        result
+
     }
 
     private def addSubMembers(SurveyConfig surveyConfig) {
