@@ -325,45 +325,55 @@ class OrganisationController extends AbstractDebugController {
         //new institution = consortia member, implies combo type consortium
         RefdataValue orgSector = O_SECTOR_HIGHER_EDU
         if(params.institution) {
-            Org orgInstance = new Org(name: params.institution, sector: orgSector)
-            orgInstance.addToOrgType(OT_INSTITUTION)
+            Org orgInstance
+
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance.save()
+                    orgInstance = new Org(name: params.institution, sector: orgSector).save()
+                    orgInstance.addToOrgType(OT_INSTITUTION).save()
+
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
                     newMember.save()
+
+                    orgInstance.setDefaultCustomerType()
                 }
-                orgInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
-                log.error("Problem creating institution: ${orgInstance.errors}")
+                log.error("Problem creating institution")
                 log.error(e.printStackTrace())
-                flash.message = message(code: "org.error.createInstitutionError",args:[orgInstance.errors])
+
+                flash.message = message(code: "org.error.createInstitutionError", args:[orgInstance ? orgInstance.errors : 'unbekannt'])
+
                 redirect ( action:'findOrganisationMatches', params: params )
             }
         }
         //new department = institution member, implies combo type department
         else if(params.department) {
-            Org deptInstance = new Org(name: params.department, sector: orgSector)
-            deptInstance.addToOrgType(OT_DEPARTMENT)
+            Org deptInstance
+
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance.save()
+                    deptInstance = new Org(name: params.department, sector: orgSector).save()
+                    deptInstance.addToOrgType(OT_DEPARTMENT).save()
+
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)
                     newMember.save()
+
+                    deptInstance.setDefaultCustomerType()
                 }
-                deptInstance.setDefaultCustomerType()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.name])
                 redirect action: 'show', id: deptInstance.id, params: [fromCreate: true]
             }
             catch (Exception e) {
-                log.error("Problem creating department: ${deptInstance.errors}")
+                log.error("Problem creating department")
                 log.error(e.printStackTrace())
-                flash.error = message(code: "org.error.createInstitutionError",args:[deptInstance.errors])
+
+                flash.error = message(code: "org.error.createInstitutionError", args:[deptInstance ? deptInstance.errors : 'unbekannt'])
+
                 redirect ( action:'findOrganisationMatches', params: params )
             }
         }
