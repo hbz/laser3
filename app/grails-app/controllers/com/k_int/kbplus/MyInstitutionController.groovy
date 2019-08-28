@@ -1717,15 +1717,17 @@ from License as l where (
         log.debug("viable roles are: ${roles}")
         log.debug("Using params: ${params}")
         
-        def qry_params = [
+        Map<String,Object> qry_params = [
                 institution: result.institution.id,
                 del_ie: del_ie.id,
                 role_sub: role_sub.id,
                 role_sub_cons: role_sub_cons.id,
                 role_cons: role_sub_consortia.id]
 
+        String sub_qry = "from issue_entitlement ie INNER JOIN issue_entitlement_coverage iecov on ie.ie_id = iecov.ic_ie_fk " +
+                "INNER JOIN subscription sub on ie.ie_subscription_fk = sub.sub_id INNER JOIN org_role orole on sub.sub_id = orole.or_sub_fk, " +
+                "title_instance_package_platform tipp INNER JOIN title_instance ti on tipp.tipp_ti_fk = ti.ti_id cross join title_instance ti2 "
 
-        def sub_qry = "from issue_entitlement ie INNER JOIN subscription sub on ie.ie_subscription_fk=sub.sub_id inner join org_role orole on sub.sub_id=orole.or_sub_fk, title_instance_package_platform tipp inner join title_instance ti  on tipp.tipp_ti_fk=ti.ti_id cross join title_instance ti2 "
         if (filterOtherPlat) {
             sub_qry += "INNER JOIN platformtipp ap on ap.tipp_id = tipp.tipp_id "
         }
@@ -1738,9 +1740,13 @@ from License as l where (
 
         if (date_restriction) {
             sub_qry += " AND ( "
-            sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
-            sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
+            sub_qry += " ( iecov.ic_start_date <= :date_restriction OR (iecov.ic_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null)) )"
+            sub_qry += "    AND "
+            sub_qry += " ( iecov.ic_end_date >= :date_restriction OR (iecov.ic_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null)) )"
             sub_qry += ") "
+
+            //sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
+            //sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
             result.date_restriction = date_restriction
             qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
@@ -1790,8 +1796,16 @@ from License as l where (
             String filterString = ""
             Map queryParams = [ieDeleted:RDStore.TIPP_DELETED,org:result.institution,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
             if (date_restriction) {
-                filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
-                queryParams.dateRestriction = date_restriction
+
+                filterString += " AND ( "
+                filterString += " ( iecov.startDate <= :dateRestriction OR (iecov.startDate is null AND (ie.subscription.startDate <= :dateRestriction OR ie.subscription.startDate is null)) )"
+                filterString += "    AND "
+                filterString += " ( iecov.endDate >= :dateRestriction OR (iecov.endDate is null AND (ie.subscription.endDate >= :dateRestriction OR ie.subscription.endDate is null)) )"
+                filterString += ") "
+                //filterString += " and ((ie.startDate <= :dateRestriction or (ie.startDate = null and (ie.subscription.startDate <= :dateRestriction or ie.subscription.startDate = null))) and (ie.endDate >= :dateRestriction or (ie.endDate = null and (ie.subscription.endDate >= :dateRestriction or ie.subscription.endDate = null))))"
+                //queryParams.dateRestriction = date_restriction
+
+                queryParams.dateRestriction = new Timestamp(date_restriction.getTime())
             }
 
             if ((params.filter) && (params.filter.length() > 0)) {
@@ -1821,9 +1835,9 @@ from License as l where (
                 filterString += " and pkgOrgRoles.roleType in (:contentProvider) "
                 queryParams.contentProvider = filterPvd
             }
-            log.debug("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
+            log.debug("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc")
             log.debug(queryParams)
-            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
+            result.titles = IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.coverages iecov join ie.subscription.orgRelations as oo join ie.tipp.pkg.orgs pkgOrgRoles where oo.org = :org and oo.roleType in (:orgRoles) and ie.status != :ieDeleted ${filterString} order by ie.tipp.title.title asc",queryParams)
         }
         else {
 
