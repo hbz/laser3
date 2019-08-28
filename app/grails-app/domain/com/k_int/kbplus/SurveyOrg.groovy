@@ -28,7 +28,7 @@ class SurveyOrg {
         lastUpdated column: 'surorg_last_updated'
     }
 
-    def existsMultiYearTerm()
+    boolean existsMultiYearTerm()
     {
         boolean existsMultiYearTerm = false
         if(surveyConfig.subscription)
