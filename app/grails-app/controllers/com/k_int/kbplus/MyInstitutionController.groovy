@@ -1089,6 +1089,12 @@ from License as l where (
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
+                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, org)
+
+                    if (surveyOrg?.existsMultiYearTerm()){
+                        value = g.message(code: "surveyOrg.perennialTerm.available")
+                    }
+
                     row.add([field: value ?: '', style: null])
                     row.add([field: result.comment ?: '', style: null])
                     row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
@@ -3796,7 +3802,7 @@ AND EXISTS (
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
             SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.getFinish() && !surorg.checkPerennialTerm())
+            if(!surre.getFinish() && !surorg.existsMultiYearTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {

@@ -106,9 +106,9 @@
                         ${surveyResult?.type?.getLocalizedType()}
                     </td>
 
-                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, surveyResult?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${surveyResult?.type?.type == Integer.toString()}">

@@ -178,9 +178,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
@@ -270,9 +270,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">

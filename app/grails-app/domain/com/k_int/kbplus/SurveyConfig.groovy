@@ -155,7 +155,7 @@ class SurveyConfig {
 
     def checkResultsFinishByOrg(Org org) {
 
-        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
             println("Test")
             return ALL_RESULTS_FINISH_BY_ORG
         } else {

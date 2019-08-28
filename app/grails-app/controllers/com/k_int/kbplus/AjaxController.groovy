@@ -251,9 +251,8 @@ class AjaxController {
 
             if (target instanceof UserSettings) {
                 target.setValue(value)
-            }
-            else {
-                def binding_properties = [ "${params.name}":value ]
+            } else {
+                def binding_properties = ["${params.name}": value]
                 bindData(target, binding_properties)
                 //if (target.hasProperty(params.name)) {
                 //    target."${params.name}" = value
@@ -264,6 +263,33 @@ class AjaxController {
             }
 
             target.save();
+            if (target instanceof SurveyResult) {
+
+                def org = contextService.getOrg()
+                //If Survey Owner set Value then set FinishDate
+                if (org?.id == target?.owner?.id && target?.finishDate == null) {
+                    def property = ""
+                    if (target?.type?.type == Integer.toString()) {
+                        property = "intValue"
+                    } else if (target?.type?.type == String.toString()) {
+                        property = "stringValue"
+                    } else if (target?.type?.type == BigDecimal.toString()) {
+                        property = "decValue"
+                    } else if (target?.type?.type == Date.toString()) {
+                        property = "dateValue"
+                    } else if (target?.type?.type == URL.toString()) {
+                        property = "urlValue"
+                    } else if (target?.type?.type == RefdataValue.toString()) {
+                        property = "refValue"
+                    }
+
+                    if (target[property] != null) {
+                        log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
+                        target.finishDate = new Date()
+                        target.save()
+                    }
+            }
+        }
 
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.

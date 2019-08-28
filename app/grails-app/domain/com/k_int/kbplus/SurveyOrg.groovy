@@ -28,9 +28,9 @@ class SurveyOrg {
         lastUpdated column: 'surorg_last_updated'
     }
 
-    def checkPerennialTerm()
+    boolean existsMultiYearTerm()
     {
-        def checkPerennialTerm = false
+        boolean existsMultiYearTerm = false
         if(surveyConfig.subscription)
         {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
@@ -39,11 +39,11 @@ class SurveyOrg {
                 def sub = surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
 
                 if(sub?.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
-                    checkPerennialTerm = true
+                    existsMultiYearTerm = true
                 }
             }
         }
-        return checkPerennialTerm
+        return existsMultiYearTerm
     }
 
     def hasOrgSubscription()

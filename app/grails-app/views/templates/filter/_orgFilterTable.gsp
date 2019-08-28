@@ -472,7 +472,7 @@
                 <g:set var="costItem" scope="request"
                        value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
 
-                <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
                     <g:if test="${costItem}">
 
                         <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
