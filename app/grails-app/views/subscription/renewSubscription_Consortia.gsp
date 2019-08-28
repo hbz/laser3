@@ -43,6 +43,15 @@
                 <th>${message(code: 'default.value.label', default: 'Value')}</th>
             </tr>
             <tr>
+                <th>${message(code: 'subscription.details.copyElementsIntoSubscription.audit')}</th>
+                <td>
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="subscription.isCopyAuditOn" name="subscription.isCopyAuditOn" checked />
+                        <label for="subscription.isCopyAuditOn">${message(code:'subscription.details.copyElementsIntoSubscription.copyAudit')}</label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th>${message(code: 'myinst.emptySubscription.name')}</th>
                 <td>
                     <div class="ui input">
@@ -62,13 +71,13 @@
             <tr>
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
-                <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"
-                       var="rdcSubStatus"/>
+                <g:set var="rdcSubStatus" value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}"/>
                 <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
-                          value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"/>
+                          value="${de.laser.helper.RDStore.SUBSCRIPTION_INTENDED.id.toString()}"
+                          disabled="${true}"/>
                 </td>
             </tr>
             </tbody>
@@ -85,3 +94,24 @@
 
 </body>
 </html>
+<r:script>
+    formularFieldsDisableIfAuditOn($('input[name="subscription.isCopyAuditOn"]'));
+
+    $('input[name="subscription.isCopyAuditOn"]').change( function() {
+        formularFieldsDisableIfAuditOn($(this));
+    });
+
+    function formularFieldsDisableIfAuditOn(that) {
+        var isCopyAuditOn = $(that).is(":checked");
+        $('input[name="subscription.name"]').prop( "disabled", isCopyAuditOn);
+        $('input[name="subscription.start_date"]').prop( "disabled", isCopyAuditOn);
+        $('input[name="subscription.end_date"]').prop( "disabled", isCopyAuditOn);
+        if (isCopyAuditOn) {
+            $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').addClass('disabled');
+        } else {
+            $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').removeClass('disabled');
+        }
+        // $('.ui.dropdown > select[name=subStatus]').parent('.dropdown').toggleClass('disabled');
+        $('.ui.dropdown > select[name=subStatus]').prop('disabled', isCopyAuditOn);
+    }
+</r:script>
