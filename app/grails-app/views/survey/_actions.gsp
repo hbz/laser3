@@ -1,19 +1,22 @@
 <semui:actionsDropdown>
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
         <g:if test="${actionName == 'currentSurveysConsortia'}">
-            <semui:actionsDropdownItem controller="survey" action="createSurvey"
-                                       message="createSurvey.label"/>
+            <semui:actionsDropdownItem controller="survey" action="createGeneralSurvey"
+                                       message="createGeneralSurvey.label"/>
+
+            <semui:actionsDropdownItem controller="survey" action="createSubscriptionSurvey"
+                                       message="createSubscriptionSurvey.label"/>
+
         </g:if>
         <g:else>
 
             <g:if test="${surveyInfo && surveyInfo.status?.id == com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])?.id}">
 
-                <semui:actionsDropdownItem controller="survey" action="allSubscriptions" params="[id: params.id]"
-                                           message="survey.SurveySub.add.label"/>
-
+                <g:if test="${!surveyInfo?.isSubscriptionSurvey}">
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties"
                                            params="[id: params.id, addSurveyConfigs: true]"
                                            message="survey.SurveyProp.add.label"/>
+                </g:if>
 
                 <div class="ui divider"></div>
                 <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && surveyInfo.status?.id == com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])?.id}">
