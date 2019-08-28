@@ -304,8 +304,8 @@ ${message(code: 'survey.label')} -
 
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                 </div>
                             </dt>
@@ -314,8 +314,8 @@ ${message(code: 'survey.label')} -
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                 </div>
                             </dt>
@@ -413,8 +413,8 @@ ${message(code: 'survey.label')} -
                                         <g:if test="${costItem?.costDescription}">
                                             <br>
 
-                                            <div class="ui icon" data-position="right center" data-variation="tiny"
-                                                 data-tooltip="${costItem?.costDescription}">
+                                            <div class="ui icon la-popup-tooltip la-delay" data-position="right center" data-variation="tiny"
+                                                 data-content="${costItem?.costDescription}">
                                                 <i class="question small circular inverted icon"></i>
                                             </div>
                                         </g:if>

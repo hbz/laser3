@@ -114,16 +114,16 @@
                         </td>
                         <td>
                             <g:if test="${side == 'target' && isContainedByTarget}">
-                                <g:link class="ui icon negative button" action="processRemoveEntitlements"
+                                <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                     <i class="minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${side == 'source' && !isContainedByTarget}">
-                                <g:link class="ui icon positive button" action="processAddEntitlements"
+                                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                     <i class="plus icon"></i>
                                 </g:link>
                             </g:elseif>

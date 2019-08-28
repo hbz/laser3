@@ -92,14 +92,14 @@
                     </td>
                     <td class="x">
                         <g:link controller="organisation" action="processAffiliation"
-                                params="${[assoc:uo.id, id:params.id, cmd:'approve']}" class="ui icon positive button"
-                                data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="top left" >
+                                params="${[assoc:uo.id, id:params.id, cmd:'approve']}" class="ui icon positive button la-popup-tooltip la-delay"
+                                data-content="${message(code:'profile.membership.accept.button')}" data-position="top left" >
                             <i class="checkmark icon"></i>
                         </g:link>
 
                         <g:link controller="organisation" action="processAffiliation"
-                                params="${[assoc:uo.id, id:params.id, cmd:'reject']}" class="ui icon negative button"
-                                data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="top left" >
+                                params="${[assoc:uo.id, id:params.id, cmd:'reject']}" class="ui icon negative button la-popup-tooltip la-delay"
+                                data-content="${message(code:'profile.membership.cancel.button')}" data-position="top left" >
                             <i class="times icon"></i>
                         </g:link>
                     </td>
@@ -135,7 +135,7 @@
                     ${uo.user.username}
 
                     <g:if test="${! uo.user.enabled}">
-                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
+                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'user.disabled.text')}">
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>
@@ -158,7 +158,7 @@
                             </g:link>
                         </g:if>
 
-                        <g:link class="ui icon negative button js-open-confirm-modal"
+                        <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                                 data-confirm-term-what="user"
                                 data-confirm-term-what-detail="${uo.user.displayName}"
                                 data-confirm-term-where="organisation"
@@ -167,7 +167,7 @@
                                 controller="organisation"
                                 action="processAffiliation"
                                 params="${[assoc:uo.id, id:params.id, cmd:'delete']}"
-                                data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="top left" >
+                                data-content="${message(code:'profile.membership.delete.button')}" data-position="top left" >
                             <i class="trash alternate icon"></i>
                         </g:link>
                     </td>

@@ -143,7 +143,7 @@
 
                             <g:if test="${editable && config?.getCurrentDocs()}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
+                                       class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigs.delete.existingDocs')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -151,7 +151,7 @@
                             </g:if>
                             <g:elseif test="${editable && config?.surveyProperties?.size() > 0}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingProperties')}">
+                                       class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigs.delete.existingProperties')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -264,7 +264,7 @@
 
                             <g:if test="${config?.getCurrentDocs()}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
+                                       class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigs.delete.existingDocs')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>

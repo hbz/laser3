@@ -34,7 +34,7 @@
                             if(propValue.value) {
                                 switch(propValue.type.type) {
                                     case "class ${RefdataValue.class.name}":
-                                        String spanOpen = '<span data-tooltip="'+propValue.refValue.getI10n("value")+'">'
+                                        String spanOpen = '<span data-content="'+propValue.refValue.getI10n("value")+'">'
                                         switch(propValue.refValue.owner) {
                                             case RefdataCategory.findByDesc("YN"):
                                             case RefdataCategory.findByDesc("YNO"):

@@ -214,13 +214,13 @@
                   <td class="x">
                     <g:if test="${editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
                         %{-- bug: erms-459
-                        <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
+                        <span data-position="top right" data-content="${message(code:'license.details.copy.tooltip')}">
                             <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
                                 <i class="copy icon"></i>
                             </g:link>
                         </span>
                         --}%
-                        <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
+                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                         <g:link controller="myInstitution" action="copyLicense" params="${[id:l.id]}" class="ui icon button">
                             <i class="copy icon"></i>
                         </g:link>

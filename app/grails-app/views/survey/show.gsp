@@ -156,7 +156,7 @@
 
                                                     <td class="x">
                                                         %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                                                        <span data-tooltip="${message(code: 'property.share.tooltip.on')}">
+                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                                             <i class="green alternate share icon"></i>
                                                         </span>
                                                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">

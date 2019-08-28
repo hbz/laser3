@@ -42,12 +42,12 @@
                         <td>
                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashDueDate.date}"/>
                             <g:if test="${SqlDateUtils.isToday(dashDueDate.date)}">
-                                <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
+                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                                     <i class="icon yellow exclamation"></i>
                                 </span>
                             </g:if>
                             <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.date)}">
-                                <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                                     <i class="icon red exclamation"></i>
                                 </span>
                             </g:elseif>
@@ -67,7 +67,7 @@
                                     <g:link controller="myInstitution" action="surveyInfos" id="${obj.id}">${obj.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${obj instanceof Task}">
-                                    <span data-position="top right" data-tooltip="Aufgabe">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                         <i class="icon checked calendar la-list-icon"></i>
                                     </span>
                                     <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>

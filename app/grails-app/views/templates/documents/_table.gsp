@@ -119,13 +119,13 @@
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
-                                        <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                             <i class="green alternate share icon"></i>
                                         </span>
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
-                                            <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button green"
                                                         params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                                     <i class="alternate share icon"></i>
@@ -133,7 +133,7 @@
                                             </span>
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button"
                                                         params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                                     <i class="alternate share icon"></i>
@@ -144,7 +144,7 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
                                 <g:if test="${contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
-                                    <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                    <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>
                                 <g:if test="${!docctx.sharedFrom && contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
