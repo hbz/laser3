@@ -78,9 +78,9 @@
 
             <div class="column"><i class="la-books icon"></i>la-books</div>
 
-            <div class="column"><i class="la-gokb icon"></i>la-noChange</div>
+            <div class="column"><i class="la-gokb icon"></i>la-gokb</div>
 
-            <div class="column"><i class="la-laser icon"></i>la-append</div>
+            <div class="column"><i class="la-laser icon"></i>la-laser</div>
 
         </div>
 
