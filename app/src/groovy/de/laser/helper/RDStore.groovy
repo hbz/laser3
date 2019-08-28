@@ -127,14 +127,14 @@ class RDStore {
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
 
-    static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
-    static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
-    static final CCT_PHONE                  = getRefdataValue('Phone','ContactContentType')
-    static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')
+    static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
+    static final CCT_EMAIL                      = getRefdataValue('E-Mail','ContactContentType')
+    static final CCT_PHONE                      = getRefdataValue('Phone','ContactContentType')
+    static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
-    static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')
+    static final PENDING_CHANGE_STATUS          = getRefdataValue('Pending', 'PendingChangeStatus')
 
-    static final TASK_STATUS_DONE           = getRefdataValue('Done', 'Task Status')
+    static final TASK_STATUS_DONE               = getRefdataValue('Done', 'Task Status')
 
     static final SHARE_CONF_ALL                 = getRefdataValue('everyone','Share Configuration')
     static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator','Share Configuration')

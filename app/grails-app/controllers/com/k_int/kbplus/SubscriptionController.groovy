@@ -2608,7 +2608,7 @@ class SubscriptionController extends AbstractDebugController {
             if (subscription.instanceOf) {
                 qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND (l.instanceOf is not null) order by LOWER(l.reference)"
             } else {
-                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND order by LOWER(l.reference)"
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) order by LOWER(l.reference)"
             }
             if (subscriber == consortia) {
                 qry_params = [org: consortia,licConsRole: licensee_cons_role]
