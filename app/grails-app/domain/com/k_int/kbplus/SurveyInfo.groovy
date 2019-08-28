@@ -20,6 +20,8 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
+    boolean isSubscriptionSurvey
+
     //List surveyConfigs
 
     static hasMany = [
@@ -31,6 +33,7 @@ class SurveyInfo {
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
+        isSubscriptionSurvey  (nullable:true, blank:true)
 
     }
 
@@ -50,8 +53,7 @@ class SurveyInfo {
         type column: 'surin_type_rv_fk'
         status column: 'surin_status_rv_fk'
 
-
-
+        isSubscriptionSurvey column: 'surin_is_subscription_survey'
     }
 
 

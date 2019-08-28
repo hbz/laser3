@@ -41,6 +41,7 @@ class SurveyConfig {
     boolean configFinish
     boolean costItemsFinish
     boolean evaluationFinish
+    boolean isSubscriptionSurveyFix
 
     static hasMany = [
             documents       : DocContext,
@@ -63,6 +64,7 @@ class SurveyConfig {
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
         evaluationFinish (nullable: true, blank: false)
+        isSubscriptionSurveyFix (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -77,6 +79,7 @@ class SurveyConfig {
         configFinish column: 'surconf_config_finish', default: false
         costItemsFinish column: 'surconf_costitems_finish', default: false
         evaluationFinish column: 'surconf_evaluation_finish', default: false
+        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
