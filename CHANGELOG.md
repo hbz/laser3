@@ -1,3 +1,7 @@
+0.19.5
+
+- survey improvements
+
 0.19.4
 
 - hotfix: permissions
