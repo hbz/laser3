@@ -22,7 +22,7 @@
 
 <semui:form>
     <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
-
+        <g:hiddenField name="sub" value="${subscription?.id}"/>
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
             <input type="text" name="name" placeholder="" value="${subscription?.name}" required />
@@ -50,6 +50,13 @@
                           value="${surveyInfo?.type?.id}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
         </g:else>
+        </div>
+
+        <div class="field required">
+            <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" name="isSubscriptionSurveyFix">
+            </div>
         </div>
 
         <div class="field ">

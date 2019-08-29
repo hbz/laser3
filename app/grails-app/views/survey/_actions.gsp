@@ -16,9 +16,11 @@
                 <semui:actionsDropdownItem controller="survey" action="allSurveyProperties"
                                            params="[id: params.id, addSurveyConfigs: true]"
                                            message="survey.SurveyProp.add.label"/>
+
+                    <div class="ui divider"></div>
                 </g:if>
 
-                <div class="ui divider"></div>
+
                 <g:if test="${surveyInfo && surveyInfo.checkOpenSurvey() && surveyInfo.status?.id == com.k_int.kbplus.RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])?.id}">
                     <semui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                                message="openSurvey.button"/>
