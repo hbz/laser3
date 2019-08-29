@@ -18,7 +18,8 @@
     <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerTitleIcon
+        type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
 
 
 <semui:messages data="${flash}"/>
@@ -44,7 +45,8 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"
-                           class="la-popup-tooltip la-delay" data-content="${message(code: 'default.search.tooltip.subscription')}">
+                          class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -142,7 +144,8 @@
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>
-                <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'subscription.slash.name')}"
+                <g:sortableColumn params="${params}" property="s.name"
+                                  title="${message(code: 'subscription.slash.name')}"
                                   rowspan="2"/>
                 <th rowspan="2">
                     ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
@@ -278,31 +281,25 @@
 
 
                         <td class="x">
-
-                            <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                    data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
-                                    controller="survey" action="addSubtoSurvey"
-                                    params="[sub: s.id]">
-                                <g:message code="createSubscriptionSurvey.selectButton"/>
-                            </g:link>
-                          %{--  <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
+                            <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
+                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findBySubscription(s)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
-                                            controller="survey" action="toggleSurveySub"
-                                            params="${params + [direction: 'add', sub: s.id]}">
-                                        <i class="plus icon"></i>
+                                            controller="survey" action="addSubtoSurvey"
+                                            params="[sub: s.id]">
+                                        <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
                                 </g:if>
-                                <g:elseif test="${surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
+                                <g:else>
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay"
-                                            data-content="${message(code: 'survey.toggleSurveySub.remove.label')}"
-                                            controller="survey" action="toggleSurveySub"
-                                            params="${params + [direction: 'remove', sub: s.id]}">
-                                        <i class="minus icon"></i>
+                                            data-content="${message(code: 'survey.toggleSurveySub.exist.label')}"
+                                            controller="survey" action="addSubtoSurvey"
+                                            params="[sub: s.id]">
+                                        <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
-                                </g:elseif>
-                            </g:if>--}%
+                                </g:else>
+
+                            </g:if>
                         </td>
                     </tr>
                 </g:if>

@@ -30,7 +30,7 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList          : consortiaMembers,
                       tmplShowCheckbox : editable,
-                      tmplDisableOrgIds: surveyConfigOrgs?.id,
+                      tmplDisableOrgIds: surveyConfig?.orgs?.org?.id,
                       tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
 

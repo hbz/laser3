@@ -155,6 +155,7 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+
         def surveyInfo = new SurveyInfo(
                 name: params.name,
                 startDate: params.startDate ? sdf.parse(params.startDate) : null,
@@ -170,6 +171,27 @@ class SurveyController {
             flash.error = g.message(code: "createSurvey.create.fail")
             redirect(url: request.getHeader('referer'))
         }
+
+        def subscription = Subscription.get(Long.parseLong(params.sub))
+        def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
+        if (!surveyConfig && subscription) {
+            surveyConfig = new SurveyConfig(
+                    subscription: subscription,
+                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size()+1 :  1,
+                    type: 'Subscription',
+                    surveyInfo: surveyInfo
+
+            )
+
+            surveyConfig.save(flush: true)
+            addSubMembers(surveyConfig)
+
+        } else {
+            surveyInfo.delete(flush: true)
+            flash.error = g.message(code: "createSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+
         flash.message = g.message(code: "createSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 

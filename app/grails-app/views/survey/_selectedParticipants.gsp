@@ -41,7 +41,6 @@
     <br>
     <br>
 
-
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList         : surveyParticipantsHasAccess,
                       tmplShowCheckbox: editable,

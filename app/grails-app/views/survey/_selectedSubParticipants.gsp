@@ -44,7 +44,7 @@
 
 
     <g:render template="/templates/filter/orgFilterTable"
-              model="[orgList         : selectedSubParticipants.findAll { it?.hasAccessOrg() }.sort { it?.sortname },
+              model="[orgList         : surveyParticipantsHasAccess,
                       tmplShowCheckbox: editable,
                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', 'surveySubInfo']
               ]"/>
