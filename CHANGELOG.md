@@ -1,3 +1,7 @@
+0.19.7
+
+- hotfix: incorrect assignment on survey evulation 
+
 0.19.6
 
 - hotfix: survey evulation view
