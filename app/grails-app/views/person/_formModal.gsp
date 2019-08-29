@@ -182,7 +182,7 @@
                         <div class="field">
                             <div class="two fields">
                                 <div class="field">
-                                    <label for="functionOrg">
+                                    <label for="functionType">
                                         <g:message code="person.function.label" default="Function"/>
                                     </label>
                                     <laser:select class="ui dropdown values"
@@ -193,7 +193,7 @@
                                                   optionValue="value"/>
                                 </div>
 
-                                <g:if test="${actionName != 'myPublicContacts'}">
+                                <g:if test="${actionName != 'myPublicContacts' }">
                                     <div class="field">
                                         <g:if test="${institution}">
                                             <label for="functionOrg">
@@ -268,6 +268,9 @@
                 <input type="hidden" name="functionType" value="${presetFunctionType?.id}"/><%-- not used ? --%>
             </g:else>
         </div>
+        <g:if test="${actionName == 'myPublicContacts'}">
+            <input type="hidden" name="functionOrg" value="${org?.id}"/>
+        </g:if>
 
     </g:form>
 
