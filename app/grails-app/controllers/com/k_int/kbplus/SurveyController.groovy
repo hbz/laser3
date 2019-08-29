@@ -179,7 +179,8 @@ class SurveyController {
                     subscription: subscription,
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size()+1 :  1,
                     type: 'Subscription',
-                    surveyInfo: surveyInfo
+                    surveyInfo: surveyInfo,
+                    isSubscriptionSurveyFix: params.isSubscriptionSurveyFix ? true : false
 
             )
 

@@ -52,6 +52,13 @@
         </g:else>
         </div>
 
+        <div class="field required">
+            <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" name="isSubscriptionSurveyFix">
+            </div>
+        </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
 
