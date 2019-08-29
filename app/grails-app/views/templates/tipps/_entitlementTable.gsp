@@ -1,7 +1,7 @@
 <%@page import="de.laser.helper.RDStore; com.k_int.kbplus.BookInstance;com.k_int.kbplus.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
-    <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header" id="${side}">
+    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
             <tr>
                 <th>

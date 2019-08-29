@@ -28,7 +28,7 @@
         </div>
     </g:form>
 </semui:filter>
-<table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+<table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
     <thead>
     <tr>
         <th>${message(code:'platform.link.accessPoint.grid.activeConfiguration', default:'Active Access configuration')}</th>

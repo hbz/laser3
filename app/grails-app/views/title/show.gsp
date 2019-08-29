@@ -303,7 +303,7 @@
 
             %{--NEW VIEW FOR TIPPS--}%
 
-  <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+  <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
       <thead>
       <tr>
           <th></th>

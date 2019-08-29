@@ -3,7 +3,7 @@
     <div style="padding: 1em 0;">
         <h5 class="ui red header">BenchMark</h5>
 
-        <table class="ui celled la-table la-table-small table ignore-floatThead">
+        <table class="ui celled la-table la-table-small table la-ignore-fixed">
             <thead>
                 <tr>
                     <th>Step</th>
