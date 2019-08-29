@@ -148,7 +148,7 @@
 
                 <g:each in="${surveyParticipantsHasAccess.groupBy {
                     it?.type.id
-                }}" var="property">
+                }.sort{it?.value?.type?.name}}" var="property">
                     <th>
                         <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
                         ${surveyProperty?.getI10n('name')}
@@ -176,7 +176,7 @@
                         <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
                     </td>
 
-                    <g:each in="${result.value}" var="resultProperty">
+                    <g:each in="${result.value.sort{it?.type?.name}}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
                                    value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
@@ -258,7 +258,7 @@
                 <th>${message(code: 'org.name.label')}</th>
                 <g:each in="${surveyParticipantsHasNotAccess.groupBy {
                     it?.type.id
-                }}" var="property">
+                }.sort{it?.value?.type?.name}}" var="property">
                     <th>
                         <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
                         ${surveyProperty?.getI10n('name')}
@@ -287,7 +287,7 @@
                         <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
                     </td>
 
-                    <g:each in="${result.value}" var="resultProperty">
+                    <g:each in="${result.value.sort{it?.type?.name}}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
                                    value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>

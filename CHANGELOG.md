@@ -1,3 +1,7 @@
+0.19.6
+
+- hotfix: survey evulation view
+
 0.19.5
 
 - survey improvements
