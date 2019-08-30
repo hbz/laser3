@@ -61,7 +61,7 @@
 <br>
 
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
 
     <div class="ui grid">
 %{--<div class="four wide column">
@@ -158,9 +158,6 @@
     </div>
 
 </g:if>
-<g:else>
-    <p><b>${message(code: 'showSurveyConfig.noConfigList')}</b></p>
-</g:else>
 
 
 <r:script>

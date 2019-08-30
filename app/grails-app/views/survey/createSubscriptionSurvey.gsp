@@ -36,7 +36,7 @@
 </h1>
 
 <semui:filter>
-    <g:form action="allSubscriptions" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="createSubscriptionSurvey" controller="survey" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
 
@@ -310,7 +310,7 @@
 </semui:form>
 
 <g:if test="${true}">
-    <semui:paginate action="allSubscriptions" controller="survey" params="${params}"
+    <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                     total="${num_sub_rows}"/>

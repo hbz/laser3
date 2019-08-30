@@ -63,19 +63,20 @@
 
                 <g:sortableColumn params="${params}" property="surInfo.name"
                                   title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
-
-                <g:sortableColumn params="${params}" property="surInfo.startDate"
+                <th rowspan="2" scope="col">${message(code: 'surveyInfo.type.label')}</th>
+                <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="surInfo.startDate"
                                   title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
-                <g:sortableColumn params="${params}" property="surInfo.endDate"
-                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-                <th>${message(code: 'surveyProperty.plural.label')}</th>
-                <th>${message(code: 'surveyConfigDocs.label')}</th>
-                <th>${message(code: 'surveyParticipants.label')}</th>
-                <th>${message(code: 'surveyCostItems.label')}</th>
-                <th>${message(code: 'surveyInfo.finished')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyConfigDocs.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyParticipants.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyCostItems.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>
 
             </tr>
-
+            <tr>
+                <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="surInfo.endDate"
+                                  title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+            </tr>
             </thead>
             <g:each in="${surveys}" var="survey" status="i">
 
@@ -96,7 +97,8 @@
                     <td class="center aligned">
                         ${(params.int('offset') ?: 0) + i + 1}
                     </td>
-                    <td><g:if test="${editable}">
+
+                    <td>%{--<g:if test="${editable}">
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <i class="icon clipboard outline la-list-icon"></i>
                             <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
@@ -119,21 +121,22 @@
                                 <i class="icon chart bar la-list-icon"></i>
                                 ${surveyConfig?.getConfigNameShort()}
                             </g:else>
-                        </g:else>
+                        </g:else>--}%
                         <div class="la-flexbox">
                             <i class="icon chart bar la-list-icon"></i>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyInfo?.name}
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui ">
+                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getConfigNameShort() : surveyInfo?.name}
                             </g:link>
                         </div>
+                    </td>
+
+                    <td class="center aligned">
+                        ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo?.startDate}"/>
-
-                    </td>
-                    <td>
-
+                        <br>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo?.endDate}"/>
                     </td>

@@ -115,8 +115,14 @@ DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
 -- set default for user.date_created
 -- July 18th was the last date when the QA database has been reset
+-- ALTER TABLE public.user ADD date_created timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
+-- ALTER TABLE public.user ADD last_updated timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
 UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '2019-07-18 00:00:00.0' where date_created is null;
 
 -- 2019-08-28
 -- Set new coloumn for survey
 ALTER TABLE public.survey_config ADD surconf_is_subscription_survey_fix boolean DEFAULT false NULL;
+
+ALTER TABLE public.survey_info ADD surin_is_subscription_survey boolean NULL;
+
+UPDATE survey_info SET surin_is_subscription_survey = true;

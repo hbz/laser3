@@ -216,6 +216,8 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
         result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
@@ -242,6 +244,8 @@ class SurveyController {
         }
 
         result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
         result.properties = getSurveyProperties(result.institution)
 
@@ -346,9 +350,6 @@ class SurveyController {
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
-        result.surveyConfigs = result.surveyInfo.surveyConfigs?.sort { it?.configOrder }
-
-        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0]?.id?.toString()
 
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
 
@@ -589,7 +590,7 @@ class SurveyController {
         result.participant = Org.get(params.participant)
 
         result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfigInList(result.institution, result.participant, result.surveyInfo.surveyConfigs).sort {
-            it?.surveyConfig?.configOrder
+            it?.surveyConfig?.getConfigNameShort()
         }.groupBy { it?.surveyConfig?.id }
 
         result
