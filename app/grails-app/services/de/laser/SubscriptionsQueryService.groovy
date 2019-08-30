@@ -103,6 +103,14 @@ class SubscriptionsQueryService {
                 }
             }
         }
+        if (params.identifier) {
+//            base_qry += (" and  exists ( select i from Identifier i left join IdentifierOccurrence io on i.id = io.identifier where i.value = ':identifier' and io.sub = s) ")
+            //TODO anderer Lösungsansatz ... in select alle sub.ids wo der Identifier überein stimmt
+            base_qry += "where s.id in ( select io.sub from IdentifierOccurrence io, Identifier id where io.identifier = id.id and id.value = :identifier ) "
+//            base_qry += "where exists ( select io from IdentifierOccurrence io, Identifier id where io.sub = s and io.identifier = id.id and id.value like :identifier ) "
+            qry_params.put('identifier', params.identifier)
+            filterSet = true
+        }
 
         if (params.org) {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org = :org) ")
