@@ -103,6 +103,11 @@ class SubscriptionsQueryService {
                 }
             }
         }
+        if (params.identifier) {
+            base_qry += "AND s.id in ( select io.sub from IdentifierOccurrence io, Identifier id where io.identifier = id.id and id.value = :identifier ) "
+            qry_params.put('identifier', params.identifier)
+            filterSet = true
+        }
 
         if (params.org) {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org = :org) ")
