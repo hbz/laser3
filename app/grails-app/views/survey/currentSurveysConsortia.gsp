@@ -125,7 +125,7 @@
                         <div class="la-flexbox">
                             <i class="icon chart bar la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui ">
-                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getConfigNameShort() : surveyInfo?.name}
+                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
                             </g:link>
                         </div>
                     </td>

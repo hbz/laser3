@@ -125,6 +125,15 @@ class SurveyConfig {
         }
     }
 
+    def getSurveyName() {
+
+        if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
+            return subscription?.name
+        } else {
+            return surveyInfo?.name
+        }
+    }
+
     def getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
