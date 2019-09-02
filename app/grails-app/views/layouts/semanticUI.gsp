@@ -619,7 +619,7 @@
                                 <g:else>
                                     <button class="ui icon toggle button active la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
-                                    </button>
+                                    </button>K
                                 </g:else>
                             </div>
                         </g:if>
@@ -628,7 +628,7 @@
 
                             <r:script>
                                 $(function(){
-                                    <g:if test="${editable}">
+                                    <g:if test="${editable} || ${overwriteEditable}">
                                         <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>
