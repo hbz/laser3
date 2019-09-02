@@ -619,7 +619,7 @@
                                 <g:else>
                                     <button class="ui icon toggle button active la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
-                                    </button>K
+                                    </button>
                                 </g:else>
                             </div>
                         </g:if>
