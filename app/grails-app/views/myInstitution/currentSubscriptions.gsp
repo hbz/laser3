@@ -61,7 +61,7 @@
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
-        <div class="three fields">
+        <div class="four fields">
             <!-- 1-1 -->
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
@@ -77,16 +77,26 @@
                 </div>
             </div>
             <!-- 1-2 -->
+            <div class="field">
+                <label for="q">${message(code: 'default.search.identifier')}</label>
+
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
+            <!-- 1-3 -->
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
-            <!-- 1-3 -->
+            <!-- 1-4 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
                                   placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
-            <!-- 1-4 -->
+            <!-- 1-5 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
