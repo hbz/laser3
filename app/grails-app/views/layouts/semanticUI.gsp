@@ -628,7 +628,7 @@
 
                             <r:script>
                                 $(function(){
-                                    <g:if test="${editable}">
+                                    <g:if test="${editable} || ${overwriteEditable}">
                                         <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>
