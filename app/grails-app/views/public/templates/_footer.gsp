@@ -93,18 +93,28 @@
 
                <div class="ui inverted link list">
                    <div class="item">
-                       <i class="universal access icon"></i><g:link controller="home" action="index" class="content">
+                       <i class="universal access icon"></i>
+                       <g:link controller="home" action="index" class="content">
                             ${message(code: 'landingpage.footer.4.link1')}
                         </g:link>
                    </div>
+%{--                   <div class="item">
+                        <i class="universal access icon"></i>
+                       <g:link controller="public" action="feedback" class="content">
+                           Ihr Feedback
+                       </g:link>
+                   </div>--}%
                    <div class="item">
-                        <i class="universal access icon"></i><a class="content" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.4.link2')}</a>
+                       <i class="universal access icon"></i>
+                       <a class="content" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.4.link2')}</a>
                    </div>
                    <div class="item">
-                       <i class="universal access icon"></i><a target="_blank" class="content" href="https://www.schlichtungsstelle-bgg.de">${message(code: 'landingpage.footer.4.link3')}</a>
+                       <i class="universal access icon"></i>
+                       <a target="_blank" class="content" href="https://www.schlichtungsstelle-bgg.de">${message(code: 'landingpage.footer.4.link3')}</a>
                    </div>
                    <div class="item">
-                       <i class="universal access icon"></i><a target="_blank" class="content" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.4.link4')}</a>
+                       <i class="universal access icon"></i>
+                       <a target="_blank" class="content" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.4.link4')}</a>
                    </div>
                </div>
            </div>
