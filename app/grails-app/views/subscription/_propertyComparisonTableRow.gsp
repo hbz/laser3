@@ -44,7 +44,7 @@
         <td>
             ${propKey.getI10n("name")}
             <g:if test="${propKey.multipleOccurrence}">
-                <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                     <i class="redo icon orange"></i>
                 </span>
             </g:if>

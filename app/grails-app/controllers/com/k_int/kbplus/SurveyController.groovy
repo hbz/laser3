@@ -53,7 +53,7 @@ class SurveyController {
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
 
-        result.surveyConfigs = SurveyConfig.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
         result.countSurveyConfigs = getSurveyConfigCounts()
 
         result
@@ -563,9 +563,11 @@ class SurveyController {
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
-        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).groupBy {
-            it.type.id
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
+            it.participant?.sortname
         }
+
 
         result
 
@@ -1682,11 +1684,22 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        def surveyResults = SurveyResult.findAllByOwnerAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort {
-            params.exportConfigs ? it?.surveyConfig?.configOrder : it?.participant.sortname
+
+        def surveyResults
+
+        if(params.surveyConfigID )
+        {
+            surveyResults = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID)).sort {
+                it?.participant.sortname
+            }
+
+        }else {
+
+            surveyResults = SurveyResult.findAllByOwnerAndSurveyConfigInList(result.institution, result.surveyInfo.surveyConfigs).sort {
+                params.exportConfigs ? it?.surveyConfig?.configOrder : it?.participant.sortname
+            }
         }
 
-        result.surveyResults = surveyResults.groupBy { it?.surveyConfig?.id }
 
         if (params.exportXLS) {
             def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
@@ -1695,7 +1708,7 @@ class SurveyController {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyParticipantResult(surveyResults, "xls", result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) ((params.surveyConfigID) ? exportSurveyParticipantResultMin(surveyResults, "xls", result.institution) : exportSurveyParticipantResult(surveyResults, "xls", result.institution))
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1882,7 +1895,7 @@ class SurveyController {
             }
             surveyOrgsDo.each { surveyOrg ->
 
-                if(!surveyOrg?.checkPerennialTerm()) {
+                if(!surveyOrg?.existsMultiYearTerm()) {
 
                     if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                         newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -2072,6 +2085,12 @@ class SurveyController {
                         value = result?.refValue ? result?.refValue.getI10n('value') : ""
                     }
 
+                    def surveyOrg =SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)
+
+                    if (surveyOrg?.existsMultiYearTerm()){
+                        value = g.message(code: "surveyOrg.perennialTerm.available")
+                    }
+
                     row.add([field: value ?: '', style: null])
                     row.add([field: result.comment ?: '', style: null])
                     row.add([field: result.finishDate ? sdf.format(result?.finishDate) : '', style: null])
@@ -2084,7 +2103,87 @@ class SurveyController {
             case 'xls':
             case 'xlsx':
                 Map sheetData = [:]
-                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
+                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
+                return exportService.generateXLSXWorkbook(sheetData)
+        }
+    }
+
+    private def exportSurveyParticipantResultMin(List<SurveyResult> results, String format, Org org) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
+        List titles = [
+                        g.message(code: 'org.shortname.label'),
+                       g.message(code: 'surveyParticipants.label'),
+
+                       g.message(code: 'surveyProperty.subName'),
+
+                       g.message(code: 'surveyConfigsInfo.newPrice'),
+                       g.message(code: 'surveyConfigsInfo.newPrice.comment'),
+                       g.message(code: 'surveyResult.finishDate')
+                       ]
+
+        results.groupBy {it.type.id}.each { property ->
+            titles << SurveyProperty.get(property.key)?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment')
+        }
+
+        List surveyData = []
+        results.findAll { it.surveyConfig.type == 'Subscription' }.groupBy { it?.participant.id }.each  { result ->
+            List row = []
+            switch (format) {
+                case "xls":
+                case "xlsx":
+
+                    def participant = Org.get(result?.key)
+
+                    row.add([field: participant?.shortname ?: '', style: null])
+                    row.add([field: participant?.name ?: '', style: null])
+
+                    row.add([field: result?.value[0]?.surveyConfig?.getConfigNameShort() ?: "", style: null])
+                    def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant))
+
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : '', style: null])
+
+                    row.add([field: surveyCostItem?.costDescription ?: '', style: null])
+
+                    row.add([field: result?.value[0]?.finishDate ? sdf.format(result?.value[0]?.finishDate) : '', style: null])
+
+                    result.value.each { resultProperty ->
+
+                        def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)
+
+                        def value = ""
+
+                        if (resultProperty?.type?.type == Integer.toString()) {
+                            value = resultProperty?.intValue ? resultProperty?.intValue.toString() : ""
+                        } else if (resultProperty?.type?.type == String.toString()) {
+                            value = resultProperty?.stringValue ?: ""
+                        } else if (resultProperty?.type?.type == BigDecimal.toString()) {
+                            value = resultProperty?.decValue ? resultProperty?.decValue.toString() : ""
+                        } else if (resultProperty?.type?.type == Date.toString()) {
+                            value = resultProperty?.dateValue ? sdf.format(resultProperty?.dateValue) : ""
+                        } else if (resultProperty?.type?.type == URL.toString()) {
+                            value = resultProperty?.urlValue ? resultProperty?.urlValue.toString() : ""
+                        } else if (resultProperty?.type?.type == RefdataValue.toString()) {
+                            value = resultProperty?.refValue ? resultProperty?.refValue.getI10n('value') : ""
+                        }
+
+                        if (surveyOrg?.existsMultiYearTerm()){
+                            value = g.message(code: "surveyOrg.perennialTerm.available")
+                        }
+
+                        row.add([field: value ?: '', style: null])
+                        row.add([field: resultProperty.comment ?: '', style: null])
+                    }
+
+                    surveyData.add(row)
+                    break
+            }
+        }
+        switch (format) {
+            case 'xls':
+            case 'xlsx':
+                Map sheetData = [:]
+                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
                 return exportService.generateXLSXWorkbook(sheetData)
         }
     }
@@ -2130,7 +2229,7 @@ class SurveyController {
 
             def costItem = CostItem.findBySurveyOrg(surveyOrg)
 
-            if (!surveyOrg?.checkPerennialTerm()) {
+            if (!surveyOrg?.existsMultiYearTerm()) {
                 if (costItem) {
                     row.add([field: g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: 2, maxFractionDigits: 2, type: "number") + costItem?.billingCurrency?.getI10n('value').split('-').first(), style: null])
                 }
@@ -2147,7 +2246,7 @@ class SurveyController {
             case 'xls':
             case 'xlsx':
                 Map sheetData = [:]
-                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: surveyData]
+                sheetData[message(code: 'menu.my.surveys')] = [titleRow: titles, columnData: surveyData]
                 return exportService.generateXLSXWorkbook(sheetData)
         }
     }
@@ -2157,19 +2256,19 @@ class SurveyController {
 
         def contextOrg = contextService.getOrg()
 
-        result.created = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status and surInfo.status = :status2",
+        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
 
-        result.active = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
 
-        result.finish = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
 
-        result.inEvaluation = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
 
-        result.completed = SurveyConfig.executeQuery("select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and surInfo.status = :status",
+        result.completed = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
                 [contextOrg: contextOrg, status: RDStore.SURVEY_COMPLETED]).size()
 
         return result

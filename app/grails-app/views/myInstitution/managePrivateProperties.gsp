@@ -51,12 +51,12 @@
                                         ${ppd.name}
 
                                         <g:if test="${ppd.mandatory}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
                                                 <i class="star icon yellow"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>

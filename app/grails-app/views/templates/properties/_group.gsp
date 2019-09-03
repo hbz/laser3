@@ -48,7 +48,7 @@
                         <%
                             /*
                             if (AuditConfig.getConfig(prop)) {
-                                println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                println '&nbsp; <span data-content="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                             }
                             */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
@@ -61,7 +61,7 @@
                             }
                         %>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
                             </span>
                         </g:if>

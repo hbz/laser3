@@ -42,7 +42,7 @@
             </td>
         </g:if>
         <td>
-            <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+            <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
         </td>
         <td>
             <span class="costData"
@@ -72,7 +72,7 @@
             <semui:xEditable owner="${ci}" type="date" field="endDate" />
         </td>
         <td>
-            ${ci.costItemElement.getI10n("value")}
+            ${ci.costItemElement?.getI10n("value")}
         </td>
         <td class="x">
             <g:if test="${editable}">
@@ -80,7 +80,7 @@
                     <g:link mapping="subfinanceEditCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
                         <i class="write icon"></i>
                     </g:link>
-                    <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
+                    <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                         <g:link mapping="subfinanceCopyCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
                             <i class="copy icon"></i>
                         </g:link>

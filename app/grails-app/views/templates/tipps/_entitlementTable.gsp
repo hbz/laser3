@@ -1,7 +1,7 @@
 <%@page import="de.laser.helper.RDStore; com.k_int.kbplus.BookInstance;com.k_int.kbplus.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
-    <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header" id="${side}">
+    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
             <tr>
                 <th>
@@ -114,16 +114,16 @@
                         </td>
                         <td>
                             <g:if test="${side == 'target' && isContainedByTarget}">
-                                <g:link class="ui icon negative button" action="processRemoveEntitlements"
+                                <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                     <i class="minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${side == 'source' && !isContainedByTarget}">
-                                <g:link class="ui icon positive button" action="processAddEntitlements"
+                                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                     <i class="plus icon"></i>
                                 </g:link>
                             </g:elseif>

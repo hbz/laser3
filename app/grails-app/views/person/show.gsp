@@ -143,7 +143,7 @@ ${personInstance}
                                     <g:each in="${personInstance.roleLinks}" var="link">
                                         <g:if test="${link.functionType}">
                                             <div class="ui item address-details">
-                                                <span data-tooltip="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
                                                     <i class="ui icon university la-list-icon"></i>
                                                 </span>
 
@@ -185,7 +185,7 @@ ${personInstance}
                                     <g:each in="${personInstance.roleLinks}" var="link">
                                         <g:if test="${link.positionType}">
                                             <div class="ui item address-details">
-                                                <span data-tooltip="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
                                                     <i class="ui icon university la-list-icon"></i>
                                                 </span>
 
@@ -229,27 +229,27 @@ ${personInstance}
                                             <div class="ui item address-details">
 
                                                 <g:if test="${link.pkg}">
-                                                    <span data-tooltip="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon university la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.cluster}">
-                                                    <span data-tooltip="${message(code:'cluster.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'cluster.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon university la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.sub}">
-                                                    <span data-tooltip="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon clipboard outline la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.lic}">
-                                                    <span data-tooltip="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon balance scale la-list-icon"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:if test="${link.title}">
-                                                    <span data-tooltip="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
+                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon book la-list-icon"></i>
                                                     </span>
                                                 </g:if>
@@ -322,13 +322,13 @@ ${personInstance}
                                     </g:else>
 
                                     <g:if test="${! personInstance.isPublic}">
-                                        <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
                                         </span>
                                         * Kann nicht geändert werden.
                                     </g:if>
                                     <g:else>
-                                        <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
                                             <i class="address card icon"></i>
                                         </span>
                                     </g:else>
@@ -347,8 +347,8 @@ ${personInstance}
                             </g:link>
                         </g:if>
                         <g:else>
-                            <button class="ui button negative disabled"
-                                data-tooltip="Dieser Kontakt ist noch über Funktionen/Positionen mit Organisationen verknüpft.">Kontakt löschen</button>
+                            <button class="ui button negative disabled la-popup-tooltip la-delay"
+                                data-content="Dieser Kontakt ist noch über Funktionen/Positionen mit Organisationen verknüpft.">Kontakt löschen</button>
                         </g:else>
                     </div>
                 </div>

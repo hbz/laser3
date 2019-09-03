@@ -208,7 +208,7 @@
                         )}" var="email">
                             <i class="ui icon envelope outline"></i>
                             <span data-position="right center"
-                                  data-tooltip="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
+                                   class="la-popup-tooltip la-delay" data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
                                 <a href="mailto:${email?.content}">${email?.content}</a>
                             </span><br>
                         </g:each>
@@ -319,7 +319,7 @@
                                }.groupBy { it.id }.size()}"/>
 
                         <g:link controller="myInstitution" action="manageConsortiaSurveys"
-                                params="${[participant: org.id]}">
+                                id="${org.id}">
                             <div class="ui circular label">
                                 ${numberOfSurveys}
                             </div>
@@ -375,15 +375,15 @@
             <td>
             <%-- here: switch if in consortia or not --%>
                 <g:if test="${!consortiaMemberIds.contains(org.id)}">
-                    <g:link class="ui icon positive button"
-                            data-tooltip="${message(code: 'org.consortiaToggle.add.label')}" controller="organisation"
+                    <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'org.consortiaToggle.add.label')}" controller="organisation"
                             action="toggleCombo" params="${params + [direction: 'add', fromOrg: org.id]}">
                         <i class="plus icon"></i>
                     </g:link>
                 </g:if>
                 <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                    <g:link class="ui icon negative button"
-                            data-tooltip="${message(code: 'org.consortiaToggle.remove.label')}"
+                    <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'org.consortiaToggle.remove.label')}"
                             controller="organisation" action="toggleCombo"
                             params="${params + [direction: 'remove', fromOrg: org.id]}">
                         <i class="minus icon"></i>
@@ -477,7 +477,7 @@
                 <g:set var="costItem" scope="request"
                        value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
 
-                <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
                     <g:if test="${costItem}">
 
                         <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
@@ -511,7 +511,7 @@
                    value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
             <g:if test="${costItem?.costDescription}">
 
-                <div class="ui icon" data-tooltip="${costItem?.costDescription}">
+                <div class="ui icon"  class="la-popup-tooltip la-delay" data-content="${costItem?.costDescription}">
                     <i class="info circular inverted icon"></i>
                 </div>
             </g:if>
