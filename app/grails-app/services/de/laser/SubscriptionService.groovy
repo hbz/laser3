@@ -23,6 +23,8 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
+
 import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -638,8 +640,14 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
+        }
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
+            {
+                throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
+                return false
         } else {
-            def new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
+            def new_ie = new IssueEntitlement(
+                    status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: tipp.accessStartDate,
