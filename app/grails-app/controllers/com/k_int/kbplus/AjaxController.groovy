@@ -822,12 +822,17 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
+          def newChecked = [:]
           checked.eachWithIndex { e, int idx ->
-              checked[idx] = params.checked == 'true' ? 'checked' : null
+              newChecked[e.key] = params.checked == 'true' ? 'checked' : null
+              cache.put('checked',newChecked)
           }
       }
-      else checked[params.index] = params.checked == 'true' ? 'checked' : null
-      cache.put('checked',checked)
+      else {
+          checked[params.index] = params.checked == 'true' ? 'checked' : null
+          cache.put('checked',checked)
+      }
+
   }
 
   /**
