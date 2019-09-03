@@ -158,7 +158,7 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ");
-          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" )) ")
+          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) AND ( NOT rectype:\"ParticipantSurveys\" ) AND ( NOT rectype:\"Surveys\" )) ")
 
           params[mapping.key].each { p ->
             if(p == params[mapping.key].first())
