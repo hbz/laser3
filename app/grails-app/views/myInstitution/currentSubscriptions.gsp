@@ -64,21 +64,21 @@
         <div class="four fields">
             <!-- 1-1 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title"">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="q" name="q"
+                    <input type="text" id="search-title" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.identifier')}</label>
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
 
                 <div class="ui input">
                     <input type="text" id="identifier" name="identifier"
