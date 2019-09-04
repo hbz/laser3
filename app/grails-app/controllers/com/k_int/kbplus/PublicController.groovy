@@ -16,6 +16,12 @@ class PublicController {
 
     @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
+    def wcagStatement() {
+    }
+    @Secured(['permitAll'])
+    def wcagFeedbackForm() {
+    }
+    @Secured(['permitAll'])
     def index() {
     }
     @Secured(['permitAll'])
