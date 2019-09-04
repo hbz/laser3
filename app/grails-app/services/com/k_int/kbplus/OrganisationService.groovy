@@ -2154,7 +2154,7 @@ class OrganisationService {
                                 }
                                 break
                             case 'tasks': v.each { t ->
-                                Task task = new Task(subscription: obj,title: t.title,description: t.description,endDate: t.endDate,status: t.status,responsibleOrg: t.responsibleOrg ?: null, responsibleUser: t.responsibleUser ?: null, creator: contextService.user, createDate: new Date())
+                                Task task = new Task(subscription: obj,title: t.title,description: t.description,endDate: t.endDate,status: t.status,responsibleOrg: t.responsibleOrg ?: null, responsibleUser: t.responsibleUser ?: null, creator: contextService.user, systemCreateDate: new Date(), createDate: new Date())
                                 if(!task.save()) {
                                     throw new CreationException(task.errors)
                                 }
