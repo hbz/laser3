@@ -422,6 +422,7 @@ class SubscriptionService {
                 if (task.status != TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
+                    newTask.systemCreateDate = new Date()
                     newTask.subscription = targetSub
                     save(newTask, flash)
                 }
