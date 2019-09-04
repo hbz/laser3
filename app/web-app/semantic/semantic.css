@@ -785,6 +785,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        PRINT
+*******************************/
+
+@media print {
+  .ui.container {
+    width: 100%;
+    padding: 2cm 2cm 3cm 3cm;
+  }
+
+  .ui.menu {
+    visibility: hidden;
+  }
+}
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
