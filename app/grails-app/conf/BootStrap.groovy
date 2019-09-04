@@ -2235,7 +2235,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
 
@@ -2572,7 +2572,7 @@ class BootStrap {
 
     void createRefdataWithI10nExplanation() {
 
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studenten'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])
