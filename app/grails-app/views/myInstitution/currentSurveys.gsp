@@ -19,7 +19,7 @@
 
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
-<semui:totalNumber total="${countSurvey}"/>
+<semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -79,19 +79,20 @@
     </g:form>
 </semui:filter>
 
-<div>
+
 <semui:form>
 
     <semui:tabs actionName="${actionName}">
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'active']}" text="Aktiv" tab="active"
-                        counts="${countSurveyConfigs?.active}"/>
+                        params="${[id: params.id, tab: 'new']}" text="neu" tab="new"
+                        counts="${countSurveys?.new}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'finish']}" text="Beendet" tab="finish"
-                        counts="${countSurveyConfigs?.finish}"/>
+                        params="${[id: params.id, tab: 'processed']}" text="bearbeitet" tab="processed"
+                        counts="${countSurveys?.processed}"/>
+        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+                        params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
+                        counts="${countSurveys?.finish}"/>
     </semui:tabs>
-
-    <div class="ui bottom attached tab segment active">
 
     <table class="ui celled sortable table la-table">
         <thead>
@@ -99,109 +100,106 @@
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.name" title="${message(code: 'surveyInfo.name.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.type" title="${message(code: 'surveyInfo.type.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.startDate"
-                              title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.endDate"
+            <g:sortableColumn params="${params}" property="surveyInfo.name"
+                              title="${message(code: 'surveyInfo.slash.name')}"/>
+            <g:sortableColumn params="${params}" property="surveyInfo.type"
+                              title="${message(code: 'surveyInfo.type.label')}"/>
+            <g:sortableColumn params="${params}" property="surveyInfo.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.status"
-                              title="${message(code: 'surveyInfo.status.label')}"/>
-            <g:sortableColumn params="${params}" property="surveyConfig.surveyInfo.owner"
+            <g:sortableColumn params="${params}" property="surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
-            <%--<th>${message(code: 'surveyInfo.processed')}</th>--%>
-            <th>${message(code: 'surveyInfo.finished')}</th>
+            <th><g:message code="surveyInfo.finished"/></th>
             <th class="la-action-info">${message(code:'default.actions')}</th>
-
         </tr>
 
         </thead>
-        <g:each in="${surveys}" var="s" status="i">
+        <g:each in="${surveyResults}" var="surveyResult" status="i">
+
+            <g:set var="surveyConfig"
+                   value="${com.k_int.kbplus.SurveyConfig.get(surveyResult.key)}"/>
+
+            <g:set var="surveyInfo"
+                   value="${surveyConfig.surveyInfo}"/>
+
             <tr>
                 <td class="center aligned">
                     ${(params.int('offset') ?: 0) + i + 1}
                 </td>
                 <td>
-                    ${s.name}
+                    <div class="la-flexbox">
+                        <i class="icon chart bar la-list-icon"></i>
+                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
+                                params="[surveyConfigID: surveyConfig?.id]" class="ui ">
+                            ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
+                        </g:link>
+                    </div>
                 </td>
                 <td>
-                    ${s.type?.getI10n('value')}
+                    ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
                 </td>
                 <td>
-                    <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/>
-
-                </td>
-                <td>
-
-                    <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo?.endDate}"/>
                 </td>
 
-                <td>
-                    ${s.status?.getI10n('value')}
-                </td>
-                <td>
-                    ${s.owner}
-                </td>
+                <td class="center aligned">
 
-                <%--
-                <td>
-                <g:set var="finish" value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
-                <g:set var="total"  value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
-
-                    <g:if test="${finish != 0 && total != 0}">
-                        <g:formatNumber number="${(finish/total)*100}" minFractionDigits="2" maxFractionDigits="2"/>%
-                    </g:if>
-                    <g:else>
-                        0%
-                    </g:else>
+                    ${surveyInfo?.owner}
 
                 </td>
-                --%>
 
-                <td style="text-align:center">
-                    <g:set var="surveyResults" value="${SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, s?.surveyConfigs)}" />
+                <td class="center aligned">
+                    <g:set var="surveyResults"
+                           value="${SurveyResult.findAllByParticipantAndSurveyConfig(institution, surveyConfig)}"/>
 
                     <g:if test="${surveyResults}">
-                        <g:if test="${surveyResults?.finishDate?.contains(null)}">
-                            <%--<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                  data-content="Nicht abgeschlossen">
-                                <i class="circle red icon"></i>
-                            </span>--%>
-                        </g:if>
-                        <g:else>
 
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                  data-content="${message(code: 'surveyResult.finish.info')}">
-                                <i class="check big green icon"></i>
-                            </span>
-                        </g:else>
+                        <g:link action="surveyConfigsInfo" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]"
+                                class="ui icon mini button">
+                            <g:if test="${surveyResults?.finishDate?.contains(null)}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                      data-variation="tiny"
+                                      data-content="Nicht abgeschlossen">
+                                    <i class="circle red icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                      data-variation="tiny"
+                                      data-content="${message(code: 'surveyResult.finish.info.consortia')}">
+                                    <i class="check big green icon"></i>
+                                </span>
+                            </g:else>
+                        </g:link>
                     </g:if>
                 </td>
 
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="myInstitution" action="surveyInfos" id="${s.id}" class="ui icon button">
+                        <span class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
+                                    class="ui icon button">
                                 <i class="write icon"></i>
                             </g:link>
                         </span>
                     </g:if>
                 </td>
+
             </tr>
 
         </g:each>
     </table>
-    </div>
 </semui:form>
-</div>
 
-<g:if test="${surveys}">
+
+%{--<g:if test="${countSurveys."${params.tab}"}">
     <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                    total="${countSurvey}"/>
-</g:if>
+                    total="${countSurveys."${params.tab}"}"/>
+</g:if>--}%
 
 </body>
 </html>

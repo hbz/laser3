@@ -50,6 +50,12 @@
 
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyInfo.comment.label')}</dt>
+                            <dd><semui:xEditable owner="${surveyInfo}" field="comment" type="text"/></dd>
+
+                        </dl>
+
                     </div>
                 </div>
 

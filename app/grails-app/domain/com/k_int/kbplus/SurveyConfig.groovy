@@ -46,7 +46,8 @@ class SurveyConfig {
     static hasMany = [
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
-            orgs            : SurveyOrg
+            orgs            : SurveyOrg,
+            surResults      : SurveyResult
     ]
 
     static constraints = {
@@ -65,6 +66,7 @@ class SurveyConfig {
         internalComment(nullable: true, blank: false)
         evaluationFinish (nullable: true, blank: false)
         isSubscriptionSurveyFix (nullable: true, blank: false)
+        surResults(nullable: true, blank: false)
     }
 
     static mapping = {
