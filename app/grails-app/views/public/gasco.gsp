@@ -210,33 +210,17 @@
     </table>
 
     </g:if>
-<style>
-.ui.table thead tr:first-child>th {
-    top: 45px!important;
-}
-</style>
 <sec:ifAnyGranted roles="ROLE_USER">
     <style>
         .ui.table thead tr:first-child>th {
             top: 90px!important;
         }
     </style>
-    <r:script>
-        // sticky table header
-/*        $('.table').floatThead({
-            position: 'fixed',
-            top: 90,
-            zIndex: 1
-        }); */
-    </r:script>
 </sec:ifAnyGranted>
 
-<r:script>
-    // sticky table header
-/*    $('.table').floatThead({
-        position: 'fixed',
-        top: 45,
-        zIndex: 1
-    }); */
-</r:script>
+<style>
+    .ui.table thead tr:first-child>th {
+        top: 48px!important;
+    }
+</style>
 </body>
