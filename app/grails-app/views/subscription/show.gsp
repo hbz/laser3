@@ -204,49 +204,60 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt class="control-label"><g:message code="license.responsibilites" default="Responsibilites" /></dt>
-                            <dd>
 
+                            <table class="ui three column table">
+                                <tbody>
+                                <g:if test="${publicSubscriptionEditors}"></g:if>
+                                <g:else>
+                                    <dl>
+                                        <dt class="control-label"><g:message code="license.responsibilites" />
+                                        </dt>
+                                    </dl>
+                                </g:else>
                                 <g:each in="${publicSubscriptionEditors}" var="pse">
-                                    <g:render template="/templates/cpa/person_full_details" model="${[
-                                            person              : pse,
-                                            personContext       : pse.tenant,
-                                            tmplShowDeleteButton    : true,
-                                            tmplShowAddPersonRoles  : false,
-                                            tmplShowAddContacts     : true,
-                                            tmplShowAddAddresses    : true,
-                                            tmplShowFunctions       : false,
-                                            tmplShowPositions       : false,
-                                            tmplShowResponsiblities : false,
-                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                            tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
-                                            controller          : 'subscription',
-                                            action              : 'show',
-                                            id                  : pse.tenant.id,
-                                            editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                    ]}"/>
+                                        <tr>
+                                            <th scope="row" class="control-label la-js-dont-hide-this-card">
+                                                <g:message code="license.responsibilite" />
+                                            </th>
+                                            <td>
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : pse,
+                                                        personContext       : pse.tenant,
+                                                        tmplShowDeleteButton    : true,
+                                                        tmplShowAddPersonRoles  : false,
+                                                        tmplShowAddContacts     : true,
+                                                        tmplShowAddAddresses    : true,
+                                                        tmplShowFunctions       : false,
+                                                        tmplShowPositions       : false,
+                                                        tmplShowResponsiblities : false,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
+                                                        controller          : 'subscription',
+                                                        action              : 'show',
+                                                        id                  : pse.tenant.id,
+                                                        editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                ]}"/>
+                                            </td>
+                                        </tr>
+                                    </g:each>
 
-                                </g:each>
-                            </dd>
-                        </dl>
+                                </tbody>
+                            </table>
 
-                        <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
-
-                            <div class="ui la-vertical buttons">
-                                <a class="ui button" data-semui="modal" href="#prsLinksModal">
-                                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                                </a>
-                            </div>
-
-                            <g:render template="/templates/links/prsResponsibilityModal"
-                                      model="[
-                                              parent: subscriptionInstance,
-                                              modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
-                                              org: contextOrg,
-                                              role: modalPrsLinkRole
-                                      ]"/>
-                        </g:if>
+                            <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
+                                <div class="ui la-vertical buttons">
+                                    <a class="ui button" data-semui="modal" href="#prsLinksModal">
+                                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                                    </a>
+                                </div>
+                                <g:render template="/templates/links/prsResponsibilityModal"
+                                          model="[
+                                                  parent: subscriptionInstance,
+                                                  modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
+                                                  org: contextOrg,
+                                                  role: modalPrsLinkRole
+                                          ]"/>
+                            </g:if>
                     </div>
                 </div>
 
