@@ -2241,12 +2241,14 @@ AND EXISTS (
 
         def currentDate = new Date(System.currentTimeMillis())
 
-        params.currentDate = currentDate
+        def newParams = [:]
+        newParams.currentDate = currentDate
 
-        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
+        def fsq = filterService.getParticipantSurveyQuery(newParams, sdFormat, result.institution)
 
-        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id)
-        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams, params).surveyConfig.surveyInfo.id).size()
+        def surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, newParams)
+        result.surveys = surveyResults.groupBy {it.id[1]}
+        result.countSurvey = result.surveys.size()
 
         result.surveysConsortia = []
 
@@ -2504,16 +2506,18 @@ AND EXISTS (
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        //result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        //result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        params.tab = params.tab ?: 'active'
+        params.tab = params.tab ?: 'new'
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.institution)
 
-        result.surveys  = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id, result)
-        result.countSurvey = SurveyInfo.findAllByIdInList(SurveyResult.findAll(fsq.query, fsq.queryParams).surveyConfig.surveyInfo.id).size()
+        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = result.surveyResults.groupBy {it.id[1]}
+        result.countSurveys = getSurveyParticipantCounts(result.institution)
 
         result
     }
@@ -2596,7 +2600,7 @@ AND EXISTS (
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
+        //result.navigation = surveyService.getParticipantConfigNavigation(result.institution, result.surveyInfo, result.surveyConfig)
 
         if(result.surveyConfig?.type == 'Subscription') {
             result.authorizedOrgs = result.user?.authorizedOrgs
@@ -3571,7 +3575,7 @@ AND EXISTS (
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN") })
-    def manageConsortiaSurveys() {
+    def manageParticipantSurveys() {
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
@@ -3584,40 +3588,18 @@ AND EXISTS (
 
         result.participant = Org.get(Long.parseLong(params.id))
 
-        //For Filter
-        params.participant = params.id ? Org.get(Long.parseLong(params.id)) : null
+        params.tab = params.tab ?: 'new'
 
-        params.tab = params.tab ?: 'active'
+        params.consortiaOrg = result.institution
 
-        def fsq = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution)
+        def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.participant)
 
-        result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
-        result.countSurveyConfigs = getSurveyParticipantCounts(result.participant)
+        println(fsq.query)
+        result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+        result.surveyResults = result.surveyResults.groupBy {it.id[1]}
+        result.countSurveys = getSurveyParticipantCounts(result.participant)
 
-        //def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.participant, result.surveys.surveyConfigs).sort { it?.surveyConfig?.configOrder }
-
-        if ( params.exportXLS ) {
-            def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportSurveyInfo(surveyResults, "xls", result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-
-            return
-        }else {
-            withFormat {
-                html {
-                    result
-                }
-            }
-        }
-
+        result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
@@ -3960,6 +3942,34 @@ AND EXISTS (
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
 
+        result.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
+
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.participant = Org.get(params.id)
+
+        result.editable = (accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")  && result.surveyConfig.surveyInfo?.owner?.id == contextService.getOrg()?.id)
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfig(result.institution, result.participant, result.surveyConfig).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyParticipantConsortiaNew() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         if (!result.editable) {
@@ -3967,47 +3977,56 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
+        result.surveyConfig = SurveyConfig.get(params.surveyConfig)
 
         result.surveyInfo = result.surveyConfig.surveyInfo
 
         result.participant = Org.get(params.id)
 
-        result.surveyResult = SurveyResult.findAllByOwnerAndParticipantAndSurveyConfig(result.institution, result.participant, result.surveyConfig).sort{it?.surveyConfig?.configOrder}.groupBy {it?.surveyConfig?.id}
+        result.subscriptionInstance = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it?.surveyConfig?.configOrder }
+
+        result.ownerId = result.surveyResults[0]?.owner?.id
+
+        //result.navigation = surveyService.getParticipantConfigNavigation(result.participant, result.surveyInfo, result.surveyConfig)
+
+        if(result.surveyConfig?.type == 'Subscription') {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == result.participant?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+        result.consCostTransfer = true
 
         result
-
     }
+
+
+
     private def getSurveyParticipantCounts(Org participant){
         def result = [:]
 
-        def contextOrg = contextService.getOrg()
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                participant: participant]).groupBy {it.id[1]}.size()
 
-        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and (surInfo.status = :status or surInfo.status = :status2)",
-                [contextOrg: contextOrg,
-                 status: RDStore.SURVEY_READY,
-                 status2: RDStore.SURVEY_IN_PROCESSING,
-                 participant: participant]).size()
 
-        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
-                [contextOrg: contextOrg,
-                 status: RDStore.SURVEY_SURVEY_STARTED,
-                participant: participant]).size()
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
-                [contextOrg: contextOrg,
-                 status: RDStore.SURVEY_SURVEY_COMPLETED,
-                 participant: participant]).size()
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+                [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
-                [contextOrg: contextOrg,
-                 status: RDStore.SURVEY_IN_EVALUATION,
-                 participant: participant]).size()
-
-        result.completed = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surInfo.owner = :contextOrg and surOrg.org = :participant and surInfo.status = :status",
-                [contextOrg: contextOrg,
-                 status: RDStore.SURVEY_COMPLETED,
-                 participant: participant]).size()
 
         return result
     }

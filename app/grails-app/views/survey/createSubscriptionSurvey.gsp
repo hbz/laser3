@@ -114,7 +114,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown" name="provider"
+                <g:select class="ui dropdown search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"
@@ -285,7 +285,7 @@
                                 <g:if test="${!com.k_int.kbplus.SurveyConfig.findBySubscription(s)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
-                                            controller="survey" action="addSubtoSurvey"
+                                            controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
@@ -293,7 +293,7 @@
                                 <g:else>
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.exist.label')}"
-                                            controller="survey" action="addSubtoSurvey"
+                                            controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>

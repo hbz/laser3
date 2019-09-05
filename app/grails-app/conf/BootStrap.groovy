@@ -1516,11 +1516,14 @@ class BootStrap {
 
     def createSurveyProperties() {
 
-        /*def requiredProps = [
-                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
-                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        def requiredProps = [
+                [
+                        name: [en: "Participation", de: "Teilnahme"],
+                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        type: OT.Rdv, cat:'YN'
+                ]
         ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)*/
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
 
     def createPrivateProperties() {
@@ -1648,7 +1651,7 @@ class BootStrap {
             }
 
             if (default_prop.introduction) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
             }
         }
     }

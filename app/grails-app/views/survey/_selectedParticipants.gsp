@@ -1,16 +1,4 @@
 <br>
-%{--<g:if test="${surveyConfig?.type == 'Subscription'}">
-    <h3 class="ui icon header"><semui:headerIcon/>
-    <i class="icon clipboard outline la-list-icon"></i>
-    <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-        ${surveyConfig?.subscription?.name}
-    </g:link>
-    </h3>
-</g:if>
-<g:else>
-    <h3 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h3>
-</g:else>--}%
-
 <semui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedParticipants']">

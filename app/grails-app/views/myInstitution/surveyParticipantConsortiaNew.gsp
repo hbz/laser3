@@ -5,83 +5,63 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyEvaluation.label', default: 'Survey Evaluation')}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-    <semui:crumb message="survey.label" class="active"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+    </g:if>
+    <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'survey.label')} -
 
-<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">${surveyInfo.name}</g:link>
-<semui:surveyStatus object="${surveyInfo}"/>
+<br>
+
+<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
+${surveyInfo.name}
 </h1>
 
-<g:if test="${navigation}">
-    <%--
-    <br>
-
-    <div class="ui center aligned grid">
-        <div class='ui big label la-annual-rings'>
-
-            <g:if test="${navigation?.prev}">
-                <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                        params="[surveyConfigID: navigation?.prev?.id]" class="item"
-                        title="${message(code: 'surveyConfigsInfo.prevSurveyConfig')}">
-                    <i class='arrow left icon'></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <i class=' icon'></i>
-            </g:else>
-            <g:message code="surveyConfigsInfo.totalSurveyConfig"
-                       args="[surveyConfig?.configOrder, navigation?.total]"/>
-            <g:if test="${navigation?.next}">
-                <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                        params="[surveyConfigID: navigation?.next?.id]" class="item"
-                        title="${message(code: 'surveyConfigsInfo.nextSurveyConfig')}">
-                    <i class='arrow right icon'></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <i class=' icon'></i>
-            </g:else>
-        </div>
-    </div>
-    --%>
-</g:if>
 
 <br>
 
 <semui:messages data="${flash}"/>
 
 
-<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
+<g:if test="${participant}">
+    <semui:form>
+    <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(participant.id)}" />
+    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}" />
 
-<br>
 
-<g:if test="${!editable}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
+        <h3><g:message code="surveyEvaluation.participants"/>:</h3>
+    <table class="ui table la-table la-table-small">
+        <tbody>
+        <tr>
+            <td>
+                <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
 
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
-                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="surveyResult.finish.info" />.
-            </p>
-        </div>
-    </div>
+                ${choosenOrg?.libraryType?.getI10n('value')}
+            </td>
+            <td>
+                <g:if test="${choosenOrgCPAs}">
+                    <g:set var="oldEditable" value="${editable}" />
+                    <g:set var="editable" value="${false}" scope="request"/>
+                    <g:each in="${choosenOrgCPAs}" var="gcp">
+                        <g:render template="/templates/cpa/person_details" model="${[person: gcp, tmplHideLinkToAddressbook: true]}" />
+                    </g:each>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                </g:if>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </semui:form>
 </g:if>
-
 
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(ownerId)}"/>
@@ -171,7 +151,7 @@ ${message(code: 'survey.label')} -
                             <dd>${subscriptionInstance?.resource?.getI10n('value')}</dd>
                             <dd><semui:auditInfo auditable="[subscriptionInstance, 'resource']"/></dd>
                         </dl>
-                        <g:if test="${subscriptionInstance?.instanceOf && (contextOrg?.id == subscriptionInstance?.getConsortia()?.id)}">
+                        <g:if test="${subscriptionInstance?.instanceOf && (participant?.id == subscriptionInstance?.getConsortia()?.id)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
@@ -249,7 +229,7 @@ ${message(code: 'survey.label')} -
                 <div class="ui card la-js-hideable">
                     <div class="content">
                         <g:set var="derivedPropDefGroups"
-                               value="${subscriptionInstance?.owner?.getCalculatedPropDefGroups(contextService.getOrg())}"/>
+                               value="${subscriptionInstance?.owner?.getCalculatedPropDefGroups(participant)}"/>
 
                         <div class="ui la-vertical buttons">
                             <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
@@ -555,9 +535,6 @@ ${message(code: 'survey.label')} -
     </table>
 
 </semui:form>
-
-<br />
-<g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
 
 
 </body>

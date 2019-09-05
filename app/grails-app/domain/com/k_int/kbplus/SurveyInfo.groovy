@@ -1,8 +1,17 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 
+import javax.persistence.Transient
+
 class SurveyInfo {
+
+    @Transient
+    def contextService
+    @Transient
+    def accessService
 
     String name
     Date startDate
@@ -59,9 +68,9 @@ class SurveyInfo {
 
     def checkOpenSurvey()
     {
-        boolean check = this.surveyConfigs.size() > 0 ? true : false
+        boolean check = this.surveyConfigs?.size() > 0 ? true : false
 
-        this.surveyConfigs.each {
+        this.surveyConfigs?.each {
 
             if(it?.subscription && !(it?.surveyProperties?.size() > 0))
             {
@@ -109,7 +118,14 @@ class SurveyInfo {
         }else {
             return null
         }
-
-
     }
+    boolean isEditable() {
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }
+
+        return false
+    }
+
 }
