@@ -18349,10 +18349,6 @@ ol.ui.horizontal.list li:before,
   background: white!important;
 }
 
-.la-border-selected {
-  border: 1px solid #bb1600;
-}
-
 .la-icon-list {
   margin-top: 10px;
 }

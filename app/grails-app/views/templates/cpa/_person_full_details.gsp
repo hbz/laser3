@@ -15,15 +15,6 @@
                         ${person.last_name}
                     </g:link>
                 </h5>
-
-                <script>
-                    $('.person-details').mouseenter(function () {
-                        $(this).parent().addClass('la-border-selected');
-                    })
-                    $('.person-details').mouseleave(function () {
-                        $(this).parent().removeClass('la-border-selected');
-                    })
-                </script>
             </div>
 
             <div class="content">
@@ -181,19 +172,19 @@
 
     </div><!-- .la-flex-list -->
 
-    <g:if test="${editable && tmplUnlinkedObj}"><%-- TODO.: refactoring layout --%>
+    <g:if test="${editable && tmplUnlinkedObj}">
+        <td class="right aligned">
+            <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
 
-        <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
-
-        <g:link class="ui mini icon negative button js-open-confirm-modal"
-                data-confirm-term-what="contact"
-                data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
-                data-confirm-term-where="${controller}"
-                data-confirm-term-how="unlink"
-                controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-            <i class="unlink icon"></i>
-        </g:link>
-
+            <g:link class="ui icon negative button js-open-confirm-modal"
+                    data-confirm-term-what="contact"
+                    data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
+                    data-confirm-term-where="${controller}"
+                    data-confirm-term-how="unlink"
+                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                <i class="unlink icon"></i>
+            </g:link>
+        </td>
     </g:if>
 
 </g:if>
