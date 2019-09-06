@@ -103,3 +103,6 @@
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
 }
+.coverageStatements .ui .card {
+  width: 145px;
+}

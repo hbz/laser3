@@ -768,12 +768,12 @@ class Subscription
            }
            if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
                if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
-                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id).sortname
+                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
-                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id).sortname
+                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
            else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
-               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id).sortname
+               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
            }
            else{
                additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
