@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
+<%@ page import="static de.laser.helper.RDStore.*" %>
 <laser:serviceInjection />
 
 <%
@@ -6,11 +7,13 @@
     List<DocContext> sharedItems = []
 
     ownobj.documents.sort{it.owner?.title}.each{ it ->
-        if (it.sharedFrom) {
-            sharedItems << it
-        }
-        else {
-            baseItems << it
+        if (it.status != DOC_DELETED){
+            if (it.sharedFrom) {
+                sharedItems << it
+            }
+            else {
+                baseItems << it
+            }
         }
     }
 
@@ -20,7 +23,6 @@
 %>
 
     <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
-
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
