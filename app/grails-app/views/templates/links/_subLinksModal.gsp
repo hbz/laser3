@@ -98,7 +98,7 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}&ctx=${context}",
+                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&ctx=${context}",
                 cache: false
             },
             clearable: true,
