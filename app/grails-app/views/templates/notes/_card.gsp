@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
-<%@ page import="static de.laser.helper.RDStore.*" %>
+<%@ page import="static de.laser.helper.RDStore.DOC_DELETED" %>
 <laser:serviceInjection />
 
 <%
