@@ -52,12 +52,14 @@
         </g:else>
         </div>
 
-        <div class="field required">
-            <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
-            <div class="ui checkbox">
-                <input type="checkbox" name="isSubscriptionSurveyFix">
+        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndIsSubscriptionSurveyFix(subscription, true))}">
+            <div class="field required">
+                <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="isSubscriptionSurveyFix" ${disableIsSubscriptionSurveyFix}>
+                </div>
             </div>
-        </div>
+        </g:if>
 
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>
