@@ -2,6 +2,20 @@
 
 - TODO
 
+0.19.8
+
+- hotfix: add many title to subscription
+- hotfix: private properties not editable for singel user by consortial subscription
+- hotfix: Wrong GOKB ID by Tipp Show View
+
+0.19.7
+
+- hotfix: incorrect assignment on survey evulation 
+
+0.19.6
+
+- hotfix: survey evulation view
+
 0.19.5
 
 - survey improvements
