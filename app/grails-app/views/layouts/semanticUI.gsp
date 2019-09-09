@@ -218,7 +218,6 @@
 
                                 <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-
                                 <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
 
