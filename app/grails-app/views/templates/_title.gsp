@@ -2,7 +2,7 @@
   <div class="sixteen wide column">
     <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
     <g:link controller="issueEntitlement" id="${ie.id}"
-            action="show"><strong>${ie.tipp.title.title}</strong>
+            action="show"><strong>${ie.tipp?.title.title}</strong>
     </g:link>
     <g:if test="${ie.tipp?.hostPlatformURL}">
       <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
@@ -102,14 +102,14 @@
                 date="${ie.accessEndDate}"/>
       </g:if>
 
-      <g:if test="${ie.tipp.id}">
+      <g:if test="${ie.tipp?.id}">
         <div class="la-title">${message(code: 'default.details.label')}</div>
         <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                 data-content="${message(code: 'laser')}"
                 href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
                 target="_blank"
                 controller="tipp" action="show"
-                id="${ie.tipp.id}">
+                id="${ie.tipp?.id}">
           <i class="book icon"></i>
         </g:link>
       </g:if>
