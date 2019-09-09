@@ -125,10 +125,10 @@
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="three wide" params="${params}" property="tipp.title.sortTitle"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
                                           title="${message(code: 'title.label', default: 'Title')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="sixteen wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
                         <th class="one wide"></th>
