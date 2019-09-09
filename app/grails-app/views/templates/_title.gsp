@@ -1,9 +1,18 @@
 <div class="ui grid">
-  <div class="twelve wide column">
+  <div class="sixteen wide column">
     <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
     <g:link controller="issueEntitlement" id="${ie.id}"
-            action="show"><strong>${ie.tipp.title.title}</strong></g:link>
+            action="show"><strong>${ie.tipp?.title.title}</strong>
+    </g:link>
+    <g:if test="${ie.tipp?.hostPlatformURL}">
+      <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+      <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
+         data-content="${ie.tipp?.platform.name}"
 
+         href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+         target="_blank"><i class="cloud icon"></i></a>
+    </g:if>
+    <br>
     <g:each in="${ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="title_id">
       <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
         <span class="ui small teal image label">
@@ -69,10 +78,7 @@
       <div class="item">
         <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform', default: 'Platform')}"></i>
         <div class="content">
-          <g:link controller="platform" action="show"
-                  id="${ie.tipp?.platform.id}">
-                  ${ie.tipp?.platform.name}
-          </g:link>
+          ${ie.tipp?.platform.name}
           <g:if test="${ie.tipp?.platform.name}">
             <g:link class="ui icon mini button la-js-dont-hide-button la-popup-tooltip la-delay"
                     data-content="${message(code: 'tipp.tooltip.changePlattform')}"
@@ -94,39 +100,30 @@
           ${message(code: 'default.on', default: 'on')} <g:formatDate
                 format="${message(code: 'default.date.format.notime')}"
                 date="${ie.accessEndDate}"/>
+      </g:if>
+
+      <g:if test="${ie.tipp?.id}">
+        <div class="la-title">${message(code: 'default.details.label')}</div>
+        <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                data-content="${message(code: 'laser')}"
+                href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                target="_blank"
+                controller="tipp" action="show"
+                id="${ie.tipp?.id}">
+          <i class="book icon"></i>
+        </g:link>
+      </g:if>
+      <g:each in="${apisources}" var="gokbAPI">
+        <g:if test="${ie?.tipp?.gokbId}">
+          <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+             data-content="${message(code: 'gokb')}"
+             href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + ie?.tipp?.gokbId : '#'}"
+             target="_blank"><i class="la-gokb  icon"></i>
+          </a>
         </g:if>
+      </g:each>
     </div>
   </div>
-  <div class="four wide column la-tipp-button-area">
-    <g:if test="${ie.tipp.id}">
-      <div class="la-title">${message(code: 'default.details.label')}</div>
-      <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-              data-content="${message(code: 'laser')}"
-              href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
-              target="_blank"
-              controller="tipp" action="show"
-              id="${ie.tipp.id}">
-        <i class="book icon"></i>
-      </g:link>
-    </g:if>
-    <g:each in="${apisources}" var="gokbAPI">
-      <g:if test="${ie?.tipp?.gokbId}">
-        <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-           data-content="${message(code: 'gokb')}"
-           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + ie?.tipp?.gokbId : '#'}"
-           target="_blank"><i class="la-gokb  icon"></i>
-        </a>
-      </g:if>
-    </g:each>
-    <g:if test="${ie.tipp?.hostPlatformURL}">
-      <div class="la-title">${message(code: 'platform')}</div>
-      <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-         <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
-         data-content="${ie.tipp?.platform.name}"
 
-         href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
-         target="_blank"><i class="cloud icon"></i></a>
-    </g:if>
-  </div>
 </div>
 

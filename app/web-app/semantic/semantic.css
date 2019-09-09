@@ -30659,6 +30659,10 @@ a.ui.card:hover,
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
 }
+
+.coverageStatements .ui .card {
+  width: 145px;
+}
 /*!
  * # Semantic UI 2.3.1 - Comment
  * http://github.com/semantic-org/semantic-ui/
