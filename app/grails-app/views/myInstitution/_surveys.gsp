@@ -3,16 +3,21 @@
 
 
 <div class="ui divided items">
-    <g:each in="${surveys}" var="surveyInfo" status="i">
+    <g:each in="${surveys}" var="survey" status="i">
+
+        <g:set var="surveyConfig"
+               value="${com.k_int.kbplus.SurveyConfig.get(survey.key)}"/>
+
+        <g:set var="surveyInfo"
+               value="${surveyConfig.surveyInfo}"/>
 
         <div class="item">
 
             <div class="content">
                 <div class="header">
-                        <i class="icon chart bar la-list-icon"></i>
-
+                    <i class="icon chart bar la-list-icon"></i>
                     <g:link controller="myInstitution" action="surveyInfos"
-                                          id="${surveyInfo.id}">${surveyInfo?.name}</g:link>
+                                          id="${surveyInfo.id}">${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}</g:link>
                 </div>
 
                 <div class="meta">
@@ -41,6 +46,7 @@
                 </div>
 
                 <div class="extra">
+
                     <g:set var="surveyResults" value="${com.k_int.kbplus.SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, surveyInfo?.surveyConfigs)}" />
 
                     <div class="ui label">

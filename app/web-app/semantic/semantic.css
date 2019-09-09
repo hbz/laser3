@@ -785,6 +785,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        PRINT
+*******************************/
+
+@media print {
+  .ui.container {
+    width: 100%;
+    padding: 2cm 2cm 3cm 3cm;
+  }
+
+  .ui.menu {
+    visibility: hidden;
+  }
+}
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
@@ -18332,10 +18347,6 @@ ol.ui.horizontal.list li:before,
 
 .ui.item.person-details:hover {
   background: white!important;
-}
-
-.la-border-selected {
-  border: 1px solid #bb1600;
 }
 
 .la-icon-list {

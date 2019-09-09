@@ -293,6 +293,34 @@ class DataloadService {
             result
         }
 
+        //Nicht auf SurveyOrg, da sonst man die Umfrage sieht bevor Sie bereit ist!
+        updateES(esclient, com.k_int.kbplus.SurveyResult.class) { surResult ->
+            def result = [:]
+
+            result._id = SurveyOrg.findBySurveyConfigAndOrg(surResult.surveyConfig, surResult.participant).id
+            result.dbId = surResult.surveyConfig?.surveyInfo?.id
+            result.availableToOrgs = surResult.participant?.id
+            result.name = surResult.surveyConfig?.getConfigNameShort()
+
+            result.rectype = 'ParticipantSurveys'
+
+            result
+        }
+
+        updateES(esclient, com.k_int.kbplus.SurveyInfo.class) { surInfo ->
+            def result = [:]
+
+            result._id = "${surInfo.id}_"+surInfo?.name?.replaceAll("\\s","")
+            result.dbId = surInfo.id
+            result.availableToOrgs = surInfo.owner?.id
+            result.name = surInfo?.name
+
+            result.rectype = 'Surveys'
+
+            result
+        }
+
+
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
@@ -736,6 +764,15 @@ class DataloadService {
         else if (domain.name == 'com.k_int.kbplus.Platform')
         {
             rectype = "Platform"
+        }
+        else if (domain.name == 'com.k_int.kbplus.SurveyResult')
+        {
+            rectype = "ParticipantSurveys"
+        }
+
+        else if (domain.name == 'com.k_int.kbplus.SurveyInfo')
+        {
+            rectype = "Surveys"
         }
         def query_str = "rectype: '${rectype}'"
 

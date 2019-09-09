@@ -93,7 +93,7 @@
 
                 <g:if test="${editable}">
                     <dt class="la-js-hideMe">
-                        Indentifikator hinzufügen
+                        Identifikfator hinzufügen
                     </dt>
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">

@@ -52,6 +52,18 @@
                                 (hit.getSource().typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
                                         (hit.getSource().typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}"
             ]
+        }else if (hit.getSource().rectype == 'ParticipantSurveys') {
+            result << [
+                    "title": "${hit.getSource().name}",
+                    "url":   g.createLink(controller:"myInstitution", action:"surveyInfos", id:"${hit.getSource().dbId}"),
+                    "category": "${message(code: 'spotlight.Survey')}"
+            ]
+        }else if (hit.getSource().rectype == 'Surveys') {
+            result << [
+                    "title": "${hit.getSource().name}",
+                    "url":   g.createLink(controller:"survey", action:"show", id:"${hit.getSource().dbId}"),
+                    "category": "${message(code: 'spotlight.Survey')}"
+            ]
         }
     }
 %>

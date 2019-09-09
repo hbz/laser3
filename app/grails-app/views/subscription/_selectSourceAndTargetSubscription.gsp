@@ -1,9 +1,8 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
 <g:if test="${! (sourceSubscription && targetSubscription)}">
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
-                workFlowPart: workFlowPart,
-                workFlowPartNext: workFlowPartNext
-            ]" method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
+    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
+            params="${params << [workFlowPart: workFlowPart]}"
+            method="post" class="ui form newLicence"  onsubmit="enableSubmit();">
         <div class="fields" style="justify-content: flex-end;">
             <div class="six wide field">
                 <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>

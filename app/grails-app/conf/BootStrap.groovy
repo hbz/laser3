@@ -1516,11 +1516,14 @@ class BootStrap {
 
     def createSurveyProperties() {
 
-        /*def requiredProps = [
-                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
-                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        def requiredProps = [
+                [
+                        name: [en: "Participation", de: "Teilnahme"],
+                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        type: OT.Rdv, cat:'YN'
+                ]
         ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)*/
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
 
     def createPrivateProperties() {
@@ -1648,7 +1651,7 @@ class BootStrap {
             }
 
             if (default_prop.introduction) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
             }
         }
     }
@@ -2235,7 +2238,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
 
@@ -2572,7 +2575,7 @@ class BootStrap {
 
     void createRefdataWithI10nExplanation() {
 
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studenten'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])

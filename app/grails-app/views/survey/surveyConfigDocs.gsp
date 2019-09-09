@@ -61,7 +61,7 @@
 <br>
 
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfig}">
 
     <div class="ui grid">
 %{--<div class="four wide column">
@@ -138,7 +138,7 @@
                                             data-confirm-term-what="document"
                                             data-confirm-term-what-detail="${docctx.owner.title}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId: "${surveyConfig.id}", deleteId: "${docctx.id}", redirectAction: "${redirect}"]'>
+                                            params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${redirect}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
@@ -158,9 +158,6 @@
     </div>
 
 </g:if>
-<g:else>
-    <p><b>${message(code: 'showSurveyConfig.noConfigList')}</b></p>
-</g:else>
 
 
 <r:script>

@@ -12,13 +12,14 @@ import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
+import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 
-import static de.laser.helper.RDStore.*
-
 class SubscriptionService {
+    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -509,9 +510,10 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
         def contextOrg = contextService.getOrg()
         def targetProp
+        boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
 
         properties?.each { sourceProp ->
             if (sourceProp instanceof CustomProperty) {
@@ -527,15 +529,32 @@ class SubscriptionService {
                 } else {
                     targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
+                targetProp = sourceProp.copyInto(targetProp)
+                save(targetProp, flash)
+                if (doCopyAudit && targetProp instanceof CustomProperty) {
+                    //copy audit
+                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                    auditConfigs.each {
+                        AuditConfig ac ->
+                            //All ReferenceFields were copied!
+                            AuditConfig.addConfig(targetProp, ac.referenceField)
+                    }
+                }
+            } else {
+                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
-            targetProp = sourceProp.copyInto(targetProp)
-            save(targetProp, flash)
         }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
+        if (isCopyAuditOn){
+            properties.each { AbstractProperty prop ->
+                AuditConfig.removeAllConfigs(prop)
+            }
+        }
         int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
     }
@@ -630,8 +649,14 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
+        }
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
+            {
+                throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
+                return false
         } else {
-            IssueEntitlement new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
+            IssueEntitlement new_ie = new IssueEntitlement(
+					status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
