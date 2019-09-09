@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyEvaluation.label', default: 'Evaluation')}</title>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="surveyEvaluation.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -148,7 +148,7 @@
 
                 <g:each in="${surveyParticipantsHasAccess.groupBy {
                     it?.type.id
-                }.sort{it?.value?.type?.name}}" var="property">
+                }.sort{it?.value[0]?.type?.name}}" var="property">
                     <th>
                         <g:set var="surveyProperty" value="${SurveyProperty.get(property.key)}"/>
                         ${surveyProperty?.getI10n('name')}

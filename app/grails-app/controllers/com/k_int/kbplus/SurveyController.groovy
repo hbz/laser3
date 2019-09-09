@@ -1958,7 +1958,8 @@ class SurveyController {
                 g.message(code: 'surveyResult.finishDate')
         ]
 
-        results.groupBy { it.type.id }.each { property ->
+        results.groupBy {it?.type.id
+        }.sort{it?.value[0]?.type?.name}.each { property ->
             titles << SurveyProperty.get(property.key)?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment')
         }
@@ -1984,7 +1985,7 @@ class SurveyController {
 
                     row.add([field: result?.value[0]?.finishDate ? sdf.format(result?.value[0]?.finishDate) : '', style: null])
 
-                    result.value.each { resultProperty ->
+                    result.value.sort{it?.type?.name}.each { resultProperty ->
 
                         def surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)
 
