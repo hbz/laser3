@@ -8,9 +8,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
-import de.laser.interfaces.Permissions
-import de.laser.interfaces.ShareSupport
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.*
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
@@ -294,6 +292,36 @@ class Subscription
         if (isTemplate()) {
             result = CALCULATED_TYPE_TEMPLATE
         }
+        else if(administrative) {
+            result = CALCULATED_TYPE_ADMINISTRATIVE
+        }
+        else if(getCollective() && getConsortia() && instanceOf) {
+            result = CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE
+        }
+        else if(getCollective() && !getAllSubscribers() && !instanceOf) {
+            result = CALCULATED_TYPE_COLLECTIVE
+        }
+        else if(getConsortia() && !getAllSubscribers() && !instanceOf) {
+            result = CALCULATED_TYPE_CONSORTIAL
+        }
+        else if((getCollective() || getConsortia()) && instanceOf) {
+            result = CALCULATED_TYPE_PARTICIPATION
+        }
+        // TODO remove type_local
+        else if(getAllSubscribers() && !instanceOf) {
+            result = CALCULATED_TYPE_LOCAL
+        }
+        result
+    }
+
+    /*
+    @Override
+    String getCalculatedType() {
+        def result = CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = CALCULATED_TYPE_TEMPLATE
+        }
         else if(getCollective() && ! getAllSubscribers() && !instanceOf) {
             result = CALCULATED_TYPE_COLLECTIVE
         }
@@ -317,6 +345,7 @@ class Subscription
         }
         result
     }
+    */
 
     List<Org> getProviders() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
