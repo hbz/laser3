@@ -96,7 +96,6 @@
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        %{--TODO: Die alten Sub-Verlängerungen entfernen mit samt Controller-Metoden--}%
         <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
         <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
             <div class="divider">OLD:</div>

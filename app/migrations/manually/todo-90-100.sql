@@ -115,33 +115,31 @@ DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
 -- set default for user.date_created
 -- July 18th was the last date when the QA database has been reset
+
 -- ALTER TABLE public.user ADD date_created timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
 -- ALTER TABLE public.user ADD last_updated timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
 UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '2019-07-18 00:00:00.0' where date_created is null;
 
 -- 2019-08-28
--- Set new coloumns for survey
-ALTER TABLE public.survey_config ADD surconf_is_subscription_survey_fix boolean DEFAULT false NULL;
-ALTER TABLE public.survey_info ADD surin_is_subscription_survey boolean NULL;
+-- new coloumn for survey (gorm auto-creation fail)
 
--- 2019-08-30
--- Update new coloumns for survey
-UPDATE survey_info SET surin_is_subscription_survey = true;
-UPDATE public.survey_config SET surconf_is_subscription_survey_fix = true where surconf_sub_fk is not null;
-UPDATE public.survey_config SET surconf_is_subscription_survey_fix = false where surconf_sub_fk is null;
+--ALTER TABLE public.survey_config ADD surconf_is_subscription_survey_fix boolean DEFAULT false NULL;
+--ALTER TABLE public.survey_info ADD surin_is_subscription_survey boolean NULL;
 
+--UPDATE survey_info SET surin_is_subscription_survey = true;
+--UPDATE public.survey_config SET surconf_is_subscription_survey_fix = true where surconf_sub_fk is not null;
+--UPDATE survey_config SET surconf_is_subscription_survey_fix = false WHERE surconf_sub_fk IS NULLL;
 
 -- 2019-09-04
--- Bugs spelling mistake
-update i10n_translation set i10n_value_de = 'Studierende' where i10n_value_de = 'Studenten'
-update i10n_translation set i10n_value_de = 'Wissenschaftliche Spezialbibliothek' where i10n_value_de = 'Wissenschafltiche Spezialbibliothek';
-update i10n_translation set i10n_value_en = 'Wissenschaftliche Spezialbibliothek' where i10n_value_en = 'Wissenschafltiche Spezialbibliothek';
-update refdata_value set rdv_value = 'Wissenschaftliche Spezialbibliothek' where rdv_value = 'Wissenschafltiche Spezialbibliothek';
+-- typo in key and translations
+
+--update i10n_translation set i10n_value_de = 'Wissenschaftliche Spezialbibliothek' where i10n_value_de = 'Wissenschafltiche Spezialbibliothek';
+--update i10n_translation set i10n_value_en = 'Wissenschaftliche Spezialbibliothek' where i10n_value_en = 'Wissenschafltiche Spezialbibliothek';
+--update refdata_value set rdv_value = 'Wissenschaftliche Spezialbibliothek' where rdv_value = 'Wissenschafltiche Spezialbibliothek';
 
 -- 2019-09-09
 -- update survey results with new global survey property
 update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
 update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
 update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
-
 
