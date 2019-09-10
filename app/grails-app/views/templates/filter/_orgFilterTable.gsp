@@ -506,14 +506,14 @@
 
                     <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
+
+                        (<g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                        maxFractionDigits="2" type="number"/>)
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                        <g:link controller="finance" action="editCostItem" params='[sub:"${costItem.sub?.id}", id:"${costItem.id}", tab:"cons"]' class="ui icon button trigger-modal">
-                            <i class="write icon"></i>
-                        </g:link>
 
                     </g:if>
                 </g:each>

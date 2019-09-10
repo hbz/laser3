@@ -255,19 +255,25 @@ class SurveyController {
                     configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
                     type: 'Subscription',
                     surveyInfo: surveyInfo,
-                    isSubscriptionSurveyFix: params.isSubscriptionSurveyFix ? true : false
+                    isSubscriptionSurveyFix: SurveyConfig.findAllBySubscriptionAndIsSubscriptionSurveyFix(subscription, true) ? false : (params.isSubscriptionSurveyFix ? true : false)
 
             )
 
             surveyConfig.save(flush: true)
 
-            def configProperty = new SurveyConfigProperties(
-                    surveyProperty: SurveyProperty.findByName('Participation'),
-                    surveyConfig: surveyConfig)
-
-            if(configProperty.save(flush: true)) {
+            //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilname-Merkmal abfragt!
+            if(!SurveyConfig.findAllBySubscriptionAndIsSubscriptionSurveyFix(subscription, true)) {
+                def configProperty = new SurveyConfigProperties(
+                        surveyProperty: SurveyProperty.findByName('Participation'),
+                        surveyConfig: surveyConfig)
+                if(configProperty.save(flush: true)) {
+                    addSubMembers(surveyConfig)
+                }
+            }else{
                 addSubMembers(surveyConfig)
             }
+
+
 
         } else {
             surveyInfo.delete(flush: true)
@@ -1381,6 +1387,13 @@ class SurveyController {
 
         result.setting = 'bulkForAll'
 
+        result.surveyOrgList = []
+
+        if (params.get('orgsIDs')) {
+            List idList = (params.get('orgsIDs')?.split(',')?.collect { Long.valueOf(it.trim()) }).toList()
+            result.surveyOrgList = SurveyOrg.findAllByOrgInListAndSurveyConfig(Org.findAllByIdInList(idList), result.surveyConfig)
+        }
+
         render(template: "/survey/costItemModal", model: result)
     }
 
@@ -1425,6 +1438,23 @@ class SurveyController {
         } else {
             redirect(uri: request.getHeader('referer'))
         }
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def setInEvaluation() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
+        result.surveyInfo.save(flush:true)
+
+        redirect(action: "currentSurveysConsortia", params:[tab: "inEvaluation"])
 
     }
 
@@ -1579,7 +1609,22 @@ class SurveyController {
                 }
             }
 
-            if (params.surveyConfig) {
+            if (params.get('surveyOrgs')) {
+                List surveyOrgs = (params.get('surveyOrgs')?.split(',')?.collect { String.valueOf(it.replaceAll("\\s","")) }).toList()
+                surveyOrgs.each {
+                    try {
+
+                        def surveyOrg = genericOIDService.resolveOID(it)
+                        if (!CostItem.findBySurveyOrg(surveyOrg)) {
+                            surveyOrgsDo << surveyOrg
+                        }
+                    } catch (Exception e) {
+                        log.error("Non-valid surveyOrg sent ${it}", e)
+                    }
+                }
+            }
+
+           /* if (params.surveyConfig) {
                 def surveyConfig = genericOIDService.resolveOID(params.surveyConfig)
 
                 surveyConfig?.orgs?.each {
@@ -1588,12 +1633,9 @@ class SurveyController {
                         surveyOrgsDo << it
                     }
                 }
-            }
+            }*/
 
-            if (!surveyOrgsDo) {
-                surveyOrgsDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
-            }
-            surveyOrgsDo.each { surveyOrg ->
+            surveyOrgsDo?.each { surveyOrg ->
 
                 if (!surveyOrg?.existsMultiYearTerm()) {
 

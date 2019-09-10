@@ -118,7 +118,7 @@
     <g:render template="/survey/costItemModal"
               model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+        <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])" class="ui icon button right floated trigger-modal">
             <i class="plus icon"></i>
         </g:link>
         </div>
@@ -204,7 +204,7 @@
             <g:render template="/survey/costItemModal"
                       model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-                <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)?.join(',')}])" class="ui icon button right floated trigger-modal">
                     <i class="plus icon"></i>
                 </g:link>
             </div>
@@ -315,7 +315,7 @@
 
 var isClicked = false;
 
-function addForAllSurveyCostItem() {
+function addForAllSurveyCostItem(orgsIDs) {
                         event.preventDefault();
 
                         // prevent 2 Clicks open 2 Modals
@@ -326,9 +326,11 @@ function addForAllSurveyCostItem() {
 
                            $.ajax({
                                 url: "<g:createLink controller='survey' action='addForAllSurveyCostItem'/>",
+                                traditional: true,
                                 data: {
                                     id: "${params.id}",
-                                    surveyConfigID: "${surveyConfig?.id}"
+                                    surveyConfigID: "${surveyConfig?.id}",
+                                    orgsIDs: orgsIDs
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);

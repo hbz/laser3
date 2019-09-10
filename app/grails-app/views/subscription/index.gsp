@@ -125,10 +125,10 @@
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
                                           title="${message(code: 'title.label', default: 'Title')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="two wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
                         <th class="one wide"></th>
@@ -252,13 +252,16 @@
 
                                     </g:if>
                                     <g:else>
+                                        <div class="ui cards">
                                         <g:each in="${ie.coverages}" var="covStmt">
-                                            <p>
+                                            <div class="ui card">
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
-                                            </p>
+                                            </div>
                                         </g:each>
-                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </div><br>
                                     </g:else>
+                                    <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+
                                 </td>
                                 <td>
                                 <!-- von --->

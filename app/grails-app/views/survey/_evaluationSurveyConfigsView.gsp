@@ -58,7 +58,7 @@
                             </g:link>
                         </td>
                         <td class="center aligned">
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon">
                                 <g:set var="finish"
                                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(config)}"/>

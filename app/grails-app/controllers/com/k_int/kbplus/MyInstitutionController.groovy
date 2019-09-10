@@ -2242,7 +2242,7 @@ AND EXISTS (
         def currentDate = new Date(System.currentTimeMillis())
 
         def newParams = [:]
-        newParams.currentDate = currentDate
+        newParams.tab = "new"
 
         def fsq = filterService.getParticipantSurveyQuery(newParams, sdFormat, result.institution)
 
@@ -3594,7 +3594,6 @@ AND EXISTS (
 
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.participant)
 
-        println(fsq.query)
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
         result.countSurveys = getSurveyParticipantCounts(result.participant)

@@ -154,8 +154,14 @@
                     </td>
                     <td>
                         <div class="la-flexbox">
+                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                                    <i class="yellow icon envelope large "></i>
+                                </span>
+                            </g:if>
                             <i class="icon chart bar la-list-icon"></i>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui ">
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
                                 ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
                             </g:link>
                         </div>
