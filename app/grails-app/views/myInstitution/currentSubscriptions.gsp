@@ -69,6 +69,7 @@
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
+
                 </label>
 
                 <div class="ui input">
@@ -78,16 +79,15 @@
                 </div>
             </div>
             <!-- 1-2 -->
-            %{--TODO: Temp ausgeblendet, Code ist noch drin. Wieder einblenden, so bald erweiterte Query (lic_id, pack_id, title_id) fertig ist!--}%
-            %{--<div class="field">--}%
-                %{--<label for="q">${message(code: 'default.search.identifier')}</label>--}%
+            <div class="field">
+                <label for="q">${message(code: 'default.search.identifier')}</label>
 
-                %{--<div class="ui input">--}%
-                    %{--<input type="text" id="identifier" name="identifier"--}%
-                           %{--placeholder="${message(code: 'default.search.identifier.ph')}"--}%
-                           %{--value="${params.identifier}"/>--}%
-                %{--</div>--}%
-            %{--</div>--}%
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
             <!-- 1-3 -->
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
