@@ -5801,7 +5801,7 @@ a .la-main-object {
   vertical-align: super;
 }
 
-.la-tipp-button-area .la-title {
+.la-title {
   color: #767676;
   font-size: .8rem;
   text-transform: uppercase;
@@ -6230,7 +6230,7 @@ a .la-main-object {
 .ui.horizontal.divider.la-date-devider {
   color: #00000066;
   font-size: 8px;
-  margin: 0.2rem 0;
+  margin: 0.6rem 0;
 }
 /*!
  * # Semantic UI 2.3.1 - Flag
@@ -30661,7 +30661,42 @@ a.ui.card:hover,
 }
 
 .coverageStatements .ui .card {
-  width: 145px;
+  width: 300px;
+}
+
+.coverageStatements .ui .card .content {
+  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.coverageStatements .ui .card .content .la-card-column {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  padding: 1em 1em;
+}
+
+.coverageStatements .ui .card .content .la-card-column:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.coverageStatements .ui .card .content .la-card-column-with-row {
+  padding: 1em 1em;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment

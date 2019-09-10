@@ -78,14 +78,10 @@
       <div class="item">
         <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform', default: 'Platform')}"></i>
         <div class="content">
-          ${ie.tipp?.platform.name}
-          <g:if test="${ie.tipp?.platform.name}">
-            <g:link class="ui icon mini button la-js-dont-hide-button la-popup-tooltip la-delay"
-                    data-content="${message(code: 'tipp.tooltip.changePlattform')}"
-                    controller="platform" action="show"
-                    id="${ie.tipp?.platform.id}"><i
-                    class="pencil alternate icon"></i></g:link>
-          </g:if>
+          <g:link controller="platform" action="show"
+                  id="${ie.tipp?.platform.id}">
+            ${ie.tipp?.platform.name}
+          </g:link>
         </div>
       </div>
     </g:if>
