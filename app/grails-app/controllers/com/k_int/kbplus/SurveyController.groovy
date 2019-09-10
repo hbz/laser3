@@ -31,6 +31,7 @@ class SurveyController {
     def financeService
     def exportService
     def taskService
+    def subscriptionService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -1455,6 +1456,104 @@ class SurveyController {
         result.surveyInfo.save(flush:true)
 
         redirect(action: "currentSurveysConsortia", params:[tab: "inEvaluation"])
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def renewalwithSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.parentSubscription = result.surveyConfig?.subscription
+        result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
+        result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+
+        result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
+
+        result.properties = SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty?.sort {it?.getI10n('name')}
+
+
+        def participantIDs = []
+
+        result.parentSubChilds?.each{
+             it.getAllSubscribers()?.each{ org ->
+                 participantIDs << org?.id
+            }
+        }
+
+        result.orgsWithTermination = []
+
+        SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
+        [participant: participantIDs,
+         owner: result.institution?.id,
+         surProperty: result.participationProperty?.id,
+         surConfig:   result.surveyConfig?.id,
+         refValue: RDStore.YN_NO]).each{
+            def newSurveyResult = [:]
+            newSurveyResult.participant = it?.participant
+            newSurveyResult.resultOfParticipation = it
+            newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {it?.type?.getI10n('name')}
+
+            result.orgsWithTermination << newSurveyResult
+
+        }
+
+        result.orgsContinuetoSubscription = []
+        SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+                [participant: participantIDs,
+                 owner: result.institution?.id,
+                 surProperty: result.participationProperty?.id,
+                 surConfig:   result.surveyConfig?.id,
+                 refValue: RDStore.YN_YES]).each{
+            def newSurveyResult = [:]
+            newSurveyResult.participant = it?.participant
+            newSurveyResult.resultOfParticipation = it
+            newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {it?.type?.getI10n('name')}
+
+            result.orgsContinuetoSubscription << newSurveyResult
+        }
+
+        result.orgsWithoutResult = SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
+                [participant: participantIDs,
+                 owner: result.institution?.id,
+                 surProperty: result.participationProperty?.id,
+                 surConfig:   result.surveyConfig?.id])
+
+
+        //MultiYearTerm Subs
+        result.orgsWithMultiYearTermSub = []
+        result.parentSubChilds?.each{ sub ->
+            if(sub?.getCalculatedSuccessor())
+            {
+                result.orgsWithMultiYearTermSub << sub
+            }
+        }
+
+        if(result.orgsContinuetoSubscription?.groupBy { it?.participant.id }?.size()+result.orgsWithTermination?.groupBy { it?.participant.id }?.size() <  result.orgsWithMultiYearTermSub?.size()) {
+            def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+
+            result.orgsWithoutResult?.each { surveyResult ->
+
+                def subChild = sub?.getDerivedSubscriptionBySubscribers(surveyResult?.participant)
+
+                if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                    if (subChild?.customProperties?.find {
+                        it?.type?.id == property?.id
+                    }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
+                        result.orgsWithMultiYearTermSub << sub
+                        return
+                    }
+                }
+            }
+        }
+
+
+        result
 
     }
 
