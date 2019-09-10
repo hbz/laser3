@@ -127,6 +127,8 @@ ALTER TABLE public.survey_info ADD surin_is_subscription_survey boolean NULL;
 
 UPDATE survey_info SET surin_is_subscription_survey = true;
 
+UPDATE public.survey_config SET surconf_is_subscription_survey_fix = true where surconf_sub_fk is not null;
+
 update i10n_translation set i10n_value_de = 'Studierende' where i10n_value_de = 'Studenten'
 update i10n_translation set i10n_value_de = 'Wissenschaftliche Spezialbibliothek' where i10n_value_de = 'Wissenschafltiche Spezialbibliothek';
 update i10n_translation set i10n_value_en = 'Wissenschaftliche Spezialbibliothek' where i10n_value_en = 'Wissenschafltiche Spezialbibliothek';

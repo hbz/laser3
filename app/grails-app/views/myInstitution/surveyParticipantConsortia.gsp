@@ -144,7 +144,7 @@ ${surveyInfo.name}
                         </td>
                     </g:else>
                     <td>
-                        <semui:xEditable owner="${surveyResult}" type="text" field="ownerComment"/>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                     </td>
 
                 </tr>
