@@ -23,7 +23,8 @@
                           id="newPrsRoleType" name="newPrsRoleType"
                           from="${roleTypeValues}"
                           optionKey="id"
-                          optionValue="value" />
+                          optionValue="value"
+                          noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
 
             <input type="hidden" name="roleType" value="${roleType}" />
         </div>
