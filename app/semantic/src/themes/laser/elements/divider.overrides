@@ -20,5 +20,5 @@
 .ui.horizontal.divider.la-date-devider {
   color: #00000066;
   font-size: 8px;
-  margin: 0.2rem 0;
+  margin: 0.6rem 0;
 }

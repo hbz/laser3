@@ -24,7 +24,7 @@
     <g:set var="counter" value="${(offset ?: 0) + 1}"/>
     <g:each in="${tipps}" var="tipp">
         <tr>
-            <td>${counter++}</td>
+            <td>${counter++}</td>                <br>test<br>
             <td>
                 <semui:listIcon type="${tipp.title?.type?.value}"/>
                 <strong><g:link controller="title" action="show"

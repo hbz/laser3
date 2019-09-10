@@ -1149,9 +1149,29 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.surveys = SurveyConfig.findAllBySubscription(result.subscription)
+        result.surveys = SurveyConfig.findAllBySubscription(result.subscription.instanceOf)
 
        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def surveysConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
+
+        result.surveys = SurveyConfig.findAllBySubscription(result.subscription)
+
+        result
     }
 
     @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
