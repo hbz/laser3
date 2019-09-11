@@ -13,7 +13,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
 import de.laser.traits.AuditableTrait
 import grails.converters.JSON
@@ -1985,7 +1985,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_provider = OR_PROVIDER
         RefdataValue role_agency = OR_AGENCY
 
-
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -2094,9 +2093,13 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
+                                /*
+                                todo: IGNORED for 0.20
+
                                 if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
                                 }
+                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -4722,6 +4725,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
         result.consortialView = result.showConsortiaFunctions
+
         result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
         result.departmentalView = result.showCollectiveFunctions
 
@@ -4742,6 +4746,14 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
+        if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
+                result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE &&
+                ! (params.action in ['addMembers', 'processAddMembers'])
+        ) {
+            result.editable = false
+
+        }
+
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
@@ -4753,11 +4765,13 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_COLLECTIVE, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {
