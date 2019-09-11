@@ -41,12 +41,9 @@
 
     <g:render template="nav" />
 
-        <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
+    <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
-        <g:render template="message" />
-    </g:if>
-
+    <g:render template="message" />
 
     <g:render template="/templates/meta/identifier" model="${[object: subscriptionInstance, editable: editable]}" />
 
@@ -195,7 +192,7 @@
                                                 tmplID:'addLink',
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
-                                                editmode: accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR"),
+                                                editmode: editable,
                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>
