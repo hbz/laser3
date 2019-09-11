@@ -3,6 +3,7 @@ package de.laser.domain
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RefdataAnnotation
+import de.laser.domain.AbstractBaseDomain
 
 class PriceItem extends AbstractBaseDomain {
 
@@ -40,12 +41,4 @@ class PriceItem extends AbstractBaseDomain {
         issueEntitlement    (nullable: false, blank: false)
     }
 
-    //for some reason, the methods are not called unless overridden ...
-    def beforeInsert() {
-        super.beforeInsert()
-    }
-
-    def beforeUpdate() {
-        super.beforeUpdate()
-    }
 }
