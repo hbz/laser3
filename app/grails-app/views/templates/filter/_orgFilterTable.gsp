@@ -506,11 +506,11 @@
 
                     <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                        <b><g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
                                            maxFractionDigits="2" type="number"/></b>
 
-                        (<g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>)
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
 
@@ -536,10 +536,14 @@
 
                     <g:if test="${costItem}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
+
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
                         ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+
                             <br>
                         <g:if test="${costItem?.startDate || costItem?.endDate}">
                             (${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notimeShort'))})
