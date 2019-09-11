@@ -1985,7 +1985,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_provider = OR_PROVIDER
         RefdataValue role_agency = OR_AGENCY
 
-
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -2094,9 +2093,13 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
+                                /*
+                                todo: IGNORED for 0.20
+
                                 if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
                                 }
+                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
