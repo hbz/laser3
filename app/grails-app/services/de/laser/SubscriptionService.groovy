@@ -121,6 +121,19 @@ class SubscriptionService {
         validSubChilds
     }
 
+    List getCurrentValidSubChilds(Subscription subscription) {
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
+                subscription,
+                SUBSCRIPTION_CURRENT
+        )
+        validSubChilds = validSubChilds?.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        }
+        validSubChilds
+    }
+
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
