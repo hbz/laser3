@@ -442,7 +442,9 @@
 
                         </td>
                         <td>
-                            <g:if test="${editable && com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)}">
+                            <g:if test="${editable &&
+                                    com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
+                                    && (com.k_int.kbplus.SurveyProperty.findByName('Participation')?.id != surveyProperty?.surveyProperty?.id)}">
                                 <g:link class="ui icon negative button"
                                         controller="survey" action="deleteSurveyPropfromSub"
                                         id="${surveyProperty?.id}">

@@ -11,10 +11,17 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+    </g:if>
+    <semui:crumb message="surveyInfo.renewal" class="active"/>
+</semui:breadcrumbs>
+
 
 <semui:controlButtons>
-    <g:render template="actions"/>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
@@ -22,11 +29,7 @@ ${surveyInfo?.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
-<g:render template="nav"/>
-
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
-
 
 <semui:messages data="${flash}"/>
 
@@ -54,11 +57,18 @@ ${surveyInfo?.name}
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
                     id="${parentSuccessorSubscription?.id}">${parentSuccessorSubscription?.dropdownNamingConvention()}</g:link>
+
+            <g:link controller="survey" action="copyElementsIntoRenewalSubscription" id="${parentSubscription?.id}"
+                    params="[sourceSubscriptionId: parentSubscription?.id, targetSubscriptionId: parentSuccessorSubscription?.id, isRenewSub: true, isCopyAuditOn: true]"
+                    class="ui button ">
+                <g:message code="renewalwithSurvey.newSub.change"/>
+            </g:link>
+
         </g:if>
         <g:else>
             <g:message code="renewalwithSurvey.noParentSuccessorSubscription"/>
-            <g:link controller="subscription" action="renewSubscription_Consortia" id="${parentSubscription?.id}"
-                    params="[surveyConfig: surveyConfig?.id]"
+            <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo?.id}"
+                    params="[surveyConfig: surveyConfig?.id, parentSub: parentSubscription?.id]"
                     class="ui button ">
                 <g:message code="renewalwithSurvey.newSub"/>
             </g:link>
@@ -162,13 +172,15 @@ ${surveyInfo?.name}
 
                         <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
 
-                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                           maxFractionDigits="2" type="number"/></b>
+                        <g:if test="${costItem}">
+                            <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                               maxFractionDigits="2" type="number"/></b>
 
-                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
-                                         maxFractionDigits="2" type="number"/>)
+                            (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                             maxFractionDigits="2" type="number"/>)
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                            ${(costItem?.billingCurrency?.getI10n('value')?.split('-'))?.first()}
+                        </g:if>
                     </td>
 
                 </tr>

@@ -512,7 +512,7 @@
                         (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
                                          maxFractionDigits="2" type="number"/>)
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
 
 
                     </g:if>
@@ -542,7 +542,7 @@
                         (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
                                          maxFractionDigits="2" type="number"/>)
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
 
                             <br>
                         <g:if test="${costItem?.startDate || costItem?.endDate}">

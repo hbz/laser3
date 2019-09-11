@@ -270,10 +270,21 @@ class SubscriptionService {
                 } else {
                     def properties = ieToTake.properties
                     properties.globalUID = null
+                    properties.coverages = null
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.subscription = targetSub
-                    save(newIssueEntitlement, flash)
+
+                    if(save(newIssueEntitlement, flash)){
+                        ieToTake.properties.coverages.each{ coverage ->
+
+                            def coverageProperties = coverage.properties
+                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                            save(newIssueEntitlement, flash)
+                        }
+                    }
                 }
             }
         }
