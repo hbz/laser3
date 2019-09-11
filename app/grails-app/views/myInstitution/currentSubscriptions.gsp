@@ -264,7 +264,7 @@
             </th>
             */ %>
 
-            <g:if test="${params.orgRole == 'Subscriber' && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+            <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
                 <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
             </g:if>
             <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -354,7 +354,7 @@
                 <%--<td>
                     ${s.type?.getI10n('value')}
                 </td>--%>
-                <g:if test="${params.orgRole == 'Subscriber'}">
+                <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective']}">
                     <td>
                         <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
                             ${s.getConsortia()?.name}
