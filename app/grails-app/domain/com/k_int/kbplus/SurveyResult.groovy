@@ -127,7 +127,7 @@ class SurveyResult extends AbstractProperty {
         }
         else if (type?.type == RefdataValue.toString())
         {
-            return refValue.getI10n('value')
+            return refValue ? refValue?.getI10n('value') : ""
         }
 
     }
