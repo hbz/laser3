@@ -680,11 +680,8 @@
         $('#isRemindByEmail').change( function (e) {
             if (this.checked) {
                 $('#isRemindCCByEmail').attr("disabled", false);
-                // $('#isRemindCCByEmail').prop("checked", false);
-                $('#emailCC').attr("disabled", false);
             } else {
                 $('#isRemindCCByEmail').attr("disabled", true);
-                $('#emailCC').attr("disabled", true);
             }
         });
 
