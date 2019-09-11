@@ -522,6 +522,16 @@ class BootStrap {
                     expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
                     descr:allDescr, type: OT.Rdv, cat:'YN'
             ],
+            [
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [key: "Shibboleth Identity Provider Entity-ID", en: "Shibboleth Identity Provider Entity-ID", de: "Shibboleth: Identity Provider Entity-ID"],
+                    expl : [en: "", de: "Wie lautet die Entity-ID der Organisation?"],
+                    descr:allDescr, type: OT.String, multiple: true, isUsedForLogic: true
+            ],
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
@@ -1508,6 +1518,16 @@ class BootStrap {
                 [
                         name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
         ]
