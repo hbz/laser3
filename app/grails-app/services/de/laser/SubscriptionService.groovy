@@ -703,9 +703,9 @@ class SubscriptionService {
                 if(withPriceData) {
                     PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
                             listPrice: issueEntitlementOverwrite.listPrice,
-                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listPriceCurrency,'Currency'),
+                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency,'Currency'),
                             localPrice: issueEntitlementOverwrite.localPrice,
-                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localPriceCurrency,'Currency'),
+                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
                             issueEntitlement: new_ie
                     )
                     if(pi.save())
@@ -725,13 +725,33 @@ class SubscriptionService {
 
     boolean deleteEntitlement(sub, gokbId) {
         IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
-        if(ie == null)
+        if(ie == null) {
             return false
+        }
         else {
             ie.status = TIPP_DELETED
-            if(ie.save())
+            if(ie.save()) {
                 return true
-            else return false
+            }
+            else{
+                return false
+            }
+        }
+    }
+
+    boolean deleteEntitlementbyID(sub, id) {
+        IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
+        if(ie == null) {
+            return false
+        }
+        else {
+            ie.status = TIPP_DELETED
+            if(ie.save()) {
+                return true
+            }
+            else{
+                return false
+            }
         }
     }
 
