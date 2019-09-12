@@ -139,12 +139,14 @@ UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '
 
 -- 2019-09-09
 -- update survey results with new global survey property
+
 update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
 update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
 update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
 
 -- 2019-09-11
 -- update survey results with new global survey property
+
 update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
 update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
 update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
@@ -160,6 +162,8 @@ update survey_config_properties set surconpro_survey_property_fk = (select surpr
 update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
 update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
 update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+
+
 -- START OF ERMS-1666 --
 -- Kontrolle vorher: zu löschende Einträge
 SELECT * FROM Person AS p

@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION GENFUNC_FILTER_MATCHER(content TEXT, test TEXT)
     AS $$
 
 DECLARE
-    VERSION CONSTANT NUMERIC = 1;
+    VERSION CONSTANT NUMERIC = 2;
 
     result_phrases BOOLEAN = false;
     result_terms BOOLEAN = false;
@@ -25,7 +25,7 @@ BEGIN
 
     /* -- find phrase with quotes -- */
 
-    FOR rm_cursor IN SELECT regexp_matches(trim(test), '("(\w|\d|\s|[[:punct:]])+")', 'g')
+    FOR rm_cursor IN SELECT regexp_matches(trim(test), '("(\w|\d|\s|[äöüÄÖÜ@]|[!§$&.,:;]|[\-\+\\])+")', 'g')
         LOOP
             phrases = array_append(phrases, rm_cursor[1]);
         END LOOP;
