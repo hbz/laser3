@@ -2,12 +2,8 @@
 <laser:serviceInjection />
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription: sourceSubscription,
-            targetSubscription: targetSubscription,
-            allSubscriptions_readRights: allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
+
+    <g:form action="copyElementsIntoRenewalSubscription" controller="survey" id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">

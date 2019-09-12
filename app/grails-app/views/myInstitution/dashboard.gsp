@@ -309,7 +309,7 @@
                                                 <i class="book icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="chart bar icon"></i>
+                                                <i class="chart pie icon"></i>
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">

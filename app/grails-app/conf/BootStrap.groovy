@@ -1521,7 +1521,28 @@ class BootStrap {
                         name: [en: "Participation", de: "Teilnahme"],
                         expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
                         type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Access choice", de: "Zugangswahl"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
                 ]
+
         ]
         createSurveyPropertiesWithI10nTranslations(requiredProps)
     }

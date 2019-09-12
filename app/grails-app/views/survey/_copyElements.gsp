@@ -3,13 +3,8 @@
 <laser:serviceInjection />
 
 <semui:form>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription: sourceSubscription,
-            targetSubscription: targetSubscription,
-            allSubscriptions_readRights: allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
-    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
+    <g:form action="copyElementsIntoRenewalSubscription" controller="survey" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id, isRenewSub: isRenewSub]"
             method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">

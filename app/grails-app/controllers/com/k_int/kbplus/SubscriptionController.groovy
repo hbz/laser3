@@ -3826,7 +3826,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: baseSub.manualCancellationDate,
+                    manualCancellationDate: (baseSub?.manualCancellationDate && isCopyAuditOn) ? (baseSub?.manualCancellationDate + 1.year) : baseSub?.manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub.isPublic,
                     isSlaved: baseSub.isSlaved,
@@ -3909,7 +3909,7 @@ class SubscriptionController extends AbstractDebugController {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
-        params.surveyConfig = params.surveyConfig ?: null
+
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,

@@ -82,7 +82,7 @@
 
                     <g:link controller="survey" action="evaluationParticipantInfo" id="${surveyInfo.id}"
                             params="[participant: participant?.id]" class="ui icon button"><i
-                            class="chart bar icon"></i></g:link>
+                            class="chart pie icon"></i></g:link>
 
                 </td>
 
@@ -140,7 +140,7 @@
 
                     <g:link controller="survey" action="evaluationParticipantInfo" id="${surveyInfo.id}"
                             params="[participant: participant?.id]" class="ui icon button"><i
-                            class="chart bar icon"></i></g:link>
+                            class="chart pie icon"></i></g:link>
 
                 </td>
             </tr>

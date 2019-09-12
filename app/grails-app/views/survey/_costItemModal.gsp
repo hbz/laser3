@@ -5,7 +5,7 @@
 <g:render template="vars" model="[org: contextService.getOrg()]"/><%-- setting vars --%>
 
 <g:if test="${setting == 'bulkForAll'}">
-    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll')}"/>
+    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll') + " ("+ surveyOrgList.size()+ ") "}"/>
 </g:if>
 <g:else>
     <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg?.org?.name])}"/>

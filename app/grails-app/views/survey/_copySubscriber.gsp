@@ -1,12 +1,8 @@
 <%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <semui:form>
-	<g:render template="selectSourceAndTargetSubscription" model="[
-			sourceSubscription: sourceSubscription,
-			targetSubscription: targetSubscription,
-			allSubscriptions_readRights: allSubscriptions_readRights,
-			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
+
+	<g:form action="copyElementsIntoRenewalSubscription" controller="survey" id="${params.id ?: params.sourceSubscriptionId}"
 			params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
 			method="post" class="ui form newLicence">
 
