@@ -1702,7 +1702,7 @@ class SurveyController {
                                  sub_name     : subscription?.name,
                                  sub_id       : subscription?.id,
                                  sub_license  : subscription?.owner?.reference ?: '',
-                                 sub_status   : SUBSCRIPTION_INTENDED]
+                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED]
         result
     }
 

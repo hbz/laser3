@@ -225,7 +225,7 @@ ${surveyInfo?.name}
                     <td>
                         <g:if test="${participantResult?.sub}">
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
-                                    class="ui button icon"><i class="icon eye"></i></g:link>
+                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
                     </td>
 
@@ -343,7 +343,7 @@ ${surveyInfo?.name}
                     <td>
                         <g:if test="${participantResult?.sub}">
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
-                                    class="ui button icon"><i class="icon eye"></i></g:link>
+                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
                     </td>
 
@@ -388,7 +388,7 @@ ${surveyInfo?.name}
                         <td>
                             <g:if test="${sub}">
                                 <g:link controller="subscription" action="show" id="${sub?.id}"
-                                        class="ui button icon"><i class="icon eye"></i></g:link>
+                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
                             </g:if>
                         </td>
                     </g:each>
@@ -504,7 +504,7 @@ ${surveyInfo?.name}
                     <td>
                         <g:if test="${participantResult?.sub}">
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
-                                    class="ui button icon"><i class="icon eye"></i></g:link>
+                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -618,7 +618,7 @@ ${surveyInfo?.name}
                     <td>
                         <g:if test="${participantResult?.sub}">
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
-                                    class="ui button icon"><i class="icon eye"></i></g:link>
+                                    class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
                     </td>
                 </tr>

@@ -168,6 +168,7 @@ class SurveyConfig {
         return result
     }
 
+    //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
     def checkResultsFinishByOrg(Org org) {
 
         if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {

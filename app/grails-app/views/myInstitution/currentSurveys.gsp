@@ -92,6 +92,10 @@
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
                         counts="${countSurveys?.finish}"/>
+        <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
+                        params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+                        counts="${countSurveys?.notFinish}"/>
+
     </semui:tabs>
 
     <table class="ui celled sortable table la-table">
@@ -134,10 +138,16 @@
                             </span>
                         </g:if>
                         <i class="icon chart pie la-list-icon"></i>
-                        <g:link controller="survey" action="show" id="${surveyInfo?.id}"
-                                 class="ui ">
-                            ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
-                        </g:link>
+
+                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
+                                         class="ui ">
+                                    ${surveyConfig?.getSurveyName()}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                ${surveyConfig?.getSurveyName()}
+                            </g:else>
                     </div>
                 </td>
                 <td>
@@ -159,9 +169,7 @@
 
                     <g:if test="${surveyResults}">
 
-                        <g:link action="surveyConfigsInfo" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]"
-                                class="ui icon mini button">
-                            <g:if test="${surveyResults?.finishDate?.contains(null)}">
+                        <g:if test="${surveyResults?.finishDate?.contains(null)}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
                                       data-variation="tiny"
                                       data-content="Nicht abgeschlossen">
@@ -176,7 +184,7 @@
                                     <i class="check big green icon"></i>
                                 </span>
                             </g:else>
-                        </g:link>
+
                     </g:if>
                 </td>
 

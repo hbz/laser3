@@ -17,7 +17,7 @@
                 <div class="header">
                     <i class="icon chart pie la-list-icon"></i>
                     <g:link controller="myInstitution" action="surveyInfos"
-                                          id="${surveyInfo.id}">${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}</g:link>
+                                          id="${surveyInfo.id}">${surveyConfig?.getSurveyName()}</g:link>
                 </div>
 
                 <div class="meta">

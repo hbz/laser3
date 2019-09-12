@@ -121,6 +121,9 @@
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
                             params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
                             counts="${countSurveys?.finish}"/>
+            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red" countsClass="red"
+                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+                            counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 
         <table class="ui celled sortable table la-table">
@@ -162,7 +165,7 @@
                             </g:if>
                             <i class="icon chart pie la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
+                                ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>
                     </td>
