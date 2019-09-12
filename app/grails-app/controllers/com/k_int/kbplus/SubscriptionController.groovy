@@ -13,7 +13,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
 import de.laser.traits.AuditableTrait
 import grails.converters.JSON
@@ -774,7 +774,7 @@ class SubscriptionController extends AbstractDebugController {
                 startDateCol:-1, startVolumeCol:-1, startIssueCol:-1,
                 endDateCol:-1, endVolumeCol:-1, endIssueCol:-1,
                 accessStartDateCol:-1, accessEndDateCol:-1, coverageDepthCol:-1, coverageNotesCol:-1, embargoCol:-1,
-                listPriceCol:-1, listPriceCurrencyCol:-1, localPriceCol:-1, localPriceCurrencyCol:-1, priceDateCol:-1]
+                listPriceCol:-1, listCurrencyCol:-1, localPriceCol:-1, localCurrencyCol:-1, priceDateCol:-1]
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
                     switch(headerCol.toLowerCase().trim()) {
@@ -814,11 +814,11 @@ class SubscriptionController extends AbstractDebugController {
                             break
                         case "listprice_value": colMap.listPriceCol = c
                             break
-                        case "listprice_currency": colMap.listPriceCurrencyCol = c
+                        case "listprice_currency": colMap.listCurrencyCol = c
                             break
                         case "localprice_value": colMap.localPriceCol = c
                             break
-                        case "localprice_currency": colMap.localPriceCurrencyCol = c
+                        case "localprice_currency": colMap.localCurrencyCol = c
                             break
                         case "price_date": colMap.priceDateCol = c
                             break
@@ -926,11 +926,11 @@ class SubscriptionController extends AbstractDebugController {
                                     switch(colName) {
                                         case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "listPriceCurrencyCol": ieCandidate.listPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
                                             break
                                         case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "localPriceCurrencyCol": ieCandidate.localPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
                                             break
                                         case "priceDateCol": ieCandidate.priceDate = cellEntry
                                             break
@@ -1011,7 +1011,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId).instanceOf.id
+        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
@@ -1985,7 +1985,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_provider = OR_PROVIDER
         RefdataValue role_agency = OR_AGENCY
 
-
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -2094,9 +2093,13 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
+                                /*
+                                todo: IGNORED for 0.20
+
                                 if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
                                 }
+                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -2376,7 +2379,7 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance.id, packageId: params.packageId]
+        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -3824,7 +3827,7 @@ class SubscriptionController extends AbstractDebugController {
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: baseSub.manualCancellationDate,
+                    manualCancellationDate: (baseSub?.manualCancellationDate && isCopyAuditOn) ? (baseSub?.manualCancellationDate + 1.year) : baseSub?.manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub.isPublic,
                     isSlaved: baseSub.isSlaved,
@@ -4724,6 +4727,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
         result.consortialView = result.showConsortiaFunctions
+
         result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
         result.departmentalView = result.showCollectiveFunctions
 
@@ -4744,6 +4748,14 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
+        if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
+                result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE &&
+                ! (params.action in ['addMembers', 'processAddMembers'])
+        ) {
+            result.editable = false
+
+        }
+
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
@@ -4755,11 +4767,13 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_COLLECTIVE, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

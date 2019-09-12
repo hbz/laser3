@@ -28,7 +28,8 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
         <%-- test, very ugly, is to avoid Hibernate Proxy exception when changing context --%>
         <g:render template="/organisation/nav" model="${[orgInstance: Org.get(institution.id), inContextOrg: true]}"/>
 
-        <g:if test="${editable}">
+        <g:if test="${editable && contextService.user.hasAffiliation('INST_EDITOR')}">
+
             <input class="ui button"
                    value="${message(code: 'person.create_new.contactPerson.label')}"
                    data-semui="modal"

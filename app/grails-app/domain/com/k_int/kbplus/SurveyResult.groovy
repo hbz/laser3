@@ -99,4 +99,37 @@ class SurveyResult extends AbstractProperty {
 
     }
 
+    CostItem getCostItem(){
+        return CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant))
+    }
+
+    def getResult()
+    {
+        if(type?.type == Integer.toString())
+        {
+            return intValue.toString()
+        }
+        else if (type?.type == String.toString())
+        {
+            return stringValue
+        }
+        else if (type?.type ==  BigDecimal.toString())
+        {
+            return decValue.toString()
+        }
+        else if (type?.type == Date.toString())
+        {
+            return dateValue.getDateString()
+        }
+        else if (type?.type == URL.toString())
+        {
+            return urlValue.toString()
+        }
+        else if (type?.type == RefdataValue.toString())
+        {
+            return refValue ? refValue?.getI10n('value') : ""
+        }
+
+    }
+
 }

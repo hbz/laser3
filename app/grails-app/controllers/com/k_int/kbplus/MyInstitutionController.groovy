@@ -684,7 +684,6 @@ from License as l where (
 
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
         List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
         List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
 

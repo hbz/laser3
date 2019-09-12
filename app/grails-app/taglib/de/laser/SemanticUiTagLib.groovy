@@ -193,7 +193,7 @@ class SemanticUiTagLib {
                 out << '<i class="circular icon la-object-ebook"></i> '
                 break
             case 'Survey':
-                out << '<i class="circular icon inverted blue chart bar"></i> '
+                out << '<i class="circular icon inverted blue chart pie"></i> '
                 break
             default:
                 out << '<i class="circular icon la-object"></i> '

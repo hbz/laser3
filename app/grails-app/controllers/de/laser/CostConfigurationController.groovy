@@ -10,11 +10,11 @@ class CostConfigurationController {
     def contextService
     def accessService
     def genericOIDService
-    private final def user_role        = Role.findByAuthority('INST_ADM')
+    private final def user_role        = Role.findByAuthority('INST_EDITOR')
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def index() {
         if(params) {
@@ -32,8 +32,8 @@ class CostConfigurationController {
         getCurrentConfigurations()
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def getCurrentConfigurations() {
         def result = [:]
 
@@ -57,8 +57,8 @@ class CostConfigurationController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createNewConfiguration() {
         def result = [editable:true] //the user clicking here is already authenticated
         def costItemElements = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('CostItemElement'))
@@ -82,8 +82,8 @@ class CostConfigurationController {
         return
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostConfiguration() {
         if(params.ciec) {
             CostItemElementConfiguration ciec = CostItemElementConfiguration.get(params.ciec)
@@ -96,8 +96,8 @@ class CostConfigurationController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)
         def org = contextService.org

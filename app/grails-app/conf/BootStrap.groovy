@@ -522,6 +522,16 @@ class BootStrap {
                     expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
                     descr:allDescr, type: OT.Rdv, cat:'YN'
             ],
+            [
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [key: "Shibboleth Identity Provider Entity-ID", en: "Shibboleth Identity Provider Entity-ID", de: "Shibboleth: Identity Provider Entity-ID"],
+                    expl : [en: "", de: "Wie lautet die Entity-ID der Organisation?"],
+                    descr:allDescr, type: OT.String, multiple: true, isUsedForLogic: true
+            ],
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
@@ -1510,6 +1520,16 @@ class BootStrap {
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
+                [
+                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -1521,7 +1541,28 @@ class BootStrap {
                         name: [en: "Participation", de: "Teilnahme"],
                         expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
                         type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Access choice", de: "Zugangswahl"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
                 ]
+
         ]
         createSurveyPropertiesWithI10nTranslations(requiredProps)
     }

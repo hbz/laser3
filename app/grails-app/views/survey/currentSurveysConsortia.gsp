@@ -135,7 +135,7 @@
                                 ${surveyConfig?.subscription?.name}
                             </g:if>
                             <g:else>
-                                <i class="icon chart bar la-list-icon"></i>
+                                <i class="icon chart pie la-list-icon"></i>
                                 ${surveyConfig?.getConfigNameShort()}
                             </g:else>
                         </g:else>--}%
@@ -146,7 +146,7 @@
                                     <i class="yellow icon envelope large "></i>
                                 </span>
                             </g:if>
-                            <i class="icon chart bar la-list-icon"></i>
+                            <i class="icon chart pie la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
                                 ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
                             </g:link>
@@ -236,16 +236,26 @@
                     </g:if>
                     <g:if test="${params.tab == "finish"}">
                         <td>
-                            <g:link class="ui button "
-                                    data-content=""
-                                    controller="survey" action="setInEvaluation" id="${surveyInfo.id}">
-                                <g:message code="surveyInfo.evaluation.action"/>
-                            </g:link>
+                            <g:if test="${surveyInfo.isSubscriptionSurvey}">
+                                <g:link class="ui button "
+                                        data-content=""
+                                        controller="survey" action="setInEvaluation" id="${surveyInfo.id}">
+                                    <g:message code="surveyInfo.evaluation.action"/>
+                                </g:link>
+                            </g:if>
                         </td>
                     </g:if>
 
                     <g:if test="${params.tab == "inEvaluation"}">
-                        <td></td>
+                        <td>
+                        <g:if test="${surveyInfo.isSubscriptionSurvey}">
+                            <g:link controller="survey" action="renewalwithSurvey" id="${surveyInfo?.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]"
+                                    class="ui button ">
+                                <g:message code="surveyInfo.renewal.action"/>
+                            </g:link>
+                        </g:if>
+                        </td>
                     </g:if>
                 </tr>
 

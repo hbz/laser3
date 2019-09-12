@@ -34,6 +34,15 @@
 				<div class="inline-lists">
 
 					<dl>
+							<dt><g:message code="address.name.label" default="name" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="name" /></dd>
+
+							<dt><g:message code="address.additionFirst.label" default="additionFirst" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="additionFirst" /></dd>
+
+							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
+							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
+
                             <dt>${RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
 
@@ -90,15 +99,6 @@
 							<dd><semui:xEditable owner="${addressInstance}" field="pobCity" /></dd>
 
                             <hr />
-
-							<dt><g:message code="address.name.label" default="name" /></dt>
-							<dd><semui:xEditable owner="${addressInstance}" field="name" /></dd>
-
-							<dt><g:message code="address.additionFirst.label" default="additionFirst" /></dt>
-							<dd><semui:xEditable owner="${addressInstance}" field="additionFirst" /></dd>
-
-							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
-							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
 
                         </dl>
                     </div>

@@ -85,7 +85,7 @@
                                 ${surveyConfig?.subscription?.name}
                             </g:if>
                             <g:else>
-                                <i class="icon chart bar la-list-icon"></i>
+                                <i class="icon chart pie la-list-icon"></i>
                                 ${surveyConfig?.getConfigNameShort()}
                             </g:else>
                         </g:else>
@@ -97,7 +97,7 @@
                                 </span>
                             </g:if>
 
-                            <i class="icon chart bar la-list-icon"></i>
+                            <i class="icon chart pie la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
                                 ${surveyInfo?.name}
                             </g:link>

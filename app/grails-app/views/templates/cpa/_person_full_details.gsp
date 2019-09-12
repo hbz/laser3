@@ -95,15 +95,26 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
+                                <g:if test="${person.roleLinks.size() > 1}">
+                                    <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
-                                <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="contact"
-                                        data-confirm-term-where="${controller}"
-                                        data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                    <i class="unlink icon"></i>
-                                </g:link>
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                            data-confirm-term-what="contact"
+                                            data-confirm-term-where="${controller}"
+                                            data-confirm-term-how="unlink"
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="Die letzte Funktion/Position zu ${person.title}
+                                        ${person.first_name}
+                                        ${person.middle_name}
+                                        ${person.last_name} lässt sich nicht löschen. Bitte legen Sie zuerst eine weitere Funktion oder Position an!">
+
+                                        <button type="button" class="ui mini icon negative button disabled"><i class="unlink icon"></i></button>
+                                    </span>
+                                </g:else>
                             </g:if>
                         </div>
                     </div><!-- .person-details -->

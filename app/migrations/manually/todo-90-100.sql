@@ -137,6 +137,65 @@ UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '
 --update i10n_translation set i10n_value_en = 'Wissenschaftliche Spezialbibliothek' where i10n_value_en = 'Wissenschafltiche Spezialbibliothek';
 --update refdata_value set rdv_value = 'Wissenschaftliche Spezialbibliothek' where rdv_value = 'Wissenschafltiche Spezialbibliothek';
 
+-- 2019-09-09
+-- update survey results with new global survey property
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+
+-- 2019-09-11
+-- update survey results with new global survey property
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+
+
+-- START OF ERMS-1666 --
+-- Kontrolle vorher: zu löschende Einträge
+SELECT * FROM Person AS p
+                left join person_role pr on p.prs_id = pr_prs_fk
+WHERE p.prs_is_public = true
+  and pr isnull;
+
+
+DELETE FROM contact AS c
+WHERE c.ct_prs_fk in (SELECT p2.prs_id FROM Person AS p2
+                                           left join person_role pr on p2.prs_id = pr_prs_fk
+                   WHERE p2.prs_is_public = true
+                     and pr isnull);
+DELETE FROM address AS a
+WHERE a.adr_prs_fk in (SELECT p2.prs_id FROM Person AS p2
+                                           left join person_role pr on p2.prs_id = pr_prs_fk
+                   WHERE p2.prs_is_public = true
+                     and pr isnull);
+DELETE FROM Person AS p
+WHERE p.prs_id in (SELECT p2.prs_id FROM Person AS p2
+                                  left join person_role pr on p2.prs_id = pr_prs_fk
+               WHERE p2.prs_is_public = true
+                 and pr isnull);
+
+-- Kontrolle nachher: Liste müsste nun LEER sein!
+SELECT * FROM Person AS p
+                left join person_role pr on p.prs_id = pr_prs_fk
+WHERE p.prs_is_public = true
+  and pr isnull;
+-- END ERMS-1666 --
+
+
 ALTER TABLE task ADD tsk_system_create_date timestamp;
 UPDATE task SET tsk_system_create_date = tsk_create_date where task.tsk_system_create_date isnull;
 ALTER TABLE task ALTER COLUMN tsk_system_create_date SET NOT NULL;
