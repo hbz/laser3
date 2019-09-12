@@ -616,12 +616,12 @@
                         <g:if test="${(controllerName=='yoda' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && editable}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                    <button class="ui icon toggle button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
+                                    <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                                         <i class="pencil alternate icon"></i>
                                     </button>
                                 </g:if>
                                 <g:else>
-                                    <button class="ui icon toggle button active la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
+                                    <button class="ui icon toggle button la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
@@ -644,8 +644,8 @@
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
 
-
-                                    deckSaver.toggleEditableElements();
+                                    // initial not needed
+                                    // deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
                                         deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                          $.ajax({
