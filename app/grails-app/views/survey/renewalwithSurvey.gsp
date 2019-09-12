@@ -50,7 +50,7 @@ ${surveyInfo?.name}
             params="[surveyConfigID: surveyConfig?.id]"
             method="post" class="ui form newLicence">
 
-        <h4>
+        <h3>
         <g:message code="renewalwithSurvey.parentSubscription"/>:
         <g:if test="${parentSubscription}">
             <g:link controller="subscription" action="show"
@@ -80,8 +80,12 @@ ${surveyInfo?.name}
             </g:link>
         </g:else>
         </br>
-        </h4>
+        </h3>
 
+        <br>
+
+        <h3 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
+            total="${surveyConfig?.orgs?.size()}"/></h3>
 
         <br>
         <br>
@@ -99,7 +103,7 @@ ${surveyInfo?.name}
                     ${participationProperty?.getI10n('name')}
 
                     <g:if test="${participationProperty?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${participationProperty?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
@@ -246,7 +250,7 @@ ${surveyInfo?.name}
                     ${participationProperty?.getI10n('name')}
 
                     <g:if test="${participationProperty?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${participationProperty?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
@@ -258,7 +262,7 @@ ${surveyInfo?.name}
                         ${surveyProperty?.getI10n('name')}
 
                         <g:if test="${surveyProperty?.getI10n('explain')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${surveyProperty?.getI10n('explain')}">
                                 <i class="question circle icon"></i>
                             </span>
@@ -396,124 +400,6 @@ ${surveyInfo?.name}
         <br>
         <br>
 
-        <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
-                total="${newOrgsContinuetoSubscription?.size()}"/></h4>
-
-        <table class="ui celled sortable table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'org.name.label')}</th>
-
-                <th>
-                    ${participationProperty?.getI10n('name')}
-
-                    <g:if test="${participationProperty?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${participationProperty?.getI10n('explain')}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:if>
-                </th>
-
-                <g:each in="${properties}" var="surveyProperty">
-                    <th>
-                        ${surveyProperty?.getI10n('name')}
-
-                        <g:if test="${surveyProperty?.getI10n('explain')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyProperty?.getI10n('explain')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-                    </th>
-                </g:each>
-                <th>${message(code: 'renewalwithSurvey.costItem.label')}</th>
-                <th>${message(code: 'default.actions')}</th>
-            </tr>
-            </thead>
-            <g:each in="${newOrgsContinuetoSubscription}" var="participantResult" status="i">
-
-                <tr>
-                    <td class="center aligned">
-                        ${i + 1}
-                    </td>
-                    <td>
-                        ${participantResult?.participant?.sortname}<br>
-                        <g:link controller="organisation" action="show"
-                                id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
-
-                    </td>
-                    <td>
-                        ${participantResult?.resultOfParticipation?.getResult()}
-
-                        <g:if test="${participantResult?.resultOfParticipation?.comment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResult?.resultOfParticipation?.comment}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-
-                        <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResult?.resultOfParticipation?.ownerComment}">
-                                <i class="info circle icon"></i>
-                            </span>
-                        </g:if>
-
-                    </td>
-
-                    <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
-                            var="participantResultProperty">
-                        <td>
-                            ${participantResultProperty?.getResult()}
-
-                            <g:if test="${participantResultProperty?.comment}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${participantResultProperty?.comment}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </g:if>
-
-                            <g:if test="${participantResultProperty?.ownerComment}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${participantResultProperty?.ownerComment}">
-                                    <i class="info circle icon"></i>
-                                </span>
-                            </g:if>
-
-                        </td>
-                    </g:each>
-
-                    <td>
-
-                        <g:set var="costItem" value="${participantResult?.resultOfParticipation?.getCostItem()}"/>
-
-                        <g:if test="${costItem}">
-                            <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></b>
-
-                            (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
-                                             maxFractionDigits="2" type="number"/>)
-
-                            ${(costItem?.billingCurrency?.getI10n('value')?.split('-'))?.first()}
-                        </g:if>
-                    </td>
-                    <td>
-                        <g:if test="${participantResult?.sub}">
-                            <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
-                                    class="ui button icon"><i class="icon eye"></i></g:link>
-                        </g:if>
-                    </td>
-
-                </tr>
-            </g:each>
-        </table>
-
-
-        <br>
-        <br>
-
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.withTermination.label')} <semui:totalNumber
                 total="${orgsWithTermination?.size()}"/></h4>
 
@@ -527,7 +413,7 @@ ${surveyInfo?.name}
                     ${participationProperty?.getI10n('name')}
 
                     <g:if test="${participationProperty?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${participationProperty?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
@@ -641,7 +527,7 @@ ${surveyInfo?.name}
                     ${participationProperty?.getI10n('name')}
 
                     <g:if test="${participationProperty?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${participationProperty?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
