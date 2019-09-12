@@ -1647,7 +1647,7 @@ class SurveyController {
         def message = g.message(code: 'renewalexport.renewals')
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        String filename = message + "_${datetoday}"
+        String filename = message + "_" + result?.surveyConfig?.getSurveyName() +"_${datetoday}"
         if (params.exportXLS) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) exportRenewalResult(result)
@@ -2722,11 +2722,14 @@ class SurveyController {
         }
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + surveyProperty?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
         titles << g.message(code: 'renewalwithSurvey.costItem.label')
 
         List renewalData = []
+
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label'), style: 'positive']])
+
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
 
@@ -2740,15 +2743,21 @@ class SurveyController {
             def period = ""
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
-                period = period + " - " + participantResult?.newSubPeriodTwoEndDate ? sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
+                period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
+
             }
             period = ""
             if (renewalResult?.multiYearTermThreeSurvey) {
-                period = participantResult?.newSubPeriodThreeStartDate ?: ""
-                period = period + " - " + participantResult?.newSubPeriodThreeEndDate ?: ""
+
+                period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
+                period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
+            }
+
+            if(period != "")
+            {
                 row.add([field: period ?: '', style: null])
             }
+
             participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
                 row.add([field: participantResultProperty?.getResult() ?: "", style: null])
 
@@ -2768,32 +2777,28 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: 'Kündiung', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label'), style: 'positive']])
 
 
-        renewalResult.orgsWithTermination.each { participantResult ->
+        renewalResult.orgsWithMultiYearTermSub.each { sub ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
-            row.add([field: participantResult?.participant?.sortname ?: '', style: null])
-            row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
+            sub.getAllSubscribers().each{ subscriberOrg ->
 
-            row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+                row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: '', style: null])
 
-            participantResult?.properties.sort {
-                it?.type?.name
-            }.each { participantResultProperty ->
-                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+                row.add([field: '', style: null])
 
-                row.add([field: participantResultProperty?.comment ?: "", style: null])
+                def period = ""
 
+                period = sub?.startDate ? sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.startDate) : ""
+
+                row.add([field: period?: '', style: null])
             }
 
-            def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
-
-            row.add([field: costItemExport ?: "", style: null])
 
             renewalData.add(row)
         }
@@ -2801,7 +2806,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: 'Neue lizenziert', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label'), style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -2843,6 +2848,41 @@ class SurveyController {
 
             renewalData.add(row)
         }
+
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label'), style: 'negative']])
+
+
+        renewalResult.orgsWithTermination.each { participantResult ->
+            List row = []
+
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
+            row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
+
+            row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
+
+            participantResult?.properties.sort {
+                it?.type?.name
+            }.each { participantResultProperty ->
+                row.add([field: participantResultProperty?.getResult() ?: "", style: null])
+
+                row.add([field: participantResultProperty?.comment ?: "", style: null])
+
+            }
+
+            def costItem = participantResult?.resultOfParticipation?.getCostItem()
+            def costItemExport = ""
+            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
+
+            row.add([field: costItemExport ?: "", style: null])
+
+            renewalData.add(row)
+        }
+
+
         Map sheetData = [:]
         sheetData[message(code: 'renewalexport.renewals')] = [titleRow: titles, columnData: renewalData]
         return exportService.generateXLSXWorkbook(sheetData)
