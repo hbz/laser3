@@ -172,11 +172,10 @@ class QueryService {
             base_qry = """
 from License as l where (
     exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, deleted:LICENSE_DELETED, template: template_license_type]
+            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, template: template_license_type]
         }
 
         if (isLicensingConsortium) {
@@ -190,11 +189,10 @@ from License as l where (
                 )
             )
         )) 
-    AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, deleted:LICENSE_DELETED, template:template_license_type]
+            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, template:template_license_type]
         }
 
         result.query = "select l ${base_qry}"

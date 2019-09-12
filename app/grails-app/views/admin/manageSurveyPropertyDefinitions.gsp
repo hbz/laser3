@@ -65,14 +65,14 @@
                 <td class="center aligned">
 
                     <g:if test="${property.isHardData}">
-                        <span data-position="top left" data-tooltip="${message(code: 'default.hardData.tooltip')}">
+                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code: 'default.hardData.tooltip')}">
                             <i class="check circle icon green"></i>
                         </span>
                     </g:if>
 
                     <g:if test="${usedPdList?.contains(property.id)}">
                         <span data-position="top left"
-                              data-tooltip="${message(code: 'default.dataIsUsed.tooltip', args: [property.id])}">
+                               class="la-popup-tooltip la-delay" data-content="${message(code: 'default.dataIsUsed.tooltip', args: [property.id])}">
                             <i class="info circle icon blue"></i>
                         </span>
                     </g:if>
@@ -152,7 +152,7 @@
                                    value="${refdataValues + refdataValue?.getI10n('value')}"/>
                         </g:each>
 
-                        <span data-position="top right" data-tooltip="${refdataValues.join('/')}">
+                        <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${refdataValues.join('/')}">
                             <small>
                                 ${com.k_int.kbplus.SurveyProperty.getLocalizedValue(property?.type)}
                             </small>

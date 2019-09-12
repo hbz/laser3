@@ -41,11 +41,13 @@ class SurveyConfig {
     boolean configFinish
     boolean costItemsFinish
     boolean evaluationFinish
+    boolean isSubscriptionSurveyFix
 
     static hasMany = [
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
-            orgs            : SurveyOrg
+            orgs            : SurveyOrg,
+            surResults      : SurveyResult
     ]
 
     static constraints = {
@@ -63,6 +65,8 @@ class SurveyConfig {
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
         evaluationFinish (nullable: true, blank: false)
+        isSubscriptionSurveyFix (nullable: true, blank: false)
+        surResults(nullable: true, blank: false)
     }
 
     static mapping = {
@@ -77,6 +81,7 @@ class SurveyConfig {
         configFinish column: 'surconf_config_finish', default: false
         costItemsFinish column: 'surconf_costitems_finish', default: false
         evaluationFinish column: 'surconf_evaluation_finish', default: false
+        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -122,6 +127,15 @@ class SurveyConfig {
         }
     }
 
+    def getSurveyName() {
+
+        if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
+            return subscription?.name
+        } else {
+            return surveyInfo?.name
+        }
+    }
+
     def getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
@@ -156,8 +170,7 @@ class SurveyConfig {
 
     def checkResultsFinishByOrg(Org org) {
 
-        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
-            println("Test")
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
             return ALL_RESULTS_FINISH_BY_ORG
         } else {
 

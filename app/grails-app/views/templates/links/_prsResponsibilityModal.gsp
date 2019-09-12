@@ -5,7 +5,7 @@
 
     <div class="field">
 
-        <table id="prs_role_tab" class="ui celled la-table la-table-small table ignore-floatThead">
+        <table id="prs_role_tab" class="ui celled la-table la-table-small table la-ignore-fixed">
             <thead>
             <tr>
                 <th>Person</th>
@@ -19,12 +19,12 @@
                         <tr>
                             <td>
                                 <g:if test="${! p.isPublic}">
-                                    <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                         <i class="address card outline icon"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
                                         <i class="address card icon"></i>
                                     </span>
                                 </g:else>

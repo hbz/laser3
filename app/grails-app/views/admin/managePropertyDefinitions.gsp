@@ -53,23 +53,23 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left" data-tooltip="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="ui icon orange cube"></i>
                                             </span>
                                         </g:if>
@@ -117,7 +117,7 @@
                                     <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                         <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                            <span data-position="top right" data-tooltip="${pd.refdataCategory}">
+                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${pd.refdataCategory}">
                                                 <small>${pd.type?.split('\\.').last()}</small>
                                             </span>
                                         </g:if>
@@ -129,7 +129,7 @@
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                     <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"

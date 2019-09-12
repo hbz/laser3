@@ -38,6 +38,9 @@ pipeline {
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
 
                     }else{
+                        if(SERVERDEPLOY == SERVER_PROD){
+                                            input("Is the notification in the Invoice Tool activated? ")
+                        }
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
                         writeFile file: "${WORKSPACE}/job.batch", text: "put /${WORKSPACE}/ROOT.war\n quit"
                         sh 'sftp -b ${WORKSPACE}/job.batch -i ${TOMCAT_HOME_PATH}/.ssh/id_rsa ${SERVERDEPLOY}:${TOMCAT_HOME_PATH}/default/webapps/'

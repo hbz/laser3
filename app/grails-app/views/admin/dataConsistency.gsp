@@ -24,7 +24,7 @@
 
                 <h3 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h3>
 
-                <table class="ui sortable celled la-table la-table-small ignore-floatThead table">
+                <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
                     <thead>
                         <tr>
                             <th>ImpId</th>
@@ -55,7 +55,7 @@
 
                 <h3 class="ui headerline" id="jumpMark_2_${obj.key}">${obj.key}</h3>
 
-                <table class="ui sortable celled la-table la-table-small ignore-floatThead table">
+                <table class="ui sortable celled la-table la-table-small la-ignore-fixed table">
                     <thead>
                     <tr>
                         <th>Attribut</th>

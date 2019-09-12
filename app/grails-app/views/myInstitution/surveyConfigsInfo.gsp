@@ -67,6 +67,22 @@ ${message(code: 'survey.label')} -
 
 <br>
 
+<g:if test="${!editable}">
+    <div class="ui icon positive message">
+        <i class="info icon"></i>
+
+        <div class="content">
+            <div class="header"></div>
+
+            <p>
+                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                <g:message code="surveyResult.finish.info" />.
+            </p>
+        </div>
+    </div>
+</g:if>
+
+
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${com.k_int.kbplus.Org.findById(ownerId)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
@@ -107,6 +123,8 @@ ${message(code: 'survey.label')} -
     <g:if test="${!subscriptionInstance}">
         <g:set var="gascoView" value="true"/>
         <h2 class="ui icon header"><semui:headerIcon/>
+
+            <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="public" action="gasco" params="[q: surveyConfig?.subscription?.name]">
             ${surveyConfig?.subscription?.name}
         </g:link>
@@ -302,8 +320,8 @@ ${message(code: 'survey.label')} -
 
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                 </div>
                             </dt>
@@ -312,8 +330,8 @@ ${message(code: 'survey.label')} -
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                     ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                 </div>
                             </dt>
@@ -411,8 +429,8 @@ ${message(code: 'survey.label')} -
                                         <g:if test="${costItem?.costDescription}">
                                             <br>
 
-                                            <div class="ui icon" data-position="right center" data-variation="tiny"
-                                                 data-tooltip="${costItem?.costDescription}">
+                                            <div class="ui icon la-popup-tooltip la-delay" data-position="right center" data-variation="tiny"
+                                                 data-content="${costItem?.costDescription}">
                                                 <i class="question small circular inverted icon"></i>
                                             </div>
                                         </g:if>
@@ -452,6 +470,13 @@ ${message(code: 'survey.label')} -
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
+            <th>
+                ${message(code: 'surveyResult.commentOnlyForParticipant')}
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                      data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
+                    <i class="question circle icon"></i>
+                </span>
+            </th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -478,7 +503,7 @@ ${message(code: 'survey.label')} -
                 <g:set var="surveyOrg"
                        value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
 
-                <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                     <td>
                         <g:if test="${surveyResult?.type?.type == Integer.toString()}">
@@ -502,17 +527,29 @@ ${message(code: 'survey.label')} -
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == RefdataValue.toString()}">
+
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
+                                <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"  id="participation" config="${surveyResult.type?.refdataCategory}" />
+                            </g:if>
+                            <g:else>
                             <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
                                                     config="${surveyResult.type?.refdataCategory}"/>
+                            </g:else>
                         </g:elseif>
                     </td>
                     <td>
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
+                    <td>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                    </td>
                 </g:if>
                 <g:else>
                     <td>
                         <g:message code="surveyOrg.perennialTerm.available"/>
+                    </td>
+                    <td>
+
                     </td>
                     <td>
 
@@ -525,9 +562,35 @@ ${message(code: 'survey.label')} -
 
 </semui:form>
 
+
+
 <br />
 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
 
+
+
+<r:script>
+                                    $('body #participation').editable({
+                                        validate: function (value) {
+                                            if (value == "com.k_int.kbplus.RefdataValue:${de.laser.helper.RDStore.YN_NO.id}") {
+                                                var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
+                                                if (r == false) {
+                                                   return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"
+                                                }
+                                            }
+                                        },
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown')
+                                                .dropdown({
+                                            clearable: true
+                                        })
+                                        ;
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
+</r:script>
 
 </body>
 </html>

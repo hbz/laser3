@@ -253,9 +253,8 @@ class AjaxController {
 
             if (target instanceof UserSettings) {
                 target.setValue(value)
-            }
-            else {
-                def binding_properties = [ "${params.name}":value ]
+            } else {
+                def binding_properties = ["${params.name}": value]
                 bindData(target, binding_properties)
                 //if (target.hasProperty(params.name)) {
                 //    target."${params.name}" = value
@@ -266,6 +265,33 @@ class AjaxController {
             }
 
             target.save();
+            if (target instanceof SurveyResult) {
+
+                def org = contextService.getOrg()
+                //If Survey Owner set Value then set FinishDate
+                if (org?.id == target?.owner?.id && target?.finishDate == null) {
+                    def property = ""
+                    if (target?.type?.type == Integer.toString()) {
+                        property = "intValue"
+                    } else if (target?.type?.type == String.toString()) {
+                        property = "stringValue"
+                    } else if (target?.type?.type == BigDecimal.toString()) {
+                        property = "decValue"
+                    } else if (target?.type?.type == Date.toString()) {
+                        property = "dateValue"
+                    } else if (target?.type?.type == URL.toString()) {
+                        property = "urlValue"
+                    } else if (target?.type?.type == RefdataValue.toString()) {
+                        property = "refValue"
+                    }
+
+                    if (target[property] != null) {
+                        log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
+                        target.finishDate = new Date()
+                        target.save()
+                    }
+            }
+        }
 
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.
@@ -782,35 +808,6 @@ class AjaxController {
       render result as JSON
   }
 
-  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-  def addCoverage() {
-      IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
-      if(base) {
-          IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
-          if(ieCoverage.save())
-            render template: '/templates/tipps/coverageStatement', model: [covStmt: ieCoverage]
-          else log.error("Error on creation new coverage statement: ${ieCoverage.getErrors()}")
-      }
-      else log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
-  }
-
-  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-  def removeCoverage() {
-      IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
-      if(ieCoverage) {
-          if(!ieCoverage.delete()) {
-              log.error("Error on deleting coverage statement: ${ieCoverage.getErrors()}")
-          }
-          else{
-              Map<String, Boolean> result = [success: true]
-              render result as JSON
-          }
-      }
-      else log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
-  }
-
   @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
   @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') || ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
   def verifyUserInput() {
@@ -828,14 +825,18 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-          List tipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = (select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub)',[sub:Long.parseLong(params.sub)])
-          tipps.each { idx ->
-              checked[idx] = params.checked == 'true' ? 'checked' : null
-          }
-      }
-      else checked[params.index] = params.checked == 'true' ? 'checked' : null
-      if(cache.put('checked',checked))
-          success.success = true
+		  def newChecked = [:]
+		  checked.eachWithIndex { e, int idx ->
+			  newChecked[e.key] = params.checked == 'true' ? 'checked' : null
+			  cache.put('checked',newChecked)
+		  }
+	  }
+	  else {
+		  checked[params.index] = params.checked == 'true' ? 'checked' : null
+		  if(cache.put('checked',checked))
+			  success.success = true
+	  }
+
       render success as JSON
   }
 

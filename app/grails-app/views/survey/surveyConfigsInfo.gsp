@@ -13,8 +13,8 @@
 <body>
 
 <semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
     </g:if>
@@ -24,8 +24,6 @@
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-
-<br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
@@ -69,10 +67,9 @@
     </div>
 </g:if>--}%
 
-<br>
-
 <g:if test="${surveyConfig?.type == 'Subscription'}">
     <h2 class="ui icon header"><semui:headerIcon/>
+        <i class="icon clipboard outline la-list-icon"></i>
     <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
         ${surveyConfig?.subscription?.name}
     </g:link>
@@ -296,8 +293,8 @@
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: "surveyConfig.scheduledStartDate.comment")}">
+                                    <div class="ui icon la-popup-tooltip la-delay"
+                                         data-content="${message(code: "surveyConfig.scheduledStartDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledStartDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
@@ -308,8 +305,8 @@
                             </dl>
                             <dl>
                                 <dt class="control-label">
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: "surveyConfig.scheduledEndDate.comment")}">
+                                    <div class="ui icon la-popup-tooltip la-delay"
+                                         data-content="${message(code: "surveyConfig.scheduledEndDate.comment")}">
                                         ${message(code: 'surveyConfig.scheduledEndDate.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
@@ -320,7 +317,7 @@
                         </g:if>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.header.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay" data-content="${message(code: "surveyConfig.header.comment")}">
                                     ${message(code: 'surveyConfig.header.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
@@ -330,7 +327,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon" data-tooltip="${message(code: "surveyConfig.comment.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay" data-content="${message(code: "surveyConfig.comment.comment")}">
                                     ${message(code: 'surveyConfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
@@ -340,8 +337,8 @@
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: "surveyConfig.internalComment.comment")}">
+                                <div class="ui icon la-popup-tooltip la-delay"
+                                     data-content="${message(code: "surveyConfig.internalComment.comment")}">
                                     ${message(code: 'surveyConfig.internalComment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div>
@@ -445,7 +442,9 @@
 
                         </td>
                         <td>
-                            <g:if test="${editable && com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)}">
+                            <g:if test="${editable &&
+                                    com.k_int.kbplus.SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty?.surveyProperty)
+                                    && (com.k_int.kbplus.SurveyProperty.findByName('Participation')?.id != surveyProperty?.surveyProperty?.id)}">
                                 <g:link class="ui icon negative button"
                                         controller="survey" action="deleteSurveyPropfromSub"
                                         id="${surveyProperty?.id}">
@@ -480,8 +479,8 @@
                                 <input type="submit" class="ui button"
                                        value="${message(code: 'surveyConfigsInfo.add.button')}"/>
 
-                                <input type="submit" name="addtoallSubs" class="ui button"
-                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>
+                                %{--<input type="submit" name="addtoallSubs" class="ui button"
+                                       value="${message(code: "surveyConfigsInfo.addtoallSubs.button")}"/>--}%
                             </g:form>
                         </td>
                     </g:if>
@@ -507,6 +506,10 @@
     </div>
 
 </g:form>
+
+<br>
+<br>
+<br>
 
 <g:javascript>
     $(".la-popup").popup({});

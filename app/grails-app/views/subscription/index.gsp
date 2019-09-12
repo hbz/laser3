@@ -120,15 +120,15 @@
                 <g:hiddenField name="offset" value="${params.offset}"/>
                 <g:hiddenField name="max" value="${params.max}"/>
 
-                <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
                                           title="${message(code: 'title.label', default: 'Title')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="two wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
                         <th class="one wide"></th>
@@ -180,7 +180,7 @@
                                 <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
                             </th>
                             <th>
-                                <semui:datepicker hideLabel="true"
+                                <%--<semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from', default: 'Earliest date')}"
                                                   inputCssClass="la-input-small" id="bulk_start_date"
                                                   name="bulk_start_date"/>
@@ -189,7 +189,7 @@
                                 <semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.to', default: 'Latest Date')}"
                                                   inputCssClass="la-input-small" id="bulk_end_date"
-                                                  name="bulk_end_date"/>
+                                                  name="bulk_end_date"/>--%>
                             </th>
                             <th>
                                 <semui:datepicker hideLabel="true"
@@ -240,7 +240,7 @@
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td id="coverageStatements">
+                                <td class="coverageStatements" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
@@ -252,13 +252,16 @@
 
                                     </g:if>
                                     <g:else>
+                                        <div class="ui cards">
                                         <g:each in="${ie.coverages}" var="covStmt">
-                                            <p>
+                                            <div class="ui card">
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
-                                            </p>
+                                            </div>
                                         </g:each>
-                                        <button data-entitlement="${ie.id}" class="ui button positive tiny addCoverage"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></button>
+                                        </div><br>
                                     </g:else>
+                                    <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+
                                 </td>
                                 <td>
                                 <!-- von --->
@@ -369,34 +372,6 @@
             hide: 0
         }
       });
-
-    $('.addCoverage').on('click',function(){
-        var ieId = $(this).attr("data-entitlement");
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="addCoverage"/>",
-            data: {
-                issueEntitlement: ieId
-            }
-        }).done(function(response) {
-            $("#coverageStatements").append(response);
-        }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
-        });
-    });
-
-    $('.removeCoverage').on('click',function(){
-        var ieId = $(this).attr("data-entitlement");
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="removeCoverage"/>",
-            data: {
-                ieCoverage: ieId
-            }
-        }).done(function(response) {
-            $("#coverageStatements").append(response);
-        }).fail(function(response) {
-          console.log("AJAX error! Please check logs! Error is: "+JSON.stringify(response));
-        });
-    });
 </r:script>
 </body>
 </html>

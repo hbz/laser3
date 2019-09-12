@@ -60,52 +60,57 @@ class TitleStreamService {
         entitlementData.each { ieObj ->
             IssueEntitlement entitlement = (IssueEntitlement) ieObj
             List row = []
-            log.debug("processing ${entitlement.tipp.title}")
+            log.debug("processing ${entitlement?.tipp.title}")
             //publication_title
-            row.add("${entitlement.tipp.title.title}")
+            row.add("${entitlement?.tipp?.title?.title}")
             log.debug("add main identifiers")
             //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-            if(entitlement.tipp.title.getIdentifierValue('pISBN'))
-                row.add(entitlement.tipp.title.getIdentifierValue('pISBN'))
-            else if(entitlement.tipp.title.getIdentifierValue('ISSN'))
-                row.add(entitlement.tipp.title.getIdentifierValue('ISSN'))
+            if(entitlement?.tipp?.title?.getIdentifierValue('pISBN'))
+                row.add(entitlement?.tipp?.title?.getIdentifierValue('pISBN'))
+            else if(entitlement?.tipp?.title?.getIdentifierValue('ISSN'))
+                row.add(entitlement?.tipp?.title?.getIdentifierValue('ISSN'))
             else row.add(' ')
             //online_identifier
-            if(entitlement.tipp.title.getIdentifierValue('ISBN'))
-                row.add(entitlement.tipp.title.getIdentifierValue('ISBN'))
-            else if(entitlement.tipp.title.getIdentifierValue('eISSN'))
-                row.add(entitlement.tipp.title.getIdentifierValue('eISSN'))
+            if(entitlement?.tipp?.title?.getIdentifierValue('ISBN'))
+                row.add(entitlement?.tipp?.title?.getIdentifierValue('ISBN'))
+            else if(entitlement?.tipp?.title?.getIdentifierValue('eISSN'))
+                row.add(entitlement?.tipp?.title?.getIdentifierValue('eISSN'))
             else row.add(' ')
             log.debug("process package start and end")
             //date_first_issue_online
-            row.add(entitlement.startDate ? dateFormat.format(entitlement.startDate) : ' ')
+
+            //TODO: Andy du musst die Coverages hier irgendwie ausgeben. Nur eine Ersatzlösung
+
+            def firstCoverage = entitlement.coverages ? entitlement.coverages[0] : null
+
+            row.add(firstCoverage?.startDate ? dateFormat.format(firstCoverage?.startDate) : ' ')
             //num_first_volume_online
-            row.add(entitlement.startVolume ?: ' ')
+            row.add(firstCoverage?.startVolume ?: ' ')
             //num_first_issue_online
-            row.add(entitlement.startIssue ?: ' ')
+            row.add(firstCoverage?.startIssue ?: ' ')
             //date_last_issue_online
-            row.add(entitlement.endDate ? dateFormat.format(entitlement.endDate) : ' ')
+            row.add(firstCoverage?.endDate ? dateFormat.format(firstCoverage?.endDate) : ' ')
             //num_last_volume_online
-            row.add(entitlement.endVolume ?: ' ')
+            row.add(firstCoverage?.endVolume ?: ' ')
             //num_last_issue_online
-            row.add(entitlement.endIssue ?: ' ')
+            row.add(firstCoverage?.endIssue ?: ' ')
             log.debug("add title url")
             //title_url
-            row.add(entitlement.tipp.hostPlatformURL ?: ' ')
+            row.add(entitlement?.tipp.hostPlatformURL ?: ' ')
             //first_author (no value?)
             row.add(' ')
             //title_id (no value?)
             row.add(' ')
             //embargo_information
-            row.add(entitlement.embargo ?: ' ')
+            row.add(firstCoverage?.embargo ?: ' ')
             //coverage_depth
-            row.add(entitlement.coverageDepth ?: ' ')
+            row.add(firstCoverage?.coverageDepth ?: ' ')
             //notes
-            row.add(entitlement.coverageNote ?: ' ')
+            row.add(firstCoverage?.coverageNote ?: ' ')
             //publisher_name (no value?)
             row.add(' ')
             //publication_type
-            switch(entitlement.tipp.title.type) {
+            switch(entitlement?.tipp?.title?.type) {
                 case RDStore.TITLE_TYPE_JOURNAL: row.add('serial')
                     break
                 case RDStore.TITLE_TYPE_EBOOK: row.add('monograph')
@@ -128,7 +133,7 @@ class TitleStreamService {
             //preceding_publication_title_id (no value?)
             row.add(' ')
             //access_type
-            switch(entitlement.tipp.payment) {
+            switch(entitlement?.tipp.payment) {
                 case RDStore.TIPP_PAYMENT_OA: row.add('F')
                     break
                 case RDStore.TIPP_PAYMENT_PAID: row.add('P')
@@ -137,24 +142,24 @@ class TitleStreamService {
                     break
             }
             //access_start_date
-            row.add(entitlement.derivedAccessStartDate ? dateFormat.format(entitlement.derivedAccessStartDate) : ' ')
+            row.add(entitlement?.derivedAccessStartDate ? dateFormat.format(entitlement?.derivedAccessStartDate) : ' ')
             //access_end_date
-            row.add(entitlement.derivedAccessEndDate ? dateFormat.format(entitlement.derivedAccessEndDate) : ' ')
+            row.add(entitlement?.derivedAccessEndDate ? dateFormat.format(entitlement?.derivedAccessEndDate) : ' ')
             log.debug("processing identifiers")
             //zdb_id
-            row.add(entitlement.tipp.title.joinIdentfiers('zdb',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('zdb',','))
             //zdb_ppn
-            row.add(entitlement.tipp.title.joinIdentfiers('zdb_ppn',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('zdb_ppn',','))
             //DOI
-            row.add(entitlement.tipp.title.joinIdentfiers('doi',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('doi',','))
             //ISSNs
-            row.add(entitlement.tipp.title.joinIdentfiers('issn',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('issn',','))
             //eISSNs
-            row.add(entitlement.tipp.title.joinIdentfiers('eissn',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('eissn',','))
             //pISBNs
-            row.add(entitlement.tipp.title.joinIdentfiers('pisbn',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('pisbn',','))
             //ISBNs
-            row.add(entitlement.tipp.title.joinIdentfiers('isbn',','))
+            row.add(entitlement?.tipp?.title?.joinIdentfiers('isbn',','))
             export.columnData.add(row)
         }
         export

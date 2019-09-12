@@ -218,8 +218,7 @@
 
                                 <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-
-                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" specRole="ROLE_ADMIN"
+                                <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN"
                                                           controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
 
                                 <%--<semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />--%>
@@ -633,7 +632,7 @@
 
                             <r:script>
                                 $(function(){
-                                    <g:if test="${editable}">
+                                    <g:if test="${editable} || ${overwriteEditable}">
                                         <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))?.value == 'Yes'}">
                                             deckSaver.configs.editMode  = true;
                                         </g:if>

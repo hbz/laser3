@@ -1,12 +1,19 @@
 <g:if test="${address}">
 	<div class="ui item address-details">
-        <span  data-tooltip="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">
+        <span class="la-popup-tooltip la-delay"  data-content="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">
             <i class="ui icon building map marker alternate la-list-icon"></i>
         </span>
         <div class="content la-space-right">
             <g:link controller="address" action="show" id="${address?.id}">
-                ${address.type?.getI10n('value')}:
-
+                <strong>${address.type?.getI10n('value')}:</strong>
+                <g:if test="${address?.additionFirst}">
+                    <br />
+                    ${address?.additionFirst}
+                </g:if>
+                <g:if test="${address?.additionSecond}">
+                    <br />
+                    ${address?.additionSecond}
+                </g:if>
                 <g:if test="${address?.name}">
                     <br />
                     ${address?.name}
@@ -33,14 +40,7 @@
                     ${address?.pobZipcode} ${address?.pobCity}
                 </g:if>
 
-                <g:if test="${address?.additionFirst}">
-                    <br />
-                    ${address?.additionFirst}
-                </g:if>
-                <g:if test="${address?.additionSecond}">
-                    <br />
-                    ${address?.additionSecond}
-                </g:if>
+
             </g:link>
         </div>
         <div class="content">

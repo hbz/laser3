@@ -45,7 +45,7 @@ class TaskController extends AbstractDebugController {
 				result
 				break*/
 			case 'POST':
-				def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, endDate: params.endDate)
+				def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
 				taskInstance.creator = contextService.getUser()
 				taskInstance.createDate = new Date()
 

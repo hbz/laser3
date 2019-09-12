@@ -14,7 +14,7 @@ class SurveyOrg {
 
 
     static constraints = {
-        priceComment (nullable:true, blank:false)
+        priceComment(nullable: true, blank: false)
     }
 
     static mapping = {
@@ -28,30 +28,35 @@ class SurveyOrg {
         lastUpdated column: 'surorg_last_updated'
     }
 
-    def checkPerennialTerm()
-    {
-        def checkPerennialTerm = false
-        if(surveyConfig.subscription)
-        {
+    boolean existsMultiYearTerm() {
+        boolean existsMultiYearTerm = false
+        def sub = surveyConfig.subscription
+        if (sub) {
+            def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-            if(property?.type == 'class com.k_int.kbplus.RefdataValue'){
-                def sub = surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)
+            if (subChild?.getCalculatedSuccessor()) {
+                existsMultiYearTerm = true
+                return existsMultiYearTerm
+            }
 
-                if(sub?.getCalculatedSuccessor() || sub?.customProperties?.find{it?.type?.id == property?.id}?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)){
-                    checkPerennialTerm = true
+            if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                if (subChild?.customProperties?.find {
+                    it?.type?.id == property?.id
+                }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
+                    existsMultiYearTerm = true
+                    return existsMultiYearTerm
                 }
             }
         }
-        return checkPerennialTerm
+        return existsMultiYearTerm
     }
 
-    def hasOrgSubscription()
-    {
+    def hasOrgSubscription() {
         def hasOrgSubscription = false
-        if(surveyConfig.subscription) {
+        if (surveyConfig.subscription) {
             Subscription.findAllByInstanceOf(surveyConfig.subscription).each { s ->
-                def ors = OrgRole.findAllWhere( sub: s, org: this.org )
+                def ors = OrgRole.findAllWhere(sub: s, org: this.org)
                 ors.each { or ->
                     if (or.roleType?.value in ['Subscriber', 'Subscriber_Consortial']) {
                         hasOrgSubscription = true

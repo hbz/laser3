@@ -46,7 +46,7 @@
         </g:if>
         <g:if test="${grailsApplication.config.featureSurvey}">
             <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
-                <th class="la-th-wrap">${message(code: 'survey.plural')}</th>
+                <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
@@ -132,6 +132,13 @@
     </thead>
     <tbody>
     <g:each in="${orgList}" var="org" status="i">
+
+        <g:if test="${controllerName in ["survey"]}">
+            <g:set var="existSubforOrg" value="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+
+            <g:set var="orgSub" value="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
+        </g:if>
+
         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
             <tr class="disabled">
         </g:if>
@@ -208,7 +215,7 @@
                         )}" var="email">
                             <i class="ui icon envelope outline"></i>
                             <span data-position="right center"
-                                  data-tooltip="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
+                                   class="la-popup-tooltip la-delay" data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
                                 <a href="mailto:${email?.content}">${email?.content}</a>
                             </span><br>
                         </g:each>
@@ -285,7 +292,7 @@
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
-            <td>
+            <td class="center aligned">
                 <div class="la-flexbox">
                     <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
                     def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
@@ -311,16 +318,39 @@
         </g:if>
         <g:if test="${grailsApplication.config.featureSurvey}">
             <g:if test="${tmplConfigShow?.contains('numberOfSurveys')}">
-                <td>
+                <td class="center aligned">
                     <div class="la-flexbox">
-                        <g:set var="numberOfSurveys"
-                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).surveyConfig.surveyInfo.findAll {
-                                   it.status.id != RDStore.SURVEY_IN_PROCESSING.id
-                               }.groupBy { it.id }.size()}"/>
 
-                        <g:link controller="myInstitution" action="manageConsortiaSurveys"
-                                params="${[participant: org.id]}">
-                            <div class="ui circular label">
+                        <g:set var="participantSurveys"
+                               value="${com.k_int.kbplus.SurveyResult.findAllByOwnerAndParticipant(contextService.org, org).findAll {
+                                   it.endDate >= new Date(System.currentTimeMillis())
+                               }}"/>
+                        <g:set var="numberOfSurveys"
+                               value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
+                        <%
+                        def finishColor = ""
+                        def countFinish = 0
+                        def countNotFinish = 0
+
+                        participantSurveys.each {
+                            if (it.getFinish()) {
+                            countFinish++
+                            } else {
+                            countNotFinish++
+                            }
+                        }
+                        if (countFinish > 0 && countNotFinish == 0) {
+                            finishColor = "green"
+                        } else if (countFinish > 0 && countNotFinish > 0) {
+                            finishColor = "yellow"
+                        } else {
+                            finishColor = "red"
+                        }
+                        %>
+
+                        <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                id="${org.id}">
+                            <div class="ui circular ${finishColor} label">
                                 ${numberOfSurveys}
                             </div>
                         </g:link>
@@ -375,15 +405,15 @@
             <td>
             <%-- here: switch if in consortia or not --%>
                 <g:if test="${!consortiaMemberIds.contains(org.id)}">
-                    <g:link class="ui icon positive button"
-                            data-tooltip="${message(code: 'org.consortiaToggle.add.label')}" controller="organisation"
+                    <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'org.consortiaToggle.add.label')}" controller="organisation"
                             action="toggleCombo" params="${params + [direction: 'add', fromOrg: org.id]}">
                         <i class="plus icon"></i>
                     </g:link>
                 </g:if>
                 <g:elseif test="${consortiaMemberIds.contains(org.id)}">
-                    <g:link class="ui icon negative button"
-                            data-tooltip="${message(code: 'org.consortiaToggle.remove.label')}"
+                    <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                            data-content="${message(code: 'org.consortiaToggle.remove.label')}"
                             controller="organisation" action="toggleCombo"
                             params="${params + [direction: 'remove', fromOrg: org.id]}">
                         <i class="minus icon"></i>
@@ -415,98 +445,131 @@
 
         <g:if test="${tmplConfigShow?.contains('surveySubInfo')}">
             <td>
-                <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
+                <g:if test="${existSubforOrg}">
+
+                    <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                    </g:if>
+                    <g:else>
                     <g:link controller="subscription" action="show"
-                            id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
-                        ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.name}
+                            id="${orgSub?.id}">
+                        ${orgSub?.name}
                     </g:link>
+                    </g:else>
 
                 </g:if>
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
             <td>
-                <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
+                <g:if test="${existSubforOrg}">
+                    <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                        <g:message code="surveyOrg.perennialTerm.available"/>
+                    </g:if>
+                    <g:else>
                     <g:link controller="subscription" action="show"
-                            id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
+                            id="${orgSub?.id}">
                         <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.startDate}"/><br>
+                                      date="${orgSub?.startDate}"/><br>
                         <g:formatDate formatName="default.date.format.notime"
-                                      date="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.endDate}"/>
+                                      date="${orgSub?.endDate}"/>
                     </g:link>
-
+                    </g:else>
                 </g:if>
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
             <td>
-                <g:if test="${com.k_int.kbplus.Subscription.get(surveyConfig?.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}">
-                    <g:link controller="subscription" action="show"
-                            id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.id}">
-                        ${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org)?.status.getI10n('value')}
-                    </g:link>
+                <g:if test="${existSubforOrg}">
+                        <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="subscription" action="show"
+                                    id="${orgSub?.id}">
+                                ${orgSub?.status.getI10n('value')}
+                            </g:link>
+                        </g:else>
 
                 </g:if>
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
-            <td class="center aligned">
-                <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(org), institution)}"
+            <td class="center aligned x">
+
+            <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                <g:message code="surveyOrg.perennialTerm.available"/>
+            </g:if>
+            <g:else>
+                <g:each in="${com.k_int.kbplus.CostItem.findAllBySubAndOwner(orgSub, institution)}"
                         var="costItem">
 
                     <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
+
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+
+
                     </g:if>
                 </g:each>
+            </g:else>
 
             </td>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
             <td class="x">
+
+                <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                    <g:message code="surveyOrg.perennialTerm.available"/>
+                </g:if>
+            <g:else>
+
                 <g:set var="surveyOrg"
                        value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
                 <g:set var="costItem" scope="request"
                        value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
 
-                <g:if test="${!surveyOrg?.checkPerennialTerm()}">
                     <g:if test="${costItem}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
+
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+
                             <br>
                         <g:if test="${costItem?.startDate || costItem?.endDate}">
                             (${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notimeShort'))})
                         </g:if>
 
                             <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${costItem?.id})"
-                                    class="ui icon button right floated trigger-modal">
+                                    class="ui icon circular button right floated trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
                     </g:if>
                     <g:else>
                         <g:link onclick="addEditSurveyCostItem(${params.id}, ${surveyConfig?.id}, ${org?.id}, ${null})"
-                                class="ui icon button right floated trigger-modal">
+                                class="ui icon circular button right floated trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                     </g:else>
-                </g:if>
-                <g:else>
-                    <g:message code="surveyOrg.perennialTerm.available"/>
+
                 </g:else>
             </td>
 
-            <td class="center aligned"
+            <td class="center aligned">
             <g:set var="costItem" scope="request"
                    value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org))}"/>
             <g:if test="${costItem?.costDescription}">
 
-                <div class="ui icon" data-tooltip="${costItem?.costDescription}">
+                <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem?.costDescription}">
                     <i class="info circular inverted icon"></i>
                 </div>
             </g:if>
@@ -550,6 +613,34 @@
 </g:if>
 <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
     <r:script>
+   $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: $(this).attr('href')
+                    }).done( function(data) {
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty().html(data);
+
+                        $('#dynamicModalContainer .ui.modal').modal({
+                            onVisible: function () {
+                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                                ajaxPostFunc();
+                                setupCalendar();
+                            },
+                            detachable: true,
+                            closable: false,
+                            transition: 'scale',
+                            onApprove : function() {
+                                $(this).find('.ui.form').submit();
+                                return false;
+                            }
+                        }).modal('show');
+                    })
+                });
+
         function addEditSurveyCostItem(id, surveyConfigID, participant, costItem) {
             event.preventDefault();
             $.ajax({

@@ -15,15 +15,6 @@
                         ${person.last_name}
                     </g:link>
                 </h5>
-
-                <script>
-                    $('.person-details').mouseenter(function () {
-                        $(this).parent().addClass('la-border-selected');
-                    })
-                    $('.person-details').mouseleave(function () {
-                        $(this).parent().removeClass('la-border-selected');
-                    })
-                </script>
             </div>
 
             <div class="content">
@@ -104,15 +95,26 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
+                                <g:if test="${person.roleLinks.size() > 1}">
+                                    <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
-                                <g:link class="ui mini icon negative button js-open-confirm-modal"
-                                        data-confirm-term-what="contact"
-                                        data-confirm-term-where="${controller}"
-                                        data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                                    <i class="unlink icon"></i>
-                                </g:link>
+                                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                                            data-confirm-term-what="contact"
+                                            data-confirm-term-where="${controller}"
+                                            data-confirm-term-how="unlink"
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-popup-tooltip la-delay" data-content="Die letzte Funktion/Position zu ${person.title}
+                                        ${person.first_name}
+                                        ${person.middle_name}
+                                        ${person.last_name} lässt sich nicht löschen. Bitte legen Sie zuerst eine weitere Funktion oder Position an!">
+
+                                        <button type="button" class="ui mini icon negative button disabled"><i class="unlink icon"></i></button>
+                                    </span>
+                                </g:else>
                             </g:if>
                         </div>
                     </div><!-- .person-details -->
@@ -181,19 +183,19 @@
 
     </div><!-- .la-flex-list -->
 
-    <g:if test="${editable && tmplUnlinkedObj}"><%-- TODO.: refactoring layout --%>
+    <g:if test="${editable && tmplUnlinkedObj}">
+        <td class="right aligned">
+            <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
 
-        <g:set var="oid" value="${tmplUnlinkedObj?.class.name}:${tmplUnlinkedObj?.id}"/>
-
-        <g:link class="ui mini icon negative button js-open-confirm-modal"
-                data-confirm-term-what="contact"
-                data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
-                data-confirm-term-where="${controller}"
-                data-confirm-term-how="unlink"
-                controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-            <i class="unlink icon"></i>
-        </g:link>
-
+            <g:link class="ui icon negative button js-open-confirm-modal"
+                    data-confirm-term-what="contact"
+                    data-confirm-term-what-detail="${tmplUnlinkedObj.prs}"
+                    data-confirm-term-where="${controller}"
+                    data-confirm-term-how="unlink"
+                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                <i class="unlink icon"></i>
+            </g:link>
+        </td>
     </g:if>
 
 </g:if>

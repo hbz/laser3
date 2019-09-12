@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'createGeneralSurvey.label')}</title>
 </head>
 
 <body>
@@ -13,17 +13,15 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="survey" class="active"/>
+    <semui:crumb message="createGeneralSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'createSurvey.label')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>${message(code: 'createGeneralSurvey.label')}</h1>
 
 <semui:messages data="${flash}"/>
 
-<br>
-
 <semui:form>
-    <g:form action="processCreateSurvey" controller="survey" method="post" class="ui form">
+    <g:form action="processCreateGeneralSurvey" controller="survey" method="post" class="ui form">
 
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</label>
@@ -64,7 +62,7 @@
 
 
         <input type="submit" class="ui button"
-               value="${message(code: 'createSurvey.create', default: 'Create')}"/>
+               value="${message(code: 'createGeneralSurvey.create', default: 'Create')}"/>
 
     </g:form>
 </semui:form>

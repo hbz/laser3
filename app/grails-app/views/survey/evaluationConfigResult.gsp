@@ -77,7 +77,7 @@
                         <dd>
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
-                                    class="ui circular label">${surveyConfig?.documents?.size()}</div></g:link>
+                                    class="ui circular label">${surveyConfig?.getCurrentDocs()?.size()}</div></g:link>
                         </dd>
 
                     </dl>
@@ -178,9 +178,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
@@ -270,9 +270,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">

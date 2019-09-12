@@ -3,13 +3,22 @@
 
 
 <div class="ui divided items">
-    <g:each in="${surveys}" var="surveyInfo" status="i">
+    <g:each in="${surveys}" var="survey" status="i">
+
+        <g:set var="surveyConfig"
+               value="${com.k_int.kbplus.SurveyConfig.get(survey.key)}"/>
+
+        <g:set var="surveyInfo"
+               value="${surveyConfig.surveyInfo}"/>
 
         <div class="item">
 
             <div class="content">
-                <a class="header"><g:link controller="myInstitution" action="surveyInfos"
-                                          id="${surveyInfo.id}">${surveyInfo?.name}</g:link></a>
+                <div class="header">
+                    <i class="icon chart pie la-list-icon"></i>
+                    <g:link controller="myInstitution" action="surveyInfos"
+                                          id="${surveyInfo.id}">${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}</g:link>
+                </div>
 
                 <div class="meta">
                     <span><g:message code="surveyInfo.owner.label"/>: ${surveyInfo?.owner}</span>
@@ -37,11 +46,22 @@
                 </div>
 
                 <div class="extra">
-                    <div class="ui label">${surveyInfo?.status.getI10n('value')}</div>
+
+                    <g:set var="surveyResults" value="${com.k_int.kbplus.SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, surveyInfo?.surveyConfigs)}" />
+
+                    <div class="ui label">
+                        ${surveyInfo?.status.getI10n('value')}
+                    </div>
 
                     <div class="ui label survey-${surveyInfo?.type.value}">
-                    <g:link controller="myInstitution" action="surveyInfos"
-                            id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}</g:link></div>
+                        <g:link controller="myInstitution" action="surveyInfos"
+                                id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}
+                        </g:link>
+                    </div>
+
+                    <g:if test="${surveyResults && !surveyResults?.finishDate?.contains(null) ? "green" : ""}">
+                            <i class="check big green icon"></i>
+                    </g:if>
                 </div>
             </div>
         </div>

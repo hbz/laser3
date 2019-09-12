@@ -1,7 +1,9 @@
 <%@page import="de.laser.helper.RDStore; com.k_int.kbplus.BookInstance;com.k_int.kbplus.ApiSource" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
-    <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header" id="${side}">
+    <g:set var="sumlistPrice" value="${0}"/>
+    <g:set var="sumlocalPrice" value="${0}"/>
+    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
             <tr>
                 <th>
@@ -16,6 +18,8 @@
             </tr>
         </thead>
         <tbody>
+
+
             <g:each in="${ies.sourceIEs}" var="ie">
                 <g:set var="tipp" value="${ie.tipp}"/>
                 <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_DELETED}}" />
@@ -107,23 +111,27 @@
                         </td>
                         <td>
                             <g:if test="${ie.priceItem}">
-                                <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencySymbol="${ie.priceItem.listPriceCurrency}" currencyCode="${ie.priceItem.listPriceCurrency}"/><br>
-                                <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencySymbol="${ie.priceItem.localPriceCurrency}" currencyCode="${ie.priceItem.localPriceCurrency}"/><br>
-                                <semui:datepicker class="ieOverwrite" name="priceDate" value="${ie.priceItem.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                                <g:formatNumber number="${ie?.priceItem?.listPrice}" type="currency" currencySymbol="${ie?.priceItem?.listCurrency}" currencyCode="${ie?.priceItem?.listCurrency}"/><br>
+                                <g:formatNumber number="${ie?.priceItem?.localPrice}" type="currency" currencySymbol="${ie?.priceItem?.localCurrency}" currencyCode="${ie?.priceItem?.localCurrency}"/><br>
+                                <semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+
+                                <g:set var="sumlistPrice" value="${sumlistPrice+(ie?.priceItem?.listPrice ?: 0)}"/>
+                                <g:set var="sumlocalPrice" value="${sumlocalPrice+(ie?.priceItem?.localPrice ?: 0)}"/>
+
                             </g:if>
                         </td>
                         <td>
                             <g:if test="${side == 'target' && isContainedByTarget}">
-                                <g:link class="ui icon negative button" action="processRemoveEntitlements"
+                                <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                     <i class="minus icon"></i>
                                 </g:link>
                             </g:if>
                             <g:elseif test="${side == 'source' && !isContainedByTarget}">
-                                <g:link class="ui icon positive button" action="processAddEntitlements"
+                                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
-                                        data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                     <i class="plus icon"></i>
                                 </g:link>
                             </g:elseif>
@@ -141,6 +149,18 @@
                 </g:else>
             </g:each>
         </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th><g:message code="financials.export.sums"/> <br>
+                    <g:formatNumber number="${sumlistPrice}" type="currency"/><br>
+                    <g:formatNumber number="${sumlocalPrice}" type="currency"/>
+                </th>
+                <th></th>
+            </tr>
+        </tfoot>
     </table>
 </div>
 

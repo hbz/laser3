@@ -54,7 +54,7 @@
                     <g:message code="org.ids.label"/>
                 </dt>
                 <dd>
-                    <table class="ui celled la-table la-table-small table ignore-floatThead">
+                    <table class="ui celled la-table la-table-small table la-ignore-fixed">
                         <thead>
                         <tr>
                             <th>${message(code: 'default.authority.label', default: 'Authority')}</th>
@@ -93,7 +93,7 @@
 
                 <g:if test="${editable}">
                     <dt class="la-js-hideMe">
-                        Indentifikator hinzufügen
+                        Identifikfator hinzufügen
                     </dt>
                     <dd class="la-js-hideMe">
                         <g:if test="${object.class.simpleName == 'License'}">

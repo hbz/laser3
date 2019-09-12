@@ -2,6 +2,7 @@ package com.k_int.kbplus.auth
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
+import de.laser.domain.AbstractBaseDomain
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
@@ -21,6 +22,8 @@ class User {
   String shibbScope
   String apikey
   String apisecret
+  Date dateCreated
+  Date lastUpdated
 
   boolean enabled
   boolean accountExpired

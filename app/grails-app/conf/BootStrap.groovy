@@ -2,14 +2,13 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
-import com.k_int.properties.PropertyDefinitionGroup
-import de.laser.OrgTypeService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.hibernate.type.TextType
+import groovy.sql.Sql
 
 import java.text.SimpleDateFormat
 
@@ -20,6 +19,7 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def dataSource
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -36,6 +36,11 @@ class BootStrap {
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
+        log.info("Database: ${grailsApplication.config.dataSource.url}")
+        log.info("Database migration plugin updateOnStart: ${grailsApplication.config.grails.plugin.databasemigration.updateOnStart}")
+        log.info("Documents: ${grailsApplication.config.documentStorageLocation}")
+
+        log.info("--------------------------------------------------------------------------------")
 
         if (grailsApplication.config.laserSystemId != null) {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
@@ -269,6 +274,9 @@ class BootStrap {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
+        log.debug("adjustDatabasePermissions ..")
+        adjustDatabasePermissions()
+
         log.debug("here we go ..")
     }
 
@@ -379,10 +387,24 @@ class BootStrap {
     }
 
     def updatePsqlRoutines() {
-        String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
-        File dir = new File(dirPath)
+
+        File dir
+
+        try {
+            def folder = this.class.classLoader.getResource('./migrations/functions')
+            dir = new File(folder.file)
+        }
+        catch (Exception e) {
+            log.warn(e)
+            log.warn('fallback ..')
+
+            String dirPath = grailsApplication.config.grails.plugin.databasemigration.changelogLocation + '/functions'
+            dir = new File(dirPath)
+        }
 
         if (dir.exists()) {
+            log.debug('scanning ' + dir.getAbsolutePath())
+
             dir.listFiles().each { file ->
                 String fileName = file.getName()
                 if (fileName.endsWith('.sql')) {
@@ -408,6 +430,13 @@ class BootStrap {
                 }
             }
         }
+
+    }
+
+    def adjustDatabasePermissions() {
+
+        Sql sql = new Sql(dataSource)
+        sql.rows("SELECT * FROM grants_for_backup()")
     }
 
     @Deprecated
@@ -492,6 +521,16 @@ class BootStrap {
                     name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
                     expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
                     descr:allDescr, type: OT.Rdv, cat:'YN'
+            ],
+            [
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [key: "Shibboleth Identity Provider Entity-ID", en: "Shibboleth Identity Provider Entity-ID", de: "Shibboleth: Identity Provider Entity-ID"],
+                    expl : [en: "", de: "Wie lautet die Entity-ID der Organisation?"],
+                    descr:allDescr, type: OT.String, multiple: true, isUsedForLogic: true
             ],
 
         ]
@@ -1481,17 +1520,51 @@ class BootStrap {
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
+                [
+                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
     def createSurveyProperties() {
 
-        /*def requiredProps = [
-                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
-                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        def requiredProps = [
+                [
+                        name: [en: "Participation", de: "Teilnahme"],
+                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Access choice", de: "Zugangswahl"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ]
+
         ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)*/
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
 
     def createPrivateProperties() {
@@ -1619,7 +1692,7 @@ class BootStrap {
             }
 
             if (default_prop.introduction) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
             }
         }
     }
@@ -2206,7 +2279,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
 
@@ -2543,7 +2616,7 @@ class BootStrap {
 
     void createRefdataWithI10nExplanation() {
 
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studenten'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])

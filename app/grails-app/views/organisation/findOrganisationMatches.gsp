@@ -94,12 +94,12 @@
 										<td>
 										<%-- here: switch if in consortia or not --%>
 											<g:if test="${!members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+												<g:link class="ui icon positive button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
 													<i class="plus icon"></i>
 												</g:link>
 											</g:if>
 											<g:elseif test="${members.get(organisationInstance.id).contains(institution.id)}">
-												<g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
+												<g:link class="ui icon negative button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.remove.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
 													<i class="minus icon"></i>
 												</g:link>
 											</g:elseif>
@@ -108,18 +108,18 @@
 									<g:elseif test="${comboType == 'Department'}">
 										<td>
 											<g:if test="${!organisationInstance.isEmpty()}">
-												<span data-tooltip="${message(code:'org.departmentRemoval.departmentNotEmpty')}">
+												<span  class="la-popup-tooltip la-delay" data-content="${message(code:'org.departmentRemoval.departmentNotEmpty')}">
 													<button class="ui icon negative button" disabled="disabled">
 														<i class="trash alternate icon"></i>
 													</button>
 												</span>
 											</g:if>
 											<g:else>
-												<g:link class="ui icon negative button"
+												<g:link class="ui icon negative button la-popup-tooltip la-delay"
 														data-confirm-term-what="department"
 														data-confirm-term-what-detail="${organisationInstance.name}"
 														data-confirm-term-where="institution"
-														data-tooltip="${message(code:'org.departmentRemoval.remove.label')}"
+														data-content="${message(code:'org.departmentRemoval.remove.label')}"
 														controller="myInstitution" action="removeDepartment"
 														params="${[dept:organisationInstance.id]}">
 													<i class="trash alternate icon"></i>

@@ -161,5 +161,58 @@ class SemanticUiDropdownTagLib {
         out << '</div>'
 
     }
+
+    def menuDropdown = { attrs, body ->
+
+        out << '<div class="ui secondary stackable menu">'
+
+        out <<          body()
+
+        out << '</div>'
+    }
+
+    def menuDropdownItems = { attrs, body ->
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def textMessage  = (text && message) ? text + " - " + message : text + message
+        out << '<div class="ui pointing dropdown link item">'
+        out << textMessage
+        out << '<i class="dropdown icon"></i> '
+        out <<  '<div class="menu">'
+
+        out <<          body()
+
+        out << '</div>'
+        out << '</div>'
+    }
+
+    def menuDropdownItem = { attrs, body ->
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (text && message) ? text + " - " + message : text + message
+        def aClass    = ('item') + (attrs.class ? ' ' + attrs.class : '')
+
+
+        if (attrs.disabled) {
+            out << '<div class="item disabled">' + linkBody + '</div>'
+        }
+        else if (attrs.controller) {
+            out << g.link(linkBody,
+                    class: aClass,
+                    controller: attrs.controller,
+                    action: attrs.action,
+                    params: attrs.params
+            )
+        }
+        else {
+            out << '<div class="item">'
+            out << linkBody
+            out << '</div>'
+        }
+
+        out << '<div class="divider"></div>'
+    }
+
+
 }
 

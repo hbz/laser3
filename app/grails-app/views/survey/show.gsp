@@ -50,6 +50,12 @@
 
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyInfo.comment.label')}</dt>
+                            <dd><semui:xEditable owner="${surveyInfo}" field="comment" type="text"/></dd>
+
+                        </dl>
+
                     </div>
                 </div>
 
@@ -65,19 +71,18 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.type.label')}</dt>
                             <dd>
-                                ${surveyInfo.type.getI10n('value')}
+                                ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
                             </dd>
 
                         </dl>
-
                     </div>
                 </div>
             </div>
 
             <g:set var="finish"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(s?.surveyConfigs).size()}"/>
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
             <g:set var="total"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(s?.surveyConfigs).size()}"/>
+                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
 
             <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
             <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
@@ -91,7 +96,7 @@
                             </div>
 
                             <div class="label"
-                                 style="background-color: transparent">${finishProcess}% <g:message
+                                 style="background-color: transparent"><g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>% <g:message
                                     code="surveyInfo.finished"/></div>
                         </div>
                     </div>
@@ -104,8 +109,8 @@
 
                     <g:each in="${surveyConfigs}" var="config" status="i">
 
-                        <div class="title active" style="background-color: ${(config?.configFinish && config?.costItemsFinish) ? 'lime' : ''}"><i
-                            class="dropdown icon"></i>
+                        <div class="title active"><i
+                            class="dropdown icon ${(config?.configFinish && config?.costItemsFinish) ? 'green' : ''}"></i>
 
                         ${config?.getConfigName()}
 
@@ -156,7 +161,7 @@
 
                                                     <td class="x">
                                                         %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                                                        <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                                             <i class="green alternate share icon"></i>
                                                         </span>
                                                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -175,10 +180,10 @@
 
                                 </div>
                                 <g:if test="${config?.type == 'SurveyProperty'}">
-                                    <div class="title" style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
+                                    <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
-                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                        <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.orgs?.size() ?: 0}</div>
                                     </div>
 
                                     <div class="content">
@@ -191,11 +196,10 @@
                                     <g:set var="costItems"
                                            value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
 
-                                    <div class="title"
-                                         style="background-color: ${config?.costItemsFinish ? 'lime' : ''}"><i
+                                    <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
-                                        <div class="ui circular label">${config?.orgs?.size() ?: 0}</div>
+                                        <div class="ui circular label ${config?.costItemsFinish ? 'green' : ''}">${config?.orgs?.size() ?: 0}</div>
                                     </div>
 
                                     <div class="content compact">
@@ -210,11 +214,10 @@
                                     </div>
 
 
-                                    <div class="title"
-                                         style="background-color: ${config?.configFinish ? 'lime' : ''}"><i
+                                    <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
-                                        <div class="ui circular label">${config?.surveyProperties?.size() ?: 0}</div>
+                                        <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.surveyProperties?.size() ?: 0}</div>
                                     </div>
 
                                     <div class="content">

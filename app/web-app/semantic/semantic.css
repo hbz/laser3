@@ -785,6 +785,21 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        PRINT
+*******************************/
+
+@media print {
+  .ui.container {
+    width: 100%;
+    padding: 2cm 2cm 3cm 3cm;
+  }
+
+  .ui.menu {
+    visibility: hidden;
+  }
+}
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
@@ -5786,7 +5801,7 @@ a .la-main-object {
   vertical-align: super;
 }
 
-.la-tipp-button-area .la-title {
+.la-title {
   color: #767676;
   font-size: .8rem;
   text-transform: uppercase;
@@ -6215,7 +6230,7 @@ a .la-main-object {
 .ui.horizontal.divider.la-date-devider {
   color: #00000066;
   font-size: 8px;
-  margin: 0.2rem 0;
+  margin: 0.6rem 0;
 }
 /*!
  * # Semantic UI 2.3.1 - Flag
@@ -18295,8 +18310,19 @@ ol.ui.horizontal.list li:before,
   transition: opacity 1s;
 }
 
+.ui.divided.middle.la-flex-list .item .button.disabled {
+  opacity: 0!important;
+  -webkit-transition: opacity 1s;
+  /* For Safari 3.1 to 6.0 */
+  transition: opacity 1s;
+}
+
 .ui.divided.middle.la-flex-list .item:hover .button {
   opacity: 1;
+}
+
+.ui.divided.middle.la-flex-list .item:hover .button.disabled {
+  opacity: 0.3!important;
 }
 
 .ui.divided.middle.la-flex-list .item .button:focus {
@@ -18332,10 +18358,6 @@ ol.ui.horizontal.list li:before,
 
 .ui.item.person-details:hover {
   background: white!important;
-}
-
-.la-border-selected {
-  border: 1px solid #bb1600;
 }
 
 .la-icon-list {
@@ -29125,11 +29147,15 @@ Floated Menu / Item
   background-color: #fffaf5;
 }
 
-.ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
+.ui.table:not(.la-ignore-fixed) thead tr:first-child > th,
+.ui.table:not(.la-ignore-fixed) thead tr:nth-child(2) > th {
   position: -webkit-sticky !important;
   position: sticky !important;
   z-index: 2;
+}
+
+.ui.table thead tr:first-child > th,
+.ui.table thead tr:nth-child(2) > th {
   background-color: #F4F8F9;
 }
 
@@ -29139,40 +29165,6 @@ Floated Menu / Item
 
 .ui.table thead tr:nth-child(2) > th {
   top: 118px;
-}
-
-.ui.table thead tr:first-child > th:last-child {
-  border-radius: 0;
-}
-
-.ui.table thead tr:first-child > th {
-  top: 90px;
-}
-
-.ui.table thead tr:first-child > th,
-.ui.table thead tr:nth-child(2) > th {
-  position: -webkit-sticky !important;
-  position: sticky!important;
-  z-index: 2;
-  background-color: #f4f8f9;
-}
-
-.ui.table.la-table-inCard tr th {
-  background-color: #f4f8f9;
-  padding-top: 1.5em;
-  padding-bottom: 1.5em;
-}
-
-.ui.table tr th {
-  color: gray;
-  font-size: .8rem;
-  text-transform: uppercase;
-}
-
-.ui.table tr td,
-.ui.table tr th {
-  padding-left: .9rem;
-  padding-right: .9rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
@@ -30677,6 +30669,45 @@ a.ui.card:hover,
 
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
+}
+
+.coverageStatements .ui .card {
+  width: 300px;
+}
+
+.coverageStatements .ui .card .content {
+  padding: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.coverageStatements .ui .card .content .la-card-column {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  padding: 1em 1em;
+}
+
+.coverageStatements .ui .card .content .la-card-column:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.coverageStatements .ui .card .content .la-card-column-with-row {
+  padding: 1em 1em;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment

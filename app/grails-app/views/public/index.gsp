@@ -221,7 +221,7 @@
 
                 <div class="ui center aligned segment inverted">
                     <p>
-                        © 2018 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
+                        © 2019 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
                     </p>
                 </div>
             </div>

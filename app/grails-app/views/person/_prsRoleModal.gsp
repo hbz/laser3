@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
 <laser:serviceInjection />
 
 <semui:modal id="${tmplId}" message="${message}">
@@ -23,7 +23,9 @@
                           id="newPrsRoleType" name="newPrsRoleType"
                           from="${roleTypeValues}"
                           optionKey="id"
-                          optionValue="value" />
+                          optionValue="value"
+                          value="${RefdataValue.getByValueAndCategory("General contact person", "Person Function")?.id}"
+                          />
 
             <input type="hidden" name="roleType" value="${roleType}" />
         </div>

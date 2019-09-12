@@ -10,7 +10,18 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
+    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
+    </g:if>
+    <g:if test="${surveyInfo}">
+        <semui:crumb controller="survey" action="surveyConfigsInfo" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig]" text="${surveyConfig?.getConfigNameShort()}"/>
+    </g:if>
+    <semui:crumb message="surveyCostItems.label" class="active"/>
+</semui:breadcrumbs>
 
 <semui:controlButtons>
     <semui:exportDropdown>
@@ -36,16 +47,22 @@
 <semui:messages data="${flash}"/>
 
 <br>
-<g:if test="${surveyConfig?.type == 'Subscription'}">
-    <h2 class="ui icon header"><semui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
-        ${surveyConfig?.subscription?.name}
-    </g:link>
-    </h2>
-</g:if>
-<g:else>
-    <h2 class="ui left aligned">${surveyConfig?.getConfigNameShort()}</h2>
-</g:else>
+
+<h2 class="ui left aligned icon header">
+    <g:if test="${surveyConfig?.type == 'Subscription'}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}">
+            ${surveyConfig?.subscription?.name}
+        </g:link>
+
+    </g:if>
+    <g:else>
+        ${surveyConfig?.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyCostItems.label')}
+</h2>
+
+<br>
 
 <g:if test="${surveyConfigs}">
     <div class="ui grid">
@@ -101,7 +118,7 @@
     <g:render template="/survey/costItemModal"
               model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-        <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+        <g:link onclick="addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])" class="ui icon button right floated trigger-modal">
             <i class="plus icon"></i>
         </g:link>
         </div>
@@ -187,7 +204,7 @@
             <g:render template="/survey/costItemModal"
                       model="[modalID: 'modalCostItemAllSub', setting: 'bulkForAll']"/>--}%
 
-                <g:link onclick="addForAllSurveyCostItem()" class="ui icon button right floated trigger-modal">
+                <g:link onclick="addForAllSurveyCostItem([${(selectedParticipants?.id)?.join(',')}])" class="ui icon button right floated trigger-modal">
                     <i class="plus icon"></i>
                 </g:link>
             </div>
@@ -271,6 +288,9 @@
 
     </g:if>
 
+    <br>
+    <br>
+
     <g:form action="surveyCostItemsFinish" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
@@ -295,7 +315,7 @@
 
 var isClicked = false;
 
-function addForAllSurveyCostItem() {
+function addForAllSurveyCostItem(orgsIDs) {
                         event.preventDefault();
 
                         // prevent 2 Clicks open 2 Modals
@@ -306,9 +326,11 @@ function addForAllSurveyCostItem() {
 
                            $.ajax({
                                 url: "<g:createLink controller='survey' action='addForAllSurveyCostItem'/>",
+                                traditional: true,
                                 data: {
                                     id: "${params.id}",
-                                    surveyConfigID: "${surveyConfig?.id}"
+                                    surveyConfigID: "${surveyConfig?.id}",
+                                    orgsIDs: orgsIDs
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);

@@ -10,7 +10,15 @@ import grails.transaction.Transactional
 @Transactional
 class SurveyService {
 
+    def accessService
+    def contextService
+
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
+
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }
 
         if(surveyInfo.status != RDStore.SURVEY_SURVEY_STARTED)
         {
@@ -33,7 +41,7 @@ class SurveyService {
         def result = [:]
         def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo?.surveyConfigs).sort {it.surveyConfig.configOrder}
 
-        int currentOrder = surveyConfig.configOrder
+        int currentOrder = surveyConfig?.configOrder
         List<Integer> configOrders = SurveyConfig.findAllByIdInList(surveyResults.findAll {it.surveyConfig.type == 'Subscription'}.groupBy {it.surveyConfig.id}.keySet()).configOrder
         int currentOrderIndex = configOrders.indexOf(currentOrder)
 

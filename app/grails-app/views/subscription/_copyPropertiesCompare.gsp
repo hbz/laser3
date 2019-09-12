@@ -1,5 +1,5 @@
 <%@page import="com.k_int.kbplus.Subscription"%>
-<%@page import="static com.k_int.kbplus.SubscriptionController.*"%>
+<%@page import="static com.k_int.kbplus.SubscriptionController.WORKFLOW_END"%>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -15,7 +15,8 @@
                 allSubscriptions_readRights: allSubscriptions_readRights,
                 allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
         <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-                params="[workFlowPart: WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
+                params="[workFlowPart: WORKFLOW_END, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+                method="post" class="ui form newLicence">
 
                 <%
                     List subscriptions = [Subscription.get(sourceSubscriptionId)]

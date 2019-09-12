@@ -42,12 +42,12 @@
                     </td>
                     <td style="text-align:center">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
-                            <span class="ui circular label ${info[2]}"
+                            <span class="ui circular label la-popup-tooltip la-delay ${info[2]}"
                                 <g:if test="${info[2] == 'red'}">
-                                    data-tooltip="${message(code:'subscription.delete.blocker')}"
+                                    data-content="${message(code:'subscription.delete.blocker')}"
                                 </g:if>
                                 <g:if test="${info[2] == 'yellow'}">
-                                    data-tooltip="${message(code:'subscription.existingCostItems.warning')}"
+                                    data-content="${message(code:'subscription.existingCostItems.warning')}"
                                 </g:if>
                             >${info[1].size()}</span>
                         </g:if>

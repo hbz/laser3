@@ -9,6 +9,7 @@ interface TemplateSupport {
     static CALCULATED_TYPE_ADMINISTRATIVE   = 'Administrative'
     static CALCULATED_TYPE_PARTICIPATION    = 'Participation'
     static CALCULATED_TYPE_UNKOWN           = 'Unknown'
+    static CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE = 'Participation as Collective'
 
     boolean isTemplate()
 

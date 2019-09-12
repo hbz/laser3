@@ -1004,6 +1004,7 @@ from Subscription as s where
 
                             Task newTask = new Task()
                             InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.systemCreateDate = new Date()
                             newTask.license = licenseInstance
                             newTask.save(flush:true)
                         }

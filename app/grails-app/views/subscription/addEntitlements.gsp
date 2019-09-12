@@ -141,7 +141,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         </div>
         <div class="field"></div>
     </div>
-    <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
             <th rowspan="3" style="vertical-align:middle;">
@@ -224,7 +224,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                    href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
                    target="_blank"><i class="share square icon"></i></a>
             </g:if>
-
+            <br>
             <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
                 <g:if test="${id.identifier.ns.ns != 'originEditUrl'}">
                     <span class="ui small teal image label">
@@ -331,19 +331,19 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             </td>
             <g:if test="${uploadPriceInfo}">
                 <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.listPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.listPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.listPriceCurrency}"/>
+                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.listPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.listCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.listCurrency}"/>
                 </td>
                 <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localPriceCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localPriceCurrency}"/>
+                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
                 </td>
                 <td>
                     <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
                 </td>
             </g:if>
             <td>
-                <g:link class="ui icon positive button" action="processAddEntitlements"
+                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
-                        data-tooltip="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                     <i class="plus icon"></i>
                 </g:link>
             </td>

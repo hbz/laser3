@@ -64,7 +64,7 @@
                         ${org.sortname}
 
                         <g:if test="${org.status?.value == 'Deleted'}">
-                            <span data-tooltip="Diese Organisation wurde as 'gelöscht' markiert." data-position="top left">
+                            <span  class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde as 'gelöscht' markiert." data-position="top left">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
@@ -89,7 +89,7 @@
                                         RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
                                 )}" var="email">
                                     <i class="ui icon envelope outline"></i>
-                                    <span data-position="right center" data-tooltip="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
+                                    <span data-position="right center" data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
                                         <a href="mailto:${email?.content}" >${email?.content}</a>
                                     </span><br>
                                 </g:each>
@@ -190,21 +190,21 @@
 
                     <td class="x">
                         <g:if test="${org.hasPerm('org_consortium')}">
-                            <button type="button" class="ui icon button"
+                            <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                     data-gascoTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
                                     data-semui="modal" data-href="#gascoEntryModal"
-                                    data-tooltip="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
                         </g:if>
 
-                        <button type="button" class="ui icon button"
+                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                 data-ctTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
                                 data-semui="modal" data-href="#customerTypeModal"
-                                data-tooltip="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
+                                data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
-                        <button type="button" class="ui icon button"
+                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                 data-alTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
                                 data-semui="modal" data-href="#apiLevelModal"
-                                data-tooltip="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
+                                data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
                     </td>
                 </tr>
 
