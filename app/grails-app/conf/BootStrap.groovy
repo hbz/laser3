@@ -424,7 +424,7 @@ class BootStrap {
                             log.debug("  -> ${fileName} : " + validate.list()?.get(0))
                         }
                         catch(Exception e) {
-                            log.error(e)
+                            log.error("  -> ${fileName} : " + e)
                         }
                     }
                 }
