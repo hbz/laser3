@@ -195,7 +195,11 @@ WHERE p.prs_is_public = true
   and pr isnull;
 -- END ERMS-1666 --
 
+--- 2019-09-12
+--- Update and delete SurveyProperty
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
 
-ALTER TABLE task ADD tsk_system_create_date timestamp;
-UPDATE task SET tsk_system_create_date = tsk_create_date where task.tsk_system_create_date isnull;
-ALTER TABLE task ALTER COLUMN tsk_system_create_date SET NOT NULL;
+DELETE FROM survey_property where surpro_name = 'Continue to license';
+DELETE FROM survey_property where surpro_name = 'Teilnahme';

@@ -441,6 +441,11 @@ class FilterService {
             query << "(surResult.finishDate is not null)"
         }
 
+        if(params.tab == "notFinish"){
+            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.finishDate is null)"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
+        }
+
         if(params.consortiaOrg) {
             query << "surResult.owner = :owner"
             queryParams << [owner: params.consortiaOrg]
