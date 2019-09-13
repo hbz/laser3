@@ -318,7 +318,13 @@ class DeletionService {
 
                     // issue entitlements
                     // sub.issueEntitlements.clear()
-                    ies.each { tmp -> tmp.delete() }
+                    ies.each { tmp ->
+
+                        tmp.coverages?.each{ coverage ->
+                            coverage.delete()
+                        }
+                        tmp.delete()
+                    }
 
                     // org access point link
                     sub.oapl.clear()

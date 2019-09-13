@@ -1,31 +1,33 @@
 <%@ page import="com.k_int.kbplus.CostItem; com.k_int.kbplus.Person; de.laser.helper.RDStore; de.laser.interfaces.TemplateSupport" %>
-<laser:serviceInjection />
+<laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.surveys.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.surveys.label')}</title>
 </head>
+
 <body>
 
-<g:render template="breadcrumb" model="${[ params:params ]}"/>
+<g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:render template="actions" />
+    <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerIcon />
-<semui:xEditable owner="${subscriptionInstance}" field="name" />
+<h1 class="ui icon header"><semui:headerIcon/>
+<semui:xEditable owner="${subscriptionInstance}" field="name"/>
 <semui:totalNumber total="${surveys.size() ?: 0}"/>
 </h1>
-<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveys" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="surveys"
+                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-<g:render template="nav" />
+<g:render template="nav"/>
 
 
-<semui:messages data="${flash}" />
+<semui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
     <table class="ui celled sortable table la-table">
@@ -50,6 +52,7 @@
             <th>${message(code: 'surveyParticipants.label')}</th>
             <th>${message(code: 'surveyCostItems.label')}</th>
             <th>${message(code: 'surveyInfo.finished')}</th>
+            <th class="la-action-info">${message(code: 'default.actions')}</th>
 
         </tr>
 
@@ -176,11 +179,13 @@
                         <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
-                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" :""} label">
+                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
-                                    <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
-                                                    maxFractionDigits="2"/>%
+                                    <g:formatNumber
+                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
+                                            minFractionDigits="2"
+                                            maxFractionDigits="2"/>%
                                 </g:if>
                                 <g:else>
                                     0%
@@ -188,6 +193,16 @@
                             </div>
                         </g:link>
                     </g:if>
+                </td>
+                <td>
+                    <span class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                        <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+                                params="[surveyConfigID: surveyConfig?.id]"
+                                class="ui button icon">
+                            <i class="write icon"></i>
+                        </g:link>
+                    </span>
                 </td>
             </tr>
 

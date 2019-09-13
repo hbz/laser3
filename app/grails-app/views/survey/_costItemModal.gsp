@@ -36,11 +36,8 @@
             <g:if test="${costItem && (mode && mode.equals("edit"))}">
                 <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}"/>
             </g:if>
-            <g:else>
                 <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
-            </g:else>
         </g:else>
-
 
         <div class="fields">
             <div class="nine wide field">
