@@ -1539,27 +1539,27 @@ class BootStrap {
         def requiredProps = [
                 [
                         name: [en: "Participation", de: "Teilnahme"],
-                        explain: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
+                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
                         type: OT.Rdv, cat:'YN'
                 ],
                 [
                         name: [en: "Access choice", de: "Zugangswahl"],
-                        explain: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
                         type: OT.String
                 ],
                 [
                         name: [en: "Category A-F", de: "Kategorie A-F"],
-                        explain: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
                         type: OT.String
                 ],
                 [
                         name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
-                        explain: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
                         type: OT.Rdv, cat:'YN'
                 ],
                 [
                         name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
-                        explain: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
                         type: OT.Rdv, cat:'YN'
                 ]
 
@@ -1687,8 +1687,8 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
-            if (default_prop.explain) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.explain)
+            if (default_prop.expl) {
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
             }
 
             if (default_prop.introduction) {
