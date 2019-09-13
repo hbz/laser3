@@ -326,6 +326,35 @@
     </a><br><br>
 
 </section>
+<%@ page import="java.util.Locale;java.util.List" %>
+<%
+    Locale localeDe = new Locale.Builder().setLanguage("de").build()
+    Locale localeEn = new Locale.Builder().setLanguage("en").build()
+
+    List<String> translations = [
+            'statusbar.hideButtons.tooltip',
+            'statusbar.showButtons.tooltip'
+    ]
+
+    println """
+dict = {
+    get: function (key, lang) {
+        return dict[key][lang]
+    },
+    'test': {
+        de: 'öö',
+        en: 'Translation'
+    }, """
+
+    translations.eachWithIndex { it, index ->
+        println "    '${it}' : {"
+        println "        de: '" + message(code: "${it}", locale: localeDe) + "',"
+        println "        en: '" + message(code: "${it}", locale: localeEn) + "' "
+        println (index < translations.size() - 1 ? "    }, " : "    }")
+    }
+
+    println "} "
+%>
 
 
 </body>

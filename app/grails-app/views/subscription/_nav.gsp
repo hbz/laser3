@@ -11,7 +11,7 @@
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${showConsortiaFunctions || showCollectiveFunctions}">
+    <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
         <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
 
         <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscription(subscriptionInstance)}">
