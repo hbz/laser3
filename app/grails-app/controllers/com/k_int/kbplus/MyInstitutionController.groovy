@@ -4025,6 +4025,10 @@ AND EXISTS (
         result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and surResult.surveyConfig.surveyInfo.status = :status",
+                [status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
 
         return result
     }

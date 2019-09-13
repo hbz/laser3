@@ -397,6 +397,26 @@
                     </td>
                 </g:if>
                 <td class="x">
+                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}">
+
+                        <g:link controller="subscription" action="surveys" id="${s?.id}"
+                                class="ui icon button">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                            <i class="ui icon envelope open"></i>
+                        </span>
+                        </g:link>
+                    </g:if>
+
+                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}">
+                        <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
+                                class="ui icon button">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                            <i class="ui icon envelope open"></i>
+                        </span>
+                        </g:link>
+                    </g:if>
                     <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
                         <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
