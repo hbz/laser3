@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION GENFUNC_FILTER_MATCHER(content TEXT, test TEXT)
     AS $$
 
 DECLARE
-    VERSION CONSTANT NUMERIC = 2;
+    VERSION CONSTANT NUMERIC = 3;
 
     result_phrases BOOLEAN = false;
     result_terms BOOLEAN = false;
@@ -44,7 +44,7 @@ BEGIN
                 IF length(trim(char_phrase)) > 0 THEN
                     RAISE NOTICE 'char_phrase: [%]',  char_phrase;
 
-                    SELECT TRUE into tmp_phrases WHERE content LIKE '%'||char_phrase||'%';
+                    SELECT TRUE into tmp_phrases WHERE content ILIKE '%'||char_phrase||'%';
                     result_phrases = bool_or(result_phrases or tmp_phrases);
                 END IF;
             END LOOP;
