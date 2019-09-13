@@ -684,6 +684,9 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
+          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.equalsIgnoreCase('removeValue_administrativeSubscription')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
           // default ..
           else {
               if (it instanceof AbstractI10nTranslatable) {
