@@ -1559,39 +1559,66 @@ class SurveyController {
             newSurveyResult.participant = it?.participant
             newSurveyResult.resultOfParticipation = it
 
-            if (result.multiYearTermTwoSurvey) {
-
-                newSurveyResult.newSubPeriodTwoStartDate = null
-                newSurveyResult.newSubPeriodTwoEndDate = null
-
-                if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                    use(TimeCategory) {
-                        newSurveyResult.newSubPeriodTwoStartDate = result.parentSuccessorSubscription?.startDate ? (result.parentSuccessorSubscription?.startDate) : null
-                        newSurveyResult.newSubPeriodTwoEndDate = result.parentSuccessorSubscription?.endDate ? (result.parentSuccessorSubscription?.endDate + 2.year) : null
-                    }
-                }
-
-            }
-            if (result.multiYearTermThreeSurvey) {
-                newSurveyResult.newSubPeriodThreeStartDate = null
-                newSurveyResult.newSubPeriodThreeEndDate = null
-
-                if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                    use(TimeCategory) {
-                        newSurveyResult.newSubPeriodThreeEndDate = parentSuccessorSubscription?.startDate ? (parentSuccessorSubscription?.startDate) : null
-                        newSurveyResult.newSubPeriodThreeEndDate = parentSuccessorSubscription?.endDate ? (parentSuccessorSubscription?.endDate + 3.year) : null
-                    }
-                }
-            }
-
             newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
                 it?.type?.getI10n('name')
             }
 
             if (it?.participant?.id in selecetedParticipantIDs) {
                 newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+
+                if (result.multiYearTermTwoSurvey) {
+
+                    newSurveyResult.newSubPeriodTwoStartDate = null
+                    newSurveyResult.newSubPeriodTwoEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
+                        }
+                    }
+
+                }
+                if (result.multiYearTermThreeSurvey) {
+                    newSurveyResult.newSubPeriodThreeStartDate = null
+                    newSurveyResult.newSubPeriodThreeEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 4.year) : null
+                        }
+                    }
+                }
+
                 result.orgsContinuetoSubscription << newSurveyResult
             } else {
+
+                if (result.multiYearTermTwoSurvey) {
+
+                    newSurveyResult.newSubPeriodTwoStartDate = null
+                    newSurveyResult.newSubPeriodTwoEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
+                        }
+                    }
+
+                }
+                if (result.multiYearTermThreeSurvey) {
+                    newSurveyResult.newSubPeriodThreeStartDate = null
+                    newSurveyResult.newSubPeriodThreeEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 4.year) : null
+                        }
+                    }
+                }
+
                 result.newOrgsContinuetoSubscription << newSurveyResult
             }
 
@@ -1619,28 +1646,34 @@ class SurveyController {
         }
 
         //MultiYearTerm Subs
-        def sumParticipantWithSub = result.orgsContinuetoSubscription?.groupBy {
+        def sumParticipantWithSub = (result.orgsContinuetoSubscription?.groupBy {
             it?.participant.id
-        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size()
+        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size() + result.orgsWithMultiYearTermSub?.size())
 
-        if (sumParticipantWithSub < result.orgsWithMultiYearTermSub?.size()) {
+        if (sumParticipantWithSub < result.parentSubChilds?.size()) {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
+            def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
-                if (surveyResult?.participant in selecetedParticipantIDs) {
-                    def subChild = result.parentSubscription?.getDerivedSubscriptionBySubscribers(surveyResult?.participant)
+                if (surveyResult?.participant?.id in selecetedParticipantIDs && surveyResult?.sub) {
 
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (subChild?.customProperties?.find {
+                        if (surveyResult?.sub?.customProperties?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-                            println(subChild)
-                            result.orgsWithMultiYearTermSub << subChild
-                            return
+
+                            result.orgsWithMultiYearTermSub << surveyResult?.sub
+                            removeSurveyResultOfOrg << surveyResult
                         }
                     }
                 }
             }
+            removeSurveyResultOfOrg?.each{ it
+                result.orgsWithoutResult?.remove(it)
+            }
+
+            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers()[0]?.sortname}
+
         }
 
 

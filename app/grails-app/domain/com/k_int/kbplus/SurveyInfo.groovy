@@ -128,4 +128,12 @@ class SurveyInfo {
         return false
     }
 
+    boolean isCompletedforOwner() {
+        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }else{
+            return false
+        }
+    }
 }
