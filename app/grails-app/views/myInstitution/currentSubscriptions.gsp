@@ -399,9 +399,9 @@
                 <td class="x">
 
                     <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}" />
-                    <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())}" />
+                    <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}" />
 
-                    <g:if test="${surveysSub && institution?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                    <g:if test="${surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) && institution?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
 
                         <g:link controller="subscription" action="surveys" id="${s?.id}"
                                 class="ui icon button">
