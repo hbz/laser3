@@ -601,7 +601,7 @@ class AdminController extends AbstractDebugController {
       List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
         @Override
         boolean accept(File dir, String name) {
-          return name.matches(grailsApplication.config.orgDumpFileNamePattern)
+          return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
         }
       })
       if(dumpFiles.size() > 0) {
@@ -629,11 +629,11 @@ class AdminController extends AbstractDebugController {
             orgNode.globalUID == dbOrg.globalUID
           }
           if(correspOrg) {
-            if(sdf.parse(correspOrg.lastUpdated.text()) > lastDumpDate) {
+            if(dbOrg.lastUpdated > lastDumpDate) {
               newOrgData << dbOrg
             }
           }
-          else if(dbOrg.dateCreated > lastDumpDate) {
+          else if(dbOrg.lastUpdated > lastDumpDate) {
             newOrgData << dbOrg
           }
         }
@@ -642,11 +642,11 @@ class AdminController extends AbstractDebugController {
             userNode.username == dbUser.username
           }
           if(correspUser) {
-            if(correspUser.lastUpdated.text() && sdf.parse(correspUser.lastUpdated.text()) > lastDumpDate) {
+            if(dbUser.lastUpdated > lastDumpDate) {
               newUserData << dbUser
             }
           }
-          else if(dbUser.dateCreated > lastDumpDate) {
+          else if(dbUser.lastUpdated > lastDumpDate) {
             newUserData << dbUser
           }
         }
@@ -1020,7 +1020,7 @@ class AdminController extends AbstractDebugController {
     List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
       @Override
       boolean accept(File dir, String name) {
-        return name.matches(grailsApplication.config.orgDumpFileNamePattern)
+        return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
       }
     })
     if(dumpFiles.size() > 0) {
@@ -1241,16 +1241,6 @@ class AdminController extends AbstractDebugController {
     session.flush()
     session.clear()
     propertyInstanceMap.get().clear()
-  }
-
-    @Secured(['ROLE_ADMIN'])
-  def financeImport() {
-    def result = [:];
-    if (request.method == 'POST'){
-      def input_stream = request.getFile("tsvfile")?.inputStream
-      //result.loaderResult = tsvSuperlifterService.load(input_stream,grailsApplication.config.financialImportTSVLoaderMappings,params.dryRun=='Y'?true:false)
-    }
-    result
   }
 
     @Secured(['ROLE_ADMIN'])
