@@ -1,5 +1,4 @@
 <div class="ui grid">
-  <div class="sixteen wide column">
     <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
     <g:link controller="issueEntitlement" id="${ie.id}"
             action="show"><strong>${ie.tipp?.title.title}</strong>
@@ -119,7 +118,5 @@
         </g:if>
       </g:each>
     </div>
-  </div>
-
 </div>
 
