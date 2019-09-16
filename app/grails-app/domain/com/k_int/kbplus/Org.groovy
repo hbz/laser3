@@ -676,13 +676,15 @@ class Org
 
     // copied from AccessService
     // private boolean checkOrgPerm(String[] orgPerms) {}
-    boolean hasPerm(String perm) {
+    boolean hasPerm(String perms) {
         boolean check = false
 
-        if (perm) {
+        if (perms) {
             def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                check = PermGrant.findByPermAndRole(Perm.findByCode(perm?.toLowerCase()?.trim()), (Role) oss.getValue())
+                perms.split(',').each { perm ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
+                }
             }
         }
         else {
