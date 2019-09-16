@@ -1,6 +1,12 @@
+0.20.4
+
+- hotfix: wrong survey icons by current subscriptions
+- hotfix: cost item elements not selectable for own costs
+- hotfix: identifiers now displayed again on organisation profile
+
 0.20.3
 
-- TODO
+- hotfix: change the permisson for surveys
 
 0.20.2
 
