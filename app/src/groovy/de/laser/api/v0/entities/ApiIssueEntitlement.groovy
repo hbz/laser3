@@ -77,21 +77,21 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.globalUID        = ie.globalUID
-        result.accessStartDate  = ie.accessStartDate
-        result.accessEndDate    = ie.accessEndDate
-        result.startDate        = ie.startDate
-        result.startVolume      = ie.startVolume
-        result.startIssue       = ie.startIssue
-        result.endDate          = ie.endDate
-        result.endVolume        = ie.endVolume
-        result.endIssue         = ie.endIssue
-        result.embargo          = ie.embargo
-        result.coverageDepth    = ie.coverageDepth
-        result.coverageNote     = ie.coverageNote
-        result.ieReason         = ie.ieReason
-        result.coreStatusStart  = ie.coreStatusStart
-        result.coreStatusEnd    = ie.coreStatusEnd
+        result.globalUID        = ie?.globalUID
+        result.accessStartDate  = ie?.accessStartDate
+        result.accessEndDate    = ie?.accessEndDate
+        result.startDate        = ie?.startDate
+        result.startVolume      = ie?.startVolume
+        result.startIssue       = ie?.startIssue
+        result.endDate          = ie?.endDate
+        result.endVolume        = ie?.endVolume
+        result.endIssue         = ie?.endIssue
+        result.embargo          = ie?.embargo
+        result.coverageDepth    = ie?.coverageDepth
+        result.coverageNote     = ie?.coverageNote
+        result.ieReason         = ie?.ieReason
+        result.coreStatusStart  = ie?.coreStatusStart
+        result.coreStatusEnd    = ie?.coreStatusEnd
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
