@@ -379,10 +379,16 @@
                           <div class="item">
                               <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}"></i>
                               <div class="content">
-                                  <g:link controller="platform" action="show"
+                                <g:if test="${t?.platform.name}">
+                                    <g:link controller="platform" action="show"
                                           id="${t?.platform.id}">
                                       ${t?.platform.name}
-                                  </g:link>
+                                    </g:link>
+                                    <g:else>
+                                        ${message(code: 'default.unknown')}
+                                    </g:else>
+                                </g:if>
+
                               </div>
                           </div>
                       </g:if>
