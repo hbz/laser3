@@ -49,7 +49,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<g:if test="${!departmentalView}">
+<g:if test="${departmentalView != true}">
     <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
 </g:if>
 
@@ -69,7 +69,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                        <g:if test="${!departmentalView}">
+                        <g:if test="${departmentalView != true}">
                             <dl>
                                 <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
                                 <dd>
@@ -77,18 +77,20 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                                 </dd>
                             </dl>
                         </g:if>
-                        <dl>
-                            <dt>
-                                <g:message code="org.sortname.label" default="Sortname"/>
-                                <g:if test="${!departmentalView}">
-                                    <br>
-                                    <g:message code="org.sortname.onlyForLibraries.label"/>
-                                </g:if>
-                            </dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="sortname"/>
-                            </dd>
-                        </dl>
+                        <g:if test="${!(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.sortname.label" default="Sortname"/>
+                                    <g:if test="${departmentalView != true}">
+                                        <br>
+                                        <g:message code="org.sortname.onlyForLibraries.label"/>
+                                    </g:if>
+                                </dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="sortname"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </g:if>
                 </div>
             </div><!-- .card -->
@@ -120,7 +122,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
             </div><!-- .card -->
 
             <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) --%>
-            <g:if test="${!departmentalView}">
+            <g:if test="${departmentalView != true}">
                 <div class="ui card">
                     <div class="content">
                         <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -251,7 +253,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div>
             </g:if>
 
-            <g:if test="${orgInstance.hasPerm("ORG_INST")}">
+            <g:if test="${departmentalView != true && !(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
                     <div class="content">
                             <dl>

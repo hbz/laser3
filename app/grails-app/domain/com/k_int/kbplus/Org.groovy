@@ -642,10 +642,10 @@ class Org
         if ( ! found ) {
             value = value?.trim()
             ns = ns?.trim()
-            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save(flush:true);
-            def id = new Identifier(ns:namespace, value:value).save(flush:true);
-            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}");
-            new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
+            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
+            def id = new Identifier(ns:namespace, value:value).save()
+            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}")
+            new IdentifierOccurrence(identifier: id, org: this).save()
         }
     }
 
