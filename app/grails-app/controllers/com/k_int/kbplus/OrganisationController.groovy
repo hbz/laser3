@@ -16,6 +16,8 @@ import static de.laser.helper.RDStore.*
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+import static de.laser.helper.RDStore.COMBO_TYPE_DEPARTMENT
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController extends AbstractDebugController {
 
@@ -557,7 +559,7 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(result.orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM")){
+        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
 
             def foundIsil = false
             def foundWibid = false
@@ -580,19 +582,15 @@ class OrganisationController extends AbstractDebugController {
 
             if(!foundIsil) {
                 result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-
-
             }
             if(!foundWibid) {
                 result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-
-
             }
             if(!foundEZB) {
                 result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-
-
             }
+            if(!foundIsil || !foundWibid || !foundEZB)
+                result.orgInstance.refresh()
         }
 
 
@@ -969,11 +967,10 @@ class OrganisationController extends AbstractDebugController {
             if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
                 //restrictions further concern only single users, not consortia
                 if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
-                    if(OrgSettings.get(result.orgInstance,OrgSettings.KEYS.CUSTOMER_TYPE)) {
-                        if(OrgSettings.get(result.orgInstance,OrgSettings.KEYS.CUSTOMER_TYPE).getValue() in ["ORG_INST","ORG_INST_COLLECTIVE"])
-                            return null
+                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
+                        return null
                     }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT)) {
                         return null
                     }
                 }
