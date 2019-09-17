@@ -199,7 +199,7 @@
                                 <semui:xEditable owner="${result}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${result.value}">
+                                <g:if test="${result?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
@@ -291,7 +291,7 @@
                                 <semui:xEditable owner="${result}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${result.value}">
+                                <g:if test="${result?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>

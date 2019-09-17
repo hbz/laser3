@@ -1762,6 +1762,7 @@ class SurveyController {
             def sub_status = null
             def old_subOID = null
             def new_subname = null
+            def manualCancellationDate = null
             if (isCopyAuditOn) {
                 use(TimeCategory) {
                     sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
@@ -1778,11 +1779,14 @@ class SurveyController {
                 new_subname = params.subscription.name
             }
 
+            use(TimeCategory) {
+                manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
+            }
             def newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null,
+                    manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
@@ -2743,9 +2747,9 @@ class SurveyController {
 
     private def exportRenewalResult(Map renewalResult) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
-        List titles = [g.message(code: 'org.name.label'),
+        List titles = [g.message(code: 'org.sortname.label'),
+                       g.message(code: 'org.name.label'),
 
-                       g.message(code: 'org.sortname.label'),
                        renewalResult.participationProperty?.getI10n('name'),
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
         ]
@@ -2757,7 +2761,9 @@ class SurveyController {
             titles << surveyProperty?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalwithSurvey.costItem.label')
+        titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
+        titles << g.message(code: 'renewalwithSurvey.costAfterTax')
+        titles << g.message(code: 'renewalwithSurvey.costTax')
 
         List renewalData = []
 
@@ -2766,8 +2772,8 @@ class SurveyController {
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
@@ -2799,10 +2805,10 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
 
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
 
             renewalData.add(row)
         }
@@ -2818,8 +2824,9 @@ class SurveyController {
 
             sub.getAllSubscribers().each{ subscriberOrg ->
 
-                row.add([field: subscriberOrg?.name ?: '', style: null])
                 row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+
                 row.add([field: '', style: null])
 
                 row.add([field: '', style: null])
@@ -2845,8 +2852,9 @@ class SurveyController {
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
+
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
@@ -2874,10 +2882,9 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
-
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
 
             renewalData.add(row)
         }
@@ -2891,8 +2898,9 @@ class SurveyController {
         renewalResult.orgsWithTermination.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
+
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])

@@ -14,18 +14,14 @@
     <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
         <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
 
-        <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscription(subscriptionInstance)}">
             <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveysConsortia" params="${[id:params.id]}" message="subscription.details.surveys.label" />
-        </g:if>
-
-
 
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
         </sec:ifAnyGranted>
     </g:if>
 
-    <g:if test="${com.k_int.kbplus.SurveyConfig.findAllBySubscription(subscriptionInstance?.instanceOf)}">
+    <g:if test="${institution?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 

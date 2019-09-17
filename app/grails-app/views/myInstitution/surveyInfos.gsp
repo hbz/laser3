@@ -320,7 +320,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                 <semui:xEditable owner="${config.value[0]}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${config.value[0].value}">
+                                <g:if test="${config.value[0]?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
