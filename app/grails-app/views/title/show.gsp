@@ -384,11 +384,10 @@
                                           id="${t?.platform.id}">
                                       ${t?.platform.name}
                                     </g:link>
-                                    <g:else>
-                                        ${message(code: 'default.unknown')}
-                                    </g:else>
                                 </g:if>
-
+                                <g:else>
+                                    ${message(code: 'default.unknown')}
+                                </g:else>
                               </div>
                           </div>
                       </g:if>
@@ -396,7 +395,6 @@
                           <div class="la-title">${message(code: 'default.details.label')}</div>
                           <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                   data-content="${message(code: 'laser')}"
-
                                   target="_blank"
                                   controller="tipp" action="show"
                                   id="${t.id}">

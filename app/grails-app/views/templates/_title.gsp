@@ -65,10 +65,15 @@
     <div class="item">
       <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code: 'tipp.platform', default: 'Platform')}"></i>
       <div class="content">
-        <g:link controller="platform" action="show"
-                id="${item.tipp?.platform.id}">
-          ${item.tipp?.platform.name}
-        </g:link>
+        <g:if test="${item.tipp?.platform.name}">
+          <g:link controller="platform" action="show"
+                  id="${item.tipp?.platform.id}">
+            ${item.tipp?.platform.name}
+          </g:link>
+        </g:if>
+        <g:else>
+          ${message(code: 'default.unknown')}
+        </g:else>
       </div>
     </div>
   </g:if>
