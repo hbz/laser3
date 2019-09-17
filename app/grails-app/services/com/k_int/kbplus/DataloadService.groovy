@@ -8,6 +8,7 @@ import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
+import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.client.Client
 import org.hibernate.ScrollMode
 
@@ -344,12 +345,7 @@ class DataloadService {
 
             def recid = site.globalUID.toString()
 
-            def future = esclient.indexAsync {
-                index es_index
-                type site.class.name
-                id recid
-                source result
-            }
+            def future = esclient.prepareIndex(es_index,site.class.name,recid).setSource(result)
 
         }
     }
@@ -411,12 +407,7 @@ class DataloadService {
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
 
-          future = esclient.index {
-              index es_index
-              type domain.name
-              id recid
-              source idx_record
-          }.actionGet()
+          future =  esclient.prepareIndex(es_index,domain.name,recid).setSource(idx_record).get()
 
 //        if ( idx_record?.status?.toLowerCase() == 'deleted' ) {
 //            future = esclient.delete {
@@ -776,15 +767,11 @@ class DataloadService {
         }
         def query_str = "rectype: '${rectype}'"
 
+        def indices = grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
+
         Client esclient = ESWrapperService.getClient()
-            def search = esclient.search {
-                indices grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX
-                source {
-                    query {
-                        query_string(query: query_str)
-                    }
-                }
-            }.actionGet()
+
+        def search = esclient.prepareSearch(indices).setQuery(QueryBuilders.queryStringQuery(query_str)).get()
 
             def resultsTotal =  search ?search.hits.totalHits: 0
 
