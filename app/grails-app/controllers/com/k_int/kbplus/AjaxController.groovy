@@ -22,6 +22,8 @@ import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -848,7 +850,29 @@ class AjaxController {
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)
           ieCandidate = [:]
-      ieCandidate[params.prop] = params.propValue
+      if(params.coverage) {
+          def ieCoverage
+          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
+          Matcher matcher = pattern.matcher(params.prop)
+          if(matcher.find()) {
+              String prop = matcher.group(1)
+              int covStmtKey = Integer.parseInt(matcher.group(2))
+              if(!ieCandidate.coverages){
+                  ieCandidate.coverages = []
+                  ieCoverage = [:]
+              }
+              else
+                  ieCoverage = ieCandidate.coverages[covStmtKey]
+              ieCoverage[prop] = params.propValue
+              ieCandidate.coverages[covStmtKey] = ieCoverage
+          }
+          else {
+              log.error("something wrong with the regex matching ...")
+          }
+      }
+      else {
+          ieCandidate[params.prop] = params.propValue
+      }
       issueEntitlementCandidates.put(params.key,ieCandidate)
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true

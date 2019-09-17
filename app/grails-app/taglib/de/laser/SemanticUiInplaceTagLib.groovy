@@ -61,7 +61,6 @@ class SemanticUiInplaceTagLib {
                 case 'url':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
                 break
-                case 'string':
                 default:
                     data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
                 break

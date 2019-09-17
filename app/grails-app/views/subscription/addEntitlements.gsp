@@ -302,30 +302,30 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                     <g:set var="coverageStatements" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : tipp.coverages}"/>
                     <g:each in="${coverageStatements}" var="covStmt" status="key">
                         <!-- von -->
-                        <semui:datepicker class="ieOverwrite" name="ieStartDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
+                        <semui:datepicker class="ieOverwrite coverage" name="ieStartDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
                         <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br>
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        <input name="ieStartVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <input data-coverage="true" name="ieStartVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.volume')}">
                         <%--${tipp?.startVolume}--%><br>
                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        <input name="ieStartIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <input data-coverage="true" name="ieStartIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.issue')}">
                         <%--${tipp?.startIssue}--%>
                         <semui:dateDevider/>
                         <!-- bis -->
-                        <semui:datepicker class="ieOverwrite" name="ieEndDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
+                        <semui:datepicker class="ieOverwrite coverage" name="ieEndDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
                         <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br>--%>
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        <input name="ieEndVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <input data-coverage="true" name="ieEndVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.volume')}">
                         <%--${tipp?.endVolume}--%><br>
                         <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        <input name="ieEndIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <input data-coverage="true" name="ieEndIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.issue')}">
                         <%--${tipp?.endIssue}--%><br>
                         <%--${tipp.coverageDepth}--%>
-                        <input class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br>
                         <%--${tipp.embargo}--%>
-                        <input class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br>
                         <%--${tipp.coverageNote}--%>
-                        <input class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br>
+                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'tipp.coverageNote')}" value="${covStmt.coverageNote}"><br>
                     </g:each>
                 </g:else>
             </td>
@@ -375,19 +375,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 </g:form>
 
 <r:script language="JavaScript">
-    <% /*
-      $(document).ready(function() {
-        $('span.newipe').editable('<g:createLink controller="ajax" action="genericSetValue" />', {
-          type      : 'textarea',
-          cancel    : '${message(code:'default.button.cancel.label', default:'Cancel')}',
-          submit    : '${message(code:'default.button.ok.label', default:'OK')}',
-          id        : 'elementid',
-          rows      : 3,
-          tooltip   : '${message(code:'default.click_to_edit', default:'Click to edit...')}'
-        });
-      });
-    */ %>
-    $("simpleHiddenRefdata").editable({
+
+     $(document).ready(function() {
+      $("simpleHiddenRefdata").editable({
         url: function(params) {
           var hidden_field_id = $(this).data('hidden-id');
           $("#"+hidden_field_id).val(params.value);
@@ -399,6 +389,11 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
     });
 
+    $(".ieOverwrite td").click(function() {
+        console.log("eee"); //continue here
+        $(".ieOverwrite").trigger("change");
+    });
+
     $(".ieOverwrite").change(function() {
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
@@ -406,9 +401,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 sub: ${subscriptionInstance.id},
                 key: $(this).parents("tr").attr("data-index"),
                 referer: "${actionName}",
-                coverage: $(this).attr("data-coverage") === "true",
-                prop: $(this).attr("name"),
-                propValue: $(this).val()
+                coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
+                prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),
+                propValue: $(this).val() ? $(this).val() : $(this).find("input").val()
             }
         }).done(function(result){
 
@@ -416,6 +411,8 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             console.log("error occurred, consult logs!");
         });
     });
+     });
+
 
     function selectAll() {
       $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
