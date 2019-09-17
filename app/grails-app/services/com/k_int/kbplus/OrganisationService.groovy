@@ -28,8 +28,6 @@ class OrganisationService {
     def messageSource
     def exportService
     def institutionsService
-    def globalSourceSyncService
-    def dataloadService
     def grailsApplication
     List<String> errors = []
 
@@ -61,12 +59,21 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.federalState.label',null,LocaleContextHolder.getLocale()))
             titles.add(messageSource.getMessage('org.country.label',null,LocaleContextHolder.getLocale()))
         }
+        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin','Verantwortlicher Admin')
+        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress','Person Function')
+        titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
         def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
         propList.each {
             titles.add(it.name)
         }
         List orgData = []
+        Map<Org,Map<String,Identifier>> identifiers = [:]
+        List identifierList = Identifier.executeQuery("select i, io.org from IdentifierOccurrence io join Identifier i where io.org in (:orgs) and i.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        identifierList.each { Identifier io, Org o ->
+            //identifiers[o] = [:]
+        }
         switch(format) {
             case "xls":
             case "xlsx":
@@ -90,6 +97,16 @@ class OrganisationService {
                         //country
                         row.add([field: org.country?.getI10n('value') ?: ' ',style: null])
                     }
+                    //get identifiers of namespaces ISIL/isil, WIB-ID, ezb-id
+                    row.add([field: furtherData.isil ?: '', style: null])
+                    row.add([field: furtherData.wib ?: '', style: null])
+                    row.add([field: furtherData.ezb ?: '', style: null])
+                    //General contact
+                    row.add([field: furtherData.generalContact ?: '', style: null])
+                    //Responsible admin
+                    row.add([field: furtherData.responsibleAdmin ?: '', style: null])
+                    //Billing contact
+                    row.add([field: furtherData.billingContact ?: '', style: null])
                     propList.each { pd ->
                         def value = ''
                         org.customProperties.each{ prop ->
@@ -158,6 +175,16 @@ class OrganisationService {
                         //country
                         row.add(org.country?.getI10n('value') ?: ' ')
                     }
+                    //get identifiers of namespaces ISIL/isil, WIB-ID, ezb-id
+                    row.add(furtherData.isil ?: '')
+                    row.add(furtherData.wib ?: '')
+                    row.add(furtherData.ezb ?: '')
+                    //General contact
+                    row.add(furtherData.generalContact ?: '')
+                    //Responsible admin
+                    row.add(furtherData.responsibleAdmin ?: '')
+                    //Billing contact
+                    row.add(furtherData.billingContact ?: '')
                     propList.each { pd ->
                         def value = ''
                         org.customProperties.each{ prop ->

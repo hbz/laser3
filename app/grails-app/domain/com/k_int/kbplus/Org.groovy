@@ -198,13 +198,13 @@ class Org
     // ERMS-1497
     List<Combo> getIncomingCombos() {
         Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
-                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+                [org: this, active: COMBO_STATUS_ACTIVE])
     }
 
     // ERMS-1497
     List<Combo> getOutgoingCombos() {
         Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
-                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+                [org: this, active: COMBO_STATUS_ACTIVE])
     }
     */
 
@@ -486,7 +486,7 @@ class Org
             def consLink = new Combo(fromOrg:result,
                                      toOrg:db_consortium,
                                      status:null,
-                                     type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                                     type: RDStore.COMBO_TYPE_CONSORTIUM
             ).save()
           }
         } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && result && imp_uuid && imp_uuid != result.gokbId){

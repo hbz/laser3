@@ -3008,8 +3008,9 @@ AND EXISTS (
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
+                    List orgs = (List) result.availableOrgs
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgs,tableHeader,true,"csv"))
                     }
                     out.close()
                 }
@@ -3026,7 +3027,6 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
             if (params.selectedOrgs) {
                 log.debug('remove orgs from consortia')
@@ -3042,7 +3042,6 @@ AND EXISTS (
             }
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
                 log.debug('remove orgs from department')
