@@ -31,7 +31,7 @@
     <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
-                comboPerm: "ORG_INST_COLLECTIVE",
+                comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
                 comboAffiliation: "INST_ADM",
                 specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
         ])}">
