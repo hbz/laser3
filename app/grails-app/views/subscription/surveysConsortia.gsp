@@ -209,6 +209,14 @@
         </g:each>
     </table>
 </g:if>
+<g:else>
+
+    <semui:form>
+        <h3>
+            <g:message code="survey.notExist.plural"/>
+        </h3>
+    </semui:form>
+</g:else>
 </body>
 </html>
 
