@@ -214,6 +214,79 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def createIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        def date_restriction = null;
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            date_restriction = sdf.parse(params.validOn)
+        }
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        if (!params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            } else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+
+        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
+        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
+
+        providers.addAll(agencies)
+        List orgIds = providers.unique().collect { it2 -> it2.id }
+
+        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.filterSet = tmpQ[2]
+        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        //,[max: result.max, offset: result.offset]
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+
+        if (params.sort && params.sort.indexOf("§") >= 0) {
+            switch (params.sort) {
+                case "orgRole§provider":
+                    subscriptions.sort { x, y ->
+                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                        a.compareToIgnoreCase b
+                    }
+                    if (params.order.equals("desc"))
+                        subscriptions.reverse(true)
+                    break
+            }
+        }
+        result.num_sub_rows = subscriptions.size()
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def addSubtoSubscriptionSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -229,6 +302,32 @@ class SurveyController {
         result.subscription = Subscription.get(Long.parseLong(params.sub))
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
+        }
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addSubtoIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.pickAndChoose = true
+        if (!result.subscription) {
+            redirect action: 'createIssueEntitlementsSurvey'
         }
 
         result
@@ -302,6 +401,67 @@ class SurveyController {
         }
 
         flash.message = g.message(code: "createSubscriptionSurvey.create.successfull")
+        redirect action: 'show', id: surveyInfo.id
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCreateIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+
+        def surveyInfo = new SurveyInfo(
+                name: params.name,
+                startDate: params.startDate ? sdf.parse(params.startDate) : null,
+                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
+                owner: contextService.getOrg(),
+                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                comment: params.comment ?: null,
+                isSubscriptionSurvey: true
+        )
+
+        if (!(surveyInfo.save(flush: true))) {
+            flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def subscription = Subscription.get(Long.parseLong(params.sub))
+        def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
+        if (!surveyConfig && subscription) {
+            surveyConfig = new SurveyConfig(
+                    subscription: subscription,
+                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    type: 'Subscription',
+                    surveyInfo: surveyInfo,
+                    isSubscriptionSurveyFix: false,
+                    pickAndChoose: true
+
+            )
+
+            surveyConfig.save(flush: true)
+
+            addSubMembers(surveyConfig)
+
+        } else {
+            surveyInfo.delete(flush: true)
+            flash.error = g.message(code: "createIssueEntitlementsSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        flash.message = g.message(code: "createIssueEntitlementsSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 
     }
@@ -1152,6 +1312,33 @@ class SurveyController {
         }
 
         redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def deleteSurveyProperty() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyProperty = SurveyProperty.findByIdAndOwner(params.deleteId, result.institution)
+
+        if (surveyProperty.countUsages()==0 && surveyProperty?.owner?.id == result.institution?.id && surveyProperty.delete())
+        {
+            flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
+        }
+
+        redirect(action: 'allSurveyProperties', id: params.id)
 
     }
 

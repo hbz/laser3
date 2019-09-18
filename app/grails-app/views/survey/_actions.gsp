@@ -7,6 +7,9 @@
             <semui:actionsDropdownItem controller="survey" action="createSubscriptionSurvey"
                                        message="createSubscriptionSurvey.label"/>
 
+            <semui:actionsDropdownItem controller="survey" action="createIssueEntitlementsSurvey"
+                                       message="createIssueEntitlementsSurvey.label"/>
+
         </g:if>
         <g:else>
 

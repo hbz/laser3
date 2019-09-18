@@ -2603,6 +2603,7 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
 
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
