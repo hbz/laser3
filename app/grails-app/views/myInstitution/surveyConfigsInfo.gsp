@@ -489,7 +489,7 @@ ${message(code: 'survey.label')} -
                     ${surveyResult?.type?.getI10n('name')}
 
                     <g:if test="${surveyResult?.type?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${surveyResult?.type?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>

@@ -10,7 +10,7 @@ class SurveyUpdateJob extends AbstractJob {
     def surveyUpdateService
 
     static triggers = {
-        cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 3 * * ?" //Fire at 03:00 every day
+        cron name:'SurveyUpdateJobTrigger', cronExpression: "0 0 23 * * ?" //Fire at 23:00 every day
     }
 
     static configFlags = []

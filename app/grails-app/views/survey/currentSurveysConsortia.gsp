@@ -148,7 +148,7 @@
                             </g:if>
                             <i class="icon chart pie la-list-icon"></i>
                             <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
+                                ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>
                     </td>
