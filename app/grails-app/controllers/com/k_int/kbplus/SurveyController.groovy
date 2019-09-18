@@ -2764,6 +2764,7 @@ class SurveyController {
         titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
         titles << g.message(code: 'renewalwithSurvey.costAfterTax')
         titles << g.message(code: 'renewalwithSurvey.costTax')
+        titles << g.message(code: 'renewalwithSurvey.currency')
 
         List renewalData = []
 
@@ -2809,6 +2810,8 @@ class SurveyController {
             row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ?: "", style: null])
+
 
             renewalData.add(row)
         }
@@ -2834,7 +2837,7 @@ class SurveyController {
                 def period = ""
 
                 period = sub?.startDate ? sdf.format(sub?.startDate) : ""
-                period = sub?.endDate ? period + " - " +sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
             }
@@ -2885,6 +2888,7 @@ class SurveyController {
             row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ?: "", style: null])
 
             renewalData.add(row)
         }
