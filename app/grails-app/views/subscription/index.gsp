@@ -253,7 +253,7 @@
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td class="coverageStatements" data-entitlement="${ie.id}">
+                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"

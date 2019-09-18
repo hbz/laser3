@@ -158,7 +158,7 @@
                 </div>
             </td>
 
-            <td>
+            <td class="la-tableCard">
 
                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
@@ -171,25 +171,40 @@
 
                 </g:if>
                 <g:else>
-                    <g:each in="${tipp.coverages}" var="coverage">
-                        <!-- von -->
-                        <g:formatDate date="${coverage.startDate}" format="${message(code:'default.date.format.notime')}"/><br>
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        ${coverage.startVolume}<br>
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        ${coverage.startIssue}
-                        <semui:dateDevider/>
-                        <!-- bis -->
-                        <g:formatDate date="${coverage.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        ${coverage.endVolume}<br>
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        ${coverage.endIssue}<br>
-                        <g:message code="tipp.coverageDepth"/>: ${coverage.coverageDepth}<br>
-                        <g:message code="tipp.coverageNote"/>: ${coverage.coverageNote}<br>
-                        <g:message code="tipp.embargo"/>: ${coverage.embargo}
-                    </g:each>
+                    <div class="ui cards">
+                        <g:each in="${tipp.coverages}" var="coverage">
+                            <div class="ui card">
+                                <div class="content">
+                                    <div class="la-card-column">
+                                        <!-- von -->
+                                        <g:formatDate date="${coverage.startDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                                        ${coverage.startVolume}<br>
+                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                                        ${coverage.startIssue}
+                                        <semui:dateDevider/>
+                                        <!-- bis -->
+                                        <g:formatDate date="${coverage.endDate}" format="${message(code:'default.date.format.notime')}"/><br>
+                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                                        ${coverage.endVolume}<br>
+                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+                                        ${coverage.endIssue}
+                                    </div>
+                                    <div class="la-card-column-with-row">
+                                        <div class="la-card-row">
+                                            <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br>
+                                            <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br>
+                                            <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:each>
+                    </div>
                 </g:else>
+
+
+
             </td>
             <td>
                 <!-- von -->
