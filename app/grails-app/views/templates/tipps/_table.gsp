@@ -31,34 +31,6 @@
                 <strong><g:link controller="title" action="show"
                                 id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
-                    <div class="item">
-                        <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
-                        <div class="content">
-                            ${tipp?.title?.volume})
-                        </div>
-                    </div>
-                </g:if>
-
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
-                    <div class="item">
-                        <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
-                        <div class="content">
-                            ${tipp?.title?.getEbookFirstAutorOrFirstEditor()}
-                        </div>
-                    </div>
-                </g:if>
-
-                <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                    <div class="item">
-                        <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
-                        <div class="content">
-                            ${tipp?.title?.editionStatement}
-                        </div>
-                    </div>
-                </g:if>
-
                 <g:if test="${tipp.hostPlatformURL}">
                     <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                     <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
@@ -67,6 +39,34 @@
                        target="_blank"><i class="cloud icon"></i></a>
                 </g:if>
                 <br>
+                <div class="la-icon-list">
+                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+                        <div class="item">
+                            <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                            <div class="content">
+                                ${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+                            </div>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                        <div class="item">
+                            <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
+                            <div class="content">
+                                ${tipp?.title?.getEbookFirstAutorOrFirstEditor()}
+                            </div>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                        <div class="item">
+                            <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
+                            <div class="content">
+                                ${tipp?.title?.editionStatement}
+                            </div>
+                        </div>
+                    </g:if>
+                </div>
 
                 <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
                     <g:if test="${id.identifier.ns.ns == 'originEditUrl'}">
@@ -159,16 +159,20 @@
             </td>
 
             <td class="la-tableCard">
-
                 <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                    ${tipp?.title?.dateFirstInPrint}
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                    ${tipp?.title?.dateFirstOnline}
-
+                    <div class="ui card">
+                        <div class="content">
+                            <!-- von -->
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                                            ${tipp?.title?.dateFirstInPrint}
+                            <semui:dateDevider/>
+                            <!-- bis -->
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                               data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                            ${tipp?.title?.dateFirstOnline}
+                        </div>
+                    </div>
                 </g:if>
                 <g:else>
                     <div class="ui cards">

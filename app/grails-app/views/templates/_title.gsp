@@ -1,19 +1,3 @@
-
-
-<g:each in="${item?.tipp?.title?.ids?.sort { t?.identifier?.ns?.ns }}" var="title_id">
-  <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
-    <span class="ui small teal image label">
-      ${title_id.identifier.ns.ns}: <div
-            class="detail">${title_id.identifier.value}</div>
-    </span>
-  </g:if>
-</g:each>
-<br/>
-
-<!--                  ISSN:<strong>${item?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${item?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
-
-
 <div class="la-icon-list">
   <g:if test="${item?.tipp?.title instanceof com.k_int.kbplus.BookInstance && item?.tipp?.title?.volume}">
     <div class="item">
@@ -22,7 +6,6 @@
         ${message(code: 'title.volume.label')} ${item?.tipp?.title?.volume}
       </div>
     </div>
-    (${message(code: 'title.volume.label')} ${item?.tipp?.title?.volume})
   </g:if>
   <g:if test="${item?.tipp?.title instanceof com.k_int.kbplus.BookInstance && (item?.tipp?.title?.firstAuthor || item?.tipp?.title?.firstEditor)}">
     <div class="item">
@@ -41,7 +24,22 @@
       </div>
     </div>
   </g:if>
+</div>
+<g:each in="${item?.tipp?.title?.ids?.sort { t?.identifier?.ns?.ns }}" var="title_id">
+  <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
+    <span class="ui small teal image label">
+      ${title_id.identifier.ns.ns}: <div
+            class="detail">${title_id.identifier.value}</div>
+    </span>
+  </g:if>
+</g:each>
+<br/>
 
+<!--                  ISSN:<strong>${item?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
+                  eISSN:<strong>${item?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
+
+
+<div class="la-icon-list">
   <g:if test="${item.availabilityStatus?.getI10n('value')}">
     <div class="item">
       <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
