@@ -800,6 +800,29 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
+        Sticky Footer
+        see
+        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
+*******************************/
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 100vh;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+main {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
@@ -1265,14 +1288,6 @@ aside.ui.accordion .title:not(.ui) {
 
 .js-gost {
   display: none;
-}
-
-a .la-main-object {
-  color: #183551;
-}
-
-.la-main-object {
-  font-weight: bold;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
@@ -17625,22 +17640,22 @@ ol.ui.list ol li,
 .ui.inverted.list .list > a.item,
 .ui.inverted.list > a.item {
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #2185d0;
+  color: #ffffff;
 }
 
 /* Linking Content */
 
 .ui.inverted.list .item a:not(.ui) {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #2185d0 !important;
+  color: #ffffff !important;
 }
 
 /*-------------------
@@ -20214,6 +20229,14 @@ ol.ui.horizontal.list li:before,
 
 .ui.grey.segment:not(.inverted) {
   border-top: 1px solid #d3dae3 !important;
+}
+
+/***********************************
+        Footer Segment
+***********************************/
+
+.ui.segment.la-footer {
+  padding: 3em 1em;
 }
 /*!
  * # Semantic UI 2.3.1 - Step
