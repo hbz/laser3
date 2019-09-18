@@ -825,14 +825,18 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-          List tipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = (select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub)',[sub:Long.parseLong(params.sub)])
-          tipps.each { idx ->
-              checked[idx] = params.checked == 'true' ? 'checked' : null
-          }
-      }
-      else checked[params.index] = params.checked == 'true' ? 'checked' : null
-      if(cache.put('checked',checked))
-          success.success = true
+		  def newChecked = [:]
+		  checked.eachWithIndex { e, int idx ->
+			  newChecked[e.key] = params.checked == 'true' ? 'checked' : null
+			  cache.put('checked',newChecked)
+		  }
+	  }
+	  else {
+		  checked[params.index] = params.checked == 'true' ? 'checked' : null
+		  if(cache.put('checked',checked))
+			  success.success = true
+	  }
+
       render success as JSON
   }
 

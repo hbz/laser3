@@ -61,13 +61,15 @@
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
-        <div class="four fields">
+        <div class="three fields">
+        %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
                 <label for="search-title"">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
+
                 </label>
 
                 <div class="ui input">
@@ -262,7 +264,7 @@
             </th>
             */ %>
 
-            <g:if test="${params.orgRole == 'Subscriber' && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+            <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
                 <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
             </g:if>
             <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -352,7 +354,7 @@
                 <%--<td>
                     ${s.type?.getI10n('value')}
                 </td>--%>
-                <g:if test="${params.orgRole == 'Subscriber'}">
+                <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective']}">
                     <td>
                         <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
                             ${s.getConsortia()?.name}
@@ -395,6 +397,26 @@
                     </td>
                 </g:if>
                 <td class="x">
+                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}">
+
+                        <g:link controller="subscription" action="surveys" id="${s?.id}"
+                                class="ui icon button">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                            <i class="ui icon envelope open"></i>
+                        </span>
+                        </g:link>
+                    </g:if>
+
+                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}">
+                        <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
+                                class="ui icon button">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                            <i class="ui icon envelope open"></i>
+                        </span>
+                        </g:link>
+                    </g:if>
                     <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
                         <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"

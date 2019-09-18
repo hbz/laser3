@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyEvaluation.label', default: 'Survey Evaluation')}</title>
 </head>
 
 <body>
@@ -25,9 +25,8 @@
 <br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
+${surveyInfo.name}
 </h1>
-
 
 
 <semui:messages data="${flash}"/>
@@ -76,7 +75,8 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <th>${message(code: 'surveyResult.participantComment')}</th>
+                <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
             </tr>
             </thead>
             <g:each in="${config.value}" var="result" status="i">
@@ -143,6 +143,9 @@
 
                         </td>
                     </g:else>
+                    <td>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                    </td>
 
                 </tr>
             </g:each>

@@ -934,11 +934,15 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     def earliest = null
     def latest = null
     boolean open = false
+
+    /*
+    TODO: BUG ERMS-1638
     ies.each { ie ->
       if ( earliest == null ) { earliest = ie.startDate } else { if ( ie.startDate < earliest ) { earliest = ie.startDate } }
       if ( latest == null ) { latest = ie.endDate } else { if ( ie.endDate > latest ) { latest = ie.endDate } }
       if ( ie.endDate == null ) open = true;
     }
+	*/
 
     [
       earliest:earliest?sdf.format(earliest):'',

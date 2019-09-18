@@ -12,13 +12,14 @@ import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DebugAnnotation
 import org.springframework.web.multipart.commons.CommonsMultipartFile
+import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 
-import static de.laser.helper.RDStore.*
-
 class SubscriptionService {
+    def genericOIDService
     def contextService
     def accessService
     def subscriptionsQueryService
@@ -111,6 +112,19 @@ class SubscriptionService {
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 subscription,
                 SUBSCRIPTION_DELETED
+        )
+        validSubChilds = validSubChilds?.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        }
+        validSubChilds
+    }
+
+    List getCurrentValidSubChilds(Subscription subscription) {
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
+                subscription,
+                SUBSCRIPTION_CURRENT
         )
         validSubChilds = validSubChilds?.sort { a, b ->
             def sa = a.getSubscriber()
@@ -256,10 +270,21 @@ class SubscriptionService {
                 } else {
                     def properties = ieToTake.properties
                     properties.globalUID = null
+                    properties.coverages = null
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.subscription = targetSub
-                    save(newIssueEntitlement, flash)
+
+                    if(save(newIssueEntitlement, flash)){
+                        ieToTake.properties.coverages.each{ coverage ->
+
+                            def coverageProperties = coverage.properties
+                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                            save(newIssueEntitlement, flash)
+                        }
+                    }
                 }
             }
         }
@@ -422,6 +447,7 @@ class SubscriptionService {
                 if (task.status != TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
+                    newTask.systemCreateDate = new Date()
                     newTask.subscription = targetSub
                     save(newTask, flash)
                 }
@@ -508,9 +534,10 @@ class SubscriptionService {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean copyProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
         def contextOrg = contextService.getOrg()
         def targetProp
+        boolean doCopyAudit = accessService.checkPerm("ORG_CONSORTIUM") && isRenewSub && isCopyAuditOn
 
         properties?.each { sourceProp ->
             if (sourceProp instanceof CustomProperty) {
@@ -526,15 +553,32 @@ class SubscriptionService {
                 } else {
                     targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
                 }
+                targetProp = sourceProp.copyInto(targetProp)
+                save(targetProp, flash)
+                if (doCopyAudit && targetProp instanceof CustomProperty) {
+                    //copy audit
+                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(SubscriptionCustomProperty.class.name, sourceProp.id)
+                    auditConfigs.each {
+                        AuditConfig ac ->
+                            //All ReferenceFields were copied!
+                            AuditConfig.addConfig(targetProp, ac.referenceField)
+                    }
+                }
+            } else {
+                Object[] args = [sourceProp?.type?.getI10n("name") ?: sourceProp.class.getSimpleName()]
+                flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
             }
-            targetProp = sourceProp.copyInto(targetProp)
-            save(targetProp, flash)
         }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, def flash){
+    boolean deleteProperties(List<AbstractProperty> properties, Subscription targetSub, boolean isRenewSub, boolean isCopyAuditOn, def flash){
+        if (isCopyAuditOn){
+            properties.each { AbstractProperty prop ->
+                AuditConfig.removeAllConfigs(prop)
+            }
+        }
         int anzCP = SubscriptionCustomProperty.executeUpdate("delete from SubscriptionCustomProperty p where p in (:properties)",[properties: properties])
         int anzPP = SubscriptionPrivateProperty.executeUpdate("delete from SubscriptionPrivateProperty p where p in (:properties)",[properties: properties])
     }
@@ -629,8 +673,14 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
             return false
+        }
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
+            {
+                throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
+                return false
         } else {
-            IssueEntitlement new_ie = new IssueEntitlement(status: TIPP_STATUS_CURRENT,
+            IssueEntitlement new_ie = new IssueEntitlement(
+					status: TIPP_STATUS_CURRENT,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
@@ -665,9 +715,9 @@ class SubscriptionService {
                 if(withPriceData) {
                     PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
                             listPrice: issueEntitlementOverwrite.listPrice,
-                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listPriceCurrency,'Currency'),
+                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency,'Currency'),
                             localPrice: issueEntitlementOverwrite.localPrice,
-                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localPriceCurrency,'Currency'),
+                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
                             issueEntitlement: new_ie
                     )
                     if(pi.save())
@@ -687,13 +737,33 @@ class SubscriptionService {
 
     boolean deleteEntitlement(sub, gokbId) {
         IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
-        if(ie == null)
+        if(ie == null) {
             return false
+        }
         else {
             ie.status = TIPP_DELETED
-            if(ie.save())
+            if(ie.save()) {
                 return true
-            else return false
+            }
+            else{
+                return false
+            }
+        }
+    }
+
+    boolean deleteEntitlementbyID(sub, id) {
+        IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
+        if(ie == null) {
+            return false
+        }
+        else {
+            ie.status = TIPP_DELETED
+            if(ie.save()) {
+                return true
+            }
+            else{
+                return false
+            }
         }
     }
 

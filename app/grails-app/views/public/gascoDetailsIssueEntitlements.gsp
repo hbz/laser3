@@ -186,4 +186,16 @@
     </tbody>
 </table>
 --%>
+<style>
+.ui.table thead tr:first-child>th {
+    top: 48px!important;
+}
+</style>
+<sec:ifAnyGranted roles="ROLE_USER">
+    <style>
+    .ui.table thead tr:first-child>th {
+        top: 90px!important;
+    }
+    </style>
+</sec:ifAnyGranted>
 </body>

@@ -20,6 +20,7 @@ class SurveyResult extends AbstractProperty {
 
     String comment
     String participantComment
+    String ownerComment
 
     SurveyProperty type
     SurveyConfig surveyConfig
@@ -35,6 +36,7 @@ class SurveyResult extends AbstractProperty {
         startDate  (nullable:true, blank:false)
         endDate (nullable:true, blank:false)
         participantComment (nullable:true, blank:false)
+        ownerComment (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -63,6 +65,7 @@ class SurveyResult extends AbstractProperty {
 
         comment column: 'surre_comment'
         participantComment column: 'surre_participant_comment'
+        ownerComment column: 'surre_owner_comment'
 
 
     }
@@ -92,6 +95,39 @@ class SurveyResult extends AbstractProperty {
         else if (type?.type == RefdataValue.toString())
         {
             return refValue ? true : false
+        }
+
+    }
+
+    CostItem getCostItem(){
+        return CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant))
+    }
+
+    def getResult()
+    {
+        if(type?.type == Integer.toString())
+        {
+            return intValue.toString()
+        }
+        else if (type?.type == String.toString())
+        {
+            return stringValue
+        }
+        else if (type?.type ==  BigDecimal.toString())
+        {
+            return decValue.toString()
+        }
+        else if (type?.type == Date.toString())
+        {
+            return dateValue.getDateString()
+        }
+        else if (type?.type == URL.toString())
+        {
+            return urlValue.toString()
+        }
+        else if (type?.type == RefdataValue.toString())
+        {
+            return refValue ? refValue?.getI10n('value') : ""
         }
 
     }

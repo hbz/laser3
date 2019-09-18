@@ -7,7 +7,8 @@
 			allSubscriptions_readRights: allSubscriptions_readRights,
 			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]" method="post" class="ui form newLicence">
+			params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId, isRenewSub: isRenewSub]"
+			method="post" class="ui form newLicence">
 
 		<table class="ui celled table">
 			<tbody>
@@ -18,7 +19,7 @@
 								<thead>
 									<tr>
 										<th colspan="5">
-											<g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+											<g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
 										</th>
 									</tr>
 									<tr>
@@ -55,7 +56,7 @@
 								<thead>
 								<tr>
 									<th colspan="4">
-										<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+										<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
 									</th>
 								</tr>
 								<tr>

@@ -93,10 +93,22 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>2.1.2</version>
-            <scope>compile</scope>
+            <version>5.6.16</version>
+            <scope>runtime</scope>
             
             
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>5.6.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.11.1</version>
         </dependency>
         
         <dependency>
@@ -211,15 +223,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.4.1212.jre6</version>
-            <scope>runtime</scope>
-            
-            
-        </dependency>
-        
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-groovy</artifactId>
-            <version>2.1.2</version>
             <scope>runtime</scope>
             
             

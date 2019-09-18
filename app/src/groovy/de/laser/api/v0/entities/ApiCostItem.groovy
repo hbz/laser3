@@ -143,7 +143,7 @@ class ApiCostItem {
         result.owner    = ApiReaderHelper.retrieveOrganisationStubMap(costItem.owner, context) // com.k_int.kbplus.Org
         result.sub      = ApiReaderHelper.requestSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
         //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
-        result.issueEntitlement = ApiReaderHelper.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.issueEntitlement = ApiIssueEntitlement.retrieveIssueEntitlementMap(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiReaderHelper.retrieveOrderMap(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.retrieveInvoiceMap(costItem.invoice)
         result.surveyOrg = costItem?.surveyOrg ?: null

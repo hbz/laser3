@@ -50,6 +50,12 @@
 
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'surveyInfo.comment.label')}</dt>
+                            <dd><semui:xEditable owner="${surveyInfo}" field="comment" type="text"/></dd>
+
+                        </dl>
+
                     </div>
                 </div>
 
@@ -65,11 +71,10 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.type.label')}</dt>
                             <dd>
-                                ${surveyInfo.type.getI10n('value')}
+                                ${surveyInfo.type.getI10n('value')} (${surveyInfo.isSubscriptionSurvey ? message(code: 'subscriptionSurvey.label') : message(code: 'generalSurvey.label')})
                             </dd>
 
                         </dl>
-
                     </div>
                 </div>
             </div>

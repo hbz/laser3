@@ -15,33 +15,18 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-
-    <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" text="${surveyInfo.name}"/>
-        <semui:crumb controller="survey" action="surveyConfigs" id="${surveyInfo.id}" message="surveyConfigs.label"/>
-    </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
+<h1 class="ui left aligned icon header"><semui:headerTitleIcon
+        type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
 
-<br>
-
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</h1>
-
-<g:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 
 
 <div class="ui icon info message">
     <i class="info icon"></i>
-
     ${message(code: 'allSubscriptions.info')}
 </div>
 
@@ -51,7 +36,7 @@
 </h1>
 
 <semui:filter>
-    <g:form action="allSubscriptions" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="createSubscriptionSurvey" controller="survey" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
 
@@ -60,7 +45,8 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"
-                           class="la-popup-tooltip la-delay" data-content="${message(code: 'default.search.tooltip.subscription')}">
+                          class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
@@ -128,7 +114,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown" name="provider"
+                <g:select class="ui dropdown search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"
@@ -158,7 +144,8 @@
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>
-                <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}"
+                <g:sortableColumn params="${params}" property="s.name"
+                                  title="${message(code: 'subscription.slash.name')}"
                                   rowspan="2"/>
                 <th rowspan="2">
                     ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
@@ -295,22 +282,23 @@
 
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                <g:if test="${!surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
+                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findBySubscription(s)}">
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
-                                            controller="survey" action="toggleSurveySub"
-                                            params="${params + [direction: 'add', sub: s.id]}">
-                                        <i class="plus icon"></i>
+                                            controller="survey" action="addSubtoSubscriptionSurvey"
+                                            params="[sub: s.id]">
+                                        <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
                                 </g:if>
-                                <g:elseif test="${surveyInfo?.surveyConfigs?.subscription?.id.contains(s.id)}">
+                                <g:else>
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay"
-                                            data-content="${message(code: 'survey.toggleSurveySub.remove.label')}"
-                                            controller="survey" action="toggleSurveySub"
-                                            params="${params + [direction: 'remove', sub: s.id]}">
-                                        <i class="minus icon"></i>
+                                            data-content="${message(code: 'survey.toggleSurveySub.exist.label')}"
+                                            controller="survey" action="addSubtoSubscriptionSurvey"
+                                            params="[sub: s.id]">
+                                        <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
-                                </g:elseif>
+                                </g:else>
+
                             </g:if>
                         </td>
                     </tr>
@@ -322,7 +310,7 @@
 </semui:form>
 
 <g:if test="${true}">
-    <semui:paginate action="allSubscriptions" controller="survey" params="${params}"
+    <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
                     next="${message(code: 'default.paginate.next', default: 'Next')}"
                     prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                     total="${num_sub_rows}"/>
