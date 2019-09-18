@@ -74,6 +74,7 @@ class RDStore {
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
+    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', 'License Status')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')
 

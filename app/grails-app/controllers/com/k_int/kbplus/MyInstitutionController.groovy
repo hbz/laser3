@@ -322,56 +322,15 @@ class MyInstitutionController extends AbstractDebugController {
         result.max      = params.format ? 10000 : result.max
         result.offset   = params.format? 0 : result.offset
 
-        def licensee_role           = RDStore.OR_LICENSEE
-        def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
-        def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
-        def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
-
-        def base_qry
-        def qry_params
 
         @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         result.filterSet = params.filterSet ? true : false
 
-        if (! params.orgRole) {
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                params.orgRole = 'Licensing Consortium'
-            }
-            else {
-                params.orgRole = 'Licensee'
-            }
-        }
-
-        if (params.orgRole == 'Licensee') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-    AND ( l.type != :template )
-)
-"""
-            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, template: template_license_type]
-        }
-
-        if (params.orgRole == 'Licensing Consortium') {
-
-            base_qry = """
-from License as l where (
-    exists ( select o from l.orgLinks as o where ( 
-            ( o.roleType = :roleTypeC 
-                AND o.org = :lic_org 
-                AND NOT exists (
-                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
-                )
-            )
-        )) 
-    AND ( l.type != :template )
-)
-"""
-            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, template:template_license_type]
-        }
+        def tmpQry = queryService.getMyLicensesQuery(contextService.org)
+        def base_qry = tmpQry.query
+        def qry_params = tmpQry.queryParams
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             base_qry += " and genfunc_filter_matcher(l.reference, :ref) = true "
@@ -416,7 +375,7 @@ from License as l where (
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
+        List totalLicenses = License.executeQuery(base_qry, qry_params)
         result.licenseCount = totalLicenses.size()
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         List orgRoles = OrgRole.findAllByOrgAndLicIsNotNull(result.institution)
@@ -2885,6 +2844,8 @@ AND EXISTS (
     def tasks() {
         def result = setResultGenerics()
 
+        def myLicensesQuery = queryService.getMyLicensesQuery(contextService.org)
+        def tmpValidLicenses = SubscriptionCustomProperty.executeQuery(myLicensesQuery.query, myLicensesQuery.queryParams)
         if (params.deleteId) {
             def dTask = Task.get(params.deleteId)
             if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
@@ -2926,9 +2887,10 @@ AND EXISTS (
             }
         }
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
+        result.validLicenses = tmpValidLicenses
+
 
         log.debug(result.taskInstanceList)
         result

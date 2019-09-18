@@ -160,8 +160,7 @@ class QueryService {
         result
     }
 
-    private def getMyLicensesQuery(Org institution){
-        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+    def getMyLicensesQuery(Org institution){
         def result = [:]
         def base_qry
         def qry_params
@@ -175,7 +174,7 @@ from License as l where (
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, template: template_license_type]
+            qry_params = [roleType1:OR_LICENSEE, roleType2:OR_LICENSEE_CONS, lic_org:institution, template: LICENSE_TYPE_TEMPLATE]
         }
 
         if (isLicensingConsortium) {
@@ -192,7 +191,7 @@ from License as l where (
     AND ( l.type != :template )
 )
 """
-            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, template:template_license_type]
+            qry_params = [roleTypeC:OR_LICENSING_CONSORTIUM, roleTypeL:OR_LICENSEE_CONS, lic_org:institution, template:LICENSE_TYPE_TEMPLATE]
         }
 
         result.query = "select l ${base_qry}"
