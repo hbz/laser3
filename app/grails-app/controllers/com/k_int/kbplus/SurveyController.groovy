@@ -2886,7 +2886,7 @@ class SurveyController {
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
 
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : '', style: null])
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem?.costInBillingCurrencyAfterTax : '', style: null])
 
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
@@ -2951,6 +2951,7 @@ class SurveyController {
         titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
         titles << g.message(code: 'renewalwithSurvey.costAfterTax')
         titles << g.message(code: 'renewalwithSurvey.costTax')
+        titles << g.message(code: 'renewalwithSurvey.currency')
 
         List renewalData = []
 
@@ -2993,9 +2994,11 @@ class SurveyController {
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
 
-            row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
+
 
             renewalData.add(row)
         }
@@ -3021,7 +3024,7 @@ class SurveyController {
                 def period = ""
 
                 period = sub?.startDate ? sdf.format(sub?.startDate) : ""
-                period = sub?.endDate ? period + " - " +sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
             }
@@ -3069,9 +3072,10 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            row.add([field: costItem?.costInBillingCurrency ? g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
 
             renewalData.add(row)
         }
@@ -3102,10 +3106,11 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
 
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
 
             renewalData.add(row)
         }
@@ -3151,7 +3156,7 @@ class SurveyController {
                     row.add([field: result?.value[0]?.surveyConfig?.getConfigNameShort() ?: "", style: null])
                     def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant))
 
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : '', style: null])
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem?.costInBillingCurrencyAfterTax : '', style: null])
 
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
