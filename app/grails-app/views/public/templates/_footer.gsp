@@ -5,22 +5,10 @@
 
             <div class="four wide column left aligned" style="opacity: 0.7">
                 <g:link controller="home" action="index" class="header item la-logo-item">
-                    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-                    <svg
-                            xmlns:dc="http://purl.org/dc/elements/1.1/"
-                            xmlns:cc="http://creativecommons.org/ns#"
-                            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                            xmlns:svg="http://www.w3.org/2000/svg"
-                            xmlns="http://www.w3.org/2000/svg"
-                            version="1.1"
-                            id="svg2"
-                            xml:space="preserve"
-                            width="75.333344"
+                    <svg width="75.333344"
                             height="26.040001"
-                            viewBox="0 0 75.33334 26.04"><metadata
-                            id="metadata8"><rdf:RDF><cc:Work
-                                rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-                                    rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+                            viewBox="0 0 75.33334 26.04">
+                            <defs
                             id="defs6" /><g
                             transform="matrix(0.24321284,0,0,0.24321284,0.552501,0.9140142)"
                             style="fill:#ffffff"

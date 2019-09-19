@@ -16,17 +16,17 @@
                 <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
-                        <label>${message(code: 'gasco.filter.search')}</label>
+                        <label for="search">${message(code: 'gasco.filter.search')}</label>
 
                         <div class="ui input">
-                            <input type="text" name="q"
+                            <input type="text" id="search" name="q"
                                    placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                                    value="${params.q}"/>
                         </div>
                     </div>
                     <div class="field">
-                        <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <fieldset id="subscritionType">
+                            <legend>${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
                             <div class="inline fields la-filter-inline">
 
                                 <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
@@ -60,14 +60,15 @@
                         </fieldset>
                     </div>
                     <div class="field" id="js-consotial-authority">
-                        <label>${message(code: 'gasco.filter.consortialAuthority')}</label>
+                        <label for="consortial">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
-                        <g:select from="${allConsortia}" class="ui fluid search selection dropdown"
+                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
                             optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
                             optionValue="${{ it.getName() }}"
                             name="consortia"
-                            noSelection="[null: '']"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
                             value="${params.consortia}"/>
+
                     </div>
 
                     <div class="field la-field-right-aligned ">
@@ -79,7 +80,7 @@
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" class="ui fluid image" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
     <r:script>
@@ -210,16 +211,16 @@
     </table>
 
     </g:if>
-<style>
+<r:style>
 .ui.table thead tr:first-child>th {
     top: 48px!important;
 }
-</style>
+</r:style>
 <sec:ifAnyGranted roles="ROLE_USER">
-    <style>
+    <r:style>
         .ui.table thead tr:first-child>th {
             top: 90px!important;
         }
-    </style>
+    </r:style>
 </sec:ifAnyGranted>
 </body>

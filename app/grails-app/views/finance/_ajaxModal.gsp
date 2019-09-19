@@ -352,7 +352,7 @@
                                           from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                          noSelection="['':'']"
+                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
                                           onchange="onSubscriptionUpdate()"
                                 />
@@ -370,7 +370,7 @@
                                       from="${[{}] + costItem?.sub?.packages}"
                                       optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                      noSelection="['':'']"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                         </g:if>
                         <g:else>

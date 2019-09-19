@@ -31,7 +31,7 @@
                                   from="${validSubChilds}"
                                   optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                   optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                  noSelection="['':'']"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
                                   value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
 
                     </g:if>

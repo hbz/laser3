@@ -65,7 +65,7 @@
                     </div>
                     <div class="twelve wide column">
                         <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
-                                  optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="['':'']"/>
+                                  optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                     </div>
                 </div>
                 <div class="row">

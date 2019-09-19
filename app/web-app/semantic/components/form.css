@@ -1173,3 +1173,9 @@ input#spotlightSearch[type="search"] {
 .ui.form .field .ui.input input.la-input-small {
   width: 80px;
 }
+legend {
+  margin: 0 0 .28571429rem 0;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: .92857143em;
+  font-weight: 700;
+}
