@@ -214,6 +214,79 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def createIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        def date_restriction = null;
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            date_restriction = sdf.parse(params.validOn)
+        }
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        if (!params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            } else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+
+        List<Org> providers = orgTypeService.getCurrentProviders(contextService.getOrg())
+        List<Org> agencies = orgTypeService.getCurrentAgencies(contextService.getOrg())
+
+        providers.addAll(agencies)
+        List orgIds = providers.unique().collect { it2 -> it2.id }
+
+        result.providers = Org.findAllByIdInList(orgIds).sort { it?.name }
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.filterSet = tmpQ[2]
+        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        //,[max: result.max, offset: result.offset]
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+
+        if (params.sort && params.sort.indexOf("§") >= 0) {
+            switch (params.sort) {
+                case "orgRole§provider":
+                    subscriptions.sort { x, y ->
+                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                        a.compareToIgnoreCase b
+                    }
+                    if (params.order.equals("desc"))
+                        subscriptions.reverse(true)
+                    break
+            }
+        }
+        result.num_sub_rows = subscriptions.size()
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def addSubtoSubscriptionSurvey() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -229,6 +302,32 @@ class SurveyController {
         result.subscription = Subscription.get(Long.parseLong(params.sub))
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
+        }
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def addSubtoIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.subscription = Subscription.get(Long.parseLong(params.sub))
+        result.pickAndChoose = true
+        if (!result.subscription) {
+            redirect action: 'createIssueEntitlementsSurvey'
         }
 
         result
@@ -302,6 +401,67 @@ class SurveyController {
         }
 
         flash.message = g.message(code: "createSubscriptionSurvey.create.successfull")
+        redirect action: 'show', id: surveyInfo.id
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processCreateIssueEntitlementsSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+
+        def surveyInfo = new SurveyInfo(
+                name: params.name,
+                startDate: params.startDate ? sdf.parse(params.startDate) : null,
+                endDate: params.endDate ? sdf.parse(params.endDate) : null,
+                type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
+                owner: contextService.getOrg(),
+                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                comment: params.comment ?: null,
+                isSubscriptionSurvey: true
+        )
+
+        if (!(surveyInfo.save(flush: true))) {
+            flash.error = g.message(code: "createSubscriptionSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def subscription = Subscription.get(Long.parseLong(params.sub))
+        def surveyConfig = subscription ? SurveyConfig.findAllBySubscriptionAndSurveyInfo(subscription, surveyInfo) : null
+        if (!surveyConfig && subscription) {
+            surveyConfig = new SurveyConfig(
+                    subscription: subscription,
+                    configOrder: surveyInfo?.surveyConfigs?.size() ? surveyInfo?.surveyConfigs?.size() + 1 : 1,
+                    type: 'Subscription',
+                    surveyInfo: surveyInfo,
+                    isSubscriptionSurveyFix: false,
+                    pickAndChoose: true
+
+            )
+
+            surveyConfig.save(flush: true)
+
+            addSubMembers(surveyConfig)
+
+        } else {
+            surveyInfo.delete(flush: true)
+            flash.error = g.message(code: "createIssueEntitlementsSurvey.create.fail")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        flash.message = g.message(code: "createIssueEntitlementsSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
 
     }
@@ -1159,6 +1319,33 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
     })
+    def deleteSurveyProperty() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyProperty = SurveyProperty.findByIdAndOwner(params.deleteId, result.institution)
+
+        if (surveyProperty.countUsages()==0 && surveyProperty?.owner?.id == result.institution?.id && surveyProperty.delete())
+        {
+            flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
+        }
+
+        redirect(action: 'allSurveyProperties', id: params.id)
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def addSurveyParticipants() {
         def result = [:]
         result.institution = contextService.getOrg()
@@ -1559,39 +1746,66 @@ class SurveyController {
             newSurveyResult.participant = it?.participant
             newSurveyResult.resultOfParticipation = it
 
-            if (result.multiYearTermTwoSurvey) {
-
-                newSurveyResult.newSubPeriodTwoStartDate = null
-                newSurveyResult.newSubPeriodTwoEndDate = null
-
-                if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                    use(TimeCategory) {
-                        newSurveyResult.newSubPeriodTwoStartDate = result.parentSuccessorSubscription?.startDate ? (result.parentSuccessorSubscription?.startDate) : null
-                        newSurveyResult.newSubPeriodTwoEndDate = result.parentSuccessorSubscription?.endDate ? (result.parentSuccessorSubscription?.endDate + 2.year) : null
-                    }
-                }
-
-            }
-            if (result.multiYearTermThreeSurvey) {
-                newSurveyResult.newSubPeriodThreeStartDate = null
-                newSurveyResult.newSubPeriodThreeEndDate = null
-
-                if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                    use(TimeCategory) {
-                        newSurveyResult.newSubPeriodThreeEndDate = parentSuccessorSubscription?.startDate ? (parentSuccessorSubscription?.startDate) : null
-                        newSurveyResult.newSubPeriodThreeEndDate = parentSuccessorSubscription?.endDate ? (parentSuccessorSubscription?.endDate + 3.year) : null
-                    }
-                }
-            }
-
             newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
                 it?.type?.getI10n('name')
             }
 
             if (it?.participant?.id in selecetedParticipantIDs) {
                 newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+
+                if (result.multiYearTermTwoSurvey) {
+
+                    newSurveyResult.newSubPeriodTwoStartDate = null
+                    newSurveyResult.newSubPeriodTwoEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
+                        }
+                    }
+
+                }
+                if (result.multiYearTermThreeSurvey) {
+                    newSurveyResult.newSubPeriodThreeStartDate = null
+                    newSurveyResult.newSubPeriodThreeEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 4.year) : null
+                        }
+                    }
+                }
+
                 result.orgsContinuetoSubscription << newSurveyResult
             } else {
+
+                if (result.multiYearTermTwoSurvey) {
+
+                    newSurveyResult.newSubPeriodTwoStartDate = null
+                    newSurveyResult.newSubPeriodTwoEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
+                        }
+                    }
+
+                }
+                if (result.multiYearTermThreeSurvey) {
+                    newSurveyResult.newSubPeriodThreeStartDate = null
+                    newSurveyResult.newSubPeriodThreeEndDate = null
+
+                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        use(TimeCategory) {
+                            newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 4.year) : null
+                        }
+                    }
+                }
+
                 result.newOrgsContinuetoSubscription << newSurveyResult
             }
 
@@ -1619,28 +1833,34 @@ class SurveyController {
         }
 
         //MultiYearTerm Subs
-        def sumParticipantWithSub = result.orgsContinuetoSubscription?.groupBy {
+        def sumParticipantWithSub = (result.orgsContinuetoSubscription?.groupBy {
             it?.participant.id
-        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size()
+        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size() + result.orgsWithMultiYearTermSub?.size())
 
-        if (sumParticipantWithSub < result.orgsWithMultiYearTermSub?.size()) {
+        if (sumParticipantWithSub < result.parentSubChilds?.size()) {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
+            def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
-                if (surveyResult?.participant in selecetedParticipantIDs) {
-                    def subChild = result.parentSubscription?.getDerivedSubscriptionBySubscribers(surveyResult?.participant)
+                if (surveyResult?.participant?.id in selecetedParticipantIDs && surveyResult?.sub) {
 
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
-                        if (subChild?.customProperties?.find {
+                        if (surveyResult?.sub?.customProperties?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-                            println(subChild)
-                            result.orgsWithMultiYearTermSub << subChild
-                            return
+
+                            result.orgsWithMultiYearTermSub << surveyResult?.sub
+                            removeSurveyResultOfOrg << surveyResult
                         }
                     }
                 }
             }
+            removeSurveyResultOfOrg?.each{ it
+                result.orgsWithoutResult?.remove(it)
+            }
+
+            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers()[0]?.sortname}
+
         }
 
 
@@ -1729,6 +1949,7 @@ class SurveyController {
             def sub_status = null
             def old_subOID = null
             def new_subname = null
+            def manualCancellationDate = null
             if (isCopyAuditOn) {
                 use(TimeCategory) {
                     sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
@@ -1745,11 +1966,14 @@ class SurveyController {
                 new_subname = params.subscription.name
             }
 
+            use(TimeCategory) {
+                manualCancellationDate =  baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null
+            }
             def newSub = new Subscription(
                     name: new_subname,
                     startDate: sub_startDate,
                     endDate: sub_endDate,
-                    manualCancellationDate: baseSub?.manualCancellationDate ? (baseSub?.manualCancellationDate + 1.year) : null,
+                    manualCancellationDate: manualCancellationDate,
                     identifier: java.util.UUID.randomUUID().toString(),
                     isPublic: baseSub?.isPublic,
                     isSlaved: baseSub?.isSlaved,
@@ -2662,7 +2886,7 @@ class SurveyController {
                     row.add([field: sub?.form?.getI10n("value") ?: '', style: null])
                     row.add([field: sub?.resource?.getI10n("value") ?: '', style: null])
 
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : '', style: null])
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem?.costInBillingCurrencyAfterTax : '', style: null])
 
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 
@@ -2710,9 +2934,9 @@ class SurveyController {
 
     private def exportRenewalResult(Map renewalResult) {
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notime'))
-        List titles = [g.message(code: 'org.name.label'),
+        List titles = [g.message(code: 'org.sortname.label'),
+                       g.message(code: 'org.name.label'),
 
-                       g.message(code: 'org.sortname.label'),
                        renewalResult.participationProperty?.getI10n('name'),
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
         ]
@@ -2724,7 +2948,10 @@ class SurveyController {
             titles << surveyProperty?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalwithSurvey.costItem.label')
+        titles << g.message(code: 'renewalwithSurvey.costBeforeTax')
+        titles << g.message(code: 'renewalwithSurvey.costAfterTax')
+        titles << g.message(code: 'renewalwithSurvey.costTax')
+        titles << g.message(code: 'renewalwithSurvey.currency')
 
         List renewalData = []
 
@@ -2733,8 +2960,8 @@ class SurveyController {
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
@@ -2766,10 +2993,12 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
 
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
+
 
             renewalData.add(row)
         }
@@ -2785,8 +3014,9 @@ class SurveyController {
 
             sub.getAllSubscribers().each{ subscriberOrg ->
 
-                row.add([field: subscriberOrg?.name ?: '', style: null])
                 row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+
                 row.add([field: '', style: null])
 
                 row.add([field: '', style: null])
@@ -2794,7 +3024,7 @@ class SurveyController {
                 def period = ""
 
                 period = sub?.startDate ? sdf.format(sub?.startDate) : ""
-                period = sub?.endDate ? period + " - " +sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
             }
@@ -2812,8 +3042,9 @@ class SurveyController {
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
+
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
@@ -2841,10 +3072,10 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
-
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
 
             renewalData.add(row)
         }
@@ -2858,8 +3089,9 @@ class SurveyController {
         renewalResult.orgsWithTermination.each { participantResult ->
             List row = []
 
-            row.add([field: participantResult?.participant?.name ?: '', style: null])
             row.add([field: participantResult?.participant?.sortname ?: '', style: null])
+            row.add([field: participantResult?.participant?.name ?: '', style: null])
+
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
@@ -2874,10 +3106,11 @@ class SurveyController {
             }
 
             def costItem = participantResult?.resultOfParticipation?.getCostItem()
-            def costItemExport = ""
-            costItemExport = costItem ? g.formatNumber(number: costItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + " (" + g.formatNumber(number: costItem?.costInBillingCurrency, minFractionDigits: "2", maxFractionDigits: "2", type: "number") + ")" : ""
 
-            row.add([field: costItemExport ?: "", style: null])
+            row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
+            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
+            row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
+            row.add([field: costItem?.billingCurrency ? costItem?.billingCurrency?.getI10n('value')?.split('-').first() : "", style: null])
 
             renewalData.add(row)
         }
@@ -2923,7 +3156,7 @@ class SurveyController {
                     row.add([field: result?.value[0]?.surveyConfig?.getConfigNameShort() ?: "", style: null])
                     def surveyCostItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(result?.value[0]?.surveyConfig, participant))
 
-                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? g.formatNumber(number: surveyCostItem?.costInBillingCurrencyAfterTax, minFractionDigits: "2", maxFractionDigits: "2", type: "number") : '', style: null])
+                    row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ? surveyCostItem?.costInBillingCurrencyAfterTax : '', style: null])
 
                     row.add([field: surveyCostItem?.costDescription ?: '', style: null])
 

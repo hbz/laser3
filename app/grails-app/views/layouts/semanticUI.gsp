@@ -644,8 +644,7 @@
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
 
-                                    // initial not needed
-                                    // deckSaver.toggleEditableElements();
+                                    deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
                                         deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                          $.ajax({

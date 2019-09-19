@@ -684,6 +684,9 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
+          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.equalsIgnoreCase('removeValue_administrativeSubscription')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
           // default ..
           else {
               if (it instanceof AbstractI10nTranslatable) {
@@ -2135,6 +2138,35 @@ class AjaxController {
 
                     result = target_object."${params.name}"
                 }
+
+                if (target_object instanceof SurveyResult) {
+
+                    def org = contextService.getOrg()
+                    //If Survey Owner set Value then set FinishDate
+                    if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
+                        def property = ""
+                        if (target_object?.type?.type == Integer.toString()) {
+                            property = "intValue"
+                        } else if (target_object?.type?.type == String.toString()) {
+                            property = "stringValue"
+                        } else if (target_object?.type?.type == BigDecimal.toString()) {
+                            property = "decValue"
+                        } else if (target_object?.type?.type == Date.toString()) {
+                            property = "dateValue"
+                        } else if (target_object?.type?.type == URL.toString()) {
+                            property = "urlValue"
+                        } else if (target_object?.type?.type == RefdataValue.toString()) {
+                            property = "refValue"
+                        }
+
+                        if (target_object[property] != null) {
+                            log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
+                            target_object.finishDate = new Date()
+                            target_object.save()
+                        }
+                    }
+                }
+
             }
 
         } catch(Exception e) {

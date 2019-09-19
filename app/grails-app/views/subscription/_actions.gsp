@@ -99,7 +99,7 @@
             </g:if>
         </sec:ifAnyGranted>
 
-        <g:if test="${showConsortiaFunctions || showCollectiveFunctions}">
+        <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 

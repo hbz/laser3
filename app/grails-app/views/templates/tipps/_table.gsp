@@ -6,9 +6,8 @@
         <th></th>
         <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
                           title="${message(code: 'title.label', default: 'Title')}"/>
-        <th class="two wide">${message(code: 'tipp.coverage')}</th>
         <th class="two wide">${message(code: 'tipp.access')}</th>
-
+        <th class="two wide">${message(code: 'tipp.coverage')}</th>
     </tr>
     <tr>
         <th colspan="2" rowspan="2"></th>
@@ -165,12 +164,14 @@
                             <!-- von -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                            ${tipp?.title?.dateFirstInPrint}
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${tipp?.title?.dateFirstInPrint}"/>
                             <semui:dateDevider/>
                             <!-- bis -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                            ${tipp?.title?.dateFirstOnline}
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                          date="${tipp?.title?.dateFirstOnline}"/>
                         </div>
                     </div>
                 </g:if>

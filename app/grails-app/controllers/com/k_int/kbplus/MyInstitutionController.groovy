@@ -2323,8 +2323,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def announcements() {
         def result = setResultGenerics()
 
@@ -2495,9 +2496,9 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
@@ -2522,9 +2523,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
         def result = [:]
@@ -2574,9 +2575,9 @@ AND EXISTS (
 
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigsInfo() {
         def result = [:]
@@ -2694,7 +2695,7 @@ AND EXISTS (
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
             SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.getFinish() && !surorg.existsMultiYearTerm())
+            if(!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {
@@ -3007,8 +3008,9 @@ AND EXISTS (
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
+                    List orgs = (List) result.availableOrgs
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgs,tableHeader,true,"csv"))
                     }
                     out.close()
                 }
@@ -3025,7 +3027,6 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
             if (params.selectedOrgs) {
                 log.debug('remove orgs from consortia')
@@ -3041,7 +3042,6 @@ AND EXISTS (
             }
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
                 log.debug('remove orgs from department')
@@ -4025,8 +4025,10 @@ AND EXISTS (
         result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and surResult.surveyConfig.surveyInfo.status = :status",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
                 [status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 status2: RDStore.SURVEY_IN_EVALUATION,
+                 status3: RDStore.SURVEY_COMPLETED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
 

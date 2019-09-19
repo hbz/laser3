@@ -397,24 +397,36 @@
                     </td>
                 </g:if>
                 <td class="x">
-                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}">
+
+                    <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}" />
+                    <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}" />
+
+                    <g:if test="${surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) && institution?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
 
                         <g:link controller="subscription" action="surveys" id="${s?.id}"
                                 class="ui icon button">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info3")}">
                             <i class="ui icon envelope open"></i>
                         </span>
                         </g:link>
                     </g:if>
 
-                    <g:if test="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}">
+                    <g:if test="${surveysConsortiaSub && institution?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']}">
                         <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
                                 class="ui icon button">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
-                            <i class="ui icon envelope open"></i>
-                        </span>
+                            <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: "surveyConfig.isCompletedforOwner.true")}">
+                                    <i class="ui icon envelope green"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyConfig.isCompletedforOwner.false")}">
+                                    <i class="ui icon envelope open"></i>
+                                </span>
+                            </g:else>
                         </g:link>
                     </g:if>
                     <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">

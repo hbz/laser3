@@ -400,7 +400,7 @@
                     <tr>
                         <td>
                             <div class="ui checkbox">
-                                <g:set var="isNotificationForSurveysStart" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, YN_YES).rdValue==YN_YES}"/>
+                                <g:set var="isNotificationForSurveysStart" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, YN_NO).rdValue==YN_YES}"/>
                                 <input type="checkbox" name="isNotificationForSurveysStart" class="hidden" value="Y" ${isNotificationForSurveysStart?'checked':''}/>
                             </div>
                         </td>
@@ -409,7 +409,7 @@
                     <tr>
                         <td>
                             <div class="ui checkbox">
-                                <g:set var="isNotificationForSystemMessages" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_YES).rdValue==YN_YES}"/>
+                                <g:set var="isNotificationForSystemMessages" value="${user.getSetting(UserSettings.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, YN_NO).rdValue==YN_YES}"/>
                                 <input type="checkbox" name="isNotificationForSystemMessages" class="hidden" value="Y" ${isNotificationForSystemMessages?'checked':''}/>
                             </div>
                         </td>
