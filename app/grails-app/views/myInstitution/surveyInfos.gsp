@@ -210,14 +210,14 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
 
                     <td class="center aligned">
-                        <g:set var="finish" value="${surveyConfig.checkResultsFinishByOrg(institution)}"/>
-                        <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
+                        <g:set var="finish" value="${surveyConfig.checkResultsEditByOrg(institution)}"/>
+                        <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
                                 <i class="circle green icon"></i>
                             </span>
                         </g:if>
-                        <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
+                        <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_PROCESSED_BY_ORG}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
                                 <i class="circle yellow icon"></i>

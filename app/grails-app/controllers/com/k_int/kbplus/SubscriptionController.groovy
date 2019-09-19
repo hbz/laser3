@@ -119,6 +119,16 @@ class SubscriptionController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
+        }
+
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
@@ -704,6 +714,15 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
+        }
+
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -980,8 +999,7 @@ class SubscriptionController extends AbstractDebugController {
                         checked = "checked"
                         result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[serial]
                     }
-                    if(result.preselectValues)
-                        result.checked[tipp.gokbId] = checked
+                    result.checked[tipp.gokbId] = checked
                 }
                 if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                     String unidentifiedTitles = result.identifiers.unidentified.join(", ")
@@ -2307,7 +2325,7 @@ class SubscriptionController extends AbstractDebugController {
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
+        def addTitlesCount = 0
         if (result.subscriptionInstance) {
             EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
@@ -2321,14 +2339,18 @@ class SubscriptionController extends AbstractDebugController {
                                     if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
                                         log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                                 }
-                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false))
-                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false)) {
+                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                }
+                                addTitlesCount++
+
                             }
                             catch (EntitlementCreationException e) {
                                 flash.error = e.getMessage()
                             }
                         }
                     }
+                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [addTitlesCount])
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -2339,9 +2361,12 @@ class SubscriptionController extends AbstractDebugController {
                     if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
                         if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
                     }
                     else if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,null,false))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
+
                 }
                 catch(EntitlementCreationException e) {
                     flash.error = e.getMessage()
@@ -2351,7 +2376,7 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'index', id: result.subscriptionInstance?.id
+        redirect action: 'addEntitlements', id: result.subscriptionInstance?.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2673,6 +2698,15 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
+        }
+
         params.gokbApi = false
 
         if (ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
@@ -2735,7 +2769,7 @@ class SubscriptionController extends AbstractDebugController {
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({
-                        Thread.currentThread().setName("PackageSync")
+                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
                         dataloadService.updateFTIndexes()

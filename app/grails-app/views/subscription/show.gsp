@@ -206,7 +206,7 @@
                     </div>
                 </div>
 
-                <div class="ui card">
+                %{--<div class="ui card">
                     <div class="content">
 
                             <table class="ui three column table">
@@ -263,7 +263,7 @@
                                           ]"/>
                             </g:if>
                     </div>
-                </div>
+                </div>--}%
 
                 <g:if test="${subscriptionInstance.packages}">
                     <div class="ui card la-js-hideable hidden">

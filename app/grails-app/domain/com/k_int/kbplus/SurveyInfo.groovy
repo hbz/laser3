@@ -91,14 +91,14 @@ class SurveyInfo {
         def count = 0
         surveyConfigs.each {
 
-            def checkResultsFinishByOrg = result."${it.checkResultsFinishByOrg(org)}"
-            if(checkResultsFinishByOrg){
+            def checkResultsEditByOrg = result."${it.checkResultsEditByOrg(org)}"
+            if(checkResultsEditByOrg){
 
-                result."${it.checkResultsFinishByOrg(org)}" = checkResultsFinishByOrg+1
+                result."${it.checkResultsEditByOrg(org)}" = checkResultsEditByOrg+1
 
 
             }else {
-                result."${it.checkResultsFinishByOrg(org)}" = 1
+                result."${it.checkResultsEditByOrg(org)}" = 1
             }
             count++
         }

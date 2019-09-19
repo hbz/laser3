@@ -50,7 +50,9 @@
                     ${i + 1}
                 </td>
                 <td>
-                    ${participant.sortname}
+                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                        ${participant?.sortname}
+                    </g:link>
                 </td>
                 <td>
                     <g:link controller="organisation" action="show" id="${participant.id}">
@@ -129,7 +131,9 @@
                     ${i + 1}
                 </td>
                 <td>
-                    ${participant.sortname}
+                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                        ${participant?.sortname}
+                    </g:link>
                 </td>
                 <td>
                     <g:link controller="organisation" action="show" id="${participant.id}">
