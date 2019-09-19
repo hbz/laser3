@@ -333,7 +333,7 @@
                         def countNotFinish = 0
 
                         participantSurveys.each {
-                            if (it.getFinish()) {
+                            if (it.isResultProcessed()) {
                             countFinish++
                             } else {
                             countNotFinish++

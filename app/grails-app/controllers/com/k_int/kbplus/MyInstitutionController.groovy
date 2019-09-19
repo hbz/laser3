@@ -2694,7 +2694,7 @@ AND EXISTS (
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
             SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.getFinish() && !surorg.existsMultiYearTerm())
+            if(!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {
@@ -4025,8 +4025,10 @@ AND EXISTS (
         result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and surResult.surveyConfig.surveyInfo.status = :status",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
                 [status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 status2: RDStore.SURVEY_IN_EVALUATION,
+                 status3: RDStore.SURVEY_COMPLETED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
 
