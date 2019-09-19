@@ -372,7 +372,10 @@ class SubscriptionController extends AbstractDebugController {
                 IssueEntitlement.withTransaction { status ->
                     removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-                    if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                    if (deleteIdList) {
+                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)",[delList: deleteIdList])
+                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
