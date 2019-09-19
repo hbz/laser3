@@ -692,5 +692,24 @@ class Org
         }
         check
     }
+    String dropdownNamingConvention(Org contextOrg){
+        String result = ''
+        if (RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()){
+            if (name) {
+                result += name
+            }
+            if (shortname){
+                result += ' (' + shortname + ')'
+            }
+        } else {
+            if (sortname) {
+                result += sortname
+            }
+            if (name) {
+                result += ' (' + name + ')'
+            }
+        }
+        result
+    }
 
 }

@@ -231,16 +231,29 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
+                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <g:link controller="issueEntitlement" id="${ie.id}"
+                                            action="show"><strong>${ie.tipp?.title.title}</strong>
+                                    </g:link>
+                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                        <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
+                                           data-content="${ie.tipp?.platform.name}"
+
+                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                           target="_blank"><i class="cloud icon"></i></a>
+                                    </g:if>
+                                    <br>
                                     <!-- START TEMPLATE -->
 
-                                    <g:render template="../templates/title" model="${[ie: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <g:render template="../templates/title" model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td class="coverageStatements" data-entitlement="${ie.id}">
+                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"

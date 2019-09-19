@@ -2927,7 +2927,6 @@ AND EXISTS (
             }
         }
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
