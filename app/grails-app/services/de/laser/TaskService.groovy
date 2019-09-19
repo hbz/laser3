@@ -15,17 +15,23 @@ class TaskService {
     def springSecurityService
     def accessService
 
-    def getTasksByCreator(User user, flag) {
+    def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
         if (user) {
             if (flag == WITHOUT_TENANT_ONLY) {
-                tasks = Task.findAllByCreatorAndResponsibleOrgAndResponsibleUser(user, null, null)
-            }
-            else {
-                tasks = Task.findAllByCreator(user)
+                def query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null " + queryMap.query
+                def params = [user : user] << queryMap.queryParams
+                tasks = Task.executeQuery(query, params)
+            } else {
+                def query = "select t from Task t where t.creator=:user " + queryMap.query
+                def params = [user : user] << queryMap.queryParams
+                tasks = Task.executeQuery(query, params)
             }
         }
-        tasks.sort{ it.endDate }
+        if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
+            tasks.sort{ it.endDate }
+        }
+        tasks
     }
 
     def getTasksByResponsible(User user, Map queryMap) {
