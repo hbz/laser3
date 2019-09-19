@@ -1,3 +1,10 @@
+0.20.5
+
+- hotfix: users can be added again, new insts and depts as well
+- hotfix: identifier field display extended to all non-department orgs
+- hotfix: erorr by api for issueEntitlements
+- hotfix: renewal export by survey
+
 0.20.4
 
 - hotfix: wrong survey icons by current subscriptions
