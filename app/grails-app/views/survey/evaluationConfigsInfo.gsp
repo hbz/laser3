@@ -179,28 +179,30 @@
                         <br>
                         <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
 
-                        <div class="ui right floated small">
-                            <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
-                                    <i class="edit green icon"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
-                                    <i class="edit red icon"></i>
-                                </span>
-                            </g:else>
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
 
-                            <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participant)}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
-                                    <i class="check green icon"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
-                                    <i class="x red icon"></i>
-                                </span>
-                            </g:else>
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
                         </div>
 
                     </td>
