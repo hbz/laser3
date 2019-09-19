@@ -105,7 +105,7 @@
 											</g:elseif>
 										</td>
 									</g:if>
-									<g:elseif test="${comboType == 'Department'}">
+									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
 										<td>
 											<g:if test="${!organisationInstance.isEmpty()}">
 												<span  class="la-popup-tooltip la-delay" data-content="${message(code:'org.departmentRemoval.departmentNotEmpty')}">

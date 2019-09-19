@@ -2322,8 +2322,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def announcements() {
         def result = setResultGenerics()
 
@@ -2494,9 +2495,9 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
@@ -2521,9 +2522,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
         def result = [:]
@@ -2573,9 +2574,9 @@ AND EXISTS (
 
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigsInfo() {
         def result = [:]
@@ -3007,8 +3008,9 @@ AND EXISTS (
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
+                    List orgs = (List) result.availableOrgs
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgs,tableHeader,true,"csv"))
                     }
                     out.close()
                 }
@@ -3025,7 +3027,6 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
             if (params.selectedOrgs) {
                 log.debug('remove orgs from consortia')
@@ -3041,7 +3042,6 @@ AND EXISTS (
             }
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
                 log.debug('remove orgs from department')

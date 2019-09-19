@@ -257,9 +257,12 @@
 <!-- _filter.gsp -->
 
 <r:script>
-        $.fn.dropdown.settings.message = {
-            noResults: "<g:message code="select2.noMatchesFound" />"
-        };
+    $.fn.dropdown.settings.message = {
+        noResults: "<g:message code="select2.noMatchesFound" />"
+    };
+    $("#filterSubStatus, #filterCIStatus").dropdown({
+        "clearable": true
+    });
     function setupDropdowns() {
         if($("#filterSubStatus").length > 0) {
             var subStatus = $("#filterSubStatus").val();

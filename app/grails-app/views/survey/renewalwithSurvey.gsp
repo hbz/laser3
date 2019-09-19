@@ -223,7 +223,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -257,6 +262,12 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
 
+                <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                    <th>
+                        <g:message code="renewalwithSurvey.period"/>
+                    </th>
+                </g:if>
+
                 <g:each in="${properties}" var="surveyProperty">
                     <th>
                         ${surveyProperty?.getI10n('name')}
@@ -285,6 +296,30 @@ ${surveyInfo?.name}
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
                     </td>
+
+                    <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                        <td>
+                    </g:if>
+
+                    <g:if test="${multiYearTermTwoSurvey}">
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodTwoStartDate}"/>
+                        <br>
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodTwoEndDate}"/>
+                    </g:if>
+                    <g:if test="${multiYearTermThreeSurvey}">
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodThreeStartDate}"/>
+                        <br>
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodThreeEndDate}"/>
+                    </g:if>
+
+                    <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                        </td>
+                    </g:if>
+
                     <td>
                         ${participantResult?.resultOfParticipation?.getResult()}
 
@@ -341,7 +376,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -502,7 +542,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -616,7 +661,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>

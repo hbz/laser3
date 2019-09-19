@@ -424,7 +424,7 @@ class BootStrap {
                             log.debug("  -> ${fileName} : " + validate.list()?.get(0))
                         }
                         catch(Exception e) {
-                            log.error(e)
+                            log.error("  -> ${fileName} : " + e)
                         }
                     }
                 }
@@ -1539,7 +1539,7 @@ class BootStrap {
         def requiredProps = [
                 [
                         name: [en: "Participation", de: "Teilnahme"],
-                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
                         type: OT.Rdv, cat:'YN'
                 ],
                 [
@@ -1687,7 +1687,7 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
-            if (default_prop.explain) {
+            if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
             }
 
