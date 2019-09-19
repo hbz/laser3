@@ -1170,7 +1170,9 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.surveys = SurveyConfig.findAllBySubscription(result.subscription.instanceOf)
+        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.startDate >= :startDate",
+                [sub: result.subscription.instanceOf,
+                 startDate: new Date(System.currentTimeMillis())])
 
        result
     }
@@ -1190,7 +1192,7 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.surveys = SurveyConfig.findAllBySubscription(result.subscription)
+        result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
 
         result
     }
