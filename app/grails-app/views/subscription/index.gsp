@@ -245,10 +245,12 @@
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstInPrint}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstOnline}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstOnline}"/>
 
                                     </g:if>
                                     <g:else>
@@ -259,8 +261,9 @@
                                             </div>
                                         </g:each>
                                         </div><br>
+                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
                                     </g:else>
-                                    <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+
 
                                 </td>
                                 <td>
