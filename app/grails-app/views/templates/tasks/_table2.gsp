@@ -70,7 +70,7 @@
             </tbody>
         </table>
 
-        <semui:paginate total="${taskInstanceCount}" />
+        <semui:paginate total="${taskInstanceCount}" params="${params}" />
 
     </div><!-- .sixteen -->
 

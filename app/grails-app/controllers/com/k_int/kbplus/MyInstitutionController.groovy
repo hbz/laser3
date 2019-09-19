@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.TaskService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -2915,7 +2916,7 @@ AND EXISTS (
                 result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
             }
         }
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  query, null)
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         //chop everything off beyond the user's pagination limit
         if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
