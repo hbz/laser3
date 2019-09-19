@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.Task" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+" %>
 <laser:serviceInjection />
 
 <semui:modal id="modalCreateTask" message="task.create.new">
@@ -66,16 +67,32 @@
                 <label for="license">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.license.label" default="License"/>
                 </label>
-                <g:select id="license" name="license" from="${validLicenses}" optionKey="id"
-                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['': '']"/>
+                <g:select id="license"
+                          name="license"
+                          from="${validLicenses?.sort{it?.dropdownNamingConvention().toLowerCase()}}"
+                          optionKey="id"
+                          optionValue="${{it?.dropdownNamingConvention()}}"
+                          value="${ownobj?.id}"
+                          class="ui dropdown many-to-one"
+                          noSelection="[null: '']"/>
             </div>
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
                 <g:message code="task.linkto" default="Task link to "/><g:message code="task.org.label" default="Org"/>
             </label>
-            <g:select id="org" name="org" from="${validOrgs}" optionKey="id" value="${ownobj?.id}"
-                      class="ui dropdown many-to-one" noSelection="['': '']"/>
+                <%
+                    validOrgs = validOrgs.collect{ GrailsHibernateUtil.unwrapIfProxy(it) }
+                %>
+            <g:select id="org"
+                      name="org"
+                      from="${validOrgs?.sort {it?.dropdownNamingConvention(contextService?.org).toLowerCase()}}"
+                      optionKey="id"
+                      optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"
+                      value="${ownobj?.id}"
+                      class="ui dropdown many-to-one"
+                      noSelection="[null: '']"/>
+
         </div>
 
             <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
@@ -83,7 +100,7 @@
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label" default="Pkg"/>
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown many-to-one" noSelection="['': '']"/>
+                          class="ui dropdown many-to-one" noSelection="[null: '']"/>
             </div>
 
             <div id="subscriptiondiv"
@@ -91,8 +108,15 @@
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
-                <g:select id="subscription" name="subscription" from="${validSubscriptions}" optionKey="id"
-                          value="${ownobj?.id}" class="ui dropdown many-to-one" noSelection="['': '']"/>
+                <g:select class="ui dropdown many-to-one"
+                          id="subscription"
+                          name="subscription"
+                          from="${validSubscriptions?.sort {it.dropdownNamingConvention(contextService.org).toLowerCase()}}"
+                          optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"
+                          optionKey="id"
+                          value="${ownobj?.id}"
+                          noSelection="[null: '']"/>
+
             </div>
 
         </g:if>
@@ -146,9 +170,14 @@
                     <label for="responsibleUser">
                         <g:message code="task.responsibleUser.label" default="Responsible User"/>
                     </label>
-                    <g:select id="responsibleUser" name="responsibleUser.id" from="${validResponsibleUsers}"
-                              optionKey="id" optionValue="display" value="${taskInstance?.responsibleUser?.id}"
-                              class="ui dropdown many-to-one" noSelection="['null': '']"/>
+                    <g:select id="responsibleUser"
+                              name="responsibleUser.id"
+                              from="${validResponsibleUsers?.sort {it.display.toLowerCase()}}"
+                              optionKey="id"
+                              optionValue="display"
+                              value="${taskInstance?.responsibleUser?.id}"
+                              class="ui dropdown many-to-one"
+                              noSelection="['null': '']"/>
                 </div>
             </div>
         </div>
