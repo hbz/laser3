@@ -450,13 +450,7 @@ ${surveyInfo.name}
             <th>${message(code: 'surveyProperty.type.label')}</th>
             <th>${message(code: 'surveyResult.result')}</th>
             <th>${message(code: 'surveyResult.commentParticipant')}</th>
-            <th>
-                ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                      data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                    <i class="question circle icon"></i>
-                </span>
-            </th>
+            <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
         </tr>
         </thead>
         <g:each in="${surveyResults}" var="surveyResult" status="i">
@@ -502,7 +496,7 @@ ${surveyInfo.name}
                             <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
-                            <g:if test="${surveyResult.value}">
+                            <g:if test="${surveyResult?.urlValue}">
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
@@ -515,7 +509,7 @@ ${surveyInfo.name}
                         <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
                     <td>
-                        <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                     </td>
                 </g:if>
                 <g:else>

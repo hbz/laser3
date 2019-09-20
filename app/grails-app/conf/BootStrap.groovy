@@ -424,7 +424,7 @@ class BootStrap {
                             log.debug("  -> ${fileName} : " + validate.list()?.get(0))
                         }
                         catch(Exception e) {
-                            log.error(e)
+                            log.error("  -> ${fileName} : " + e)
                         }
                     }
                 }
@@ -1539,7 +1539,7 @@ class BootStrap {
         def requiredProps = [
                 [
                         name: [en: "Participation", de: "Teilnahme"],
-                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
                         type: OT.Rdv, cat:'YN'
                 ],
                 [
@@ -1687,7 +1687,7 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
-            if (default_prop.explain) {
+            if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
             }
 
@@ -2603,6 +2603,7 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
 
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
@@ -2770,7 +2771,14 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
+	    
+	RefdataCategory.loc(RefdataCategory.IE_ACCEPT_STATUS,
+                [en: RefdataCategory.IE_ACCEPT_STATUS, de: RefdataCategory.IE_ACCEPT_STATUS], BOOTSTRAP)
 
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
+       
         RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
 

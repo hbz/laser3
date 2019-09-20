@@ -59,9 +59,10 @@ class User {
     UserRole.findAllByUser(this).collect { it.role } as Set
   }
 
+    /* hotfix; does not work
     void afterInsert() {
         userService.initMandatorySettings(this)
-    }
+    }*/
 
     void beforeInsert() {
         encodePassword()

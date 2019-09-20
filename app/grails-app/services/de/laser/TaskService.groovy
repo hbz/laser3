@@ -4,6 +4,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY
+import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY
 
 @Transactional
 class TaskService {
@@ -11,18 +13,25 @@ class TaskService {
     final static WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
 
     def springSecurityService
+    def accessService
 
-    def getTasksByCreator(User user, flag) {
+    def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
         if (user) {
             if (flag == WITHOUT_TENANT_ONLY) {
-                tasks = Task.findAllByCreatorAndResponsibleOrgAndResponsibleUser(user, null, null)
-            }
-            else {
-                tasks = Task.findAllByCreator(user)
+                def query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null " + queryMap.query
+                def params = [user : user] << queryMap.queryParams
+                tasks = Task.executeQuery(query, params)
+            } else {
+                def query = "select t from Task t where t.creator=:user " + queryMap.query
+                def params = [user : user] << queryMap.queryParams
+                tasks = Task.executeQuery(query, params)
             }
         }
-        tasks.sort{ it.endDate }
+        if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
+            tasks.sort{ it.endDate }
+        }
+        tasks
     }
 
     def getTasksByResponsible(User user, Map queryMap) {
@@ -138,31 +147,45 @@ class TaskService {
 
     def getPreconditions(Org contextOrg) {
         def result = [:]
-
-        def qry_params1 = [
-            lic_org:    contextOrg,
-            org_roles:  [
-                    RDStore.OR_LICENSEE,
-                    RDStore.OR_LICENSEE_CONS
-            ]
-        ]
-        def qry_params2 = [
-            'roleTypes' : [
-                    RDStore.OR_SUBSCRIBER,
-                    RDStore.OR_SUBSCRIBER_CONS,
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA
-            ],
-            'activeInst': contextOrg
-        ]
-
         def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
         def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
+        //TODO: MAX und OFFSET anders festlegen
+        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
-            //TODO: MAX und OFFSET anders festlegen
-            result.validLicenses = License.executeQuery('select l ' + MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params1, [max: 1000, offset: 0])
-            result.validSubscriptions = Subscription.executeQuery("select s " + MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params2,  [max: 1000, offset: 0])
+            if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
+                def qry_params_for_lic = [
+                    lic_org:    contextOrg,
+                    org_roles:  [
+                            RDStore.OR_LICENSEE,
+                            RDStore.OR_LICENSING_CONSORTIUM
+                    ]
+                ]
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+
+            } else if (accessService.checkPerm("ORG_INST")) {
+                def qry_params_for_lic = [
+                    lic_org:    contextOrg,
+                    org_roles:  [
+                            RDStore.OR_LICENSEE,
+                            RDStore.OR_LICENSEE_CONS
+                    ]
+                ]
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+
+            } else {
+                result.validLicenses = []
+            }
+            def qry_params_for_sub = [
+                'roleTypes' : [
+                        RDStore.OR_SUBSCRIBER,
+                        RDStore.OR_SUBSCRIBER_CONS,
+                        RDStore.OR_SUBSCRIPTION_CONSORTIA
+                ],
+                'activeInst': contextOrg
+            ]
+            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub,  maxOffset)
         }
         else { // TODO: admin and datamanager without contextOrg possible ?
             result.validLicenses = License.list()

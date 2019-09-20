@@ -8,6 +8,7 @@ import com.k_int.kbplus.SubscriptionPackage
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
 import de.laser.api.v0.ApiToolkit
+import de.laser.domain.IssueEntitlementCoverage
 import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -77,26 +78,19 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.globalUID        = ie.globalUID
-        result.accessStartDate  = ie.accessStartDate
-        result.accessEndDate    = ie.accessEndDate
-        result.startDate        = ie.startDate
-        result.startVolume      = ie.startVolume
-        result.startIssue       = ie.startIssue
-        result.endDate          = ie.endDate
-        result.endVolume        = ie.endVolume
-        result.endIssue         = ie.endIssue
-        result.embargo          = ie.embargo
-        result.coverageDepth    = ie.coverageDepth
-        result.coverageNote     = ie.coverageNote
-        result.ieReason         = ie.ieReason
-        result.coreStatusStart  = ie.coreStatusStart
-        result.coreStatusEnd    = ie.coreStatusEnd
+        result.globalUID        = ie?.globalUID
+        result.accessStartDate  = ie?.accessStartDate
+        result.accessEndDate    = ie?.accessEndDate
+        result.ieReason         = ie?.ieReason
+        result.coreStatusStart  = ie?.coreStatusStart
+        result.coreStatusEnd    = ie?.coreStatusEnd
 
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
+
+        result.coverages            = retrieveIssueEntitlementCoverageCollection(ie.coverages, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.TitleInstancePackagePlatform
 
         // References
         if (ignoreRelation != ApiReaderHelper.IGNORE_ALL) {
@@ -116,5 +110,45 @@ class ApiIssueEntitlement {
         }
 
         return ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * @return Map<String, Object>
+     */
+    static Map<String, Object> retrieveIssueEntitlementCoverageMap(IssueEntitlementCoverage coverage, def ignoreRelation, Org context) {
+        def result = [:]
+        if (! coverage) {
+            return null
+        }
+
+        result.startDate        = coverage?.startDate
+        result.startVolume      = coverage?.startVolume
+        result.startIssue       = coverage?.startIssue
+        result.endDate          = coverage?.endDate
+        result.endVolume        = coverage?.endVolume
+        result.endIssue         = coverage?.endIssue
+        result.embargo          = coverage?.embargo
+        result.coverageDepth    = coverage?.coverageDepth
+        result.coverageNote     = coverage?.coverageNote
+
+        return ApiToolkit.cleanUp(result, true, true)
+    }
+
+    /**
+     * Access rights due wrapping object
+     *
+     * @param list
+     * @param ignoreRelation
+     * @param com.k_int.kbplus.Org context
+     * @return Collection<Object>
+     */
+    static Collection<Object> retrieveIssueEntitlementCoverageCollection(Collection<IssueEntitlementCoverage> list, def ignoreRelation, Org context) {
+        def result = []
+
+        list?.each { it -> // com.k_int.kbplus.IssueEntitlementCoverage
+            result << retrieveIssueEntitlementCoverageMap(it, ignoreRelation, context)
+        }
+
+        result
     }
 }

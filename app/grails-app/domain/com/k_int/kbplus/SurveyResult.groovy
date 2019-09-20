@@ -70,7 +70,7 @@ class SurveyResult extends AbstractProperty {
 
     }
 
-    boolean getFinish()
+    boolean isResultProcessed()
     {
         if(type?.type == Integer.toString())
         {

@@ -744,19 +744,6 @@
           description: Mapping RefdataCategory
           enum:
             [""]
-        coverageDepth:
-          type: string
-        coverageNote:
-          type: string
-        endDate:
-          type: string
-          format: date-time
-        endVolume:
-          type: string
-        endIssue:
-          type: string
-        embargo:
-          type: string
         ieReason:
           type: string
         medium:
@@ -764,13 +751,34 @@
           description: Mapping RefdataCategory
           enum:
             [""]
-        startVolume:
-          type: string
-        startIssue:
-          type: string
-        startDate:
-          type: string
-          format: date-time
+        coverages:
+          $ref: "#/components/schemas/CoverageCollection"
+
+    CoverageCollection:
+      type: array
+      items:
+        type: object
+        properties:
+          coverageDepth:
+            type: string
+          coverageNote:
+            type: string
+          endDate:
+            type: string
+            format: date-time
+          endVolume:
+            type: string
+          endIssue:
+            type: string
+          embargo:
+            type: string
+          startVolume:
+            type: string
+          startIssue:
+            type: string
+          startDate:
+            type: string
+            format: date-time
 
 
     IssueEntitlement_in_Subscription:

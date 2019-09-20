@@ -198,13 +198,13 @@ class Org
     // ERMS-1497
     List<Combo> getIncomingCombos() {
         Combo.executeQuery('SELECT c FROM Combo c WHERE c.toOrg = :org AND c.status = :active',
-                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+                [org: this, active: COMBO_STATUS_ACTIVE])
     }
 
     // ERMS-1497
     List<Combo> getOutgoingCombos() {
         Combo.executeQuery('SELECT c FROM Combo c WHERE c.fromOrg = :org AND c.status = :active',
-                [org: this, active: RDStore.COMBO_STATUS_ACTIVE])
+                [org: this, active: COMBO_STATUS_ACTIVE])
     }
     */
 
@@ -486,7 +486,7 @@ class Org
             def consLink = new Combo(fromOrg:result,
                                      toOrg:db_consortium,
                                      status:null,
-                                     type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+                                     type: RDStore.COMBO_TYPE_CONSORTIUM
             ).save()
           }
         } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && result && imp_uuid && imp_uuid != result.gokbId){
@@ -642,10 +642,10 @@ class Org
         if ( ! found ) {
             value = value?.trim()
             ns = ns?.trim()
-            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save(flush:true);
-            def id = new Identifier(ns:namespace, value:value).save(flush:true);
-            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}");
-            new IdentifierOccurrence(identifier: id, org: this).save(flush:true)
+            def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
+            def id = new Identifier(ns:namespace, value:value).save()
+            log.debug("Create new identifier occurrence for pid:${id.getId()} ns:${ns} value:${value}")
+            new IdentifierOccurrence(identifier: id, org: this).save()
         }
     }
 
@@ -676,19 +676,40 @@ class Org
 
     // copied from AccessService
     // private boolean checkOrgPerm(String[] orgPerms) {}
-    boolean hasPerm(String perm) {
+    boolean hasPerm(String perms) {
         boolean check = false
 
-        if (perm) {
+        if (perms) {
             def oss = OrgSettings.get(this, OrgSettings.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
-                check = PermGrant.findByPermAndRole(Perm.findByCode(perm?.toLowerCase()?.trim()), (Role) oss.getValue())
+                perms.split(',').each { perm ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
+                }
             }
         }
         else {
             check = true
         }
         check
+    }
+    String dropdownNamingConvention(Org contextOrg){
+        String result = ''
+        if (RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()){
+            if (name) {
+                result += name
+            }
+            if (shortname){
+                result += ' (' + shortname + ')'
+            }
+        } else {
+            if (sortname) {
+                result += sortname
+            }
+            if (name) {
+                result += ' (' + name + ')'
+            }
+        }
+        result
     }
 
 }
