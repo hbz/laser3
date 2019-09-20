@@ -11,13 +11,13 @@ import java.text.SimpleDateFormat
 class SurveyConfig {
 
     @Transient
-    public static final ALL_RESULTS_FINISH_BY_ORG = "Finish"
+    public static final ALL_RESULTS_PROCESSED_BY_ORG = "All Processed"
 
     @Transient
-    public static final ALL_RESULTS_NOT_FINISH_BY_ORG = "Not Finish"
+    public static final ALL_RESULTS_NOT_PROCESSED_BY_ORG = "Not Processed"
 
     @Transient
-    public static final ALL_RESULTS_HALF_FINISH_BY_ORG = "Half Finish"
+    public static final ALL_RESULTS_HALF_PROCESSED_BY_ORG = "Half Processed"
 
     Integer configOrder
 
@@ -41,11 +41,13 @@ class SurveyConfig {
     boolean configFinish
     boolean costItemsFinish
     boolean evaluationFinish
+    boolean isSubscriptionSurveyFix
 
     static hasMany = [
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
-            orgs            : SurveyOrg
+            orgs            : SurveyOrg,
+            surResults      : SurveyResult
     ]
 
     static constraints = {
@@ -63,6 +65,8 @@ class SurveyConfig {
         scheduledEndDate (nullable: true, blank: false)
         internalComment(nullable: true, blank: false)
         evaluationFinish (nullable: true, blank: false)
+        isSubscriptionSurveyFix (nullable: true, blank: false)
+        surResults(nullable: true, blank: false)
     }
 
     static mapping = {
@@ -77,6 +81,7 @@ class SurveyConfig {
         configFinish column: 'surconf_config_finish', default: false
         costItemsFinish column: 'surconf_costitems_finish', default: false
         evaluationFinish column: 'surconf_evaluation_finish', default: false
+        isSubscriptionSurveyFix column: 'surconf_is_subscription_survey_fix', default: false
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -122,6 +127,15 @@ class SurveyConfig {
         }
     }
 
+    def getSurveyName() {
+
+        if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
+            return subscription?.name
+        } else {
+            return surveyInfo?.name
+        }
+    }
+
     def getConfigName() {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
@@ -154,11 +168,11 @@ class SurveyConfig {
         return result
     }
 
-    def checkResultsFinishByOrg(Org org) {
+    //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
+    def checkResultsEditByOrg(Org org) {
 
-        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.checkPerennialTerm()) {
-            println("Test")
-            return ALL_RESULTS_FINISH_BY_ORG
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+            return ALL_RESULTS_PROCESSED_BY_ORG
         } else {
 
             def countFinish = 0
@@ -167,19 +181,40 @@ class SurveyConfig {
             def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                 surveyResult.each {
-                    if (it.getFinish()) {
+                    if (it.isResultProcessed()) {
                         countFinish++
                     } else {
                         countNotFinish++
                     }
                 }
                 if (countFinish > 0 && countNotFinish == 0) {
-                    return ALL_RESULTS_FINISH_BY_ORG
+                    return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
-                    return ALL_RESULTS_HALF_FINISH_BY_ORG
+                    return ALL_RESULTS_HALF_PROCESSED_BY_ORG
                 } else {
-                    return ALL_RESULTS_NOT_FINISH_BY_ORG
+                    return ALL_RESULTS_NOT_PROCESSED_BY_ORG
                 }
+        }
+
+
+    }
+
+    boolean isResultsSetFinishByOrg(Org org) {
+
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+            return true
+        } else {
+
+            def countFinish = 0
+            def countNotFinish = 0
+
+            def surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+
+            if(surveyResults?.finishDate.contains(null)){
+                return false
+            }else {
+                return true
+            }
         }
 
 

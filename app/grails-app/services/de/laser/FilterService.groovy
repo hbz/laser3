@@ -327,15 +327,14 @@ class FilterService {
         }
 
         if (params.participant) {
-            query << "exists (select surConfig from SurveyConfig as surConfig where surConfig.surveyInfo = surInfo and " +
-                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant))"
+            query << "" +
+                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant)"
             queryParams << [participant : params.participant]
         }
 
         if(params.tab == "created"){
-            query << "surInfo.status = :status"
+            query << "(surInfo.status = :status or surInfo.status = :status2)"
             queryParams << [status: RDStore.SURVEY_IN_PROCESSING]
-            query << "surInfo.status = :status2"
             queryParams << [status2: RDStore.SURVEY_READY]
         }
 
@@ -359,13 +358,20 @@ class FilterService {
             queryParams << [status: RDStore.SURVEY_COMPLETED]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC, LOWER(surConfig.subscription.name), LOWER(surInfo.name)") + " " + (params.order ?: "asc")
+        def defaultOrder = " order by " + (params.sort ?: " surInfo.endDate DESC") + " " + (params.order ?: "asc")
 
-        if (query.size() > 0) {
+        /*if (query.size() > 0) {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
         } else {
             result.query = "select surConfig from SurveyConfig surConfig left join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg" + defaultOrder
         }
+*/
+        if (query.size() > 0) {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg" + defaultOrder
+        }
+
         queryParams << [contextOrg : contextOrg]
 
 
@@ -373,20 +379,20 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org contextOrg) {
+    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "genfunc_filter_matcher(surveyConfig.surveyInfo.name, :name) = true"
+            query << "genfunc_filter_matcher(surResult.surveyConfig.surveyInfo.name, :name) = true"
             queryParams << [name:"${params.name}"]
         }
         if(params.status) {
-            query << "surveyConfig.surveyInfo.status = :status"
+            query << "surResult.surveyConfig.surveyInfo.status = :status"
             queryParams << [status: RefdataValue.get(params.status)]
         }
         if(params.type) {
-            query << "surveyConfig.surveyInfo.type = :type"
+            query << "surResult.surveyConfig.surveyInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
         }
 
@@ -394,12 +400,12 @@ class FilterService {
 
             params.currentDate = (params.currentDate instanceof Date) ? params.currentDate : sdFormat.parse(params.currentDate)
 
-            query << "surveyConfig.surveyInfo.startDate <= :startDate and (surveyConfig.surveyInfo.endDate >= :endDate or surveyConfig.surveyInfo.endDate is null)"
+            query << "surResult.surveyConfig.surveyInfo.startDate <= :startDate and (surResult.surveyConfig.surveyInfo.endDate >= :endDate or surResult.surveyConfig.surveyInfo.endDate is null)"
 
             queryParams << [startDate : params.currentDate]
             queryParams << [endDate : params.currentDate]
 
-            query << "surveyConfig.surveyInfo.status = :status"
+            query << "surResult.surveyConfig.surveyInfo.status = :status"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
 
         }
@@ -415,18 +421,47 @@ class FilterService {
 
             params.endDate = params.endDate instanceof Date ? params.endDate : sdFormat.parse(params.endDate)
 
-            query << "(surveyConfig.surveyInfo.endDate <= :endDate or surveyConfig.surveyInfo.endDate is null)"
+            query << "(surResult.surveyConfig.surveyInfo.endDate <= :endDate or surResult.surveyConfig.surveyInfo.endDate is null)"
             queryParams << [endDate : params.endDate]
         }
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
+
+
+        if(params.tab == "new"){
+            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "processed"){
+            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "finish"){
+            query << "(surResult.finishDate is not null)"
+        }
+
+        if(params.tab == "notFinish"){
+            query << "((surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3) and surResult.finishDate is null)"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
+            queryParams << [status2: RDStore.SURVEY_IN_EVALUATION]
+            queryParams << [status3: RDStore.SURVEY_COMPLETED]
+        }
+
+        if(params.consortiaOrg) {
+            query << "surResult.owner = :owner"
+            queryParams << [owner: params.consortiaOrg]
+        }
+
+
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyResult where participant = :contextOrg and " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :org and " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyResult where participant = :contextOrg" + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult where surResult.participant = :org" + defaultOrder
         }
-        queryParams << [contextOrg : contextOrg]
+        queryParams << [org : org]
 
 
         result.queryParams = queryParams

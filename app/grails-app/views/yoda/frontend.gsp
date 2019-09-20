@@ -78,11 +78,10 @@
 
             <div class="column"><i class="la-books icon"></i>la-books</div>
 
-            <div class="column"><i class="la-noChange icon"></i>la-noChange</div>
+            <div class="column"><i class="la-gokb icon"></i>la-gokb</div>
 
-            <div class="column"><i class="la-append icon"></i>la-append</div>
+            <div class="column"><i class="la-laser icon"></i>la-laser</div>
 
-            <div class="column"><i class="la-replace icon"></i>la-replace</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
@@ -263,13 +262,13 @@
     <div class="html ui top attached segment example">
         <ul>
             <li><code>tabindex="0"</code><b> – für den Screenreader</b>
-            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
             <li><code>class="icon thumbtack blue"</code> <b> – für Gestaltung</b>
             <li><code>data-content="1 2 3"</code>
         </ul>
         <div class="ui top attached label">WCAG-Proof Icon</div>
     </div>
-    <i  tabindex="0" class="la-js-popup icon thumbtack blue" data-content="1 2 3" ></i>
+    <i  tabindex="0" class="la-popup-tooltip la-delay icon thumbtack blue" data-content="1 2 3" ></i>
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kan, Icon bleibt</h4>
     <div class="html ui top attached segment example">
         <ul>
@@ -278,7 +277,7 @@
             <li><code>class="ui icon mini button </code>
                 <ul>
                     <li><code>la-audit-button </code>
-                    <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+                    <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
                     <li><code>la-js-editmode-remain-icon"</code>
                 </ul>
             </li>
@@ -287,7 +286,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
     <dd class="la-js-editmode-container">
-        <a  role="button" class="ui icon mini button la-audit-button la-js-popup" href='https://www.spiegel.de' data-content="4 5 6">
+        <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
             <i class="icon thumbtack la-js-editmode-icon"></i>
         </a>
     </dd><br>
@@ -297,7 +296,7 @@
         <ul>
             <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
 
             </li>
 
@@ -305,7 +304,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
 
-    <a  role="button" class="ui icon mini button la-audit-button la-js-popup" href='https://www.spiegel.de' data-content="10 11 12">
+    <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
         <i class="icon thumbtack la-js-editmode-icon"></i>
     </a><br><br>
     <h4 class="ui header">Funktions-Button, der ausgeschaltet werden kann, Icon verschwindet</h4>
@@ -313,7 +312,7 @@
         <ul>
             <li><code>role="button"</code>, <b>wenn es ein Link ist</b>
             <li><code>class="ui icon mini button </code>
-            <li><code>class="la-js-popup"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
+            <li><code>class="la-popup-tooltip la-delay"</code> <b> – für die Aktivierung des Tooltips mit Jvascript</b>
 
             </li>
 
@@ -321,11 +320,40 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
 
-    <a  role="button" class="ui icon mini button la-audit-button la-js-popup la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
+    <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
         <i class="icon thumbtack"></i>
     </a><br><br>
 
 </section>
+<%@ page import="java.util.Locale;java.util.List" %>
+<%
+    Locale localeDe = new Locale.Builder().setLanguage("de").build()
+    Locale localeEn = new Locale.Builder().setLanguage("en").build()
+
+    List<String> translations = [
+            'statusbar.hideButtons.tooltip',
+            'statusbar.showButtons.tooltip'
+    ]
+
+    println """
+dict = {
+    get: function (key, lang) {
+        return dict[key][lang]
+    },
+    'test': {
+        de: 'öö',
+        en: 'Translation'
+    }, """
+
+    translations.eachWithIndex { it, index ->
+        println "    '${it}' : {"
+        println "        de: '" + message(code: "${it}", locale: localeDe) + "',"
+        println "        en: '" + message(code: "${it}", locale: localeEn) + "' "
+        println (index < translations.size() - 1 ? "    }, " : "    }")
+    }
+
+    println "} "
+%>
 
 
 </body>

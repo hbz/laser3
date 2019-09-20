@@ -111,7 +111,7 @@ ${message(code: 'subscription.linkLicenseMembers.header')}
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'license.details.isSlaved.tooltip')}">
+                                       class="la-popup-tooltip la-delay" data-content="${message(code: 'license.details.isSlaved.tooltip')}">
                                     <i class="thumbtack blue icon"></i>
                                 </span>
                             </g:if>

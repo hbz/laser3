@@ -130,7 +130,7 @@ class AccessService {
 
         if (orgPerms) {
             Org ctx = contextService.getOrg()
-            checkOrgPerm(ctx, orgPerms)
+            check = checkOrgPerm(ctx, orgPerms)
         } else {
             check = true
         }

@@ -16,7 +16,7 @@
       <g:message code="tipp.show.label" args="${[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name]}"/>
     </h1>
 
-    <g:render template="/templates/meta/identifier" model="${[object: titleInstanceInstance, editable: editable]}" />
+    <g:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}" />
 
     <semui:messages data="${flash}" />
 

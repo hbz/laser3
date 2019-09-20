@@ -103,3 +103,25 @@
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
 }
+// card at subscription/index
+.la-tableCard .ui .card {
+  width: 300px;
+  .content {
+    padding: 0;
+    display: flex;
+    .la-card-column {
+      flex-grow: 1;
+      padding: @contentPadding;
+      &:first-child {
+        border-right: @extraDivider;
+      }
+    }
+    .la-card-column-with-row {
+      padding: @contentPadding;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+}

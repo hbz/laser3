@@ -15,6 +15,10 @@
     <body>
 
         <semui:debugInfo>
+            <div style="padding: 1em 0;">
+                <p>sub.administrative: ${subscriptionInstance.administrative}</p>
+                <p>getCalculatedType(): ${subscriptionInstance.getCalculatedType()}</p>
+            </div>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
             <g:render template="/templates/debug/orgRoles"  model="[debug: subscriptionInstance.orgRelations]" />
             <g:render template="/templates/debug/prsRoles"  model="[debug: subscriptionInstance.prsLinks]" />
@@ -41,12 +45,9 @@
 
     <g:render template="nav" />
 
-        <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
+    <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
-        <g:render template="message" />
-    </g:if>
-
+    <g:render template="message" />
 
     <g:render template="/templates/meta/identifier" model="${[object: subscriptionInstance, editable: editable]}" />
 
@@ -97,11 +98,14 @@
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
-                                    <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
+                                    <g:if test="${subscriptionInstance.administrative || subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
                                         ${subscriptionInstance.type?.getI10n('value')}
                                     </g:if>
                                     <g:else>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
+                                                                config='Subscription Type'
+                                                                constraint="removeValue_administrativeSubscription"
+                                        />
                                     </g:else>
                                 </dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
@@ -195,60 +199,71 @@
                                                 tmplID:'addLink',
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
-                                                editmode: accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR"),
+                                                editmode: editable,
                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>
                     </div>
                 </div>
 
-                <div class="ui card">
+                %{--<div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt class="control-label"><g:message code="license.responsibilites" default="Responsibilites" /></dt>
-                            <dd>
 
+                            <table class="ui three column table">
+                                <tbody>
+                                <g:if test="${publicSubscriptionEditors}"></g:if>
+                                <g:else>
+                                    <dl>
+                                        <dt class="control-label"><g:message code="license.responsibilites" />
+                                        </dt>
+                                    </dl>
+                                </g:else>
                                 <g:each in="${publicSubscriptionEditors}" var="pse">
-                                    <g:render template="/templates/cpa/person_full_details" model="${[
-                                            person              : pse,
-                                            personContext       : pse.tenant,
-                                            tmplShowDeleteButton    : true,
-                                            tmplShowAddPersonRoles  : false,
-                                            tmplShowAddContacts     : true,
-                                            tmplShowAddAddresses    : true,
-                                            tmplShowFunctions       : false,
-                                            tmplShowPositions       : false,
-                                            tmplShowResponsiblities : false,
-                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                            tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
-                                            controller          : 'subscription',
-                                            action              : 'show',
-                                            id                  : pse.tenant.id,
-                                            editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
-                                    ]}"/>
+                                        <tr>
+                                            <th scope="row" class="control-label la-js-dont-hide-this-card">
+                                                <g:message code="license.responsibilite" />
+                                            </th>
+                                            <td>
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : pse,
+                                                        personContext       : pse.tenant,
+                                                        tmplShowDeleteButton    : true,
+                                                        tmplShowAddPersonRoles  : false,
+                                                        tmplShowAddContacts     : true,
+                                                        tmplShowAddAddresses    : true,
+                                                        tmplShowFunctions       : false,
+                                                        tmplShowPositions       : false,
+                                                        tmplShowResponsiblities : false,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        tmplUnlinkedObj     : PersonRole.findByPrsAndOrgAndSubAndResponsibilityType(pse, pse.tenant, subscriptionInstance, RDStore.PRS_RESP_SPEC_SUB_EDITOR),
+                                                        controller          : 'subscription',
+                                                        action              : 'show',
+                                                        id                  : pse.tenant.id,
+                                                        editable            : ((pse.tenant.id == contextService.getOrg().id && user.hasAffiliation('INST_EDITOR')) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
+                                                ]}"/>
+                                            </td>
+                                        </tr>
+                                    </g:each>
 
-                                </g:each>
-                            </dd>
-                        </dl>
+                                </tbody>
+                            </table>
 
-                        <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
-
-                            <div class="ui la-vertical buttons">
-                                <a class="ui button" data-semui="modal" href="#prsLinksModal">
-                                    ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
-                                </a>
-                            </div>
-
-                            <g:render template="/templates/links/prsResponsibilityModal"
-                                      model="[
-                                              parent: subscriptionInstance,
-                                              modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
-                                              org: contextOrg,
-                                              role: modalPrsLinkRole
-                                      ]"/>
-                        </g:if>
+                            <g:if test="${OrgRole.findAllByOrg(contextOrg)}">
+                                <div class="ui la-vertical buttons">
+                                    <a class="ui button" data-semui="modal" href="#prsLinksModal">
+                                        ${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}
+                                    </a>
+                                </div>
+                                <g:render template="/templates/links/prsResponsibilityModal"
+                                          model="[
+                                                  parent: subscriptionInstance,
+                                                  modalVisiblePersons: contextOrg.getPublicPersons().minus(publicSubscriptionEditors),
+                                                  org: contextOrg,
+                                                  role: modalPrsLinkRole
+                                          ]"/>
+                            </g:if>
                     </div>
-                </div>
+                </div>--}%
 
                 <g:if test="${subscriptionInstance.packages}">
                     <div class="ui card la-js-hideable hidden">

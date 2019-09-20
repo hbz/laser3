@@ -77,7 +77,7 @@
                         <dd>
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon"><div
-                                    class="ui circular label">${surveyConfig?.documents?.size()}</div></g:link>
+                                    class="ui circular label">${surveyConfig?.getCurrentDocs()?.size()}</div></g:link>
                         </dd>
 
                     </dl>
@@ -169,7 +169,11 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${result?.participant?.sortname}
+
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${result?.participant?.id}">
+                            ${result?.participant?.sortname}
+                        </g:link>
+
                     </td>
                     <td>
                         <g:link controller="organisation" action="show" id="${result?.participant.id}">
@@ -178,9 +182,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
@@ -199,7 +203,7 @@
                                 <semui:xEditable owner="${result}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${result.value}">
+                                <g:if test="${result?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
@@ -261,7 +265,9 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${result?.participant?.sortname}
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${result?.participant?.id}">
+                            ${result?.participant?.sortname}
+                        </g:link>
                     </td>
                     <td>
                         <g:link controller="organisation" action="show" id="${result?.participant.id}">
@@ -270,9 +276,9 @@
                     </td>
 
                     <g:set var="surveyOrg"
-                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, institution)}"/>
+                           value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(result?.surveyConfig, result?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${result?.type?.type == Integer.toString()}">
@@ -291,7 +297,7 @@
                                 <semui:xEditable owner="${result}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${result.value}">
+                                <g:if test="${result?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>

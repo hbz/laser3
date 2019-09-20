@@ -137,18 +137,25 @@ class TitleController extends AbstractDebugController {
     }
   }
 
-  @Secured(['ROLE_USER'])
-  def show() {
-    def result = [:]
+    @Secured(['ROLE_USER'])
+        def show() {
+        def result = [:]
 
-    result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-    result.ti = TitleInstance.get(params.id)
-    result.duplicates = reusedIdentifiers(result.ti);
-    result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?",[result.ti]);
+        result.ti = TitleInstance.get(params.id)
+        if (! result.ti) {
+            flash.error = message(code:'titleInstance.error.notFound.es')
+            redirect action: 'list'
 
-    result
-  }
+            return
+        }
+
+        result.duplicates = reusedIdentifiers(result.ti);
+        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = ?", [result.ti] )
+
+        result
+    }
 
     private def reusedIdentifiers(title) {
     // Test for identifiers that are used accross multiple titles

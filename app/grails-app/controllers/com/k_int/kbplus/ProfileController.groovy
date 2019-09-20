@@ -209,12 +209,10 @@ class ProfileController {
         if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
             flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.noCCEmailAddressError')
         } else {
-            if (params.remindCCEmailaddress){
-                if (validateEmailAddress(params.remindCCEmailaddress)){
-                    changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
-                } else {
-                    flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
-                }
+            if (params.remindCCEmailaddress == null || params.remindCCEmailaddress.trim() == '' || validateEmailAddress(params.remindCCEmailaddress)){
+                changeValue(user.getSetting(REMIND_CC_EMAILADDRESS, null),       params.remindCCEmailaddress,     'profile.updateProfile.updated.remindCCEmailaddress')
+            } else {
+                flash.error += message(code:'profile.updateProfile.updated.email.error', default:"Emails must be of the form user@domain.name<br/>")
             }
             changeValue(user.getSetting(IS_REMIND_CC_BY_EMAIL, YN_NO),                   params.isRemindCCByEmail?:"N",     'profile.updateProfile.updated.isRemindCCByEmail')
         }
@@ -278,39 +276,40 @@ class ProfileController {
 
     private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
         def oldValue = userSetting.value
-        if (newValue) {
-            if (userSetting.key.type == RefdataValue && userSetting.key.rdc == 'YN') {
-                if (newValue == 'Y') {
-                    newValue = YN_YES
-                } else {
-                    newValue = YN_NO
-                }
-            }
-            if (userSetting.key.type == Integer) {
-                newValue = Integer.parseInt(newValue)
-            }
-            boolean valueHasChanged = oldValue != newValue
-            if (valueHasChanged) {
-                userSetting.setValue(newValue)
-                flash.message += (message(code: messageSuccessfull) + "<br/>")
-            }
-        } else {
-            if (    REMIND_PERIOD_FOR_TASKS == userSetting.key ||
-                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD == userSetting.key ||
-                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE == userSetting.key ||
-                    REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_ORG_PRIVATE_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_ORG_CUSTOM_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key ||
-                    REMIND_PERIOD_FOR_SURVEYS_ENDDATE == userSetting.key
-            ) {
+        if (    REMIND_PERIOD_FOR_TASKS == userSetting.key ||
+                REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD == userSetting.key ||
+                REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE == userSetting.key ||
+                REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_ORG_PRIVATE_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_ORG_CUSTOM_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP == userSetting.key ||
+                REMIND_PERIOD_FOR_SURVEYS_ENDDATE == userSetting.key
+        ) {
+            if ( ! newValue) {
                 flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error.dashboardReminderPeriod') + "<br/>")
-            } else {
-                flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error') + "<br/>")
+                return
             }
+        }
+        if (userSetting.key.type == RefdataValue && userSetting.key.rdc == 'YN') {
+            if (newValue == 'Y') {
+                newValue = YN_YES
+            } else {
+                newValue = YN_NO
+            }
+        }
+        if (userSetting.key.type == Integer) {
+            newValue = Integer.parseInt(newValue)
+        }
+        if (userSetting.key.type == String) {
+            newValue = ((String)newValue).isEmpty() ? null : newValue.trim()
+        }
+        boolean valueHasChanged = oldValue != newValue
+        if (valueHasChanged) {
+            userSetting.setValue(newValue)
+            flash.message += (message(code: messageSuccessfull) + "<br/>")
         }
     }
 

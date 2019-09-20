@@ -1,4 +1,4 @@
-<%@ page import="static de.laser.helper.RDStore.*; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
 <%@ page import="com.k_int.kbplus.Combo;grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <g:if test="${OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
+    <g:if test="${RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds()}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
     <g:elseif test="${institutionalView}">
@@ -49,7 +49,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<g:if test="${!departmentalView}">
+<g:if test="${departmentalView != true}">
     <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
 </g:if>
 
@@ -69,7 +69,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                        <g:if test="${!departmentalView}">
+                        <g:if test="${departmentalView != true}">
                             <dl>
                                 <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
                                 <dd>
@@ -77,18 +77,20 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                                 </dd>
                             </dl>
                         </g:if>
-                        <dl>
-                            <dt>
-                                <g:message code="org.sortname.label" default="Sortname"/>
-                                <g:if test="${!departmentalView}">
-                                    <br>
-                                    <g:message code="org.sortname.onlyForLibraries.label"/>
-                                </g:if>
-                            </dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="sortname"/>
-                            </dd>
-                        </dl>
+                        <g:if test="${!(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.sortname.label" default="Sortname"/>
+                                    <g:if test="${departmentalView != true}">
+                                        <br>
+                                        <g:message code="org.sortname.onlyForLibraries.label"/>
+                                    </g:if>
+                                </dt>
+                                <dd>
+                                    <semui:xEditable owner="${orgInstance}" field="sortname"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </g:if>
                 </div>
             </div><!-- .card -->
@@ -119,8 +121,8 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div>
             </div><!-- .card -->
 
-
-            <g:if test="${orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'))}">
+            <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) --%>
+            <g:if test="${departmentalView != true}">
                 <div class="ui card">
                     <div class="content">
                         <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -251,78 +253,78 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div>
             </g:if>
 
-
-            <div class="ui card">
-                <div class="content">
-                    <g:if test="${orgInstance.hasPerm("ORG_INST")}">
-                        <dl>
-                            <dt>
-                                <g:message code="org.libraryType.label" default="Library Type"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                        config='Library Type'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.libraryNetwork.label" default="Library Network"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                        config='Library Network'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.funderType.label" default="Funder Type"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.federalState.label" default="Federal State"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.federalState.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="federalState"
-                                                        config='Federal State'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.country.label" default="Country"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.country.expl')}">
-                                    <i class="question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
-                            </dd>
-                        </dl>
-                    </div>
+            <g:if test="${departmentalView != true && !(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+                <div class="ui card">
+                    <div class="content">
+                            <dl>
+                                <dt>
+                                    <g:message code="org.libraryType.label" default="Library Type"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.libraryType.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
+                                                            config='Library Type'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.libraryNetwork.label" default="Library Network"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.libraryNetwork.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                                            config='Library Network'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.funderType.label" default="Funder Type"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.funderType.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="funderType" config='Funder Type'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.federalState.label" default="Federal State"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.federalState.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="federalState"
+                                                            config='Federal State'/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>
+                                    <g:message code="org.country.label" default="Country"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${message(code: 'org.country.expl')}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <semui:xEditableRefData owner="${orgInstance}" field="country" config='Country'/>
+                                </dd>
+                            </dl>
+                        </div>
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${(OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+
+            <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -671,8 +673,6 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                       model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
         </g:if>
     </aside>
-</div>
-</div>
 </div>
 </body>
 </html>

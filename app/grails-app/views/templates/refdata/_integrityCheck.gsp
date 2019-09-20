@@ -21,7 +21,7 @@
                         <!-- ${entry.rdc} -->
                         <g:each in="${entry.check}" var="check">
                             <g:if test="${check.value != true}">
-                                <div class="ui label red" data-tooltip="RDC: ${check.value.desc} (${check.value.id})">${check.key}</div>
+                                <div class="ui label red la-popup-tooltip la-delay" data-content="RDC: ${check.value.desc} (${check.value.id})">${check.key}</div>
                             </g:if>
                             <g:else>
                                 <div class="ui label green">${check.key}</div>

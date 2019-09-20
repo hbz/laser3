@@ -210,14 +210,14 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
 
                     <td class="center aligned">
-                        <g:set var="finish" value="${surveyConfig.checkResultsFinishByOrg(institution)}"/>
-                        <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_FINISH_BY_ORG}">
+                        <g:set var="finish" value="${surveyConfig.checkResultsEditByOrg(institution)}"/>
+                        <g:if test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyConfig.allResultsFinishByOrg')}">
                                 <i class="circle green icon"></i>
                             </span>
                         </g:if>
-                        <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_FINISH_BY_ORG}">
+                        <g:elseif test="${finish == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_HALF_PROCESSED_BY_ORG}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'surveyConfig.allResultsHalfFinishByOrg')}">
                                 <i class="circle yellow icon"></i>
@@ -232,7 +232,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                     </td>
 
                     <td>
-                        <span data-tooltip="${message(code: 'surveyConfig.editResult')}">
+                        <span  class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfig.editResult')}">
                             <g:link action="surveyConfigsInfo" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui icon button">
                                 <i class="pencil icon"></i>
                             </g:link>
@@ -320,7 +320,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
                                 <semui:xEditable owner="${config.value[0]}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${config.value[0].value}">
+                                <g:if test="${config.value[0]?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>

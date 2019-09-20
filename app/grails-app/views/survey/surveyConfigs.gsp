@@ -27,48 +27,45 @@
 
 <semui:messages data="${flash}"/>
 
-<br>
-
-<h2 class="ui left aligned icon header">${message(code: 'surveyConfigs.list')} <semui:totalNumber
-        total="${surveyConfigs.size()}"/></h2>
 
 <div>
-    <semui:form>
 
-        <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.subscriptions')} <semui:totalNumber
-                total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
+    <g:if test="${surveyInfo?.isSubscriptionSurvey}">
+        <semui:form>
 
-        <table class="ui celled sortable table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">
-                    ${message(code: 'surveyConfig.configOrder.label')}
-                </th>
-                <th>${message(code: 'surveyProperty.subName')}</th>
-                <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
-                <th>${message(code: 'surveyProperty.subStatus')}</th>
+            <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.subscriptions')} <semui:totalNumber
+                    total="${surveyConfigs.findAll { it?.type == 'Subscription' }.size()}"/></h3>
 
-                <th>${message(code: 'surveyProperty.plural.label')}</th>
-                <th>${message(code: 'surveyConfig.documents.label')}</th>
-                <th>${message(code: 'surveyConfig.orgs.label')}</th>
-                <th>${message(code: 'surveyCostItems.label')}</th>
-                <th></th>
+            <table class="ui celled sortable table la-table">
+                <thead>
+                <tr>
+                    <th class="center aligned">
+                        ${message(code: 'surveyConfig.configOrder.label')}
+                    </th>
+                    <th>${message(code: 'surveyProperty.subName')}</th>
+                    <th>${message(code: 'surveyProperty.subProviderAgency')}</th>
+                    <th>${message(code: 'surveyProperty.subStatus')}</th>
 
-            </tr>
+                    <th>${message(code: 'surveyProperty.plural.label')}</th>
+                    <th>${message(code: 'surveyConfig.documents.label')}</th>
+                    <th>${message(code: 'surveyConfig.orgs.label')}</th>
+                    <th>${message(code: 'surveyCostItems.label')}</th>
+                    <th></th>
 
-            </thead>
-        <g:set var="surveySubConfigs" value="${surveyConfigs.findAll{it?.type == 'Subscription'}}"/>
-            <g:each in="${surveySubConfigs}" var="config" status="i">
+                </tr>
 
+                </thead>
+                <g:set var="surveySubConfigs" value="${surveyConfigs.findAll { it?.type == 'Subscription' }}"/>
+                <g:each in="${surveySubConfigs}" var="config" status="i">
 
-                <g:set var="participantsFinish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(config)}"/>
+                    <g:set var="participantsFinish"
+                           value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(config)}"/>
 
-                <g:set var="participantsparticipantsTotal"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(config)}"/>
+                    <g:set var="participantsparticipantsTotal"
+                           value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(config)}"/>
 
                     <tr>
-                        <td class="center aligned" >
+                        <td class="center aligned">
                             %{--<div class="ui label large la-annual-rings">
                                 <g:if test="${config?.configOrder > 1}">
                                 <g:link action="changeConfigOrder" id="${surveyInfo.id}"
@@ -87,7 +84,7 @@
                                     <i class="icon"></i>
                                 </g:else>
                             </div>--}%
-                            ${i+1}
+                            ${i + 1}
                         </td>
                         <td>
                             <g:link controller="subscription" action="show"
@@ -95,8 +92,10 @@
 
                         </td>
                         <td>
-                            <g:each in="${config?.subscription?.getProviders()+config?.subscription?.getAgencies()}" var="provider">
-                                <g:link controller="organisation" action="show" id="${provider?.id}">${provider?.name}</g:link><br>
+                            <g:each in="${config?.subscription?.getProviders() + config?.subscription?.getAgencies()}"
+                                    var="provider">
+                                <g:link controller="organisation" action="show"
+                                        id="${provider?.id}">${provider?.name}</g:link><br>
                             </g:each>
                         </td>
                         <td>
@@ -143,7 +142,8 @@
 
                             <g:if test="${editable && config?.getCurrentDocs()}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
+                                      class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyConfigs.delete.existingDocs')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -151,7 +151,8 @@
                             </g:if>
                             <g:elseif test="${editable && config?.surveyProperties?.size() > 0}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingProperties')}">
+                                      class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyConfigs.delete.existingProperties')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -169,52 +170,51 @@
                             </g:elseif>
                         </td>
                     </tr>
-            </g:each>
-        </table>
-    </semui:form>
+                </g:each>
+            </table>
+        </semui:form>
+    </g:if>
+    <g:else>
+        <semui:form>
 
-    <br>
-    <br>
+            <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.selecetedPropertys')} <semui:totalNumber
+                    total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
 
+            <table class="ui celled sortable table la-table">
+                <thead>
+                <tr>
+                    <th class="center aligned">
+                        ${message(code: 'surveyConfig.configOrder.label')}
+                    </th>
+                    <th>${message(code: 'surveyProperty.name')}</th>
+                    <th>${message(code: 'surveyProperty.type.label')}</th>
+                    <th>${message(code: 'surveyConfig.documents.label')}</th>
+                    <th>${message(code: 'surveyConfig.orgs.label')}</th>
+                    <th></th>
 
-    <semui:form>
+                </tr>
 
-        <h3 class="ui left aligned icon header">${message(code: 'surveyConfigs.list.selecetedPropertys')} <semui:totalNumber
-                total="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }.size()}"/></h3>
+                </thead>
 
-        <table class="ui celled sortable table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">
-                    ${message(code: 'surveyConfig.configOrder.label')}
-                </th>
-                <th>${message(code: 'surveyProperty.name')}</th>
-                <th>${message(code: 'surveyProperty.type.label')}</th>
-                <th>${message(code: 'surveyConfig.documents.label')}</th>
-                <th>${message(code: 'surveyConfig.orgs.label')}</th>
-                <th></th>
-
-            </tr>
-
-            </thead>
-
-            <g:set var="surveyPropertyConfigs" value="${surveyConfigs.findAll{it?.type == 'SurveyProperty'}}"/>
-            <g:each in="${surveyPropertyConfigs}" var="config" status="i">
+                <g:set var="surveyPropertyConfigs" value="${surveyConfigs.findAll { it?.type == 'SurveyProperty' }}"/>
+                <g:each in="${surveyPropertyConfigs}" var="config" status="i">
                     <tr>
                         <td class="center aligned">
                             <div class="ui label large la-annual-rings">
-                                <g:if test="${config?.configOrder-surveySubConfigs.size() > 1}">
+                                <g:if test="${config?.configOrder - surveySubConfigs.size() > 1}">
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
-                                            params="[surveyConfigID: config?.id, change: 'up']"><i class="angle up icon"></i></g:link>
+                                            params="[surveyConfigID: config?.id, change: 'up']"><i
+                                            class="angle up icon"></i></g:link>
                                 </g:if>
                                 <g:else>
                                     <i class="icon"></i>
                                 </g:else>
                                 <br>
                                 ${config?.configOrder}<br>
-                                <g:if test="${config?.configOrder <= surveySubConfigs?.size()-1}">
+                                <g:if test="${config?.configOrder <= surveySubConfigs?.size() - 1}">
                                     <g:link action="changeConfigOrder" id="${surveyInfo.id}"
-                                            params="[surveyConfigID: config?.id, change: 'down']"><i class="angle down icon"></i></g:link>
+                                            params="[surveyConfigID: config?.id, change: 'down']"><i
+                                            class="angle down icon"></i></g:link>
                                 </g:if>
                                 <g:else>
                                     <i class="icon"></i>
@@ -227,7 +227,9 @@
                                 ${config?.surveyProperty?.getI10n('name')}
 
                                 <g:if test="${config?.surveyProperty?.getI10n('explain')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-variation="tiny" data-content="${config?.surveyProperty?.getI10n('explain')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-variation="tiny"
+                                          data-content="${config?.surveyProperty?.getI10n('explain')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
@@ -264,7 +266,8 @@
 
                             <g:if test="${config?.getCurrentDocs()}">
                                 <span data-position="top right"
-                                      data-tooltip="${message(code: 'surveyConfigs.delete.existingDocs')}">
+                                      class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyConfigs.delete.existingDocs')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>
@@ -282,9 +285,10 @@
                             </g:elseif>
                         </td>
                     </tr>
-            </g:each>
-        </table>
-    </semui:form>
+                </g:each>
+            </table>
+        </semui:form>
+    </g:else>
 
 </div>
 

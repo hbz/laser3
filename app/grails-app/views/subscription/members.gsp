@@ -117,7 +117,7 @@
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
-                                <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
+                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                                     <i class="thumbtack blue icon"></i>
                                 </span>
                             </g:if>
@@ -173,14 +173,14 @@
                         <g:if test="${editable}">
                             <g:if test="${sub.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                    <span data-tooltip="${message(code:'subscription.details.hiddenForSubscriber')}">
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
                                         <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                             <i class="eye orange icon"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span data-tooltip="${message(code:'subscription.details.hideToSubscriber')}">
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}">
                                         <g:link class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                             <i class="eye icon"></i>
                                         </g:link>

@@ -87,7 +87,7 @@
                                 ${fieldValue(bean: us, field: "username")}
 
                                 <g:if test="${! UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_USER'))}">
-                                    <span data-tooltip="Dieser Account besitzt keine ROLE_USER." data-position="top right">
+                                    <span  class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER." data-position="top right">
                                         <i class="icon minus circle red"></i>
                                     </span>
                                 </g:if>
@@ -118,7 +118,7 @@
                                 </sec:ifAnyGranted>
                                 <sec:ifNotGranted roles="ROLE_YODA">
                                     <g:if test="${! us.enabled}">
-                                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
+                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'user.disabled.text')}">
                                             <i class="icon minus circle red"></i>
                                         </span>
                                     </g:if>

@@ -13,6 +13,20 @@
             <g:textField id="name" name="name" value="${addressInstance?.name}"/>
         </div>
 
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
+            <label for="additionFirst">
+                <g:message code="address.additionFirst.label" default="additionFirst"/>
+            </label>
+            <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
+        </div>
+
+        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
+            <label for="additionSecond">
+                <g:message code="address.additionSecond.label" default="additionSecond"/>
+            </label>
+            <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
+        </div>
+
         <div class="field">
             <div class="three fields">
                 <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
@@ -102,20 +116,6 @@
         </div>
 
         <h4 class="ui dividing header"><g:message code="address.additionals.label"/></h4>
-
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
-            <label for="additionFirst">
-                <g:message code="address.additionFirst.label" default="additionFirst"/>
-            </label>
-            <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
-        </div>
-
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
-            <label for="additionSecond">
-                <g:message code="address.additionSecond.label" default="additionSecond"/>
-            </label>
-            <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
-        </div>
 
         <g:if test="${modalId && hideType}">
 

@@ -1,8 +1,17 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 
+import javax.persistence.Transient
+
 class SurveyInfo {
+
+    @Transient
+    def contextService
+    @Transient
+    def accessService
 
     String name
     Date startDate
@@ -20,6 +29,8 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
+    boolean isSubscriptionSurvey
+
     //List surveyConfigs
 
     static hasMany = [
@@ -31,6 +42,7 @@ class SurveyInfo {
         endDate (nullable:true, blank:false)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
+        isSubscriptionSurvey  (nullable:true, blank:true)
 
     }
 
@@ -50,16 +62,15 @@ class SurveyInfo {
         type column: 'surin_type_rv_fk'
         status column: 'surin_status_rv_fk'
 
-
-
+        isSubscriptionSurvey column: 'surin_is_subscription_survey'
     }
 
 
     def checkOpenSurvey()
     {
-        boolean check = this.surveyConfigs.size() > 0 ? true : false
+        boolean check = this.surveyConfigs?.size() > 0 ? true : false
 
-        this.surveyConfigs.each {
+        this.surveyConfigs?.each {
 
             if(it?.subscription && !(it?.surveyProperties?.size() > 0))
             {
@@ -80,14 +91,14 @@ class SurveyInfo {
         def count = 0
         surveyConfigs.each {
 
-            def checkResultsFinishByOrg = result."${it.checkResultsFinishByOrg(org)}"
-            if(checkResultsFinishByOrg){
+            def checkResultsEditByOrg = result."${it.checkResultsEditByOrg(org)}"
+            if(checkResultsEditByOrg){
 
-                result."${it.checkResultsFinishByOrg(org)}" = checkResultsFinishByOrg+1
+                result."${it.checkResultsEditByOrg(org)}" = checkResultsEditByOrg+1
 
 
             }else {
-                result."${it.checkResultsFinishByOrg(org)}" = 1
+                result."${it.checkResultsEditByOrg(org)}" = 1
             }
             count++
         }
@@ -107,7 +118,22 @@ class SurveyInfo {
         }else {
             return null
         }
+    }
+    boolean isEditable() {
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }
 
+        return false
+    }
 
+    boolean isCompletedforOwner() {
+        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }else{
+            return false
+        }
     }
 }

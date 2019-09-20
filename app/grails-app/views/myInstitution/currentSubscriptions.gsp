@@ -62,12 +62,14 @@
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
+        %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
                 <label for="q">${message(code: 'default.search.text', default: 'Search text')}
-                    <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
+
                 </label>
 
                 <div class="ui input">
@@ -77,16 +79,26 @@
                 </div>
             </div>
             <!-- 1-2 -->
+            <div class="field">
+                <label for="q">${message(code: 'default.search.identifier')}</label>
+
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
+            <!-- 1-3 -->
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
-            <!-- 1-3 -->
+            <!-- 1-4 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
                                   placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
-            <!-- 1-4 -->
+            <!-- 1-5 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
@@ -252,7 +264,7 @@
             </th>
             */ %>
 
-            <g:if test="${params.orgRole == 'Subscriber' && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+            <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
                 <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
             </g:if>
             <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -342,7 +354,7 @@
                 <%--<td>
                     ${s.type?.getI10n('value')}
                 </td>--%>
-                <g:if test="${params.orgRole == 'Subscriber'}">
+                <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective']}">
                     <td>
                         <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
                             ${s.getConsortia()?.name}
@@ -385,6 +397,38 @@
                     </td>
                 </g:if>
                 <td class="x">
+
+                    <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}" />
+                    <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}" />
+
+                    <g:if test="${surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) && institution?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+
+                        <g:link controller="subscription" action="surveys" id="${s?.id}"
+                                class="ui icon button">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                              data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info3")}">
+                            <i class="ui icon envelope open"></i>
+                        </span>
+                        </g:link>
+                    </g:if>
+
+                    <g:if test="${surveysConsortiaSub && institution?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']}">
+                        <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
+                                class="ui icon button">
+                            <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${message(code: "surveyConfig.isCompletedforOwner.true")}">
+                                    <i class="ui icon envelope green"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyConfig.isCompletedforOwner.false")}">
+                                    <i class="ui icon envelope open"></i>
+                                </span>
+                            </g:else>
+                        </g:link>
+                    </g:if>
                     <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">
                         <laser:statsLink class="ui icon button"
                                          base="${grailsApplication.config.statsApiUrl}"
@@ -409,7 +453,7 @@
                         <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
 
                             <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
-                                <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
+                                <span data-position="top right" data-content="${message(code:'subscription.delete.existingCostItems')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>
                                     </button>

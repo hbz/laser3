@@ -54,7 +54,7 @@
                                         <g:set var="refdataValues" value="${refdataValues + refdataValue?.getI10n('value')}"/>
                                     </g:each>
 
-                                    <span data-position="top right" data-tooltip="${refdataValues.join('/')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${refdataValues.join('/')}">
                                         <small>${PropertyDefinition.getLocalizedValue(pd.type)}</small>
                                     </span>
                                 </g:if>
@@ -64,12 +64,12 @@
                             </td>
                             <td>
                                 <g:if test="${usedPdList?.contains(pd.id)}">
-                                    <span data-position="top right" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                         <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
                                 <g:if test="${pd.multipleOccurrence}">
-                                    <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                         <i class="redo icon orange"></i>
                                     </span>
                                 </g:if>
@@ -126,7 +126,7 @@
                         </td>
                         <td>
                             <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                <span data-position="top right" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
+                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                     <i class="info circle icon blue"></i>
                                 </span>
                             </g:if>

@@ -67,14 +67,6 @@
                 <g:if test="${personRole?.responsibilityType}">
                     (${personRole?.responsibilityType?.getI10n('value')})
                 </g:if>
-                <script>
-                    $('.person-details').mouseenter(function () {
-                        $(this).parent().addClass('la-border-selected');
-                    })
-                    $('.person-details').mouseleave(function () {
-                        $(this).parent().removeClass('la-border-selected');
-                    })
-                </script>
             </div>
 
             <div class="content">

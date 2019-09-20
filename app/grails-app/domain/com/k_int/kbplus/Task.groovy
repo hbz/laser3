@@ -19,6 +19,7 @@ class Task {
 
     User            creator
     Date            endDate
+    Date            systemCreateDate
     Date            createDate
 
     User            responsibleUser
@@ -35,6 +36,7 @@ class Task {
         status          (nullable:false, blank:false)
         creator         (nullable:false, blank:false)
         endDate         (nullable:false, blank:false)
+        systemCreateDate (nullable:false, blank:false)
         createDate      (nullable:false, blank:false)
         responsibleUser (nullable:true,  blank:true)
         responsibleOrg  (nullable:true,  blank:true)
@@ -56,6 +58,7 @@ class Task {
 
         creator         column:'tsk_creator_fk'
         endDate         column:'tsk_end_date'
+        systemCreateDate column:'tsk_system_create_date'
         createDate      column:'tsk_create_date'
 
         responsibleUser      column:'tsk_responsible_user_fk'

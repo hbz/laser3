@@ -13,8 +13,9 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
-import de.laser.interfaces.TemplateSupport
+import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
+import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -118,6 +119,16 @@ class SubscriptionController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
+        }
+
         result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("subscription")
 
@@ -700,6 +711,15 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
+        }
+
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -773,7 +793,7 @@ class SubscriptionController extends AbstractDebugController {
                 startDateCol:-1, startVolumeCol:-1, startIssueCol:-1,
                 endDateCol:-1, endVolumeCol:-1, endIssueCol:-1,
                 accessStartDateCol:-1, accessEndDateCol:-1, coverageDepthCol:-1, coverageNotesCol:-1, embargoCol:-1,
-                listPriceCol:-1, listPriceCurrencyCol:-1, localPriceCol:-1, localPriceCurrencyCol:-1, priceDateCol:-1]
+                listPriceCol:-1, listCurrencyCol:-1, localPriceCol:-1, localCurrencyCol:-1, priceDateCol:-1]
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
                     switch(headerCol.toLowerCase().trim()) {
@@ -813,11 +833,11 @@ class SubscriptionController extends AbstractDebugController {
                             break
                         case "listprice_value": colMap.listPriceCol = c
                             break
-                        case "listprice_currency": colMap.listPriceCurrencyCol = c
+                        case "listprice_currency": colMap.listCurrencyCol = c
                             break
                         case "localprice_value": colMap.localPriceCol = c
                             break
-                        case "localprice_currency": colMap.localPriceCurrencyCol = c
+                        case "localprice_currency": colMap.localCurrencyCol = c
                             break
                         case "price_date": colMap.priceDateCol = c
                             break
@@ -925,11 +945,11 @@ class SubscriptionController extends AbstractDebugController {
                                     switch(colName) {
                                         case "listPriceCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "listPriceCurrencyCol": ieCandidate.listPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
                                             break
                                         case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                             break
-                                        case "localPriceCurrencyCol": ieCandidate.localPriceCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
+                                        case "localCurrencyCol": ieCandidate.localCurrency = RefdataValue.getByValueAndCategory(cellEntry,"Currency")?.value
                                             break
                                         case "priceDateCol": ieCandidate.priceDate = cellEntry
                                             break
@@ -976,8 +996,7 @@ class SubscriptionController extends AbstractDebugController {
                         checked = "checked"
                         result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[serial]
                     }
-                    if(result.preselectValues)
-                        result.checked[tipp.gokbId] = checked
+                    result.checked[tipp.gokbId] = checked
                 }
                 if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                     String unidentifiedTitles = result.identifiers.unidentified.join(", ")
@@ -1010,7 +1029,7 @@ class SubscriptionController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetSubscriptionId
-        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId).instanceOf.id
+        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
@@ -1132,6 +1151,47 @@ class SubscriptionController extends AbstractDebugController {
             }
         }
     }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def surveys() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
+
+        result.surveys = SurveyConfig.findAllBySubscription(result.subscription.instanceOf)
+
+       result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def surveysConsortia() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+
+        LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
+
+        result.surveys = SurveyConfig.findAllBySubscription(result.subscription)
+
+        result
+    }
+
     @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
@@ -1943,7 +2003,6 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_provider = OR_PROVIDER
         RefdataValue role_agency = OR_AGENCY
 
-
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
@@ -2052,9 +2111,13 @@ class SubscriptionController extends AbstractDebugController {
                                 }
                                 new OrgRole(org: result.institution, sub: memberSub, roleType: role_sub_cons).save()
 
+                                /*
+                                todo: IGNORED for 0.20
+
                                 if (cm.getCustomerType() == 'ORG_INST_COLLECTIVE') {
                                     new OrgRole(org: cm, sub: memberSub, roleType: role_sub_coll).save()
                                 }
+                                */
                             }
                             else {
                                 new OrgRole(org: cm, sub: memberSub, roleType: role_coll).save()
@@ -2259,7 +2322,7 @@ class SubscriptionController extends AbstractDebugController {
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
-
+        def addTitlesCount = 0
         if (result.subscriptionInstance) {
             EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
@@ -2273,14 +2336,18 @@ class SubscriptionController extends AbstractDebugController {
                                     if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
                                         log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                                 }
-                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false))
-                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false)) {
+                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                }
+                                addTitlesCount++
+
                             }
                             catch (EntitlementCreationException e) {
                                 flash.error = e.getMessage()
                             }
                         }
                     }
+                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [addTitlesCount])
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -2291,9 +2358,12 @@ class SubscriptionController extends AbstractDebugController {
                     if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
                         if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
                     }
                     else if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,null,false))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
+
                 }
                 catch(EntitlementCreationException e) {
                     flash.error = e.getMessage()
@@ -2303,7 +2373,7 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'index', id: result.subscriptionInstance?.id
+        redirect action: 'addEntitlements', id: result.subscriptionInstance?.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2334,7 +2404,7 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance.id, packageId: params.packageId]
+        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2586,7 +2656,7 @@ class SubscriptionController extends AbstractDebugController {
             if (subscription.instanceOf) {
                 qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND (l.instanceOf is not null) order by LOWER(l.reference)"
             } else {
-                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) AND order by LOWER(l.reference)"
+                qry = "select l from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :org and ( ol.roleType = :licRole or ol.roleType = :licConsRole) ) order by LOWER(l.reference)"
             }
             if (subscriber == consortia) {
                 qry_params = [org: consortia,licConsRole: licensee_cons_role]
@@ -2623,6 +2693,15 @@ class SubscriptionController extends AbstractDebugController {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
+        }
+
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+
+        threadArray.each {
+            if (it.name == 'PackageSync_'+result.subscriptionInstance?.id) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
+            }
         }
 
         params.gokbApi = false
@@ -2687,7 +2766,7 @@ class SubscriptionController extends AbstractDebugController {
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({
-                        Thread.currentThread().setName("PackageSync")
+                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
                         globalSourceSyncService.initialiseTracker(grt)
                         //Update INDEX ES
                         dataloadService.updateFTIndexes()
@@ -3556,6 +3635,7 @@ class SubscriptionController extends AbstractDebugController {
                             if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
                                 Task newTask = new Task()
                                 InvokerHelper.setProperties(newTask, task.properties)
+                                newTask.systemCreateDate = new Date()
                                 newTask.subscription = newSub2
                                 newTask.save(flush: true)
                             }
@@ -3749,66 +3829,98 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
+        def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-            ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
-            if (previousSubscriptions.size() > 0) {
-                flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+        if (previousSubscriptions.size() > 0) {
+            flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+        } else {
+            boolean isCopyAuditOn = params.subscription.isCopyAuditOn? true : false
+            def sub_startDate = null
+            def sub_endDate = null
+            def sub_status = null
+            def old_subOID = null
+            def new_subname = null
+            if (isCopyAuditOn) {
+                use(TimeCategory) {
+                    sub_startDate = baseSub.endDate ? (baseSub.endDate + 1.day) : null
+                    sub_endDate = baseSub.endDate ? (baseSub.endDate + 1.year) : null
+                }
+                sub_status = SUBSCRIPTION_INTENDED
+                old_subOID = baseSub.id
+                new_subname = baseSub.name
             } else {
-                def sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
-                def sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
-                def sub_status = params.subStatus
-                def old_subOID = params.subscription.old_subid
-                def new_subname = params.subscription.name
+                sub_startDate = params.subscription?.start_date ? parseDate(params.subscription?.start_date, possible_date_formats) : null
+                sub_endDate = params.subscription?.end_date ? parseDate(params.subscription?.end_date, possible_date_formats): null
+                sub_status = params.subStatus
+                old_subOID = params.subscription.old_subid
+                new_subname = params.subscription.name
+            }
 
-                def newSub = new Subscription(
-                        name: new_subname,
-                        startDate: sub_startDate,
-                        endDate: sub_endDate,
-                        identifier: java.util.UUID.randomUUID().toString(),
-                        isPublic: baseSub.isPublic,
-                        isSlaved: baseSub.isSlaved,
-                        type: Subscription.get(old_subOID)?.type ?: null,
-                        status: sub_status,
-                        resource: baseSub.resource ?: null,
-                        form: baseSub.form ?: null
-                )
+            def newSub = new Subscription(
+                    name: new_subname,
+                    startDate: sub_startDate,
+                    endDate: sub_endDate,
+                    manualCancellationDate: (baseSub?.manualCancellationDate && isCopyAuditOn) ? (baseSub?.manualCancellationDate + 1.year) : baseSub?.manualCancellationDate,
+                    identifier: java.util.UUID.randomUUID().toString(),
+                    isPublic: baseSub.isPublic,
+                    isSlaved: baseSub.isSlaved,
+                    type: baseSub.type ?: null,
+                    status: sub_status,
+                    resource: baseSub.resource ?: null,
+                    form: baseSub.form ?: null
+            )
 
-                if (!newSub.save(flush: true)) {
-                    log.error("Problem saving subscription ${newSub.errors}");
-                    return newSub
-                } else {
-                    log.debug("Save ok");
-                    //Copy References
-                    //OrgRole
-                    baseSub.orgRelations?.each { or ->
-
-                        if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                            OrgRole newOrgRole = new OrgRole()
-                            InvokerHelper.setProperties(newOrgRole, or.properties)
-                            newOrgRole.sub = newSub
-                            newOrgRole.save(flush: true)
-                        }
+            if (!newSub.save(flush: true)) {
+                log.error("Problem saving subscription ${newSub.errors}");
+                return newSub
+            } else {
+                log.debug("Save ok");
+                if (isCopyAuditOn){
+                    //copy audit
+                    def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(Subscription.class.name, baseSub.id)
+                    auditConfigs.each {
+                        AuditConfig ac ->
+                            //All ReferenceFields were copied!
+                            //'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource'
+                             AuditConfig.addConfig(newSub, ac.referenceField)
                     }
-                    //link to previous subscription
-                    Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
-                    if (!prevLink.save(flush: true)) {
-                        log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                }
+                //Copy References
+                //OrgRole
+                baseSub.orgRelations?.each { or ->
+
+                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.sub = newSub
+                        newOrgRole.save(flush: true)
                     }
-                    result.newSub = newSub
+                }
+                //link to previous subscription
+                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                if (!prevLink.save(flush: true)) {
+                    log.error("Problem linking to previous subscription: ${prevLink.errors}")
+                }
+                result.newSub = newSub
 
-                    LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
+                LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 
-                    if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
-                    result.isRenewSub = true
+                if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+                result.isRenewSub = true
+                if (isCopyAuditOn){
                     redirect controller: 'subscription',
-                             action: 'copyElementsIntoSubscription',
-                             id: old_subOID,
-                             params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
+                            action: 'copyElementsIntoSubscription',
+                            id: old_subOID,
+                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true, isCopyAuditOn: true]
+                } else {
+                    redirect controller: 'subscription',
+                            action: 'copyElementsIntoSubscription',
+                            id: old_subOID,
+                            params: [sourceSubscriptionId: old_subOID, targetSubscriptionId: newSub.id, isRenewSub: true]
                 }
             }
-//        }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -3816,32 +3928,30 @@ class SubscriptionController extends AbstractDebugController {
     def renewSubscription_Consortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        result.institution = contextService.org //TODO überprüfen, ob das richtig ist!!!
+        result.institution = contextService.org
         if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
             response.sendError(401); return
         }
 
-//        if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            def subscription = Subscription.get(params.baseSubscription ?: params.id)
+        def subscription = Subscription.get(params.baseSubscription ?: params.id)
 
-            def sdf = new SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
-            result.errors = []
-            def newStartDate
-            def newEndDate
-            use(TimeCategory) {
-                newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
-                newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
-            }
+        result.errors = []
+        def newStartDate
+        def newEndDate
+        use(TimeCategory) {
+            newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
+            newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
+        }
 
-            result.isRenewSub = true
-            result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
-                                     sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
-                                     sub_name     : subscription.name,
-                                     sub_id       : subscription.id,
-                                     sub_license  : subscription?.owner?.reference ?: '',
-                                     sub_status   : SUBSCRIPTION_INTENDED]
-//        }
+        result.isRenewSub = true
+        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
+                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
+                                 sub_name     : subscription.name,
+                                 sub_id       : subscription.id,
+                                 sub_license  : subscription?.owner?.reference ?: '',
+                                 sub_status   : SUBSCRIPTION_INTENDED]
         result
     }
 
@@ -3893,7 +4003,8 @@ class SubscriptionController extends AbstractDebugController {
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.isRenewSub = params.isRenewSub ?: null
+        if (params?.isRenewSub) {result.isRenewSub = params?.isRenewSub}
+
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
@@ -3964,6 +4075,7 @@ class SubscriptionController extends AbstractDebugController {
                 }
                 break;
             case WORKFLOW_END:
+                result << copySubElements_Properties();
                 if (params?.targetSubscriptionId){
                     flash.error = ""
                     flash.message = ""
@@ -3980,7 +4092,8 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.workFlowPart = params?.workFlowPart ?: WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params?.workFlowPartNext ?: WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-        result.isRenewSub = params?.isRenewSub ?: null
+        if (params?.isCopyAuditOn) {result.isCopyAuditOn = params?.isCopyAuditOn}
+        if (params?.isRenewSub) {result.isRenewSub = params?.isRenewSub}
         result
     }
 
@@ -4145,6 +4258,8 @@ class SubscriptionController extends AbstractDebugController {
     Map copySubElements_Properties(){
         LinkedHashMap result = [customProperties:[:],privateProperties:[:]]
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        boolean isRenewSub = params?.isRenewSub ? true : false
+        boolean isCopyAuditOn = params?.isCopyAuditOn ? true : false
         Subscription newSub = null
         List<Subscription> subsToCompare = [baseSub]
         if (params.targetSubscriptionId) {
@@ -4153,12 +4268,12 @@ class SubscriptionController extends AbstractDebugController {
         }
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToTake && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.copyProperties(propertiesToTake, newSub, flash)
+            subscriptionService.copyProperties(propertiesToTake, newSub, isRenewSub, isCopyAuditOn, flash)
         }
 
         List<AbstractProperty> propertiesToDelete = params?.list('subscription.deleteProperty').collect{ genericOIDService.resolveOID(it)}
         if (propertiesToDelete && isBothSubscriptionsSet(baseSub, newSub)) {
-            subscriptionService.deleteProperties(propertiesToDelete, newSub, flash)
+            subscriptionService.deleteProperties(propertiesToDelete, newSub, isRenewSub, isCopyAuditOn, flash)
         }
 
         if (newSub) {
@@ -4418,6 +4533,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         Task newTask = new Task()
                         InvokerHelper.setProperties(newTask, task.properties)
+                        newTask.systemCreateDate = new Date()
                         newTask.subscription = newSubscriptionInstance
                         newTask.save(flush: true)
                     }
@@ -4645,6 +4761,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
         result.consortialView = result.showConsortiaFunctions
+
         result.showCollectiveFunctions = showCollectiveFunctions(contextService.getOrg(), result.subscription)
         result.departmentalView = result.showCollectiveFunctions
 
@@ -4665,6 +4782,14 @@ class SubscriptionController extends AbstractDebugController {
         }
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
+        if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
+                result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE &&
+                ! (params.action in ['addMembers', 'processAddMembers'])
+        ) {
+            result.editable = false
+
+        }
+
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.editable) {
                 log.debug("--- NOT EDITABLE ---")
@@ -4676,11 +4801,13 @@ class SubscriptionController extends AbstractDebugController {
     }
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
-        return ((subscription?.getCollective()?.id == contextOrg?.id) && !subscription.instanceOf)
+        return ((subscription?.getCollective()?.id == contextOrg?.id) && subscription.getCalculatedType() in
+                [TemplateSupport.CALCULATED_TYPE_COLLECTIVE, TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE])
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles, format) {

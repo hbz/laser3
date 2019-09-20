@@ -120,15 +120,15 @@
                 <g:hiddenField name="offset" value="${params.offset}"/>
                 <g:hiddenField name="max" value="${params.max}"/>
 
-                <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
                                           title="${message(code: 'title.label', default: 'Title')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="two wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices" /></th>
                         <th class="one wide"></th>
@@ -231,34 +231,53 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
+                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <g:link controller="issueEntitlement" id="${ie.id}"
+                                            action="show"><strong>${ie.tipp?.title.title}</strong>
+                                    </g:link>
+                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                        <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
+                                           data-content="${ie.tipp?.platform.name}"
+
+                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                           target="_blank"><i class="cloud icon"></i></a>
+                                    </g:if>
+                                    <br>
                                     <!-- START TEMPLATE -->
 
-                                    <g:render template="../templates/title" model="${[ie: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <g:render template="../templates/title" model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td class="coverageStatements" data-entitlement="${ie.id}">
+                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstInPrint}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstOnline}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstOnline}"/>
 
                                     </g:if>
                                     <g:else>
+                                        <div class="ui cards">
                                         <g:each in="${ie.coverages}" var="covStmt">
-                                            <p>
+                                            <div class="ui card">
                                                 <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
-                                            </p>
+                                            </div>
                                         </g:each>
-                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+                                        </div><br>
+                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
                                     </g:else>
+
+
                                 </td>
                                 <td>
                                 <!-- von --->

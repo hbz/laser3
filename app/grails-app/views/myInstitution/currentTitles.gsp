@@ -342,37 +342,47 @@
 
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                                ${ie?.tipp?.title?.dateFirstInPrint}
+                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                              date="${ie?.tipp?.title?.dateFirstInPrint}"/>
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                                ${ie?.tipp?.title?.dateFirstOnline}
+                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                              date="${ie?.tipp?.title?.dateFirstOnline}"/>
+
 
                                             </g:if>
                                             <g:else>
 
                                                 <!-- von --->
-                                                <semui:xEditable owner="${ie}" type="date" field="startDate"/><br>
-                                                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.volume')}"></i>
-                                                <semui:xEditable owner="${ie}" field="startVolume"/><br>
+                                                <g:each in="${ie.coverages}" var="coverage" status="i">
 
-                                                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.issue')}"></i>
-                                                <semui:xEditable owner="${ie}" field="startIssue"/>
-                                                <semui:dateDevider/>
-                                                <!-- bis -->
-                                                <semui:xEditable owner="${ie}" type="date" field="endDate"/><br>
-                                                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.volume')}"></i>
-                                                <semui:xEditable owner="${ie}" field="endVolume"/><br>
+                                                    <semui:xEditable owner="${coverage}" type="date" field="startDate"/><br>
 
-                                                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.issue')}"></i>
-                                                <semui:xEditable owner="${ie}" field="endIssue"/>
+                                                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                                       data-content="${message(code: 'tipp.volume')}"></i>
+                                                    <semui:xEditable owner="${coverage}" field="startVolume"/><br>
+
+                                                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
+                                                       data-content="${message(code: 'tipp.issue')}"></i>
+                                                    <semui:xEditable owner="${coverage}" field="startIssue"/>
+
+                                                    <semui:dateDevider/>
+                                                    <!-- bis -->
+                                                    <semui:xEditable owner="${coverage}" type="date" field="endDate"/><br>
+                                                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                                       data-content="${message(code: 'tipp.volume')}"></i>
+                                                    <semui:xEditable owner="${coverage}" field="endVolume"/><br>
+
+                                                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
+                                                       data-content="${message(code: 'tipp.issue')}"></i>
+                                                    <semui:xEditable owner="${coverage}" field="endIssue"/>
+
+                                                </g:each>
                                             </g:else>
 
                                         </div>
                                         <div class="eight wide centered column">
+
                                         <!-- von --->
                                             <g:if test="${editable}">
                                                 <semui:xEditable owner="${ie}" type="date" field="accessStartDate"/>

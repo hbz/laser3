@@ -425,7 +425,7 @@ class BootStrap {
                             log.debug("  -> ${fileName} : " + validate.list()?.get(0))
                         }
                         catch(Exception e) {
-                            log.error(e)
+                            log.error("  -> ${fileName} : " + e)
                         }
                     }
                 }
@@ -522,6 +522,16 @@ class BootStrap {
                     name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
                     expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
                     descr:allDescr, type: OT.Rdv, cat:'YN'
+            ],
+            [
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [key: "Shibboleth Identity Provider Entity-ID", en: "Shibboleth Identity Provider Entity-ID", de: "Shibboleth: Identity Provider Entity-ID"],
+                    expl : [en: "", de: "Wie lautet die Entity-ID der Organisation?"],
+                    descr:allDescr, type: OT.String, multiple: true, isUsedForLogic: true
             ],
 
         ]
@@ -1511,17 +1521,51 @@ class BootStrap {
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
+                [
+                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
     def createSurveyProperties() {
 
-        /*def requiredProps = [
-                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
-                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        def requiredProps = [
+                [
+                        name: [en: "Participation", de: "Teilnahme"],
+                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Access choice", de: "Zugangswahl"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ]
+
         ]
-        createSurveyPropertiesWithI10nTranslations(requiredProps)*/
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
 
     def createPrivateProperties() {
@@ -1644,12 +1688,12 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
-            if (default_prop.explain) {
+            if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
             }
 
             if (default_prop.introduction) {
-                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.introduction)
             }
         }
     }
@@ -2236,7 +2280,7 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Öffentliche Bibliothek', de: 'Öffentliche Bibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Universität', de: 'Universität'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Staats-/ Landes-/ Regionalbibliothek', de: 'Staats-/ Landes-/ Regionalbibliothek'], BOOTSTRAP)
-        RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
+        RefdataValue.loc('Library Type',   [en: 'Wissenschaftliche Spezialbibliothek', de: 'Wissenschaftliche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
 
@@ -2560,6 +2604,7 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
 
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
@@ -2573,7 +2618,7 @@ class BootStrap {
 
     void createRefdataWithI10nExplanation() {
 
-        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studenten'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
+        I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Students', de: 'Studierende'], BOOTSTRAP),'expl',[en:'',de:'Gesamtzahl aller immatrikulierten Studierenden'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP),'expl',[en:'',de:'zugehöriges wissenschaftliches Personal'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'User', de: 'Nutzer'], BOOTSTRAP),'expl',[en:'',de:'Nutzer der Einrichtung'])
         I10nTranslation.createOrUpdateI10n(RefdataValue.loc('Number Type',[en: 'Population', de: 'Einwohner'], BOOTSTRAP),'expl',[en:'',de:'Einwohner der Stadt'])

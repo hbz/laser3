@@ -951,8 +951,18 @@ ol.ui.horizontal.list li:before,
 /* For Safari 3.1 to 6.0 */
   transition: opacity 1s;
 }
+.ui.divided.middle.la-flex-list .item .button.disabled {
+  opacity: 0!important;
+  -webkit-transition: opacity 1s;
+  
+/* For Safari 3.1 to 6.0 */
+  transition: opacity 1s;
+}
 .ui.divided.middle.la-flex-list .item:hover .button {
   opacity: 1;
+}
+.ui.divided.middle.la-flex-list .item:hover .button.disabled {
+  opacity: 0.3!important;
 }
 .ui.divided.middle.la-flex-list .item .button:focus {
   opacity: 1;
@@ -982,9 +992,6 @@ ol.ui.horizontal.list li:before,
 }
 .ui.item.person-details:hover {
   background: white!important;
-}
-.la-border-selected {
-  border: 1px solid #bb1600;
 }
 .la-icon-list {
   margin-top: 10px;

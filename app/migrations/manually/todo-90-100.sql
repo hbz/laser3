@@ -102,22 +102,104 @@
 
 -- 2019-08-22
 -- set by all surveyConfigs evaluationFinish to false
+
 -- ALTER TABLE public.survey_config ADD surconf_evaluation_finish boolean DEFAULT false NULL;
 -- UPDATE survey_config SET surconf_evaluation_finish = false WHERE surconf_evaluation_finish is null;
 
+
 -- 2019-08-21
--- change column mappings, set default for user.date_created
+-- change column mappings
 
-ALTER TABLE public.org RENAME date_created TO org_date_created;
-ALTER TABLE public.org RENAME last_updated TO org_last_updated;
+--ALTER TABLE public.org RENAME date_created TO org_date_created;
+--ALTER TABLE public.org RENAME last_updated TO org_last_updated;
 
-ALTER TABLE public."user" ADD COLUMN date_created timestamp without time zone;
-ALTER TABLE public."user" ADD COLUMN last_updated timestamp without time zone;
-
+-- set default for user.date_created
 -- July 18th was the last date when the QA database has been reset
+
+-- ALTER TABLE public.user ADD date_created timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
+-- ALTER TABLE public.user ADD last_updated timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
 UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '2019-07-18 00:00:00.0' where date_created is null;
 
-ALTER TABLE public."user" ALTER COLUMN date_created set not null;
-ALTER TABLE public."user" ALTER COLUMN date_created set default now();
-alter table public."user" alter column last_updated set not null;
-alter table public."user" alter column last_updated set default now();
+-- 2019-08-28
+-- new coloumn for survey (gorm auto-creation fail)
+
+--ALTER TABLE public.survey_config ADD surconf_is_subscription_survey_fix boolean DEFAULT false NULL;
+--ALTER TABLE public.survey_info ADD surin_is_subscription_survey boolean NULL;
+
+--UPDATE survey_info SET surin_is_subscription_survey = true;
+--UPDATE public.survey_config SET surconf_is_subscription_survey_fix = true where surconf_sub_fk is not null;
+--UPDATE survey_config SET surconf_is_subscription_survey_fix = false WHERE surconf_sub_fk IS NULLL;
+
+-- 2019-09-04
+-- typo in key and translations
+
+--update i10n_translation set i10n_value_de = 'Wissenschaftliche Spezialbibliothek' where i10n_value_de = 'Wissenschafltiche Spezialbibliothek';
+--update i10n_translation set i10n_value_en = 'Wissenschaftliche Spezialbibliothek' where i10n_value_en = 'Wissenschafltiche Spezialbibliothek';
+--update refdata_value set rdv_value = 'Wissenschaftliche Spezialbibliothek' where rdv_value = 'Wissenschafltiche Spezialbibliothek';
+
+-- 2019-09-09
+-- update survey results with new global survey property
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Continue to license');
+
+-- 2019-09-11
+-- update survey results with new global survey property
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Access choice') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Zugangswahl');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Category A-F') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Kategorie A-F');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 2 years') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 2 Jahre');
+
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Multi-year term 3 years') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Mehrjahreslaufzeit 3 Jahre');
+
+
+-- START OF ERMS-1666 --
+-- Kontrolle vorher: zu löschende Einträge
+SELECT * FROM Person AS p
+                left join person_role pr on p.prs_id = pr_prs_fk
+WHERE p.prs_is_public = true
+  and pr isnull;
+
+
+DELETE FROM contact AS c
+WHERE c.ct_prs_fk in (SELECT p2.prs_id FROM Person AS p2
+                                           left join person_role pr on p2.prs_id = pr_prs_fk
+                   WHERE p2.prs_is_public = true
+                     and pr isnull);
+DELETE FROM address AS a
+WHERE a.adr_prs_fk in (SELECT p2.prs_id FROM Person AS p2
+                                           left join person_role pr on p2.prs_id = pr_prs_fk
+                   WHERE p2.prs_is_public = true
+                     and pr isnull);
+DELETE FROM Person AS p
+WHERE p.prs_id in (SELECT p2.prs_id FROM Person AS p2
+                                  left join person_role pr on p2.prs_id = pr_prs_fk
+               WHERE p2.prs_is_public = true
+                 and pr isnull);
+
+-- Kontrolle nachher: Liste müsste nun LEER sein!
+SELECT * FROM Person AS p
+                left join person_role pr on p.prs_id = pr_prs_fk
+WHERE p.prs_is_public = true
+  and pr isnull;
+-- END ERMS-1666 --
+
+--- 2019-09-12
+--- Update and delete SurveyProperty
+update survey_result set surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surre_type_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
+update survey_config set surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconf_surprop_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
+update survey_config_properties set surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Participation') where surconpro_survey_property_fk = (select surpro_id from survey_property where surpro_name = 'Teilnahme');
+
+DELETE FROM survey_property where surpro_name = 'Continue to license';
+DELETE FROM survey_property where surpro_name = 'Teilnahme';

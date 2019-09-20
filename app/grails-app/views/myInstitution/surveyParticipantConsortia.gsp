@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'surveyEvaluation.label', default: 'Survey Evaluation')}</title>
 </head>
 
 <body>
@@ -25,9 +25,8 @@
 <br>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
+${surveyInfo.name}
 </h1>
-
 
 
 <semui:messages data="${flash}"/>
@@ -76,7 +75,8 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
-                <th>${message(code: 'surveyResult.commentParticipant')}</th>
+                <th>${message(code: 'surveyResult.participantComment')}</th>
+                <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
             </tr>
             </thead>
             <g:each in="${config.value}" var="result" status="i">
@@ -101,9 +101,9 @@
                     </td>
 
 
-                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, institution)}"/>
+                    <g:set var="surveyOrg" value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyResult?.surveyConfig, surveyResult?.participant)}"/>
 
-                    <g:if test="${!surveyOrg?.checkPerennialTerm()}">
+                    <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
 
                         <td>
                             <g:if test="${surveyResult?.type?.type == Integer.toString()}">
@@ -122,7 +122,7 @@
                                 <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${surveyResult.value}">
+                                <g:if test="${surveyResult?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
@@ -143,6 +143,9 @@
 
                         </td>
                     </g:else>
+                    <td>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                    </td>
 
                 </tr>
             </g:each>

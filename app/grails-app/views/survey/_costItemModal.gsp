@@ -5,7 +5,7 @@
 <g:render template="vars" model="[org: contextService.getOrg()]"/><%-- setting vars --%>
 
 <g:if test="${setting == 'bulkForAll'}">
-    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll')}"/>
+    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll') + " ("+ surveyOrgList.size()+ ") "}"/>
 </g:if>
 <g:else>
     <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg?.org?.name])}"/>
@@ -30,16 +30,14 @@
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <g:if test="${setting == 'bulkForAll'}">
             <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
+            <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
         </g:if>
         <g:else>
             <g:if test="${costItem && (mode && mode.equals("edit"))}">
                 <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}"/>
             </g:if>
-            <g:else>
                 <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
-            </g:else>
         </g:else>
-
 
         <div class="fields">
             <div class="nine wide field">
@@ -117,8 +115,8 @@
                                        number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <div class="ui icon button" id="costButton3"
-                             data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton3"
+                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                              data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
@@ -156,8 +154,8 @@
                                placeholder="${g.message(code: 'financials.newCosts.exchangeRate')}"
                                value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001"/>
 
-                        <div class="ui icon button" id="costButton2"
-                             data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton2"
+                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                              data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
@@ -190,8 +188,8 @@
                                        number="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <div class="ui icon button" id="costButton1"
-                             data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}"
+                        <div class="ui icon button la-popup-tooltip la-delay" id="costButton1"
+                             data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}"
                              data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>

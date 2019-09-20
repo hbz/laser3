@@ -71,7 +71,7 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="ten wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>
@@ -89,6 +89,14 @@
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                             </div>
                         </g:if>
+                        <g:else>
+                            <div class="two wide column">
+                                <!-- Hidden Fake Button To hold the other Botton in Place -->
+                                <div class="ui icon mini button la-hidden">
+                                    <i class="coffe icon"></i>
+                                </div>
+                            </div>
+                        </g:else>
                         <div class="center aligned four wide column la-js-editmode-container">
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                 <g:if test="${docctx?.isShared}">
