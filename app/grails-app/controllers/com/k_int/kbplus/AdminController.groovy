@@ -652,7 +652,7 @@ class AdminController extends AbstractDebugController {
         }
         //data collected: prepare export!
         if(newOrgData || newUserData) {
-          List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
+          //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
           File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
           StringBuilder exportReport = new StringBuilder()
           exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
@@ -828,7 +828,7 @@ class AdminController extends AbstractDebugController {
                   }
                 }
               }
-              persons {
+              /*persons {
                 newPersonData.each { Person p ->
                   person {
                     log.debug("now processing ${p.id}")
@@ -890,7 +890,7 @@ class AdminController extends AbstractDebugController {
                     }
                   }
                 }
-              }
+              }*/
               users {
                 newUserData.each { User u ->
                   user {
@@ -945,7 +945,7 @@ class AdminController extends AbstractDebugController {
                   }
                 }
               }
-              addresses {
+              /*addresses {
                 Address.executeQuery('select a from Address a where a.prs in :prsList or a.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { a ->
                   address {
                     if(a.org) org(a.org.globalUID)
@@ -995,7 +995,7 @@ class AdminController extends AbstractDebugController {
                     }
                   }
                 }
-              }
+              }*/
             }
           }
           exportReport.append(newOrgData.join("</li><li>")+"</ul></p>")
@@ -1256,6 +1256,8 @@ class AdminController extends AbstractDebugController {
             else if (params.apiLevel == 'Kein Zugriff') {
                 ApiToolkit.removeApiLevel(target)
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'deleteCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
@@ -1263,15 +1265,17 @@ class AdminController extends AbstractDebugController {
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
                 oss.delete()
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
-            def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def osObj = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
 
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
-
+            if (osObj != OrgSettings.SETTING_NOT_FOUND) {
+                OrgSettings oss = (OrgSettings) osObj
                 // ERMS-1615
                 if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                     log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
@@ -1302,27 +1306,31 @@ class AdminController extends AbstractDebugController {
                     /*
                       todo: IGNORED for 0.20
 
-                    conSubscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
-                            OrgRole newRole = new OrgRole(
-                                  org: role.org,
-                                  sub: role.sub,
-                                  roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                            )
-                            newRole.save()
-
-                            // keep consortia type
-                            //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            //role.sub.save()
-                        }
                     }*/
+                    conSubscriberRoles.each { role ->
+                      if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                        OrgRole newRole = new OrgRole(
+                                org: role.org,
+                                sub: role.sub,
+                                roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                        )
+                        newRole.save()
+
+                        // keep consortia type
+                        //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                        //role.sub.save()
+                      }
+                    }
                 }
                 oss.roleValue = customerType
                 oss.save(flush:true)
+
             }
             else {
                 OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'changeGascoEntry') {
           Org target = genericOIDService.resolveOID(params.target)
@@ -1338,6 +1346,8 @@ class AdminController extends AbstractDebugController {
               OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
             }
           }
+          target.lastUpdated = new Date()
+          target.save(flush:true)
         }
 
         result.orgList = Org.findAll()
