@@ -725,11 +725,12 @@
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
-
+    <sec:ifNotGranted roles="ROLE_USER">
         <!-- Footer -->
-    <g:render template="/public/templates/footer" />
-
+            <g:render template="/public/templates/footer" />
         <!-- Footer End -->
+    </sec:ifNotGranted>
+
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
