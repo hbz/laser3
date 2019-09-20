@@ -36,6 +36,8 @@ class RefdataCategory extends AbstractI10nTranslatable {
     public static final PKG_PAYMENTTYPE = 'Package Payment Type'
     @Transient
     public static final PKG_GLOBAL = 'Package Global'
+     @Transient
+    public static final IE_ACCEPT_STATUS = 'IE Accept Status'
 
     String desc
 
