@@ -24,6 +24,14 @@
       </div>
     </div>
   </g:if>
+  <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+    <div class="item">
+      <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+      <div class="content">
+        ${tipp?.title?.summaryOfContent}
+      </div>
+    </div>
+  </g:if>
 </div>
 <g:each in="${item?.tipp?.title?.ids?.sort { t?.identifier?.ns?.ns }}" var="title_id">
   <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
