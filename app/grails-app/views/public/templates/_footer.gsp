@@ -4,7 +4,7 @@
        <div class="ui stackable inverted divided equal height stackable grid center aligned">
 
             <div class="four wide column left aligned" style="opacity: 0.7">
-                <g:link controller="home" action="index" class="header item la-logo-item">
+                <g:link controller="home" aria-label="${message(code:'default.home.label')}" action="index" class="header item la-logo-item">
                     <svg width="75.333344"
                             height="26.040001"
                             viewBox="0 0 75.33334 26.04">

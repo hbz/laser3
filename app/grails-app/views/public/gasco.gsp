@@ -60,14 +60,16 @@
                         </fieldset>
                     </div>
                     <div class="field" id="js-consotial-authority">
-                        <label for="consortial">${message(code: 'gasco.filter.consortialAuthority')}</label>
+                        <fieldset>
+                            <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>
 
-                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
-                            optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
-                            optionValue="${{ it.getName() }}"
-                            name="consortia"
-                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
-                            value="${params.consortia}"/>
+                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                                optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                                optionValue="${{ it.getName() }}"
+                                name="consortia"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                value="${params.consortia}"/>
+                        </fieldset>
 
                     </div>
 
@@ -110,6 +112,7 @@
             $('.js-consortiallicence').on('click', toggleFilterPart)
             toggleTableHeading()
             $('.ui secondary button').on('click', toggleTableHeading)
+
         });
     </r:script>
     <g:if test="${subscriptions}">
