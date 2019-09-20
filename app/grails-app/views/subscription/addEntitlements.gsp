@@ -216,6 +216,9 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
                 <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
                 </div>
+                <div class="item">
+                    <b>${message(code: 'title.summaryOfContent.label')}:</b> ${tipp?.title?.summaryOfContent}
+                </div>
             </g:if>
 
             <g:if test="${tipp.hostPlatformURL}">
