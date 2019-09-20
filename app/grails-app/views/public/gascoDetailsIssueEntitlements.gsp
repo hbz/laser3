@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="field">
-                    <label for="idns">Suche nach Identifikatoren</label>
+                    <label for="idns">Identifikator-Typ</label>
                     <g:select id="idns" name="idns"
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
@@ -41,12 +41,11 @@
                 </div>
 
                 <div class="field">
-                    <label>&nbsp;</label>
-                    <input type="text" name="idv" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.idv}" />
+                    <label for="idv">Identifikator</label>
+                    <input type="text" id="idv" name="idv" placeholder="Identifikator eingeben" value="${params.idv}" />
                 </div>
 
-                <div class="field">
-                    <label>&nbsp;</label>
+                <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
