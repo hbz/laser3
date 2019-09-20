@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
-<%@ page import="static de.laser.helper.RDStore.DOC_DELETED" %>
+<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext;de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -7,7 +6,7 @@
     List<DocContext> sharedItems = []
 
     ownobj.documents.sort{it.owner?.title}.each{ it ->
-        if (it.status != DOC_DELETED){
+        if (it.status != RDStore.DOC_DELETED){
             if (it.sharedFrom) {
                 sharedItems << it
             }
@@ -30,7 +29,7 @@
 
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:if test="${editable || editable2}">
+                            <g:if test="${(docctx.owner.owner?.id == contextService.org.id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>

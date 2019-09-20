@@ -9,7 +9,7 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
-import de.laser.helper.RDStore
+import static de.laser.helper.RDStore.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -33,7 +33,6 @@ class LicenseController extends AbstractDebugController {
     def contextService
     def addressbookService
     def filterService
-    def controlledListService
     def orgTypeService
     def deletionService
 
@@ -173,7 +172,7 @@ class LicenseController extends AbstractDebugController {
         //def task_licensorFilter = task {
 
         //a new query builder service for selection lists has been introduced
-        //result.availableSubs = controlledListService.getSubscriptions(params+[status:RDStore.SUBSCRIPTION_CURRENT]).results
+        //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
 
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
@@ -268,42 +267,51 @@ class LicenseController extends AbstractDebugController {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                RefdataValue comboType
+                Set<RefdataValue> memberOrgRoleTypes
+                String superOrgType
 
-                def consMembers = Org.executeQuery(
-                        'select c.fromOrg from Combo as c where c.toOrg = :inst and c.type = :cons',
-                        [inst:result.institution, cons:RDStore.COMBO_TYPE_CONSORTIUM]
-                )
-
-                def memberSubs = Subscription.executeQuery(
-                        'select distinct sub from Subscription sub join sub.instanceOf cons join cons.owner lic where lic = :license',
-                        [license: result.license]
-                )
-
-                def validOrgs = [[id:Long.parseLong('0')]] // erms-582
-                if (memberSubs) {
-                    validOrgs = Org.executeQuery(
-                            'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',
-                            [orgs: consMembers, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], subs: memberSubs]
-                    )
+                if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                    comboType = COMBO_TYPE_CONSORTIUM
+                    memberOrgRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_CONS]
+                    superOrgType = message(code:'consortium.superOrgType')
+                }
+                else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
+                    comboType = COMBO_TYPE_DEPARTMENT
+                    memberOrgRoleTypes = [OR_SUBSCRIBER, OR_SUBSCRIBER_COLLECTIVE]
+                    superOrgType = message(code:'collective.superOrgType')
                 }
 
-                // applying filter AFTER valid orgs are found
-                def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
+                //check if everything has been initialised
+                if(comboType && memberOrgRoleTypes && superOrgType) {
+                    List<Org> members = Org.executeQuery(
+                            'select c.fromOrg from Combo as c where c.toOrg = :inst and c.type = :comboType',
+                            [inst:result.institution, comboType:comboType])
+                    List<Subscription> memberSubs = Subscription.executeQuery(
+                            'select distinct sub from Subscription sub join sub.instanceOf cons join cons.owner lic where lic = :license',
+                            [license: result.license])
+                    List<Map<String,Long>> validOrgs = [[id:0]] // erms-582
+                    if (memberSubs) {
+                        validOrgs = Org.executeQuery(
+                                'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',
+                                [orgs: members, roleTypes: memberOrgRoleTypes, subs: memberSubs])
+                    }
+                    // applying filter AFTER valid orgs are found
+                    def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
 
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
-                result.cons_members_disabled = []
+                    result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                    result.members_disabled = []
+                    result.superOrgType = superOrgType
 
-
-                def memberLics = License.executeQuery(
-                        'select l from License l where l.instanceOf = :lic', [lic: result.license]
-                )
-                result.cons_members.each { it ->
-                    if (memberLics && OrgRole.executeQuery('' +
-                            'select ogr from OrgRole ogr join ogr.lic lc where lc in :lic and ogr.org = :org',
-                            [lic: memberLics, org: it]
-                    )) {
-                        result.cons_members_disabled << it.id
+                    List<License> memberLics = License.executeQuery('select l from License l where l.instanceOf = :lic', [lic: result.license])
+                    result.members.each { it ->
+                        if (memberLics && OrgRole.executeQuery('' +
+                                'select ogr from OrgRole ogr join ogr.lic lc where lc in :lic and ogr.org = :org',
+                                [lic: memberLics, org: it]
+                        )) {
+                            result.members_disabled << it.id
+                        }
                     }
                 }
             }
@@ -322,27 +330,29 @@ class LicenseController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        def orgType       = [RDStore.OT_INSTITUTION.id.toString()]
+        List orgType       = [OT_INSTITUTION.id.toString()]
         if (accessService.checkPerm("ORG_CONSORTIUM")) {
-            orgType = [RDStore.OT_CONSORTIUM.id.toString()]
+            orgType = [OT_CONSORTIUM.id.toString()]
         }
-        def role_lic      = RDStore.OR_LICENSEE_CONS
-        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
+        RefdataValue role_lic      = OR_LICENSEE_CONS
+        RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            role_lic = OR_LICENSEE_COLL
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
-                def cons_members = []
+            if (accessService.checkPerm("ORG_INST_COLLECTIVE, ORG_CONSORTIUM")) {
+                List<Org> members = []
                 def licenseCopy
 
                 params.list('selectedOrgs').each { it ->
                     def fo = Org.findById(Long.valueOf(it))
-                    cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                    members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
 
-                cons_members.each { cm ->
+                members.each { cm ->
 
-                    def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                    def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
                     if (result.license) {
                         def licenseParams = [

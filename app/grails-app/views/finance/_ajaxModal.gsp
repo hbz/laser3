@@ -328,18 +328,20 @@
 
                 <div class="field">
 
-                    <g:if test="${tab in ["cons","coll"] && (sub || (costItem && costItem.sub))}">
+                    <g:if test="${(sub || (costItem && costItem.sub))}">
                         <%
                             def validSubChilds
                             Subscription contextSub
                             if(costItem && costItem.sub) contextSub = costItem.sub
                             else if(sub) contextSub = sub
-                            //consortial subscription
-                            if(!contextSub.instanceOf)
+                            if(tab in ["cons","coll","collAsSubscr"]){
+                                //member subscriptions
                                 validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
-                            //consortial member subscription
-                            else if(contextSub.instanceOf)
-                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub.instanceOf, RDStore.SUBSCRIPTION_DELETED)
+                            }
+                            else if(tab == "subscr" && contextSub.getCollective().id == org.id) {
+                                //consortial member subscription for collective
+                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
+                            }
                         %>
 
                         <g:if test="${validSubChilds}">

@@ -13,6 +13,7 @@ class RDStore {
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
+    static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective','Organisational Role')
 
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')

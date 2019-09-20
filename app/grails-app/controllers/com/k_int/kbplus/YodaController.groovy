@@ -600,7 +600,7 @@ class YodaController {
 
             /*
             todo: IGNORED for 0.20
-
+            */
             result.subConsRoles.each{ so ->
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
@@ -614,7 +614,7 @@ class YodaController {
                     newRole.save()
                 }
             }
-            */
+
         }
 
         result

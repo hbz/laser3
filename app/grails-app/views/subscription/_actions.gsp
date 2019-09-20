@@ -76,10 +76,6 @@
             <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
             <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
         </g:if>
-        <g:else>
-            <semui:actionsDropdownItemDisabled controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-            <semui:actionsDropdownItemDisabled controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-        </g:else>
 
         <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
         <sec:ifAnyGranted roles="ROLE_ADMIN">
@@ -141,7 +137,7 @@
             </g:else>
         </g:if>
 
-          <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+          <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
 
               <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                          params="${[id: params.id]}"
