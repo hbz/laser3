@@ -7,12 +7,14 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 @Secured(['permitAll'])
 class PublicController {
-
+    GrailsApplication grailsApplication
     def springSecurityService
     def genericOIDService
+    def mailService
 
     @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
@@ -20,6 +22,25 @@ class PublicController {
     }
     @Secured(['permitAll'])
     def wcagFeedbackForm() {
+    }
+    @Secured(['permitAll'])
+    def sendFeedbackForm() {
+
+        try {
+
+            mailService.sendMail {
+                to 'barrierefreiheitsbelange@hbz-nrw.de'
+                from grailsApplication.config.notifications.email.from
+                subject grailsApplication.config.laserSystemId + ' - ' + 'Feedback-Mechanismus Barrierefreiheit'
+                body view: '/mailTemplates/text/wcagFeedback', model: [params]
+            }
+        }
+        catch (Exception e) {
+            println "Unable to perform email due to exception ${e.message}"
+        }
+    }
+    @Secured(['permitAll'])
+    def wcagEasyLanguage() {
     }
     @Secured(['permitAll'])
     def index() {

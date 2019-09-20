@@ -71,10 +71,36 @@ modules = {
 
         resource url:'js/application.js.gsp'
     }
-
     accessibility {
-        dependsOn 'semanticUI'
+        dependsOn 'jquery'
+        dependsOn 'deprecated'
+
+        // legacy CRAP ..
+        // legacy CRAP ..
+        // legacy CRAP ..
+
+        resource url:'semantic-restoration/jquery-editable.css', attrs: [media: 'screen,print']               // updated stuff
+        resource url:'semantic-restoration/jquery.poshytip.js'                // updated stuff
+        resource url:'semantic-restoration/jquery-editable-poshytip.min.js'   // updated stuff
+
+        resource url:'js/libs/moment-with-locales.min.js'
+        resource url:'js/libs/moment.min.js'
+
+        resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
+
+        resource url:'semantic/semantic.min.js'         // new stuff
+        resource url:'accessibility/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
+
+        resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
+
+        //resource url:'css/select2.css'            // updated stuff // new version 3.5.4
+        resource url:'css/select2-laser.css', attrs: [media: 'screen,print']       // overwrite to look more like semantic ui
+        resource url:'js/select2.min.js'         // updated stuff // new version 3.5.4
+
+
+        resource url:'js/application.js.gsp'
     }
+
 
     swaggerApi {
         dependsOn 'jquery'

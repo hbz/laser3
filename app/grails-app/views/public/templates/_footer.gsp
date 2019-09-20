@@ -80,25 +80,27 @@
                </h4>
 
                <div class="ui inverted link list">
-                   <div class="item">
+%{--                   <div class="item">
                        <i class="universal access icon"></i>
                        <g:link controller="public" action="wcagStatement" class="content">
                             ${message(code: 'landingpage.footer.4.link1')}
                         </g:link>
-                   </div>
+                   </div>--}%
                    <div class="item">
                         <i class="universal access icon"></i>
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
                            ${message(code: 'landingpage.footer.4.link2')}
                        </g:link>
                    </div>
-                   <div class="item">
+%{--                   <div class="item">
                        <i class="universal access icon"></i>
                        <a target="_blank" class="content" href="https://www.schlichtungsstelle-bgg.de">${message(code: 'landingpage.footer.4.link3')}</a>
-                   </div>
+                   </div>--}%
                    <div class="item">
                        <i class="universal access icon"></i>
-                       <a target="_blank" class="content" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.4.link4')}</a>
+                        <g:link controller="public" action="wcagEasyLanguage" class="content">
+                            ${message(code: 'landingpage.footer.4.link4')}
+                        </g:link>
                    </div>
                </div>
            </div>

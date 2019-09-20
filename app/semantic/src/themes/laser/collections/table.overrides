@@ -55,7 +55,7 @@
       padding-right:0.9rem;
     }
     th {
-      color: gray;
+      color: #515151;
       font-size: 0.8rem;
       text-transform: uppercase;
       a {
