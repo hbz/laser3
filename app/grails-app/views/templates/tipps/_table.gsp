@@ -65,6 +65,16 @@
                             </div>
                         </div>
                     </g:if>
+
+                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                        <div class="item">
+                            <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                            <div class="content">
+                                ${tipp?.title?.summaryOfContent}
+                            </div>
+                        </div>
+                    </g:if>
+
                 </div>
 
                 <g:each in="${tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }}" var="id">
