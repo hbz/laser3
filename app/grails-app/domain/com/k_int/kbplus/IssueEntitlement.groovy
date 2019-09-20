@@ -37,7 +37,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   @RefdataAnnotation(cat = '?')
   RefdataValue medium
     
-  @RefdataAnnotation(cat = 'Accept Status')
+  @RefdataAnnotation(cat = 'IE ACCEPT STATUS')
   RefdataValue acceptStatus
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
