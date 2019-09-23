@@ -36,6 +36,9 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   @RefdataAnnotation(cat = '?')
   RefdataValue medium
+    
+  @RefdataAnnotation(cat = 'IE ACCEPT STATUS')
+  RefdataValue acceptStatus
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
@@ -66,6 +69,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
+      acceptStatus column:'ie_accept_status_rv_fk'
       /*
       startDate column:'ie_start_date',      index: 'ie_dates_idx'
       startVolume column:'ie_start_volume'
@@ -92,6 +96,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     coreStatus     (nullable:true, blank:true)
     coreStatusStart(nullable:true, blank:true)
     coreStatusEnd  (nullable:true, blank:true)
+    acceptStatus  (nullable:true, blank:true)
       /*
       startDate     (nullable:true, blank:true)
       startVolume   (nullable:true, blank:true)

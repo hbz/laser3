@@ -14,7 +14,9 @@
                 <th>${message(code: 'task.status.label', default: 'Status')}</th>
 
 
-                <th>${message(code: 'task.object.label', default: 'Object')}</th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    <th>${message(code: 'task.object.label', default: 'Object')}</th>
+                </g:if>
 
                 <th>${message(code: 'task.responsibleEmployee.label')}</th>
 
@@ -34,20 +36,22 @@
                         <semui:xEditableRefData config="Task Status" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
 
-                    <td>
-                        <g:if test="${taskInstance.license}">
-                            <g:link controller="license" action="show" id="${taskInstance.license?.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.org}">
-                            <g:link controller="organisation" action="show" id="${taskInstance.org?.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.pkg}">
-                            <g:link controller="package" action="show" id="${taskInstance.pkg?.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.subscription}">
-                            <g:link controller="subscription" action="show" id="${taskInstance.subscription?.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
-                        </g:if>
-                    </td>
+                    <g:if test="${controllerName == 'myInstitution'}">
+                        <td>
+                            <g:if test="${taskInstance.license}">
+                                <g:link controller="license" action="show" id="${taskInstance.license?.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.org}">
+                                <g:link controller="organisation" action="show" id="${taskInstance.org?.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.pkg}">
+                                <g:link controller="package" action="show" id="${taskInstance.pkg?.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.subscription}">
+                                <g:link controller="subscription" action="show" id="${taskInstance.subscription?.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                            </g:if>
+                        </td>
+                    </g:if>
 
                     <td>${fieldValue(bean: taskInstance, field: "responsibleUser")}
                     </td>

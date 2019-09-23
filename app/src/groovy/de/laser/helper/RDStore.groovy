@@ -128,6 +128,10 @@ class RDStore {
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
+    
+    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', 'IE Accept Status')
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION= getRefdataValue('Under Negotiation', 'IE Accept Status')
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION= getRefdataValue('Under Consideration','IE Accept Status')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                      = getRefdataValue('E-Mail','ContactContentType')

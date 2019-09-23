@@ -63,7 +63,7 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
                         fakeList.remove(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
-                                  noSelection="${['' : message(code:'accessMethod.all')]}"
+                                  noSelection="${['' : '']}"
                                   value="${['':'']}"/>
                 </div>
 

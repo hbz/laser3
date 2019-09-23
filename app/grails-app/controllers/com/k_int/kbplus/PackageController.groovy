@@ -926,7 +926,15 @@ class PackageController extends AbstractDebugController {
             }
         }
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance, params)
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
+        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.packageInstance)
+        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
         log.debug(result.taskInstanceList)
 
         result

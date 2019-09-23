@@ -870,7 +870,7 @@ from License as l where (
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
         boolean asCons = false
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
@@ -881,7 +881,7 @@ from License as l where (
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
-        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -1878,7 +1878,8 @@ from License as l where (
                     response.contentType = "text/csv"
 
                     def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)       RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
+                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {
@@ -2903,35 +2904,22 @@ AND EXISTS (
         }
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
-        def query = filterService.getTaskQuery(params, sdFormat)
+        def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
         result.taskInstanceCount = result.taskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.taskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
-            }
-        }
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  query, null)
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, result.myTaskInstanceCount)
-            }
-        }
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
         log.debug(result.taskInstanceList)
+        log.debug(result.myTaskInstanceList)
         result
     }
 

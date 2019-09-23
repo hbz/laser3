@@ -727,8 +727,17 @@ from Subscription as s where
             }
         }
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license, params)
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.license)
+        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
+        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
         log.debug(result.taskInstanceList)
+        log.debug(result.myTaskInstanceList)
 
         result
     }

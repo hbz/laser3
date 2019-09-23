@@ -366,59 +366,62 @@ class ExportService {
 			def earliest_date
 			def latest_date
 			entitlements.each { e ->
-				if(e.tipp.title.id != current_title_id){
-					if(current_title_id != -1){
-						//Write earliest and latest dates
-						writer.write("\"${earliest_date?formatter.format(earliest_date):''}\",");
-						writer.write("\"${latest_date?formatter.format(latest_date):''}\"");
-						//Write entitlements
-						writer.write("${entitlements_str}");
-						writer.write("\n");
+				e.coverages.each { covStmt ->
+					if(e.tipp.title.id != current_title_id){
+						if(current_title_id != -1){
+							//Write earliest and latest dates
+							writer.write("\"${earliest_date?formatter.format(earliest_date):''}\",");
+							writer.write("\"${latest_date?formatter.format(latest_date):''}\"");
+							//Write entitlements
+							writer.write("${entitlements_str}");
+							writer.write("\n");
+						}
+
+						//Start a new title
+						current_title_id = e.tipp.title.id
+						def ti = e.tipp.title
+						entitlements_str = ""
+
+						writer.write("\"${ti.title}\",");
+						namespaces.each(){ ns ->
+							writer.write("\"${ti.getIdentifierValue(ns)?:''}\",");
+						}
+						earliest_date = e.startDate?:null
+						latest_date = e.endDate?:null
 					}
-					
-					//Start a new title
-					current_title_id = e.tipp.title.id
-					def ti = e.tipp.title
-					entitlements_str = ""
-					
-					writer.write("\"${ti.title}\",");
-					namespaces.each(){ ns ->
-						writer.write("\"${ti.getIdentifierValue(ns)?:''}\",");
-					}
-					earliest_date = e.startDate?:null
-					latest_date = e.endDate?:null
-				}
-				
-				if(e.startDate && (!earliest_date || earliest_date>e.startDate)) earliest_date = e.startDate
-				if(e.endDate && (!latest_date || latest_date<e.endDate)) latest_date = e.endDate
-				
+
+					if(covStmt.startDate && (!earliest_date || earliest_date>covStmt.startDate)) earliest_date = covStmt.startDate
+					if(covStmt.endDate && (!latest_date || latest_date<covStmt.endDate)) latest_date = covStmt.endDate
+
 //                    grouped_ies[ti[0].id].each(){ ie ->
-				entitlements_str += ",\"${e.subscription.name}\","
-				entitlements_str += "${e.startDate?formatter.format(e.startDate):''},"
-				entitlements_str += "\"${e.startVolume?:''}\","
-				entitlements_str += "\"${e.startIssue?:''}\","
-				entitlements_str += "${e.endDate?formatter.format(e.endDate):''},"
-				entitlements_str += "\"${e.endVolume?:''}\","
-				entitlements_str += "\"${e.endIssue?:''}\","
-				entitlements_str += "\"${e.embargo?:''}\","
-				entitlements_str += "\"${e.coverageDepth?:''}\","
-				entitlements_str += "\"${e.coverageNote?:''}\","
-				entitlements_str += "\"${e.tipp?.platform?.name?:''}\","
-				entitlements_str += "\"${e.tipp?.hostPlatformURL?:''}\","
-				entitlements_str += "\""
-				e.tipp?.additionalPlatforms.eachWithIndex(){ ap, i ->
-					if(i>0) entitlements_str += ", "
-					entitlements_str += "${ap.platform.name}"
-				}
-				entitlements_str += "\","
-				def coreDateList = ""
-				for(Date[] coreDate : getIECoreDates(e)){
-					coreDateList += formatCoreDates(coreDate) + " - "
-				}
-				entitlements_str += "\"${coreDateList}\","
-				entitlements_str += "\"${e.coreStatus?:''}\""
+					entitlements_str += ",\"${e.subscription.name}\","
+					entitlements_str += "${covStmt.startDate?formatter.format(covStmt.startDate):''},"
+					entitlements_str += "\"${covStmt.startVolume?:''}\","
+					entitlements_str += "\"${covStmt.startIssue?:''}\","
+					entitlements_str += "${covStmt.endDate?formatter.format(covStmt.endDate):''},"
+					entitlements_str += "\"${covStmt.endVolume?:''}\","
+					entitlements_str += "\"${covStmt.endIssue?:''}\","
+					entitlements_str += "\"${covStmt.embargo?:''}\","
+					entitlements_str += "\"${covStmt.coverageDepth?:''}\","
+					entitlements_str += "\"${covStmt.coverageNote?:''}\","
+					entitlements_str += "\"${e.tipp?.platform?.name?:''}\","
+					entitlements_str += "\"${e.tipp?.hostPlatformURL?:''}\","
+					entitlements_str += "\""
+					e.tipp?.additionalPlatforms.eachWithIndex(){ ap, i ->
+						if(i>0) entitlements_str += ", "
+						entitlements_str += "${ap.platform.name}"
+					}
+					entitlements_str += "\","
+					def coreDateList = ""
+					for(Date[] coreDate : getIECoreDates(e)){
+						coreDateList += formatCoreDates(coreDate) + " - "
+					}
+					entitlements_str += "\"${coreDateList}\","
+					entitlements_str += "\"${e.coreStatus?:''}\""
 //                    }
+				}
 			}
+
 			
 			//Write earliest and latest dates for last title
 			writer.write("\"${earliest_date?formatter.format(earliest_date):''}\",");
