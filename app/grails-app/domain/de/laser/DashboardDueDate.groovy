@@ -20,31 +20,38 @@ class DashboardDueDate {
     String oid
     User responsibleUser
     Org  responsibleOrg
+    boolean isDone
+    boolean isHide
     Timestamp lastUpdated
 
-    DashboardDueDate(Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg){
+    DashboardDueDate(Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
         this(
                 isManualCancellationDate? 'Kündigungsdatum' : 'Enddatum',
                 isManualCancellationDate? obj.manualCancellationDate : obj.endDate,
                 obj,
                 responsibleUser,
-                responsibleOrg)
+                responsibleOrg,
+                isDone,
+                isHide
+        )
     }
-    DashboardDueDate(AbstractProperty obj, User responsibleUser, Org responsibleOrg){
-        this(obj.type?.name?: obj.class.simpleName, obj.dateValue, obj, responsibleUser, responsibleOrg)
+    DashboardDueDate(AbstractProperty obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
+        this(obj.type?.name?: obj.class.simpleName, obj.dateValue, obj, responsibleUser, responsibleOrg, isDone, isHide)
     }
-    DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg){
-        this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg)
+    DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
+        this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHide)
     }
-    DashboardDueDate(SurveyInfo obj, User responsibleUser, Org responsibleOrg){
-        this('Enddatum', obj.endDate, obj, responsibleUser, responsibleOrg)
+    DashboardDueDate(SurveyInfo obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHide){
+        this('Enddatum', obj.endDate, obj, responsibleUser, responsibleOrg, isDone, isHide)
     }
-    private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg){
+    private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg, isDone, isHide){
         this.attribut = attribut
         this.date = date
         this.oid = "${object.class.name}:${object.id}"
         this.responsibleUser = responsibleUser
         this.responsibleOrg = responsibleOrg
+        this.isDone = isDone
+        this.isHide = isHide
     }
 
     static mapping = {
@@ -54,6 +61,8 @@ class DashboardDueDate {
         oid                     column: 'das_oid'
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_fk_idx'
         responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_fk_idx'
+        isDone                  column: 'das_is_done'
+        isHide                  column: 'das_is_hide'
         autoTimestamp true
     }
 
@@ -63,9 +72,11 @@ class DashboardDueDate {
         oid                     (nullable:false, blank:false)//,unique: ['date', 'oid', 'responsibleOrg'])
         responsibleUser         (nullable:true, blank:false)
         responsibleOrg          (nullable:true, blank:false)
+        isDone                  (nullable:false, blank:false)
+        isHide                  (nullable:false, blank:false)
         lastUpdated             (nullable:true, blank:false)
-
     }
+
     private static String getPropertyValue(String messageKey) {
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
