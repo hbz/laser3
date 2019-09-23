@@ -60,7 +60,7 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.country.label',null,LocaleContextHolder.getLocale()))
         }
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin','Verantwortlicher Admin')
+        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin','Person Function')
         RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress','Person Function')
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
         def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -69,16 +69,45 @@ class OrganisationService {
             titles.add(it.name)
         }
         List orgData = []
-        Map<Org,Map<String,Identifier>> identifiers = [:]
-        List identifierList = Identifier.executeQuery("select i, io.org from IdentifierOccurrence io join Identifier i where io.org in (:orgs) and i.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
-        identifierList.each { Identifier io, Org o ->
-            //identifiers[o] = [:]
+        Map<Org,Map<String,String>> identifiers = [:]
+        List identifierList = Identifier.executeQuery("select i, io.org from IdentifierOccurrence io join io.identifier i where io.org in (:orgs) and i.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        identifierList.each { row ->
+            Identifier io = (Identifier) row[0]
+            Org o = (Org) row[1]
+            Map<String,String> orgIdentifiers = identifiers[o]
+            if(!orgIdentifiers)
+                orgIdentifiers = [:]
+            orgIdentifiers[io.ns.ns] = io.value
+            identifiers[o] = orgIdentifiers
+        }
+        Map<Org,Map<String,List<String>>> contacts = [:]
+        List contactList = Contact.executeQuery("select c.content, pr.org, pr.functionType from PersonRole pr join pr.prs p join p.contacts c where pr.org in (:orgs) and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",[orgs:orgs,functionTypes:[generalContact,responsibleAdmin,billingContact],type: RDStore.CCT_EMAIL])
+        contactList.each { row ->
+            String c = row[0]
+            Org o = (Org) row[1]
+            RefdataValue funcType = (RefdataValue) row[2]
+            Map<String,List<String>> orgContacts = contacts[o]
+            if(!orgContacts)
+                orgContacts = [:]
+            List<String> emails = orgContacts[funcType.value]
+            if(!emails) {
+                emails = []
+            }
+            emails << c
+            orgContacts[funcType.value] = emails
+            contacts[o] = orgContacts
         }
         switch(format) {
             case "xls":
             case "xlsx":
-                orgs.each{  org ->
+                orgs.each{ org ->
                     List row = []
+                    Map<String,String> furtherData = [isil: identifiers[org]?.ISIL,
+                                                      wib: identifiers[org]?.wibid,
+                                                      ezb: identifiers[org]?.ezb,
+                                                      generalContact: contacts[org]?.get("General contact person")?.join(";"),
+                                                      responsibleAdmin: contacts[org]?.get("Responsible Admin")?.join(";"),
+                                                      billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add([field: org.sortname ?: '',style: null])
                     //Shortname
@@ -155,8 +184,14 @@ class OrganisationService {
                 sheetData[message] = [titleRow:titles,columnData:orgData]
                 return exportService.generateXLSXWorkbook(sheetData)
             case "csv":
-                orgs.each{  org ->
+                orgs.each{ org ->
                     List row = []
+                    Map<String,String> furtherData = [isil: identifiers[org]?.ISIL,
+                                                      wib: identifiers[org]?.wibid,
+                                                      ezb: identifiers[org]?.ezb,
+                                                      generalContact: contacts[org]?.get("General contact person")?.join(";"),
+                                                      responsibleAdmin: contacts[org]?.get("Responsible Admin")?.join(";"),
+                                                      billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
                     //Shortname
