@@ -32,12 +32,14 @@ class PublicController {
                 to 'barrierefreiheitsbelange@hbz-nrw.de'
                 from grailsApplication.config.notifications.email.from
                 subject grailsApplication.config.laserSystemId + ' - ' + 'Feedback-Mechanismus Barrierefreiheit'
-                body view: '/mailTemplates/text/wcagFeedback', model: [params]
+                body (view: '/mailTemplates/text/wcagFeedback', model: [name:params.name, email:params.email,url:params.url, comment:params.comment])
+
             }
         }
         catch (Exception e) {
             println "Unable to perform email due to exception ${e.message}"
         }
+//        redirect controller: 'public', action: 'sendFeedbackForm', params: params, id: copyLicense.id
     }
     @Secured(['permitAll'])
     def wcagEasyLanguage() {
