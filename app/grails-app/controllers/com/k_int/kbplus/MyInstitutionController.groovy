@@ -870,7 +870,7 @@ from License as l where (
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
         boolean asCons = false
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
@@ -881,7 +881,7 @@ from License as l where (
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
-        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -1878,7 +1878,8 @@ from License as l where (
                     response.contentType = "text/csv"
 
                     def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)       RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
+                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {

@@ -2772,7 +2772,14 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
+	    
+	RefdataCategory.loc(RefdataCategory.IE_ACCEPT_STATUS,
+                [en: RefdataCategory.IE_ACCEPT_STATUS, de: RefdataCategory.IE_ACCEPT_STATUS], BOOTSTRAP)
 
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
+       
         RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
 
