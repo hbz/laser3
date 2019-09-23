@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+import de.laser.TaskService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -684,7 +685,6 @@ from License as l where (
 
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
         List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
         List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
 
@@ -2242,7 +2242,7 @@ AND EXISTS (
         def currentDate = new Date(System.currentTimeMillis())
 
         def newParams = [:]
-        newParams.currentDate = currentDate
+        newParams.tab = "new"
 
         def fsq = filterService.getParticipantSurveyQuery(newParams, sdFormat, result.institution)
 
@@ -2323,8 +2323,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    //@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def announcements() {
         def result = setResultGenerics()
 
@@ -2495,9 +2496,9 @@ AND EXISTS (
         }
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
         def result = [:]
@@ -2522,9 +2523,9 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
         def result = [:]
@@ -2574,9 +2575,9 @@ AND EXISTS (
 
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
     def surveyConfigsInfo() {
         def result = [:]
@@ -2694,7 +2695,7 @@ AND EXISTS (
         boolean allResultHaveValue = true
         surveyResults.each { surre ->
             SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.getFinish() && !surorg.existsMultiYearTerm())
+            if(!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
                 allResultHaveValue = false
         }
         if(allResultHaveValue) {
@@ -2902,36 +2903,22 @@ AND EXISTS (
         }
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
-        def query = filterService.getTaskQuery(params, sdFormat)
+        def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
         result.taskInstanceCount = result.taskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.taskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
-            }
-        }
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, result.myTaskInstanceCount)
-            }
-        }
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
         log.debug(result.taskInstanceList)
+        log.debug(result.myTaskInstanceList)
         result
     }
 
@@ -3008,8 +2995,9 @@ AND EXISTS (
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
+                    List orgs = (List) result.availableOrgs
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(orgListTotal,tableHeader,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(orgs,tableHeader,true,"csv"))
                     }
                     out.close()
                 }
@@ -3026,7 +3014,6 @@ AND EXISTS (
 
         // new: filter preset
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
             if (params.selectedOrgs) {
                 log.debug('remove orgs from consortia')
@@ -3042,7 +3029,6 @@ AND EXISTS (
             }
         }
         else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            params.orgType  = RDStore.OT_DEPARTMENT?.id?.toString()
             result.comboType = RDStore.COMBO_TYPE_DEPARTMENT
             if (params.selectedOrgs) {
                 log.debug('remove orgs from department')
@@ -3594,7 +3580,6 @@ AND EXISTS (
 
         def fsq = filterService.getParticipantSurveyQuery(params, sdFormat, result.participant)
 
-        println(fsq.query)
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
         result.countSurveys = getSurveyParticipantCounts(result.participant)
@@ -4026,6 +4011,12 @@ AND EXISTS (
 
         result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
+
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
+                [status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 status2: RDStore.SURVEY_IN_EVALUATION,
+                 status3: RDStore.SURVEY_COMPLETED,
+                 participant: participant]).groupBy {it.id[1]}.size()
 
 
         return result
