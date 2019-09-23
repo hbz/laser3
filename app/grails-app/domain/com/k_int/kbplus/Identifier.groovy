@@ -34,20 +34,23 @@ class Identifier {
 
   def beforeUpdate() {
     value = value?.trim()
+      boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
 
-      if(this.ns?.ns == 'wibid')
-      {
-          if(!(this.value =~ /^WIB/) && this.value != '')
+      if(forOrg) {
+          if(this.ns?.ns == 'wibid')
           {
-              this.value = 'WIB'+this.value.trim()
+              if(!(this.value =~ /^WIB/) && this.value != '')
+              {
+                  this.value = 'WIB'+this.value.trim()
+              }
           }
-      }
 
-      if(this.ns?.ns == 'ISIL')
-      {
-          if(!(this.value =~ /^DE-/ ) && this.value != '')
+          if(this.ns?.ns == 'ISIL')
           {
-              this.value = 'DE-'+this.value.trim()
+              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')
+              {
+                  this.value = 'DE-'+this.value.trim()
+              }
           }
       }
 

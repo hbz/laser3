@@ -3201,6 +3201,7 @@ No Host Platform URL Content
         def namespaces = [
                             [ns: "GND", typ: "com.k_int.kbplus.Creator"],
                             [ns: "ISIL"],
+                            [ns: "ISIL_Paketsigel"],
                             [ns: "uri"],
                             [ns: "zdb"],
                             [ns: "zdb_ppn"],
