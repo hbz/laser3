@@ -1,10 +1,14 @@
 package com.k_int.kbplus
 
 
-import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.transport.InetSocketTransportAddress
+import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.client.*
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
@@ -32,8 +36,9 @@ class ESSearchService{
 
    def result = [:]
 
-   Client esclient = getClient()
-   def index = esclient.settings.indexName
+   List client = getClient()
+    Client esclient = client[0]
+   def index = client[1]
 
    result.host = esclient.settings().host
    result.es_host_url = esclient.settings().es_url
@@ -52,7 +57,30 @@ class ESSearchService{
         }
 
         log.debug("index:${index} query: ${query_str}");
-        def search = esclient.search{
+        def search
+        try {
+          SearchRequestBuilder searchRequestBuilder  = esclient.prepareSearch(index)
+          if (params.sort) {
+            SortOrder order = SortOrder.ASC
+            if (params.order) {
+              order = SortOrder.valueOf(params.order?.toUpperCase())
+            }
+            searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString(), order)
+          }
+          log.debug("searchRequestBuilder start to add query and aggregration query string is ${query_str}")
+
+          searchRequestBuilder.setQuery(QueryBuilders.queryStringQuery(query_str))
+                  .setFrom(params.offset)
+                  .setSize(params.max)
+
+          search = searchRequestBuilder.get()
+        }
+        catch (Exception ex) {
+          log.error("Error processing ${index} ${query_str}",ex);
+        }
+
+        //Old search with ES 2.4.6
+        /*def search = esclient.search{
                   indices index
                   source {
                     from = params.offset
@@ -123,7 +151,14 @@ class ESSearchService{
 
             }
           }
+        }*/
+        if ( search ) {
+          def search_hits = search.getHits()
+          result.hits = search.getHits()
+          result.resultsTotal = search_hits.totalHits
+          result.index = index
         }
+
       }
       else {
         log.debug("No query.. Show search page")
@@ -314,20 +349,23 @@ class ESSearchService{
     log.debug("es_host = ${es_host}");
     log.debug("es_url = ${es_url}");
 
-    Settings settings = Settings.settingsBuilder()
+    Settings settings = Settings.builder()
             .put("client.transport.sniff", true)
             .put("cluster.name", es_cluster_name)
-            .put("indexName", es_index_name)
-            .put("host", es_host)
+            .put("network.host", es_host)
             .put("es_url", es_url)
             .build();
 
-    esclient = TransportClient.builder().settings(settings).build();
+/*    //esclient = TransportClient.builder().settings(settings).build();
+    esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
 
     // add transport addresses
-    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300 as int))
+    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300 as int))*/
 
-    return esclient
+    esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
+    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));
+
+    return [esclient, es_index_name]
   }
 
 }

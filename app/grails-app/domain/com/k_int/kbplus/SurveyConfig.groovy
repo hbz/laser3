@@ -11,13 +11,13 @@ import java.text.SimpleDateFormat
 class SurveyConfig {
 
     @Transient
-    public static final ALL_RESULTS_FINISH_BY_ORG = "Finish"
+    public static final ALL_RESULTS_PROCESSED_BY_ORG = "All Processed"
 
     @Transient
-    public static final ALL_RESULTS_NOT_FINISH_BY_ORG = "Not Finish"
+    public static final ALL_RESULTS_NOT_PROCESSED_BY_ORG = "Not Processed"
 
     @Transient
-    public static final ALL_RESULTS_HALF_FINISH_BY_ORG = "Half Finish"
+    public static final ALL_RESULTS_HALF_PROCESSED_BY_ORG = "Half Processed"
 
     Integer configOrder
 
@@ -168,10 +168,11 @@ class SurveyConfig {
         return result
     }
 
-    def checkResultsFinishByOrg(Org org) {
+    //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
+    def checkResultsEditByOrg(Org org) {
 
         if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
-            return ALL_RESULTS_FINISH_BY_ORG
+            return ALL_RESULTS_PROCESSED_BY_ORG
         } else {
 
             def countFinish = 0
@@ -180,19 +181,40 @@ class SurveyConfig {
             def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                 surveyResult.each {
-                    if (it.getFinish()) {
+                    if (it.isResultProcessed()) {
                         countFinish++
                     } else {
                         countNotFinish++
                     }
                 }
                 if (countFinish > 0 && countNotFinish == 0) {
-                    return ALL_RESULTS_FINISH_BY_ORG
+                    return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
-                    return ALL_RESULTS_HALF_FINISH_BY_ORG
+                    return ALL_RESULTS_HALF_PROCESSED_BY_ORG
                 } else {
-                    return ALL_RESULTS_NOT_FINISH_BY_ORG
+                    return ALL_RESULTS_NOT_PROCESSED_BY_ORG
                 }
+        }
+
+
+    }
+
+    boolean isResultsSetFinishByOrg(Org org) {
+
+        if (SurveyOrg.findBySurveyConfigAndOrg(this, org)?.existsMultiYearTerm()) {
+            return true
+        } else {
+
+            def countFinish = 0
+            def countNotFinish = 0
+
+            def surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+
+            if(surveyResults?.finishDate.contains(null)){
+                return false
+            }else {
+                return true
+            }
         }
 
 

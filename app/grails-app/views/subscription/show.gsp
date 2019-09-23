@@ -15,6 +15,10 @@
     <body>
 
         <semui:debugInfo>
+            <div style="padding: 1em 0;">
+                <p>sub.administrative: ${subscriptionInstance.administrative}</p>
+                <p>getCalculatedType(): ${subscriptionInstance.getCalculatedType()}</p>
+            </div>
             <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
             <g:render template="/templates/debug/orgRoles"  model="[debug: subscriptionInstance.orgRelations]" />
             <g:render template="/templates/debug/prsRoles"  model="[debug: subscriptionInstance.prsLinks]" />
@@ -41,12 +45,9 @@
 
     <g:render template="nav" />
 
-        <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
+    <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
-        <g:render template="message" />
-    </g:if>
-
+    <g:render template="message" />
 
     <g:render template="/templates/meta/identifier" model="${[object: subscriptionInstance, editable: editable]}" />
 
@@ -97,11 +98,14 @@
                                 <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
-                                    <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
+                                    <g:if test="${subscriptionInstance.administrative || subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
                                         ${subscriptionInstance.type?.getI10n('value')}
                                     </g:if>
                                     <g:else>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
+                                                                config='Subscription Type'
+                                                                constraint="removeValue_administrativeSubscription"
+                                        />
                                     </g:else>
                                 </dd>
                                 <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
@@ -195,14 +199,14 @@
                                                 tmplID:'addLink',
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
-                                                editmode: accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_EDITOR"),
+                                                editmode: editable,
                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>
                     </div>
                 </div>
 
-                <div class="ui card">
+                %{--<div class="ui card">
                     <div class="content">
 
                             <table class="ui three column table">
@@ -259,7 +263,7 @@
                                           ]"/>
                             </g:if>
                     </div>
-                </div>
+                </div>--}%
 
                 <g:if test="${subscriptionInstance.packages}">
                     <div class="ui card la-js-hideable hidden">

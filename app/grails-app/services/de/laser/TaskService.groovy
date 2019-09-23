@@ -66,27 +66,7 @@ class TaskService {
     def getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
     }
-//
-//    def getTasksByCreatorAndObject(User user, Object obj,  Object params) {
-//        def tasks = []
-//        if (user && obj) {
-//            switch (obj.getClass().getSimpleName()) {
-//                case 'Org':
-//                    tasks = Task.findAllByCreatorAndOrg(user, obj, params)
-//                    break
-//                case 'Package':
-//                    tasks = Task.findAllByCreatorAndPkg(user, obj, params)
-//                    break
-//                case 'Subscription':
-//                    tasks = Task.findAllByCreatorAndSubscription(user, obj, params)
-//                    break
-//                case 'SurveyConfig':
-//                    tasks = Task.findAllByCreatorAndSurveyConfig(user, obj, params)
-//                    break
-//            }
-//        }
-//        tasks
-//    }
+
     List chopOffForPageSize(List taskInstanceList, User user, int offset){
         //chop everything off beyond the user's pagination limit
         int taskInstanceCount = taskInstanceList?.size() ?: 0

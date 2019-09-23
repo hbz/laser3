@@ -50,6 +50,7 @@
                     <div class="item"><b><g:message code="title.editionNumber.label"/>:</b> ${ti?.editionNumber}</div>
                     <div class="item"><b><g:message code="title.editionStatement.label"/>:</b> ${ti?.editionStatement}</div>
                     <div class="item"><b><g:message code="title.volume.label"/>:</b> ${ti?.volume}</div>
+                    <div class="item"><b>${message(code: 'title.summaryOfContent.label')}:</b> ${tipp?.title?.summaryOfContent}</div>
                     <div class="item"><b><g:message code="title.dateFirstInPrint.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
                     <div class="item"><b><g:message code="title.dateFirstOnline.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
                 </g:if>
@@ -272,7 +273,7 @@
                   </tr>
                 </g:if>
                 --}%%{--
-  
+
                 <g:each in="${ti.tipps}" var="t">
                   <tr>
                     --}%%{--<td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td> BULK_REMOVE --}%%{--
@@ -283,7 +284,7 @@
                             <g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link>
                         </div>
                     </td>
-  
+
                     <td><g:message code="title.show.history.date"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
                     <g:message code="tipp.volume"/>: ${t.startVolume}<br/>
                     <g:message code="tipp.issue"/>: ${t.startIssue}</td>
@@ -328,24 +329,19 @@
           <tr>
               <td>${counter++}</td>
               <td>
-                      <div class="la-flexbox">
-                          <i class="icon gift scale la-list-icon"></i>
-                          <g:link controller="package" action="show" id="${t?.pkg?.id}">${t?.pkg?.name}</g:link>
-                      </div>
-                  <br>
-                  <g:link controller="tipp" action="show" id="${t.id}"><g:message code="platform.show.full_tipp"/></g:link>
-              &nbsp;&nbsp;&nbsp;
-                  <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                          var="gokbAPI">
-                      <g:if test="${t?.gokbId}">
-                          <a target="_blank" href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"><i
-                                  title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                      </g:if>
-                  </g:each>
-                  <br>
 
+
+                  <div class="la-inline-flexbox la-popup-tooltip la-delay">
+                      <i class="icon gift scale la-list-icon"></i>
+                      <g:link controller="package" action="show" id="${t?.pkg?.id}">${t?.pkg?.name}</g:link>
+                  </div>
                   <g:if test="${t.hostPlatformURL}">
-                      <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="<g:message code="tipp.tooltip.callUrl"/>" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                      <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                         data-content="${t.platform.name}"
+                         href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}"
+                         target="_blank">
+                          <i class="cloud icon"></i>
+                      </a><br>
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
@@ -363,23 +359,60 @@
                           </span>
                       </g:else>
                   </g:each>
+                  <div class="la-icon-list">
+                      <g:if test="${t.availabilityStatus?.getI10n('value')}">
+                          <div class="item">
+                              <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+                              <div class="content">
+                                  ${t.availabilityStatus?.getI10n('value')}
+                              </div>
+                          </div>
+                      </g:if>
 
-
-                  <div class="ui list">
-                      <div class="item"  title="${t.availabilityStatusExplanation}"><b><g:message code="default.access.label"/>:</b> ${t.availabilityStatus?.getI10n('value')}</div>
-                      <div class="item"><b><g:message code="default.status.label"/>:</b>  <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></div>
-                      <div class="item"><b><g:message code="tipp.platform"/>: </b>
-                          <g:if test="${t?.platform.name}">
-                              ${t?.platform.name}
-                          </g:if>
-                          <g:else><g:message code="default.unknown"/></g:else>
-                          <g:if test="${t?.platform.name}">
-                              <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
-                          </g:if>
-                          <g:if test="${t?.platform.primaryUrl}">
-                              <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t?.platform.primaryUrl.contains('http') ? t?.platform.primaryUrl :'http://'+t?.platform.primaryUrl}" target="_blank"><i class="share square icon"></i></a>
-                          </g:if>
+                      <div class="item">
+                          <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
+                          <div class="content">
+                              <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
+                          </div>
                       </div>
+
+                      <g:if test="${t?.platform.name}">
+                          <div class="item">
+                              <i class="grey icon cloud la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}"></i>
+                              <div class="content">
+                                <g:if test="${t?.platform.name}">
+                                    <g:link controller="platform" action="show"
+                                          id="${t?.platform.id}">
+                                      ${t?.platform.name}
+                                    </g:link>
+                                </g:if>
+                                <g:else>
+                                    ${message(code: 'default.unknown')}
+                                </g:else>
+                              </div>
+                          </div>
+                      </g:if>
+                      <g:if test="${t?.id}">
+                          <div class="la-title">${message(code: 'default.details.label')}</div>
+                          <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'laser')}"
+                                  target="_blank"
+                                  controller="tipp" action="show"
+                                  id="${t.id}">
+                              <i class="book icon"></i>
+                          </g:link>
+                      </g:if>
+
+                      <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                              var="gokbAPI">
+                          <g:if test="${t?.gokbId}">
+                              <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                 data-content="${message(code: 'gokb')}"
+                                 href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"
+                                 target="_blank"><i class="la-gokb  icon"></i>
+                              </a>
+                          </g:if>
+                      </g:each>
                   </div>
               </td>
 

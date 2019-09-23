@@ -43,11 +43,9 @@
                                   title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
                 <g:sortableColumn params="${params}" property="surInfo.endDate"
                                   title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-                <th>${message(code: 'surveyProperty.plural.label')}</th>
-                <th>${message(code: 'surveyConfigDocs.label')}</th>
-                <th>${message(code: 'surveyParticipants.label')}</th>
-                <th>${message(code: 'surveyCostItems.label')}</th>
+
                 <th>${message(code: 'surveyInfo.finished')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
 
             </tr>
 
@@ -57,46 +55,38 @@
                 <g:set var="surveyInfo"
                        value="${surveyConfig?.surveyInfo}"/>
 
-
-                <g:set var="participantsFinish"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
-
-                <g:set var="participantsTotal"
-                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfig(surveyConfig)}"/>
-
                 <tr>
                     <td class="center aligned">
                         ${(params.int('offset') ?: 0) + i + 1}
                     </td>
-                    <td><g:if test="${editable}">
-                        <g:if test="${surveyConfig?.type == 'Subscription'}">
-                            <i class="icon clipboard outline la-list-icon"></i>
-                            <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui ">
-                                ${surveyConfig?.subscription?.name}
-                            </g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyConfig?.getConfigNameShort()}
-                            </g:link>
-                        </g:else>
-                    </g:if>
-                        <g:else>
+                    <td>
                             <g:if test="${surveyConfig?.type == 'Subscription'}">
                                 <i class="icon clipboard outline la-list-icon"></i>
                                 ${surveyConfig?.subscription?.name}
                             </g:if>
                             <g:else>
-                                <i class="icon chart bar la-list-icon"></i>
+                                <i class="icon chart pie la-list-icon"></i>
                                 ${surveyConfig?.getConfigNameShort()}
                             </g:else>
-                        </g:else>
+
                         <div class="la-flexbox">
-                            <i class="icon chart bar la-list-icon"></i>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
-                                ${surveyInfo?.name}
-                            </g:link>
+                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                                    <i class="yellow icon envelope large "></i>
+                                </span>
+                            </g:if>
+
+                            <i class="icon chart pie la-list-icon"></i>
+                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                                <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.id}"
+                                        class="ui ">
+                                    ${surveyConfig?.getSurveyName()}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                ${surveyConfig?.getSurveyName()}
+                            </g:else>
                         </div>
                     </td>
                     <td>
@@ -112,75 +102,51 @@
 
                     <td class="center aligned">
 
-                        <g:if test="${surveyConfig}">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
-                                <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
-                                        params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                    <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
-                                        ${surveyConfig?.surveyProperties?.size() ?: 0}
-                                    </div>
+                        <g:set var="surveyResults"
+                               value="${com.k_int.kbplus.SurveyResult.findAllByParticipantAndSurveyConfig(institution, surveyConfig)}"/>
+
+                        <g:if test="${surveyResults}">
+
+                                <g:if test="${surveyResults?.finishDate?.contains(null)}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                          data-variation="tiny"
+                                          data-content="Nicht abgeschlossen">
+                                        <i class="circle red icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                          data-variation="tiny"
+                                          data-content="${message(code: 'surveyResult.finish.info.consortia')}">
+                                        <i class="check big green icon"></i>
+                                    </span>
+                                </g:else>
+                        </g:if>
+                    </td>
+                    <td class="x">
+
+
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
                                 </g:link>
-                            </g:if>
-                        </g:if>
+                            </span>
 
-                    </td>
-                    <td class="center aligned">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular label">
-                                    ${surveyConfig?.getCurrentDocs()?.size() ?: 0}
-                                </div>
-                            </g:link>
-                        </g:if>
-                    </td>
-
-                    <td class="center aligned">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish == participantsTotal ? "green" : surveyConfig?.configFinish ? "yellow" : ""} label">
-                                    ${participantsFinish?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0} / ${surveyConfig?.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
-                                </div>
-                            </g:link>
-                        </g:if>
-                    </td>
-
-
-                    <td class="center aligned">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
-                                <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
-                                    ${surveyConfig?.getSurveyConfigCostItems()?.size() ?: 0}
-                                </div>
-                            </g:link>
-                        </g:if>
-                    </td>
-
-                    <td class="center aligned">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
-                                    params="[surveyConfigID: surveyConfig?.id]"
-                                    class="ui icon">
-                                <div class="ui circular ${surveyConfig?.evaluationFinish ? "green" : (participantsFinish.size() == participantsTotal.size()) ? "yellow" :""} label">
-                                    <g:if
-                                            test="${participantsFinish && participantsTotal}">
-                                        <g:formatNumber number="${(participantsFinish.size() / participantsTotal.size()) * 100}" minFractionDigits="2"
-                                                        maxFractionDigits="2"/>%
-                                    </g:if>
-                                    <g:else>
-                                        0%
-                                    </g:else>
-                                </div>
-                            </g:link>
-                        </g:if>
                     </td>
                 </tr>
 
             </g:each>
         </table>
     </g:if>
+    <g:else>
+        <semui:form>
+            <h3>
+                <g:message code="survey.notExist.plural"/>
+            </h3>
+        </semui:form>
+    </g:else>
         </body>
         </html>
 

@@ -7,7 +7,7 @@
 <g:set var="user" value="${contextService.user}"/>
 <g:set var="org" value="${contextService.org}"/>
 
-<g:if test="${actionName == 'index'}">
+    <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
         <%--<semui:exportDropdownItem>
             <g:link class="item" controller="subscription" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
@@ -72,8 +72,15 @@
         </g:else>
         <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
 
-        <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-        <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        <g:if test="${editable}">
+            <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
+            <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
+            <semui:actionsDropdownItemDisabled controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        </g:else>
+
         <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <g:if test="${subscriptionInstance.instanceOf}">
@@ -92,14 +99,13 @@
             </g:if>
         </sec:ifAnyGranted>
 
-        <g:if test="${(org.id in [subscriptionInstance.getConsortia()?.id,subscriptionInstance.getCollective()?.id]) && !subscriptionInstance.instanceOf}">
+        <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
             <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        %{--TODO: Die alten Sub-Verlängerungen entfernen mit samt Controller-Metoden--}%
+        <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
         <sec:ifAnyGranted roles="ROLE_ADMIN, ROLE_YODA">
             <div class="divider">OLD:</div>
-            <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
             <g:if test="${subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_LOCAL && !previousSubscriptions}">
                 <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
                                        params="${[id: params.id]}" message="subscription.details.renewals.label"/>
@@ -115,7 +121,7 @@
         </sec:ifAnyGranted>
 
         <g:if test="${subscriptionInstance.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_CONSORTIAL,TemplateSupport.CALCULATED_TYPE_COLLECTIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
-            <g:if test ="${previousSubscriptions}">
+            <g:if test="${previousSubscriptions}">
                 <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription_Consortia"
                                                    params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
             </g:if>
@@ -150,9 +156,11 @@
         </g:if>
 
         <g:if test="${actionName == 'show'}">
-            <g:if test="${accessService.checkMinUserOrgRole(user,org,"INST_EDITOR")}">
-                <div class="divider"></div>
-                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
+            <g:if test="${editable}">
+                <g:if test="${accessService.checkMinUserOrgRole(user,org,"INST_EDITOR")}">
+                    <div class="divider"></div>
+                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
+                </g:if>
             </g:if>
 
             <g:if test="${editable}">

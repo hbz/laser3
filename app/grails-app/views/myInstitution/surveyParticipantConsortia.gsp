@@ -122,7 +122,7 @@ ${surveyInfo.name}
                                 <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
-                                <g:if test="${surveyResult.value}">
+                                <g:if test="${surveyResult?.urlValue}">
                                     <semui:linkIcon/>
                                 </g:if>
                             </g:elseif>
@@ -144,7 +144,7 @@ ${surveyInfo.name}
                         </td>
                     </g:else>
                     <td>
-                        <semui:xEditable owner="${surveyResult}" type="text" field="ownerComment"/>
+                        <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                     </td>
 
                 </tr>

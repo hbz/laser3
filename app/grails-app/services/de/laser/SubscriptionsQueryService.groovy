@@ -103,8 +103,22 @@ class SubscriptionsQueryService {
                 }
             }
         }
+
         if (params.identifier) {
-            base_qry += "AND s.id in ( select io.sub from IdentifierOccurrence io, Identifier id where io.identifier = id.id and id.value = :identifier ) "
+            String tmpBaseQuery1 = "( exists ( select io from IdentifierOccurrence io, Identifier id"
+            String tmpBaseQuery2 = "and io.identifier = id.id and id.value = :identifier ) )"
+
+            base_qry += "AND ("
+            base_qry += tmpBaseQuery1 + " where io.sub = s.id " + tmpBaseQuery2 + " or "
+
+            base_qry += tmpBaseQuery1 + ", License lic where io.lic = lic.id and s.owner = lic " + tmpBaseQuery2 + " or "
+
+            base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where io.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
+
+            base_qry += tmpBaseQuery1 + ", TitleInstance ti, TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
+                    " where io.ti = ti.id and tipp.title = ti.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2
+            base_qry += ")"
+
             qry_params.put('identifier', params.identifier)
             filterSet = true
         }

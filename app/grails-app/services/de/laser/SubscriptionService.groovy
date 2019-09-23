@@ -121,6 +121,19 @@ class SubscriptionService {
         validSubChilds
     }
 
+    List getCurrentValidSubChilds(Subscription subscription) {
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatus(
+                subscription,
+                SUBSCRIPTION_CURRENT
+        )
+        validSubChilds = validSubChilds?.sort { a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa?.sortname ?: sa?.name ?: "")?.compareTo((sb?.sortname ?: sb?.name ?: ""))
+        }
+        validSubChilds
+    }
+
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
@@ -257,10 +270,21 @@ class SubscriptionService {
                 } else {
                     def properties = ieToTake.properties
                     properties.globalUID = null
+                    properties.coverages = null
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.subscription = targetSub
-                    save(newIssueEntitlement, flash)
+
+                    if(save(newIssueEntitlement, flash)){
+                        ieToTake.properties.coverages.each{ coverage ->
+
+                            def coverageProperties = coverage.properties
+                            IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
+                            InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
+                            newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                            save(newIssueEntitlement, flash)
+                        }
+                    }
                 }
             }
         }
@@ -691,9 +715,9 @@ class SubscriptionService {
                 if(withPriceData) {
                     PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
                             listPrice: issueEntitlementOverwrite.listPrice,
-                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listPriceCurrency,'Currency'),
+                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency,'Currency'),
                             localPrice: issueEntitlementOverwrite.localPrice,
-                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localPriceCurrency,'Currency'),
+                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
                             issueEntitlement: new_ie
                     )
                     if(pi.save())
@@ -713,13 +737,33 @@ class SubscriptionService {
 
     boolean deleteEntitlement(sub, gokbId) {
         IssueEntitlement ie = IssueEntitlement.findWhere(tipp: TitleInstancePackagePlatform.findByGokbId(gokbId), subscription: sub)
-        if(ie == null)
+        if(ie == null) {
             return false
+        }
         else {
             ie.status = TIPP_DELETED
-            if(ie.save())
+            if(ie.save()) {
                 return true
-            else return false
+            }
+            else{
+                return false
+            }
+        }
+    }
+
+    boolean deleteEntitlementbyID(sub, id) {
+        IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
+        if(ie == null) {
+            return false
+        }
+        else {
+            ie.status = TIPP_DELETED
+            if(ie.save()) {
+                return true
+            }
+            else{
+                return false
+            }
         }
     }
 

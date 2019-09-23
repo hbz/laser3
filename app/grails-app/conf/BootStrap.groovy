@@ -424,7 +424,7 @@ class BootStrap {
                             log.debug("  -> ${fileName} : " + validate.list()?.get(0))
                         }
                         catch(Exception e) {
-                            log.error(e)
+                            log.error("  -> ${fileName} : " + e)
                         }
                     }
                 }
@@ -521,6 +521,16 @@ class BootStrap {
                     name: [key: "TaxExemption", en: "TaxExemption", de: "Steuerbefreiung"],
                     expl : [en: "", de: "Liegt eine Steuerbefreiung für den Anbieter vor?"],
                     descr:allDescr, type: OT.Rdv, cat:'YN'
+            ],
+            [
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [key: "Shibboleth Identity Provider Entity-ID", en: "Shibboleth Identity Provider Entity-ID", de: "Shibboleth: Identity Provider Entity-ID"],
+                    expl : [en: "", de: "Wie lautet die Entity-ID der Organisation?"],
+                    descr:allDescr, type: OT.String, multiple: true, isUsedForLogic: true
             ],
 
         ]
@@ -1510,6 +1520,16 @@ class BootStrap {
                         expl: [en: "", de: "Gibt es einen SFX-Eintrag?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
+                [
+                        name: [key: "Take Over Titles", en: "Take Over Titles", de: "Take-Over-Titel"],
+                        expl: [en: "", de: "Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel."],
+                        descr:allDescr, type: OT.String
+                ],
+                [
+                        name: [key: "Deep Discount Price", en: "Deep Discount Price", de: "Deep-Discount-Preis"],
+                        expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
+                        descr:allDescr, type: OT.Rdv, cat:'YN'
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -1519,9 +1539,30 @@ class BootStrap {
         def requiredProps = [
                 [
                         name: [en: "Participation", de: "Teilnahme"],
-                        expl: [en: "Do you still want to license the license?", de: "Welche Einschränkung des Benutzerkreises gibt es?"],
+                        expl: [en: "Do you still want to license the license?", de: "Wollen Sie weiterhin an der Lizenz teilnehmen?"],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Access choice", de: "Zugangswahl"],
+                        expl: [en: "Please indicate here whether you want 2FA, access for scientists or no remote access?", de: "Bitte geben Sie hier an, ob Sie 2FA, Zugang für Wissenschaftler oder kein remote Zugang wünschen?"],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Category A-F", de: "Kategorie A-F"],
+                        expl: [en: "Please indicate which price category your facility falls into. These can be found in the price tables. A-C each Uni with and without lawyers; D-F FH with and without law and other facilities.", de: "Bitte geben Sie an, in welche Preis-Kategorie Ihre Einrichtung fällt. Diese können Sie den Preistabellen entnehmen. A-C jeweils Uni mit und ohne Jurastutenten; D-F FH mit und ohne Jura und sonstige Einrichtungen."],
+                        type: OT.String
+                ],
+                [
+                        name: [en: "Multi-year term 2 years", de: "Mehrjahreslaufzeit 2 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for two years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für zwei Jahre wünschen."],
+                        type: OT.Rdv, cat:'YN'
+                ],
+                [
+                        name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
+                        expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
                         type: OT.Rdv, cat:'YN'
                 ]
+
         ]
         createSurveyPropertiesWithI10nTranslations(requiredProps)
     }
@@ -1646,7 +1687,7 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
 
-            if (default_prop.explain) {
+            if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
             }
 
@@ -2562,6 +2603,7 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
 
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
@@ -2729,7 +2771,14 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
+	    
+	RefdataCategory.loc(RefdataCategory.IE_ACCEPT_STATUS,
+                [en: RefdataCategory.IE_ACCEPT_STATUS, de: RefdataCategory.IE_ACCEPT_STATUS], BOOTSTRAP)
 
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
+       
         RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
 

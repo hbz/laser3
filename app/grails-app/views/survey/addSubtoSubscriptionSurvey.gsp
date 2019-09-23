@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'createGeneralSurvey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'createSubscriptionSurvey.label')}</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="createGeneralSurvey.label" class="active"/>
+    <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
@@ -52,12 +52,14 @@
         </g:else>
         </div>
 
-        <div class="field required">
-            <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
-            <div class="ui checkbox">
-                <input type="checkbox" name="isSubscriptionSurveyFix">
+        <g:if test="${!(com.k_int.kbplus.SurveyConfig.findAllBySubscriptionAndIsSubscriptionSurveyFix(subscription, true))}">
+            <div class="field required">
+                <label>${message(code: 'surveyConfig.isSubscriptionSurveyFix.label.info')}</label>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="isSubscriptionSurveyFix" ${disableIsSubscriptionSurveyFix}>
+                </div>
             </div>
-        </div>
+        </g:if>
 
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label', default: 'New Survey Name')}</label>

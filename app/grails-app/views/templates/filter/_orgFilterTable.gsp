@@ -333,7 +333,7 @@
                         def countNotFinish = 0
 
                         participantSurveys.each {
-                            if (it.getFinish()) {
+                            if (it.isResultProcessed()) {
                             countFinish++
                             } else {
                             countNotFinish++
@@ -506,14 +506,14 @@
 
                     <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
 
-                        <g:link controller="finance" action="editCostItem" params='[sub:"${costItem.sub?.id}", id:"${costItem.id}", tab:"cons"]' class="ui icon button trigger-modal">
-                            <i class="write icon"></i>
-                        </g:link>
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+
 
                     </g:if>
                 </g:each>
@@ -536,10 +536,14 @@
 
                     <g:if test="${costItem}">
 
-                        <g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                        maxFractionDigits="2" type="number"/>
+                        <b><g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                           maxFractionDigits="2" type="number"/></b>
 
-                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                        (<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2"
+                                         maxFractionDigits="2" type="number"/>)
+
+                        ${(costItem?.billingCurrency?.getI10n('value')?.split('-')).first()}
+
                             <br>
                         <g:if test="${costItem?.startDate || costItem?.endDate}">
                             (${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notimeShort'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notimeShort'))})

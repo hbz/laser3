@@ -489,7 +489,7 @@ ${message(code: 'survey.label')} -
                     ${surveyResult?.type?.getI10n('name')}
 
                     <g:if test="${surveyResult?.type?.getI10n('explain')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${surveyResult?.type?.getI10n('explain')}">
                             <i class="question circle icon"></i>
                         </span>
@@ -522,13 +522,19 @@ ${message(code: 'survey.label')} -
                             <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
-                            <g:if test="${surveyResult.value}">
+                            <g:if test="${surveyResult?.urlValue}">
                                 <semui:linkIcon/>
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${surveyResult?.type?.type == RefdataValue.toString()}">
+
+                            <g:if test="${surveyResult?.type?.name in ["Participation"] && surveyResult?.owner?.id != institution?.id}">
+                                <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"  id="participation" config="${surveyResult.type?.refdataCategory}" />
+                            </g:if>
+                            <g:else>
                             <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
                                                     config="${surveyResult.type?.refdataCategory}"/>
+                            </g:else>
                         </g:elseif>
                     </td>
                     <td>
@@ -556,9 +562,35 @@ ${message(code: 'survey.label')} -
 
 </semui:form>
 
+
+
 <br />
 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}">Zur Übersicht</g:link>
 
+
+
+<r:script>
+                                    $('body #participation').editable({
+                                        validate: function (value) {
+                                            if (value == "com.k_int.kbplus.RefdataValue:${de.laser.helper.RDStore.YN_NO.id}") {
+                                                var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
+                                                if (r == false) {
+                                                   return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"
+                                                }
+                                            }
+                                        },
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown')
+                                                .dropdown({
+                                            clearable: true
+                                        })
+                                        ;
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
+</r:script>
 
 </body>
 </html>

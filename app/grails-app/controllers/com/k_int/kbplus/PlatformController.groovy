@@ -146,6 +146,23 @@ class PlatformController extends AbstractDebugController {
       [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
       */
 
+        result
+
+    }
+    @Secured(['ROLE_USER'])
+    def platformTipps() {
+        def editable
+        def platformInstance = Platform.get(params.id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+        Map result = [platformInstance: platformInstance, editable: editable, user: springSecurityService.getCurrentUser()]
+
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP().intValue()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0

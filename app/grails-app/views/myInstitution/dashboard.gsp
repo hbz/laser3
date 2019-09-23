@@ -39,7 +39,8 @@
                             <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
+                            <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
+                            <%--<g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>--%>
                         </div>
                         <g:if test="${grailsApplication.config.feature_finance}">
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
@@ -89,11 +90,15 @@
             ${countChanges}
             ${message(code:'myinst.todo.label', default:'To Do')}
         </a>
+
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
         <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
+        </sec:ifAnyGranted>
+
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked calendar icon large"></i>
@@ -205,6 +210,7 @@
             </div>
         </div>
 
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
@@ -253,6 +259,7 @@
                 <semui:paginate offset="${announcementOffset ? announcementOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
+        </sec:ifAnyGranted>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
@@ -309,7 +316,7 @@
                                                 <i class="book icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('survey')}">
-                                                <i class="chart bar icon"></i>
+                                                <i class="chart pie icon"></i>
                                             </g:if>
                                         </span>
                                     <g:if test="${tskObj.controller.contains('survey')}">

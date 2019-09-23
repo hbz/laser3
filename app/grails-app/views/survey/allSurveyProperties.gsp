@@ -71,6 +71,7 @@
                 <th>${message(code: 'surveyProperty.explain.label')}</th>
                 <th>${message(code: 'surveyProperty.comment.label')}</th>
                 <th>${message(code: 'surveyProperty.type.label')}</th>
+                <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
             </thead>
 
@@ -117,6 +118,13 @@
                     <td>
                         ${property?.getLocalizedType()}
 
+                    </td>
+                    <td class="x">
+                        <g:if test="${property.countUsages()==0 && property?.owner?.id == institution?.id }">
+                            <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
                     </td>
                 </tr>
             </g:each>

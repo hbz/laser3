@@ -139,5 +139,13 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
     }
 
+    def countUsages() {
+
+            def scp = SurveyProperty.executeQuery("select count(scp) from SurveyConfigProperties as scp where scp.surveyProperty = ?", [this])
+            def srp = SurveyProperty.executeQuery("select count(srp) from SurveyResult as srp where srp.type = ?", [this])
+            return scp[0]+srp[0] ?: 0
+
+    }
+
 
 }

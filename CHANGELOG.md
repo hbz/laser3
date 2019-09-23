@@ -1,6 +1,35 @@
-0.20-RC
+0.20.5
+
+- hotfix: users can be added again, new insts and depts as well
+- hotfix: identifier field display extended to all non-department orgs
+- hotfix: erorr by api for issueEntitlements
+- hotfix: renewal export by survey
+
+0.20.4
+
+- hotfix: wrong survey icons by current subscriptions
+- hotfix: cost item elements not selectable for own costs
+- hotfix: identifiers now displayed again on organisation profile
+
+0.20.3
+
+- hotfix: change the permisson for surveys
+
+0.20.2
 
 - TODO
+
+0.20.1
+
+- TODO
+
+0.20
+
+- TODO
+
+0.19.9
+
+- hotfix: renewal subscription menu 
 
 0.19.8
 

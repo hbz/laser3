@@ -121,6 +121,9 @@
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
                             params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
                             counts="${countSurveys?.finish}"/>
+            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red" countsClass="red"
+                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+                            counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 
         <table class="ui celled sortable table la-table">
@@ -154,9 +157,15 @@
                     </td>
                     <td>
                         <div class="la-flexbox">
-                            <i class="icon chart bar la-list-icon"></i>
-                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui ">
-                                ${surveyInfo.isSubscriptionSurvey ? surveyConfig?.getSurveyName() : surveyInfo?.name}
+                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: "surveyConfig.isSubscriptionSurveyFix.label.info2")}">
+                                    <i class="yellow icon envelope large "></i>
+                                </span>
+                            </g:if>
+                            <i class="icon chart pie la-list-icon"></i>
+                            <g:link controller="survey" action="show" id="${surveyInfo?.id}" class="ui ">
+                                ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>
                     </td>

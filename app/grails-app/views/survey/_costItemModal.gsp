@@ -5,7 +5,7 @@
 <g:render template="vars" model="[org: contextService.getOrg()]"/><%-- setting vars --%>
 
 <g:if test="${setting == 'bulkForAll'}">
-    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll')}"/>
+    <g:set var="modalText" value="${message(code: 'financials.addNewCostForAll') + " ("+ surveyOrgList.size()+ ") "}"/>
 </g:if>
 <g:else>
     <g:set var="modalText" value="${message(code: 'financials.addNewCostFor', args: [surveyOrg?.org?.name])}"/>
@@ -30,16 +30,14 @@
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
         <g:if test="${setting == 'bulkForAll'}">
             <g:hiddenField name="surveyConfig" value="${surveyConfig.class.getName()}:${surveyConfig.id}"/>
+            <g:hiddenField name="surveyOrgs" value="${surveyOrgList.join(",")}"/>
         </g:if>
         <g:else>
             <g:if test="${costItem && (mode && mode.equals("edit"))}">
                 <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}"/>
             </g:if>
-            <g:else>
                 <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
-            </g:else>
         </g:else>
-
 
         <div class="fields">
             <div class="nine wide field">

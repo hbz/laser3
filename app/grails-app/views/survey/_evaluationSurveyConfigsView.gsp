@@ -58,7 +58,7 @@
                             </g:link>
                         </td>
                         <td class="center aligned">
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                            <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon">
                                 <g:set var="finish"
                                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(config)}"/>
@@ -69,7 +69,7 @@
 
                             <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id]" class="ui icon button"><i
-                                    class="chart bar icon"></i></g:link>
+                                    class="chart pie icon"></i></g:link>
 
                         </td>
                     </tr>
@@ -146,7 +146,7 @@
                             <g:link controller="survey" action="evaluationConfigResult" id="${surveyInfo.id}"
                                     params="[surveyConfigID: config?.id, prop: config?.surveyProperty?.id]"
                                     class="ui icon button"><i
-                                    class="chart bar icon"></i></g:link>
+                                    class="chart pie icon"></i></g:link>
 
                         </td>
                     </tr>

@@ -19,7 +19,7 @@
 								<thead>
 									<tr>
 										<th colspan="5">
-											<g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+											<g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
 										</th>
 									</tr>
 									<tr>
@@ -56,7 +56,7 @@
 								<thead>
 								<tr>
 									<th colspan="4">
-										<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+										<g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
 									</th>
 								</tr>
 								<tr>

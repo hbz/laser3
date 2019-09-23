@@ -906,6 +906,9 @@ class AdminController extends AbstractDebugController {
                             role.sub.save()
                         }
                     }
+                    /*
+                      todo: IGNORED for 0.20
+
                     conSubscriberRoles.each{ role ->
                         if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
@@ -919,9 +922,8 @@ class AdminController extends AbstractDebugController {
                             //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
                             //role.sub.save()
                         }
-                    }
+                    }*/
                 }
-
                 oss.roleValue = customerType
                 oss.save(flush:true)
             }

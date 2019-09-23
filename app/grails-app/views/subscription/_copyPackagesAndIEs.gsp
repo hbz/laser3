@@ -17,7 +17,7 @@
                     <th class="six wide">
                         <div class="la-copyElements-th-flex-container">
                             <div class="la-copyElements-th-flex-item">
-                                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+                                <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
                                 <input type="checkbox" name="checkAllCopyCheckboxes" data-action="copy" onClick="toggleAllCheckboxes(this)" checked/>
@@ -28,7 +28,7 @@
                     <th class="six wide">
                         <div class="la-copyElements-th-flex-container">
                             <div class="la-copyElements-th-flex-item">
-                                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+                                <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.dropdownNamingConvention()}</g:link></g:if>
                             </div>
                             <div>
                                 <input type="checkbox" data-action="delete" onClick="toggleAllCheckboxes(this)" />
