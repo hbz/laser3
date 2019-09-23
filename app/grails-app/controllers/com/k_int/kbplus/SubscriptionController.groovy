@@ -8,6 +8,7 @@ import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -382,7 +383,10 @@ class SubscriptionController extends AbstractDebugController {
                 IssueEntitlement.withTransaction { status ->
                     removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-                    if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                    if (deleteIdList) {
+                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)",[delList: deleteIdList])
+                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                    }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
 
                     flash.message = message(code: 'subscription.details.unlink.successfully')
@@ -2332,7 +2336,7 @@ class SubscriptionController extends AbstractDebugController {
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
-                                if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
                                     if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
                                         log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                                 }
@@ -2355,7 +2359,7 @@ class SubscriptionController extends AbstractDebugController {
             }
             else if(params.singleTitle) {
                 try {
-                    if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
+                    if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
                         if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
@@ -2446,6 +2450,29 @@ class SubscriptionController extends AbstractDebugController {
         }
         else {
             log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'index', id: params.id
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def addEmptyPriceItem() {
+        if(params.ieid) {
+            IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+            if(ie) {
+                PriceItem pi = new PriceItem(issueEntitlement: ie)
+                pi.setGlobalUID()
+                if(!pi.save()) {
+                    log.error(pi.errors)
+                    flash.error = message(code:'subscription.details.addEmptyPriceItem.priceItemNotSaved')
+                }
+            }
+            else {
+                flash.error = message(code:'subscription.details.addEmptyPriceItem.issueEntitlementNotFound')
+            }
+        }
+        else {
+            flash.error = message(code:'subscription.details.addEmptyPriceItem.noIssueEntitlement')
         }
         redirect action: 'index', id: params.id
     }
