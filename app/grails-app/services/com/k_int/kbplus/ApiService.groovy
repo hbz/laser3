@@ -8,10 +8,12 @@ import com.k_int.properties.PropertyDefinition
 import groovy.util.logging.Log4j
 import groovy.util.slurpersupport.GPathResult
 
+import java.text.SimpleDateFormat
+
 @Log4j
 class ApiService {
 
-    def grailsApplication
+    def messageSource
 
     /**
      * 
@@ -398,19 +400,20 @@ class ApiService {
     }
 
     /*
-        hic codex data pro organisationibus atque utilisatoribus leget et in repositorium datium scribit si hoc repositorium datium nulla data continet. In casis altris codex nihil facet
-        We should not think in Latin - this code reads off data from an existing dump and writes them into the database
+        hic codex data pro organisationibus atque utilisatoribus ex fons datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
+        We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the entire datasource or a part of it; in latter case, this is an increment
     */
-    void setupBasicData() {
-        log.debug("database is probably empty; setting up essential data ..")
+    void setupBasicData(File baseFile) {
         try {
-            def orgBase = new XmlSlurper().parse(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
+            SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+            def orgBase = new XmlSlurper().parse(baseFile)
             //insert all organisations
             orgBase.organisations.org.each { orgData ->
-                //filter out probably deleted orgs
-                if (!orgData.name.text().contains("DEL")) {
+                //filter out probably deleted orgs and those already existent
+                Org org = Org.findByGlobalUID(orgData.globalUID.text())
+                if (!orgData.name.text().contains("DEL") && !org) {
                     //insert raw org data
-                    Org org = new Org()
+                    org = new Org()
                     //log.debug("globalUID: ${orgData.globalUID.text()}")
                     org.globalUID = orgData.globalUID.text()
                     //log.debug("name: ${orgData.name.text()}")
@@ -479,6 +482,8 @@ class ApiService {
                         //log.debug("libraryType: ${RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(),orgData.libraryType.rdc.text())}")
                         org.libraryType = RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(), orgData.libraryType.rdc.text())
                     }
+                    org.dateCreated = sdf.parse(orgData.dateCreated.text())
+                    org.lastUpdated = sdf.parse(orgData.lastUpdated.text())
                     Set<RefdataValue> orgTypes = []
                     orgData.orgTypes.orgType.each { orgType ->
                         log.debug("----- processing org types -----")
@@ -506,7 +511,7 @@ class ApiService {
                             //new Identifier(ns: IdentifierNamespace.findByNs(idData.@namespace.text()), value: idData.@value.text()).save(flush: true)
                             Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
                             //log.debug("org: ${orgData.globalUID.text()}")
-                            new IdentifierOccurrence(org: org, identifier: id).save(flush: true)
+                            new IdentifierOccurrence(org: org, identifier: id).save()
                         }
                         orgData.settings.setting.each { st ->
                             log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
@@ -523,14 +528,176 @@ class ApiService {
                         }
                     } else if (org.hasErrors()) {
                         log.error("Error on saving org: ${org.getErrors()}")
-                        System.exit(46)
+                        //System.exit(46)
+                    }
+                }
+                else if(org) {
+                    //org exists => update data
+                    if(org.name != orgData.name.text()){
+                        //log.debug("name: ${orgData.name.text()}")
+                        org.name = orgData.name.text()
+                    }
+                    if (org.shortname != orgData.shortname.text()) {
+                        //log.debug("shortname: ${orgData.shortname.text()}")
+                        org.shortname = orgData.shortname.text()
+                    }
+                    if (org.sortname != orgData.sortname.text()) {
+                        //log.debug("sortname: ${orgData.sortname.text()}")
+                        org.sortname = orgData.sortname.text()
+                    }
+                    if (org.url != orgData.url.text()) {
+                        //log.debug("url: ${orgData.url.text()}")
+                        org.url = orgData.url.text()
+                    }
+                    if (org.urlGov != orgData.urlGov.text()) {
+                        //log.debug("urlGov: ${orgData.urlGov.text()}")
+                        org.urlGov = orgData.urlGov.text()
+                    }
+                    if (org.importSource != orgData.importSource.text()) {
+                        //log.debug("importSource: ${orgData.importSource.text()}")
+                        org.importSource = orgData.importSource.text()
+                    }
+                    if (org.impId != orgData.impId.text()) {
+                        //log.debug("impId: ${orgData.impId.text()}")
+                        org.impId = orgData.impId.text()
+                    }
+                    if (org.gokbId != orgData.gokbId.text()) {
+                        //log.debug("gokbId: ${orgData.gokbId.text()}")
+                        org.gokbId = orgData.gokbId.text()
+                    }
+                    if (org.ipRange != orgData.ipRange.text()) {
+                        //log.debug("ipRange: ${orgData.ipRange.text()}")
+                        org.ipRange = orgData.ipRange.text()
+                    }
+                    if (org.scope != orgData.scope.text()) {
+                        //log.debug("scope: ${orgData.scope.text()}")
+                        org.scope = orgData.scope.text()
+                    }
+                    if (org.categoryId != orgData.categoryId.text()) {
+                        //log.debug("categoryId: ${orgData.categoryId.text()}")
+                        org.categoryId = orgData.categoryId.text()
+                    }
+                    if ((orgData.sector.rdv.size() && orgData.sector.rdc.size()) && org.sector?.value != orgData.sector.rdv.text()) {
+                        //log.debug("sector: ${RefdataValue.getByValueAndCategory(orgData.sector.rdv.text(),orgData.sector.rdc.text())}")
+                        org.sector = RefdataValue.getByValueAndCategory(orgData.sector.rdv.text(), orgData.sector.rdc.text())
+                    }
+                    if ((orgData.status.rdv.size() && orgData.sector.drc.size()) && org.status?.value != orgData.status.rdv.text()) {
+                        //log.debug("status: ${RefdataValue.getByValueAndCategory(orgData.status.rdv.text(),orgData.status.rdc.text())}")
+                        org.status = RefdataValue.getByValueAndCategory(orgData.status.rdv.text(), orgData.status.rdc.text())
+                    }
+                    if ((orgData.membership.rdv.size() && orgData.membership.rdc.size()) && org.membership?.value != orgData.membership.rdv.text()) {
+                        //log.debug("membership: ${RefdataValue.getByValueAndCategory(orgData.membership.rdv.text(),orgData.membership.rdc.text())}")
+                        org.membership = RefdataValue.getByValueAndCategory(orgData.membership.rdv.text(), orgData.membership.rdc.text())
+                    }
+                    if ((orgData.country.rdv.size() && orgData.country.rdc.size()) && org.country?.value != orgData.country.rdv.text()) {
+                        //log.debug("country: ${RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(),orgData.countryElem.rdc.text())}")
+                        org.country = RefdataValue.getByValueAndCategory(orgData.countryElem.rdv.text(), orgData.countryElem.rdc.text())
+                    }
+                    if ((orgData.federalState.rdv.size() && orgData.federalState.rdc.size()) && org.federalState?.value != orgData.federalState.rdv.text()) {
+                        //log.debug("federalState: ${RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(),orgData.federalState.rdc.text())}")
+                        org.federalState = RefdataValue.getByValueAndCategory(orgData.federalState.rdv.text(), orgData.federalState.rdc.text())
+                    }
+                    if ((orgData.libraryType.rdv.size() && orgData.libraryType.rdc.size()) && org.libraryType?.value != orgData.libraryType.rdv.text()) {
+                        //log.debug("libraryType: ${RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(),orgData.libraryType.rdc.text())}")
+                        org.libraryType = RefdataValue.getByValueAndCategory(orgData.libraryType.rdv.text(), orgData.libraryType.rdc.text())
+                    }
+                    org.lastUpdated = sdf.parse(orgData.lastUpdated.text())
+                    Set<RefdataValue> orgTypes = []
+                    log.debug("----- processing org types -----")
+                    if(org.orgType.size() > orgData.orgTypes.orgType.size()) {
+                        //log.debug("orgType: ${RefdataValue.getByValueAndCategory(orgType.rdv.text(),orgType.rdc.text())}")
+                        org.orgType.eachWithIndex { ot, int i ->
+                            def orgType = orgData.orgTypes.orgType[i]
+                            if(orgType){
+                                RefdataValue newRDValue = RefdataValue.getByValueAndCategory(orgType.rdv.text(), orgType.rdc.text())
+                                if(ot.id != newRDValue.id) {
+                                    orgTypes << newRDValue
+                                }
+                                else orgTypes << ot
+                            }
+                        }
+                    }
+                    else if(org.orgType.size() <= orgData.orgTypes.orgType.size()) {
+                        orgData.orgTypes.orgType.eachWithIndex { orgType, int i ->
+                            RefdataValue ot = orgTypes[i]
+                            RefdataValue newRDValue = RefdataValue.getByValueAndCategory(orgType.rdv.text(), orgType.rdc.text())
+                            if(ot) {
+                                if(ot.id != newRDValue.id)
+                                    orgTypes << newRDValue
+                                else orgTypes << ot
+                            }
+                            else if(!ot) {
+                                orgTypes << newRDValue
+                            }
+                        }
+                    }
+                    org.orgType = orgTypes
+                    org.save()
+                    log.debug("----- processing cost configurations -----")
+                    orgData.costConfigurations.costConfiguration.each { cc ->
+                        //log.debug("costItemElement: ${RefdataValue.getByValueAndCategory(cc.rdv.text(),cc.rdc.text())}")
+                        RefdataValue costItemElement = RefdataValue.getByValueAndCategory(cc.rdv.text(), cc.rdc.text())
+                        //log.debug("elementSign: ${RefdataValue.getByValueAndCategory(cc.elementSign.rdv.text(),cc.elementSign.rdc.text())}")
+                        RefdataValue elementSign = RefdataValue.getByValueAndCategory(cc.elementSign.rdc.text(), cc.elementSign.rdv.text())
+                        CostItemElementConfiguration ciec = CostItemElementConfiguration.findByForOrganisationAndCostItemElement(org, costItemElement)
+                        if(ciec) {
+                            if(ciec.elementSign?.id != elementSign?.id)
+                                ciec.elementSign = elementSign
+                        }
+                        else {
+                            ciec = new CostItemElementConfiguration()
+                            ciec.costItemElement = costItemElement
+                            ciec.elementSign = elementSign
+                            //log.debug("forOrganisation: ${orgData.globalUID.text()}")
+                            ciec.forOrganisation = org
+                        }
+                        ciec.save()
+                    }
+                    log.debug("----- processing identifiers -----")
+                    orgData.ids.id.each { idData ->
+                        //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
+                        //log.debug("value: ${idData.@value.text()}")
+                        if(idData.@namespace.text() == 'originEditUrl') {
+                            URL originEditUrl = new URL(idData.@value.text())
+                            if(org.originEditUrl != originEditUrl) {
+                                org.originEditUrl = originEditUrl
+                            }
+                        }
+                        else {
+                            Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                            //log.debug("org: ${orgData.globalUID.text()}")
+                            IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
+                            if(!idOcc) {
+                                idOcc = new IdentifierOccurrence()
+                                idOcc.save()
+                            }
+                        }
+                    }
+                    orgData.settings.setting.each { st ->
+                        log.debug("name: ${OrgSettings.KEYS.valueOf(st.name.text())}")
+                        //log.debug("value: ${st.value.text()}")
+                        if (st.rdValue.size() && !OrgSettings.findByOrgAndKeyAndRdValue(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))) {
+                            OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), RefdataValue.getByValueAndCategory(st.rdValue.rdv.text(), st.rdValue.rdc.text()))
+                        }
+                        else if (st.roleValue.size() && !OrgSettings.findByOrgAndKeyAndRoleValue(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))) {
+                            if(OrgSettings.KEYS.valueOf(st.name.text()) == OrgSettings.KEYS.CUSTOMER_TYPE) {
+                                OrgSettings oss = OrgSettings.findByOrgAndKey(org, OrgSettings.KEYS.CUSTOMER_TYPE)
+                                oss.setValue(Role.findByAuthority(st.roleValue.text()))
+                            }
+                            else
+                                OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), Role.findByAuthority(st.roleValue.text()))
+                        }
+                        else if(st.value.size() && !OrgSettings.findByOrgAndKeyAndStrValue(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())){
+                            OrgSettings.add(org, OrgSettings.KEYS.valueOf(st.name.text()), st.value.text())
+                        }
                     }
                 }
             }
-            //insert all users
+            //insert users not existing
             orgBase.users.user.each { userData ->
-                if (!User.findByUsername(userData.username.text())) {
-                    User user = new User()
+                User user = User.findByUsername(userData.username.text())
+                if (!user) {
+                    user = new User()
                     //log.debug("username: ${userData.username.text()}")
                     user.username = userData.username.text()
                     //log.debug("display: ${userData.display.text()}")
@@ -555,9 +722,13 @@ class ApiService {
                         user.apikey = userData.apikey.text()
                     if (userData.apisecret.text())
                         user.apisecret = userData.apisecret.text()
+                    if(userData.dateCreated.text())
+                        user.dateCreated = sdf.parse(userData.dateCreated.text())
+                    if(userData.lastUpdated.text())
+                        user.lastUpdated = sdf.parse(userData.lastUpdated.text())
                     //log.debug("password: ${userData.password.text()}")
                     user.password = "bob" //temp, we will override it with the correct hash
-                    if (user.save(flush: true)) {
+                    if (user.save()) {
                         //data to be processed after save()
                         userData.roles.role.each { uRole ->
                             //log.debug("role: ${Role.findByAuthority(uRole.text())}")
@@ -580,8 +751,41 @@ class ApiService {
                         User.executeUpdate('update User u set u.password = :password where u.username = :username', [password: userData.password.text(), username: userData.username.text()])
                     } else if (user.hasErrors()) {
                         log.error("error on saving user: ${user.getErrors()}")
-                        System.exit(47)
                     }
+                }
+                else if(user) {
+                    if(user.display != userData.display.text()) {
+                        //log.debug("display: ${userData.display.text()}")
+                        user.display = userData.display.text()
+                    }
+                    if (user.email != userData.email.text()) {
+                        //log.debug("email: ${userData.email.text()}")
+                        user.email = userData.email.text()
+                    }
+                    if (user.shibbScope != userData.shibbScope.text()) {
+                        //log.debug("shibbScope: ${userData.shibbScope.text()}")
+                        user.shibbScope = userData.shibbScope.text()
+                    }
+                    if(user.enabled != userData.enabled.text().toBoolean()){
+                        //log.debug("enabled: ${userData.enabled.text().toBoolean()}")
+                        user.enabled = userData.enabled.text().toBoolean()
+                    }
+                    if(user.accountExpired != userData.accountExpired.text().toBoolean()) {
+                        //log.debug("accountExpired: ${userData.accountExpired.text().toBoolean()}")
+                        user.accountExpired = userData.accountExpired.text().toBoolean()
+                    }
+                    if(user.accountLocked != userData.accountLocked.text().toBoolean()) {
+                        //log.debug("accountLocked: ${userData.accountLocked.text().toBoolean()}")
+                        user.accountLocked = userData.accountLocked.text().toBoolean()
+                    }
+                    if(user.passwordExpired != userData.passwordExpired.text().toBoolean()) {
+                        //log.debug("passwordExpired: ${userData.passwordExpired.text().toBoolean()}")
+                        user.passwordExpired = userData.passwordExpired.text().toBoolean()
+                    }
+                    if (user.apikey != userData.apikey.text())
+                        user.apikey = userData.apikey.text()
+                    if (user.apisecret != userData.apisecret.text())
+                        user.apisecret = userData.apisecret.text()
                 }
             }
             //insert all user affiliations
@@ -597,155 +801,172 @@ class ApiService {
                 if (affData.dateRequested.text()) {
                     affiliation.dateRequested = Long.parseLong(affData.dateRequested.text())
                 }
-                if (!affiliation.save(flash: true) && affiliation.hasErrors()) {
+                if (!affiliation.save() && affiliation.hasErrors()) {
                     log.error("error on saving affiliation: ${affiliation.getErrors()}")
-                    System.exit(47)
                 }
             }
             //insert all combos
             orgBase.combos.combo.each { comboData ->
                 log.debug("----- processing combo ${comboData.fromOrg.text()} -> ${comboData.toOrg.text()} -----")
-                //log.debug("type: ${RefdataValue.getByValueAndCategory(comboData.type.rdv.text(),comboData.type.rdc.text())}, fromOrg: ${comboData.fromOrg.text()}, toOrg: ${comboData.toOrg.text()}")
-                Combo combo = new Combo(type: RefdataValue.getByValueAndCategory(comboData.type.rdv.text(), comboData.type.rdc.text()), fromOrg: Org.findByGlobalUID(comboData.fromOrg.text()), toOrg: Org.findByGlobalUID(comboData.toOrg.text()))
-                if (!combo.save(flush: true) && combo.hasErrors()) {
-                    log.error("error on saving combo: ${combo.getErrors()}")
-                    System.exit(47)
+                Combo combo = Combo.findByFromOrgAndToOrg(Org.findByGlobalUID(comboData.fromOrg.text()), Org.findByGlobalUID(comboData.toOrg.text()))
+                if(!combo) {
+                    //log.debug("type: ${RefdataValue.getByValueAndCategory(comboData.type.rdv.text(),comboData.type.rdc.text())}, fromOrg: ${comboData.fromOrg.text()}, toOrg: ${comboData.toOrg.text()}")
+                    combo = new Combo(type: RefdataValue.getByValueAndCategory(comboData.type.rdv.text(), comboData.type.rdc.text()), fromOrg: Org.findByGlobalUID(comboData.fromOrg.text()), toOrg: Org.findByGlobalUID(comboData.toOrg.text()))
+                    if (!combo.save() && combo.hasErrors()) {
+                        log.error("error on saving combo: ${combo.getErrors()}")
+                    }
                 }
             }
             //insert all persons
-            orgBase.persons.person.each { personData ->
-                log.debug("----- processing person ${personData.lastName.text()} for ${personData.tenant.text()} -----")
-                if (!Person.findByGlobalUID(personData.globalUID.text())) {
-                    Person person = new Person(globalUID: personData.globalUID.text())
-                    if (personData.title.text()) {
-                        //log.debug("title: ${personData.title.text()}")
-                        person.title = personData.title.text()
-                    }
-                    if (personData.firstName.text()) {
-                        //log.debug("first_name: ${personData.firstName.text()}")
-                        person.first_name = personData.firstName.text()
-                    }
-                    if (personData.middleName.text()) {
-                        //log.debug("middle_mame: ${personData.middleName.text()}")
-                        person.middle_name = personData.middleName.text()
-                    }
-                    if (personData.lastName.text()) {
-                        //log.debug("last_name: ${personData.lastName.text()}")
-                        person.last_name = personData.lastName.text()
-                    }
-                    if(personData.tenant.text()) {
-                        //log.debug("tenant: ${Org.findByGlobalUID(personData.tenant.text())}")
-                        person.tenant = Org.findByGlobalUID(personData.tenant.text())
-                    }
-                    if(personData.gender.rdv.size() && personData.gender.rdc.size()) {
-                        //log.debug("gender: ${RefdataValue.getByValueAndCategory(personData.gender.rdv.text(),personData.gender.rdc.text())}")
-                        person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
-                    }
+            if(orgBase.persons) {
+                orgBase.persons.person.each { personData ->
+                    log.debug("----- processing person ${personData.lastName.text()} for ${personData.tenant.text()} -----")
+                    if (!Person.findByGlobalUID(personData.globalUID.text())) {
+                        Person person = new Person(globalUID: personData.globalUID.text())
+                        if (personData.title.text()) {
+                            //log.debug("title: ${personData.title.text()}")
+                            person.title = personData.title.text()
+                        }
+                        if (personData.firstName.text()) {
+                            //log.debug("first_name: ${personData.firstName.text()}")
+                            person.first_name = personData.firstName.text()
+                        }
+                        if (personData.middleName.text()) {
+                            //log.debug("middle_mame: ${personData.middleName.text()}")
+                            person.middle_name = personData.middleName.text()
+                        }
+                        if (personData.lastName.text()) {
+                            //log.debug("last_name: ${personData.lastName.text()}")
+                            person.last_name = personData.lastName.text()
+                        }
+                        if(personData.tenant.text()) {
+                            //log.debug("tenant: ${Org.findByGlobalUID(personData.tenant.text())}")
+                            person.tenant = Org.findByGlobalUID(personData.tenant.text())
+                        }
+                        if(personData.gender.rdv.size() && personData.gender.rdc.size()) {
+                            //log.debug("gender: ${RefdataValue.getByValueAndCategory(personData.gender.rdv.text(),personData.gender.rdc.text())}")
+                            person.gender = RefdataValue.getByValueAndCategory(personData.gender.rdv.text(), personData.gender.rdc.text())
+                        }
 
-                    if(personData.isPublic.rdv.text() in ['1', 'Yes', 'yes', 'Ja', 'ja', 'true'] ) { // todo tmp fallback; remove later
-                        //log.debug("isPublic: ${RefdataValue.getByValueAndCategory(personData.isPublic.rdv.text(),personData.isPublic.rdc.text())}")
-                        person.isPublic = true
+                        if(personData.isPublic.text() == 'Yes' ) {
+                            //log.debug("isPublic: ${personData.isPublic.text()")
+                            person.isPublic = true
+                        }
+                        if(personData.contactType.rdv.size() && personData.contactType.rdc.size()) {
+                            //log.debug("contactType: ${RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(),personData.contactType.rdc.text())}")
+                            person.contactType = RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(), personData.contactType.rdc.text())
+                        }
+                        if (!person.save(flash: true) && person.hasErrors()) {
+                            log.error("error on saving person: ${person.getErrors()}")
+                        }
+                    } else {
+                        log.info("person with ${personData.globalUID.text()} already in the database, skipping ...")
                     }
-                    if(personData.contactType.rdv.size() && personData.contactType.rdc.size()) {
-                        //log.debug("contactType: ${RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(),personData.contactType.rdc.text())}")
-                        person.contactType = RefdataValue.getByValueAndCategory(personData.contactType.rdv.text(), personData.contactType.rdc.text())
-                    }
-                    if (!person.save(flash: true) && person.hasErrors()) {
-                        log.error("error on saving person: ${person.getErrors()}")
-                        System.exit(47)
-                    }
-                } else {
-                    log.info("person with ${personData.globalUID.text()} already in the database, skipping ...")
                 }
             }
             //insert all person roles
-            orgBase.personRoles.personRole.each { prData ->
-                log.debug("----- processing person role ${prData.org.text()} <-> ${prData.prs.text()} ------")
-                PersonRole role = new PersonRole(org: Org.findByGlobalUID(prData.org.text()), prs: Person.findByGlobalUID(prData.prs.text()), functionType: RefdataValue.getByValueAndCategory(prData.functionType.rdv.text(), prData.functionType.rdc.text()))
-                if (!role.save(flush: true) && role.hasErrors()) {
-                    log.error("error on saving person role: ${role.getErrors()}")
-                    System.exit(47)
+            if(orgBase.personRoles) {
+                orgBase.personRoles.personRole.each { prData ->
+                    log.debug("----- processing person role ${prData.org.text()} <-> ${prData.prs.text()} ------")
+                    Org targetOrg = Org.findByGlobalUID(prData.org.text())
+                    Person targetPrs = Person.findByGlobalUID(prData.prs.text())
+                    RefdataValue functionType = RefdataValue.getByValueAndCategory(prData.functionType.rdv.text(), prData.functionType.rdc.text())
+                    PersonRole role = PersonRole.findByOrgAndPrsAndFunctionType(targetOrg,targetPrs,functionType)
+                    if(!role) {
+                        role = new PersonRole(org: targetOrg, prs: targetPrs, functionType: functionType)
+                        if (!role.save() && role.hasErrors()) {
+                            log.error("error on saving person role: ${role.getErrors()}")
+                        }
+                    }
                 }
+                //insert all addresses
             }
-            //insert all addresses
-            orgBase.addresses.address.each { addressData ->
-                log.debug("----- processing address ${addressData.street1.text()} ${addressData.street2.text()} at ${addressData.zipcode.text()} ${addressData.city.text()} -----")
-                //log.debug("street_1:${addressData.street1.text()},street_2:${addressData.street2.text()},zipcode:${addressData.zipcode.text()},city:${addressData.city.text()}")
-                Address address = new Address(street_1: addressData.street1.text(), street_2: addressData.street2.text(), zipcode: addressData.zipcode.text(), city: addressData.city.text())
-                if (addressData.org.text()) {
-                    //log.debug("org: ${addressData.org.text()}")
-                    address.org = Org.findByGlobalUID(addressData.org.text())
-                }
-                if (addressData.prs.text()) {
-                    //log.debug("person: ${addressData.prs.text()}")
-                    address.prs = Person.findByGlobalUID(addressData.prs.text())
-                }
-                if (addressData.pob.text()) {
-                    //log.debug("pob: ${addressData.pob.text()}")
-                    address.pob = addressData.pob.text()
-                }
-                if (addressData.pobZipcode.text()) {
-                    //log.debug("pobZipcode: ${addressData.pobZipcode.text()}")
-                    address.pobZipcode = addressData.pobZipcode.text()
-                }
-                if (addressData.pobCity.text()) {
-                    //log.debug("pobCity: ${addressData.pobCity.text()}")
-                    address.pobCity = addressData.pobCity.text()
-                }
-                if (addressData.state.rdv.text() && addressData.state.rdc.text()) {
-                    //log.debug("state: ${RefdataValue.getByValueAndCategory(addressData.state.rdv.text(),addressData.state.rdc.text())}")
-                    address.state = RefdataValue.getByValueAndCategory(addressData.state.rdv.text(), addressData.state.rdc.text())
-                }
-                if (addressData.countryElem.rdv.text() && addressData.countryElem.rdc.text()) {
-                    //log.debug("country: ${RefdataValue.getByValueAndCategory(addressData.countryElem.rdv.text(),addressData.countryElem.rdc.text())}")
-                    address.country = RefdataValue.getByValueAndCategory(addressData.countryElem.rdv.text(), addressData.countryElem.rdc.text())
-                }
-                //log.debug("type: ${RefdataValue.getByValueAndCategory(addressData.type.rdv.text(),addressData.type.rdc.text())}")
-                address.type = RefdataValue.getByValueAndCategory(addressData.type.rdv.text(), addressData.type.rdc.text())
-                if (addressData.name.text()) {
-                    //log.debug("name: ${addressData.name.text()}")
-                    address.name = addressData.name.text()
-                }
-                if (addressData.additionFirst.text()) {
-                    //log.debug("additionFirst: ${addressData.additionFirst.text()}")
-                    address.additionFirst = addressData.additionFirst.text()
-                }
-                if (addressData.additionSecond.text()) {
-                    //log.debug("additionSecond: ${addressData.additionSecond.text()}")
-                    address.additionSecond = addressData.additionSecond.text()
-                }
-                if (!address.save(flash: true) && address.hasErrors()) {
-                    log.error("error on saving address: ${address.getErrors()}")
-                    System.exit(47)
+            if(orgBase.addresses) {
+                orgBase.addresses.address.each { addressData ->
+                    log.debug("----- processing address ${addressData.street1.text()} ${addressData.street2.text()} at ${addressData.zipcode.text()} ${addressData.city.text()} -----")
+                    Address address
+                    if(addressData.org.text()) {
+                        address = Address.findByOrg(Org.findByGlobalUID(addressData.org.text()))
+                        if(!address) {
+                            //log.debug("org: ${addressData.org.text()}")
+                            Org addressOrg = Org.findByGlobalUID(addressData.org.text())
+                            address = new Address(street_1: addressData.street1.text(), street_2: addressData.street2.text(), zipcode: addressData.zipcode.text(), city: addressData.city.text(), org: addressOrg)
+                        }
+                    }
+                    else {
+                        //log.debug("street_1:${addressData.street1.text()},street_2:${addressData.street2.text()},zipcode:${addressData.zipcode.text()},city:${addressData.city.text()}")
+                        address = new Address(street_1: addressData.street1.text(), street_2: addressData.street2.text(), zipcode: addressData.zipcode.text(), city: addressData.city.text())
+                    }
+                    if (addressData.prs.text()) {
+                        //log.debug("person: ${addressData.prs.text()}")
+                        address.prs = Person.findByGlobalUID(addressData.prs.text())
+                    }
+                    if (addressData.pob.text()) {
+                        //log.debug("pob: ${addressData.pob.text()}")
+                        address.pob = addressData.pob.text()
+                    }
+                    if (addressData.pobZipcode.text()) {
+                        //log.debug("pobZipcode: ${addressData.pobZipcode.text()}")
+                        address.pobZipcode = addressData.pobZipcode.text()
+                    }
+                    if (addressData.pobCity.text()) {
+                        //log.debug("pobCity: ${addressData.pobCity.text()}")
+                        address.pobCity = addressData.pobCity.text()
+                    }
+                    if (addressData.state.rdv.text() && addressData.state.rdc.text()) {
+                        //log.debug("state: ${RefdataValue.getByValueAndCategory(addressData.state.rdv.text(),addressData.state.rdc.text())}")
+                        address.state = RefdataValue.getByValueAndCategory(addressData.state.rdv.text(), addressData.state.rdc.text())
+                    }
+                    if (addressData.countryElem.rdv.text() && addressData.countryElem.rdc.text()) {
+                        //log.debug("country: ${RefdataValue.getByValueAndCategory(addressData.countryElem.rdv.text(),addressData.countryElem.rdc.text())}")
+                        address.country = RefdataValue.getByValueAndCategory(addressData.countryElem.rdv.text(), addressData.countryElem.rdc.text())
+                    }
+                    //log.debug("type: ${RefdataValue.getByValueAndCategory(addressData.type.rdv.text(),addressData.type.rdc.text())}")
+                    address.type = RefdataValue.getByValueAndCategory(addressData.type.rdv.text(), addressData.type.rdc.text())
+                    if (addressData.name.text()) {
+                        //log.debug("name: ${addressData.name.text()}")
+                        address.name = addressData.name.text()
+                    }
+                    if (addressData.additionFirst.text()) {
+                        //log.debug("additionFirst: ${addressData.additionFirst.text()}")
+                        address.additionFirst = addressData.additionFirst.text()
+                    }
+                    if (addressData.additionSecond.text()) {
+                        //log.debug("additionSecond: ${addressData.additionSecond.text()}")
+                        address.additionSecond = addressData.additionSecond.text()
+                    }
+                    if (!address.save() && address.hasErrors()) {
+                        log.error("error on saving address: ${address.getErrors()}")
+                    }
                 }
             }
             //insert all contacts
-            orgBase.contacts.contact.each { contactData ->
-                log.debug("----- processing contact ${contactData.content.text()} -----")
-                //log.debug("content: ${contactData.content.text()}")
-                Contact contact = new Contact(content: contactData.content.text())
-                if (contactData.org.text()) {
-                    //log.debug("org: ${Org.findByGlobalUID(contactData.org.text())}")
-                    contact.org = Org.findByGlobalUID(contactData.org.text())
-                }
-                if (contactData.prs.text()) {
-                    //log.debug("person: ${Person.findByGlobalUID(contactData.prs.text())}")
-                    contact.prs = Person.findByGlobalUID(contactData.prs.text())
-                }
-                //log.debug("contentType: ${RefdataValue.getByValueAndCategory(contactData.contentType.rdv.text(),contactData.contentType.rdc.text())}")
-                contact.contentType = RefdataValue.getByValueAndCategory(contactData.contentType.rdv.text(), contactData.contentType.rdc.text())
-                //log.debug("type: ${RefdataValue.getByValueAndCategory(contactData.type.rdv.text(),contactData.type.rdc.text())}")
-                contact.type = RefdataValue.getByValueAndCategory(contactData.type.rdv.text(), contactData.type.rdc.text())
-                if (!contact.save(flash: true) && contact.hasErrors()) {
-                    log.error("error on saving contact: ${contact.getErrors()}")
-                    System.exit(47)
+            if(orgBase.contacts) {
+                orgBase.contacts.contact.each { contactData ->
+                    log.debug("----- processing contact ${contactData.content.text()} -----")
+                    //log.debug("content: ${contactData.content.text()}")
+                    Contact contact = new Contact(content: contactData.content.text())
+                    if (contactData.org.text()) {
+                        //log.debug("org: ${Org.findByGlobalUID(contactData.org.text())}")
+                        contact.org = Org.findByGlobalUID(contactData.org.text())
+                    }
+                    if (contactData.prs.text()) {
+                        //log.debug("person: ${Person.findByGlobalUID(contactData.prs.text())}")
+                        contact.prs = Person.findByGlobalUID(contactData.prs.text())
+                    }
+                    //log.debug("contentType: ${RefdataValue.getByValueAndCategory(contactData.contentType.rdv.text(),contactData.contentType.rdc.text())}")
+                    contact.contentType = RefdataValue.getByValueAndCategory(contactData.contentType.rdv.text(), contactData.contentType.rdc.text())
+                    //log.debug("type: ${RefdataValue.getByValueAndCategory(contactData.type.rdv.text(),contactData.type.rdc.text())}")
+                    contact.type = RefdataValue.getByValueAndCategory(contactData.type.rdv.text(), contactData.type.rdc.text())
+                    if (!contact.save() && contact.hasErrors()) {
+                        log.error("error on saving contact: ${contact.getErrors()}")
+                    }
                 }
             }
-            //System.exit(45)
+
         }
         catch (FileNotFoundException e) {
             log.error("Data not found - PANIC!")
-            System.exit(48)
         }
     }
 
