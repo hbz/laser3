@@ -338,7 +338,7 @@
                                 //member subscriptions
                                 validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
                             }
-                            else if(tab == "subscr" && contextSub.getCollective().id == org.id) {
+                            else if(tab == "subscr" && contextSub.getCollective()?.id == org.id) {
                                 //consortial member subscription for collective
                                 validSubChilds = Subscription.findAllByInstanceOf(contextSub)
                             }

@@ -2547,6 +2547,8 @@ class SubscriptionController extends AbstractDebugController {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
                     dTask.delete(flush: true)
+                    if(params.returnToShow)
+                        redirect action: 'show', id: params.id
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
@@ -4846,7 +4848,7 @@ class SubscriptionController extends AbstractDebugController {
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL, TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {
