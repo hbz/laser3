@@ -55,7 +55,7 @@
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'License Status'))
                 %>
                 <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
-                              noSelection="${['' : message(code:'accessMethod.all')]}"
+                              noSelection="${['' : '']}"
                               value="${['':'']}"/>
             </div>
 
