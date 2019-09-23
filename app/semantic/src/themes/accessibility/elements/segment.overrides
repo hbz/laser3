@@ -1,0 +1,35 @@
+
+
+/*******************************
+            Segment
+*******************************/
+
+.ui.segment.la-filter {
+  background: @laFilterBackground;
+  border: none;
+}
+.ui.segment.la-filter-temp {
+  background: @laFilterBackground;
+  border: none;
+}
+.ui.segment.la-role-admin {
+  border-right: 10px solid @blue;
+}
+.ui.segment.la-role-yoda {
+  border-right: 10px solid @green;
+}
+.ui.segment.la-search {
+  background: #f1ebe5;
+  border: none;
+}
+
+/* Grey */
+.ui.grey.segment:not(.inverted) {
+  border-top: 1px solid #d3dae3 !important;
+}
+/***********************************
+        Footer Segment
+***********************************/
+.ui.segment.la-footer {
+  padding: 3em 1em;
+}

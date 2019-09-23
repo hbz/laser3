@@ -88,7 +88,7 @@ modules = {
 
         resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
 
-        resource url:'semantic/semantic.min.js'         // new stuff
+        resource url:'accessibility/semantic.min.js'         // new stuff
         resource url:'accessibility/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
 
         resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff

@@ -1,0 +1,143 @@
+/*******************************
+         Button Overrides
+*******************************/
+// to see the Buttons only if hover or focus
+.ui.la-selectable.table tr{
+  &:last-child{
+    border-bottom: none;
+  }
+  .button.la-selectable-button {
+    opacity: 0;
+  }
+  &:hover .button.la-selectable-button {
+    opacity: 1;
+  }
+  .button.la-selectable-button:focus {
+    opacity: 1;
+  }
+}
+.la-width-122 {
+  width: 122px;
+}
+
+.ui.button.la-new-item {
+  margin-left: .8rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem
+}
+
+/*--------------
+     Toggle for Context Bar
+---------------*/
+
+/* Toggle (Modifies active state to give affordances) */
+.la-contextBar .ui.toggle.buttons .active.button,
+.la-contextBar .ui.buttons .button.toggle.active,
+.la-contextBar .ui.button.toggle.active {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: @invertedTextShadow;
+  color: @positiveColor !important;
+}
+.ui.button.toggle.active:hover {
+  background-color: transparent !important;
+  text-shadow: @invertedTextShadow;
+  color:@positiveColorHover !important;
+}
+.la-contextBar .ui.button:hover,
+.la-contextBar .ui.button:focus{
+  background-color: transparent !important;
+}
+/* Vertical  Style special for details show sides */
+.ui.la-vertical.buttons {
+  display: inline-flex;
+  flex-direction: column;
+}
+.ui.la-vertical.buttons .button {
+  display: block;
+  float: none;
+  width: 100%;
+  margin: @la-verticalGroupOffset;
+  box-shadow: @verticalBoxShadow;
+  border-radius: 0em;
+}
+#js-confirmation-button.positive.button {
+  background-color: @red !important;
+}
+
+element.style {
+}
+.ui.green.button {
+  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
+  box-shadow: 0 0 0 0 #d3dae3 inset;
+}
+.ui.green.button, .ui.green.buttons .button {
+  background-color: #98b500;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
+}
+.ui.icon.button, .ui.icon.buttons .button {
+  padding: .78571429em .78571429em .78571429em;
+}
+.ui.mini.button, .ui.mini.buttons .button, .ui.mini.buttons .or {
+  font-size: .78571429rem;
+}
+.ui.dropdown {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  outline: 0;
+  text-align: left;
+  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: box-shadow .1s ease,width .1s ease;
+  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ui.button, .ui.buttons .button, .ui.buttons .or {
+  font-size: 1rem;
+}
+
+element.style {
+}
+.ui.green.button {
+  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
+  box-shadow: 0 0 0 0 #d3dae3 inset;
+}
+.ui.green.button, .ui.green.buttons .button {
+  background-color: #98b500;
+  color: #fff;
+  text-shadow: none;
+  background-image: none;
+}
+.ui.icon.button, .ui.icon.buttons .button {
+  padding: .78571429em .78571429em .78571429em;
+}
+.ui.mini.button, .ui.mini.buttons .button, .ui.mini.buttons .or {
+  font-size: .78571429rem;
+}
+.ui.dropdown {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  outline: 0;
+  text-align: left;
+  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: width .1s ease,-webkit-box-shadow .1s ease;
+  transition: box-shadow .1s ease,width .1s ease;
+  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.ui.button, .ui.buttons .button, .ui.buttons .or {
+  font-size: 1rem;
+}
+.ui.button.la-audit-button {
+  vertical-align: super;
+}
+
+.la-title {
+  color: #767676;
+  font-size: .8rem;
+  text-transform: uppercase;
+}

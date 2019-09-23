@@ -1,5 +1,6 @@
 <%@ page import="de.laser.interfaces.TemplateSupport; de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 <!doctype html>
+<r:require module="annotations" />
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
