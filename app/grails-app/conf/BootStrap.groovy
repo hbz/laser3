@@ -260,7 +260,8 @@ class BootStrap {
 
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-            apiService.setupBasicData()
+            log.debug("database is probably empty; setting up essential data ..")
+            apiService.setupBasicData(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
         }
 
         //log.debug("initializeDefaultSettings ..")

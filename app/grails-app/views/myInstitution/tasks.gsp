@@ -55,16 +55,10 @@
 
         <semui:messages data="${flash}" />
 
-        <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
-
-
 
         <g:render template="/templates/tasks/modal_create" />
 
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-
-
-
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
         <g:render template="/templates/tasks/js_taskedit"/>
