@@ -866,7 +866,13 @@ class AjaxController {
               }
               else
                   ieCoverage = ieCandidate.coverages[covStmtKey]
-              ieCoverage[prop] = params.propValue
+              if(prop in ['startDate','endDate']) {
+                  SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+                  ieCoverage[prop] = sdf.parse(params.propValue)
+              }
+              else {
+                  ieCoverage[prop] = params.propValue
+              }
               ieCandidate.coverages[covStmtKey] = ieCoverage
           }
           else {
