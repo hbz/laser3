@@ -854,7 +854,7 @@ aside.ui.segment {
 
 .ui.accordion .title .dropdown.icon.la-dropdown-accordion:before {
   font-size: 2rem;
-  color: #d3dae3;
+  color: #004678;
 }
 
 aside.ui.accordion .title:not(.ui) {
@@ -1323,8 +1323,8 @@ aside.ui.accordion .title:not(.ui) {
   text-align: center;
   text-decoration: none;
   border-radius: 0;
-  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -1348,8 +1348,8 @@ aside.ui.accordion .title:not(.ui) {
 .ui.button:hover {
   background-color: #CACBCD;
   background-image: none;
-  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
   color: rgba(0, 0, 0, 0.8);
 }
 
@@ -1753,7 +1753,7 @@ aside.ui.accordion .title:not(.ui) {
   margin: 0px 0px 0px -1px !important;
   padding: '';
   font-size: 1em;
-  border-color: #d3dae3;
+  border-color: #004678;
 }
 
 /* Tag */
@@ -1798,8 +1798,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.facebook.button:hover {
@@ -1821,8 +1821,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.twitter.button:hover {
@@ -1844,8 +1844,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.google.plus.button:hover {
@@ -1887,8 +1887,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.youtube.button:hover {
@@ -1910,8 +1910,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.instagram.button:hover {
@@ -1933,8 +1933,8 @@ aside.ui.accordion .title:not(.ui) {
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.pinterest.button:hover {
@@ -1955,8 +1955,8 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #4D7198;
   color: #FFFFFF;
   background-image: none;
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.vk.button:hover {
@@ -2112,14 +2112,14 @@ aside.ui.accordion .title:not(.ui) {
   border-radius: 0;
   text-transform: none;
   text-shadow: none !important;
-  -webkit-box-shadow: 0px 0px 0px 1px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px #004678 inset;
+  box-shadow: 0px 0px 0px 1px #004678 inset;
 }
 
 .ui.basic.buttons {
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   border-radius: 0;
 }
 
@@ -2131,24 +2131,24 @@ aside.ui.accordion .title:not(.ui) {
 .ui.basic.button:hover {
   background: #FFFFFF !important;
   color: rgba(0, 0, 0, 0.8) !important;
-  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset;
 }
 
 .ui.basic.buttons .button:focus,
 .ui.basic.button:focus {
   background: #FFFFFF !important;
   color: rgba(0, 0, 0, 0.8) !important;
-  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset;
 }
 
 .ui.basic.buttons .button:active,
 .ui.basic.button:active {
   background: #F8F8F8 !important;
   color: rgba(0, 0, 0, 0.9) !important;
-  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #004678 inset;
 }
 
 .ui.basic.buttons .active.button,
@@ -2167,13 +2167,13 @@ aside.ui.accordion .title:not(.ui) {
 /* Vertical */
 
 .ui.basic.buttons .button:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset inset;
-  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #d3dae3 inset inset;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset inset;
+  box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.35) inset, 0px 0px 0px 0px #004678 inset inset;
 }
 
 .ui.basic.buttons .button:active {
-  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #d3dae3 inset inset;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #d3dae3 inset inset;
+  -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #004678 inset inset;
+  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.15) inset, 0px 1px 4px 0px #004678 inset inset;
 }
 
 .ui.basic.buttons .active.button {
@@ -2232,7 +2232,7 @@ aside.ui.accordion .title:not(.ui) {
 /* Basic Group */
 
 .ui.basic.buttons .button {
-  border-left: 1px solid #d3dae3;
+  border-left: 1px solid #004678;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -2243,7 +2243,7 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.basic.vertical.buttons .button {
   border-left-width: 0px;
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
 }
 
 .ui.basic.vertical.buttons .button:first-child {
@@ -2442,8 +2442,8 @@ aside.ui.accordion .title:not(.ui) {
   display: block;
   margin: 0em;
   border-radius: 0em;
-  -webkit-box-shadow: 0px 0px 0px 1px #d3dae3 !important;
-  box-shadow: 0px 0px 0px 1px #d3dae3 !important;
+  -webkit-box-shadow: 0px 0px 0px 1px #004678 !important;
+  box-shadow: 0px 0px 0px 1px #004678 !important;
 }
 
 /* Top / Bottom */
@@ -2737,8 +2737,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.black.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.black.buttons .button:hover,
@@ -2912,8 +2912,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.grey.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.grey.buttons .button:hover,
@@ -3087,8 +3087,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.brown.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.brown.buttons .button:hover,
@@ -3262,8 +3262,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.blue.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.blue.buttons .button:hover,
@@ -3437,8 +3437,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.green.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.green.buttons .button:hover,
@@ -3612,8 +3612,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.orange.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.orange.buttons .button:hover,
@@ -3787,8 +3787,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.pink.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.pink.buttons .button:hover,
@@ -3962,8 +3962,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.violet.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.violet.buttons .button:hover,
@@ -4137,8 +4137,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.purple.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.purple.buttons .button:hover,
@@ -4312,8 +4312,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.red.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.red.buttons .button:hover,
@@ -4487,8 +4487,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.teal.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.teal.buttons .button:hover,
@@ -4662,8 +4662,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.olive.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.olive.buttons .button:hover,
@@ -4837,8 +4837,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.yellow.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.yellow.buttons .button:hover,
@@ -5016,8 +5016,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.primary.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.primary.buttons .button:hover,
@@ -5195,8 +5195,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.secondary.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.secondary.buttons .button:hover,
@@ -5374,8 +5374,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.positive.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.positive.buttons .button:hover,
@@ -5467,8 +5467,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.negative.button {
-  -webkit-box-shadow: 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.negative.buttons .button:hover,
@@ -5590,8 +5590,8 @@ aside.ui.accordion .title:not(.ui) {
 
 .ui.buttons > .ui.button:not(.basic):not(.inverted),
 .ui.buttons:not(.basic):not(.inverted) > .button {
-  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
-  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #d3dae3 inset;
+  -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
+  box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px #004678 inset;
 }
 
 .ui.buttons .button:first-child {
@@ -19259,7 +19259,7 @@ ol.ui.horizontal.list li:before,
   margin: 1rem 0em;
   padding: 1em 1em;
   border-radius: 0;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
 }
 
 .ui.segment:first-child {
@@ -19281,7 +19281,7 @@ ol.ui.horizontal.list li:before,
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
-  border-bottom: 1px solid #d3dae3;
+  border-bottom: 1px solid #004678;
 }
 
 .ui.vertical.segment:last-child {
@@ -19338,7 +19338,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.basic.table.segment {
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   -webkit-box-shadow: 0;
   box-shadow: 0;
 }
@@ -19376,7 +19376,7 @@ ol.ui.horizontal.list li:before,
   padding: 1em 1em;
   min-height: 18rem;
   background: #f4f8f9;
-  border-color: #d3dae3;
+  border-color: #004678;
   -webkit-box-shadow: 0px 2px 25px 0 rgba(34, 36, 38, 0.05) inset;
   box-shadow: 0px 2px 25px 0 rgba(34, 36, 38, 0.05) inset;
 }
@@ -19451,7 +19451,7 @@ ol.ui.horizontal.list li:before,
   left: 0px;
   position: absolute;
   width: 100%;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   -webkit-box-shadow: '';
   box-shadow: '';
 }
@@ -19508,7 +19508,7 @@ ol.ui.horizontal.list li:before,
   position: absolute;
   bottom: -3px;
   left: 0%;
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
   background: rgba(0, 0, 0, 0.03);
   width: 100%;
   height: 6px;
@@ -19617,7 +19617,7 @@ ol.ui.horizontal.list li:before,
   flex-direction: column;
   position: relative;
   margin: 1rem 0em;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   -webkit-box-shadow: 0;
   box-shadow: 0;
   border-radius: 0;
@@ -19642,7 +19642,7 @@ ol.ui.horizontal.list li:before,
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
 }
 
 .ui.segments:not(.horizontal) > .segment:first-child {
@@ -19675,7 +19675,7 @@ ol.ui.horizontal.list li:before,
 /* Nested Group */
 
 .ui.segments > .ui.segments {
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
   margin: 1rem 1rem;
 }
 
@@ -19705,7 +19705,7 @@ ol.ui.horizontal.list li:before,
   box-shadow: 0;
   margin: 1rem 0em;
   border-radius: 0;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
 }
 
 /* Nested Horizontal Group */
@@ -19717,7 +19717,7 @@ ol.ui.horizontal.list li:before,
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid #004678;
 }
 
 /* Horizontal Segment */
@@ -19734,7 +19734,7 @@ ol.ui.horizontal.list li:before,
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-left: 1px solid #d3dae3;
+  border-left: 1px solid #004678;
 }
 
 /* Border Fixes */
@@ -20203,12 +20203,12 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 .ui.segment.la-filter {
-  background: #e6eaef;
+  background: #004678;
   border: none;
 }
 
 .ui.segment.la-filter-temp {
-  background: #e6eaef;
+  background: #004678;
   border: none;
 }
 
@@ -21190,7 +21190,7 @@ ol.ui.horizontal.list li:before,
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
@@ -21207,7 +21207,7 @@ ol.ui.horizontal.list li:before,
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
@@ -21248,7 +21248,7 @@ ol.ui.horizontal.list li:before,
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
   box-shadow: 0em 0em 0em 0em transparent inset;
@@ -22306,15 +22306,15 @@ ol.ui.horizontal.list li:before,
 }
 
 .la-filter-selected {
-  background: #d3dae3 !important;
+  background: #004678 !important;
 }
 
 .la-calendar-selected input {
-  background: #d3dae3 !important;
+  background: #004678 !important;
 }
 
 .la-filter-dropdown-selected {
-  background: #d3dae3 !important;
+  background: #004678 !important;
 }
 
 .ui.icon.input > i.icon#btn-search:not(.link) {
@@ -25714,7 +25714,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu {
   margin-left: 0em;
   margin-right: 0em;
-  border-bottom: 2px solid #d3dae3;
+  border-bottom: 2px solid #004678;
 }
 
 .ui.secondary.pointing.menu .item {
@@ -25760,7 +25760,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .link.item:active,
 .ui.secondary.pointing.menu a.item:active {
   background-color: transparent;
-  border-color: #d3dae3;
+  border-color: #004678;
 }
 
 /* Active */
@@ -25793,7 +25793,7 @@ Floated Menu / Item
   border-bottom-width: 0px;
   border-right-width: 2px;
   border-right-style: solid;
-  border-right-color: #d3dae3;
+  border-right-color: #004678;
 }
 
 .ui.secondary.vertical.pointing.menu .item {
@@ -25819,7 +25819,7 @@ Floated Menu / Item
 
 .ui.secondary.inverted.pointing.menu {
   border-width: 2px;
-  border-color: #d3dae3;
+  border-color: #004678;
 }
 
 .ui.secondary.inverted.pointing.menu .item {
@@ -27003,7 +27003,8 @@ Floated Menu / Item
 .ui.menu.la-contextBar {
   top: 50px;
   z-index: 90;
-  background-color: #d3dae3;
+  background-color: #004678;
+  color: white;
 }
 
 .ui.menu.la-contextBar .item {
@@ -27012,7 +27013,7 @@ Floated Menu / Item
 
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
-  color: #767676;
+  color: white;
 }
 
 .ui.menu.la-contextBar .ui.sub.header.item {
