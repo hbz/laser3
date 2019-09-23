@@ -14,8 +14,7 @@
                     </g:else>
                 </div>
                 <div>
-                    <input name="select-all-copy" type="checkbox" class="select-all"  onclick="selectAllTake(this);" />
-                    %{--<input name="select-all-copy" type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />--}%
+                    <input name="select-all-copy" type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />
                 </div>
             </div>
         </th>
@@ -94,8 +93,7 @@
                         %{--COPY:--}%
                         <g:if test="${propValues.containsKey(sourceSubscription)}">
                             <div class="ui checkbox la-toggle-radio la-replace">
-                                %{--<g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />--}%
-                                <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}"  />
+                                <g:checkBox name="subscription.takeProperty" class="bulkcheck" data-action="copy" data-multipleOccurrence="${propKey.multipleOccurrence}" value="${genericOIDService.getOID(propValue)}" checked="${true}" />
                             </div>
                         </g:if>
                     </div>
