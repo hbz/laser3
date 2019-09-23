@@ -14,7 +14,7 @@
                     </g:else>
                 </div>
                 <div>
-                    <input name="select-all-copy" type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />
+                    <input type="checkbox" class="select-all"  onclick="selectAllTake(this);" checked="${true}" />
                 </div>
             </div>
         </th>
