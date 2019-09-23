@@ -16,8 +16,6 @@ import static de.laser.helper.RDStore.*
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
-import static de.laser.helper.RDStore.COMBO_TYPE_DEPARTMENT
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController extends AbstractDebugController {
 
