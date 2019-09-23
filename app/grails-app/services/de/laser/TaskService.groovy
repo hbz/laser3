@@ -18,22 +18,68 @@ class TaskService {
     def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
         if (user) {
+            def query
             if (flag == WITHOUT_TENANT_ONLY) {
-                def query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null " + queryMap.query
-                def params = [user : user] << queryMap.queryParams
-                tasks = Task.executeQuery(query, params)
+                query = "select t from Task t where t.creator=:user and t.responsibleUser is null and t.responsibleOrg is null "
             } else {
-                def query = "select t from Task t where t.creator=:user " + queryMap.query
-                def params = [user : user] << queryMap.queryParams
-                tasks = Task.executeQuery(query, params)
+                query = "select t from Task t where t.creator=:user "
             }
+            def params = [user : user]
+            if (queryMap){
+                query += queryMap.query
+                params << queryMap.queryParams
+            }
+            tasks = Task.executeQuery(query, params)
         }
         if ( ! queryMap || ! queryMap?.query?.toLowerCase()?.contains('order by')){
             tasks.sort{ it.endDate }
         }
         tasks
     }
+    def getTasksByCreatorAndObject(User user, License obj,  Object params) {
+        (user && obj)? Task.findAllByCreatorAndLicense(user, obj, params) : []
+    }
+    def getTasksByCreatorAndObject(User user, Org obj,  Object params) {
+        (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj, params) : []
+    }
+    def getTasksByCreatorAndObject(User user, Package obj,  Object params) {
+        (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj, params) : []
+    }
+    def getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
+        (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj, params) : []
+    }
+    def getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
+        (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
+    }
+    def getTasksByCreatorAndObject(User user, License obj ) {
+        (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
+    }
+    def getTasksByCreatorAndObject(User user, Org obj ) {
+        (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
+    }
+    def getTasksByCreatorAndObject(User user, Package obj ) {
+        (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
+    }
+    def getTasksByCreatorAndObject(User user, Subscription obj) {
+        (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj) : []
+    }
+    def getTasksByCreatorAndObject(User user, SurveyConfig obj) {
+        (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
+    }
 
+    List chopOffForPageSize(List taskInstanceList, User user, int offset){
+        //chop everything off beyond the user's pagination limit
+        int taskInstanceCount = taskInstanceList?.size() ?: 0
+        if (taskInstanceCount > user.getDefaultPageSizeTMP()) {
+            try {
+                taskInstanceList = taskInstanceList.subList(offset, offset + Math.toIntExact(user.getDefaultPageSizeTMP()))
+            }
+            catch (IndexOutOfBoundsException e) {
+                taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
+            }
+        }
+        taskInstanceList
+    }
     def getTasksByResponsible(User user, Map queryMap) {
         def tasks = []
         if (user) {

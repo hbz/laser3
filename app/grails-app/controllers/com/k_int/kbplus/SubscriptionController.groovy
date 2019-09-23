@@ -2552,7 +2552,15 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
+
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
+        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscriptionInstance)
+        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
