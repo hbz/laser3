@@ -84,8 +84,13 @@ ${surveyInfo?.name}
 
         <br>
 
-        <h3 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
-            total="${surveyConfig?.orgs?.size()}"/></h3>
+        <h3 class="ui left aligned icon header">
+            ${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}
+            <semui:totalNumber total="${surveyConfig?.orgs?.size()}"/>
+            <br>
+            ${message(code: 'myinst.consortiaSubscriptions.member')}
+            <semui:totalNumber total="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+        </h3>
 
         <br>
         <br>
