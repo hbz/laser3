@@ -167,6 +167,7 @@ class Identifier {
     @Transient
     def afterInsert = {
 
+
         if(this.ns?.ns == 'wibid')
         {
             if(this.value == 'Unknown')
@@ -192,7 +193,7 @@ class Identifier {
                 this.value = ''
                 this.save()
             }
-            else if(!(this.value =~ /^DE-/ ) && this.value != '')
+            else if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')
             {
                 this.value = 'DE-'+this.value.trim()
             }

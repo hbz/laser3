@@ -506,7 +506,7 @@
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
-                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl</g:link>
+                                    <g:link class="item" controller="yoda" action="migratePackageIdentifiers">Remap Package Identifier Namespace</g:link>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
