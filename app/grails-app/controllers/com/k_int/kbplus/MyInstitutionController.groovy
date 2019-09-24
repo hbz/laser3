@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
@@ -2782,6 +2783,40 @@ AND EXISTS (
         result.usage = Fact.findAllByRelatedTitleAndSupplierAndInst(result.tip.title,result.tip.provider,result.tip.institution)
       }
       result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM") })
+    Map userList() {
+        Map result = setResultGenerics()
+        //overwrite
+        result.editable = result.user.hasRole('ROLE_ADMIN') || result.user.hasAffiliation('INST_ADM')
+
+        // only context org depending
+        List baseQuery = ['select distinct u from User u UserOrg uo']
+        List whereQuery = ['( uo.user = u and uo.org = :org )']
+        Map queryParams = [org:result.institution]
+        if (params.authority) {
+            baseQuery.add('UserRole ur')
+            whereQuery.add('ur.user = u and ur.role = :role')
+            queryParams.put('role', Role.get(params.authority.toLong()))
+        }
+
+        if (params.name && params.name != '' ) {
+            whereQuery.add('(lower(username) like :name or lower(display) like :name)')
+            queryParams.put('name', "%${params.name.toLowerCase()}%")
+        }
+
+        result.users = User.executeQuery(baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') , queryParams)
+        result.total = result.users.size()
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM") })
+    def userEdit() {
+
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

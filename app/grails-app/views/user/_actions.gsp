@@ -2,7 +2,7 @@
 
 <g:if test="${actionName == 'list'}">
     <semui:actionsDropdown>
-        <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" />
+        <semui:actionsDropdownItem controller="${controllerName}" action="create" message="user.create_new.label" />
     </semui:actionsDropdown>
 </g:if>
 <g:if test="${actionName == 'edit'}">

@@ -65,14 +65,10 @@ class UserController extends AbstractDebugController {
             )
         }
 
-        render view: 'delete', model: result
+        render view: '/templates/user/_delete', model: result
     }
 
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-    @Secured(closure = {
-        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
-                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
-    })
+    @Secured(['ROLE_ADMIN'])
     def list() {
 
         def result = setResultGenerics()
@@ -81,6 +77,8 @@ class UserController extends AbstractDebugController {
         List whereQuery = []
         Map queryParams = [:]
 
+        /*
+        as of ERMS-1557, this method can be called only with admin rights. All other contexts are deployed to their respective controllers.
         if (! result.editor.hasRole('ROLE_ADMIN') || params.org) {
             // only context org depending
             baseQuery.add('UserOrg uo')
@@ -90,6 +88,7 @@ class UserController extends AbstractDebugController {
             Org comboOrg = params.org ? Org.get(params.org) : contextService.getOrg()
             queryParams.put('org', comboOrg)
         }
+        */
 
         if (params.authority) {
             baseQuery.add('UserRole ur')
@@ -273,7 +272,7 @@ class UserController extends AbstractDebugController {
                     }
                     flash.error = errMess.join('<br>')
 
-                    render view: 'create', model: [
+                    render view: '/templates/user/_create', model: [
                             userInstance: user,
                             editable: result.editable,
                             availableOrgs: result.availableOrgs,
