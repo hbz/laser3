@@ -1,0 +1,13 @@
+/*******************************
+         Theme Overrides
+*******************************/
+.ui.breadcrumb {
+  color: @darkGrey;
+}
+/* Link */
+.ui.breadcrumb a {
+  color: @black;
+}
+.ui.breadcrumb a:hover {
+  color: @linkHoverColor;
+}

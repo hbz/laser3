@@ -16,8 +16,8 @@
 
         <input type="hidden" name="offset" value="${params.offset}"/>
 
-        <label for="q" class="control-label">${message(code: 'title.search')} :</label>
-        <input id="q" type="text" name="q" placeholder="${message(code: 'title.search.ph')}" value="${params.q}"/>
+        <label for="search-title" class="control-label">${message(code: 'title.search')} :</label>
+        <input id="search-title" type="text" name="q" placeholder="${message(code: 'title.search.ph')}" value="${params.q}"/>
        
         <label for="filter" class="control-label">${message(code: 'title.search_in')} :</label>
         <g:select id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>

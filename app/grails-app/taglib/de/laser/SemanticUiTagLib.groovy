@@ -158,7 +158,7 @@ class SemanticUiTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" class="ui button icon" data-semui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
             out << '<i class="red bug icon"></i>'
             out << '</a>'
 

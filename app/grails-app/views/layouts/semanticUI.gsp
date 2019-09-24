@@ -69,7 +69,7 @@
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
     <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item la-logo-item">
+            <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
@@ -727,13 +727,12 @@
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
+    <sec:ifNotGranted roles="ROLE_USER">
+        <!-- Footer -->
+            <g:render template="/public/templates/footer" />
+        <!-- Footer End -->
+    </sec:ifNotGranted>
 
-        <footer id="Footer">
-            <div class="clearfix"></div>
-            <div class="footer-links container">
-                <div class="row"></div>
-            </div>
-        </footer>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
