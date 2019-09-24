@@ -626,6 +626,23 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def migratePackageIdentifiers() {
+        IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
+        Set<Identifier> idList = Identifier.executeQuery("select io.identifier from IdentifierOccurrence io where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'")
+        if(idList) {
+            Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            flash.message = "Changes performed on ${idList.size()} package identifiers ..."
+        }
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def assignNoteOwners() {
+        subscriptionUpdateService.assignNoteOwners()
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
     def toggleBoolSetting() {
         Map<String, Object> result = [:]
         def s = Setting.findByName(params.setting)

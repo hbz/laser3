@@ -493,7 +493,7 @@
                                     <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="assignNoteOwners">Assign note owners for notes of subscriptions and licenses without owners</g:link>
                                     <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
                                     <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
 
