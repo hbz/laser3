@@ -1724,7 +1724,10 @@ class SurveyController {
             def newSurveyResult = [:]
             newSurveyResult.participant = it?.participant
             newSurveyResult.resultOfParticipation = it
-            newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+            newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                    [parentSub: result.parentSubscription,
+                     participant:  it?.participant
+                    ])[0]
             newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
                 it?.type?.getI10n('name')
             }
@@ -1751,9 +1754,15 @@ class SurveyController {
             }
 
             if (it?.participant?.id in selecetedParticipantIDs) {
-                newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
 
-                if (result.multiYearTermTwoSurvey) {
+                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub: result.parentSubscription,
+                         participant:  it?.participant
+                        ])[0]
+
+                //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+
+               if (result.multiYearTermTwoSurvey) {
 
                     newSurveyResult.newSubPeriodTwoStartDate = null
                     newSurveyResult.newSubPeriodTwoEndDate = null
@@ -1761,7 +1770,7 @@ class SurveyController {
                     if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
                         use(TimeCategory) {
                             newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 2.year) : null
                         }
                     }
 
@@ -1773,7 +1782,7 @@ class SurveyController {
                     if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
                         use(TimeCategory) {
                             newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 4.year) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
                         }
                     }
                 }
@@ -1789,7 +1798,7 @@ class SurveyController {
                     if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
                         use(TimeCategory) {
                             newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
+                            newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 2.year) : null
                         }
                     }
 
@@ -1801,7 +1810,7 @@ class SurveyController {
                     if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
                         use(TimeCategory) {
                             newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 4.year) : null
+                            newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
                         }
                     }
                 }
@@ -1809,7 +1818,9 @@ class SurveyController {
                 result.newOrgsContinuetoSubscription << newSurveyResult
             }
 
+
         }
+
         //Orgs without really result
         result.orgsWithoutResult = []
         SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
@@ -1825,12 +1836,17 @@ class SurveyController {
             }
 
             if (it?.participant?.id in selecetedParticipantIDs) {
-                newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub: result.parentSubscription,
+                         participant:  it?.participant
+                        ])[0]
+                //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
             } else {
                 newSurveyResult.sub = null
             }
             result.orgsWithoutResult << newSurveyResult
         }
+
 
         //MultiYearTerm Subs
         def sumParticipantWithSub = (result.orgsContinuetoSubscription?.groupBy {
@@ -2971,17 +2987,13 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-
+                row.add([field: period ?: '', style: null])
             }
-            period = ""
+
             if (renewalResult?.multiYearTermThreeSurvey) {
 
                 period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
                 period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
-            }
-
-            if(period != "")
-            {
                 row.add([field: period ?: '', style: null])
             }
 
@@ -2992,7 +3004,7 @@ class SurveyController {
 
             }
 
-            def costItem = participantResult?.resultOfParticipation?.getCostItem()
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -3071,7 +3083,7 @@ class SurveyController {
 
             }
 
-            def costItem = participantResult?.resultOfParticipation?.getCostItem()
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
@@ -3105,7 +3117,7 @@ class SurveyController {
 
             }
 
-            def costItem = participantResult?.resultOfParticipation?.getCostItem()
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])

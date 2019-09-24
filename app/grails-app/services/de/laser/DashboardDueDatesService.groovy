@@ -98,14 +98,14 @@ class DashboardDueDatesService {
                     if (obj instanceof Subscription) {
                         int reminderPeriodForManualCancellationDate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, DEFAULT_REMINDER_PERIOD).value
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org))
+                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org, false, false))
                         }
                         int reminderPeriodForSubsEnddate = user.getSetting(UserSettings.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE, DEFAULT_REMINDER_PERIOD).value
                         if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriodForSubsEnddate)) {
-                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org))
+                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org, false, false))
                         }
                     } else {
-                        dashboarEntriesToInsert.add(new DashboardDueDate(obj, user, org))
+                        dashboarEntriesToInsert.add(new DashboardDueDate(obj, user, org, false, false))
                     }
                 }
             }

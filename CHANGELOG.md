@@ -1,3 +1,12 @@
+0.20.6
+
+- hotfix: show survey only by consortial sub 
+- hotfix: member exports work again, extensions done for identifiers and contacts
+- hotfix: address lines changed
+- hotfix: add Entitlements to sub and improve views with BookInstance 
+- hotfix: renewal export by survey and survey participants not see all surveys 
+
+
 0.20.5
 
 - hotfix: users can be added again, new insts and depts as well
