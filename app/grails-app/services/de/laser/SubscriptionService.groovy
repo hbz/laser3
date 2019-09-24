@@ -668,7 +668,7 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -685,31 +685,32 @@ class SubscriptionService {
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
                     accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
-                    ieReason: 'Manually Added by User')
+                    ieReason: 'Manually Added by User',
+                    acceptStatus: acceptStatus)
             if (new_ie.save()) {
                 Set coverageStatements
+                Set fallback = tipp.coverages
                 if(issueEntitlementOverwrite?.coverages) {
                     coverageStatements = issueEntitlementOverwrite.coverages
                 }
                 else {
-                    coverageStatements = tipp.coverages
+                    coverageStatements = fallback
                 }
-                coverageStatements.each { covStmt ->
+                coverageStatements.eachWithIndex { covStmt, int c ->
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
-                            startDate: covStmt.startDate,
-                            startVolume: covStmt.startVolume,
-                            startIssue: covStmt.startIssue,
-                            endDate: covStmt.endDate,
-                            endVolume: covStmt.endVolume,
-                            endIssue: covStmt.endIssue,
-                            coverageDepth: covStmt.coverageDepth,
-                            coverageNote: covStmt.coverageNote,
-                            embargo: covStmt.embargo,
+                            startDate: covStmt.startDate ?: fallback[c]?.startDate,
+                            startVolume: covStmt.startVolume ?: fallback[c]?.startVolume,
+                            startIssue: covStmt.startIssue ?: fallback[c]?.startIssue,
+                            endDate: covStmt.endDate ?: fallback[c]?.endDate,
+                            endVolume: covStmt.endVolume ?: fallback[c]?.endVolume,
+                            endIssue: covStmt.endIssue ?: fallback[c]?.endIssue,
+                            coverageDepth: covStmt.coverageDepth ?: fallback[c]?.coverageDepth,
+                            coverageNote: covStmt.coverageNote ?: fallback[c]?.coverageNote,
+                            embargo: covStmt.embargo ?: fallback[c]?.embargo,
                             issueEntitlement: new_ie
                     )
                     if(!ieCoverage.save()) {
                         throw new EntitlementCreationException(ieCoverage.getErrors())
-                        return false
                     }
                 }
                 if(withPriceData) {
@@ -724,13 +725,11 @@ class SubscriptionService {
                         return true
                     else {
                         throw new EntitlementCreationException(pi.errors)
-                        return false
                     }
                 }
                 else return true
             } else {
                 throw new EntitlementCreationException(new_ie.errors)
-                return false
             }
         }
     }

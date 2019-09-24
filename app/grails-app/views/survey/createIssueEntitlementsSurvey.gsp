@@ -15,11 +15,11 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-    <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
+    <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header"><semui:headerTitleIcon
-        type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
+        type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
 
 <semui:messages data="${flash}"/>
@@ -27,7 +27,7 @@
 
 <div class="ui icon info message">
     <i class="info icon"></i>
-    ${message(code: 'allSubscriptions.info')}
+    ${message(code: 'allSubscriptions.info2')}
 </div>
 
 
@@ -36,7 +36,7 @@
 </h1>
 
 <semui:filter>
-    <g:form action="createSubscriptionSurvey" controller="survey" method="get" class="form-inline ui small form">
+    <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="form-inline ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
 
@@ -275,22 +275,13 @@
 
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                <g:if test="${!com.k_int.kbplus.SurveyConfig.findBySubscription(s)}">
+
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label')}"
-                                            controller="survey" action="addSubtoSubscriptionSurvey"
+                                            controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>
                                     </g:link>
-                                </g:if>
-                                <g:else>
-                                    <g:link class="ui icon negative button la-popup-tooltip la-delay"
-                                            data-content="${message(code: 'survey.toggleSurveySub.exist.label')}"
-                                            controller="survey" action="addSubtoSubscriptionSurvey"
-                                            params="[sub: s.id]">
-                                        <g:message code="createSubscriptionSurvey.selectButton"/>
-                                    </g:link>
-                                </g:else>
 
                             </g:if>
                         </td>

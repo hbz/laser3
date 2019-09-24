@@ -46,7 +46,7 @@
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
                     %>
                     <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
-                                  noSelection="${['' : message(code:'accessMethod.all')]}"
+                                  noSelection="${['' : '']}"
                                   value="${['':'']}"
                                   class="ui select dropdown"/>
                 </div>
@@ -143,7 +143,7 @@
 
                 $('#asOrgType').change(function() {
                     var selVal = $(this).val();
-                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}'].indexOf(selVal) > -1) {
+                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}'].indexOf(selVal) > -1) {
                         $('.cons-options').show()
                     }
                     else {

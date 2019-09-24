@@ -22,6 +22,8 @@ import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -684,6 +686,9 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
+          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.equalsIgnoreCase('removeValue_administrativeSubscription')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
           // default ..
           else {
               if (it instanceof AbstractI10nTranslatable) {
@@ -848,7 +853,35 @@ class AjaxController {
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)
           ieCandidate = [:]
-      ieCandidate[params.prop] = params.propValue
+      if(params.coverage) {
+          def ieCoverage
+          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
+          Matcher matcher = pattern.matcher(params.prop)
+          if(matcher.find()) {
+              String prop = matcher.group(1)
+              int covStmtKey = Integer.parseInt(matcher.group(2))
+              if(!ieCandidate.coverages){
+                  ieCandidate.coverages = []
+                  ieCoverage = [:]
+              }
+              else
+                  ieCoverage = ieCandidate.coverages[covStmtKey]
+              if(prop in ['startDate','endDate']) {
+                  SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+                  ieCoverage[prop] = sdf.parse(params.propValue)
+              }
+              else {
+                  ieCoverage[prop] = params.propValue
+              }
+              ieCandidate.coverages[covStmtKey] = ieCoverage
+          }
+          else {
+              log.error("something wrong with the regex matching ...")
+          }
+      }
+      else {
+          ieCandidate[params.prop] = params.propValue
+      }
       issueEntitlementCandidates.put(params.key,ieCandidate)
       if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
           success.success = true
@@ -2135,6 +2168,35 @@ class AjaxController {
 
                     result = target_object."${params.name}"
                 }
+
+                if (target_object instanceof SurveyResult) {
+
+                    def org = contextService.getOrg()
+                    //If Survey Owner set Value then set FinishDate
+                    if (org?.id == target_object?.owner?.id && target_object?.finishDate == null) {
+                        def property = ""
+                        if (target_object?.type?.type == Integer.toString()) {
+                            property = "intValue"
+                        } else if (target_object?.type?.type == String.toString()) {
+                            property = "stringValue"
+                        } else if (target_object?.type?.type == BigDecimal.toString()) {
+                            property = "decValue"
+                        } else if (target_object?.type?.type == Date.toString()) {
+                            property = "dateValue"
+                        } else if (target_object?.type?.type == URL.toString()) {
+                            property = "urlValue"
+                        } else if (target_object?.type?.type == RefdataValue.toString()) {
+                            property = "refValue"
+                        }
+
+                        if (target_object[property] != null) {
+                            log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
+                            target_object.finishDate = new Date()
+                            target_object.save()
+                        }
+                    }
+                }
+
             }
 
         } catch(Exception e) {

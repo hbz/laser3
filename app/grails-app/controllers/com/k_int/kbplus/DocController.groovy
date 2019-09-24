@@ -34,19 +34,20 @@ class DocController extends AbstractDebugController {
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
+		params.org = contextService.org
 		switch (request.method) {
-		case 'GET':
-        	[docInstance: new Doc(params)]
-			break
-		case 'POST':
-	        def docInstance = new Doc(params)
-	        if (!docInstance.save(flush: true)) {
-	            render view: 'create', model: [docInstance: docInstance]
-	            return
-	        }
+			case 'GET':
+				[docInstance: new Doc(params)]
+				break
+			case 'POST':
+				def docInstance = new Doc(params)
+				if (!docInstance.save(flush: true)) {
+					render view: 'create', model: [docInstance: docInstance]
+					return
+				}
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'doc.label', default: 'Doc'), docInstance.id])
-	        redirect action: 'show', id: docInstance.id
+				flash.message = message(code: 'default.created.message', args: [message(code: 'doc.label', default: 'Doc'), docInstance.id])
+				redirect action: 'show', id: docInstance.id
 			break
 		}
     }
@@ -75,7 +76,7 @@ class DocController extends AbstractDebugController {
 	            redirect action: 'list'
 	            return
 	        }
-
+			docInstance.owner = contextService.org
 	        [docInstance: docInstance]
 			break
 		case 'POST':
@@ -98,6 +99,8 @@ class DocController extends AbstractDebugController {
 	        }
 
 	        docInstance.properties = params
+			if(!docInstance.owner)
+				docInstance.owner = contextService.org
 
 	        if (!docInstance.save(flush: true)) {
 	            render view: 'edit', model: [docInstance: docInstance]
@@ -145,6 +148,8 @@ class DocController extends AbstractDebugController {
 				}
 
 				docInstance.properties = params
+				if(!docInstance.owner)
+					docInstance.owner = contextService.org
 
 				if (!docInstance.save(flush: true)) {
 					//render view: 'edit', model: [docInstance: docInstance]

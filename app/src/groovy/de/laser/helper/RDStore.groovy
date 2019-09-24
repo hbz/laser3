@@ -13,6 +13,7 @@ class RDStore {
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
+    static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective','Organisational Role')
 
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
@@ -74,6 +75,7 @@ class RDStore {
     //static final SUBSCRIPTION_TYPE_COLLECTIVE   	= getRefdataValue('Collective Subscription','Subscription Type')
 
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
+    static final LICENSE_NO_STATUS          = getRefdataValue('Status not defined', 'License Status')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')
 
@@ -126,6 +128,10 @@ class RDStore {
     static final TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', 'TIPP Status')
     static final TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', 'TIPP Status')
     //TIPP_STATUS_DELETED is defined above as TIPP_DELETED
+    
+    static final IE_ACCEPT_STATUS_FIXED            = getRefdataValue('Fixed', 'IE Accept Status')
+    static final IE_ACCEPT_STATUS_UNDER_NEGOTIATION= getRefdataValue('Under Negotiation', 'IE Accept Status')
+    static final IE_ACCEPT_STATUS_UNDER_CONSIDERATION= getRefdataValue('Under Consideration','IE Accept Status')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                      = getRefdataValue('E-Mail','ContactContentType')

@@ -231,24 +231,39 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
+                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <g:link controller="issueEntitlement" id="${ie.id}"
+                                            action="show"><strong>${ie.tipp?.title.title}</strong>
+                                    </g:link>
+                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                        <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                        <%-- data-content="${message(code: 'tipp.tooltip.callUrl')}" --%>
+                                           data-content="${ie.tipp?.platform.name}"
+
+                                           href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL : 'http://' + ie.tipp?.hostPlatformURL}"
+                                           target="_blank"><i class="cloud icon"></i></a>
+                                    </g:if>
+                                    <br>
                                     <!-- START TEMPLATE -->
 
-                                    <g:render template="../templates/title" model="${[ie: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                    <g:render template="../templates/title" model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 
                                 <td>
                                     <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                                 </td>
-                                <td class="coverageStatements" data-entitlement="${ie.id}">
+                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
                                     <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstInPrint}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        ${ie?.tipp?.title?.dateFirstOnline}
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie?.tipp?.title?.dateFirstOnline}"/>
 
                                     </g:if>
                                     <g:else>
@@ -259,8 +274,9 @@
                                             </div>
                                         </g:each>
                                         </div><br>
+                                        <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
                                     </g:else>
-                                    <g:link action="addCoverage" params="${[issueEntitlement: ie.id]}" class="ui compact icon button positive tiny"><i class="ui icon plus" data-content="Lizenzzeitraum hinzufügen"></i></g:link>
+
 
                                 </td>
                                 <td>
@@ -288,10 +304,16 @@
                                 </td>
                                 <td>
                                     <g:if test="${ie.priceItem}">
-                                        <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/><br>
-                                        <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>
-                                        (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
+                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice" owner="${ie.priceItem}"/> <semui:xEditableRefData field="listCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br>
+                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice" owner="${ie.priceItem}"/> <semui:xEditableRefData field="localCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
+                                        (<g:message code="tipp.priceDate"/> <semui:xEditable field="priceDate" type="date" owner="${ie.priceItem}"/> <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>--%>)
                                     </g:if>
+                                    <g:elseif test="${editable}">
+                                        <g:link action="addEmptyPriceItem" class="ui icon positive button"
+                                                params="${[ieid: ie.id, id: subscriptionInstance.id]}">
+                                            <i class="money icon"></i>
+                                        </g:link>
+                                    </g:elseif>
                                 </td>
                                 <td class="x">
                                     <g:if test="${editable}">

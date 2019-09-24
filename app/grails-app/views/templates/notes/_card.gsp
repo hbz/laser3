@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
-<%@ page import="static de.laser.helper.RDStore.DOC_DELETED" %>
+<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext;de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%
@@ -7,12 +6,13 @@
     List<DocContext> sharedItems = []
 
     ownobj.documents.sort{it.owner?.title}.each{ it ->
-        if (it.status != DOC_DELETED){
+        if (it.status != RDStore.DOC_DELETED){
             if (it.sharedFrom) {
                 sharedItems << it
             }
             else {
-                baseItems << it
+                if(it.owner.owner?.id == contextService.org.id || it.owner.owner == null)
+                    baseItems << it
             }
         }
     }
@@ -29,8 +29,8 @@
                     <!--<div class="event">-->
 
                     <div class="ui grid summary">
-                        <div class="twelve wide column">
-                            <g:if test="${editable || editable2}">
+                        <div class="ten wide column">
+                            <g:if test="${(docctx.owner.owner?.id == contextService.org.id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}</a>
@@ -55,7 +55,7 @@
                             ${message(code:'template.notes.created')}
                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
                         </div>
-                        <div class="center aligned four wide column la-js-editmode-container">
+                        <div class="center aligned two wide column la-js-editmode-container">
 
                             <g:if test="${ownobj?.showUIShareButton()}">
                             <g:if test="${docctx?.isShared}">
@@ -92,6 +92,14 @@
                             </g:else>
 
                         </g:if>
+                        </div>
+                        <div class="center aligned three wide column la-js-editmode-container">
+                            <g:if test="${!docctx.sharedFrom}">
+                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"notes"]'>
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:if>
                         </div>
                     </div>
                     <!--</div>-->

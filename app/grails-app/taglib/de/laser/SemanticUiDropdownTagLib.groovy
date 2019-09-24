@@ -100,6 +100,13 @@ class SemanticUiDropdownTagLib {
         def aClass    = 'item'
         def href      = attrs.href ? attrs.href : '#'
 
+        def tooltip = attrs.tooltip ?: ""
+
+        if(tooltip != "")
+        {
+            linkBody = '<div data-tooltip="'+tooltip+'">'+linkBody+'</div>'
+        }
+
         if (this.pageScope.variables?.actionName == attrs.action) {
             aClass = 'item active'
         }

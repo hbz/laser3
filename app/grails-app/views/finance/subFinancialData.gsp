@@ -85,6 +85,10 @@
             <g:set var="showCollectiveFunctions" value="true"/>
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.collectiveCosts')}"/>
         </g:elseif>
+        <g:elseif test="${showView.equals("collAsSubscr")}">
+            <g:set var="showCollectiveFunctions" value="true"/>
+            <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${subscr.count} ${message(code:'financials.header.subscriptionCosts')} / ${coll.count} ${message(code:'financials.header.collectiveCosts')}"/>
+        </g:elseif>
         <g:elseif test="${showView.equals("consAtSubscr")}">
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <g:set var="totalString" value="${cons.count ? cons.count : 0} ${message(code:'financials.header.consortialCosts')}"/>
@@ -109,10 +113,10 @@
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
-        <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions])]}"/>
+        <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions,showCollectiveFunctions:showCollectiveFunctions])]}"/>
 
         <g:if test="${showView.equals("consAtSubscr")}">
-            <g:render template="../subscription/message" model="${[subscriptionInstance: subscription]}"/>
+            <g:render template="../subscription/message" model="${[contextOrg: institution, subscriptionInstance: subscription]}"/>
         </g:if>
 
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />

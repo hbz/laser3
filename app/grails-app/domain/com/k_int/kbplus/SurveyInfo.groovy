@@ -72,9 +72,11 @@ class SurveyInfo {
 
         this.surveyConfigs?.each {
 
-            if(it?.subscription && !(it?.surveyProperties?.size() > 0))
+            if(it?.subscription)
             {
-                check = false
+                if(!it.pickAndChoose && !(it?.surveyProperties?.size() > 0)) {
+                    check = false
+                }
             }
 
             if(!(it?.orgs.org?.size > 0)){
@@ -91,14 +93,14 @@ class SurveyInfo {
         def count = 0
         surveyConfigs.each {
 
-            def checkResultsFinishByOrg = result."${it.checkResultsFinishByOrg(org)}"
-            if(checkResultsFinishByOrg){
+            def checkResultsEditByOrg = result."${it.checkResultsEditByOrg(org)}"
+            if(checkResultsEditByOrg){
 
-                result."${it.checkResultsFinishByOrg(org)}" = checkResultsFinishByOrg+1
+                result."${it.checkResultsEditByOrg(org)}" = checkResultsEditByOrg+1
 
 
             }else {
-                result."${it.checkResultsFinishByOrg(org)}" = 1
+                result."${it.checkResultsEditByOrg(org)}" = 1
             }
             count++
         }
@@ -128,4 +130,12 @@ class SurveyInfo {
         return false
     }
 
+    boolean isCompletedforOwner() {
+        if(this.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED] && this.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }else{
+            return false
+        }
+    }
 }

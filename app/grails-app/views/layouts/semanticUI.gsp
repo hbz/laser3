@@ -394,8 +394,8 @@
                                <div class="menu">
                                     <g:link class="item" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
                                     <g:link class="item" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
+                                    <g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>
                                     <g:link class="item" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
-                                    <%--<g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>--%>
                                 </div>
                             </div>
                             <div class="divider"></div>
@@ -493,8 +493,9 @@
                                     <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="assignNoteOwners">Assign note owners for notes of subscriptions and licenses without owners</g:link>
                                     <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
+                                    <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
 
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
@@ -504,6 +505,8 @@
                                     <%--<g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
+                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl</g:link>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
@@ -644,8 +647,7 @@
                                         deckSaver.configs.editMode  = false;
                                     </g:else>
 
-                                    // initial not needed
-                                    // deckSaver.toggleEditableElements();
+                                    deckSaver.toggleEditableElements();
                                     $(".ui.toggle.button").click(function(){
                                         deckSaver.configs.editMode = !deckSaver.configs.editMode;
                                          $.ajax({

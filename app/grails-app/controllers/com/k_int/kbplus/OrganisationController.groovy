@@ -11,7 +11,6 @@ import de.laser.helper.DebugUtil
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
-import de.laser.helper.RDStore
 import static de.laser.helper.RDStore.*
 
 import javax.servlet.ServletOutputStream
@@ -329,13 +328,14 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance = new Org(name: params.institution, sector: orgSector).save()
-                    orgInstance.addToOrgType(OT_INSTITUTION).save()
+                    orgInstance = new Org(name: params.institution, sector: orgSector)
+                    orgInstance.save()
 
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
                     newMember.save()
 
                     orgInstance.setDefaultCustomerType()
+                    orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType')) //RDStore adding causes a DuplicateKeyException
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.institution.label'), orgInstance.name])
@@ -356,13 +356,14 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance = new Org(name: params.department, sector: orgSector).save()
-                    deptInstance.addToOrgType(OT_DEPARTMENT).save()
+                    deptInstance = new Org(name: params.department, sector: orgSector)
+                    deptInstance.save()
 
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)
                     newMember.save()
 
                     deptInstance.setDefaultCustomerType()
+                    deptInstance.addToOrgType(RefdataValue.getByValueAndCategory('Department','OrgRoleType'))
                 }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.department.label'), deptInstance.name])
@@ -495,14 +496,14 @@ class OrganisationController extends AbstractDebugController {
         else {
             du.setBenchMark('editable2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                List<Long> consortia = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
+                List<Long> consortia = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_CONSORTIUM,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if(consortia.size() == 1 && consortia.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
                     result.editable = true
             }
             else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                List<Long> department = Combo.findAllByTypeAndFromOrg(RDStore.COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
+                List<Long> department = Combo.findAllByTypeAndFromOrg(COMBO_TYPE_DEPARTMENT,result.orgInstance).collect { it ->
                     it.toOrg.id
                 }
                 if (department.contains(result.institution.id) && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))
@@ -556,7 +557,7 @@ class OrganisationController extends AbstractDebugController {
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
-        if(result.orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM")){
+        if(!Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT) && !(OT_PROVIDER.id in result.orgInstance.getallOrgTypeIds())){
 
             def foundIsil = false
             def foundWibid = false
@@ -579,19 +580,15 @@ class OrganisationController extends AbstractDebugController {
 
             if(!foundIsil) {
                 result.orgInstance.addOnlySpecialIdentifiers('ISIL', 'Unknown')
-
-
             }
             if(!foundWibid) {
                 result.orgInstance.addOnlySpecialIdentifiers('wibid', 'Unknown')
-
-
             }
             if(!foundEZB) {
                 result.orgInstance.addOnlySpecialIdentifiers('ezb', 'Unknown')
-
-
             }
+            if(!foundIsil || !foundWibid || !foundEZB)
+                result.orgInstance.refresh()
         }
 
 
@@ -688,7 +685,7 @@ class OrganisationController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') ||
-                          instAdmService.hasInstAdmPivileges(result.user, orgInstance, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+                          instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
@@ -776,7 +773,7 @@ class OrganisationController extends AbstractDebugController {
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
 
-      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])) {
+      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])) {
 
           if (params.cmd == 'approve') {
               uo.status = UserOrg.STATUS_APPROVED
@@ -952,7 +949,7 @@ class OrganisationController extends AbstractDebugController {
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR'),inContextOrg:true]
+        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR'),inContextOrg:true,institutionalView:false,departmentalView:false]
         if(params.id) {
             result.orgInstance = Org.get(params.id)
             result.inContextOrg = result.orgInstance.id == org.id
@@ -966,12 +963,12 @@ class OrganisationController extends AbstractDebugController {
             }
             //restrictions hold if viewed org is not the context org
             if(!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
-                //restrictions further concern only singe users, not consortia
-                if(accessService.checkPerm("ORG_INST")) {
-                    if(OrgSettings.get(result.orgInstance,OrgSettings.KEYS.CUSTOMER_TYPE)?.getValue() in ["ORG_INST","ORG_INST_COLLECTIVE"]) {
+                //restrictions further concern only single users, not consortia
+                if(accessService.checkPerm("ORG_INST") && !result.departmentalView) {
+                    if(result.orgInstance.hasPerm("ORG_INST,ORG_INST_COLLECTIVE")) {
                         return null
                     }
-                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && !result.departmentalView) {
+                    else if(accessService.checkPerm("ORG_INST_COLLECTIVE") && Combo.findByFromOrgAndType(result.orgInstance,COMBO_TYPE_DEPARTMENT)) {
                         return null
                     }
                 }

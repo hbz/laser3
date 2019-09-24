@@ -26,7 +26,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         if(params.forFinanceView) {
             //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
-            List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_COLLECTIVE]])
             Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
             String filterString = " "
             if(params.query && params.query.length() > 0) {
@@ -94,16 +94,27 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
 
-            if (params.ctype) {
-                if (s.getCalculatedType() in params.list('ctype')) {
+            switch (params.ltype) {
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    if (s.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                        if(org in s.orgRelations.collect { or -> or.org })
+                            result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    }
+                    break
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                        result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
+                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
+                        result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
+                default:
                     result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
-                }
-            }
-            else {
-                result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
             }
         }
-		log.debug ("getSubscriptions(): ${result.results.size()} Matches")
+		//log.debug ("getSubscriptions(): ${result.results.size()} Matches")
         result
     }
 

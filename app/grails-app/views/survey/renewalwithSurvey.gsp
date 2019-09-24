@@ -84,8 +84,13 @@ ${surveyInfo?.name}
 
         <br>
 
-        <h3 class="ui left aligned icon header">${message(code: 'surveyParticipants.label')} <semui:totalNumber
-            total="${surveyConfig?.orgs?.size()}"/></h3>
+        <h3 class="ui left aligned icon header">
+            ${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}
+            <semui:totalNumber total="${surveyConfig?.orgs?.size()}"/>
+            <br>
+            ${message(code: 'myinst.consortiaSubscriptions.member')}
+            <semui:totalNumber total="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+        </h3>
 
         <br>
         <br>
@@ -139,10 +144,38 @@ ${surveyInfo?.name}
                         ${i + 1}
                     </td>
                     <td>
-                        ${participantResult?.participant?.sortname}<br>
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
+                            ${participantResult?.participant?.sortname}
+                        </g:link>
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
+
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
+                        </div>
                     </td>
                     <td>
                         ${participantResult?.resultOfParticipation?.getResult()}
@@ -223,7 +256,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -257,6 +295,12 @@ ${surveyInfo?.name}
                     </g:if>
                 </th>
 
+                <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                    <th>
+                        <g:message code="renewalwithSurvey.period"/>
+                    </th>
+                </g:if>
+
                 <g:each in="${properties}" var="surveyProperty">
                     <th>
                         ${surveyProperty?.getI10n('name')}
@@ -280,11 +324,63 @@ ${surveyInfo?.name}
                         ${i + 1}
                     </td>
                     <td>
-                        ${participantResult?.participant?.sortname}<br>
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
+                            ${participantResult?.participant?.sortname}
+                        </g:link>
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
+
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
+                        </div>
                     </td>
+
+                    <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                        <td>
+                    </g:if>
+
+                    <g:if test="${multiYearTermTwoSurvey}">
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodTwoStartDate}"/>
+                        <br>
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodTwoEndDate}"/>
+                    </g:if>
+                    <g:if test="${multiYearTermThreeSurvey}">
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodThreeStartDate}"/>
+                        <br>
+                        <g:formatDate formatName="default.date.format.notime"
+                                      date="${participantResult?.newSubPeriodThreeEndDate}"/>
+                    </g:if>
+
+                    <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+                        </td>
+                    </g:if>
+
                     <td>
                         ${participantResult?.resultOfParticipation?.getResult()}
 
@@ -341,7 +437,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -443,9 +544,38 @@ ${surveyInfo?.name}
                         ${i + 1}
                     </td>
                     <td>
-                        ${participantResult?.participant?.sortname}<br>
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
+                            ${participantResult?.participant?.sortname}
+                        </g:link>
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
+
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
+
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
+                        </div>
 
                     </td>
                     <td>
@@ -502,7 +632,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>
@@ -557,10 +692,40 @@ ${surveyInfo?.name}
                         ${i + 1}
                     </td>
                     <td>
-                        ${participantResult?.participant?.sortname}<br>
+
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
+                        ${participantResult?.participant?.sortname}
+                        </g:link>
+
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
+
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participantResult?.participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
+                        </div>
                     </td>
                     <td>
                         ${participantResult?.resultOfParticipation?.getResult()}
@@ -616,7 +781,12 @@ ${surveyInfo?.name}
                         </g:if>
                     </td>
                     <td>
+
+                        <g:link controller="myInstitution" action="surveyParticipantConsortiaNew" id="${participantResult?.participant?.id}"
+                                params="[surveyConfig: surveyConfig?.id]" class="ui button icon"><i class="icon chart pie"></i></g:link>
+
                         <g:if test="${participantResult?.sub}">
+                            <br>
                             <g:link controller="subscription" action="show" id="${participantResult?.sub?.id}"
                                     class="ui button icon"><i class="icon clipboard"></i></g:link>
                         </g:if>

@@ -161,6 +161,7 @@
                         </g:if>
                     </th>
                 </g:each>
+                <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
             </tr>
             </thead>
             <g:each in="${surveyParticipantsHasAccess.groupBy { it?.participant.id }}" var="result" status="i">
@@ -172,16 +173,50 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${participant?.sortname}<br>
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                            ${participant?.sortname}
+                        </g:link>
+                        <br>
                         <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
-                    </td>
 
+                        <div class="ui grid">
+                            <div class="right aligned wide column">
+                                <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
+                                        <i class="edit green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notprocessedOrg')}">
+                                        <i class="edit red icon"></i>
+                                    </span>
+                                </g:else>
+
+                                <g:if test="${surveyConfig?.isResultsSetFinishByOrg(participant)}">
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.finishOrg')}">
+                                        <i class="check green icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.notfinishOrg')}">
+                                        <i class="x red icon"></i>
+                                    </span>
+                                </g:else>
+                            </div>
+                        </div>
+
+                    </td>
+                    <g:set var="resultPropertyParticipation" />
                     <g:each in="${result.value.sort{it?.type?.name}}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
                                    value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
                             <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+
+                                <g:if test="${resultProperty?.type?.name == "Participation"}">
+                                    <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
+                                </g:if>
 
                                 <g:if test="${resultProperty?.type?.type == Integer.toString()}">
                                     <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
@@ -199,7 +234,7 @@
                                     <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                      overwriteEditable="${overwriteEditable}"
                                                      class="la-overflow la-ellipsis"/>
-                                    <g:if test="${resultProperty.value}">
+                                    <g:if test="${resultProperty?.urlValue}">
                                         <semui:linkIcon/>
                                     </g:if>
                                 </g:elseif>
@@ -228,6 +263,11 @@
                             </g:else>
                         </td>
                     </g:each>
+                    <td>
+                        <g:if test="${resultPropertyParticipation}">
+                            <semui:xEditable owner="${resultPropertyParticipation}" type="text" field="ownerComment"/>
+                        </g:if>
+                    </td>
                 </tr>
             </g:each>
         </table>
@@ -271,6 +311,7 @@
                         </g:if>
                     </th>
                 </g:each>
+                <th>${message(code: 'surveyResult.commentOnlyForOwner')}</th>
             </tr>
             </thead>
             <g:each in="${surveyParticipantsHasNotAccess.groupBy { it?.participant.id }}" var="result" status="i">
@@ -282,17 +323,24 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${participant?.sortname}
+                        <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                            ${participant?.sortname}
+                        </g:link>
                         <br>
                         <g:link controller="organisation" action="show" id="${participant.id}">(${fieldValue(bean: participant, field: "name")})</g:link>
                     </td>
 
+                    <g:set var="resultPropertyParticipation"/>
                     <g:each in="${result.value.sort{it?.type?.name}}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
                                    value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty?.surveyConfig, participant)}"/>
 
                             <g:if test="${!surveyOrg?.existsMultiYearTerm()}">
+
+                                <g:if test="${resultProperty?.type?.name == "Participation"}">
+                                <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
+                                </g:if>
 
                                 <g:if test="${resultProperty?.type?.type == Integer.toString()}">
                                     <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
@@ -310,7 +358,7 @@
                                     <semui:xEditable owner="${resultProperty}" type="url" field="urlValue"
                                                      overwriteEditable="${overwriteEditable}"
                                                      class="la-overflow la-ellipsis"/>
-                                    <g:if test="${resultProperty.value}">
+                                    <g:if test="${resultProperty?.urlValue}">
                                         <semui:linkIcon/>
                                     </g:if>
                                 </g:elseif>
@@ -338,7 +386,13 @@
 
                             </g:else>
                         </td>
+
                     </g:each>
+                    <td>
+                        <g:if test="${resultPropertyParticipation}">
+                        <semui:xEditable owner="${resultPropertyParticipation}" type="text" field="ownerComment"/>
+                        </g:if>
+                    </td>
                 </tr>
             </g:each>
         </table>
