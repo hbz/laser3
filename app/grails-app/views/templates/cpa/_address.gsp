@@ -6,6 +6,10 @@
         <div class="content la-space-right">
             <g:link controller="address" action="show" id="${address?.id}">
                 <strong>${address.type?.getI10n('value')}:</strong>
+                <g:if test="${address?.name}">
+                    <br />
+                    ${address?.name}
+                </g:if>
                 <g:if test="${address?.additionFirst}">
                     <br />
                     ${address?.additionFirst}
@@ -13,10 +17,6 @@
                 <g:if test="${address?.additionSecond}">
                     <br />
                     ${address?.additionSecond}
-                </g:if>
-                <g:if test="${address?.name}">
-                    <br />
-                    ${address?.name}
                 </g:if>
 
                 <br />

@@ -53,7 +53,7 @@
                                     </td>
                                         <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
                                     <td>
-                                        <semui:xEditableBoolean owner="${idNs}" field="unique"/>
+                                        <semui:xEditableBoolean owner="${idNs}" field="isUnique"/>
                                     </td>
                                     <td>
                                         <g:link controller="admin" action="manageNamespaces"
@@ -71,7 +71,7 @@
                                     <td>${fieldValue(bean: idNs, field: "nsType")}</td>
                                     <td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
                                         <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
-                                    <td>${idNs.unique}</td>
+                                    <td>${idNs.isUnique}</td>
                                     <td></td>
                                 </g:else>
                             </tr>

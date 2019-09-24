@@ -495,6 +495,7 @@
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
                                     <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
                                     <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
+                                    <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
 
                                     <%--<g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>--%>
