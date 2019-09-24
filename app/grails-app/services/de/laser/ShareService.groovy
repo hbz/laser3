@@ -29,6 +29,22 @@ class ShareService {
                 isShared:       false
         )
         if (clonedShare.save(flush: true)) {
+            if(target instanceof Subscription) {
+                //damn that three-tier inheritance level ... check if there are departments for a consortial subscription!!!! Show David!!!
+                List<Subscription> descendants = Subscription.findAllByInstanceOf(target)
+                descendants.each { Subscription d ->
+                    DocContext clonedDescendantShare = new DocContext(
+                            owner:          share.owner ,
+                            subscription:   d,
+                            doctype:        share.doctype,
+                            domain:         share.domain,
+                            globannounce:   share.globannounce,
+                            sharedFrom:     share,
+                            isShared:       false
+                    )
+                    clonedDescendantShare.save(flush: true)
+                }
+            }
             if (! share.isShared) {
                 share.isShared = true
                 if (share.save(flush: true)) {

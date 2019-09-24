@@ -1213,7 +1213,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
 
@@ -1275,9 +1275,10 @@ class SubscriptionController extends AbstractDebugController {
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
+            return
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
 
@@ -1582,10 +1583,13 @@ class SubscriptionController extends AbstractDebugController {
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
+        if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && result.institution.id == result.subscription.getCollective().id)
+            result.propList = result.parentSub.privateProperties.type
+        else
+            result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
 
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
@@ -1634,7 +1638,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -1684,7 +1688,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -1781,7 +1785,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         def change = []
@@ -1852,7 +1856,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -2004,6 +2008,8 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic = OR_LICENSEE_CONS
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            role_lic = OR_LICENSEE_COLL
         RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider = OR_PROVIDER
@@ -2040,8 +2046,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 members.each { cm ->
 
-                    //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
-                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
                         def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
 
                         if (subLicense) {
@@ -2060,7 +2065,7 @@ class SubscriptionController extends AbstractDebugController {
                                 licenseCopy = institutionsService.copyLicense(
                                         subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
-                            else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
                                 licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
                             }
 
@@ -2544,6 +2549,8 @@ class SubscriptionController extends AbstractDebugController {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
                     dTask.delete(flush: true)
+                    if(params.returnToShow)
+                        redirect action: 'show', id: params.id
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
@@ -4820,11 +4827,15 @@ class SubscriptionController extends AbstractDebugController {
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
         if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
-                result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE &&
-                ! (params.action in ['addMembers', 'processAddMembers'])
+                (result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ||
+                result.subscription.instanceOf?.getConsortia()) &&
+                ! (params.action in ['addMembers', 'processAddMembers',
+                                     'linkLicenseMembers', 'processLinkLicenseMembers',
+                                     'linkPackagesMembers', 'processLinkPackagesMembers',
+                                     'propertiesMembers', 'processPropertiesMembers',
+                                     'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
         ) {
             result.editable = false
-
         }
 
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
@@ -4839,7 +4850,7 @@ class SubscriptionController extends AbstractDebugController {
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL, TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {

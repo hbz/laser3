@@ -49,7 +49,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<g:if test="${departmentalView != true}">
+<g:if test="${departmentalView == false}">
     <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
 </g:if>
 
@@ -69,7 +69,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                        <g:if test="${departmentalView != true}">
+                        <g:if test="${departmentalView == false}">
                             <dl>
                                 <dt><g:message code="org.shortname.label" default="Shortname"/></dt>
                                 <dd>
@@ -81,7 +81,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                             <dl>
                                 <dt>
                                     <g:message code="org.sortname.label" default="Sortname"/>
-                                    <g:if test="${departmentalView != true}">
+                                    <g:if test="${departmentalView == false}">
                                         <br>
                                         <g:message code="org.sortname.onlyForLibraries.label"/>
                                     </g:if>
@@ -122,7 +122,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
             </div><!-- .card -->
 
             <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) --%>
-            <g:if test="${departmentalView != true}">
+            <g:if test="${departmentalView == false}">
                 <div class="ui card">
                     <div class="content">
                         <div class="header"><g:message code="default.identifiers.label"/></div>
@@ -253,7 +253,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                 </div>
             </g:if>
 
-            <g:if test="${departmentalView != true && !(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
+            <g:if test="${departmentalView == false && !(RDStore.OT_PROVIDER.id in orgInstance.getallOrgTypeIds())}">
                 <div class="ui card">
                     <div class="content">
                             <dl>

@@ -215,7 +215,8 @@ class TaskService {
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE,
-                            RDStore.OR_LICENSEE_CONS
+                            RDStore.OR_LICENSEE_CONS,
+                            RDStore.OR_LICENSEE_COLL
                     ]
                 ]
                 result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
@@ -227,7 +228,8 @@ class TaskService {
                 'roleTypes' : [
                         RDStore.OR_SUBSCRIBER,
                         RDStore.OR_SUBSCRIBER_CONS,
-                        RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                        RDStore.OR_SUBSCRIPTION_COLLECTIVE
                 ],
                 'activeInst': contextOrg
             ]
