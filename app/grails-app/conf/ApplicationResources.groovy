@@ -7,7 +7,7 @@ modules = {
     }
 
     annotations {
-        dependsOn 'semanticUI'
+        //dependsOn 'semanticUI'
 
         resource url:'js/libs/summernote.min.js'
         resource url:'css/summernote.css', attrs: [media: 'screen,print']
