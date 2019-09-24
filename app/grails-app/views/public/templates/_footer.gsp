@@ -89,12 +89,14 @@
                             ${message(code: 'landingpage.footer.4.link1')}
                         </g:link>
                    </div>--}%
+                <g:if test="${grailsApplication.config?.laserSystemId == 'LAS:eR-Productive' || grailsApplication.config?.laserSystemId == 'local'}">
                    <div class="item">
                         <i class="universal access icon"></i>
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
                            ${message(code: 'landingpage.footer.4.link2')}
                        </g:link>
                    </div>
+                </g:if>
 %{--                   <div class="item">
                        <i class="universal access icon"></i>
                        <a target="_blank" class="content" href="https://www.schlichtungsstelle-bgg.de">${message(code: 'landingpage.footer.4.link3')}</a>

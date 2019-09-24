@@ -1,11 +1,6 @@
 /*******************************
         Global Overrides
 *******************************/
-
-/*******************************
-        LATO Local Font
-*******************************/
-
 @font-face {
     font-family: 'Lato';
     src: url('../../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');

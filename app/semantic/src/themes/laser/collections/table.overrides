@@ -29,14 +29,14 @@
 
 .ui.sortable.table thead th {
   cursor: default;
-  color: @grey;
+  color: #515151;
 }
 
 
 /* Hover */
 .ui.sortable.table thead th:hover {
   background: #F2F2F2;
-  color: @grey;
+  color: @black;
 }
 .ui.sortable.table thead th.sortable:hover {
   background:#F2F2F2;
@@ -62,7 +62,7 @@
         //display: inline-block;
         //padding: 0.5rem 0;
         cursor: pointer;
-        color: gray;
+        color: #515151;
       }
     }
     th:not(.sortable){

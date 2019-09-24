@@ -19,8 +19,8 @@
 .ui.checkbox input:checked ~ .box:after,
 .ui.checkbox input:checked ~ label:after {
   content: '\e800';
-  color: @grey;
-  background-color: @laFilterChosen !important;
+  color: @blue;
+  background-color: @white !important;
 }
 
 /* Indeterminate */

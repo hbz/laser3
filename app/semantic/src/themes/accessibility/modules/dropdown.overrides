@@ -57,3 +57,4 @@
   .dropdown.close:before { content: "\f00d"; }
 */
 
+/* Displays like a select box */

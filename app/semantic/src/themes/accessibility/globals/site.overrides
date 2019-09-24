@@ -1,32 +1,31 @@
 /*******************************
         Global Overrides
 *******************************/
-
 /*******************************
         LATO Local Font
 *******************************/
 
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
+    src: url('../../themes/accessibility/assets/fonts/LatoLatin-Regular.woff') format('woff');
     font-style: normal;
     font-weight: 400;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Bold.woff') format('woff');
+    src: url('../../themes/accessibility/assets/fonts/LatoLatin-Bold.woff') format('woff');
     font-style: normal;
     font-weight: 700;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Italic.woff') format('woff');
+    src: url('../../themes/accessibility/assets/fonts/LatoLatin-Italic.woff') format('woff');
     font-style: italic;
     font-weight: 400;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
+    src: url('../../themes/accessibility/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
     font-style: italic;
     font-weight: 700;
 }
@@ -459,4 +458,32 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
     display: none;
+}
+
+.la-filter
+
+{
+    .ui.input {
+        color: @white;
+    }
+    .ui.selection.dropdown {
+        color: @white;
+    }
+    .ui.form .field>label {
+        color: @white;
+    }
+    .ui.form input[type=text],
+    .ui.form input[type=text]:focus{
+        color: @white;
+        border: 1px solid @white;
+    }
+    .ui.selection.visible.dropdown>.text:not(.default){
+        color: @white;
+    }
+}
+.la-filter-temp {
+    .ui.form .field>label {
+        color: @white;
+    }
+
 }

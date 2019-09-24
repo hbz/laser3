@@ -48,8 +48,8 @@
     Brand Colors
 --------------------*/
 
-@primaryColor        : @blue;
-@secondaryColor      : @black;
+@primaryColor        : @black;
+@secondaryColor      : @orange;
 
 @lightPrimaryColor   : @lightBlue;
 @lightSecondaryColor : @lightBlack;
@@ -81,8 +81,8 @@
 
 /* Input Text Color */
 @inputColor: @textColor;
-@inputPlaceholderColor: lighten(@inputColor, 75);
-@inputPlaceholderFocusColor: lighten(@inputColor, 45);
+@inputPlaceholderColor: lighten(@inputColor, 45);
+@inputPlaceholderFocusColor: lighten(@inputColor, 25);
 
 /* Line Height Default For Inputs in Browser (Descendors are 17px at 14px base em) */
 @inputLineHeight: unit((17 / 14), em);
@@ -139,7 +139,7 @@
 --------------------*/
 
 @linkColor           : #275480;
-@linkUnderline       : none;
+@linkUnderline       : underline;
 @linkHoverColor      : @lightBlue;
 @linkHoverUnderline  : none;
 @linkHoverUnderline  : none;
@@ -416,8 +416,8 @@
 --------------------*/
 
 /* For source only. Modified in gulp for dist */
-@imagePath : '../../themes/default/assets/images';
-@fontPath  : '../../themes/default/assets/fonts';
+@imagePath : '../../themes/laser/assets/images';
+@fontPath  : '../../themes/laser/assets/fonts';
 
 /*-------------------
        Em Sizes
