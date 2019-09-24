@@ -45,6 +45,7 @@ class SurveyController {
     def taskService
     def subscriptionService
     def comparisonService
+    def surveyUpdateService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -123,7 +124,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: params.type,
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: false
         )
@@ -357,7 +358,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: params.type,
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true
         )
@@ -428,7 +429,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true
         )
@@ -498,7 +499,7 @@ class SurveyController {
 
         result.properties = getSurveyProperties(result.institution)
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.getConfigNameShort() }
 
@@ -548,7 +549,7 @@ class SurveyController {
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
@@ -595,7 +596,7 @@ class SurveyController {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
 
-        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         //Only SurveyConfigs with Subscriptions
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.findAll { it.subscription != null }?.sort {
@@ -746,7 +747,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        //result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+        //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : true
 
         result.surveyProperty = SurveyProperty.get(params.prop)
 
@@ -767,8 +768,6 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-
-        result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
 
         result.properties = getSurveyProperties(result.institution)
 
@@ -1016,7 +1015,7 @@ class SurveyController {
         }
 
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.surveyInfo && result.editable) {
 
@@ -1108,7 +1107,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.surveyInfo && result.editable) {
 
@@ -1202,7 +1201,7 @@ class SurveyController {
         def surveyInfo = surveyConfig.surveyInfo
         //surveyInfo.removeFromSurveyConfigs(surveyConfig)
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             try {
@@ -1247,7 +1246,7 @@ class SurveyController {
 
         def surveyInfo = surveyConfigProp?.surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             try {
@@ -1361,7 +1360,7 @@ class SurveyController {
         def surveyConfig = SurveyConfig.get(params.surveyConfigID)
         def surveyInfo = surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1400,7 +1399,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
 
@@ -1408,59 +1407,130 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
 
-                if (config?.type == 'Subscription') {
+                if(!config?.pickAndChoose) {
+                    if (config?.type == 'Subscription') {
 
-                    config.orgs?.org?.each { org ->
+                        config.orgs?.org?.each { org ->
 
-                        config?.surveyProperties?.each { property ->
+                            config?.surveyProperties?.each { property ->
+
+                                def surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: result.surveyInfo.startDate,
+                                        endDate: result.surveyInfo.endDate,
+                                        type: property.surveyProperty,
+                                        surveyConfig: config
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.debug(surveyResult)
+                                }
+                            }
+                        }
+                    } else {
+                        config.orgs?.org?.each { org ->
 
                             def surveyResult = new SurveyResult(
                                     owner: result.institution,
                                     participant: org ?: null,
                                     startDate: result.surveyInfo.startDate,
                                     endDate: result.surveyInfo.endDate,
-                                    type: property.surveyProperty,
+                                    type: config.surveyProperty,
                                     surveyConfig: config
                             )
 
                             if (surveyResult.save(flush: true)) {
-                                log.debug(surveyResult)
-                            } else {
-                                log.debug(surveyResult)
+
                             }
                         }
-
                     }
-
-                } else {
-                    config.orgs?.org?.each { org ->
-
-                        def surveyResult = new SurveyResult(
-                                owner: result.institution,
-                                participant: org ?: null,
-                                startDate: result.surveyInfo.startDate,
-                                endDate: result.surveyInfo.endDate,
-                                type: config.surveyProperty,
-                                surveyConfig: config
-                        )
-
-                        if (surveyResult.save(flush: true)) {
-
-                        }
-
-
-                    }
-
                 }
-
             }
 
-            result.surveyInfo.status = RefdataValue.loc('Survey Status', [en: 'Ready', de: 'Bereit'])
+            result.surveyInfo.status = RDStore.SURVEY_READY
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "openSurvey.successfully")
         }
 
-        redirect action: 'surveyEvaluation', id: params.id
+            redirect action: 'show', id: params.id
+
+    }
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processOpenSurveyNow() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+
+        def currentDate = new Date(System.currentTimeMillis())
+
+        if (result.editable) {
+
+            result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
+
+            result.surveyConfigs.each { config ->
+                if(!config?.pickAndChoose) {
+                    if (config?.type == 'Subscription') {
+
+                        config.orgs?.org?.each { org ->
+
+                            config?.surveyProperties?.each { property ->
+
+                                def surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: currentDate,
+                                        endDate: result.surveyInfo.endDate,
+                                        type: property.surveyProperty,
+                                        surveyConfig: config
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.debug(surveyResult)
+                                }
+                            }
+                        }
+                    } else {
+                        config.orgs?.org?.each { org ->
+
+                            def surveyResult = new SurveyResult(
+                                    owner: result.institution,
+                                    participant: org ?: null,
+                                    startDate: currentDate,
+                                    endDate: result.surveyInfo.endDate,
+                                    type: config.surveyProperty,
+                                    surveyConfig: config
+                            )
+
+                            if (surveyResult.save(flush: true)) {
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
+            result.surveyInfo.startDate = currentDate
+            result.surveyInfo.save(flush: true)
+            flash.message = g.message(code: "openSurveyNow.successfully")
+
+            surveyUpdateService.emailsToSurveyUsers([result.surveyInfo?.id])
+
+        }
+
+            redirect action: 'show', id: params.id
 
     }
 
@@ -1474,7 +1544,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1517,7 +1587,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             result.surveyInfo.surveyConfigs.each { config ->
