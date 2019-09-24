@@ -668,7 +668,7 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -685,7 +685,8 @@ class SubscriptionService {
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
                     accessEndDate: issueEntitlementOverwrite?.accessEndDate ? escapeService.parseDate(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
-                    ieReason: 'Manually Added by User')
+                    ieReason: 'Manually Added by User',
+                    acceptStatus: acceptStatus)
             if (new_ie.save()) {
                 Set coverageStatements
                 Set fallback = tipp.coverages

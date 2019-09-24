@@ -366,6 +366,40 @@ class SemanticUiTagLib {
         }
     }
 
+    def ieAcceptStatusIcon = { attrs, body ->
+        def hideTooltip = attrs.hideTooltip ? false : true
+
+        switch (attrs.status) {
+            case 'Fixed':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon certificate green"></i>'
+                out << '</div>'
+                break
+            case 'Under Negotiation':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon hourglass end yellow"></i>'
+                out << '</div>'
+                break
+            case 'Under Consideration':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon hourglass start red"></i>'
+                out << '</div>'
+                break
+            default:
+                out << ''
+                break
+        }
+    }
+
     def contactIcon = { attrs, body ->
 
         switch (attrs.type) {

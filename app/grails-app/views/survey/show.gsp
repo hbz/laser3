@@ -193,9 +193,6 @@
 
                                 <g:if test="${config?.type == 'Subscription'}">
 
-                                    <g:set var="costItems"
-                                           value="${com.k_int.kbplus.CostItem.findAllBySurveyOrgInList(config?.orgs)}"/>
-
                                     <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyParticipants.label')}
 
@@ -205,15 +202,15 @@
                                     <div class="content compact">
 
                                         <g:render template="/templates/filter/orgFilterTable"
-                                                  model="[orgList       : config?.orgs.org,
-                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItem'],
+                                                  model="[orgList       : config?.orgs.org.sort{it?.sortname},
+                                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', config?.pickAndChoose ? '' : 'surveyCostItem'],
                                                           tableID       : 'costTable',
                                                           surveyConfig  : config,
                                                           editable      : false
                                                   ]"/>
                                     </div>
 
-
+                                    <g:if test="${!config?.pickAndChoose}">
                                     <div class="title"><i
                                             class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
@@ -260,6 +257,7 @@
                                         </g:if>
 
                                     </div>
+                                    </g:if>
                                 </g:if>
                             </div>
                         </div>

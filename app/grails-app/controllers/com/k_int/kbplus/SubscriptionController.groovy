@@ -14,6 +14,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDStore
 import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
 import de.laser.traits.AuditableTrait
@@ -1041,6 +1042,16 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map renewEntitlementsWithSurvey() {
+        params.id = params.targetSubscriptionId
+        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        def result = loadDataFor_PackagesEntitlements()
+        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def previous() {
         previousAndExpected(params, 'previous');
     }
@@ -1171,9 +1182,9 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.startDate >= :startDate",
+        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
                 [sub: result.subscription.instanceOf,
-                 startDate: new Date(System.currentTimeMillis())])
+                 invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
 
        result
     }
@@ -2329,6 +2340,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
         //result.user = User.get(springSecurityService.principal.id)
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
@@ -2344,10 +2356,10 @@ class SubscriptionController extends AbstractDebugController {
                         if(v == 'checked') {
                             try {
                                 if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                    if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
+                                    if(subscriptionService.addEntitlement(result.subscriptionInstance, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
                                         log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                                 }
-                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false)) {
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false, ie_accept_status)) {
                                     log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
                                 }
                                 addTitlesCount++
@@ -2367,11 +2379,11 @@ class SubscriptionController extends AbstractDebugController {
             else if(params.singleTitle) {
                 try {
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
+                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
                     }
-                    else if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,null,false))
+                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
 
@@ -2415,7 +2427,11 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        if(params.surveyFunction){
+            redirect action: 'renewEntitlementsWithSurvey', model: [targetSubscriptionId: result.subscriptionInstance?.id]
+        }else {
+            redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2432,10 +2448,57 @@ class SubscriptionController extends AbstractDebugController {
         List tippsToAdd = params."tippsToAdd".split(",")
         List tippsToDelete = params."tippsToDelete".split(",")
 
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false))
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false, ie_accept_status))
+                        log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
+                }
+                catch (EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+            }
+            tippsToDelete.each { tipp ->
+                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
+                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+            }
+            if(params.process == "finalise") {
+                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
+                sp.finishDate = new Date()
+                if(!sp.save()) {
+                    flash.error = sp.getErrors()
+                }
+                else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
+            }
+        }
+        else {
+            log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'index', id: params.id
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processRenewEntitlementswithSurvey() {
+        log.debug("renewEntitlements ...")
+        params.id = Long.parseLong(params.id)
+        params.packageId = Long.parseLong(params.packageId)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        List tippsToAdd = params."tippsToAdd".split(",")
+        List tippsToDelete = params."tippsToDelete".split(",")
+
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+
+        if(result.subscriptionInstance) {
+            tippsToAdd.each { tipp ->
+                try {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status))
                         log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
                 }
                 catch (EntitlementCreationException e) {

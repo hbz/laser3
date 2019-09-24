@@ -3,6 +3,15 @@
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPrice" value="${0}"/>
     <g:set var="sumlocalPrice" value="${0}"/>
+    <br>
+    <g:if test="${side == 'target' && targetInfoMessage}">
+        <h3 class="ui header center aligned"><g:message code="${targetInfoMessage}" /></h3>
+    </g:if>
+
+    <g:if test="${side == 'source' && sourceInfoMessage}">
+        <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}" /></h3>
+    </g:if>
+
     <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
             <tr>
@@ -23,11 +32,21 @@
             <g:each in="${ies.sourceIEs}" var="ie">
                 <g:set var="tipp" value="${ie.tipp}"/>
                 <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_DELETED}}" />
+                <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp}}" />
                 <g:if test="${side == 'source' || (side == 'target' && isContainedByTarget)}">
                     <tr data-gokbId="${tipp.gokbId}" data-index="${counter}">
-                        <td><input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck"></td>
+                        <td>
+                            <g:if test="${surveyFunction && isContainedByTarget}">
+
+                            </g:if><g:else>
+                                <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
+                            </g:else>
+                        </td>
                         <td>${counter++}</td>
                         <td class="titleCell">
+                            <g:if test="${side == 'target' && targetIE}">
+                                 <semui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
+                            </g:if>
                             <semui:listIcon type="${tipp.title?.type?.value}"/>
                             <strong><g:link controller="title" action="show" id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
                             <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
@@ -124,7 +143,8 @@
                             </g:if>
                         </td>
                         <td>
-                            <g:if test="${side == 'target' && isContainedByTarget}">
+
+                            <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION}">
                                 <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                         params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                         data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
@@ -133,11 +153,12 @@
                             </g:if>
                             <g:elseif test="${side == 'source' && !isContainedByTarget}">
                                 <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
+                                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, surveyFunction: surveyFunction]}"
                                         data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                     <i class="plus icon"></i>
                                 </g:link>
                             </g:elseif>
+
                         </td>
                     </tr>
                 </g:if>
