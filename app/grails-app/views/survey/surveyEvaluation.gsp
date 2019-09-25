@@ -13,7 +13,7 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:controlButtons>
-    <g:if test="${surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
+    <g:if test="${surveyInfo.status != de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" action="exportParticipantResult" id="${surveyInfo.id}"
@@ -42,7 +42,7 @@
 
 <br>
 
-<g:if test="${surveyInfo.status == RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])}">
+<g:if test="${surveyInfo.status == de.laser.helper.RDStore.SURVEY_IN_PROCESSING}">
     <b>${message(code: 'surveyEvaluation.notOpenSurvey')}</b>
 </g:if>
 <g:else>

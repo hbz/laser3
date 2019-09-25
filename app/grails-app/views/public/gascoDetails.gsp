@@ -36,7 +36,7 @@
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
                               class="ui dropdown"
-                              noSelection="['':'']"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
 
@@ -185,16 +185,16 @@
     </tbody>
 </table>
 --%>
-<style>
+<r:style>
 .ui.table thead tr:first-child>th {
     top: 48px!important;
 }
-</style>
+</r:style>
 <sec:ifAnyGranted roles="ROLE_USER">
-    <style>
+    <r:style>
     .ui.table thead tr:first-child>th {
         top: 90px!important;
     }
-    </style>
+    </r:style>
 </sec:ifAnyGranted>
 </body>

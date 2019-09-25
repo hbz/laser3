@@ -186,7 +186,7 @@
 @sortableHoverColor: @hoveredTextColor;
 
 @sortableActiveBackground: @#D3DAE3;
-@sortableActiveColor: @selectedTextColor;
+@sortableActiveColor: #515151;
 
 @sortableActiveHoverBackground: @#D3DAE3;
 @sortableActiveHoverColor: @selectedTextColor;

@@ -94,16 +94,27 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
 
-            if (params.ctype) {
-                if (s.getCalculatedType() in params.list('ctype')) {
+            switch (params.ltype) {
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    if (s.getCalculatedType() in [TemplateSupport.CALCULATED_TYPE_PARTICIPATION,TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                        if(org in s.orgRelations.collect { or -> or.org })
+                            result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    }
+                    break
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                        result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
+                case TemplateSupport.CALCULATED_TYPE_COLLECTIVE:
+                    if (s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
+                        result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
+                default:
                     result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
-                }
-            }
-            else {
-                result.results.add([name:s.dropdownNamingConvention(org), value:s.class.name + ":" + s.id])
+                    break
             }
         }
-		log.debug ("getSubscriptions(): ${result.results.size()} Matches")
+		//log.debug ("getSubscriptions(): ${result.results.size()} Matches")
         result
     }
 

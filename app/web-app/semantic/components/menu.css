@@ -937,7 +937,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu {
   margin-left: 0em;
   margin-right: 0em;
-  border-bottom: 2px solid #d3dae3;
+  border-bottom: 2px solid #004678;
 }
 .ui.secondary.pointing.menu .item {
   border-bottom-color: transparent;
@@ -977,7 +977,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .link.item:active,
 .ui.secondary.pointing.menu a.item:active {
   background-color: transparent;
-  border-color: #d3dae3;
+  border-color: #004678;
 }
 
 /* Active */
@@ -1006,7 +1006,7 @@ Floated Menu / Item
   border-bottom-width: 0px;
   border-right-width: 2px;
   border-right-style: solid;
-  border-right-color: #d3dae3;
+  border-right-color: #004678;
 }
 .ui.secondary.vertical.pointing.menu .item {
   border-bottom: none;
@@ -1028,7 +1028,7 @@ Floated Menu / Item
 }
 .ui.secondary.inverted.pointing.menu {
   border-width: 2px;
-  border-color: #d3dae3;
+  border-color: #004678;
 }
 .ui.secondary.inverted.pointing.menu .item {
   color: rgba(255, 255, 255, 0.9);
@@ -2056,14 +2056,15 @@ Floated Menu / Item
 .ui.menu.la-contextBar {
   top: 50px;
   z-index: 90;
-  background-color: #d3dae3;
+  background-color: #004678;
+  color: white;
 }
 .ui.menu.la-contextBar .item {
   padding: 0;
 }
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
-  color: #767676;
+  color: white;
 }
 .ui.menu.la-contextBar .ui.sub.header.item {
   border-left: none!important;

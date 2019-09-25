@@ -1,6 +1,6 @@
 databaseChangeLog = {
 
-	changeSet(author: "kloberd (generated)", id: "1566540202427-2") {
+	changeSet(author: "kloberd (generated)", id: "1566540202427-1") {
 		createIndex(indexName: "rdv_owner_value_idx", schemaName: "public", tableName: "refdata_value") {
 			column(name: "rdv_owner")
 			column(name: "rdv_value")

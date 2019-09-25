@@ -623,11 +623,11 @@ class Org
     }
 
     boolean isConsortiaMember() {
-        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM)
     }
 
     boolean isDepartment() {
-        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
 
     // Only for ISIL, EZB, WIBID

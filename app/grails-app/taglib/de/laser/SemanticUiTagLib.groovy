@@ -158,7 +158,7 @@ class SemanticUiTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" class="ui button icon" data-semui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
             out << '<i class="red bug icon"></i>'
             out << '</a>'
 
@@ -362,6 +362,40 @@ class SemanticUiTagLib {
                 }
                 out << '><i class="icon book la-list-icon"></i>'
                 out << '</div>'
+                break
+        }
+    }
+
+    def ieAcceptStatusIcon = { attrs, body ->
+        def hideTooltip = attrs.hideTooltip ? false : true
+
+        switch (attrs.status) {
+            case 'Fixed':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon certificate green"></i>'
+                out << '</div>'
+                break
+            case 'Under Negotiation':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon hourglass end yellow"></i>'
+                out << '</div>'
+                break
+            case 'Under Consideration':
+                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
+                if (hideTooltip) {
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon hourglass start red"></i>'
+                out << '</div>'
+                break
+            default:
+                out << ''
                 break
         }
     }
