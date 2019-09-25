@@ -131,8 +131,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
-                                                      action="documents" message="menu.my.documents" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
@@ -157,17 +156,14 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          action="manageMembers" message="menu.my.consortia" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN"
-                                                          action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
-                                                          action="manageMembers" message="menu.my.departments" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.departments" />
                             </g:elseif>
 
                             <div class="divider"></div>
@@ -231,8 +227,7 @@
 
                             <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisation" action="users" params="[id: contextOrg?.id]"
-                                                      message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                    <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>

@@ -7,10 +7,10 @@
   </head>
     <body>
 
-        <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        <g:render template="/user/breadcrumb" model="${[ params:params ]}"/>
 
         <semui:controlButtons>
-            <g:render template="actions" />
+            <g:render template="/user/actions" />
         </semui:controlButtons>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
@@ -38,8 +38,9 @@
                               data-pk="${user.class.name}:${user.id}"
                               data-name="display"
                               data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                              data-original-title="${user.display}">${user.display}</span>
-                        </g:if>
+                              data-original-title="${user.display}">${user.display}
+                        </span>
+                    </g:if>
                     <g:else>
                         ${user.display}
                     </g:else>
@@ -98,16 +99,20 @@
 
     </div><!-- grid -->
 
-    <div class="ui one column grid">
-        <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
-    </div>
+    <g:if test="${manipulateAffiliations}">
+        <div class="ui one column grid">
+            <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
+        </div>
+    </g:if>
 
     <g:if test="${editable}">
-        <div class="ui segment form">
-            <g:set var="orgLabel" value="Organisation" />
+        <g:if test="${availableOrgs}">
+            <div class="ui segment form">
+                <g:set var="orgLabel" value="Organisation" />
 
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
-        </div>
+                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+            </div>
+        </g:if>
 
         <g:if test="${availableComboDeptOrgs}">
             <div class="ui segment form">
@@ -151,7 +156,7 @@
                 </tr>
               </g:each>
             </tbody>
-<g:if test="${editable}">
+            <g:if test="${editable}">
               <tfoot>
               <tr>
                   <td colspan="2">
@@ -165,7 +170,7 @@
                   </td>
               </tr>
               </tfoot>
-</g:if>
+            </g:if>
           </table>
 
           <r:script language="JavaScript">

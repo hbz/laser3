@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.auth.Role" %>
 <laser:serviceInjection/>
 <semui:filter>
-    <g:form action="list" method="get" class="ui form">
+    <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 
         <div class="four fields">
             <div class="field">

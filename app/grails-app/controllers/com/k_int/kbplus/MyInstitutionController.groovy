@@ -7,7 +7,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
-import de.laser.TaskService
+//import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -26,6 +26,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.FieldError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -38,9 +39,9 @@ import java.text.SimpleDateFormat
 class MyInstitutionController extends AbstractDebugController {
     def dataSource
     def springSecurityService
-    def ESSearchService
+    def userService
     def genericOIDService
-    def factService
+    def instAdmService
     def exportService
     def escapeService
     def transformerService
@@ -2785,38 +2786,95 @@ AND EXISTS (
       result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM") })
-    Map userList() {
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def userList() {
         Map result = setResultGenerics()
         //overwrite
         result.editable = result.user.hasRole('ROLE_ADMIN') || result.user.hasAffiliation('INST_ADM')
 
-        // only context org depending
-        List baseQuery = ['select distinct u from User u UserOrg uo']
-        List whereQuery = ['( uo.user = u and uo.org = :org )']
-        Map queryParams = [org:result.institution]
-        if (params.authority) {
-            baseQuery.add('UserRole ur')
-            whereQuery.add('ur.user = u and ur.role = :role')
-            queryParams.put('role', Role.get(params.authority.toLong()))
-        }
+        Map filterParams = params
+        filterParams.status = UserOrg.STATUS_APPROVED
+        filterParams.org = result.institution
 
-        if (params.name && params.name != '' ) {
-            whereQuery.add('(lower(username) like :name or lower(display) like :name)')
-            queryParams.put('name', "%${params.name.toLowerCase()}%")
-        }
-
-        result.users = User.executeQuery(baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') , queryParams)
+        result.users = userService.getUserSet(filterParams)
+        result.breadcrumb = '/organisation/breadcrumb'
+        result.titleMessage = "${result.institution} - ${message(code:'org.nav.users')}"
+        result.inContextOrg = true
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
+        result.orgInstance = result.institution
+        result.navPath = "/organisation/nav"
+        result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
+        result.multipleAffiliationsWarning = true
+        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
+        result.tableConfig = [editable:result.editable, editor:result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
         result.total = result.users.size()
 
-        result
+        render view: '/templates/user/_list', model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def userEdit() {
+        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, institution: contextService.org, manipulateAffiliations: true]
+        result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
+                [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+        result.availableComboDeptOrgs << result.institution
+        result.availableOrgRoles = Role.findAllByRoleType('user')
 
+        render view: '/templates/user/_edit', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def userCreate() {
+        Map result = setResultGenerics()
+        result.orgInstance = result.institution
+        result.editor = result.user
+        result.inContextOrg = true
+        result.breadcrumb = '/organisation/breadcrumb'
+
+        result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
+        result.availableOrgs.add(result.orgInstance)
+
+        result.availableOrgRoles = Role.findAllByRoleType('user')
+
+        render view: '/templates/user/_create', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def processUserCreate() {
+        def success = userService.addNewUser(params,flash)
+        //despite IntelliJ's warnings, success may be an array other than the boolean true
+        if(success instanceof User) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            redirect action: 'userEdit', id: success.id
+        }
+        else if(success instanceof List) {
+            flash.error = success.join('<br>')
+            redirect action: 'userCreate'
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def addAffiliation() {
+        Map result = userService.setResultGenerics(params)
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect action: 'userEdit', id: params.id
+            return
+        }
+
+        Org org = Org.get(params.org)
+        Role formalRole = Role.get(params.formalRole)
+
+        if (result.user && org && formalRole) {
+            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+        }
+
+        redirect action: 'userEdit', id: params.id
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
