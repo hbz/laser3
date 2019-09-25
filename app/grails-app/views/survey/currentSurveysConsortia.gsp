@@ -220,7 +220,7 @@
                     <td class="center aligned">
 
                         <g:if test="${surveyConfig}">
-                            <g:if test="${surveyConfig?.type == 'Subscription'}">
+                            <g:if test="${surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
                                 <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig?.configFinish ? "green" : ""} label">
@@ -257,7 +257,7 @@
 
                     <g:if test="${params.tab in ["created", "active"]}">
                         <td class="center aligned">
-                            <g:if test="${surveyConfig}">
+                            <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
                                 <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
@@ -269,7 +269,7 @@
                     </g:if>
                     <g:if test="${params.tab != "created"}">
                         <td class="center aligned">
-                            <g:if test="${surveyConfig}">
+                            <g:if test="${surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
                                 <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]"
                                         class="ui icon">
@@ -289,7 +289,7 @@
                     </g:if>
                     <g:if test="${params.tab == "finish"}">
                         <td>
-                            <g:if test="${surveyInfo.isSubscriptionSurvey}">
+                            <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
                                 <g:link class="ui button "
                                         data-content=""
                                         controller="survey" action="setInEvaluation" id="${surveyInfo.id}">
@@ -301,7 +301,7 @@
 
                     <g:if test="${params.tab == "inEvaluation"}">
                         <td>
-                        <g:if test="${surveyInfo.isSubscriptionSurvey}">
+                        <g:if test="${surveyInfo.isSubscriptionSurvey && surveyConfig && surveyConfig?.type == 'Subscription' && !surveyConfig?.pickAndChoose}">
                             <g:link controller="survey" action="renewalwithSurvey" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]"
                                     class="ui button ">
