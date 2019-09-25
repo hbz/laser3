@@ -931,7 +931,7 @@
 /* Sorted */
 .ui.sortable.table thead th.sorted {
   background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.95);
+  color: #515151;
 }
 .ui.sortable.table thead th.sorted:after {
   display: inline-block;
@@ -1141,7 +1141,7 @@
 /* Sorted */
 .ui.sortable.table thead th.sorted {
   background: #F2F2F2;
-  color: rgba(0, 0, 0, 0.95);
+  color: #515151;
 }
 .ui.sortable.table thead th.sortable:after {
   content: '\f0dc';
@@ -1158,13 +1158,13 @@
 }
 .ui.sortable.table thead th {
   cursor: default;
-  color: #767676;
+  color: #515151;
 }
 
 /* Hover */
 .ui.sortable.table thead th:hover {
   background: #F2F2F2;
-  color: #767676;
+  color: #1B1C1D;
 }
 .ui.sortable.table thead th.sortable:hover {
   background: #F2F2F2;
@@ -1178,13 +1178,13 @@
   padding-right: 0.9rem;
 }
 .ui.table tr th {
-  color: gray;
+  color: #515151;
   font-size: 0.8rem;
   text-transform: uppercase;
 }
 .ui.table tr th a {
   cursor: pointer;
-  color: gray;
+  color: #515151;
 }
 .ui.table tr th:not(.sortable) a {
   text-decoration: underline;

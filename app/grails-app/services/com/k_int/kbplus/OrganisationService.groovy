@@ -2060,7 +2060,8 @@ class OrganisationService {
                                                         embargo: tipp.embargo,
                                                         coverageDepth: tipp.coverageDepth,
                                                         coverageNote: tipp.coverageNote,
-                                                        ieReason: 'Automatically copied when creating subscription'
+                                                        ieReason: 'Automatically copied when creating subscription',
+                                                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                                                 )
                                                 if(!ie.save()) {
                                                     throw new CreationException(ie.errors)

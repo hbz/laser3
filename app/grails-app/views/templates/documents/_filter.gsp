@@ -33,11 +33,11 @@
             <div class="two fields">
                 <div class="field">
                   <label for="docOwnerOrg">${message(code:'org.docs.table.ownerOrg')}</label>
-                  <g:select class="ui fluid search dropdown" name="docOwnerOrg" from="${Org.executeQuery("select o from Org o order by o.name")}" optionKey="id" optionValue="name" value="${params.docOwnerOrg}" noSelection="['':'']"/>
+                  <g:select class="ui fluid search dropdown" name="docOwnerOrg" from="${Org.executeQuery("select o from Org o order by o.name")}" optionKey="id" optionValue="name" value="${params.docOwnerOrg}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>--%>
             <%--<div class="field">
               <label for="docShareConf">${message(code:'template.addDocument.shareConf')}</label>
-              <laser:select name="docShareConf" class="ui dropdown fluid" value="${params.docShareConf}" noSelection="['':'']"
+              <laser:select name="docShareConf" class="ui dropdown fluid" value="${params.docShareConf}" noSelection="${['' : message(code:'default.select.choose.label')]}"
                             from="${RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' order by rdv.order asc")}" optionKey="id" optionValue="value"/>
             </div>
         </div>

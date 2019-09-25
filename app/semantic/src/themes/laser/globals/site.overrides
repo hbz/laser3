@@ -1,11 +1,6 @@
 /*******************************
         Global Overrides
 *******************************/
-
-/*******************************
-        LATO Local Font
-*******************************/
-
 @font-face {
     font-family: 'Lato';
     src: url('../../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
@@ -43,6 +38,23 @@
     }
 
 }
+
+/*******************************
+        Sticky Footer
+        see
+        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
+*******************************/
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
 
 /*******************************
         MISSED IN SEMANTIC UI
@@ -442,12 +454,4 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
     display: none;
-}
-// most important object in table
-a
-    &.la-main-object {
-        color: #183551;
-}
-.la-main-object {
-    font-weight: bold;
 }

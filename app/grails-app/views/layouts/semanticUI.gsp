@@ -69,7 +69,7 @@
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
     <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item la-logo-item">
+            <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
@@ -493,7 +493,7 @@
                                     <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="assignNoteOwners">Assign note owners for notes of subscriptions and licenses without owners</g:link>
                                     <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
                                     <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
 
@@ -727,13 +727,12 @@
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
+    <sec:ifNotGranted roles="ROLE_USER">
+        <!-- Footer -->
+            <g:render template="/public/templates/footer" />
+        <!-- Footer End -->
+    </sec:ifNotGranted>
 
-        <footer id="Footer">
-            <div class="clearfix"></div>
-            <div class="footer-links container">
-                <div class="row"></div>
-            </div>
-        </footer>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>

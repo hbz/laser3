@@ -4,9 +4,11 @@
     boolean parentAtChild = false
 
     if(instance instanceof Subscription) {
-        //array is created and should be extended to collective view; not yet done because collective view is not merged yet
         if(contextService.org.id in [instance.getConsortia()?.id,instance.getCollective()?.id] && instance.instanceOf) {
-            parentAtChild = true
+            if(contextService.org.id == instance.getConsortia()?.id && instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+                parentAtChild = true
+            else if(instance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION)
+                parentAtChild = true
         }
     }
     else if(instance instanceof License) {
@@ -46,34 +48,32 @@
                     boolean inOwnerOrg = false
                     boolean inTargetOrg = false
                     boolean isCreator = false
-                    if(docctx.org) {
 
-                        if(docctx.owner.owner?.id == contextService.org.id)
-                            inOwnerOrg = true
-                        else if(contextService.org.id == docctx.targetOrg?.id)
-                            inTargetOrg = true
-                        if(docctx.owner.creator?.id == user.id)
-                            isCreator = true
-                        if(docctx.org) {
-                            switch(docctx.shareConf) {
-                                case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                                    break
-                                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                                    break
-                                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
-                                    break
-                                case RDStore.SHARE_CONF_CONSORTIUM:
-                                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                                    break
-                                default:
-                                    if(docctx.shareConf) log.debug(docctx.shareConf)
-                                    else visible = true
-                                    break
-                            }
+                    if(docctx.owner.owner?.id == contextService.org.id)
+                        inOwnerOrg = true
+                    else if(contextService.org.id == docctx.targetOrg?.id)
+                        inTargetOrg = true
+                    if(docctx.owner.creator?.id == user.id)
+                        isCreator = true
+                    if(docctx.org) {
+                        switch(docctx.shareConf) {
+                            case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                                break
+                            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                                break
+                            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                                break
+                            case RDStore.SHARE_CONF_CONSORTIUM:
+                            case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                                break
+                            default:
+                                if(docctx.shareConf) log.debug(docctx.shareConf)
+                                else visible = true
+                                break
                         }
-                        else if(inOwnerOrg || docctx.sharedFrom) {
-                            visible = true
-                        }
+                    }
+                    else if(inOwnerOrg || docctx.sharedFrom) {
+                        visible = true
                     }
                     else {
                         if((parentAtChild && docctx.sharedFrom) || !parentAtChild)
@@ -143,10 +143,10 @@
                                     </g:if>
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
-                                <g:if test="${contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
+                                <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>
-                                <g:if test="${!docctx.sharedFrom && contextService.user.hasAffiliationForForeignOrg("INST_EDITOR",docctx.owner.owner) && inOwnerOrg}">
+                                <g:if test="${!docctx.sharedFrom && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>

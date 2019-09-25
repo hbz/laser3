@@ -752,10 +752,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
-/*******************************
-        LATO Local Font
-*******************************/
-
 @font-face {
   font-family: 'Lato';
   src: url('./themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
@@ -797,6 +793,29 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   .ui.menu {
     visibility: hidden;
   }
+}
+
+/*******************************
+        Sticky Footer
+        see
+        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
+*******************************/
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 100vh;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+main {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
 }
 
 /*******************************
@@ -1265,14 +1284,6 @@ aside.ui.accordion .title:not(.ui) {
 
 .js-gost {
   display: none;
-}
-
-a .la-main-object {
-  color: #183551;
-}
-
-.la-main-object {
-  font-weight: bold;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
@@ -8489,8 +8500,8 @@ body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before {
 
 @font-face {
   font-family: 'Icons';
-  src: url("./themes/default/assets/fonts/icons.eot");
-  src: url("./themes/default/assets/fonts/icons.eot?#iefix") format('embedded-opentype'), url("./themes/default/assets/fonts/icons.woff2") format('woff2'), url("./themes/default/assets/fonts/icons.woff") format('woff'), url("./themes/default/assets/fonts/icons.ttf") format('truetype'), url("./themes/default/assets/fonts/icons.svg#icons") format('svg');
+  src: url("./themes/laser/assets/fonts/icons.eot");
+  src: url("./themes/laser/assets/fonts/icons.eot?#iefix") format('embedded-opentype'), url("./themes/laser/assets/fonts/icons.woff2") format('woff2'), url("./themes/laser/assets/fonts/icons.woff") format('woff'), url("./themes/laser/assets/fonts/icons.ttf") format('truetype'), url("./themes/laser/assets/fonts/icons.svg#icons") format('svg');
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -13746,8 +13757,8 @@ i.icon.youtube.play:before {
 
 @font-face {
   font-family: 'outline-icons';
-  src: url("./themes/default/assets/fonts/outline-icons.eot");
-  src: url("./themes/default/assets/fonts/outline-icons.eot?#iefix") format('embedded-opentype'), url("./themes/default/assets/fonts/outline-icons.woff2") format('woff2'), url("./themes/default/assets/fonts/outline-icons.woff") format('woff'), url("./themes/default/assets/fonts/outline-icons.ttf") format('truetype'), url("./themes/default/assets/fonts/outline-icons.svg#icons") format('svg');
+  src: url("./themes/laser/assets/fonts/outline-icons.eot");
+  src: url("./themes/laser/assets/fonts/outline-icons.eot?#iefix") format('embedded-opentype'), url("./themes/laser/assets/fonts/outline-icons.woff2") format('woff2'), url("./themes/laser/assets/fonts/outline-icons.woff") format('woff'), url("./themes/laser/assets/fonts/outline-icons.ttf") format('truetype'), url("./themes/laser/assets/fonts/outline-icons.svg#icons") format('svg');
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -14252,8 +14263,8 @@ i.icon.star.empty:before {
 
 @font-face {
   font-family: 'brand-icons';
-  src: url("./themes/default/assets/fonts/brand-icons.eot");
-  src: url("./themes/default/assets/fonts/brand-icons.eot?#iefix") format('embedded-opentype'), url("./themes/default/assets/fonts/brand-icons.woff2") format('woff2'), url("./themes/default/assets/fonts/brand-icons.woff") format('woff'), url("./themes/default/assets/fonts/brand-icons.ttf") format('truetype'), url("./themes/default/assets/fonts/brand-icons.svg#icons") format('svg');
+  src: url("./themes/laser/assets/fonts/brand-icons.eot");
+  src: url("./themes/laser/assets/fonts/brand-icons.eot?#iefix") format('embedded-opentype'), url("./themes/laser/assets/fonts/brand-icons.woff2") format('woff2'), url("./themes/laser/assets/fonts/brand-icons.woff") format('woff'), url("./themes/laser/assets/fonts/brand-icons.ttf") format('truetype'), url("./themes/laser/assets/fonts/brand-icons.svg#icons") format('svg');
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -15131,15 +15142,15 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 
 .ui.input > input::-moz-placeholder {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 
 /*******************************
@@ -15224,17 +15235,17 @@ img.ui.bordered.image {
 
 .ui.input.focus > input::-webkit-input-placeholder,
 .ui.input > input:focus::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input.focus > input::-moz-placeholder,
 .ui.input > input:focus::-moz-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 .ui.input.focus > input:-ms-input-placeholder,
 .ui.input > input:focus:-ms-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /*--------------------
@@ -17625,22 +17636,22 @@ ol.ui.list ol li,
 .ui.inverted.list .list > a.item,
 .ui.inverted.list > a.item {
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #2185d0;
+  color: #ffffff;
 }
 
 /* Linking Content */
 
 .ui.inverted.list .item a:not(.ui) {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #2185d0 !important;
+  color: #ffffff !important;
 }
 
 /*-------------------
@@ -20215,6 +20226,14 @@ ol.ui.horizontal.list li:before,
 .ui.grey.segment:not(.inverted) {
   border-top: 1px solid #d3dae3 !important;
 }
+
+/***********************************
+        Footer Segment
+***********************************/
+
+.ui.segment.la-footer {
+  padding: 3em 1em;
+}
 /*!
  * # Semantic UI 2.3.1 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -21385,27 +21404,27 @@ ol.ui.horizontal.list li:before,
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 
 .ui.form :-ms-input-placeholder {
-  color: rgba(191, 191, 191, 0.87) !important;
-}
-
-.ui.form ::-moz-placeholder {
-  color: rgba(191, 191, 191, 0.87);
-}
-
-.ui.form :focus::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
-}
-
-.ui.form :focus:-ms-input-placeholder {
   color: rgba(115, 115, 115, 0.87) !important;
 }
 
-.ui.form :focus::-moz-placeholder {
+.ui.form ::-moz-placeholder {
   color: rgba(115, 115, 115, 0.87);
+}
+
+.ui.form :focus::-webkit-input-placeholder {
+  color: rgba(64, 64, 64, 0.87);
+}
+
+.ui.form :focus:-ms-input-placeholder {
+  color: rgba(64, 64, 64, 0.87) !important;
+}
+
+.ui.form :focus::-moz-placeholder {
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /* Error Placeholder */
@@ -22356,6 +22375,13 @@ input#spotlightSearch[type="search"] {
 
 .ui.form .field .ui.input input.la-input-small {
   width: 80px;
+}
+
+legend {
+  margin: 0 0 .28571429rem 0;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: .92857143em;
+  font-weight: 700;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
@@ -28688,7 +28714,7 @@ Floated Menu / Item
 
 .ui.sortable.table thead th.sorted {
   background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.95);
+  color: #515151;
 }
 
 .ui.sortable.table thead th.sorted:after {
@@ -28927,7 +28953,7 @@ Floated Menu / Item
 
 .ui.sortable.table thead th.sorted {
   background: #F2F2F2;
-  color: rgba(0, 0, 0, 0.95);
+  color: #515151;
 }
 
 .ui.sortable.table thead th.sortable:after {
@@ -28948,14 +28974,14 @@ Floated Menu / Item
 
 .ui.sortable.table thead th {
   cursor: default;
-  color: #767676;
+  color: #515151;
 }
 
 /* Hover */
 
 .ui.sortable.table thead th:hover {
   background: #F2F2F2;
-  color: #767676;
+  color: #1B1C1D;
 }
 
 .ui.sortable.table thead th.sortable:hover {
@@ -28973,14 +28999,14 @@ Floated Menu / Item
 }
 
 .ui.table tr th {
-  color: gray;
+  color: #515151;
   font-size: 0.8rem;
   text-transform: uppercase;
 }
 
 .ui.table tr th a {
   cursor: pointer;
-  color: gray;
+  color: #515151;
 }
 
 .ui.table tr th:not(.sortable) a {
@@ -34600,7 +34626,7 @@ select.ui.dropdown {
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
-  color: rgba(115, 115, 115, 0.87) !important;
+  color: rgba(64, 64, 64, 0.87) !important;
 }
 
 /* Search Menu */
@@ -34868,12 +34894,12 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,
 .ui.default.dropdown:not(.button) > input:focus ~ .text {
-  color: rgba(115, 115, 115, 0.87);
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /*--------------------

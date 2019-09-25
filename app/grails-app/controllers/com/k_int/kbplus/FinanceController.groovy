@@ -107,8 +107,10 @@ class FinanceController extends AbstractDebugController {
         result.editable = accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
         result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        if(result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id])
-            params.view = "consAtSubscr"
+        if(result.subscription.instanceOf && result.institution.id in [result.subscription.getConsortia()?.id,result.subscription.getCollective()?.id]) {
+            if(result.institution.id == result.subscription.getConsortia()?.id)
+                params.view = "consAtSubscr"
+        }
         switch(params.view) {
             case "own": result.ownOffset = result.offset
                 break
@@ -121,7 +123,7 @@ class FinanceController extends AbstractDebugController {
             default: log.info("unhandled view: ${params.view}")
                 break
         }
-        result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max,result.offset)
+        result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max.toInteger(),result.offset.toInteger())
         if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
@@ -131,7 +133,10 @@ class FinanceController extends AbstractDebugController {
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_COLLECTIVE)) {
-            result.showView = "coll"
+            if(result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
+                result.showView = "coll"
+            else if(result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+                result.showView = "collAsSubscr"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
             params.comboType = "Department"
@@ -152,7 +157,7 @@ class FinanceController extends AbstractDebugController {
             if(params.view == "consAtSubscr")
                 result.view = "consAtSubscr"
         }
-        else if(params.subscrSort)
+        else if(params.subscrSort || result.showView == "collAsSubscr")
             result.view = "subscr"
         else result.view = params.view ? params.view : result.showView
         result.filterPresets = result.financialData.filterPresets

@@ -605,7 +605,7 @@ class YodaController {
 
             /*
             todo: IGNORED for 0.20
-
+            */
             result.subConsRoles.each{ so ->
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
@@ -619,7 +619,7 @@ class YodaController {
                     newRole.save()
                 }
             }
-            */
+
         }
 
         result
@@ -633,6 +633,12 @@ class YodaController {
             Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
             flash.message = "Changes performed on ${idList.size()} package identifiers ..."
         }
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def assignNoteOwners() {
+        subscriptionUpdateService.assignNoteOwners()
         redirect controller: 'home'
     }
 

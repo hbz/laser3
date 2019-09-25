@@ -7,7 +7,7 @@ modules = {
     }
 
     annotations {
-        dependsOn 'semanticUI'
+        //dependsOn 'semanticUI'
 
         resource url:'js/libs/summernote.min.js'
         resource url:'css/summernote.css', attrs: [media: 'screen,print']
@@ -42,7 +42,23 @@ modules = {
         resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
     }
 
+
     semanticUI {
+        dependsOn 'base'
+
+        resource url:'semantic/semantic.min.js'         // new stuff
+        resource url:'semantic/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
+
+    }
+    accessibility {
+        dependsOn 'base'
+        //dependsOn 'semanticUI'
+
+        resource url:'semantic/semantic2.min.js'         // new stuff
+        resource url:'semantic/semantic2.min.css', attrs: [media: 'screen,print']       // new stuff
+
+    }
+    base {
         dependsOn 'jquery'
         dependsOn 'deprecated'
 
@@ -59,8 +75,7 @@ modules = {
 
         resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
 
-        resource url:'semantic/semantic.min.js'         // new stuff
-        resource url:'semantic/semantic.min.css', attrs: [media: 'screen,print']       // new stuff
+
 
         resource url:'semantic-restoration/jquery.readmore.min.js' // new stuff
 
@@ -70,10 +85,6 @@ modules = {
 
 
         resource url:'js/application.js.gsp'
-    }
-
-    accessibility {
-        dependsOn 'semanticUI'
     }
 
     swaggerApi {
