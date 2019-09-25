@@ -18,11 +18,11 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "klober (generated)", id: "1569389997414-4") {
+/*	changeSet(author: "klober (generated)", id: "1569389997414-4") {
 		addColumn(schemaName: "public", tableName: "price_item") {
 			column(name: "pi_list_currency_rv_fk", type: "int8")
 		}
-	}
+	}*/
 
 	changeSet(author: "klober (generated)", id: "1569389997414-5") {
 		addColumn(schemaName: "public", tableName: "task") {
@@ -34,9 +34,9 @@ databaseChangeLog = {
 		modifyDataType(columnName: "idns_is_hidden", newDataType: "bool", tableName: "identifier_namespace")
 	}
 
-	changeSet(author: "klober (generated)", id: "1569389997414-7") {
+/*	changeSet(author: "klober (generated)", id: "1569389997414-7") {
 		dropColumn(columnName: "local_currency_id", tableName: "price_item")
-	}
+	}*/
 
 	changeSet(author: "klober (generated)", id: "1569389997414-8") {
 		modifyDataType(columnName: "ic_id", newDataType: "int8", tableName: "issue_entitlement_coverage")
@@ -54,8 +54,17 @@ databaseChangeLog = {
 		dropNotNullConstraint(columnDataType: "numeric(19, 2)", columnName: "pi_list_price", tableName: "price_item")
 	}
 
-	changeSet(author: "klober (generated)", id: "1569389997414-12") {
+	changeSet(author: "djebeniani (modified)", id: "1569389997414-12") {
+		grailsChange {
+			change {
+				sql.execute("ALTER TABLE price_item RENAME pi_local_currency_rv_fk  TO pi_list_currency_rv_fk")
+				sql.execute("ALTER TABLE price_item RENAME local_currency_id  TO pi_local_currency_rv_fk")
+			}
+			rollback {}
+		}
+		dropNotNullConstraint(columnDataType: "int8", columnName: "pi_list_currency_rv_fk", tableName: "price_item")
 		dropNotNullConstraint(columnDataType: "int8", columnName: "pi_local_currency_rv_fk", tableName: "price_item")
+		dropNotNullConstraint(columnDataType: "int8", columnName: "version", tableName: "price_item")
 	}
 
 	changeSet(author: "klober (generated)", id: "1569389997414-13") {
@@ -109,4 +118,40 @@ databaseChangeLog = {
 	//changeSet(author: "klober (generated)", id: "1569389997414-25") {
 	//	dropForeignKeyConstraint(baseTableName: "price_item", baseTableSchemaName: "public", constraintName: "fka8c4e849bf9846e6")
 	//}
+
+	changeSet(author: "djebeniani (modified)", id: "1569389997414-25") {
+		grailsChange {
+			change {
+				sql.execute("UPDATE task SET tsk_system_create_date = tsk_create_date where tsk_system_create_date IS NULL")
+				sql.execute("ALTER TABLE task ALTER COLUMN tsk_system_create_date SET NOT NULL")
+			}
+			rollback {}
+		}
+	}
+
+	changeSet(author: "djebeniani (modified)", id: "1569389997414-26") {
+		grailsChange {
+			change {
+				sql.execute("UPDATE issue_entitlement SET ie_accept_status_rv_fk = (SELECT rdv.rdv_id FROM refdata_value rdv\n" +
+						"    JOIN refdata_category rdc ON rdv.rdv_owner = rdc.rdc_id\n" +
+						"WHERE rdv.rdv_value = 'Fixed' AND rdc.rdc_description = 'IE Accept Status') where\n" +
+						"ie_id IN (SELECT ie_id FROM issue_entitlement JOIN refdata_value rv ON issue_entitlement.ie_status_rv_fk = rv.rdv_id\n" +
+						"WHERE rdv_value = 'Current')")
+			}
+			rollback {}
+		}
+	}
+	changeSet(author: "djebeniani (modified)", id: "1569389997414-27") {
+		grailsChange {
+			change {
+				sql.execute("UPDATE dashboard_due_date SET das_is_hide = false where das_is_hide IS NULL")
+				sql.execute("ALTER TABLE dashboard_due_date ALTER COLUMN das_is_hide SET NOT NULL")
+				sql.execute("UPDATE dashboard_due_date SET das_is_done = false where das_is_done IS NULL")
+				sql.execute("ALTER TABLE dashboard_due_date ALTER COLUMN das_is_done SET NOT NULL")
+			}
+			rollback {}
+		}
+	}
+
+
 }

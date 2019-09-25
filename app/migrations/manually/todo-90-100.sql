@@ -204,16 +204,4 @@ update survey_config_properties set surconpro_survey_property_fk = (select surpr
 DELETE FROM survey_property where surpro_name = 'Continue to license';
 DELETE FROM survey_property where surpro_name = 'Teilnahme';
 
---- 2019-09-16
---- ERMS-1490
---- correct price item column mappigs
 
-ALTER TABLE price_item RENAME pi_local_currency_rv_fk  TO pi_list_currency_rv_fk;
-ALTER TABLE price_item RENAME local_currency_id  TO pi_local_currency_rv_fk;
-
-ALTER TABLE price_item ALTER COLUMN version DROP NOT NULL;
-ALTER TABLE price_item ALTER COLUMN pi_list_currency_rv_fk DROP NOT NULL;
-ALTER TABLE price_item ALTER COLUMN pi_list_price DROP NOT NULL;
-ALTER TABLE price_item ALTER COLUMN pi_local_currency_rv_fk DROP NOT NULL;
-ALTER TABLE price_item ALTER COLUMN pi_local_price DROP NOT NULL;
-ALTER TABLE price_item ALTER COLUMN pi_price_date DROP NOT NULL;
