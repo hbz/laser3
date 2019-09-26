@@ -316,7 +316,7 @@
                 group3.attr('disabled', 'disabled')
                 group4.attr('disabled', 'disabled')
 
-                $("label[for='last_name']").text("Benenner")
+                $("label[for='last_name']").text("Bezeichnung")
                 ! $("#"+mId+"#last_name").val() ? $("#"+mId+"#last_name").val("Allgemeiner Funktionskontakt") : false
 
             }
