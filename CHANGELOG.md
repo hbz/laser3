@@ -2,6 +2,10 @@
 
 - TODO
 
+0.20.7
+
+-hotfix: show latecomers on renewal for survey
+
 0.20.6
 
 - hotfix: show survey only by consortial sub 

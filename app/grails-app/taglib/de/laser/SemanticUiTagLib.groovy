@@ -851,8 +851,9 @@ class SemanticUiTagLib {
     def totalNumber = { attrs, body ->
 
         def total = attrs.total
+        def newClass = attrs.class ?: ''
 
-        out << '<span class="ui circular label">'
+        out << '<span class="ui circular ' + newClass + ' label">'
         out << total
         out << '</span>'
     }
