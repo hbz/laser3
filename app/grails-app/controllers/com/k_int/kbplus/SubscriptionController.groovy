@@ -13,6 +13,7 @@ import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.RDStore
 import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
 import de.laser.traits.AuditableTrait
@@ -1170,9 +1171,9 @@ class SubscriptionController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
-        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.startDate >= :startDate",
+        result.surveys = SurveyConfig.executeQuery("from SurveyConfig where subscription = :sub and surveyInfo.status not in (:invalidStatuses)",
                 [sub: result.subscription.instanceOf,
-                 startDate: new Date(System.currentTimeMillis())])
+                 invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
 
        result
     }
