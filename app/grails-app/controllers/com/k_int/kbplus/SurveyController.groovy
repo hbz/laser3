@@ -52,6 +52,15 @@ class SurveyController {
     public static final String WORKFLOW_PROPERTIES = '4'
     public static final String WORKFLOW_END = '6'
 
+    def possible_date_formats = [
+            new SimpleDateFormat('yyyy/MM/dd'),
+            new SimpleDateFormat('dd.MM.yyyy'),
+            new SimpleDateFormat('dd/MM/yyyy'),
+            new SimpleDateFormat('dd/MM/yy'),
+            new SimpleDateFormat('yyyy/MM'),
+            new SimpleDateFormat('yyyy')
+    ]
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
@@ -1521,11 +1530,15 @@ class SurveyController {
                 result.orgsWithMultiYearTermSub << sub
             }
             else if (lateCommersProperty && lateCommersProperty?.type == 'class com.k_int.kbplus.RefdataValue') {
-                if(sub?.customProperties?.find {
-                    it?.type?.id == lateCommersProperty?.id
-                }?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
+                def subProp = sub?.customProperties?.find { it?.type?.id == lateCommersProperty?.id }
+                if(subProp?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
                 {
                     result.orgsLateCommers << sub
+                } else
+                {
+                    sub?.getAllSubscribers()?.each { org ->
+                        selecetedParticipantIDs << org?.id
+                    }
                 }
             }
             else
@@ -1800,7 +1813,7 @@ class SurveyController {
                     sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
                     sub_endDate = baseSub?.endDate ? (baseSub?.endDate + 1.year) : null
                 }
-                sub_status = SUBSCRIPTION_INTENDED
+                sub_status = RDStore.SUBSCRIPTION_INTENDED
                 old_subOID = baseSub?.id
                 new_subname = baseSub?.name
             } else {
@@ -1906,10 +1919,10 @@ class SurveyController {
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
-        List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL]
+        List<String> subTypSubscriberVisible = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,
+                                                RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,
+                                                RDStore.SUBSCRIPTION_TYPE_ALLIANCE,
+                                                RDStore.SUBSCRIPTION_TYPE_NATIONAL]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                         result.targetSubscription &&
@@ -3196,6 +3209,19 @@ class SurveyController {
         }
 
         result
+    }
+    def parseDate(datestr, possible_formats) {
+        def parsed_date = null;
+        if (datestr && (datestr.toString().trim().length() > 0)) {
+            for (Iterator i = possible_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                try {
+                    parsed_date = i.next().parse(datestr.toString());
+                }
+                catch (Exception e) {
+                }
+            }
+        }
+        parsed_date
     }
 
 }
