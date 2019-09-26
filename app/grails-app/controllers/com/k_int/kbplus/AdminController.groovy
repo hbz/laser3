@@ -16,6 +16,11 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.util.slurpersupport.FilteredNodeChildren
+import groovy.util.slurpersupport.GPathResult
+import groovy.xml.MarkupBuilder
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -41,7 +46,7 @@ class AdminController extends AbstractDebugController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
   def ESSearchService
-  def GOKbService
+  def apiService
 
   @Secured(['ROLE_ADMIN'])
   def index() { }
@@ -587,51 +592,449 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def orgsExport() {
-    response.setHeader("Content-disposition", "attachment; filename=\"orgsExport.csv\"")
-    response.contentType = "text/csv"
-    def out = response.outputStream
-    out << "org.name,sector,consortia,id.jusplogin,id.JC,id.Ringold,id.UKAMF,id.ISIL,iprange\n"
-    Org.list().each { org ->
-      def consortium = org.outgoingCombos.find{it.type.value=='Consortium'}.collect{it.toOrg.name}.join(':')
-
-      out << "\"${org.name}\",\"${org.sector?:''}\",\"${consortium}\",\"${org.getIdentifierByType('jusplogin')?.value?:''}\",\"${org.getIdentifierByType('JC')?.value?:''}\",\"${org.getIdentifierByType('Ringold')?.value?:''}\",\"${org.getIdentifierByType('UKAMF')?.value?:''}\",\"${org.getIdentifierByType('ISIL')?.value?:''}\",\"${org.ipRange?:''}\"\n"
+    Date now = new Date()
+    File basicDataDir = new File(grailsApplication.config.basicDataPath)
+    if(basicDataDir) {
+      GPathResult oldBase
+      XmlSlurper slurper = new XmlSlurper()
+      Date lastDumpDate
+      List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+        @Override
+        boolean accept(File dir, String name) {
+          return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
+        }
+      })
+      if(dumpFiles.size() > 0) {
+        dumpFiles.toSorted { f1, f2 ->
+          f1.lastModified() <=> f2.lastModified()
+        }
+        File lastDump = dumpFiles.last()
+        lastDumpDate = new Date(lastDump.lastModified())
+        oldBase = slurper.parse(lastDump)
+      }
+      else {
+        File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+        lastDumpDate = new Date(f.lastModified())
+        if(f.exists()) {
+          //complicated way - determine most recent org and user creation dates
+          oldBase = slurper.parse(f)
+        }
+      }
+      if(oldBase) {
+        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+        Set<Org> newOrgData = []
+        Set<User> newUserData = []
+        Org.getAll().each { Org dbOrg ->
+          def correspOrg = oldBase.organisations.org.find { orgNode ->
+            orgNode.globalUID == dbOrg.globalUID
+          }
+          if(correspOrg) {
+            if(dbOrg.lastUpdated > lastDumpDate) {
+              newOrgData << dbOrg
+            }
+          }
+          else if(dbOrg.lastUpdated > lastDumpDate) {
+            newOrgData << dbOrg
+          }
+        }
+        User.getAll().each { User dbUser ->
+          def correspUser = oldBase.users.user.find { userNode ->
+            userNode.username == dbUser.username
+          }
+          if(correspUser) {
+            if(dbUser.lastUpdated > lastDumpDate) {
+              newUserData << dbUser
+            }
+          }
+          else if(dbUser.lastUpdated > lastDumpDate) {
+            newUserData << dbUser
+          }
+        }
+        //data collected: prepare export!
+        if(newOrgData || newUserData) {
+          //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
+          File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+          StringBuilder exportReport = new StringBuilder()
+          exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
+          newDump.withWriter { writer ->
+            MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
+            orgDataBuilder.data {
+              organisations {
+                newOrgData.each { Org o ->
+                  org {
+                    globalUID(o.globalUID)
+                    name(o.name)
+                    shortname(o.shortname)
+                    shortcode(o.shortcode)
+                    sortname(o.sortname)
+                    url(o.url)
+                    urlGov(o.urlGov)
+                    importSource(o.importSource)
+                    lastImportDate(o.lastImportDate)
+                    impId(o.impId)
+                    gokbId(o.gokbId)
+                    comment(o.comment)
+                    ipRange(o.ipRange)
+                    scope(o.scope)
+                    dateCreated(o.dateCreated)
+                    lastUpdated(o.lastUpdated)
+                    categoryId(o.categoryId)
+                    sector {
+                      if(o.sector) {
+                        rdc(o.sector.owner.desc)
+                        rdv(o.sector.value)
+                      }
+                    }
+                    status {
+                      if(o.status) {
+                        rdc(o.status.owner.desc)
+                        rdv(o.status.value)
+                      }
+                    }
+                    membership {
+                      if(o.membership) {
+                        rdc(o.membership.owner.desc)
+                        rdv(o.membership.value)
+                      }
+                    }
+                    countryElem {
+                      if(o.country) {
+                        rdc(o.country.owner.desc)
+                        rdv(o.country.value)
+                      }
+                    }
+                    federalState {
+                      if(o.federalState) {
+                        rdc(o.federalState.owner.desc)
+                        rdv(o.federalState.value)
+                      }
+                    }
+                    libraryNetwork {
+                      if(o.libraryNetwork) {
+                        rdc(o.libraryNetwork.owner.desc)
+                        rdv(o.libraryNetwork.value)
+                      }
+                    }
+                    funderType {
+                      if(o.funderType) {
+                        rdc(o.funderType.owner.desc)
+                        rdv(o.funderType.value)
+                      }
+                    }
+                    libraryType {
+                      if(o.libraryType) {
+                        rdc(o.libraryType.owner.desc)
+                        rdv(o.libraryType.value)
+                      }
+                    }
+                    costConfigurations {
+                      CostItemElementConfiguration.findAllByForOrganisation(o).each { ciecObj ->
+                        CostItemElementConfiguration ciec = (CostItemElementConfiguration) ciecObj
+                        costConfiguration {
+                          rdc(ciec.costItemElement.owner.desc)
+                          rdv(ciec.costItemElement.value)
+                          elementSign {
+                            rdc(ciec.elementSign.owner.desc)
+                            rdv(ciec.elementSign.value)
+                          }
+                        }
+                      }
+                    }
+                    ids {
+                      o.ids.each { idObj ->
+                        IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                        id (namespace: idOcc.identifier.ns.ns, value: idOcc.identifier.value)
+                      }
+                    }
+                    //outgoing/ingoingCombos: assembled in branch combos
+                    //prsLinks, affiliations, contacts and addresses done on own branches respectively
+                    orgTypes {
+                      o.orgType.each { ot ->
+                        orgType {
+                          rdc(ot.owner.desc)
+                          rdv(ot.value)
+                        }
+                      }
+                    }
+                    settings {
+                      List<OrgSettings> os = OrgSettings.findAllByOrg(o)
+                      os.each { st ->
+                        switch(st.key.type) {
+                          case RefdataValue:
+                            if(st.rdValue) {
+                              setting {
+                                name(st.key)
+                                rdValue {
+                                  rdc(st.rdValue.owner.desc)
+                                  rdv(st.rdValue.value)
+                                }
+                              }
+                            }
+                            break
+                          case Role:
+                            if(st.roleValue) {
+                              setting {
+                                name(st.key)
+                                roleValue(st.roleValue.authority)
+                              }
+                            }
+                            break
+                          default: setting{
+                            name(st.key)
+                            value(st.getValue())
+                            }
+                            break
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              affiliations {
+                UserOrg.findAllByUserInList(newUserData.toList()).each { userOrg ->
+                  affiliation {
+                    user(userOrg.user.username)
+                    org(userOrg.org.globalUID)
+                    status(userOrg.status)
+                    if(userOrg.formalRole) {
+                      formalRole(userOrg.formalRole.authority)
+                    }
+                    if(userOrg.dateActioned) {
+                      dateActioned(userOrg.dateActioned)
+                    }
+                    if(userOrg.dateRequested) {
+                      dateRequested(userOrg.dateRequested)
+                    }
+                  }
+                }
+              }
+              combos {
+                Combo.executeQuery('select c from Combo c where c.fromOrg in :fromOrg or c.toOrg in :toOrg',[fromOrg: newOrgData.toList(),toOrg: newOrgData.toList()]).each { c ->
+                  if(c.type) {
+                    combo {
+                      status {
+                        if (c.status) {
+                          rdc(c.status.owner.desc)
+                          rdv(c.status.value)
+                        }
+                      }
+                      type{
+                        rdc(c.type.owner.desc)
+                        rdv(c.type.value)
+                      }
+                      fromOrg(c.fromOrg.globalUID)
+                      toOrg(c.toOrg.globalUID)
+                    }
+                  }
+                }
+              }
+              /*persons {
+                newPersonData.each { Person p ->
+                  person {
+                    log.debug("now processing ${p.id}")
+                    globalUID(p.globalUID)
+                    title(p.title)
+                    firstName(p.first_name)
+                    middleName(p.middle_name)
+                    lastName(p.last_name)
+                    if(p.tenant)
+                      tenant(p.tenant.globalUID)
+                    if(p.gender) {
+                      gender {
+                        rdc(p.gender.owner.desc)
+                        rdv(p.gender.value)
+                      }
+                    }
+                    if(p.isPublic) {
+                      isPublic {
+                        'Yes'
+                      }
+                    }
+                    if(p.contactType) {
+                      contactType {
+                        rdc(p.contactType.owner.desc)
+                        rdv(p.contactType.value)
+                      }
+                    }
+                    if(p.roleType) {
+                      roleType {
+                        rdc(p.roleType.owner.desc)
+                        rdv(p.roleType.value)
+                      }
+                    }
+                  }
+                }
+              }
+              personRoles {
+                PersonRole.findAllByOrgInList(newOrgData.toList()).each { link ->
+                  personRole {
+                    org(link.org.globalUID)
+                    prs(link.prs.globalUID)
+                    if(link.positionType) {
+                      positionType {
+                        rdc(link.positionType.owner.desc)
+                        rdv(link.positionType.value)
+                      }
+                    }
+                    if(link.functionType) {
+                      functionType {
+                        rdc(link.functionType.owner.desc)
+                        rdv(link.functionType.value)
+                      }
+                    }
+                    if(link.responsibilityType) {
+                      responsibilityType {
+                        rdc(link.responsibilityType.owner.desc)
+                        rdv(link.responsibilityType.value)
+                      }
+                    }
+                  }
+                }
+              }*/
+              users {
+                newUserData.each { User u ->
+                  user {
+                    username(u.username)
+                    display(u.display)
+                    password(u.password)
+                    email(u.email)
+                    shibbScope(u.shibbScope)
+                    apikey(u.apikey)
+                    apisecret(u.apisecret)
+                    enabled(u.enabled)
+                    accountExpired(u.accountExpired)
+                    accountLocked(u.accountLocked)
+                    passwordExpired(u.passwordExpired)
+                    dateCreated(u.dateCreated)
+                    lastUpdated(u.lastUpdated)
+                    //affiliations done already on organisations
+                    roles {
+                      u.roles.each { rObj ->
+                        UserRole r = (UserRole) rObj
+                        role(r.role.authority)
+                      }
+                    }
+                    settings {
+                      List<UserSettings> us = UserSettings.findAllByUser(u)
+                      us.each { st ->
+                        switch(st.key.type) {
+                          case Org: setting{
+                            name(st.key)
+                            org(st.orgValue ? st.orgValue.globalUID : ' ')
+                          }
+                            break
+                          case RefdataValue:
+                            if(st.rdValue) {
+                              setting {
+                                name(st.key)
+                                rdValue {
+                                  rdc(st.rdValue.owner.desc)
+                                  rdv(st.rdValue.value)
+                                }
+                              }
+                            }
+                            break
+                          default: setting{
+                            name(st.key)
+                            value(st.getValue())
+                            }
+                            break
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              /*addresses {
+                Address.executeQuery('select a from Address a where a.prs in :prsList or a.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { a ->
+                  address {
+                    if(a.org) org(a.org.globalUID)
+                    if(a.prs) prs(a.prs.globalUID)
+                    street1(a.street_1)
+                    street2(a.street_2)
+                    zipcode(a.zipcode)
+                    city(a.city)
+                    pob(a.pob)
+                    pobZipcode(a.pobZipcode)
+                    pobCity(a.pobCity)
+                    if(a.state) {
+                      state {
+                        rdc(a.state.owner.desc)
+                        rdv(a.state.value)
+                      }
+                    }
+                    if(a.country) {
+                      countryElem {
+                        rdc(a.country.owner.desc)
+                        rdv(a.country.value)
+                      }
+                    }
+                    type {
+                      rdc(a.type.owner.desc)
+                      rdv(a.type.value)
+                    }
+                    if(a.name) name(a.name)
+                    if(a.additionFirst) additionFirst(a.additionFirst)
+                    if(a.additionSecond) additionSecond(a.additionSecond)
+                  }
+                }
+              }
+              contacts {
+                Contact.executeQuery('select c from Contact c where c.prs in :prsList or c.org in :orgList',[prsList:newPersonData,orgList:newOrgData]).each { c ->
+                  contact {
+                    if(c.org) org(c.org.globalUID)
+                    if(c.prs) prs(c.prs.globalUID)
+                    content(c.content)
+                    contentType {
+                      rdc(c.contentType.owner.desc)
+                      rdv(c.contentType.value)
+                    }
+                    type {
+                      rdc(c.type.owner.desc)
+                      rdv(c.type.value)
+                    }
+                  }
+                }
+              }*/
+            }
+          }
+          exportReport.append(newOrgData.join("</li><li>")+"</ul></p>")
+          exportReport.append("<p>Folgende Nutzer wurden erfolgreich exportiert: <ul><li>"+newUserData.join("</li><li>")+"</ul></p>")
+          flash.message = exportReport.toString()
+        }
+        else {
+          flash.error = "Es liegen keine Daten zum Export vor!"
+        }
+      }
     }
-    out.close()
+    else {
+      log.error("Basic data dump directory missing - PANIC!")
+      flash.error = "Das Verzeichnis der Exportdaten fehlt! Bitte anlegen und Datenbestand kontrollieren, ggf. neuen Basisdatensatz anlegen"
+    }
+    redirect controller: 'myInstitution', action: 'dashboard'
   }
 
   @Secured(['ROLE_ADMIN'])
   def orgsImport() {
-
-    if ( request.method=="POST" ) {
-      def upload_mime_type = request.getFile("orgs_file")?.contentType
-      def upload_filename = request.getFile("orgs_file")?.getOriginalFilename()
-      def input_stream = request.getFile("orgs_file")?.inputStream
-
-      CSVReader r = new CSVReader( new InputStreamReader(input_stream, java.nio.charset.Charset.forName('UTF-8') ) )
-      String[] nl;
-      def first = true
-      while ((nl = r.readNext()) != null) {
-        if ( first ) {
-          first = false; // Skip header
-        }
-        else {
-          
-          def candidate_identifiers = [
-            'jusplogin':nl[3],
-            'JC':nl[4],
-            'Ringold':nl[5],
-            'UKAMF':nl[6],
-            'ISIL':nl[7]
-          ]
-          log.debug("Load ${nl[0]}, ${nl[1]}, ${nl[2]} ${candidate_identifiers} ${nl[8]}");
-          Org.lookupOrCreate(nl[0],
-                             nl[1],
-                             nl[2],
-                             candidate_identifiers,
-                             nl[8].replace('-', ','))
-        }
+    File basicDataDir = new File(grailsApplication.config.basicDataPath)
+    List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
+      @Override
+      boolean accept(File dir, String name) {
+        return name.matches("${grailsApplication.config.orgDumpFileNamePattern}.*")
       }
+    })
+    if(dumpFiles.size() > 0) {
+      dumpFiles.toSorted { f1, f2 ->
+        f1.lastModified() <=> f2.lastModified()
+      }
+      File lastDump = dumpFiles.last()
+      apiService.setupBasicData(lastDump)
+      flash.message = "Daten wurden erfolgreich aufgesetzt!"
     }
+    else {
+      flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
+    }
+    redirect controller: 'myInstitution', action: 'dashboard'
   }
 
   @Secured(['ROLE_ADMIN'])
@@ -841,16 +1244,6 @@ class AdminController extends AbstractDebugController {
   }
 
     @Secured(['ROLE_ADMIN'])
-  def financeImport() {
-    def result = [:];
-    if (request.method == 'POST'){
-      def input_stream = request.getFile("tsvfile")?.inputStream
-      //result.loaderResult = tsvSuperlifterService.load(input_stream,grailsApplication.config.financialImportTSVLoaderMappings,params.dryRun=='Y'?true:false)
-    }
-    result
-  }
-
-    @Secured(['ROLE_ADMIN'])
     def manageOrganisations() {
         Map<String, Object> result = [:]
 
@@ -863,6 +1256,8 @@ class AdminController extends AbstractDebugController {
             else if (params.apiLevel == 'Kein Zugriff') {
                 ApiToolkit.removeApiLevel(target)
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'deleteCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
@@ -870,15 +1265,17 @@ class AdminController extends AbstractDebugController {
             if (oss != OrgSettings.SETTING_NOT_FOUND) {
                 oss.delete()
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
-            def oss = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
+            def osObj = OrgSettings.get(target, OrgSettings.KEYS.CUSTOMER_TYPE)
 
-            if (oss != OrgSettings.SETTING_NOT_FOUND) {
-
+            if (osObj != OrgSettings.SETTING_NOT_FOUND) {
+                OrgSettings oss = (OrgSettings) osObj
                 // ERMS-1615
                 if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                     log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
@@ -909,27 +1306,31 @@ class AdminController extends AbstractDebugController {
                     /*
                       todo: IGNORED for 0.20
 
-                    conSubscriberRoles.each{ role ->
-                        if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
-                            OrgRole newRole = new OrgRole(
-                                  org: role.org,
-                                  sub: role.sub,
-                                  roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
-                            )
-                            newRole.save()
-
-                            // keep consortia type
-                            //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
-                            //role.sub.save()
-                        }
                     }*/
+                    conSubscriberRoles.each { role ->
+                      if (role.sub.getCalculatedType() == Subscription.CALCULATED_TYPE_PARTICIPATION) {
+                        OrgRole newRole = new OrgRole(
+                                org: role.org,
+                                sub: role.sub,
+                                roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                        )
+                        newRole.save()
+
+                        // keep consortia type
+                        //role.sub.type = RDStore.SUBSCRIPTION_TYPE_LOCAL
+                        //role.sub.save()
+                      }
+                    }
                 }
                 oss.roleValue = customerType
                 oss.save(flush:true)
+
             }
             else {
                 OrgSettings.add(target, OrgSettings.KEYS.CUSTOMER_TYPE, customerType)
             }
+            target.lastUpdated = new Date()
+            target.save(flush:true)
         }
         else if (params.cmd == 'changeGascoEntry') {
           Org target = genericOIDService.resolveOID(params.target)
@@ -945,6 +1346,8 @@ class AdminController extends AbstractDebugController {
               OrgSettings.add(target, OrgSettings.KEYS.GASCO_ENTRY, option)
             }
           }
+          target.lastUpdated = new Date()
+          target.save(flush:true)
         }
 
         result.orgList = Org.findAll()

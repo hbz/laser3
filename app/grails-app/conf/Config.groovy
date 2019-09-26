@@ -453,6 +453,8 @@ environments {
 
 basicDataPath = documentStorageLocation+'/basic_data_dumps/'
 basicDataFileName = 'basicDataDump.xml'
+orgDumpFileNamePattern = 'orgDump_'
+orgDumpFileExtension = '.xml'
 
 subscriptionTransforms = [
     'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],

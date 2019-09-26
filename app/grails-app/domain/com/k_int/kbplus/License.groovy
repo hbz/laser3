@@ -13,9 +13,11 @@ import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
+import java.text.SimpleDateFormat
 
 class License
         extends AbstractBaseDomain
@@ -809,5 +811,21 @@ AND lower(l.reference) LIKE (:ref)
         )
 
         copy
+    }
+    String dropdownNamingConvention() {
+        String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
+
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, LocaleContextHolder.getLocale()))
+        String period = startDate ? sdf.format(startDate) : ''
+        period = endDate ? period + ' - ' + sdf.format(endDate) : ''
+        period = period ? '(' + period + ')' : ''
+
+        String result = ''
+        result += reference + " - " + statusString + " " + period
+        if (TemplateSupport.CALCULATED_TYPE_PARTICIPATION == getCalculatedType()) {
+            result += " - " + messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
+        }
+
+        return result
     }
 }

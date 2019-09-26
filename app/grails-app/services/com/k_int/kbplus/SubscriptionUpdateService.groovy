@@ -4,6 +4,7 @@ import com.k_int.ClassUtils
 import de.laser.SystemEvent
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
+import de.laser.interfaces.TemplateSupport
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONElement
 
@@ -164,6 +165,7 @@ class SubscriptionUpdateService extends AbstractLockableService {
      * Triggered from the Yoda menu
      * Loops through all IssueEntitlements and checks if there are inconcordances with their respective TIPPs. If so, and, if there is no pending change registered,
      * a new pending change is registered
+     * !!!! BEWARE !!!! The modifications for ERMS-1581 are NOT implemented! This method does thus not work!
      */
     void retriggerPendingChanges() {
         Org contextOrg = contextService.org
@@ -221,6 +223,37 @@ class SubscriptionUpdateService extends AbstractLockableService {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Triggered from the Yoda menu
+     * Loops through all {@link Doc}ument objects without owner but with a {@link DocContext} for a {@link Subscription} or {@link License} and assigns the ownership
+     * to the respective subscriber/licensee.
+     */
+    void assignNoteOwners() {
+        Set<DocContext> docsWithoutOwner = DocContext.executeQuery('select dc from DocContext dc where dc.owner.owner = null and (dc.subscription != null or dc.license != null)')
+        docsWithoutOwner.each { DocContext dc ->
+            Org documentOwner
+            if(dc.subscription) {
+                if(dc.isShared) {
+                    if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL)
+                        documentOwner = dc.subscription.getConsortia()
+                    else if(dc.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE)
+                        documentOwner = dc.subscription.getCollective()
+                }
+                else
+                    documentOwner = dc.subscription.getSubscriber()
+                log.debug("now processing note ${dc.owner.id} for subscription ${dc.subscription.id} whose probable owner is ${documentOwner}")
+            }
+            else if(dc.license) {
+                documentOwner = dc.license.getLicensee()
+                log.debug("now processing note ${dc.owner.id} for license ${dc.license.id} whose probable owner is ${documentOwner}")
+            }
+            if(documentOwner) {
+                dc.owner.owner = documentOwner
+                dc.owner.save()
             }
         }
     }

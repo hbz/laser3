@@ -99,10 +99,10 @@
                                     <g:message code="financials.tab.consCosts"/>
                                 </div>
                             </g:if>
-                            <g:elseif test="${showView.equals("coll") || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
-                                <g:if test="${!fixedSubscription}">
-                                    <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
-                                </g:if>
+                            <g:elseif test="${showView in ["coll","collAsSubscr"] || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
+                                <div class="item" data-tab="subscr">
+                                    ${message(code:'financials.tab.subscrCosts')}
+                                </div>
                                 <div class="item" data-tab="coll">
                                     <g:message code="financials.tab.collCosts"/>
                                 </div>
@@ -124,13 +124,11 @@
                                 <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers]"/>
                             </div>
                         </g:if>
-                        <g:elseif test="${showView.equals("coll") || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
-                            <g:if test="${!fixedSubscription}">
-                                <div data-tab="subscr" class="ui bottom attached tab">
-                                    <br />
-                                    <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr]"/>
-                                </div>
-                            </g:if>
+                        <g:elseif test="${showView in ["coll","collAsSubscr"] || (showView.equals("consAtSubscr") && accessService.checkPerm("ORG_INST_COLLECTIVE"))}">
+                            <div data-tab="subscr" class="ui bottom attached tab">
+                                <br />
+                                <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr]"/>
+                            </div>
                             <div data-tab="coll" class="ui bottom attached tab">
                                 <br />
                                 <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: coll, orgRoles: financialData.consSubscribers]"/>

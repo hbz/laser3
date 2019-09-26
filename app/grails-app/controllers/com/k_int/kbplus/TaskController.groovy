@@ -45,7 +45,7 @@ class TaskController extends AbstractDebugController {
 				result
 				break*/
 			case 'POST':
-				def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, endDate: params.endDate)
+				def taskInstance = new Task(title: params.title, description: params.description, status: params.status.id, systemCreateDate: new Date(), endDate: params.endDate)
 				taskInstance.creator = contextService.getUser()
 				taskInstance.createDate = new Date()
 
@@ -57,19 +57,19 @@ class TaskController extends AbstractDebugController {
 					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()
 				}
 
-				if (params.linkto == "license" && params.license) {
+				if (params.linkto == "license" && params.license && params.license != 'null') {
 					taskInstance.license = License.get(params.license) ?: null
 				}
-				else if (params.linkto == "pkg" && params.pkg) {
+				else if (params.linkto == "pkg" && params.pkg && params.pkg != 'null') {
 					taskInstance.pkg = Package.get(params.pkg) ?: null
 				}
-				else if (params.linkto == "subscription" && params.subscription) {
+				else if (params.linkto == "subscription" && params.subscription && params.subscription != 'null') {
 					taskInstance.subscription = Subscription.get(params.subscription) ?: null
 				}
-				else if (params.linkto == "org" && params.org) {
+				else if (params.linkto == "org" && params.org && params.org != 'null') {
 					taskInstance.org = Org.get(params.org) ?: null
 				}
-				else if (params.linkto == "surveyConfig" && params.surveyConfig) {
+				else if (params.linkto == "surveyConfig" && params.surveyConfig && params.surveyConfig != 'null') {
 					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
 				}
 

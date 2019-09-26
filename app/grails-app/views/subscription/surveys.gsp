@@ -43,7 +43,7 @@
                                   title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
                 <g:sortableColumn params="${params}" property="surInfo.endDate"
                                   title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-
+                <th>${message(code: 'surveyInfo.type.label')}</th>
                 <th>${message(code: 'surveyInfo.finished')}</th>
                 <th>${message(code: 'surveyInfo.finishedDate')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
@@ -100,6 +100,9 @@
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${surveyInfo?.endDate}"/>
                     </td>
+                    <td>
+                        ${surveyInfo?.type?.getI10n('value')}
+                    </td>
 
                     <td class="center aligned">
 
@@ -133,7 +136,7 @@
                     </td>
                     <td class="x">
 
-
+                        <g:if test="${!surveyConfig?.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyConfigsInfo" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]"
@@ -141,6 +144,17 @@
                                     <i class="write icon"></i>
                                 </g:link>
                             </span>
+                        </g:if>
+
+                        <g:if test="${surveyConfig?.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="subscription" action="renewEntitlementsWithSurvey" params="${[targetSubscriptionId: params.id]}"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
 
                     </td>
                 </tr>

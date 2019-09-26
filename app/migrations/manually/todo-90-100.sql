@@ -1,4 +1,4 @@
-
+﻿
 -- 2019-08-01
 -- migrate refdataValues (category='YN') to boolean
 
@@ -97,7 +97,7 @@
 -- ERMS-1615
 -- remove subscription type collective (AFTER yoda-triggered migration)
 
-DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
+-- DELETE FROM refdata_value WHERE rdv_value = 'Collective Subscription';
 
 
 -- 2019-08-22
@@ -203,3 +203,5 @@ update survey_config_properties set surconpro_survey_property_fk = (select surpr
 
 DELETE FROM survey_property where surpro_name = 'Continue to license';
 DELETE FROM survey_property where surpro_name = 'Teilnahme';
+
+

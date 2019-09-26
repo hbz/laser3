@@ -45,7 +45,7 @@
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt><g:message code="accessPoint.range.plural" default="Addressbereiche" /></dt>
+                                    <dt><g:message code="accessPoint.range.plural" default="Adressbereiche" /></dt>
                                     <dd></dd>
                                 </dl>
                                 <div class="fields three">
@@ -150,7 +150,7 @@
                 </h5>
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform" method="POST">
                     <g:hiddenField name="id" value="${accessPoint?.id}" />
-                    <table class="ui celled la-table table compact collapsing ignore-floatThead">
+                    <table class="ui celled la-table table compact collapsing la-ignore-fixed">
                         <thead>
                         <tr>
                             <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
@@ -185,7 +185,7 @@
                 </g:form>
               <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkSubscription']" id="linkLicense" method="POST">
                 <g:hiddenField name="id" value="${accessPoint?.id}" />
-                <table  class="ui celled collapsing la-table table compact ignore-floatThead">
+                <table  class="ui celled collapsing la-table table compact la-ignore-fixed">
                   <thead>
                   <tr>
                     <g:sortableColumn property="license" title="${message(code: 'subscription.label', default: 'License')}" />

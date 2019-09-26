@@ -894,3 +894,12 @@
 .ui.grey.segment:not(.inverted) {
   border-top: 1px solid #d3dae3 !important;
 }
+
+
+/***********************************
+        Footer Segment
+***********************************/
+
+.ui.segment.la-footer {
+  padding: 3em 1em;
+}

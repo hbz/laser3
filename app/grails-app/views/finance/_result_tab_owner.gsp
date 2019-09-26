@@ -2,7 +2,7 @@
 <%@page import="de.laser.helper.RDStore"%>
 <laser:serviceInjection />
 
-<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
+<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">

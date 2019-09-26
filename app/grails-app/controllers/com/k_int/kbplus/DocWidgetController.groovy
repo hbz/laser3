@@ -28,6 +28,7 @@ class DocWidgetController extends AbstractDebugController {
                         title: params.licenseNoteTitle,
                         content: params.licenseNote,
                         type: RefdataValue.getByValueAndCategory('Note', 'Document Type'),
+                        owner: contextService.org,
                         user: user).save()
 
 

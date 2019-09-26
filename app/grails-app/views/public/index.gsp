@@ -3,6 +3,10 @@
 <head>
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser', default: 'LAS:eR')}</title>
+    <script>
+        var gspLocale = "${message(code:'default.locale.label')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+    </script>
 
 </head>
 
@@ -156,76 +160,9 @@
             </div>
         </div>
 
+        <g:render template="templates/footer" />
 
 
-        <div class="ui inverted vertical footer segment ">
-            <div class="ui container">
-                <div class="ui stackable inverted divided equal height stackable grid center aligned">
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">
-                                ${message(code: 'landingpage.footer.1.head')}
-                            </h4>
-
-                            <div class="ui inverted link list">
-                                <a class="item" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/ueber-uns/kontakt/anreise">${message(code: 'landingpage.footer.1.link2')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.1.link3')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/datenschutz">${message(code:'dse')}</a>
-                            </div>
-                        </div>
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">
-                            ${message(code: 'landingpage.footer.2.head')}
-                            </h4>
-
-                            <div class="ui inverted link list">
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" target="_blank">${message(code: 'landingpage.footer.2.link1')}</a>
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank" >${message(code: 'landingpage.footer.2.link2')}</a>
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Blog" target="_blank" >${message(code: 'landingpage.footer.2.link3')}</a>
-                            </div>
-                        </div>
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
-                            <div class="ui inverted link list">
-
-                                <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
-                                    Version: ${grailsApplication.metadata['app.version']}
-                                </a>
-
-                                <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                                    <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
-                                        Branch: ${grailsApplication.metadata['repository.branch']}
-                                    </a>
-                                </g:if>
-
-                                <div class="item">
-                                    <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                                        <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
-                                            Build: ${grailsApplication.metadata['app.buildDate']}
-                                        </a>
-                                    </g:if>
-                                    <g:else>
-                                        Build: ${grailsApplication.metadata['app.buildDate']}
-                                    </g:else>
-                                </div>
-
-                                <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                                <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
-                            </div>
-                        </div>
-
-                </div>
-
-                <div class="ui center aligned segment inverted">
-                    <p>
-                        © 2019 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
-                    </p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

@@ -222,13 +222,6 @@
                             <g:if test="${s.packages.size() > 10}">
                                 <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                             </g:if>
-                            <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
-                                <i>
-                                    ${message(code: 'myinst.currentSubscriptions.no_links', default: 'None currently, Add packages via')}
-                                    <g:link controller="subscription" action="linkPackage"
-                                            id="${s.id}">${message(code: 'subscription.details.linkPackage.label', default: 'Link Package')}</g:link>
-                                </i>
-                            </g:if>
                         <!-- packages -->
                         </td>
                     <%--

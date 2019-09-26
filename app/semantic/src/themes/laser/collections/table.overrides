@@ -29,14 +29,14 @@
 
 .ui.sortable.table thead th {
   cursor: default;
-  color: @grey;
+  color: #515151;
 }
 
 
 /* Hover */
 .ui.sortable.table thead th:hover {
   background: #F2F2F2;
-  color: @grey;
+  color: @black;
 }
 .ui.sortable.table thead th.sortable:hover {
   background:#F2F2F2;
@@ -55,14 +55,14 @@
       padding-right:0.9rem;
     }
     th {
-      color: gray;
+      color: #515151;
       font-size: 0.8rem;
       text-transform: uppercase;
       a {
         //display: inline-block;
         //padding: 0.5rem 0;
         cursor: pointer;
-        color: gray;
+        color: #515151;
       }
     }
     th:not(.sortable){
@@ -227,8 +227,8 @@
 }
 
 // Fixed Table Header
-.ui.table:not(.ignore-floatThead) thead tr:first-child > th,
-.ui.table:not(.ignore-floatThead) thead tr:nth-child(2) > th {
+.ui.table:not(.la-ignore-fixed) thead tr:first-child > th,
+.ui.table:not(.la-ignore-fixed) thead tr:nth-child(2) > th {
   position: sticky !important;
   z-index: 2;
 }

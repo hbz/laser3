@@ -1,11 +1,13 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.DashboardDueDate
+//import de.laser.TaskService //unused for quite a long time
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.*
 import grails.converters.JSON
@@ -24,6 +26,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.FieldError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -36,9 +39,9 @@ import java.text.SimpleDateFormat
 class MyInstitutionController extends AbstractDebugController {
     def dataSource
     def springSecurityService
-    def ESSearchService
+    def userService
     def genericOIDService
-    def factService
+    def instAdmService
     def exportService
     def escapeService
     def transformerService
@@ -869,7 +872,7 @@ from License as l where (
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label')]
         boolean asCons = false
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+        if(accessService.checkPerm('ORG_INST_COLLECTIVE, ORG_CONSORTIUM')) {
             asCons = true
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
@@ -880,7 +883,7 @@ from License as l where (
         List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
         List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
         List allIdentifiers = IdentifierOccurrence.findAllBySubIsNotNull()
-        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and ci.costItemStatus != :ciDeleted and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
+        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
         allProviders.each { provider ->
             Set subProviders
             if(providers.get(provider.sub)) {
@@ -1877,7 +1880,8 @@ from License as l where (
                     response.contentType = "text/csv"
 
                     def out = response.outputStream
-                    exportService.StreamOutTitlesCSV(out, result.titles)       RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
+                    exportService.StreamOutTitlesCSV(out, result.titles)
+                    RefdataValue del_sub = RDStore.SUBSCRIPTION_DELETED
                     out.close()
                 }
                 /*json {
@@ -2782,6 +2786,97 @@ AND EXISTS (
       result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def userList() {
+        Map result = setResultGenerics()
+        //overwrite
+        result.editable = result.user.hasRole('ROLE_ADMIN') || result.user.hasAffiliation('INST_ADM')
+
+        Map filterParams = params
+        filterParams.status = UserOrg.STATUS_APPROVED
+        filterParams.org = result.institution
+
+        result.users = userService.getUserSet(filterParams)
+        result.breadcrumb = '/organisation/breadcrumb'
+        result.titleMessage = "${result.institution} - ${message(code:'org.nav.users')}"
+        result.inContextOrg = true
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
+        result.orgInstance = result.institution
+        result.navPath = "/organisation/nav"
+        result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
+        result.multipleAffiliationsWarning = true
+        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
+        result.tableConfig = [editable:result.editable, editor:result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')]
+        result.total = result.users.size()
+
+        render view: '/templates/user/_list', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def userEdit() {
+        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, institution: contextService.org, manipulateAffiliations: true]
+        result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
+                [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+        result.availableComboDeptOrgs << result.institution
+        result.availableOrgRoles = Role.findAllByRoleType('user')
+
+        render view: '/templates/user/_edit', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def userCreate() {
+        Map result = setResultGenerics()
+        result.orgInstance = result.institution
+        result.editor = result.user
+        result.inContextOrg = true
+        result.breadcrumb = '/organisation/breadcrumb'
+
+        result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
+        result.availableOrgs.add(result.orgInstance)
+
+        result.availableOrgRoles = Role.findAllByRoleType('user')
+
+        render view: '/templates/user/_create', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def processUserCreate() {
+        def success = userService.addNewUser(params,flash)
+        //despite IntelliJ's warnings, success may be an array other than the boolean true
+        if(success instanceof User) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            redirect action: 'userEdit', id: success.id
+        }
+        else if(success instanceof List) {
+            flash.error = success.join('<br>')
+            redirect action: 'userCreate'
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def addAffiliation() {
+        Map result = userService.setResultGenerics(params)
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect action: 'userEdit', id: params.id
+            return
+        }
+
+        Org org = Org.get(params.org)
+        Role formalRole = Role.get(params.formalRole)
+
+        if (result.user && org && formalRole) {
+            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+        }
+
+        redirect action: 'userEdit', id: params.id
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -2902,36 +2997,22 @@ AND EXISTS (
         }
 
         DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
-        def query = filterService.getTaskQuery(params, sdFormat)
+        def queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
         result.taskInstanceCount = result.taskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.taskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
-            }
-        }
-        result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        //chop everything off beyond the user's pagination limit
-        if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
-            try {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
-            }
-            catch (IndexOutOfBoundsException e) {
-                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, result.myTaskInstanceCount)
-            }
-        }
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
+        result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         def preCon = taskService.getPreconditions(contextService.getOrg())
         result << preCon
 
         log.debug(result.taskInstanceList)
+        log.debug(result.myTaskInstanceList)
         result
     }
 

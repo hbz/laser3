@@ -8,6 +8,7 @@ import de.laser.AuditConfig
 import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.IssueEntitlementCoverage
+import de.laser.domain.PriceItem
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
@@ -1041,6 +1042,16 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map renewEntitlementsWithSurvey() {
+        params.id = params.targetSubscriptionId
+        params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
+        def result = loadDataFor_PackagesEntitlements()
+        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def previous() {
         previousAndExpected(params, 'previous');
     }
@@ -1213,7 +1224,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
 
@@ -1275,9 +1286,10 @@ class SubscriptionController extends AbstractDebugController {
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
+            return
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         result.parentLicense = result.parentSub.owner
 
@@ -1582,10 +1594,13 @@ class SubscriptionController extends AbstractDebugController {
         params.remove('filterPropDef')
 
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscriptionInstance.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
-        result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
+        if(result.subscriptionInstance.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE && result.institution.id == result.subscription.getCollective().id)
+            result.propList = result.parentSub.privateProperties.type
+        else
+            result.propList = result.parentSub.privateProperties.type + result.parentSub.customProperties.type
 
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
@@ -1634,7 +1649,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         //Sortieren
@@ -1684,7 +1699,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -1781,7 +1796,7 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
         def change = []
@@ -1852,7 +1867,7 @@ class SubscriptionController extends AbstractDebugController {
 
         result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
 
-        result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
+        result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
 
@@ -2004,6 +2019,8 @@ class SubscriptionController extends AbstractDebugController {
         RefdataValue role_sub_coll = OR_SUBSCRIPTION_COLLECTIVE
         RefdataValue role_sub_hidden = OR_SUBSCRIBER_CONS_HIDDEN
         RefdataValue role_lic = OR_LICENSEE_CONS
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            role_lic = OR_LICENSEE_COLL
         RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
 
         RefdataValue role_provider = OR_PROVIDER
@@ -2040,8 +2057,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 members.each { cm ->
 
-                    //u.f.n., it is not clear, whether ERMS-1194 foresees also the license transmission
-                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if(accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
                         def postfix = (members.size() > 1) ? 'Teilnehmervertrag' : (cm.shortname ?: cm.name)
 
                         if (subLicense) {
@@ -2060,7 +2076,7 @@ class SubscriptionController extends AbstractDebugController {
                                 licenseCopy = institutionsService.copyLicense(
                                         subLicense, subLicenseParams, InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
                             }
-                            else if (params.generateSlavedLics == 'reference' && !licenseCopy) {
+                            else if ((params.generateSlavedLics == 'reference' || params.attachToParticipationLic == "true") && !licenseCopy) {
                                 licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
                             }
 
@@ -2324,6 +2340,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
         //result.user = User.get(springSecurityService.principal.id)
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
@@ -2338,11 +2355,11 @@ class SubscriptionController extends AbstractDebugController {
                     checked.each { k,v ->
                         if(v == 'checked') {
                             try {
-                                if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                    if(subscriptionService.addEntitlement(result.subscriptionInstance,k,issueEntitlementCandidates?.get(k),Boolean.valueOf(params.uploadPriceInfo)))
+                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                    if(subscriptionService.addEntitlement(result.subscriptionInstance, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
                                         log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                                 }
-                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false)) {
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false, ie_accept_status)) {
                                     log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
                                 }
                                 addTitlesCount++
@@ -2361,12 +2378,12 @@ class SubscriptionController extends AbstractDebugController {
             }
             else if(params.singleTitle) {
                 try {
-                    if(Boolean.valueOf(params.preselectCoverageDates) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,issueEntitlementCandidates?.get(params.singleTitle),Boolean.valueOf(params.uploadPriceInfo)))
+                    if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
+                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
                     }
-                    else if(subscriptionService.addEntitlement(result.subscriptionInstance,params.singleTitle,null,false))
+                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
 
@@ -2410,7 +2427,11 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        if(params.surveyFunction){
+            redirect action: 'renewEntitlementsWithSurvey', model: [targetSubscriptionId: result.subscriptionInstance?.id]
+        }else {
+            redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -2427,10 +2448,12 @@ class SubscriptionController extends AbstractDebugController {
         List tippsToAdd = params."tippsToAdd".split(",")
         List tippsToDelete = params."tippsToDelete".split(",")
 
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false))
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance,tipp,null,false, ie_accept_status))
                         log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
                 }
                 catch (EntitlementCreationException e) {
@@ -2452,6 +2475,74 @@ class SubscriptionController extends AbstractDebugController {
         }
         else {
             log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'index', id: params.id
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processRenewEntitlementswithSurvey() {
+        log.debug("renewEntitlements ...")
+        params.id = Long.parseLong(params.id)
+        params.packageId = Long.parseLong(params.packageId)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        List tippsToAdd = params."tippsToAdd".split(",")
+        List tippsToDelete = params."tippsToDelete".split(",")
+
+        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+
+        if(result.subscriptionInstance) {
+            tippsToAdd.each { tipp ->
+                try {
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status))
+                        log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
+                }
+                catch (EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+            }
+            tippsToDelete.each { tipp ->
+                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
+                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+            }
+            if(params.process == "finalise") {
+                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
+                sp.finishDate = new Date()
+                if(!sp.save()) {
+                    flash.error = sp.getErrors()
+                }
+                else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
+            }
+        }
+        else {
+            log.error("Unable to locate subscription instance")
+        }
+        redirect action: 'index', id: params.id
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def addEmptyPriceItem() {
+        if(params.ieid) {
+            IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+            if(ie) {
+                PriceItem pi = new PriceItem(issueEntitlement: ie)
+                pi.setGlobalUID()
+                if(!pi.save()) {
+                    log.error(pi.errors)
+                    flash.error = message(code:'subscription.details.addEmptyPriceItem.priceItemNotSaved')
+                }
+            }
+            else {
+                flash.error = message(code:'subscription.details.addEmptyPriceItem.issueEntitlementNotFound')
+            }
+        }
+        else {
+            flash.error = message(code:'subscription.details.addEmptyPriceItem.noIssueEntitlement')
         }
         redirect action: 'index', id: params.id
     }
@@ -2521,6 +2612,8 @@ class SubscriptionController extends AbstractDebugController {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
                     dTask.delete(flush: true)
+                    if(params.returnToShow)
+                        redirect action: 'show', id: params.id
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
@@ -2531,7 +2624,15 @@ class SubscriptionController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
+
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance)
+        result.taskInstanceCount = result.taskInstanceList?.size()
+        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscriptionInstance)
+        result.myTaskInstanceCount = result.myTaskInstanceList?.size()
+        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
@@ -3641,6 +3742,7 @@ class SubscriptionController extends AbstractDebugController {
                             if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
                                 Task newTask = new Task()
                                 InvokerHelper.setProperties(newTask, task.properties)
+                                newTask.systemCreateDate = new Date()
                                 newTask.subscription = newSub2
                                 newTask.save(flush: true)
                             }
@@ -4538,6 +4640,7 @@ class SubscriptionController extends AbstractDebugController {
 
                         Task newTask = new Task()
                         InvokerHelper.setProperties(newTask, task.properties)
+                        newTask.systemCreateDate = new Date()
                         newTask.subscription = newSubscriptionInstance
                         newTask.save(flush: true)
                     }
@@ -4787,11 +4890,15 @@ class SubscriptionController extends AbstractDebugController {
         result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
         if(result.subscription.getCollective()?.id == contextService.getOrg()?.id &&
-                result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE &&
-                ! (params.action in ['addMembers', 'processAddMembers'])
+                (result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ||
+                result.subscription.instanceOf?.getConsortia()) &&
+                ! (params.action in ['addMembers', 'processAddMembers',
+                                     'linkLicenseMembers', 'processLinkLicenseMembers',
+                                     'linkPackagesMembers', 'processLinkPackagesMembers',
+                                     'propertiesMembers', 'processPropertiesMembers',
+                                     'subscriptionPropertiesMembers', 'processSubscriptionPropertiesMembers'])
         ) {
             result.editable = false
-
         }
 
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
@@ -4806,7 +4913,7 @@ class SubscriptionController extends AbstractDebugController {
 
     static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription?.getConsortia()?.id == contextOrg?.id) && subscription.getCalculatedType() in
-                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL])
+                [TemplateSupport.CALCULATED_TYPE_CONSORTIAL, TemplateSupport.CALCULATED_TYPE_ADMINISTRATIVE])
     }
 
     static boolean showCollectiveFunctions(Org contextOrg, Subscription subscription) {

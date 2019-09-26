@@ -131,7 +131,7 @@ class Org
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk'
+            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
@@ -623,11 +623,11 @@ class Org
     }
 
     boolean isConsortiaMember() {
-        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM)
     }
 
     boolean isDepartment() {
-        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
 
     // Only for ISIL, EZB, WIBID
@@ -691,6 +691,25 @@ class Org
             check = true
         }
         check
+    }
+    String dropdownNamingConvention(Org contextOrg){
+        String result = ''
+        if (RDStore.OT_INSTITUTION == contextOrg?.getCustomerType()){
+            if (name) {
+                result += name
+            }
+            if (shortname){
+                result += ' (' + shortname + ')'
+            }
+        } else {
+            if (sortname) {
+                result += sortname
+            }
+            if (name) {
+                result += ' (' + name + ')'
+            }
+        }
+        result
     }
 
 }

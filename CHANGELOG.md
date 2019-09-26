@@ -1,3 +1,7 @@
+1.0-RC
+
+- TODO
+
 0.20.7
 
 -hotfix: show latecomers on renewal for survey

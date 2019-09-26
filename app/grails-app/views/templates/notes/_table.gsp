@@ -54,7 +54,7 @@
                             </g:else>
                         </g:if>
 
-                        <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR') && ! docctx.sharedFrom}">
+                        <g:if test="${! docctx.sharedFrom}">
                             <a onclick="noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>

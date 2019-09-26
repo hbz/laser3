@@ -30,7 +30,7 @@ class FinanceService {
      * @param subscription - the subscription for which the financial data is retrieved. Its type determines the views displayed on return.
      * @return a LinkedHashMap with the cost items for each tab to display
      */
-    Map getCostItemsForSubscription(Subscription sub,params,long max,int offset) {
+    Map getCostItemsForSubscription(Subscription sub,params,int max,int offset) {
         Org org = contextService.org
         LinkedHashMap result = [own:[:],cons:[:],coll:[:],subscr:[:]]
         int ownOffset = 0
@@ -38,15 +38,15 @@ class FinanceService {
         int subscrOffset = 0
         switch(params.view) {
             case "own": ownOffset = offset
-                if(params.max) max = Long.parseLong(params.max)
+                if(params.max) max = Integer.parseInt(params.max)
                 break
             case "cons":
             case "coll":
             case "consAtSubscr": consOffset = offset
-                if(params.max) max =  Long.parseLong(params.max)
+                if(params.max) max =  Integer.parseInt(params.max)
                 break
             case "subscr": subscrOffset = offset
-                if(params.max) max = Long.parseLong(params.max)
+                if(params.max) max = Integer.parseInt(params.max)
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
@@ -64,7 +64,7 @@ class FinanceService {
         }
         List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub = :sub '+filterOwnQuery[0]+ownSort,[owner:org,sub:sub]+filterOwnQuery[1])
         result.own.costItems = []
-        long limit = ownOffset+max
+        int limit = ownOffset+max
         if(limit > ownCostItems.size())
             limit = ownCostItems.size()
         for(int i = ownOffset;i < limit;i++) {
@@ -140,6 +140,57 @@ class FinanceService {
                     result.cons.costItems = costItems
                     result.cons.count = count
                     result.cons.sums = sums
+                }
+                break
+            case CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE:
+                String consSort
+                if(params.consSort)
+                    consSort = " order by ${params.sort} ${params.order}"
+                else
+                    consSort = " order by sortname asc "
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub.instanceOf,roleTypes:[OR_SUBSCRIBER_CONS,OR_SUBSCRIBER_CONS_HIDDEN]]+filterConsQuery[1])
+                List collCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType in (:roleTypes)) as sortname from CostItem as ci where ci.owner = :owner and ci.surveyOrg = null and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+consSort,[owner:org,sub:sub,roleTypes:[OR_SUBSCRIBER_COLLECTIVE]]+filterConsQuery[1])
+                result.cons.costItems = consCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
+                result.coll.costItems = collCostItems.collect{row -> row[0]}.drop(consOffset).take(max)
+                result.cons.count = consCostItems.size()
+                result.coll.count = collCostItems.size()
+                if(result.cons.count > 0){
+                    result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
+                }
+                if(result.coll.count > 0){
+                    result.coll.sums = calculateResults(collCostItems.collect { row -> row[0]})
+                }
+                String visibility = ""
+                if(org.id != sub.getCollective()?.id) {
+                    visibility = " and ci.isVisibleForSubscriber = true"
+                }
+                String subscrSort
+                if(params.subscrSort)
+                    subscrSort = " order by ${params.sort} ${params.order}"
+                else
+                    subscrSort = ""
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner in :owner and ci.surveyOrg = null and ci.sub = :sub'+visibility+filterSubscrQuery[0]+subscrSort,[owner:[sub.getConsortia()],sub:sub]+filterSubscrQuery[1])
+                List costItems = []
+                limit = subscrOffset+max
+                if(limit > subscrCostItems.size())
+                    limit = subscrCostItems.size()
+                for(int i = subscrOffset;i < limit;i++) {
+                    costItems.add(subscrCostItems[i])
+                }
+                int count = subscrCostItems.size()
+                Map sums = [:]
+                if(count > 0) {
+                    sums = calculateResults(subscrCostItems)
+                }
+                if(params.view in ["subscr","collAsSubscr"] || !params.view) {
+                    result.subscr.costItems = costItems
+                    result.subscr.count = count
+                    result.subscr.sums = sums
+                }
+                else if(params.view.equals("consAtSubscr")) {
+                    result.coll.costItems = costItems
+                    result.coll.count = count
+                    result.coll.sums = sums
                 }
                 break
         }

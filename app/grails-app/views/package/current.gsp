@@ -105,7 +105,7 @@
             <div class="column">
                 <%--<g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <g:if test="${editable}">
-          <table class="ui celled la-table table ignore-floatThead la-bulk-header">
+          <table class="ui celled la-table table la-ignore-fixed la-bulk-header">
 
             <thead>
             <tr>

@@ -260,7 +260,8 @@ class BootStrap {
 
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-            apiService.setupBasicData()
+            log.debug("database is probably empty; setting up essential data ..")
+            apiService.setupBasicData(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
         }
 
         //log.debug("initializeDefaultSettings ..")
@@ -299,6 +300,7 @@ class BootStrap {
         def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Konsortium'], BOOTSTRAP)
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'], BOOTSTRAP)
+        def or_licensee_coll_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Collective', en: 'Collective licensee', de: 'Institut des Lizenznehmers'], BOOTSTRAP)
 
         def or_sc_role            = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'], BOOTSTRAP)
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
@@ -2609,6 +2611,7 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'selection', en: 'Title selection Survey', de: 'Titelauswahl-Umfrage'], BOOTSTRAP)
 
         RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
         RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
@@ -2776,7 +2779,14 @@ class BootStrap {
         RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'], BOOTSTRAP)
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'], BOOTSTRAP)
         */
+	    
+	RefdataCategory.loc(RefdataCategory.IE_ACCEPT_STATUS,
+                [en: RefdataCategory.IE_ACCEPT_STATUS, de: RefdataCategory.IE_ACCEPT_STATUS], BOOTSTRAP)
 
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Fixed', de: 'Feststehend'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.IE_ACCEPT_STATUS, [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
+       
         RefdataCategory.loc('IE Access Status',
                 [en: 'IE Access Status', de: 'IE Access Status'], BOOTSTRAP)
 

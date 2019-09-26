@@ -65,7 +65,7 @@
         %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title"">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
@@ -73,14 +73,14 @@
                 </label>
 
                 <div class="ui input">
-                    <input type="text" id="q" name="q"
+                    <input type="text" id="search-title" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->
             <div class="field">
-                <label for="q">${message(code: 'default.search.identifier')}</label>
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
 
                 <div class="ui input">
                     <input type="text" id="identifier" name="identifier"
@@ -182,10 +182,11 @@
                     <div class="inline fields la-filter-inline">
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                            boolean orgHasAdministrativeSubscriptions = OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :consortium and oo.sub.administrative = true',[context:institution,consortium:RDStore.OR_SUBSCRIPTION_CONSORTIA])
                             if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
-                            if(!accessService.checkPerm("ORG_CONSORTIUM")) {
+                            if(!orgHasAdministrativeSubscriptions) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE
                             }
                         %>

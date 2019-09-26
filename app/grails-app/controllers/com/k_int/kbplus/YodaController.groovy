@@ -15,13 +15,16 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import groovy.json.JsonOutput
 import groovy.xml.MarkupBuilder
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
 import com.k_int.kbplus.OrgSettings
+import groovy.json.JsonOutput
 
+import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -50,6 +53,8 @@ class YodaController {
     def deletionService
     def surveyUpdateService
     def changeNotificationService
+    def subscriptionService
+    def exportService
 
     static boolean ftupdate_running = false
 
@@ -600,7 +605,7 @@ class YodaController {
 
             /*
             todo: IGNORED for 0.20
-
+            */
             result.subConsRoles.each{ so ->
                 Subscription sub = so[0]
                 OrgRole role 	 = so[1]
@@ -614,10 +619,27 @@ class YodaController {
                     newRole.save()
                 }
             }
-            */
+
         }
 
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def migratePackageIdentifiers() {
+        IdentifierNamespace isilPaketsigel = IdentifierNamespace.findByNs('ISIL_Paketsigel')
+        Set<Identifier> idList = Identifier.executeQuery("select io.identifier from IdentifierOccurrence io where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'")
+        if(idList) {
+            Identifier.executeUpdate("update IdentifierOccurrence io set io.identifier.ns = :isilPaketsigel where io.pkg != null and lower(io.identifier.ns.ns) = 'isil'",[isilPaketsigel: isilPaketsigel])
+            flash.message = "Changes performed on ${idList.size()} package identifiers ..."
+        }
+        redirect controller: 'home'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def assignNoteOwners() {
+        subscriptionUpdateService.assignNoteOwners()
+        redirect controller: 'home'
     }
 
     @Secured(['ROLE_YODA'])
@@ -1200,7 +1222,8 @@ class YodaController {
                                 accountExpired(u.accountExpired)
                                 accountLocked(u.accountLocked)
                                 passwordExpired(u.passwordExpired)
-
+                                dateCreated(u.dateCreated)
+                                lastUpdated(u.lastUpdated)
                                 //affiliations done already on organisations
                                 roles {
                                     u.roles.each { rObj ->
@@ -1467,6 +1490,132 @@ class YodaController {
     def frontend() {
         Map<String, Object> result = [test:123]
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def cleanUpSurveys() {
+        def result = [:]
+
+        def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
+        def count = 0
+        def resultMap = []
+        subSurveys.each { surConfig ->
+
+
+            def parentSubscription = surConfig?.subscription
+            def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
+            def parentSuccessorSubscription = surConfig?.subscription?.getCalculatedSuccessor()
+            def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
+            parentSubChilds?.each { sub ->
+                if (sub?.getCalculatedSuccessor()) {
+                    sub?.getAllSubscribers().each { org1 ->
+
+                        def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
+                        if(surveyResult?.size() > 0) {
+                            count++
+                            def newMap = [:]
+                            println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
+                            newMap.surveyResult = surveyResult?.id ?: ""
+                            newMap.subName = sub.name
+                            newMap.subId = sub.id
+                            newMap.orgName = org1.name
+                            newMap.sortName = org1?.sortname
+                            newMap.propertiesSize = surveyResult?.size()
+                            newMap.info = 'Nachfolger Lizenz vorhanden'
+                            println("")
+                            resultMap << newMap
+                        }else{
+                            count++
+                            def newMap = [:]
+                            println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
+                            newMap.surveyResult = 'Kein Umfrage'
+                            newMap.subName = sub.name
+                            newMap.subId = sub.id
+                            newMap.orgName = org1.name
+                            newMap.sortName = org1?.sortname
+                            newMap.propertiesSize = 0
+                            newMap.info = 'Nachfolger Lizenz vorhanden'
+                            println("")
+                            resultMap << newMap
+                        }
+
+                    }
+
+                } else {
+                    if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
+                        if (sub?.customProperties?.find {
+                            it?.type?.id == property?.id
+                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
+
+                            sub?.getAllSubscribers().each { org ->
+                                def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
+                                if(surveyResult?.size() > 0) {
+                                    count++
+                                    def newMap = [:]
+                                    println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
+                                    newMap.surveyResult = surveyResult?.id ?: ""
+                                    newMap.subName = sub.name
+                                    newMap.subId = sub.id
+                                    newMap.orgName = org.name
+                                    newMap.sortName = org?.sortname
+                                    newMap.propertiesSize = surveyResult?.size()
+                                    newMap.info = 'Merkmal vorhanden'
+                                    println("")
+                                    resultMap << newMap
+                                }else{
+                                    count++
+                                    def newMap = [:]
+                                    println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
+                                    newMap.surveyResult = 'Kein Umfrage'
+                                    newMap.subName = sub.name
+                                    newMap.subId = sub.id
+                                    newMap.orgName = org.name
+                                    newMap.sortName = org?.sortname
+                                    newMap.propertiesSize = 0
+                                    newMap.info = 'Merkmal vorhanden'
+                                    println("")
+                                    resultMap << newMap
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        def output = JsonOutput.toJson(resultMap)
+
+        println(output)
+
+        response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
+        response.contentType = "text/csv"
+        ServletOutputStream out = response.outputStream
+        List titles = [
+
+        ]
+        List rows = []
+        resultMap.each { newMap ->
+            List row = []
+
+            row.add(newMap.subName)
+            row.add(newMap.subId)
+            row.add(newMap.sortName)
+            row.add(newMap.orgName)
+            row.add(newMap.propertiesSize)
+            row.add(newMap.info)
+            row.add(newMap.surveyResult)
+
+            rows.add(row)
+        }
+        out.withWriter { writer ->
+            writer.write(exportService.generateSeparatorTableString(titles,rows,','))
+        }
+        out.close()
+
+        result
+
+        redirect action: 'dashboard'
     }
 
 }

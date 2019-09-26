@@ -5,4 +5,4 @@
 - Java 1.8.0
 - PostgreSQL 10.6
 - Apache Tomcat 9.0.0
-- ElasticSearch 2.4.6
+- ElasticSearch 5.6.16
