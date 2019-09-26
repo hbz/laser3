@@ -45,13 +45,13 @@
             <semui:securedSubNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:else>
-        TODO: check ctx != foreign org
+        TODO: check ctx != foreign org--%>
         <g:if test="${!departmentalView}">
             <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
                                      specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                     affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+                                     affiliation="INST_ADM" affiliationOrg="${orgInstance}" orgPerm="ORG_INST,ORG_CONSORTIUM"
                                      message="org.nav.options" />
-        </g:if>--%>
+        </g:if>
     </g:if>
 
     <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: orgInstance.id]}"

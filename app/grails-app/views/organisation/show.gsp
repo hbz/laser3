@@ -107,7 +107,7 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                             </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM")}">
+                    <g:if test="${!departmentalView}">
                         <dl>
                             <dt><g:message code="org.urlGov.label"/></dt>
                             <dd>
