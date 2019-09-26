@@ -70,7 +70,7 @@
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
-                        <div class="ten wide column">
+                        <div class="nine wide column">
                             <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
@@ -84,20 +84,30 @@
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
                         <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
-                            <div class="four wide column">
+                            <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
-                                <g:if test="${!docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
-                                            data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
-                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
-                                        <i class="trash alternate icon"></i>
-                                    </g:link>
-                                </g:if>
                             </div>
+                            <g:if test="${!docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
+                                <div class="two wide column">
+                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
+                                        data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                                </div>
+                            </g:if>
+                            <g:else>
+                                <div class="two wide column">
+                                    <!-- Hidden Fake Button To hold the other Botton in Place -->
+                                    <div class="ui icon mini button la-hidden">
+                                        <i class="coffe icon"></i>
+                                    </div>
+                                </div>
+                            </g:else>
                         </g:if>
                         <g:else>
-                            <div class="four wide column">
+                            <div class="two wide column">
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="ui icon mini button la-hidden">
                                     <i class="coffe icon"></i>
