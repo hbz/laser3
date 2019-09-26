@@ -8,6 +8,7 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import grails.plugin.springsecurity.SpringSecurityService
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -30,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def instAdmService
     def organisationService
     def deletionService
+    def userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -684,8 +686,7 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') ||
-                          instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
@@ -693,40 +694,67 @@ class OrganisationController extends AbstractDebugController {
 
         }
 
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }
+          if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+          }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        //result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
-
-        List baseQuery  = ['select distinct uo from UserOrg uo, User u']
-        List whereQuery = ['uo.user = u and uo.org = :org']
-        Map queryParams = [org: orgInstance]
-
-        whereQuery.add('uo.status = :status')
-        queryParams.put('status', UserOrg.STATUS_APPROVED)
-
-        if (params.authority) {
-            whereQuery.add('uo.formalRole = :role')
-            queryParams.put('role', Role.get(params.authority.toLong()))
-        }
-
-        if (params.name && params.name != '' ) {
-            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
-            queryParams.put('name', "${params.name}")
-        }
-
-        result.users = User.executeQuery(
-                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
-                queryParams,
-                [sort:'user.username', order: 'asc']
-        )
-
         result.orgInstance = orgInstance
-        result
+
+        Map filterParams = params
+        filterParams.status = UserOrg.STATUS_APPROVED
+        filterParams.org = orgInstance
+
+        result.users = userService.getUserSet(filterParams)
+        result.breadcrumb = 'breadcrumb'
+        result.titleMessage = "${orgInstance.name} - ${message(code:'org.nav.users')}"
+        result.inContextOrg = false
+        result.navPath = "nav"
+        result.navConfiguration = [orgInstance: orgInstance, inContextOrg: false]
+        result.multipleAffiliationsWarning = true
+        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:orgInstance])
+        availableComboOrgs.add(orgInstance)
+        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
+        result.tableConfig = [editable: result.editable, editor: result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'), availableComboOrgs: availableComboOrgs]
+        result.total = result.users.size()
+        render view: '/templates/user/_list', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def userEdit() {
+        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, orgInstance: contextService.org, manipulateAffiliations: false]
+
+        render view: '/templates/user/_edit', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def userCreate() {
+        Map result = setResultGenericsAndCheckAccess(params)
+        result.availableOrgs = Org.get(params.id)
+        result.availableOrgRoles = Role.findAllByRoleType('user')
+        result.editor = result.user
+        result.breadcrumb = 'breadcrumb'
+
+        render view: '/templates/user/_create', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    def processUserCreate() {
+        def success = userService.addNewUser(params, flash)
+        //despite IntelliJ's warnings, success may be an array other than the boolean true
+        if(success instanceof User) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            redirect action: 'userEdit', id: success.id
+        }
+        else if(success instanceof List) {
+            flash.error = success.join('<br>')
+            redirect action: 'userCreate'
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -949,7 +977,7 @@ class OrganisationController extends AbstractDebugController {
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR'),inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
         if(params.id) {
             result.orgInstance = Org.get(params.id)
             result.inContextOrg = result.orgInstance.id == org.id
