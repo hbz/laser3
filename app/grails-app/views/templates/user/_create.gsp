@@ -8,14 +8,14 @@
     </head>
     <body>
 
-        <g:render template="breadcrumb" model="${[ params:params ]}"/>
+        <g:render template="${breadcrumb}" model="${[inContextOrg: inContextOrg, orgInstance: orgInstance, departmentalView: departmentalView, institutionalView: institutionalView,  params:params ]}"/>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
 
         <semui:messages data="${flash}" />
 
         <g:if test="${editable}">
-            <g:form name="newUser" class="ui form" action="create" method="post">
+            <g:form name="newUser" class="ui form" controller="${controllerName}" action="processUserCreate" method="post">
                 <fieldset>
                     <div class="field required">
                         <label for="username">${message(code:'user.username.label')}</label>
@@ -34,51 +34,26 @@
                         <input class="validateNotEmpty" type="text" id="email" name="email" value="${params.email}"/>
                     </div>
 
-                    <g:if test="${availableComboOrgs}">
-                        <div class="two fields">
-                            <div class="field">
-                                <label for="userOrg">${message(code:'user.org')}</label>
-                                <g:select id="consortium" name="comboOrg"
-                                          from="${availableComboOrgs}"
-                                          optionKey="id"
-                                          optionValue="${{(it.sortname ?: '')  + ' (' + it.name + ')'}}"
-                                          value="${params.org ?: contextService.getOrg().id}"
-                                          class="ui fluid search dropdown"/>
-                            </div>
-                            <div class="field">
-                                <label for="userRole">${message(code:'user.role')}</label>
-                                <g:select id="userRole" name="comboFormalRole"
-                                          from="${availableOrgRoles}"
-                                          optionKey="id"
-                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                          value="${Role.findByAuthority('INST_EDITOR').id}"
-                                          class="ui fluid dropdown"/>
-                            </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="userOrg">${message(code:'user.org')}</label>
+                            <g:select id="userOrg" name="org"
+                                      from="${availableOrgs}"
+                                      optionKey="id"
+                                      optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                      value="${params.org ?: orgInstance?.id}"
+                                      class="ui fluid search dropdown"/>
                         </div>
-                    </g:if>
-                    <g:else>
-                        <div class="two fields">
-                            <div class="field">
-                                <label for="userOrg">${message(code:'user.org')}</label>
-                                <g:select id="userOrg" name="org"
-                                          from="${availableOrgs}"
-                                          optionKey="id"
-                                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                                          value="${params.org ?: contextService.getOrg().id}"
-                                          class="ui fluid search dropdown"/>
-                            </div>
-                            <div class="field">
-                                <label for="userRole">${message(code:'user.role')}</label>
-                                <g:select id="userRole" name="formalRole"
-                                          from="${availableOrgRoles}"
-                                          optionKey="id"
-                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                          value="${Role.findByAuthority('INST_EDITOR').id}"
-                                          class="ui fluid dropdown"/>
-                            </div>
+                        <div class="field">
+                            <label for="userRole">${message(code:'user.role')}</label>
+                            <g:select id="userRole" name="formalRole"
+                                      from="${availableOrgRoles}"
+                                      optionKey="id"
+                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                      value="${Role.findByAuthority('INST_EDITOR').id}"
+                                      class="ui fluid dropdown"/>
                         </div>
-
-                    </g:else>
+                    </div>
 
                     <div class="field">
                         <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
