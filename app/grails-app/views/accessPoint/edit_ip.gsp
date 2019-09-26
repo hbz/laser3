@@ -45,7 +45,7 @@
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt><g:message code="accessPoint.range.plural" default="Addressbereiche" /></dt>
+                                    <dt><g:message code="accessPoint.range.plural" default="Adressbereiche" /></dt>
                                     <dd></dd>
                                 </dl>
                                 <div class="fields three">
