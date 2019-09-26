@@ -113,6 +113,7 @@
             <g:sortableColumn params="${params}" property="surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th><g:message code="surveyInfo.finished"/></th>
+            <th><g:message code="surveyInfo.finishedDate"/></th>
             <th class="la-action-info">${message(code:'default.actions')}</th>
         </tr>
 
@@ -186,6 +187,13 @@
                             </g:else>
 
                     </g:if>
+                </td>
+                <td class="center aligned">
+                <g:if test="${surveyResults}">
+                    <g:if test="${!surveyResults?.finishDate?.contains(null)}">
+                        <g:formatDate formatName="default.date.format.notime" date="${surveyResults?.finishDate[0]}"/>
+                    </g:if>
+                </g:if>
                 </td>
 
                 <td class="x">
