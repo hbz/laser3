@@ -859,7 +859,7 @@ class SubscriptionService {
             //check if we have some mandatory properties ...
             //status(nullable:false, blank:false) -> to status, defaults to status not set
             if(colMap.status != null) {
-                String statusKey = cols[colMap.status]
+                String statusKey = cols[colMap.status].trim()
                 if(statusKey) {
                     String status = refdataService.retrieveRefdataValueOID(statusKey,'Subscription Status')
                     if(status) {
@@ -888,13 +888,13 @@ class SubscriptionService {
             //moving on to optional attributes
             //name(nullable:true, blank:false) -> to name
             if(colMap.name != null) {
-                String name = cols[colMap.name]
+                String name = cols[colMap.name].trim()
                 if(name)
                     candidate.name = name
             }
             //owner(nullable:true, blank:false) -> to license
             if(colMap.owner != null) {
-                String ownerKey = cols[colMap.owner]
+                String ownerKey = cols[colMap.owner].trim()
                 if(ownerKey) {
                     List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:ownerKey,roleTypes:[OR_LICENSEE_CONS,OR_LICENSING_CONSORTIUM,OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
@@ -909,7 +909,7 @@ class SubscriptionService {
             }
             //type(nullable:true, blank:false) -> to type
             if(colMap.type != null) {
-                String typeKey = cols[colMap.type]
+                String typeKey = cols[colMap.type].trim()
                 if(typeKey) {
                     String type = refdataService.retrieveRefdataValueOID(typeKey,'Subscription Type')
                     if(type) {
@@ -922,7 +922,7 @@ class SubscriptionService {
             }
             //form(nullable:true, blank:false) -> to form
             if(colMap.form != null) {
-                String formKey = cols[colMap.form]
+                String formKey = cols[colMap.form].trim()
                 if(formKey) {
                     String form = refdataService.retrieveRefdataValueOID(formKey,'Subscription Form')
                     if(form) {
@@ -935,7 +935,7 @@ class SubscriptionService {
             }
             //resource(nullable:true, blank:false) -> to resource
             if(colMap.resource != null) {
-                String resourceKey = cols[colMap.resource]
+                String resourceKey = cols[colMap.resource].trim()
                 if(resourceKey) {
                     String resource = refdataService.retrieveRefdataValueOID(resourceKey,'Subscription Resource')
                     if(resource) {
@@ -955,7 +955,7 @@ class SubscriptionService {
             */
             Date startDate
             if(colMap.startDate != null) {
-                startDate = escapeService.parseDate(cols[colMap.startDate])
+                startDate = escapeService.parseDate(cols[colMap.startDate].trim())
             }
             /*
             endDate(nullable:true, blank:false, validator: { val, obj ->
@@ -966,7 +966,7 @@ class SubscriptionService {
             */
             Date endDate
             if(colMap.endDate != null) {
-                endDate = escapeService.parseDate(cols[colMap.endDate])
+                endDate = escapeService.parseDate(cols[colMap.endDate].trim())
             }
             if(startDate && endDate) {
                 if(startDate <= endDate) {
@@ -989,8 +989,8 @@ class SubscriptionService {
             }
             //instanceOf(nullable:true, blank:false)
             if(colMap.instanceOf != null && colMap.member != null) {
-                String idCandidate = cols[colMap.instanceOf]
-                String memberIdCandidate = cols[colMap.member]
+                String idCandidate = cols[colMap.instanceOf].trim()
+                String memberIdCandidate = cols[colMap.member].trim()
                 if(idCandidate && memberIdCandidate) {
                     List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [OR_SUBSCRIPTION_CONSORTIA, OR_SUBSCRIPTION_COLLECTIVE], idCandidate: idCandidate])
                     List<Org> possibleOrgs = Org.executeQuery("select distinct idOcc.org from IdentifierOccurrence idOcc, Combo c join idOcc.identifier id where c.fromOrg = idOcc.org and :idCandidate in (cast(idOcc.org.id as string),idOcc.org.globalUID) or (id.value = :idCandidate and id.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type",[idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
