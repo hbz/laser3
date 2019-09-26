@@ -131,7 +131,7 @@ class Org
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk'
+            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
