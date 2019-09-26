@@ -10,7 +10,7 @@
         <semui:subNavItem controller="myInstitution" action="myPublicContacts" message="menu.institutions.publicContacts" />
     </g:if>
 
-    <g:if test="${orgInstance.sector?.id != RDStore.O_SECTOR_PUBLISHER && !departmentalView}">
+    <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER && !departmentalView}">
 
         <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
@@ -29,25 +29,29 @@
     </g:if>
 
     <g:if test="${orgInstance.sector != RDStore.O_SECTOR_PUBLISHER}">
-        <g:if test="${accessService.checkForeignOrgComboPermAffiliationX([
+        <g:if test="${inContextOrg}">
+            <semui:securedSubNavItem controller="myInstitution" action="userList"
+                                     message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+        </g:if>
+        <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
                 org: orgInstance,
                 comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
                 comboAffiliation: "INST_ADM",
                 specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
         ])}">
             <semui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
-        </g:if>
-        <g:else>
+        </g:elseif>
+        <%--<g:else>
             <semui:securedSubNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}"
                                      message="org.nav.users" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:else>
-        <%-- TODO: check ctx != foreign org --%>
+        TODO: check ctx != foreign org
         <g:if test="${!departmentalView}">
             <semui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
                                      specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
                                      affiliation="INST_ADM" affiliationOrg="${orgInstance}"
                                      message="org.nav.options" />
-        </g:if>
+        </g:if>--%>
     </g:if>
 
     <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: orgInstance.id]}"
