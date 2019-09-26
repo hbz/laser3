@@ -1,4 +1,4 @@
-semantic.js /*
+ /*
  * # Semantic UI - 2.3.1
  * https://github.com/Semantic-Org/Semantic-UI
  * http://www.semantic-ui.com/

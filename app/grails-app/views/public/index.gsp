@@ -3,6 +3,10 @@
 <head>
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser', default: 'LAS:eR')}</title>
+    <script>
+        var gspLocale = "${message(code:'default.locale.label')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+    </script>
 
 </head>
 
