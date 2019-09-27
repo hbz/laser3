@@ -15,9 +15,9 @@
         <%
             String message
             if(showConsortiaFunctions)
-                message = "subscription.details.members.label"
+                message = "subscription.details.consortiaMembers.label"
             else if(showCollectiveFunctions)
-                message = "collective.member.plural"
+                message = "subscription.details.collectiveMembers.label"
         %>
         <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="${message}" />
 

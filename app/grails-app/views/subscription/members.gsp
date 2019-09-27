@@ -5,7 +5,14 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.members.label')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} :
+        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+            <g:message code="subscription.details.consortiaMembers.label"/>
+        </g:if>
+        <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
+            <g:message code="subscription.details.collectiveMembers.label"/>
+        </g:elseif>
+    </title>
 </head>
 <body>
 
@@ -200,7 +207,7 @@
                 <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
             </g:if>
             <g:else>
-                <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>
+                <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
             </g:else>
 
         </body>
