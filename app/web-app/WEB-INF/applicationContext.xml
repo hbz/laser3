@@ -22,9 +22,7 @@
 	</bean>
 
 	<bean id="characterEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
-		<property name="encoding">
-			<value>utf-8</value>
-		</property>
+		<property name="encoding" value="UTF-8"/>
 	</bean>
 
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean" />
