@@ -1569,7 +1569,12 @@ class BootStrap {
                         name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
                         expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
                         type: OT.Rdv, cat:'YN'
-                ]
+                ],
+                [
+                        name: [en: "Sim-User Number", de: "Sim-User Zahl"],
+                        expl: [en: "Please indicate which number of Sim users should be licensed.", de: "Bitte geben sie an, welche Anzahl an Sim-Usern lizenziert werden soll."],
+                        type: OT.String
+                ],
 
         ]
         createSurveyPropertiesWithI10nTranslations(requiredProps)
