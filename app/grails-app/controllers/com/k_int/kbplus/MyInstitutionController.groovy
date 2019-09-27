@@ -445,7 +445,7 @@ from License as l where (
             List rows = []
             totalLicenses.each { licObj ->
                 License license = (License) licObj
-                List row = [[field:license.reference.replaceAll(',',' '),style:null]]
+                List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
                 List linkedSubs = license.subscriptions.collect { sub ->
                     sub.name
                 }
@@ -924,7 +924,7 @@ from License as l where (
             switch (format) {
                 case "xls":
                 case "xlsx":
-                    row.add([field: sub.name ?: "", style: null])
+                    row.add([field: sub.name ?: "", style: 'bold'])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
