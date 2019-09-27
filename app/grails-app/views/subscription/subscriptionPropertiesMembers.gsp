@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
 </head>
 
 <body>
@@ -17,18 +17,18 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label')}
+    ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}
 </h1>
 
 <g:render template="navSubscriberManagement"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.subscriptionPropertiesMembers.header')}
+${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -46,7 +46,7 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
         <g:form action="processSubscriptionPropertiesMembers" method="post" class="ui form">
             <g:hiddenField name="id" value="${params.id}"/>
 
-            <h4>${message(code: 'subscription.subscriptionPropertiesConsortia.info')}</h4>
+            <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
 
             <div class="two fields">
                 <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
@@ -219,8 +219,7 @@ ${message(code: 'subscription.subscriptionPropertiesMembers.header')}
     <br>
 
     <g:if test="${!filteredSubChilds}">
-        <strong><g:message code="subscription.details.nomembers.label"
-                           default="No members have been added to this license. You must first add members."/></strong>
+        <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
     </g:if>
 
 </g:else>

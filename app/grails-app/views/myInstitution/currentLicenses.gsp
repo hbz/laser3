@@ -118,7 +118,7 @@
                                     <input id="radioLicensee" type="radio" value="Licensee" name="orgRole" tabindex="0" class="hidden"
                                            <g:if test="${params.orgRole == 'Licensee'}">checked=""</g:if>
                                     >
-                                    <label for="radioLicensee">${message(code: 'subscription.details.members.label')}</label>
+                                    <label for="radioLicensee">${message(code: 'subscription.details.consortiaMembers.label')}</label>
                                 </div>
                             </div>
 

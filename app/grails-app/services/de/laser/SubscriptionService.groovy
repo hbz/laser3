@@ -721,6 +721,7 @@ class SubscriptionService {
                             localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
                             issueEntitlement: new_ie
                     )
+                    pi.setGlobalUID()
                     if(pi.save())
                         return true
                     else {
