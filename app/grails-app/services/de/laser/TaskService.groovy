@@ -241,7 +241,7 @@ class TaskService {
         }
 
         result.validOrgs            = Org.list() // TODO
-        result.validPackages        = Package.list() // TODO
+        result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by p.sortName asc") // TODO
 
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs = validResponsibleOrgs
