@@ -95,8 +95,8 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
+                                <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
-                                    <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}"/>
 
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="contact"
@@ -107,13 +107,25 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip la-delay" data-content="Die letzte Funktion/Position zu ${person.title}
-                                        ${person.first_name}
-                                        ${person.middle_name}
-                                        ${person.last_name} lässt sich nicht löschen. Bitte legen Sie zuerst eine weitere Funktion oder Position an!">
-
-                                        <button type="button" class="ui mini icon negative button disabled"><i class="unlink icon"></i></button>
-                                    </span>
+                                    <g:link class="ui button negative"
+                                            controller="person"
+                                            action="_delete"
+                                            id="${person?.id}"
+                                            onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
+                                                    default: 'Do you want to delete the whole contact?',
+                                                    args:[personRole?.functionType?.getI10n('value'), person.toString()])}')">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
+                                    %{--<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">--}%
+                                        %{--<g:hiddenField name="id" value="${person?.id}" />--}%
+                                        %{--<div class="ui icon negative button js-open-confirm-modal"--}%
+                                             %{--data-confirm-term-what="contact"--}%
+                                             %{--data-confirm-term-what-detail="${person?.toString()}"--}%
+                                             %{--data-confirm-term-how="delete"--}%
+                                             %{--data-confirm-id="${person?.id}" >--}%
+                                            %{--<i class="unlink icon"></i>--}%
+                                        %{--</div>--}%
+                                    %{--</g:form>--}%
                                 </g:else>
                             </g:if>
                         </div>
