@@ -116,8 +116,6 @@
 
         <g:if test="${availableComboDeptOrgs}">
             <div class="ui segment form">
-                <g:set var="orgLabel" value="Institute" />
-
                 <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
             </div>
         </g:if>

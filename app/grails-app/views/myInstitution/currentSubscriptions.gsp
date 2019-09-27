@@ -183,7 +183,7 @@
                         <%
                             List subTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
                             boolean orgHasAdministrativeSubscriptions = OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :consortium and oo.sub.administrative = true',[context:institution,consortium:RDStore.OR_SUBSCRIPTION_CONSORTIA])
-                            if(!accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_USER")) {
+                            if(accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_USER")) {
                                 subTypes -= RDStore.SUBSCRIPTION_TYPE_LOCAL
                             }
                             if(!orgHasAdministrativeSubscriptions) {
