@@ -913,7 +913,7 @@ class SubscriptionController extends AbstractDebugController {
                     else ieCoverages = []
                     Map covStmt = [:]
                     colMap.each { String colName, int colNo ->
-                        if(colNo > -1) {
+                        if(colNo > -1 && cols[colNo]) {
                             String cellEntry = cols[colNo].trim()
                             if(result.preselectCoverageDates) {
                                 switch(colName) {
@@ -1973,14 +1973,17 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         result.superOrgType = []
+        result.memberType = []
         if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
             if(accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.comboType = COMBO_TYPE_CONSORTIUM.value
                 result.superOrgType << message(code:'consortium.superOrgType')
+                result.memberType << message(code:'consortium.subscriber')
             }
             if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
                 params.comboType = COMBO_TYPE_DEPARTMENT.value
                 result.superOrgType << message(code:'collective.superOrgType')
+                result.memberType << message(code:'collective.member.plural')
             }
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -4875,9 +4878,11 @@ class SubscriptionController extends AbstractDebugController {
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
+            args.memberType = [message(code:'consortium.subscriber')]
         }
         else if(result.departmentalView) {
             args.superOrgType = [message(code:'collective.superOrgType')]
+            args.memberType = [message(code:'collective.member.plural')]
         }
         result.args = args
 

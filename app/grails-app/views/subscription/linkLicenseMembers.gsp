@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}"/>
 
 </semui:breadcrumbs>
 
@@ -149,7 +149,7 @@ ${message(code: 'subscription.linkLicenseMembers.header')}
     </g:form>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label"/></strong>
+    <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
 </body>

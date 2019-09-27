@@ -29,7 +29,7 @@
 
         <div class="field">
             <div class="three fields">
-                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')} required">
+                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_1', 'error')}">
                     <label for="street_1">
                         <g:message code="address.street_1.label" default="Street1"/>
                     </label>
@@ -59,14 +59,14 @@
 
         <div class="field">
             <div class="three fields">
-                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')} required">
+                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')}">
                     <label for="zipcode">
                         <g:message code="address.zipcode.label" default="Zipcode"/>
                     </label>
                     <g:textField id="zipcode" name="zipcode" value="${addressInstance?.zipcode}"/>
                 </div>
 
-                <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
+                <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')}">
                     <label for="city">
                         <g:message code="address.city.label" default="City"/>
                     </label>

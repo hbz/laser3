@@ -33,6 +33,7 @@ class AjaxController {
     def taskService
     def controlledListService
     def dataConsistencyService
+    def accessService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -683,10 +684,14 @@ class AjaxController {
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
           // handle custom constraint(s) ..
-          if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
+          if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
-          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.equalsIgnoreCase('removeValue_administrativeSubscription')) {
+          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
+          //value is correct incorrectly translated!
+          if (it.value.equalsIgnoreCase('local licence') && accessService.checkPerm("ORG_CONSORTIUM") && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
