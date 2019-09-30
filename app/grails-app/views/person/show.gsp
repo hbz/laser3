@@ -174,6 +174,7 @@ ${personInstance}
                                                                         controller="person"
                                                                         action="_delete"
                                                                         id="${personInstance?.id}"
+                                                                        params="[previousReferer: request.getHeader('referer')]"
                                                                         onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
                                                                                 default: 'Do you want to delete the whole contact?',
                                                                                 args:[link?.functionType?.getI10n('value'), personInstance.toString()])}')">
@@ -241,6 +242,7 @@ ${personInstance}
                                                                         controller="person"
                                                                         action="_delete"
                                                                         id="${personInstance?.id}"
+                                                                        params="[previousReferer: request.getHeader('referer')]"
                                                                         onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
                                                                                 default: 'Do you want to delete the whole contact?',
                                                                                 args:[link.positionType?.getI10n('value'), personInstance.toString()])}')">
@@ -391,7 +393,11 @@ ${personInstance}
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
-                            <g:link class="ui button negative" controller="person" action="_delete" id="${personInstance?.id}">
+                            <g:link class="ui button negative"
+                                    controller="person"
+                                    action="_delete"
+                                    id="${personInstance?.id}"
+                                    params="[previousReferer: request.getHeader('referer')]">
                                 Kontakt löschen
                             </g:link>
                     </div>
