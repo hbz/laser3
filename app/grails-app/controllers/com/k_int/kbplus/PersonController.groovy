@@ -193,11 +193,15 @@ class PersonController extends AbstractDebugController {
         try {
             personInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            //redirect action: 'list'
-            redirect(url: request.getHeader('referer'))
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            String referer = request.getHeader('referer')
+            if (referer.endsWith('person/show/'+params.id)) {
+                redirect controller: 'myInstitution', action: 'addressbook'
+            } else {
+//                redirect action: 'list'
+                redirect(url: referer)
+            }
+        } catch (DataIntegrityViolationException e) {
+ 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect action: 'show', id: params.id
         }
     }
