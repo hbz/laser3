@@ -107,7 +107,7 @@
             <tfoot>
                 <tr>
                     <td>
-                        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
+                        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
                     </td>
                 </tr>
             </tfoot>
