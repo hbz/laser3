@@ -24,7 +24,7 @@ environments {
             dialect         = "org.hibernate.dialect.PostgreSQLDialect"
             username        = "laser"
             password        = "laser"
-            url             = "jdbc:postgresql://localhost:5432/laser?useUnicode=true&amp;characterEncoding=UTF-8"
+            url             = "jdbc:postgresql://localhost:5432/laser"
             //configClass     = HibernateFilterDomainConfiguration.class
             pooled          = true
             properties {
@@ -46,7 +46,7 @@ environments {
             dialect         = "org.hibernate.dialect.PostgreSQLDialect"
             username        = "laser"
             password        = "laser"
-            url             = "jdbc:postgresql://localhost:5432/laser?useUnicode=true&amp;characterEncoding=UTF-8"
+            url             = "jdbc:postgresql://localhost:5432/laser"
             //configClass     = HibernateFilterDomainConfiguration.class
             pooled          = true
             properties {
