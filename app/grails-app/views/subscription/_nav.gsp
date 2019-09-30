@@ -12,9 +12,16 @@
     </g:else>
 
     <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
-        <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
+        <%
+            String message
+            if(showConsortiaFunctions)
+                message = "subscription.details.consortiaMembers.label"
+            else if(showCollectiveFunctions)
+                message = "subscription.details.collectiveMembers.label"
+        %>
+        <semui:subNavItem controller="subscription" action="members" params="${[id:params.id]}" message="${message}" />
 
-            <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveysConsortia" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveysConsortia" params="${[id:params.id]}" message="subscription.details.surveys.label" />
 
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />

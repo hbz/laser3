@@ -112,4 +112,13 @@ class UserService {
         user
     }
 
+    def addAffiliation(user, orgId, formalRoleId, flash) {
+        Org org = Org.get(orgId)
+        Role formalRole = Role.get(formalRoleId)
+
+        if (user && org && formalRole) {
+            instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+        }
+    }
+
 }

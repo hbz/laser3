@@ -445,7 +445,7 @@ from License as l where (
             List rows = []
             totalLicenses.each { licObj ->
                 License license = (License) licObj
-                List row = [[field:license.reference.replaceAll(',',' '),style:null]]
+                List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
                 List linkedSubs = license.subscriptions.collect { sub ->
                     sub.name
                 }
@@ -924,7 +924,7 @@ from License as l where (
             switch (format) {
                 case "xls":
                 case "xlsx":
-                    row.add([field: sub.name ?: "", style: null])
+                    row.add([field: sub.name ?: "", style: 'bold'])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -2820,6 +2820,9 @@ AND EXISTS (
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableComboDeptOrgs << result.institution
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            result.orgLabel = message(code:'collective.member.plural')
+        else result.orgLabel = message(code:'default.institution')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/templates/user/_edit', model: result
@@ -2866,14 +2869,7 @@ AND EXISTS (
             redirect action: 'userEdit', id: params.id
             return
         }
-
-        Org org = Org.get(params.org)
-        Role formalRole = Role.get(params.formalRole)
-
-        if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
-        }
-
+        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
         redirect action: 'userEdit', id: params.id
     }
 

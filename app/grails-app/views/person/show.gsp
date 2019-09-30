@@ -55,7 +55,7 @@ ${personInstance}
                                 <g:message code="person.last_name.label" default="Lastname"/>
                             </g:if>
                             <g:else>
-                                Benenner
+                                Bezeichnung
                             </g:else>
                         </dt>
                         <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd>

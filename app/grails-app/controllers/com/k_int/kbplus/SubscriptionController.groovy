@@ -17,7 +17,6 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
-import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -386,6 +385,7 @@ class SubscriptionController extends AbstractDebugController {
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
                     if (deleteIdList) {
                         IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)",[delList: deleteIdList])
+                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
@@ -913,7 +913,7 @@ class SubscriptionController extends AbstractDebugController {
                     else ieCoverages = []
                     Map covStmt = [:]
                     colMap.each { String colName, int colNo ->
-                        if(colNo > -1) {
+                        if(colNo > -1 && cols[colNo]) {
                             String cellEntry = cols[colNo].trim()
                             if(result.preselectCoverageDates) {
                                 switch(colName) {
@@ -1843,7 +1843,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
         if(change){
-            flash.message = message(code: 'subscription.subscriptionPropertiesConsortia.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
+            flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
         }
 
         def id = params.id
@@ -1973,14 +1973,17 @@ class SubscriptionController extends AbstractDebugController {
         }
 
         result.superOrgType = []
+        result.memberType = []
         if (accessService.checkPerm('ORG_INST_COLLECTIVE,ORG_CONSORTIUM')) {
             if(accessService.checkPerm('ORG_CONSORTIUM')) {
                 params.comboType = COMBO_TYPE_CONSORTIUM.value
                 result.superOrgType << message(code:'consortium.superOrgType')
+                result.memberType << message(code:'consortium.subscriber')
             }
             if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
                 params.comboType = COMBO_TYPE_DEPARTMENT.value
                 result.superOrgType << message(code:'collective.superOrgType')
+                result.memberType << message(code:'collective.member.plural')
             }
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -4875,9 +4878,15 @@ class SubscriptionController extends AbstractDebugController {
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
+            args.memberTypeSingle = [message(code:'consortium.subscriber')]
+            args.memberType = [message(code:'consortium.subscriber')]
+            args.memberTypeGenitive = [message(code:'consortium.subscriber')]
         }
         else if(result.departmentalView) {
             args.superOrgType = [message(code:'collective.superOrgType')]
+            args.memberTypeSingle = [message(code:'collective.member')]
+            args.memberType = [message(code:'collective.member.plural')]
+            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
         }
         result.args = args
 
