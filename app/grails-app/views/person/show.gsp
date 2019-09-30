@@ -156,16 +156,41 @@ ${personInstance}
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
-                                                        <div class="ui mini icon buttons">
-                                                            <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                            <g:link class="ui negative button js-open-confirm-modal"
-                                                                    data-confirm-term-what="function"
-                                                                    data-confirm-term-what-detail="${link.functionType?.getI10n('value')}"
-                                                                    data-confirm-term-how="delete"
-                                                                    controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
-                                                                <i class="trash alternate icon"></i>
-                                                            </g:link>
-                                                        </div>
+                                                        <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                        <g:if test="${personInstance.roleLinks?.size() > 1}">
+                                                            <div class="ui mini icon buttons">
+                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                        data-confirm-term-what="function"
+                                                                        data-confirm-term-what-detail="${link.functionType?.getI10n('value')}"
+                                                                        data-confirm-term-how="delete"
+                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
+                                                                    <i class="trash alternate icon"></i>
+                                                                </g:link>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <div class="ui mini icon buttons">
+                                                                <g:link class="ui negative button"
+                                                                        controller="person"
+                                                                        action="_delete"
+                                                                        id="${personInstance?.id}"
+                                                                        onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
+                                                                                default: 'Do you want to delete the whole contact?',
+                                                                                args:[link?.functionType?.getI10n('value'), personInstance.toString()])}')">
+                                                                    <i class="trash alternate icon"></i>
+                                                                </g:link>
+                                                                %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
+                                                                %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
+                                                                %{--<div class="ui icon negative button js-open-confirm-modal"--}%
+                                                                %{--data-confirm-term-what="contact"--}%
+                                                                %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
+                                                                %{--data-confirm-term-how="delete"--}%
+                                                                %{--data-confirm-id="${personInstance?.id}" >--}%
+                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                %{--</div>--}%
+                                                                %{--</g:form>--}%
+                                                            </div>
+                                                        </g:else>
                                                     </g:if>
                                                 </div>
                                             </div>
@@ -198,16 +223,41 @@ ${personInstance}
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
-                                                        <div class="ui mini icon buttons">
-                                                            <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                            <g:link class="ui negative button js-open-confirm-modal"
-                                                                    data-confirm-term-what="function"
-                                                                    data-confirm-term-what-detail="${link.positionType?.getI10n('value')}"
-                                                                    data-confirm-term-how="delete"
-                                                                    controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
-                                                                <i class="trash alternate icon"></i>
-                                                            </g:link>
-                                                        </div>
+                                                        <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                        <g:if test="${personInstance.roleLinks?.size() > 1}">
+                                                            <div class="ui mini icon buttons">
+                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                        data-confirm-term-what="function"
+                                                                        data-confirm-term-what-detail="${link.positionType?.getI10n('value')}"
+                                                                        data-confirm-term-how="delete"
+                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
+                                                                    <i class="trash alternate icon"></i>
+                                                                </g:link>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <div class="ui mini icon buttons">
+                                                                <g:link class="ui negative button"
+                                                                        controller="person"
+                                                                        action="_delete"
+                                                                        id="${personInstance?.id}"
+                                                                        onclick="return confirm('${message( code: 'org.deletePrsLinksAndContact.button.confirm',
+                                                                                default: 'Do you want to delete the whole contact?',
+                                                                                args:[link.positionType?.getI10n('value'), personInstance.toString()])}')">
+                                                                    <i class="trash alternate icon"></i>
+                                                                </g:link>
+                                                                %{--<g:form controller="person" action="_delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
+                                                                    %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
+                                                                    %{--<div class="ui icon negative button js-open-confirm-modal"--}%
+                                                                         %{--data-confirm-term-what="contact"--}%
+                                                                         %{--data-confirm-term-what-detail="${personInstance?.toString()}"--}%
+                                                                         %{--data-confirm-term-how="delete"--}%
+                                                                         %{--data-confirm-id="${personInstance?.id}" >--}%
+                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                    %{--</div>--}%
+                                                                %{--</g:form>--}%
+                                                            </div>
+                                                        </g:else>
                                                     </g:if>
                                                 </div>
                                             </div>
@@ -341,15 +391,9 @@ ${personInstance}
             <g:if test="${editable && personInstance?.tenant?.id == contextService.getOrg().id}">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${personInstance.roleLinks.isEmpty()}">
                             <g:link class="ui button negative" controller="person" action="_delete" id="${personInstance?.id}">
                                 Kontakt löschen
                             </g:link>
-                        </g:if>
-                        <g:else>
-                            <button class="ui button negative disabled la-popup-tooltip la-delay"
-                                data-content="Dieser Kontakt ist noch über Funktionen/Positionen mit Organisationen verknüpft.">Kontakt löschen</button>
-                        </g:else>
                     </div>
                 </div>
             </g:if>

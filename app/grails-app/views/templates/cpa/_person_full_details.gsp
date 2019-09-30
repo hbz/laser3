@@ -107,7 +107,7 @@
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link class="ui button negative"
+                                    <g:link class="ui mini icon negative button"
                                             controller="person"
                                             action="_delete"
                                             id="${person?.id}"
@@ -118,7 +118,7 @@
                                     </g:link>
                                     %{--<g:form controller="person" action="_delete" data-confirm-id="${person?.id?.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person?.id}" />--}%
-                                        %{--<div class="ui icon negative button js-open-confirm-modal"--}%
+                                        %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
                                              %{--data-confirm-term-what="contact"--}%
                                              %{--data-confirm-term-what-detail="${person?.toString()}"--}%
                                              %{--data-confirm-term-how="delete"--}%
