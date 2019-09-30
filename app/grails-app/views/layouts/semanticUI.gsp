@@ -718,6 +718,7 @@
 
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
+
         <%-- global content container --%>
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
@@ -769,5 +770,11 @@
         <r:layoutResources/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
+
+        <sec:ifAnyGranted roles="ROLE_YODA">
+            <g:if test="${plt}">
+                <p style="padding:1em; text-align: right">page load time (backend only): ${plt} ms</p>
+            </g:if>
+        </sec:ifAnyGranted>
     </body>
 </html>

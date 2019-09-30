@@ -735,7 +735,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List errorList = []
         if (result.subscriptionInstance) {
-            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
+            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
             Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
             result.subscriptionInstance.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement)
@@ -2350,7 +2350,7 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
         def addTitlesCount = 0
         if (result.subscriptionInstance) {
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 if(cache.get('checked')) {

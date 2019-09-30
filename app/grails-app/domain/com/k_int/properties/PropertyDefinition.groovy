@@ -5,6 +5,7 @@ import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.CacheService
+import de.laser.ContextService
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import de.laser.helper.EhcacheWrapper
@@ -260,13 +261,15 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         return result
         */
 
-        CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
-        EhcacheWrapper cache
+        def cache
 
         if (! params.tenant) {
+            CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
             cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/custom/${params.desc}/${LocaleContextHolder.getLocale()}/")
-        } else {
-            cache = cacheService.getTTL300Cache("PropertyDefinition/refdataFind/private/${params.desc}/tenant/${params.tenant}/${LocaleContextHolder.getLocale()}/")
+        }
+        else {
+            ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+            cache = contextService.getCache("PropertyDefinition/refdataFind/private/${params.desc}/${LocaleContextHolder.getLocale()}/", contextService.ORG_SCOPE)
         }
 
         if (! cache.get('propDefs')) {
