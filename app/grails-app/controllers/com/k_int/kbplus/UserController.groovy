@@ -140,6 +140,7 @@ class UserController extends AbstractDebugController {
                         [customerType: OrgSettings.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
+            result.manipulateAffiliations = true
             //}
         }
         render view: '/templates/user/_edit', model: result
@@ -214,10 +215,11 @@ class UserController extends AbstractDebugController {
             return
         }
 
+        result.breadcrumb = 'breadcrumb'
         result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        result
+        render view: '/templates/user/_create', model: result
     }
 
     @Secured(['ROLE_ADMIN'])

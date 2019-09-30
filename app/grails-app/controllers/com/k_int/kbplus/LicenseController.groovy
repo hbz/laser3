@@ -291,7 +291,7 @@ class LicenseController extends AbstractDebugController {
                     List<Subscription> memberSubs = Subscription.executeQuery(
                             'select distinct sub from Subscription sub join sub.instanceOf cons join cons.owner lic where lic = :license',
                             [license: result.license])
-                    List<Map<String,Long>> validOrgs = [[id:0]] // erms-582
+                    List<Map<String,Long>> validOrgs = [[id:(long) 0]] // erms-582
                     if (memberSubs) {
                         validOrgs = Org.executeQuery(
                                 'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType in (:roleTypes) and ogr.sub in (:subs)',

@@ -44,7 +44,7 @@ import="de.laser.helper.RDStore; com.k_int.kbplus.Org; com.k_int.kbplus.Person; 
         <g:if test="${visiblePersons}">
 
             <semui:filter>
-                <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
+                <g:form action="${actionName}" controller="myInstitution" method="get" class="form-inline ui small form">
                     <div class="four fields">
                         <div class="field">
                             <label for="prs">${message(code: 'person.filter.name')}</label>

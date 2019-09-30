@@ -89,7 +89,7 @@
   <g:if test="${item?.availabilityStatus?.value == 'Expected'}">
     ${message(code: 'default.on', default: 'on')} <g:formatDate
         format="${message(code: 'default.date.format.notime')}"
-        date="${ie.accessStartDate}"/>
+        date="${item.accessStartDate}"/>
   </g:if>
 
   <g:if test="${item?.availabilityStatus?.value == 'Expired'}">
