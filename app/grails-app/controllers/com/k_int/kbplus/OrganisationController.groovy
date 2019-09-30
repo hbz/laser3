@@ -871,7 +871,16 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        result.visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+        List visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+
+        result.visiblePersons = visiblePersons
 
         result
     }

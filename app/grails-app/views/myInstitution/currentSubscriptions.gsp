@@ -224,7 +224,9 @@
                             <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
                                    <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
                                 >
-                            <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
+                            <label for="radioSubscriber">
+                                <g:message code="subscription.details.consortiaMembers.label"/>
+                            </label>
                         </div>
                     </div>
                     <div class="field">

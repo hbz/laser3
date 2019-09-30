@@ -62,6 +62,7 @@ class MyInstitutionController extends AbstractDebugController {
     def titleStreamService
     def financeService
     def surveyService
+    def cacheService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -183,22 +184,52 @@ class MyInstitutionController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-        long timestamp = System.currentTimeSeconds()
+        long timestamp = System.currentTimeMillis()
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
 
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+        def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
+
+        List currentSubIds = []
+        List allLocals     = []
+        List allSubscrCons = []
+        List allSubscrColl = []
+        List allConsOnly   = []
+        List allCollOnly   = []
+
+        if (cache.get('currentSubInfo')) {
+            def currentSubInfo = cache.get('currentSubInfo')
+            currentSubIds = currentSubInfo['currentSubIds']
+            allLocals     = currentSubInfo['allLocals']
+            allSubscrCons = currentSubInfo['allSubscrCons']
+            allSubscrColl = currentSubInfo['allSubscrColl']
+            allConsOnly   = currentSubInfo['allConsOnly']
+            allCollOnly   = currentSubInfo['allCollOnly']
+
+            log.debug('currentSubInfo from cache')
+        }
+        else {
+            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
+
+            cache.put('currentSubInfo', [
+                    currentSubIds: currentSubIds,
+                    allLocals: allLocals,
+                    allSubscrCons: allSubscrCons,
+                    allSubscrColl: allSubscrColl,
+                    allConsOnly: allConsOnly,
+                    allCollOnly: allCollOnly
+            ])
+        }
 
         result.subscriptionMap = [:]
-
-        List allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
-        List allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
-        List allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
-        List allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
-        List allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
 
         if(currentSubIds) {
             /*
@@ -278,13 +309,8 @@ class MyInstitutionController extends AbstractDebugController {
         else result.platformInstanceList = []
         result.platformInstanceTotal    = result.platformInstanceList.size()
 
-
-        //println "platformSubscriptionList: " + platformSubscriptionList.size()
-        //println "allLocals:                " + allLocals.size()
-        //println "allSubscrCons:            " + allSubscrCons.size()
-        //println "allConsOnly:              " + allConsOnly.size()
-
-        //println "${System.currentTimeSeconds() - timestamp} Sekunden"
+        result.plt = (System.currentTimeMillis() - timestamp)
+        result.cachedContent = true
 
         result
     }
@@ -682,16 +708,28 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
+        long timestamp = System.currentTimeMillis()
 
         def result = setResultGenerics()
 
+        def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
+        List orgIds = []
+
+        if (cache.get('orgIds')) {
+            orgIds = cache.get('orgIds')
+            log.debug('orgIds from cache')
+        }
+        else {
+            List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
+            List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
+            providers.addAll(agencies)
+            orgIds = providers.unique().collect{ it2 -> it2.id }
+
+            cache.put('orgIds', orgIds)
+        }
+
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect{ it2 -> it2.id }
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -711,6 +749,10 @@ from License as l where (
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
+
+        result.plt = (System.currentTimeMillis() - timestamp)
+        result.cachedContent = true
+
         if ( params.exportXLS ) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")

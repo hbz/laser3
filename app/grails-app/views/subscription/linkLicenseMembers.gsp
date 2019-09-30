@@ -22,14 +22,14 @@
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-${message(code: 'subscription.details.subscriberManagement.label')}
+${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}
 </h1>
 
-<g:render template="navSubscriberManagement" />
+<g:render template="navSubscriberManagement" model="${[args:args]}"/>
 
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkLicenseMembers.header')}
+${message(code: 'subscription.linkLicenseMembers.header', args: args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -55,7 +55,7 @@ ${message(code: 'subscription.linkLicenseMembers.header')}
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkLicenseMembers.info')}</h4>
+                <h4>${message(code: 'subscription.linkLicenseMembers.info', args: args.memberType)}</h4>
 
                 <label>${message(code: 'subscription.linktoLicense')}</label>
                 <g:if test="${validLicenses}">
@@ -75,7 +75,7 @@ ${message(code: 'subscription.linkLicenseMembers.header')}
     <div class="divider"></div>
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.linkLicenseMembers.deleteLicensesInfo')}</h4>
+        <h4>${message(code: 'subscription.linkLicenseMembers.deleteLicensesInfo', args: args.memberType)}</h4>
 
         <g:link class="ui button js-open-confirm-modal"
                 data-confirm-term-content = "${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm')}"

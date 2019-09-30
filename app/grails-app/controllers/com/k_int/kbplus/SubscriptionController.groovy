@@ -17,7 +17,6 @@ import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
 import de.laser.interfaces.*
 import de.laser.oai.OaiClientLaser
-import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
@@ -386,6 +385,7 @@ class SubscriptionController extends AbstractDebugController {
                     def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
                     if (deleteIdList) {
                         IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)",[delList: deleteIdList])
+                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
                         IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
                     }
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [result.package, result.subscription])
@@ -735,7 +735,7 @@ class SubscriptionController extends AbstractDebugController {
 
         List errorList = []
         if (result.subscriptionInstance) {
-            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}")
+            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
             Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
             result.subscriptionInstance.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement)
@@ -1843,7 +1843,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
         if(change){
-            flash.message = message(code: 'subscription.subscriptionPropertiesConsortia.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
+            flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [change?.unique { a, b -> a <=> b }.join(', ').toString()])
         }
 
         def id = params.id
@@ -2350,7 +2350,7 @@ class SubscriptionController extends AbstractDebugController {
         //userAccessCheck(result.subscriptionInstance, result.user, 'edit')
         def addTitlesCount = 0
         if (result.subscriptionInstance) {
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}")
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 if(cache.get('checked')) {
@@ -4878,11 +4878,15 @@ class SubscriptionController extends AbstractDebugController {
         Map args = [:]
         if(result.consortialView) {
             args.superOrgType = [message(code:'consortium.superOrgType')]
+            args.memberTypeSingle = [message(code:'consortium.subscriber')]
             args.memberType = [message(code:'consortium.subscriber')]
+            args.memberTypeGenitive = [message(code:'consortium.subscriber')]
         }
         else if(result.departmentalView) {
             args.superOrgType = [message(code:'collective.superOrgType')]
+            args.memberTypeSingle = [message(code:'collective.member')]
             args.memberType = [message(code:'collective.member.plural')]
+            args.memberTypeGenitive = [message(code:'collective.member.genitive')]
         }
         result.args = args
 
