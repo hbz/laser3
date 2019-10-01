@@ -256,7 +256,7 @@
                 </g:each>
             </div>
             <div>
-                <semui:paginate offset="${announcementOffset ? announcementOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
+                <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
         </sec:ifAnyGranted>
