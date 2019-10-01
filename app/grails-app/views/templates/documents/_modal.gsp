@@ -101,7 +101,18 @@
                         <dd>
                             <%
                                 //Germans would say 'Durch das Knie in's Auge und zurück' ...
-                                List<Org> orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and o != :contextOrg and not (c.toOrg != :contextOrg and c.type = :department) order by o.sortname asc, o.name asc",[contextOrg:institution,deleted:RDStore.O_STATUS_DELETED,department:RDStore.COMBO_TYPE_DEPARTMENT])
+                                List<Org> orgs = []
+                                if(institution.hasPerm('ORG_CONSORTIUM'))
+                                    orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and (o != :contextOrg and not c.type = :department)",[contextOrg:institution, deleted:RDStore.O_STATUS_DELETED, department:RDStore.COMBO_TYPE_DEPARTMENT])
+                                else if(institution.hasPerm('ORG_INST_COLLECTIVE'))
+                                    orgs = Org.executeQuery("select distinct o from Combo c join c.fromOrg o where (o.status = null or o.status != :deleted) and (o != :contextOrg and (c.toOrg = :contextOrg and c.type = :department))",[contextOrg:institution, deleted:RDStore.O_STATUS_DELETED, department:RDStore.COMBO_TYPE_DEPARTMENT])
+                                //feel free to include this sort clause in the queries above!
+                                orgs.addAll(Org.findAllBySector(RDStore.O_SECTOR_PUBLISHER))
+                                orgs.sort { x,y ->
+                                    if(x.sortname == y.sortname)
+                                        x.name <=> y.name
+                                    else x.sortname <=> y.sortname
+                                }
                             %>
                             <g:select name="targetOrg" id="targetOrg" from="${orgs}" optionKey="id" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${[null:'']}"/>
                         </dd>
