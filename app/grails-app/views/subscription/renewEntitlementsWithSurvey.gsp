@@ -12,10 +12,14 @@
     <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}"/>
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
 </semui:breadcrumbs>
+
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui left aligned icon header"><semui:headerIcon/> <g:message code="subscription.details.renewEntitlements.label" /></h1>
+
+<h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>
+<g:message code="issueEntitlementsSurvey.label" />: ${surveyConfig?.surveyInfo?.name}
+</h1>
 
 <g:render template="nav"/>
 
