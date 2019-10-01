@@ -26,10 +26,8 @@
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
-                    <!--<div class="event">-->
-
                     <div class="ui grid summary">
-                        <div class="twelve wide column la-column-right-lessPadding">
+                        <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.org.id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
@@ -51,23 +49,20 @@
                                 </a>
                             </g:else>
                             <br/>
-
                             ${message(code:'template.notes.created')}
                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
                         </div>
-                        <%-- START First Small Column --%>
-                        <div class="two wide column la-js-editmode-container la-column-right-lessPadding la-column-left-lessPadding">
+                        <div class="right aligned six wide column la-column-left-lessPadding">
+                            <%-- START First Button --%>
                             <g:if test="${!docctx.sharedFrom}">
                                 <g:link controller="${controllerName}" action="deleteDocuments" class="ui mini icon negative button"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"notes"]'>
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>
-                        </div>
-                        <%-- STOP First Small Column --%>
-                        <%-- START Second Small Column --%>
-                        <div class="two wide column la-js-editmode-container la-column-left-lessPadding">
+                            <%-- STOP First Button --%>
                             <g:if test="${ownobj?.showUIShareButton()}">
+                            <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
@@ -103,18 +98,16 @@
 
                             </g:if>
                             <g:else>
-                                <div class="two wide column">
+
                                     <!-- Hidden Fake Button To hold the other Botton in Place -->
                                     <div class="ui icon mini button la-hidden">
                                         <i class="coffe icon"></i>
                                     </div>
-                                </div>
+
                             </g:else>
-                        <%-- STOP Second
+                            <%-- START Second Button --%>
+                        </div>
                     </div>
-                    <%-- STOP Second Small Column --%>
-                    </div>
-                    <!--</div>-->
                 </div>
             </g:if>
         </g:each>
