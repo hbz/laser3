@@ -70,7 +70,7 @@
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
-                        <div class="nine wide column">
+                        <div class="nine wide column la-column-right-lessPadding">
                             <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
@@ -83,13 +83,17 @@
                                 </g:else>
                             </g:link>(${docctx.owner?.type?.getI10n("value")})
                         </div>
+
                         <g:if test="${docctx.owner.owner?.id == contextService.org.id}">
-                            <div class="two wide column">
+                            <%-- START First Small Column --%>
+                            <div class="two wide column la-column-left-lessPadding la-column-right-lessPadding">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                             </div>
+                            <%-- STOP First Small Column --%>
+                            <%-- START Second Small Column --%>
                             <g:if test="${!docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
-                                <div class="two wide column">
+                                <div class="two wide column la-column-left-lessPadding la-column-right-lessPadding">
                                 <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
                                         data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"show"]'>
@@ -105,16 +109,24 @@
                                     </div>
                                 </div>
                             </g:else>
+                            <%-- STOP Second Small Column --%>
                         </g:if>
                         <g:else>
-                            <div class="two wide column">
+                            <div class="two wide column la-column-right-lessPadding la-column-left-lessPadding">
+                                <!-- Hidden Fake Button To hold the other Botton in Place -->
+                                <div class="ui icon mini button la-hidden">
+                                    <i class="coffe icon"></i>
+                                </div>
+                            </div>
+                            <div class="two wide column la-column-right-lessPadding la-column-left-lessPadding">
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
                                 <div class="ui icon mini button la-hidden">
                                     <i class="coffe icon"></i>
                                 </div>
                             </div>
                         </g:else>
-                        <div class="center aligned two wide column la-js-editmode-container">
+                         <%-- Third Small Column --%>
+                        <div class="center aligned two wide column la-js-editmode-container la-column-left-lessPadding">
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
