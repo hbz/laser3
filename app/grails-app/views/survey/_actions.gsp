@@ -38,7 +38,7 @@
 
                     <semui:actionsDropdownItemDisabled controller="survey" action="processOpenSurveyNow"
                                                        params="[id: params.id]"
-                                                       message="openSurvey.button" tooltip="${message(code: "openSurveyNow.button.info")}"/>
+                                                       message="openSurveyNow.button" tooltip="${message(code: "openSurveyNow.button.info")}"/>
                 </g:else>
                 <div class="ui divider"></div>
             </g:if>

@@ -306,7 +306,7 @@ class FilterService {
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "genfunc_filter_matcher(surInfo.name, :name) = true"
+            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
         }
         if(params.status) {
@@ -379,12 +379,12 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
+    Map<String,Object> getParticipantSurveyQuery_OLD(Map params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
         if(params.name) {
-            query << "genfunc_filter_matcher(surResult.surveyConfig.surveyInfo.name, :name) = true"
+            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
             queryParams << [name:"${params.name}"]
         }
         if(params.status) {
@@ -394,6 +394,11 @@ class FilterService {
         if(params.type) {
             query << "surResult.surveyConfig.surveyInfo.type = :type"
             queryParams << [type: RefdataValue.get(params.type)]
+        }
+
+        if(params.owner) {
+            query << "surInfo.owner = :owner"
+            queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
         }
 
         if (params.currentDate) {
@@ -457,9 +462,101 @@ class FilterService {
         def defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :org and " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs left join surConfig.surResults surResult  where (surResult.participant = :org or surOrgs.org = :org)  and " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult where surResult.participant = :org" + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs left surConfig.surResults surResult where (surResult.participant = :org or surOrgs.org = :org) " + defaultOrder
+        }
+        queryParams << [org : org]
+
+
+        result.queryParams = queryParams
+        result
+    }
+
+    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.name) {
+            query << "(genfunc_filter_matcher(surInfo.name, :name) = true or (genfunc_filter_matcher(surConfig.subscription.name, :name) = true))"
+            queryParams << [name:"${params.name}"]
+        }
+        if(params.status) {
+            query << "surInfo.status = :status"
+            queryParams << [status: RefdataValue.get(params.status)]
+        }
+        if(params.type) {
+            query << "surInfo.type = :type"
+            queryParams << [type: RefdataValue.get(params.type)]
+        }
+
+        if(params.owner) {
+            query << "surInfo.owner = :owner"
+            queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
+        }
+
+        if (params.currentDate) {
+
+            params.currentDate = (params.currentDate instanceof Date) ? params.currentDate : sdFormat.parse(params.currentDate)
+
+            query << "surInfo.startDate <= :startDate and (surInfo.endDate >= :endDate or surInfo.endDate is null)"
+
+            queryParams << [startDate : params.currentDate]
+            queryParams << [endDate : params.currentDate]
+
+            query << "surInfo.status = :status"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+
+        }
+
+        if (params.startDate && sdFormat && !params.currentDate) {
+
+            params.startDate = (params.startDate instanceof Date) ? params.startDate : sdFormat.parse(params.startDate)
+
+            query << "surInfo.startDate >= :startDate"
+            queryParams << [startDate : params.startDate]
+        }
+        if (params.endDate && sdFormat && !params.currentDate) {
+
+            params.endDate = params.endDate instanceof Date ? params.endDate : sdFormat.parse(params.endDate)
+
+            query << "(surInfo.endDate <= :endDate or surInfo.endDate is null)"
+            queryParams << [endDate : params.endDate]
+        }
+
+        if(params.tab == "new"){
+            query << "(surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null)))"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "processed"){
+            query << "(surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)))"
+            queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
+        }
+
+        if(params.tab == "finish"){
+            query << "not exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null)"
+        }
+
+        if(params.tab == "notFinish"){
+            query << "((surInfo.status = :status or surInfo.status = :status2 or surInfo.status = :status3) and exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null))"
+            queryParams << [status: RDStore.SURVEY_SURVEY_COMPLETED]
+            queryParams << [status2: RDStore.SURVEY_IN_EVALUATION]
+            queryParams << [status3: RDStore.SURVEY_COMPLETED]
+        }
+
+        if(params.consortiaOrg) {
+            query << "surInfo.owner = :owner"
+            queryParams << [owner: params.consortiaOrg]
+        }
+
+
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(surInfo.name)") + " " + (params.order ?: "asc")
+
+        if (query.size() > 0) {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :org  and " + query.join(" and ") + defaultOrder
+        } else {
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :org " + defaultOrder
         }
         queryParams << [org : org]
 

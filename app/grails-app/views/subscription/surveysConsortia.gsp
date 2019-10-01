@@ -128,7 +128,7 @@
 
                 <td class="center aligned">
 
-                    <g:if test="${surveyConfig}">
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
                         <g:if test="${surveyConfig?.type == 'Subscription'}">
                             <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
                                     params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
@@ -164,7 +164,7 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig}">
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig?.costItemsFinish ? "green" : ""} label">
@@ -175,7 +175,7 @@
                 </td>
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig}">
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
                                 class="ui icon">
@@ -195,14 +195,19 @@
                     </g:if>
                 </td>
                 <td>
-                    <span class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                        <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
-                                params="[surveyConfigID: surveyConfig?.id]"
-                                class="ui button icon">
-                            <i class="write icon"></i>
-                        </g:link>
-                    </span>
+                    <g:if test="${surveyConfig && !surveyConfig.pickAndChoose}">
+                        <span class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="survey" action="evaluationConfigsInfo" id="${surveyInfo?.id}"
+                                    params="[surveyConfigID: surveyConfig?.id]"
+                                    class="ui button icon">
+                                <i class="write icon"></i>
+                            </g:link>
+                        </span>
+                    </g:if>
+                    <g:if test="${surveyConfig && surveyConfig.pickAndChoose}">
+
+                    </g:if>
                 </td>
             </tr>
 

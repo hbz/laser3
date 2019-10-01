@@ -3097,15 +3097,14 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-
                 period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
                 period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
+
+            row.add([field: period ?: '', style: null])
 
             participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
                 row.add([field: participantResultProperty?.getResult() ?: "", style: null])
@@ -3236,14 +3235,14 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = period + " - " + participantResult?.newSubPeriodTwoEndDate ? sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
             period = ""
             if (renewalResult?.multiYearTermThreeSurvey) {
                 period = participantResult?.newSubPeriodThreeStartDate ?: ""
                 period = period + " - " + participantResult?.newSubPeriodThreeEndDate ?: ""
-                row.add([field: period ?: '', style: null])
             }
+            row.add([field: period ?: '', style: null])
+
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
@@ -3277,6 +3276,8 @@ class SurveyController {
             row.add([field: participantResult?.resultOfParticipation?.getResult() ?: '', style: null])
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
+
+            row.add([field: '', style: null])
 
             participantResult?.properties.sort {
                 it?.type?.name

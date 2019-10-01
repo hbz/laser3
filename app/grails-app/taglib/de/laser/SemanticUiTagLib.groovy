@@ -2,6 +2,8 @@ package de.laser
 
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.SurveyOrg
+import com.k_int.kbplus.SurveyResult
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
@@ -948,6 +950,117 @@ class SemanticUiTagLib {
             )
         } else {
             out << linkBody
+        }
+    }
+
+    def surveyEditButton = { attrs, body ->
+        def surveyResult = attrs.surveyResult
+        def surveyInfo = attrs.surveyInfo
+        def surveyConfig = attrs.surveyInfo
+        def linkBody = "<i class='write icon'></i>"
+        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def aClass = attrs.class
+
+        out << "<span class='la-popup-tooltip la-delay'"
+        out << "data-content='${message}'>"
+
+        out << g.link(linkBody,
+                class: aClass,
+                controller: attrs.controller,
+                action: attrs.action,
+                params: attrs.params,
+                id: attrs.id
+        )
+
+        out << "</span>"
+    }
+
+    def surveyFinishIcon = { attrs, body ->
+        def surveyConfig = attrs.surveyConfig
+        def participant = attrs.participant
+        def surveyOwnerView = attrs.surveyOwnerView
+
+        if (surveyConfig?.pickAndChoose) {
+            def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
+            if (finishDate) {
+                if (surveyOwnerView) {
+                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                    out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
+                    out << " <i class='check big green icon'></i></span>"
+                } else {
+                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                    out << "data-content='${message(code: "surveyResult.finish.info")}'>"
+                    out << " <i class='check big green icon'></i></span>"
+                }
+            } else {
+                if (surveyOwnerView) {
+                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                    out << "data-content='${message(code: "surveyResult.noFinish.info.consortia")}'>"
+                    out << " <i class='circle red icon'></i></span>"
+                } else {
+                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                    out << "data-content='${message(code: "surveyResult.noFinish.info")}'>"
+                    out << " <i class='circle red icon'></i></span>"
+                }
+            }
+        } else {
+            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
+
+            if (surveyResults) {
+
+                if (surveyResults?.finishDate?.contains(null)) {
+                    if (surveyOwnerView) {
+                        out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                        out << "data-content='${message(code: "surveyResult.noFinish.info.consortia")}'>"
+                        out << " <i class='circle red icon'></i></span>"
+                    } else {
+                        out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                        out << "data-content='${message(code: "surveyResult.noFinish.info")}'>"
+                        out << " <i class='circle red icon'></i></span>"
+                    }
+                } else {
+
+                    if (surveyOwnerView) {
+                        out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                        out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
+                        out << " <i class='check big green icon'></i></span>"
+                    } else {
+                        out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                        out << "data-content='${message(code: "surveyResult.finish.info")}'>"
+                        out << " <i class='check big green icon'></i></span>"
+                    }
+
+                }
+
+
+                /*if (surveyResults?.find {
+                    it.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id
+                }?.getResult() == RDStore.YN_NO.getI10n('value')) {
+                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
+                    out << " data-content='${message(code: 'surveyResult.particiption.terminated')}'>"
+                    out << "<i class='minus circle big red icon'></i></span>"
+                }*/
+            }
+
+
+        }
+    }
+
+    def surveyFinishDate = { attrs, body ->
+        def surveyConfig = attrs.surveyConfig
+        def participant = attrs.participant
+
+        if (surveyConfig?.pickAndChoose) {
+            def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
+            if (finishDate) {
+                out << g.formatDate(format: message(code: "default.date.format.notime"), date: finishDate)
+            }
+        } else {
+            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)
+
+            if (!surveyResults?.finishDate?.contains(null)) {
+                out << g.formatDate(format: message(code: "default.date.format.notime"), date: surveyResults?.finishDate[0])
+            }
         }
     }
 

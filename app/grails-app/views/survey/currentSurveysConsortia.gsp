@@ -30,7 +30,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="currentSurveysConsortia" controller="survey" method="get" class="form-inline ui small form" params="[tab: params.tab]">
+    <g:form action="currentSurveysConsortia" controller="survey" method="post" class="form-inline ui small form" params="[tab: params.tab]">
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
