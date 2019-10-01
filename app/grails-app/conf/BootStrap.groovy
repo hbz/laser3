@@ -3209,6 +3209,7 @@ No Host Platform URL Content
         def namespaces = [
                             [ns: "GND", typ: "com.k_int.kbplus.Creator"],
                             [ns: "ISIL"],
+                            [ns: "ISIL_Paketsigel"],
                             [ns: "uri"],
                             [ns: "zdb"],
                             [ns: "zdb_ppn"],
@@ -3220,7 +3221,8 @@ No Host Platform URL Content
         namespaces.each { namespaceproperties ->
             def namespace = namespaceproperties["ns"]
             def typ = namespaceproperties["typ"]?:null
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ).save(flush: true);
+            //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save(flush: true);
 
         }
 
