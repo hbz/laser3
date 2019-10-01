@@ -26,6 +26,8 @@ import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ADMINISTRATIVE
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ALLIANCE
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_CONSORTIAL
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_NATIONAL
+import static de.laser.helper.RDStore.getTIPP_DELETED
+import static de.laser.helper.RDStore.getTIPP_STATUS_CURRENT
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -487,6 +489,48 @@ class SurveyController {
         }
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
+
+        result
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyTitles() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.contextOrg = contextService.getOrg()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        String base_qry = null
+        Map<String,Object> qry_params = [subscription: result.surveyConfig?.subscription]
+
+
+
+        def date_filter
+        date_filter = new Date()
+        result.as_at_date = date_filter
+        base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+        base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+        qry_params.startDate = date_filter
+        qry_params.endDate = date_filter
+
+
+        base_qry += " and ie.status = :current "
+        qry_params.current = TIPP_STATUS_CURRENT
+
+        base_qry += "order by lower(ie.tipp.title.title) asc"
+
+        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
+
+        result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
 
         result
 

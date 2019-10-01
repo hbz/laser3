@@ -28,7 +28,7 @@
         </sec:ifAnyGranted>
     </g:if>
 
-    <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER', 'ORG_CONSORTIUM_SURVEY'] && subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_INST" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 
