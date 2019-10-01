@@ -86,14 +86,14 @@ ${surveyInfo?.name}
 
         <g:set var="consortiaSubscriptions" value="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
         <g:set var="surveyParticipants" value="${surveyConfig?.orgs?.size()}"/>
-        <g:set var="totalOrgs" value="${orgsContinuetoSubscription?.size()+newOrgsContinuetoSubscription?.size()+orgsWithMultiYearTermSub?.size()+orgsLateCommers?.size()+orgsWithTermination?.size()+orgsWithoutResult?.size()}"/>
+        <g:set var="totalOrgs" value="${(orgsContinuetoSubscription?.size()?:0)+(newOrgsContinuetoSubscription?.size()?:0)+(orgsWithMultiYearTermSub?.size()?:0)+(orgsLateCommers?.size()?:0)+(orgsWithTermination?.size()?:0)+(orgsWithoutResult?.size()?:0)+(orgsWithParticipationInParentSuccessor?.size()?:0)}"/>
 
 
         <h3 class="ui left aligned icon header">
-            ${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}
+            <g:link action="evaluationConfigsInfo" id="${surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" >${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}</g:link>
             <semui:totalNumber total="${surveyParticipants}"/>
             <br>
-            ${message(code: 'renewalwithSurvey.orgsInSub')}
+            <g:link controller="subscription" action="members" id="${parentSubscription?.id}" >${message(code: 'renewalwithSurvey.orgsInSub')}</g:link>
             <semui:totalNumber class="${surveyParticipants != consortiaSubscriptions ? 'red': ''}" total="${consortiaSubscriptions}"/>
             <br>
             ${message(code: 'renewalwithSurvey.orgsTotalInRenewalProcess')}
@@ -104,7 +104,7 @@ ${surveyInfo?.name}
         <br>
 
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.continuetoSubscription.label')} <semui:totalNumber
-                total="${orgsContinuetoSubscription?.size()}"/></h4>
+                total="${orgsContinuetoSubscription?.size()?:0}"/></h4>
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -155,7 +155,7 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
-                        <br><br>
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
@@ -284,7 +284,7 @@ ${surveyInfo?.name}
         <br>
 
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
-                total="${newOrgsContinuetoSubscription?.size()}"/></h4>
+                total="${newOrgsContinuetoSubscription?.size()?:0}"/></h4>
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -335,7 +335,7 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
-                        <br><br>
+                        <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
@@ -465,7 +465,7 @@ ${surveyInfo?.name}
         <br>
 
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
-                total="${orgsWithMultiYearTermSub?.size()}"/></h4>
+                total="${orgsWithMultiYearTermSub?.size()?:0}"/></h4>
 
         <table class="ui celled la-table table">
             <thead>
@@ -489,6 +489,57 @@ ${surveyInfo?.name}
                         <td>
                             ${subscriberOrg?.sortname}
                             <br>
+
+                            <g:link controller="organisation" action="show"
+                                    id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
+                        </td>
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                        <td>${sub.status.getI10n('value')}</td>
+                        <td>
+                            <g:if test="${sub}">
+                                <g:link controller="subscription" action="show" id="${sub?.id}"
+                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+                            <g:if test="${sub?.getCalculatedSuccessor()}">
+                                <br>
+                                <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
+                                        class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
+                            </g:if>
+                        </td>
+                    </g:each>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+
+        <br>
+        <br>
+
+        <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
+                total="${orgsWithParticipationInParentSuccessor?.size()?:0}"/></h4>
+
+        <table class="ui celled la-table table">
+            <thead>
+            <tr>
+                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                <th>${message(code: 'default.sortname.label')}</th>
+                <th>${message(code: 'default.startDate.label')}</th>
+                <th>${message(code: 'default.endDate.label')}</th>
+                <th>${message(code: 'subscription.details.status')}</th>
+                <th>${message(code: 'default.actions')}</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${orgsWithParticipationInParentSuccessor}" var="sub" status="i">
+                <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
+                    <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
+                        <td>
+                            ${subscriberOrg?.sortname}
                             <br>
                             <g:link controller="organisation" action="show"
                                     id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
@@ -516,8 +567,9 @@ ${surveyInfo?.name}
         <br>
         <br>
 
+
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsLateCommers.label')} <semui:totalNumber
-                total="${orgsLateCommers?.size()}"/></h4>
+                total="${orgsLateCommers?.size()?:0}"/></h4>
 
         <table class="ui celled la-table table">
             <thead>
@@ -540,7 +592,7 @@ ${surveyInfo?.name}
                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                         <td>
                             ${subscriberOrg?.sortname}
-                            <br><br>
+                            <br>
                             <g:link controller="organisation" action="show"
                                     id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
                         </td>
@@ -568,7 +620,7 @@ ${surveyInfo?.name}
         <br>
 
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.withTermination.label')} <semui:totalNumber
-                total="${orgsWithTermination?.size()}"/></h4>
+                total="${orgsWithTermination?.size()?:0}"/></h4>
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -613,7 +665,6 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
-                        <br>
                         <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
@@ -717,7 +768,7 @@ ${surveyInfo?.name}
         <br>
 
         <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsWithoutResult.label')} <semui:totalNumber
-                total="${orgsWithoutResult?.size()}"/></h4>
+                total="${orgsWithoutResult?.size()?:0}"/></h4>
 
         <table class="ui celled sortable table la-table">
             <thead>
@@ -765,7 +816,7 @@ ${surveyInfo?.name}
                         </g:link>
 
                         <br>
-                        <br>
+
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
