@@ -198,7 +198,7 @@ class TaskService {
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
         //TODO: MAX und OFFSET anders festlegen
-//        Map maxOffset = [max: 1000, offset: 0]
+        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
             if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
                 def qry_params_for_lic = [
