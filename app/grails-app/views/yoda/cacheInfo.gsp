@@ -55,7 +55,7 @@
         </dl>
 
         <g:link class="ui button negative"
-                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
+                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
 
     </div>
 </g:each>
@@ -80,7 +80,7 @@
         </ul>
 
         <g:link class="ui button negative"
-                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache löschen</g:link>
+                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache leeren</g:link>
 
     </div>
 </g:each>
