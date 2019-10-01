@@ -75,12 +75,14 @@ class FinanceController extends AbstractDebugController {
             params.comboType = 'Consortium'
             def fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+            result.subMembersLabel = 'subscription.details.consortiaMembers.label'
         }
         else if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
             result.showView = "coll"
             params.comboType = 'Department'
             def fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+            result.subMembersLabel = 'subscription.details.collectiveMembers.label'
         }
         else result.showView = "subscr"
         if(params.ownSort)
@@ -131,6 +133,7 @@ class FinanceController extends AbstractDebugController {
             params.comboType = "Consortium"
             Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+            result.subMembersLabel = 'subscription.details.consortiaMembers.label'
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_COLLECTIVE)) {
             if(result.subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_COLLECTIVE)
@@ -142,6 +145,7 @@ class FinanceController extends AbstractDebugController {
             params.comboType = "Department"
             Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+            result.subMembersLabel = 'subscription.details.collectiveMembers.label'
         }
         else if(OrgRole.findBySubAndOrgAndRoleTypeInList(result.subscription,result.institution,[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]))
             result.showView = "subscr"

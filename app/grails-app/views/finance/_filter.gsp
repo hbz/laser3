@@ -19,7 +19,9 @@
                 <%-- this test includes the check if the filter is called for a subscription consortia --%>
                 <g:if test="${subscriptionParticipants && !showView.equals("consAtSubscr")}">
                     <div class="field">
-                        <label for="filterSubMembers">${message(code:'subscription.details.members.label')}</label>
+                        <label for="filterSubMembers">
+                            <g:message code="${subMembersLabel}"/>
+                        </label>
                         <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPreset?.filterSubMembers}"
                                   class="ui fluid search dropdown" from="${subscriptionParticipants}" optionKey="id" optionValue="name"
                                   noSelection="${['':'Alle ..']}"
