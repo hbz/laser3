@@ -832,7 +832,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
 		  def newChecked = [:]
@@ -853,7 +853,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateIssueEntitlementOverwrite() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)

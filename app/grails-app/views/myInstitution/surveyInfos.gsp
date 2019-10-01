@@ -340,7 +340,7 @@ ${message(code: 'survey.label')} - ${surveyInfo.name}
 
 </g:if>
 <g:if test="${editable}">
-    <g:link class="ui button" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}">
+    <g:link class="ui button green" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}">
         <g:message code="surveyResult.finish.info2"/>
     </g:link>
 </g:if>

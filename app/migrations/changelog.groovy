@@ -38,4 +38,5 @@ databaseChangeLog = {
 	include file: 'changelog-98.groovy'
 
 	include file: 'changelog-100.groovy'	// v1.0
+	include file: 'changelog-101.groovy'
 }

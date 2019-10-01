@@ -2,6 +2,7 @@ package de.laser.helper
 
 
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.SurveyProperty
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -148,7 +149,15 @@ class RDStore {
     static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation','Share Configuration') //maps to key, value is correct!
     static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members','Share Configuration')
 
+    //Properties
+
+    static final SURVEY_PARTICIPATION_PROPERTY = getSurveyProperty('Participation')
+
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
+    }
+
+    static SurveyProperty getSurveyProperty(String name) {
+        (SurveyProperty) GrailsHibernateUtil.unwrapIfProxy( SurveyProperty.getByName(name))
     }
 }

@@ -326,3 +326,7 @@ h1 .icon.h1-icon-overwrite {
 .ui.label.survey-interest {
     background-color: deepskyblue;
 }
+
+.ui.label.survey-selection {
+    background-color: #ffdf00;
+}

@@ -1755,6 +1755,7 @@ class SurveyController {
         result.parentSubscription = result.surveyConfig?.subscription
         result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
 
@@ -1805,9 +1806,17 @@ class SurveyController {
                 }
             }
         }
+        result.orgsWithParticipationInParentSuccessor = []
+        result.parentSuccessorSubChilds?.each { sub ->
+            sub?.getAllSubscribers()?.each { org ->
+                if(! (org?.id in selecetedParticipantIDs)) {
+                    result.orgsWithParticipationInParentSuccessor  << sub
+                }
+            }
+        }
 
         result.orgsWithTermination = []
-        if(selecetedParticipantIDs) {
+            if(selecetedParticipantIDs) {
             //Orgs with termination there sub
             SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
                     [participant: selecetedParticipantIDs,
@@ -1818,6 +1827,7 @@ class SurveyController {
                 def newSurveyResult = [:]
                 newSurveyResult.participant = it?.participant
                 newSurveyResult.resultOfParticipation = it
+                newSurveyResult.surveyConfig = result.surveyConfig
                 newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
                          participant: it?.participant
@@ -1844,7 +1854,7 @@ class SurveyController {
                 def newSurveyResult = [:]
                 newSurveyResult.participant = it?.participant
                 newSurveyResult.resultOfParticipation = it
-
+                newSurveyResult.surveyConfig = result.surveyConfig
                 newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
                     it?.type?.getI10n('name')
                 }
@@ -1929,6 +1939,7 @@ class SurveyController {
                 def newSurveyResult = [:]
                 newSurveyResult.participant = it?.participant
                 newSurveyResult.resultOfParticipation = it
+                newSurveyResult.surveyConfig = result.surveyConfig
                 newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
                     it?.type?.getI10n('name')
                 }
@@ -1948,11 +1959,11 @@ class SurveyController {
 
 
         //MultiYearTerm Subs
-        def sumParticipantWithSub = (result.orgsContinuetoSubscription?.groupBy {
+        def sumParticipantWithSub = ((result.orgsContinuetoSubscription?.groupBy {
             it?.participant.id
-        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size() + result.orgsWithMultiYearTermSub?.size())
+        }?.size()?:0) + (result.orgsWithTermination?.groupBy { it?.participant.id }?.size()?:0) + (result.orgsWithMultiYearTermSub?.size()?:0))
 
-        if (sumParticipantWithSub < result.parentSubChilds?.size()) {
+        if (sumParticipantWithSub < result.parentSubChilds?.size()?:0) {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
             def removeSurveyResultOfOrg = []
@@ -3056,9 +3067,9 @@ class SurveyController {
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
         ]
 
-        if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey) {
-            titles << g.message(code: 'renewalwithSurvey.period')
-        }
+
+        titles << g.message(code: 'renewalwithSurvey.period')
+
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
@@ -3070,7 +3081,7 @@ class SurveyController {
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
@@ -3086,15 +3097,14 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-
                 period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
                 period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
+
+            row.add([field: period ?: '', style: null])
 
             participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
                 row.add([field: participantResultProperty?.getResult() ?: "", style: null])
@@ -3103,7 +3113,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -3117,7 +3127,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -3147,7 +3157,37 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
+
+
+        renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
+            List row = []
+
+            sub.getAllSubscribers().each{ subscriberOrg ->
+
+                row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+
+                row.add([field: '', style: null])
+
+                row.add([field: '', style: null])
+
+                def period = ""
+
+                period = sub?.startDate ? sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
+
+                row.add([field: period?: '', style: null])
+            }
+
+
+            renewalData.add(row)
+        }
+
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsLateCommers.each { sub ->
@@ -3177,7 +3217,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -3195,14 +3235,14 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = period + " - " + participantResult?.newSubPeriodTwoEndDate ? sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
             period = ""
             if (renewalResult?.multiYearTermThreeSurvey) {
                 period = participantResult?.newSubPeriodThreeStartDate ?: ""
                 period = period + " - " + participantResult?.newSubPeriodThreeEndDate ?: ""
-                row.add([field: period ?: '', style: null])
             }
+            row.add([field: period ?: '', style: null])
+
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
@@ -3212,7 +3252,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
@@ -3224,7 +3264,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label'), style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.each { participantResult ->
@@ -3237,6 +3277,8 @@ class SurveyController {
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
 
+            row.add([field: '', style: null])
+
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
@@ -3246,7 +3288,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])

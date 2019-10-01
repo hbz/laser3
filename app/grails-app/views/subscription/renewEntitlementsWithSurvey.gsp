@@ -19,10 +19,12 @@
 
 <g:render template="nav"/>
 
+%{--<g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id in [subscriptionInstance.getConsortia()?.id, subscriptionInstance.getCollective()?.id])}">
+    <g:render template="message"/>
+</g:if>--}%
+
 <%--<g:set var="counter" value="${offset + 1}"/>
 ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )--%>
-
-
 
 <g:if test="${flash.error}">
     <semui:messages data="${flash}"/>
@@ -32,19 +34,43 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     <g:hiddenField id="tippsToAdd" name="tippsToAdd"/>
     <g:hiddenField id="tippsToDelete" name="tippsToDelete"/>
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}" />
-    <g:hiddenField name="surveyFunction" value="true" />
+    <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}" />
+
+    <semui:form>
+
+        <g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
+            <div class="ui icon positive message">
+                <i class="info icon"></i>
+
+                <div class="content">
+                    <div class="header"></div>
+
+                    <p>
+                        <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                        <g:message code="renewEntitlementsWithSurvey.finish.info" />.
+                    </p>
+                </div>
+            </div>
+            <br>
+        </g:if>
+
     <div class="ui grid">
+
         <div class="row">
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source", sourceInfoMessage: 'renewalwithSurvey.generalEntitlements', surveyFunction: true]}" />
-            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target", targetInfoMessage: 'renewalwithSurvey.currentEntitlements', surveyFunction: true]}" />
+            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source", surveyFunction: true]}" />
+            <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target", surveyFunction: true]}" />
         </div>
         <div class="row">
             <div class="sixteen wide column">
-                <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="subscription.details.renewEntitlements.preliminary"/></button>
-                <button type="submit" name="process" value="finalise" class="ui red button"><g:message code="subscription.details.renewEntitlements.submit"/></button>
+                <g:if test="${editable}">
+                <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
+                <button type="submit" name="process" value="finalise" class="ui red button"><g:message code="renewEntitlementsWithSurvey.submit"/></button>
+                </g:if>
             </div>
         </div>
     </div>
+
+    </semui:form>
 </g:form>
 
 </body>

@@ -22,6 +22,9 @@ class ContextService {
     static final SERVER_QA    = 'SERVER_QA'
     static final SERVER_PROD  = 'SERVER_PROD'
 
+    static final USER_SCOPE  = 'USER_SCOPE'
+    static final ORG_SCOPE   = 'ORG_SCOPE'
+
     void setOrg(Org context) {
         GrailsHttpSession session = WebUtils.retrieveGrailsWebRequest().getSession()
         session.setAttribute('contextOrg', context)
@@ -47,10 +50,14 @@ class ContextService {
         getUser()?.authorizedOrgs
     }
 
-    EhcacheWrapper getCache(String cacheKeyPrefix) {
-        def cacheName    = "${getUser().username}#${getUser().id}"
+    EhcacheWrapper getCache(String cacheKeyPrefix, String scope) {
         def cacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
-        Cache cache      = (Cache) cacheService.getCache(cacheManager, cacheName)
+        def cacheName    = "USER:${getUser().id}"
+
+        if (scope == ORG_SCOPE) {
+            cacheName = "ORG:${getOrg().id}"
+        }
+        Cache cache = (Cache) cacheService.getCache(cacheManager, cacheName)
 
         return new EhcacheWrapper(cache, cacheKeyPrefix)
     }

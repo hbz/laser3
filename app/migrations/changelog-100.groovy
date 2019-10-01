@@ -18,12 +18,6 @@ databaseChangeLog = {
 		}
 	}
 
-/*	changeSet(author: "klober (generated)", id: "1569389997414-4") {
-		addColumn(schemaName: "public", tableName: "price_item") {
-			column(name: "pi_list_currency_rv_fk", type: "int8")
-		}
-	}*/
-
 	changeSet(author: "klober (generated)", id: "1569389997414-5") {
 		addColumn(schemaName: "public", tableName: "task") {
 			column(name: "tsk_system_create_date", type: "timestamp")
@@ -33,10 +27,6 @@ databaseChangeLog = {
 	changeSet(author: "klober (generated)", id: "1569389997414-6") {
 		modifyDataType(columnName: "idns_is_hidden", newDataType: "bool", tableName: "identifier_namespace")
 	}
-
-/*	changeSet(author: "klober (generated)", id: "1569389997414-7") {
-		dropColumn(columnName: "local_currency_id", tableName: "price_item")
-	}*/
 
 	changeSet(author: "klober (generated)", id: "1569389997414-8") {
 		modifyDataType(columnName: "ic_id", newDataType: "int8", tableName: "issue_entitlement_coverage")
@@ -115,10 +105,6 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "ie_accept_status_rv_fk", baseTableName: "issue_entitlement", baseTableSchemaName: "public", constraintName: "FK2D45F6C7F06B2DF8", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
-	//changeSet(author: "klober (generated)", id: "1569389997414-25") {
-	//	dropForeignKeyConstraint(baseTableName: "price_item", baseTableSchemaName: "public", constraintName: "fka8c4e849bf9846e6")
-	//}
-
 	changeSet(author: "djebeniani (modified)", id: "1569389997414-25") {
 		grailsChange {
 			change {
@@ -152,6 +138,4 @@ databaseChangeLog = {
 			rollback {}
 		}
 	}
-
-
 }
