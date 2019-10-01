@@ -79,7 +79,7 @@
                 </div>
             </div>
 
-            <g:if test="${config?.pickAndChoose}">
+            <g:if test="${!config?.pickAndChoose}">
                 <g:set var="finish"
                        value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
                 <g:set var="total"
@@ -108,23 +108,7 @@
                 </g:if>
 
             </g:if>
-            <g:else>
-                <div class="ui icon message">
-                    <i class="info icon"></i>
 
-                    <div class="content">
-                        <div class="header"></div>
-
-                        <p>
-                            <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                            <g:message code="showSurveyInfo.pickAndChoose.Package" />
-                        </p>
-                        <g:link controller="subscription" action="index" id="${config?.subscription?.id}">
-                            ${config?.subscription?.name}
-                        </g:link>
-                    </div>
-                </div>
-            </g:else>
             <br>
             <g:if test="${surveyConfigs}">
                 <div class="ui styled fluid accordion">

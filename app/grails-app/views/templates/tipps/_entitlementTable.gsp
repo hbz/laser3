@@ -19,14 +19,14 @@
             <g:message code="subscription" />: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
             <br>
             <br>
-            <g:message code="package" />:
+            %{--<g:message code="package" />:
             <div class="ui bulleted list">
                 <g:each in="${newSub?.packages.sort{it?.pkg?.name}}" var="subPkg">
                     <div class="item">
                         <b>${subPkg?.pkg?.name}</b>
                     </div>
                 </g:each>
-            </div>
+            </div>--}%
         </semui:form>
 
     </g:if>
@@ -74,11 +74,10 @@
                 <g:if test="${side == 'source' || (side == 'target' && isContainedByTarget)}">
                     <tr data-gokbId="${tipp.gokbId}" data-index="${counter}">
                         <td>
-                            <g:if test="${surveyFunction && isContainedByTarget}">
-
-                            </g:if><g:else>
+                            <g:if test="${!isContainedByTarget && editable}">
                                 <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
-                            </g:else>
+                            </g:if>
+
                         </td>
                         <td>${counter++}</td>
                         <td class="titleCell">
@@ -173,7 +172,7 @@
                             <g:if test="${ie.priceItem}">
                                 <g:formatNumber number="${ie?.priceItem?.listPrice}" type="currency" currencySymbol="${ie?.priceItem?.listCurrency}" currencyCode="${ie?.priceItem?.listCurrency}"/><br>
                                 <g:formatNumber number="${ie?.priceItem?.localPrice}" type="currency" currencySymbol="${ie?.priceItem?.localCurrency}" currencyCode="${ie?.priceItem?.localCurrency}"/><br>
-                                <semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                                %{--<semui:datepicker class="ieOverwrite" name="priceDate" value="${ie?.priceItem?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>--}%
 
                                 <g:set var="sumlistPrice" value="${sumlistPrice+(ie?.priceItem?.listPrice ?: 0)}"/>
                                 <g:set var="sumlocalPrice" value="${sumlocalPrice+(ie?.priceItem?.localPrice ?: 0)}"/>
