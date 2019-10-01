@@ -44,7 +44,7 @@
                             </span>
                         </div>
 
-                        <div class="center aligned four wide column">
+                        <div class="right aligned four wide column">
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                     <g:if test="${docctx?.isShared}">
