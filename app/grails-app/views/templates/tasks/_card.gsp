@@ -14,7 +14,7 @@
                     <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
                 </div>
             </div>
-            <div class="four wide column">
+            <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="tasks" class="ui mini icon negative button"
                         params='[deleteId:tsk?.id, id: params.id, returnToShow: true]'>
                     <i class="trash alternate icon"></i>

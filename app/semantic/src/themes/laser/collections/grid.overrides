@@ -1,0 +1,10 @@
+/*******************************
+         Theme Overrides
+*******************************/
+
+.ui.grid>.column:not(.row).la-column-right-lessPadding {
+  padding-right: 0.1rem;
+}
+.ui.grid>.column:not(.row).la-column-left-lessPadding {
+  padding-left: 0.1rem;
+}
