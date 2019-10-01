@@ -3,7 +3,7 @@
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPrice" value="${0}"/>
     <g:set var="sumlocalPrice" value="${0}"/>
-    <br>
+
     <g:if test="${side == 'target' && targetInfoMessage}">
         <h3 class="ui header center aligned"><g:message code="${targetInfoMessage}" /></h3>
     </g:if>
@@ -11,6 +11,44 @@
     <g:if test="${side == 'source' && sourceInfoMessage}">
         <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}" /></h3>
     </g:if>
+
+    <g:if test="${side == 'target' && surveyFunction}">
+        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.currentEntitlements" /></h2>
+
+        <semui:form>
+            <g:message code="subscription" />: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
+            <br>
+            <br>
+            <g:message code="package" />:
+            <div class="ui bulleted list">
+                <g:each in="${newSub?.packages.sort{it?.pkg?.name}}" var="subPkg">
+                    <div class="item">
+                        <b>${subPkg?.pkg?.name}</b>
+                    </div>
+                </g:each>
+            </div>
+        </semui:form>
+
+    </g:if>
+
+    <g:if test="${side == 'source' && surveyFunction}">
+        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.selectableTitles" /></h2>
+
+        <semui:form>
+            <g:message code="subscription" />: <b>${subscription?.name}</b>
+        <br>
+            <br>
+            <g:message code="package" />:
+            <div class="ui bulleted list">
+            <g:each in="${subscription?.packages.sort{it?.pkg?.name}}" var="subPkg">
+                <div class="item">
+                    <b>${subPkg?.pkg?.name}</b> (<g:message code="title.plural" />: ${subPkg?.pkg?.tipps?.size()?: 0})
+                </div>
+            </g:each>
+            </div>
+        </semui:form>
+    </g:if>
+
 
     <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="${side}">
         <thead>
@@ -70,7 +108,7 @@
                                     <b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
                                 </div>
                                 <div class="item">
-                                    <b>${message(code: 'title.summaryOfContent.label')}:</b> ${tipp?.title?.summaryOfContent}
+                                     ${tipp?.title?.summaryOfContent}
                                 </div>
                             </g:if>
                             <g:if test="${tipp.hostPlatformURL}">
@@ -144,20 +182,39 @@
                         </td>
                         <td>
 
-                            <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION}">
-                                <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
-                                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
-                                        data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                    <i class="minus icon"></i>
-                                </g:link>
+                            <g:if test="${surveyFunction}">
+                                <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveIssueEntitlementsSurvey"
+                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                        <i class="minus icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
+                                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddIssueEntitlementsSurvey"
+                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, surveyConfigID: surveyConfig?.id]}"
+                                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                        <i class="plus icon"></i>
+                                    </g:link>
+                                </g:elseif>
                             </g:if>
-                            <g:elseif test="${side == 'source' && !isContainedByTarget}">
-                                <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                        params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, surveyFunction: surveyFunction]}"
-                                        data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                    <i class="plus icon"></i>
-                                </g:link>
-                            </g:elseif>
+                            <g:else>
+                                <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == de.laser.helper.RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
+                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId, packageId: packageId]}"
+                                            data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                        <i class="minus icon"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
+                                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                            params="${[id: subscriptionInstance.id, singleTitle: tipp.gokbId]}"
+                                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                        <i class="plus icon"></i>
+                                    </g:link>
+                                </g:elseif>
+                            </g:else>
+
 
                         </td>
                     </tr>
@@ -179,8 +236,8 @@
                 <th></th>
                 <th></th>
                 <th><g:message code="financials.export.sums"/> <br>
-                    <g:formatNumber number="${sumlistPrice}" type="currency"/><br>
-                    <g:formatNumber number="${sumlocalPrice}" type="currency"/>
+                    <g:message code="tipp.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br>
+                    %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 </th>
                 <th></th>
             </tr>

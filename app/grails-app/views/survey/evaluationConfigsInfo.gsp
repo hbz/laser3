@@ -248,6 +248,15 @@
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
+
+                                <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                          data-variation="tiny"
+                                          data-content="${message(code: 'surveyResult.particiption.terminated')}">
+                                        <i class="minus circle big red icon"></i>
+                                    </span>
+                                </g:if>
+
                             </g:if>
                             <g:else>
 
@@ -370,6 +379,14 @@
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${resultProperty?.comment}">
                                         <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+
+                                <g:if test="${resultProperty?.type?.id == RDStore.SURVEY_PARTICIPATION_PROPERTY?.id && resultProperty?.getResult() == RDStore.YN_NO.getI10n('value')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
+                                          data-variation="tiny"
+                                          data-content="${message(code: 'surveyResult.particiption.terminated')}">
+                                        <i class="minus circle big red icon"></i>
                                     </span>
                                 </g:if>
                             </g:if>

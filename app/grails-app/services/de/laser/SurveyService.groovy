@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.SurveyConfig
 import com.k_int.kbplus.SurveyInfo
+import com.k_int.kbplus.SurveyOrg
 import com.k_int.kbplus.SurveyResult
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
@@ -34,6 +35,36 @@ class SurveyService {
             return false
         }
 
+
+    }
+
+    boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
+
+        if(accessService.checkPermAffiliationX('ORG_CONSORTIUM_SURVEY','INST_EDITOR','ROLE_ADMIN') && surveyConfig?.surveyInfo.owner?.id == contextService.getOrg()?.id)
+        {
+            return true
+        }
+
+        if(!surveyConfig?.pickAndChoose)
+        {
+            return false
+        }
+
+        if(surveyConfig?.surveyInfo.status != RDStore.SURVEY_SURVEY_STARTED)
+        {
+            return false
+        }
+
+        if(accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')) {
+
+            if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig).finishDate) {
+                return false
+            } else {
+                return true
+            }
+        }else{
+            return false
+        }
 
     }
 

@@ -77,6 +77,7 @@ class SubscriptionController extends AbstractDebugController {
     def escapeService
     def deletionService
     def auditService
+    def surveyService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -1042,10 +1043,13 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    Map renewEntitlementsWithSurvey() {
+    def renewEntitlementsWithSurvey() {
         params.id = params.targetSubscriptionId
         params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
         def result = loadDataFor_PackagesEntitlements()
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.subscriber = result.newSub.getSubscriber()
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
         result
     }
@@ -2343,7 +2347,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
         //result.user = User.get(springSecurityService.principal.id)
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
@@ -2401,6 +2405,77 @@ class SubscriptionController extends AbstractDebugController {
 
         redirect action: 'addEntitlements', id: result.subscriptionInstance?.id
     }
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processAddIssueEntitlementsSurvey() {
+        log.debug("processAddIssueEntitlementsSurvey....");
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.subscription = Subscription.get(params.id)
+        result.institution = result.subscription?.subscriber
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+
+        def addTitlesCount = 0
+        if (result.subscriptionInstance) {
+            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
+            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+            if(!params.singleTitle) {
+                if(cache.get('checked')) {
+                    Map checked = cache.get('checked')
+                    checked.each { k,v ->
+                        if(v == 'checked') {
+                            try {
+                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                    if(subscriptionService.addEntitlement(result.subscriptionInstance, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                                }
+                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false, ie_accept_status)) {
+                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
+                                }
+                                addTitlesCount++
+
+                            }
+                            catch (EntitlementCreationException e) {
+                                flash.error = e.getMessage()
+                            }
+                        }
+                    }
+                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [addTitlesCount])
+                }
+                else {
+                    log.error('cache error or no titles selected')
+                }
+            }
+            else if(params.singleTitle) {
+                try {
+                    if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
+                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
+                    }
+                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
+                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
+                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
+
+                }
+                catch(EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+            }
+        } else {
+            log.error("Unable to locate subscription instance");
+        }
+
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetSubscriptionId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
+    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
@@ -2416,7 +2491,7 @@ class SubscriptionController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
-        log.debug("removeEntitlements....");
+        log.debug("processRemoveEntitlements....");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
         if (!result) {
@@ -2430,17 +2505,39 @@ class SubscriptionController extends AbstractDebugController {
             log.error("Unable to locate subscription instance");
         }
 
-        if(params.surveyFunction){
-            redirect action: 'renewEntitlementsWithSurvey', model: [targetSubscriptionId: result.subscriptionInstance?.id]
-        }else {
-            redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+        redirect action: 'renewEntitlements', model: [targetSubscriptionId: result.subscriptionInstance?.id, packageId: params.packageId]
+
+    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def processRemoveIssueEntitlementsSurvey() {
+        log.debug("processRemoveIssueEntitlementsSurvey....");
+
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.subscription = Subscription.get(params.id)
+        result.institution = result.subscription?.subscriber
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        if (!result.editable) {
+            response.sendError(401); return
         }
+
+        if (result.subscriptionInstance && params.singleTitle) {
+            if(subscriptionService.deleteEntitlement(result.subscriptionInstance,params.singleTitle))
+                log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscriptionInstance.id}")
+        } else {
+            log.error("Unable to locate subscription instance");
+        }
+
+        redirect action: 'renewEntitlementsWithSurvey', params: [targetSubscriptionId: result.subscriptionInstance?.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlements() {
-        log.debug("renewEntitlements ...")
+        log.debug("processRenewEntitlements ...")
         params.id = Long.parseLong(params.id)
         params.packageId = Long.parseLong(params.packageId)
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
@@ -2451,7 +2548,7 @@ class SubscriptionController extends AbstractDebugController {
         List tippsToAdd = params."tippsToAdd".split(",")
         List tippsToDelete = params."tippsToDelete".split(",")
 
-        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+        def ie_accept_status =RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
@@ -2484,19 +2581,25 @@ class SubscriptionController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def processRenewEntitlementswithSurvey() {
-        log.debug("renewEntitlements ...")
-        params.id = Long.parseLong(params.id)
-        params.packageId = Long.parseLong(params.packageId)
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_EDIT)
-        if (!result) {
+    def processRenewEntitlementsWithSurvey() {
+        log.debug("processRenewEntitlementsWithSurvey ...")
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.subscriptionInstance = Subscription.get(params.id)
+        result.subscription = Subscription.get(params.id)
+        result.institution = result.subscription?.subscriber
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        if (!result.editable) {
             response.sendError(401); return
         }
 
         List tippsToAdd = params."tippsToAdd".split(",")
         List tippsToDelete = params."tippsToDelete".split(",")
 
-        def ie_accept_status = params.surveyFunction ? RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION: RDStore.IE_ACCEPT_STATUS_FIXED
+        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+
+        def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
 
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
@@ -2513,18 +2616,21 @@ class SubscriptionController extends AbstractDebugController {
                     log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
             }
             if(params.process == "finalise") {
-                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscriptionInstance,Package.get(params.packageId))
-                sp.finishDate = new Date()
-                if(!sp.save()) {
-                    flash.error = sp.getErrors()
+                if(surveyOrg) {
+                    surveyOrg.finishDate = new Date()
+                    if (!surveyOrg.save()) {
+                        flash.error = surveyOrg.getErrors()
+                    } else flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
                 }
-                else flash.message = message(code:'subscription.details.renewEntitlements.submitSuccess',args:[sp.pkg.name])
+                else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                }
             }
         }
         else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'index', id: params.id
+        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
