@@ -314,7 +314,7 @@ ${message(code: 'survey.label')} -
 
 
 
-            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+            <g:if test="${surveyConfig?.type == 'Subscription'}">
                 <div class="ui card ">
                     <div class="content">
 
@@ -357,7 +357,7 @@ ${message(code: 'survey.label')} -
                 </div>
             </div>
 
-            <g:if test="${surveyConfig?.type == 'Subscription' && !gascoView}">
+            <g:if test="${surveyConfig?.type == 'Subscription'}">
                 <div class="ui card la-time-card">
 
                     <div class="content">
@@ -366,13 +366,11 @@ ${message(code: 'survey.label')} -
 
                     <div class="content">
 
-                        <g:set var="surveyOrg"
-                               value="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
-                        <g:set var="costItem"
+                        <g:set var="costItemSurvey"
                                value="${com.k_int.kbplus.CostItem.findBySurveyOrg(com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution))}"/>
                         <g:set var="costItemsSub"
-                               value="${subscriptionInstance?.costItems.findAll {
-                                   it?.costItemElement?.id == costItem?.costItemElement?.id
+                               value="${subscriptionInstance?.costItems?.findAll {
+                                   it?.costItemElement?.id == costItemSurvey?.costItemElement?.id
                                }}"/>
 
                         <%
@@ -398,39 +396,41 @@ ${message(code: 'survey.label')} -
                             <tbody class="top aligned">
                             <tr>
                                 <td>
-                                    <g:each in="${costItemsSub}" var="costItemSub">
-                                        ${costItemSub?.costItemElement?.getI10n('value')}
-                                        <b><g:formatNumber
-                                                number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
-                                                minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
+                                    <g:if test="${costItemsSub}">
+                                        <g:each in="${costItemsSub}" var="costItemSub">
+                                            ${costItemSub?.costItemElement?.getI10n('value')}
+                                            <b><g:formatNumber
+                                                    number="${consCostTransfer ? costItemSub?.costInBillingCurrencyAfterTax : costItemSub?.costInBillingCurrency}"
+                                                    minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                        ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
+                                            ${(costItemSub?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                                        <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
-                                            <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
-                                        </g:if>
-                                        <br>
+                                            <g:if test="${costItemSub?.startDate || costItemSub?.endDate}">
+                                                <br>(${formatDate(date: costItemSub?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSub?.endDate, format: message(code: 'default.date.format.notime'))})
+                                            </g:if>
+                                            <br>
 
-                                    </g:each>
+                                        </g:each>
+                                    </g:if>
                                 </td>
                                 <td>
-                                    <g:if test="${costItem}">
-                                        ${costItem?.costItemElement?.getI10n('value')}
+                                    <g:if test="${costItemSurvey}">
+                                        ${costItemSurvey?.costItemElement?.getI10n('value')}
                                         <b><g:formatNumber
-                                                number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}"
+                                                number="${consCostTransfer ? costItemSurvey?.costInBillingCurrencyAfterTax : costItemSurvey?.costInBillingCurrency}"
                                                 minFractionDigits="2" maxFractionDigits="2" type="number"/></b>
 
-                                        ${(costItem?.billingCurrency?.getI10n('value').split('-')).first()}
+                                        ${(costItemSurvey?.billingCurrency?.getI10n('value').split('-')).first()}
 
-                                        <g:if test="${costItem?.startDate || costItem?.endDate}">
-                                            <br>(${formatDate(date: costItem?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItem?.endDate, format: message(code: 'default.date.format.notime'))})
+                                        <g:if test="${costItemSurvey?.startDate || costItemSurvey?.endDate}">
+                                            <br>(${formatDate(date: costItemSurvey?.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey?.endDate, format: message(code: 'default.date.format.notime'))})
                                         </g:if>
 
-                                        <g:if test="${costItem?.costDescription}">
+                                        <g:if test="${costItemSurvey?.costDescription}">
                                             <br>
 
                                             <div class="ui icon la-popup-tooltip la-delay" data-position="right center" data-variation="tiny"
-                                                 data-content="${costItem?.costDescription}">
+                                                 data-content="${costItemSurvey?.costDescription}">
                                                 <i class="question small circular inverted icon"></i>
                                             </div>
                                         </g:if>

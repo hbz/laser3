@@ -217,7 +217,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                 <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
                 </div>
                 <div class="item">
-                    <b>${message(code: 'title.summaryOfContent.label')}:</b> ${tipp?.title?.summaryOfContent}
+                     ${tipp?.title?.summaryOfContent}
                 </div>
             </g:if>
 

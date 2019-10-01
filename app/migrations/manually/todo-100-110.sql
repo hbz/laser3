@@ -27,3 +27,8 @@
 -- ALTER TABLE price_item ALTER COLUMN pi_local_currency_rv_fk DROP NOT NULL;
 -- ALTER TABLE price_item ALTER COLUMN pi_local_price DROP NOT NULL;
 -- ALTER TABLE price_item ALTER COLUMN pi_price_date DROP NOT NULL;
+
+-- 2019-09-30
+-- add coloums to surveyResult
+alter table survey_result add surre_is_required boolean;
+UPDATE survey_result set surre_is_required = false where surre_is_required is null;
