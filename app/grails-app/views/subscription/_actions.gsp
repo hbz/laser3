@@ -6,6 +6,13 @@
 
 <g:set var="user" value="${contextService.user}"/>
 <g:set var="org" value="${contextService.org}"/>
+<%
+    List menuArgs
+    if(showConsortiaFunctions)
+        menuArgs = [message(code:'subscription.details.consortiaMembers.label')]
+    else if(showCollectiveFunctions)
+        menuArgs = [message(code:'subscription.details.collectiveMembers.label')]
+%>
 
     <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
@@ -96,7 +103,7 @@
         </sec:ifAnyGranted>
 
         <g:if test="${showConsortiaFunctions || showCollectiveFunctions || subscriptionInstance.administrative}">
-            <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
+            <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
         </g:if>
 
         <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
@@ -141,7 +148,7 @@
 
               <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                          params="${[id: params.id]}"
-                                         message="subscription.details.subscriberManagement.label"/>
+                                         text="${message(code:'subscription.details.subscriberManagement.label',args:menuArgs)}"/>
         </g:if>
 
         <g:if test="${actionName == 'members'}">

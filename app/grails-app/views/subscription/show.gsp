@@ -104,7 +104,7 @@
                                     <g:else>
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
                                                                 config='Subscription Type'
-                                                                constraint="removeValue_administrativeSubscription"
+                                                                constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                         />
                                     </g:else>
                                 </dd>

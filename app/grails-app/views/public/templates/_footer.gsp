@@ -3,7 +3,7 @@
 
        <div class="ui stackable inverted divided equal height stackable grid center aligned">
 
-            <div class="four wide column left aligned" style="opacity: 0.7">
+            <div class="five wide column left aligned" style="opacity: 0.7">
                 <g:link controller="home" aria-label="${message(code:'default.home.label')}" action="index" class="header item la-logo-item">
                     <svg width="75.333344"
                             height="26.040001"
@@ -41,7 +41,7 @@
                     $('#spanYear').html(new Date().getFullYear());
                 </r:script>
                 <p>
-                    ©<span id="spanYear"></span>&nbsp;Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
+                    ©<span id="spanYear"></span>&nbsp;Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) &#8231; Jülicher Straße 6 &#8231; 50674 Köln &#8231; +49 221 400 75-0
                 </p>
             </div>
 
@@ -66,6 +66,7 @@
                 </div>
             </div>
 
+           <%--
             <div class="three wide column left aligned">
                 <h4 class="ui inverted header">
                     ${message(code: 'landingpage.footer.2.head')}
@@ -77,7 +78,9 @@
                     <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Blog" target="_blank" >${message(code: 'landingpage.footer.2.link3')}</a>
                 </div>
             </div>
-           <div class="three wide column left aligned">
+            --%>
+
+            <div class="four wide column left aligned">
                <h4 class="ui inverted header">
                    ${message(code: 'landingpage.footer.4.head')}
                </h4>
@@ -109,7 +112,7 @@
                    </div>
                </div>
            </div>
-            <div class="three wide column left aligned">
+            <div class="four wide column left aligned">
                 <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
                 <div class="ui inverted link list">
 

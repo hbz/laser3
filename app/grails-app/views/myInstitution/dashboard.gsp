@@ -38,10 +38,10 @@
                         <div class="item">
                             <g:link controller="myInstitution" action="changes">${message(code: 'myinst.todo.label', default: 'To Do')}</g:link>
                         </div>
-                        <div class="item">
-                            <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
-                            <%--<g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>--%>
-                        </div>
+                        <semui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="announcements" message="announcement.plural" />
+                        <%--<div class="item">
+                            <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
+                        </div>--%>
                         <g:if test="${grailsApplication.config.feature_finance}">
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                         </g:if>
@@ -256,7 +256,7 @@
                 </g:each>
             </div>
             <div>
-                <semui:paginate offset="${announcementOffset ? announcementOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
+                <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
         </sec:ifAnyGranted>

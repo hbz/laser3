@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}</title>
 </head>
 
 <body>
@@ -17,18 +17,18 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label')}
+    ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}
 </h1>
 
-<g:render template="navSubscriberManagement"/>
+<g:render template="navSubscriberManagement" model="${[args:args]}"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.propertiesMembers.header')}
+${message(code: 'subscription.propertiesMembers.header',args:args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -83,15 +83,15 @@ ${message(code: 'subscription.propertiesMembers.header')}
 
             <div class="ui bulleted list">
                 <div class="item">
-                    <g:message code="subscription.propertiesMembers.info2"/>
+                    <g:message code="subscription.propertiesMembers.info2" args="${args.memberTypeSingle}"/>
                 </div>
 
                 <div class="item">
-                    <g:message code="subscription.propertiesMembers.info3" args="${args.superOrgType}"/>
+                    <g:message code="subscription.propertiesMembers.info3" args="${[args.superOrgType[0],args.memberType[0]]}"/>
                 </div>
 
                 <div class="item">
-                    <g:message code="subscription.propertiesMembers.info4"/>
+                    <g:message code="subscription.propertiesMembers.info4" args="${args.memberTypeSingle}"/>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@ ${message(code: 'subscription.propertiesMembers.header')}
             <g:hiddenField name="id" value="${params.id}"/>
 
             <div class="field required">
-                <h4>${message(code: 'subscription.propertiesMembers.info')}</h4>
+                <h4>${message(code: 'subscription.propertiesMembers.info', args: args.memberType)}</h4>
 
                 <div class="inline field">
                     <label>${message(code: 'subscription.propertiesMembers.propertySelected')}:</label>
@@ -155,7 +155,7 @@ ${message(code: 'subscription.propertiesMembers.header')}
 
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo')}</h4>
+        <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo',args:args.memberType)}</h4>
 
             <g:link class="ui button js-open-confirm-modal"
                     data-confirm-term-content = "${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
@@ -553,14 +553,14 @@ ${message(code: 'subscription.propertiesMembers.header')}
 </g:if>
 <g:else>
 
-    <br><strong>
+    <br>
 
-    <g:if test="${!filteredSubChilds}"><g:message code="subscription.details.nomembers.label"
-                                                  default="No members have been added to this license. You must first add members."/></strong>
+    <g:if test="${!filteredSubChilds}">
+        <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
     </g:if>
 
-    <g:if test="${!filterPropDef}"><g:message
-            code="subscription.propertiesMembers.noPropertySeleced"/></strong>
+    <g:if test="${!filterPropDef}">
+        <strong><g:message code="subscription.propertiesMembers.noPropertySeleced" args="${args.memberTypeGenitive}"/></strong>
     </g:if>
 </g:else>
 

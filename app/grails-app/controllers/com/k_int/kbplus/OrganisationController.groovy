@@ -757,6 +757,19 @@ class OrganisationController extends AbstractDebugController {
         }
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    def addAffiliation() {
+        Map result = userService.setResultGenerics(params)
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect action: 'userEdit', id: params.id
+            return
+        }
+        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
+        redirect action: 'userEdit', id: params.id
+    }
+
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def edit() {
         redirect controller: 'organisation', action: 'show', params: params
@@ -858,7 +871,16 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        result.visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+        List visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+
+        result.visiblePersons = visiblePersons
 
         result
     }

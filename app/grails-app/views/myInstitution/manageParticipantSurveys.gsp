@@ -23,7 +23,8 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="manageParticipantSurveys" controller="myInstitution" method="get" id="${params.id}" params="[tab: params.tab]" class="form-inline ui small form">
+    <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
+            params="[tab: params.tab]" class="form-inline ui small form">
 
         <div class="three fields">
             <div class="field">
@@ -121,8 +122,10 @@
             <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
                             params="${[id: params.id, tab: 'finish']}" text="abgeschlossen" tab="finish"
                             counts="${countSurveys?.finish}"/>
-            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red" countsClass="red"
-                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen" tab="notFinish"
+            <semui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
+                            countsClass="red"
+                            params="${[id: params.id, tab: 'notFinish']}" text="vorsorgliche Kündigungen"
+                            tab="notFinish"
                             counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 
@@ -140,7 +143,10 @@
                                   title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
                 <th>${message(code: 'surveyProperty.plural.label')}</th>
                 <th><g:message code="surveyInfo.finished"/></th>
-                <th><g:message code="surveyInfo.finishedDate"/></th>
+                <g:if test="${params.tab == 'finish'}">
+                    <th><g:message code="surveyInfo.finishedDate"/></th>
+                </g:if>
+                <th class="la-action-info">${message(code: 'default.actions')}</th>
             </tr>
 
             </thead>
@@ -179,7 +185,7 @@
 
                     <td class="center aligned">
 
-                        <g:if test="${surveyConfig}">
+                        <g:if test="${surveyConfig && !surveyConfig?.pickAndChoose}">
                             <g:if test="${surveyConfig?.type == 'Subscription'}">
                                 <g:link controller="survey" action="surveyConfigsInfo" id="${surveyInfo?.id}"
                                         params="[surveyConfigID: surveyConfig?.id]" class="ui icon">
@@ -192,35 +198,36 @@
                     </td>
 
                     <td class="center aligned">
-                        <g:set var="surveyResults"
-                               value="${SurveyResult.findAllByParticipantAndSurveyConfig(Org.get(params.id), surveyConfig)}"/>
-
-                        <g:if test="${surveyResults}">
-
-                            <g:link action="surveyParticipantConsortiaNew" id="${participant?.id}" params="[surveyConfig: surveyConfig?.id]"
-                                    class="ui icon mini button">
-                            <g:if test="${surveyResults?.finishDate?.contains(null)}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"
-                                      data-content="Nicht abgeschlossen">
-                                    <i class="circle red icon"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
-
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"
-                                      data-content="${message(code: 'surveyResult.finish.info.consortia')}">
-                                    <i class="check big green icon"></i>
-                                </span>
-                            </g:else>
-                            </g:link>
-                        </g:if>
+                        <semui:surveyFinishIcon participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
                     </td>
-                    <td class="center aligned">
-                        <g:if test="${surveyResults}">
-                            <g:if test="${!surveyResults?.finishDate?.contains(null)}">
-                                <g:formatDate formatName="default.date.format.notime" date="${surveyResults?.finishDate[0]}"/>
-                            </g:if>
+                    <g:if test="${params.tab == 'finish'}">
+                        <td class="center aligned">
+                            <semui:surveyFinishDate participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}"/>
+                        </td>
+                    </g:if>
+                    <td>
+                        <g:if test="${!surveyConfig?.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link action="surveyParticipantConsortiaNew" id="${participant?.id}"
+                                        params="[surveyConfig: surveyConfig?.id]"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
                         </g:if>
+
+                        <g:if test="${surveyConfig?.pickAndChoose}">
+                            %{--<span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
+                                <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id}"
+                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id]}"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>--}%
+                        </g:if>
+
                     </td>
 
                 </tr>

@@ -79,31 +79,53 @@
                 </div>
             </div>
 
-            <g:set var="finish"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
-            <g:set var="total"
-                   value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
+            <g:if test="${config?.pickAndChoose}">
+                <g:set var="finish"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInListAndFinishDateIsNotNull(surveyInfo?.surveyConfigs).size()}"/>
+                <g:set var="total"
+                       value="${com.k_int.kbplus.SurveyResult.findAllBySurveyConfigInList(surveyInfo?.surveyConfigs).size()}"/>
 
-            <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-            <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
-                <div class="ui card">
+                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+                <g:if test="${finishProcess > 0 || surveyInfo?.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED.id}">
+                    <div class="ui card">
 
-                    <div class="content">
-                        <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
-                             data-total="100">
-                            <div class="bar">
-                                <div class="progress">${finishProcess}</div>
+                        <div class="content">
+                            <div class="ui indicating progress" id="finishProcess" data-value="${finishProcess}"
+                                 data-total="100">
+                                <div class="bar">
+                                    <div class="progress">${finishProcess}</div>
+                                </div>
+
+                                <div class="label"
+                                     style="background-color: transparent"><g:formatNumber number="${finishProcess}"
+                                                                                           type="number"
+                                                                                           maxFractionDigits="2"
+                                                                                           minFractionDigits="2"/>% <g:message
+                                        code="surveyInfo.finished"/></div>
                             </div>
-
-                            <div class="label"
-                                 style="background-color: transparent"><g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>% <g:message
-                                    code="surveyInfo.finished"/></div>
                         </div>
                     </div>
-                </div>
-            </g:if>
-            <br>
+                </g:if>
 
+            </g:if>
+            <g:else>
+                <div class="ui icon message">
+                    <i class="info icon"></i>
+
+                    <div class="content">
+                        <div class="header"></div>
+
+                        <p>
+                            <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                            <g:message code="showSurveyInfo.pickAndChoose.Package" />
+                        </p>
+                        <g:link controller="subscription" action="index" id="${config?.subscription?.id}">
+                            ${config?.subscription?.name}
+                        </g:link>
+                    </div>
+                </div>
+            </g:else>
+            <br>
             <g:if test="${surveyConfigs}">
                 <div class="ui styled fluid accordion">
 
@@ -161,7 +183,8 @@
 
                                                     <td class="x">
                                                         %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
+                                                        <span class="la-popup-tooltip la-delay"
+                                                              data-content="${message(code: 'property.share.tooltip.on')}">
                                                             <i class="green alternate share icon"></i>
                                                         </span>
                                                         <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -202,7 +225,7 @@
                                     <div class="content compact">
 
                                         <g:render template="/templates/filter/orgFilterTable"
-                                                  model="[orgList       : config?.orgs.org.sort{it?.sortname},
+                                                  model="[orgList       : config?.orgs.org.sort { it?.sortname },
                                                           tmplConfigShow: ['lineNumber', 'sortname', 'name', config?.pickAndChoose ? '' : 'surveyCostItem'],
                                                           tableID       : 'costTable',
                                                           surveyConfig  : config,
@@ -211,52 +234,52 @@
                                     </div>
 
                                     <g:if test="${!config?.pickAndChoose}">
-                                    <div class="title"><i
-                                            class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
+                                        <div class="title"><i
+                                                class="dropdown icon"></i>${message(code: 'surveyProperty.plural.label')}
 
-                                        <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.surveyProperties?.size() ?: 0}</div>
-                                    </div>
+                                            <div class="ui circular label ${config?.configFinish ? 'green' : ''}">${config?.surveyProperties?.size() ?: 0}</div>
+                                        </div>
 
-                                    <div class="content">
+                                        <div class="content">
 
-                                        <g:if test="${config?.surveyProperties}">
-                                            <table class="ui celled sortable table la-table">
-                                                <thead>
-                                                <tr>
-                                                    <th>${message(code: 'surveyProperty.name')}</th>
-                                                    <th>${message(code: 'surveyProperty.type.label')}</th>
-                                                </tr>
-
-                                                </thead>
-                                                <g:each in="${config?.surveyProperties.sort {
-                                                    it?.surveyProperty?.getI10n('name')
-                                                }}" var="prop" status="x">
+                                            <g:if test="${config?.surveyProperties}">
+                                                <table class="ui celled sortable table la-table">
+                                                    <thead>
                                                     <tr>
-
-                                                        <td>
-                                                            ${prop?.surveyProperty?.getI10n('name')}
-
-                                                            <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
-                                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                                      data-position="right center"
-                                                                      data-content="${prop?.surveyProperty?.getI10n('explain')}">
-                                                                    <i class="question circle icon"></i>
-                                                                </span>
-                                                            </g:if>
-
-                                                        </td>
-                                                        <td>
-                                                            ${message(code: 'surveyConfigs.surveyPropToSub')}
-                                                            <br>
-                                                            <b>${message(code: 'surveyProperty.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
-
-                                                        </td>
+                                                        <th>${message(code: 'surveyProperty.name')}</th>
+                                                        <th>${message(code: 'surveyProperty.type.label')}</th>
                                                     </tr>
-                                                </g:each>
-                                            </table>
-                                        </g:if>
 
-                                    </div>
+                                                    </thead>
+                                                    <g:each in="${config?.surveyProperties.sort {
+                                                        it?.surveyProperty?.getI10n('name')
+                                                    }}" var="prop" status="x">
+                                                        <tr>
+
+                                                            <td>
+                                                                ${prop?.surveyProperty?.getI10n('name')}
+
+                                                                <g:if test="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                                          data-position="right center"
+                                                                          data-content="${prop?.surveyProperty?.getI10n('explain')}">
+                                                                        <i class="question circle icon"></i>
+                                                                    </span>
+                                                                </g:if>
+
+                                                            </td>
+                                                            <td>
+                                                                ${message(code: 'surveyConfigs.surveyPropToSub')}
+                                                                <br>
+                                                                <b>${message(code: 'surveyProperty.type.label')}: ${prop?.surveyProperty?.getLocalizedType()}</b>
+
+                                                            </td>
+                                                        </tr>
+                                                    </g:each>
+                                                </table>
+                                            </g:if>
+
+                                        </div>
                                     </g:if>
                                 </g:if>
                             </div>

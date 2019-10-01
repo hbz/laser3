@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args:args.memberType)}</title>
 </head>
 
 <body>
@@ -17,18 +17,18 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}"/>
 
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label')}
+    ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}
 </h1>
 
-<g:render template="navSubscriberManagement" />
+<g:render template="navSubscriberManagement" model="${[args:args]}"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesMembers.header')}
+${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -72,7 +72,7 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkPackagesMembers.info')}</h4>
+                <h4>${message(code: 'subscription.linkPackagesMembers.info',args: args.memberType)}</h4>
 
                 <label><g:message code="subscription.linkPackagesMembers.package.label" args="${args.superOrgType}"/></label>
                 <g:if test="${validPackages}">
@@ -222,8 +222,7 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
     </div>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label"
-                           default="No members have been added to this license. You must first add members."/></strong>
+    <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
 <div id="magicArea"></div>

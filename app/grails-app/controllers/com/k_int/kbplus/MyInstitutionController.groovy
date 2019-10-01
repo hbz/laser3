@@ -30,6 +30,7 @@ import org.springframework.validation.FieldError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.nio.charset.Charset
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
@@ -62,6 +63,7 @@ class MyInstitutionController extends AbstractDebugController {
     def titleStreamService
     def financeService
     def surveyService
+    def cacheService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -183,22 +185,52 @@ class MyInstitutionController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-        long timestamp = System.currentTimeSeconds()
+        long timestamp = System.currentTimeMillis()
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result.max = params.max ?: result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ?: 0
 
-        List currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+        def cache = contextService.getCache('MyInstitutionController/currentPlatforms/', contextService.ORG_SCOPE)
+
+        List currentSubIds = []
+        List allLocals     = []
+        List allSubscrCons = []
+        List allSubscrColl = []
+        List allConsOnly   = []
+        List allCollOnly   = []
+
+        if (cache.get('currentSubInfo')) {
+            def currentSubInfo = cache.get('currentSubInfo')
+            currentSubIds = currentSubInfo['currentSubIds']
+            allLocals     = currentSubInfo['allLocals']
+            allSubscrCons = currentSubInfo['allSubscrCons']
+            allSubscrColl = currentSubInfo['allSubscrColl']
+            allConsOnly   = currentSubInfo['allConsOnly']
+            allCollOnly   = currentSubInfo['allCollOnly']
+
+            log.debug('currentSubInfo from cache')
+        }
+        else {
+            currentSubIds = orgTypeService.getCurrentSubscriptions(contextService.getOrg()).collect{ it.id }
+            allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
+            allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
+            allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
+            allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
+            allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
+
+            cache.put('currentSubInfo', [
+                    currentSubIds: currentSubIds,
+                    allLocals: allLocals,
+                    allSubscrCons: allSubscrCons,
+                    allSubscrColl: allSubscrColl,
+                    allConsOnly: allConsOnly,
+                    allCollOnly: allCollOnly
+            ])
+        }
 
         result.subscriptionMap = [:]
-
-        List allLocals     = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER).collect{ it -> it.sub.id }
-        List allSubscrCons = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_CONS).collect{ it -> it.sub.id }
-        List allSubscrColl = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIBER_COLLECTIVE).collect{ it -> it.sub.id }
-        List allConsOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).collect{ it -> it.sub.id }
-        List allCollOnly   = OrgRole.findAllWhere(org: contextService.getOrg(), roleType: RDStore.OR_SUBSCRIPTION_COLLECTIVE).collect{ it -> it.sub.id }
 
         if(currentSubIds) {
             /*
@@ -278,13 +310,8 @@ class MyInstitutionController extends AbstractDebugController {
         else result.platformInstanceList = []
         result.platformInstanceTotal    = result.platformInstanceList.size()
 
-
-        //println "platformSubscriptionList: " + platformSubscriptionList.size()
-        //println "allLocals:                " + allLocals.size()
-        //println "allSubscrCons:            " + allSubscrCons.size()
-        //println "allConsOnly:              " + allConsOnly.size()
-
-        //println "${System.currentTimeSeconds() - timestamp} Sekunden"
+        result.plt = (System.currentTimeMillis() - timestamp)
+        result.cachedContent = true
 
         result
     }
@@ -445,7 +472,7 @@ from License as l where (
             List rows = []
             totalLicenses.each { licObj ->
                 License license = (License) licObj
-                List row = [[field:license.reference.replaceAll(',',' '),style:null]]
+                List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
                 List linkedSubs = license.subscriptions.collect { sub ->
                     sub.name
                 }
@@ -682,16 +709,28 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
+        long timestamp = System.currentTimeMillis()
 
         def result = setResultGenerics()
 
+        def cache = contextService.getCache('MyInstitutionController/currentProviders/', contextService.ORG_SCOPE)
+        List orgIds = []
+
+        if (cache.get('orgIds')) {
+            orgIds = cache.get('orgIds')
+            log.debug('orgIds from cache')
+        }
+        else {
+            List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
+            List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
+            providers.addAll(agencies)
+            orgIds = providers.unique().collect{ it2 -> it2.id }
+
+            cache.put('orgIds', orgIds)
+        }
+
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
-
-        providers.addAll(agencies)
-        List orgIds = providers.unique().collect{ it2 -> it2.id }
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -711,6 +750,10 @@ from License as l where (
         SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
+
+        result.plt = (System.currentTimeMillis() - timestamp)
+        result.cachedContent = true
+
         if ( params.exportXLS ) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
@@ -924,7 +967,7 @@ from License as l where (
             switch (format) {
                 case "xls":
                 case "xlsx":
-                    row.add([field: sub.name ?: "", style: null])
+                    row.add([field: sub.name ?: "", style: 'bold'])
                     List ownerReferences = sub.owner?.collect {
                         it.reference
                     }
@@ -2192,8 +2235,8 @@ AND EXISTS (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.announcementOffset = 0
         result.dashboardDueDatesOffset = 0
         switch(params.view) {
@@ -2476,6 +2519,7 @@ AND EXISTS (
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+            log.debug(Charset.defaultCharset())
             if(encoding == "UTF-8") {
                 result.filename = tsvFile.originalFilename
                 Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
@@ -2820,6 +2864,9 @@ AND EXISTS (
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableComboDeptOrgs << result.institution
+        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
+            result.orgLabel = message(code:'collective.member.plural')
+        else result.orgLabel = message(code:'default.institution')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/templates/user/_edit', model: result
@@ -2866,14 +2913,7 @@ AND EXISTS (
             redirect action: 'userEdit', id: params.id
             return
         }
-
-        Org org = Org.get(params.org)
-        Role formalRole = Role.get(params.formalRole)
-
-        if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
-        }
-
+        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
         redirect action: 'userEdit', id: params.id
     }
 
@@ -4094,19 +4134,19 @@ AND EXISTS (
     private def getSurveyParticipantCounts(Org participant){
         def result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null)))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                 participant: participant]).groupBy {it.id[1]}.size()
 
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and not exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and ((surInfo.status = :status or surInfo.status = :status2 or surInfo.status = :status3) and exists (select surResult from surConfig.surResults surResult where surResult.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_COMPLETED,
                  status2: RDStore.SURVEY_IN_EVALUATION,
                  status3: RDStore.SURVEY_COMPLETED,

@@ -118,7 +118,7 @@
                                     <input id="radioLicensee" type="radio" value="Licensee" name="orgRole" tabindex="0" class="hidden"
                                            <g:if test="${params.orgRole == 'Licensee'}">checked=""</g:if>
                                     >
-                                    <label for="radioLicensee">${message(code: 'subscription.details.members.label')}</label>
+                                    <label for="radioLicensee">${message(code: 'subscription.details.consortiaMembers.label')}</label>
                                 </div>
                             </div>
 
@@ -158,7 +158,7 @@
                     <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
                 </g:if>
                   <g:if test="${params.orgRole == 'Licensing Consortium'}">
-                      <th>${message(code:'license.details.incoming.childs')}</th>
+                      <th>${message(code:'license.details.incoming.childs',args:[message(code:'consortium.superOrgType')])}</th>
                   </g:if>
                   <th>${message(code:'license.status')}</th>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />

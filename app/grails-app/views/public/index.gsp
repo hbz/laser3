@@ -75,23 +75,30 @@
                         <h1>NEWS</h1>
                     </div>
 
-                    <span class="ui basic blue left pointing  label la-eye-catcher-txt">
+                    <span class="ui basic blue left pointing label la-eye-catcher-txt">
 
-                        <strong>GASCO-Produktsuche via LAS:eR aktiv</strong>
+                        <strong>LAS:eR ist neue hbz-Dienstleistung</strong>
+                        <br />
+                        <br />
+
+                        Ab dem 01.10.2019 ist das Electronic Resource Management System LAS:eR eine Dienstleistung des hbz.
+                        Der Dienst wird bereits bundesweit von Hochschulbibliotheken und Konsortialführern zur Lizenzverwaltung eingesetzt,
+                        die durch das Software as a Service (SaaS)-Modell webbasiert Zugriff auf die jeweils aktuelle Version der Software haben
+                        und somit auch von neu hinzukommenden Features, Komfort-Funktionen und Verbesserungen ohne zusätzlichen Installationsaufwand profitieren.
 
                         <br />
                         <br />
 
-                        Als erstes allgemein nutzbares Zusatzfeature ist ab sofort der GASCO-Monitor unter
-                        <a href="https://laser.hbz-nrw.de/gasco">https://laser.hbz-nrw.de/gasco</a> verfügbar,
-                        <br/>
-
-                        der aus den Eintragungen der projektbeteiligten Konsortialstellen und der GASCO-Teilnehmer automatisiert einen Index
-                        der konsortial verfügbaren Produkte erzeugt und somit die bisher manuell zusammengestellte GASCO-Liste ablöst.
+                        Das LAS:eR-Support-Team (<a href="mailto:laser_support@hbz-nrw.de">laser_support@hbz-nrw.de</a>) unterstützt die teilnehmenden Einrichtungen
+                        durch Schulungen und Dokumentationen und ist erster Ansprechpartner bei technischen Problemen.
 
                         <br />
                         <br />
 
+                        Falls Sie weiterführende Fragen zur LAS:eR-Dienstleistung haben oder LAS:eR an Ihrer Einrichtung zur lokalen Lizenzverwaltung einsetzen möchten,
+                        kontaktieren Sie uns: <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a>
+
+                        <br />
                     </span>
                 </div>
 

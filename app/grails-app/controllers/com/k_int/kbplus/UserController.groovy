@@ -136,13 +136,11 @@ class UserController extends AbstractDebugController {
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
             else {*/
-                result.availableOrgs = Org.executeQuery(
-                        'from Org o where o.sector.value = :sec and (o.status is null or o.status.value != \'Deleted\') and o not in ( ' +
-                        'select c.fromOrg from Combo c where c.type = :type' +
-                        ') ) order by o.sortname',
-                        [sec: 'Higher Education', type: RDStore.COMBO_TYPE_DEPARTMENT]
+                result.availableOrgs = Org.executeQuery("select o from Org o left join o.status s where exists (select os.org from OrgSettings os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
+                        [customerType: OrgSettings.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
+            result.manipulateAffiliations = true
             //}
         }
         render view: '/templates/user/_edit', model: result
@@ -217,10 +215,11 @@ class UserController extends AbstractDebugController {
             return
         }
 
+        result.breadcrumb = 'breadcrumb'
         result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        result
+        render view: '/templates/user/_create', model: result
     }
 
     @Secured(['ROLE_ADMIN'])

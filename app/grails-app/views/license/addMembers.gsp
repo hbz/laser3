@@ -5,14 +5,14 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
     <semui:crumb controller="license" action="show" id="${license.id}" text="${license.reference}"/>
-    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
