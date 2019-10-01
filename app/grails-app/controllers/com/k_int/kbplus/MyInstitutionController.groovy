@@ -30,6 +30,7 @@ import org.springframework.validation.FieldError
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
+import java.nio.charset.Charset
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.text.RuleBasedCollator
@@ -2476,6 +2477,7 @@ AND EXISTS (
         CommonsMultipartFile tsvFile = params.tsvFile
         if(tsvFile && tsvFile.size > 0) {
             String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+            log.debug(Charset.defaultCharset())
             if(encoding == "UTF-8") {
                 result.filename = tsvFile.originalFilename
                 Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)
