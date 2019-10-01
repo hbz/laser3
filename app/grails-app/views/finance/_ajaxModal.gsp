@@ -334,8 +334,12 @@
                             Subscription contextSub
                             if(costItem && costItem.sub) contextSub = costItem.sub
                             else if(sub) contextSub = sub
-                            if(tab in ["cons","coll","collAsSubscr"]){
-                                //member subscriptions
+                            if(tab == "cons" && contextSub.instanceOf) {
+                                //consortia member subscriptions
+                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub.instanceOf, RDStore.SUBSCRIPTION_DELETED)
+                            }
+                            else if(tab in ["cons","coll","collAsSubscr"]){
+                                //department subscriptions
                                 validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
                             }
                             else if(tab == "subscr" && contextSub.getCollective()?.id == org.id) {

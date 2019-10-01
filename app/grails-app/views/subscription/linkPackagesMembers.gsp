@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -162,9 +162,10 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                         <div class="ui middle aligned selection list">
                             <g:each in="${sub.packages.sort { it.pkg.name }}" var="sp">
+                                <g:set var="childPkgHasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp',[sp:sp.id])}"/>
                                 <div class="item">
                                     <div class="right floated content">
-                                        <g:if test="${editable}">
+                                        <g:if test="${editable && !childPkgHasCostItems}">
                                             <div class="ui icon negative buttons">
                                                 <button class="ui button la-selectable-button"
                                                         onclick="unlinkPackage(${sp.pkg.id}, ${sub.id})">
@@ -173,6 +174,14 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
                                             </div>
                                             <br/>
                                         </g:if>
+                                        <g:elseif test="${editable && childPkgHasCostItems}">
+                                            <div class="ui icon negative buttons">
+                                                <button class="ui button la-selectable-button disabled">
+                                                    <i class="unlink icon"></i>
+                                                </button>
+                                            </div>
+                                            <br/>
+                                        </g:elseif>
                                     </div>
 
                                     <div class="content">
@@ -180,6 +189,9 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
                                                 params="[pkgfilter: sp.pkg?.id]">
                                             ${sp?.pkg?.name}<br>${raw(sp.getIEandPackageSize())}
                                         </g:link>
+                                        <g:if test="${editable && childPkgHasCostItems}">
+                                            <br><g:message code="subscription.delete.existingCostItems"/>
+                                        </g:if>
                                     </div>
                                 </div>
                             </g:each>
