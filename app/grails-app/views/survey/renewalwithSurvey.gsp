@@ -84,12 +84,20 @@ ${surveyInfo?.name}
 
         <br>
 
+        <g:set var="consortiaSubscriptions" value="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+        <g:set var="surveyParticipants" value="${surveyConfig?.orgs?.size()}"/>
+        <g:set var="totalOrgs" value="${orgsContinuetoSubscription?.size()+newOrgsContinuetoSubscription?.size()+orgsWithMultiYearTermSub?.size()+orgsLateCommers?.size()+orgsWithTermination?.size()+orgsWithoutResult?.size()}"/>
+
+
         <h3 class="ui left aligned icon header">
             ${message(code: 'survey.label')} ${message(code: 'surveyParticipants.label')}
-            <semui:totalNumber total="${surveyConfig?.orgs?.size()}"/>
+            <semui:totalNumber total="${surveyParticipants}"/>
             <br>
-            ${message(code: 'myinst.consortiaSubscriptions.member')}
-            <semui:totalNumber total="${com.k_int.kbplus.Subscription.findAllByInstanceOf(parentSubscription)?.size()}"/>
+            ${message(code: 'renewalwithSurvey.orgsInSub')}
+            <semui:totalNumber class="${surveyParticipants != consortiaSubscriptions ? 'red': ''}" total="${consortiaSubscriptions}"/>
+            <br>
+            ${message(code: 'renewalwithSurvey.orgsTotalInRenewalProcess')}
+            <semui:totalNumber class="${totalOrgs != consortiaSubscriptions ? 'red': ''}" total="${totalOrgs}"/>
         </h3>
 
         <br>
@@ -147,7 +155,7 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
-                        <br>
+                        <br><br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
@@ -327,7 +335,7 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
-                        <br>
+                        <br><br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
 
@@ -479,7 +487,9 @@ ${surveyInfo?.name}
                     </td>
                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                         <td>
-                            ${subscriberOrg?.sortname}<br>
+                            ${subscriberOrg?.sortname}
+                            <br>
+                            <br>
                             <g:link controller="organisation" action="show"
                                     id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
                         </td>
@@ -490,6 +500,62 @@ ${surveyInfo?.name}
                             <g:if test="${sub}">
                                 <g:link controller="subscription" action="show" id="${sub?.id}"
                                         class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+                            <g:if test="${sub?.getCalculatedSuccessor()}">
+                                <br>
+                                <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
+                                        class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
+                            </g:if>
+                        </td>
+                    </g:each>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+
+        <br>
+        <br>
+
+        <h4 class="ui left aligned icon header">${message(code: 'renewalwithSurvey.orgsLateCommers.label')} <semui:totalNumber
+                total="${orgsLateCommers?.size()}"/></h4>
+
+        <table class="ui celled la-table table">
+            <thead>
+            <tr>
+                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                <th>${message(code: 'default.sortname.label')}</th>
+                <th>${message(code: 'default.startDate.label')}</th>
+                <th>${message(code: 'default.endDate.label')}</th>
+                <th>${message(code: 'subscription.details.status')}</th>
+                <th>${message(code: 'default.actions')}</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${orgsLateCommers}" var="sub" status="i">
+                <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
+                    <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
+                        <td>
+                            ${subscriberOrg?.sortname}
+                            <br><br>
+                            <g:link controller="organisation" action="show"
+                                    id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
+                        </td>
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                        <td>${sub.status.getI10n('value')}</td>
+                        <td>
+                            <g:if test="${sub}">
+                                <g:link controller="subscription" action="show" id="${sub?.id}"
+                                        class="ui button icon"><i class="icon clipboard"></i></g:link>
+                            </g:if>
+                            <g:if test="${sub?.getCalculatedSuccessor()}">
+                                <br>
+                                <g:link controller="subscription" action="show" id="${sub?.getCalculatedSuccessor()?.id}"
+                                        class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                             </g:if>
                         </td>
                     </g:each>
@@ -547,6 +613,7 @@ ${surveyInfo?.name}
                         <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participantResult?.participant.id}">
                             ${participantResult?.participant?.sortname}
                         </g:link>
+                        <br>
                         <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>
@@ -697,6 +764,7 @@ ${surveyInfo?.name}
                         ${participantResult?.participant?.sortname}
                         </g:link>
 
+                        <br>
                         <br>
                         <g:link controller="organisation" action="show"
                                 id="${participantResult?.participant.id}">(${fieldValue(bean: participantResult?.participant, field: "name")})</g:link>

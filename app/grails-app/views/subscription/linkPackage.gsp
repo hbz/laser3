@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <!doctype html>
 
 <html>
@@ -162,17 +162,24 @@
                                         <g:else>
                                             <span><b>${message(code: 'subscription.details.linkPackage.currentPackage', default: 'This package is already linked to the license!')}</b>
                                             </span>
-                                            <g:if test="${editable}">
-                                                <br>
-
+                                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscriptionInstance])}" />
+                                            <br>
+                                            <g:if test="${editable && !hasCostItems}">
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
                                                             onclick="unlinkPackage(${com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.id})">
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
-                                                <br/>
                                             </g:if>
+                                            <g:elseif test="${editable && hasCostItems}">
+                                                <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
+                                                    <button class="ui disabled button la-selectable-button">
+                                                        <i class="unlink icon"></i>
+                                                    </button>
+                                                </div>
+                                            </g:elseif>
+                                            <br/>
                                         </g:else>
                                     </td>
                                 </tr>
@@ -213,17 +220,24 @@
                 <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
                     <div class="item"><g:link controller="package" action="show"
                                               id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                        <g:if test="${editable}">
-                            <br>
-
+                        <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscriptionInstance,sp:sp])}"/>
+                        <br>
+                        <g:if test="${editable && !hasCostItems}">
                             <div class="ui mini icon buttons">
                                 <button class="ui button la-selectable-button"
                                         onclick="unlinkPackage(${sp.pkg.id})">
                                     <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
                                 </button>
                             </div>
-                            <br/>
                         </g:if>
+                        <g:elseif test="${editable && hasCostItems}">
+                            <div class="ui mini icon buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
+                                <button class="ui disabled button la-selectable-button">
+                                    <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
+                                </button>
+                            </div>
+                        </g:elseif>
+                        <br/>
                     </div><hr>
                 </g:each>
             </div>
