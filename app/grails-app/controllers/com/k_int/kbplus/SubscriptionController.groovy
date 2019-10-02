@@ -1537,6 +1537,7 @@ class SubscriptionController extends AbstractDebugController {
             flash.error = g.message(code: "default.notAutorized.message")
             redirect(url: request.getHeader('referer'))
         }
+        flash.error = ""
 
         result.parentSub = result.subscriptionInstance.instanceOf ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
@@ -1547,30 +1548,37 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg = :sp',[sp:pkg])) {
+                    def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                    def queryParams = [sub: subChild, pkg_id: pkg.id]
 
-                def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                def queryParams = [sub: subChild, pkg_id: pkg.id]
 
 
+                    if (subChild.isEditableBy(result.user)) {
+                        result.editable = true
+                        if (params.withIE) {
+                            //delete matches
+                            IssueEntitlement.withTransaction { status ->
+                                removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
+                                def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
 
-                if (subChild.isEditableBy(result.user)) {
-                    result.editable = true
-                    if (params.withIE) {
-                        //delete matches
-                        IssueEntitlement.withTransaction { status ->
-                            removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
-                            def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
-                            if (deleteIdList) IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList]);
+                                if (deleteIdList) {
+                                    IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                                    PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
+                                    IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                                }
+                                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
+
+                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
+                            }
+                        } else {
                             SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                            flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
+                            flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                         }
-                    } else {
-                        SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
-
-                        flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                     }
                 }
+                else flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
             }
         }
 
