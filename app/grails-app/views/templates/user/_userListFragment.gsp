@@ -44,7 +44,7 @@
                             ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                         </g:if>
                         <g:elseif test="${!showAllAffiliations}">
-                            <g:if test="${affi.org.id == contextService.getOrg().id}">
+                            <g:if test="${affi.org.id == orgInstance.id}">
                                 <g:message code="cv.roles.${affi.formalRole.authority}"/>
                             </g:if>
                             <%-- int affiCount = 0 %>
