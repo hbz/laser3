@@ -379,7 +379,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getParticipantSurveyQuery_OLD(Map params, DateFormat sdFormat, Org org) {
+    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
@@ -462,9 +462,9 @@ class FilterService {
         def defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs left join surConfig.surResults surResult  where (surResult.participant = :org or surOrgs.org = :org)  and " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where (surResult.participant = :org)  and " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs left surConfig.surResults surResult where (surResult.participant = :org or surOrgs.org = :org) " + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult where (surResult.participant = :org) " + defaultOrder
         }
         queryParams << [org : org]
 
@@ -473,7 +473,7 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getParticipantSurveyQuery(Map params, DateFormat sdFormat, Org org) {
+    Map<String,Object> getParticipantSurveyQuery_New(Map params, DateFormat sdFormat, Org org) {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
