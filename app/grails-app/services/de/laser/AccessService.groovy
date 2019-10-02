@@ -20,7 +20,7 @@ class AccessService {
 
     def grailsApplication
     def springSecurityService
-    ContextService contextService
+    def contextService
 
     // ---- new stuff here
     // ---- new stuff here

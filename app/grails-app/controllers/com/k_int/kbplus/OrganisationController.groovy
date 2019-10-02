@@ -40,9 +40,9 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(perm="FAKE,ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
 
@@ -53,7 +53,7 @@ class OrganisationController extends AbstractDebugController {
                 user:           user,
                 orgInstance:    org,
                 editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   contextService.getOrg().id == params.int('id')
+                inContextOrg:   contextService.getOrg().id == org.id
         ]
 
         result.editable = result.editable || (result.inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
@@ -70,30 +70,54 @@ class OrganisationController extends AbstractDebugController {
         }
 
         // adding default settings
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
-            )
+        organisationService.initMandatorySettings(result.orgInstance)
+
+        // collecting visible settings by customer type, role and/or combo
+        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(result.orgInstance)
+
+        List<OrgSettings.KEYS> openSet = [
+                OrgSettings.KEYS.API_LEVEL,
+                OrgSettings.KEYS.API_KEY,
+                OrgSettings.KEYS.API_PASSWORD,
+                OrgSettings.KEYS.CUSTOMER_TYPE,
+                OrgSettings.KEYS.GASCO_ENTRY
+        ]
+        List<OrgSettings.KEYS> privateSet = [
+                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+        ]
+        List<OrgSettings.KEYS> credentialsSet = [
+                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+        ]
+
+        result.settings = allSettings.findAll { it.key in openSet }
+
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.settings.addAll(allSettings.findAll { it.key in privateSet })
+            result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
         }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,''
-            )
+        else if (contextService.getOrg().id == org.id) {
+            log.debug( 'settings for own org')
+
+            if (! ['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key in privateSet })
+                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            }
+            else {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+            }
+            println org.customerType
         }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ''
-            )
-        }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
-            )
+        else if (Combo.findByFromOrgAndToOrg(org, contextService.getOrg())){
+            log.debug( 'settings for combo related org > consortia or collective')
+
+            result.settings.addAll(allSettings.findAll { it.key in privateSet })
         }
 
-        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
+        println allSettings
+        println result.settings
+
         result
     }
 
