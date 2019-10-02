@@ -62,7 +62,6 @@ class OrgSettings {
     }
 
     static List<OrgSettings.KEYS> getEditableSettings() {
-
         [
                 OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,

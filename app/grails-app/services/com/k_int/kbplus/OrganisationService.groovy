@@ -20,6 +20,7 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
+import com.k_int.kbplus.OrgSettings
 
 @Transactional
 class OrganisationService {
@@ -33,6 +34,23 @@ class OrganisationService {
 
     void initMandatorySettings(Org org) {
         log.debug('initMandatorySettings for org') //org.id call crashes when called from sync
+
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,'')
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, '')
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
 
         // called after
         // new Org.save()

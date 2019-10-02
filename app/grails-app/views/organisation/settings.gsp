@@ -21,7 +21,7 @@
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
+        <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
         <semui:messages data="${flash}" />
 
@@ -109,12 +109,12 @@
                                         </td>
                                         <td>
 
-                                            <g:if test="${os.key in OrgSettings.getEditableSettings()}">
+                                            <g:if test="${(inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) && os.key in OrgSettings.getEditableSettings()}">
                                             <%-- Refdata YN --%>
                                                 <g:if test="${os?.key?.rdc=='YN'}">
                                                 <%-- Validation through user is necessary --%>
                                                     <g:if test="${'OAMONITOR_SERVER_ACCESS'.equals(os.key.toString())}">
-                                                        <semui:xEditableRefData owner="${os}" field="rdValue"  id="oamonitor_server_access" config="${os.key.rdc}" />
+                                                        <semui:xEditableRefData owner="${os}" field="rdValue" id="oamonitor_server_access" config="${os.key.rdc}" />
                                                     </g:if>
                                                 <%-- Other Refdata YN --%>
                                                     <g:else>
