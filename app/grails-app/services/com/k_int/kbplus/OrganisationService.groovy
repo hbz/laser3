@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
+import de.laser.ContextService
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
@@ -30,6 +31,8 @@ class OrganisationService {
     def exportService
     def institutionsService
     def grailsApplication
+    def userService
+    def instAdmService
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
@@ -2461,4 +2464,63 @@ class OrganisationService {
         out
     }
 
+    void createOrgsFromScratch() {
+        def currentServer = grailsApplication.config.getCurrentServer()
+        Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
+                                          institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
+                                          singlenutzer:Role.findByAuthority('ORG_INST'),
+                                          kollektivnutzer:Role.findByAuthority('ORG_INST_COLLECTIVE'),
+                                          konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
+        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution','OrgRoleType')
+        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium','OrgRoleType')
+        RefdataValue department = RefdataValue.getByValueAndCategory('Department','OrgRoleType')
+        //create home org
+        Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+        if(!hbz) {
+            hbz = new Org(name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU)
+            hbz.save(flush:true) //I hate flush:true!!!!!
+            OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
+            grailsApplication.config.sysusers.each { su ->
+                User admin = User.findByUsername(su.name)
+                instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+            }
+        }
+        if(currentServer in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) { //take out server local when pushing code
+            Map<String,Org> modelOrgs = [konsorte: new Org(name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]),
+                                         institut: new Org(name:'Musterinstitut',orgType: [department]),
+                                         singlenutzer: new Org(name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]),
+                                         kollektivnutzer: new Org(name:'Mustereinrichtung Kollektiv',shortname:'Mustereinrichtung Kollektiv',sortname:'Musterstadt, Kollektiv',orgType: [institution]),
+                                         konsortium: new Org(name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium])]
+            Map<String,Org> testOrgs = [konsorte: new Org(name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]),
+                                        institut: new Org(name:'Testinstitut',orgType: [department]),
+                                        singlenutzer: new Org(name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]),
+                                        kollektivnutzer: new Org(name:'Testeinrichtung Kollektiv',shortname:'Testeinrichtung Kollektiv',sortname:'Teststadt, Kollektiv',orgType: [institution]),
+                                        konsortium: new Org(name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium])]
+            [modelOrgs,testOrgs].each { Map<String,Org> orgs ->
+                orgs.each { String customerType, Org org ->
+                    org.sector = RDStore.O_SECTOR_HIGHER_EDU
+                    if(org.save(flush:true)) {
+                        //other ones are covered by Org.setDefaultCustomerType()
+                        if(customerType in ['singlenutzer','kollektivnutzer','konsortium']) {
+                            OrgSettings.add(org,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes[customerType])
+                            if(customerType == 'konsortium') {
+                                orgs.konsorte.save()
+                                Combo c = new Combo(fromOrg: orgs.konsorte, toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
+                                c.save()
+                            }
+                            else if(customerType == 'kollektivnutzer') {
+                                orgs.institut.save()
+                                Combo c = new Combo(fromOrg: orgs.institut, toOrg: org, type: RDStore.COMBO_TYPE_DEPARTMENT)
+                                c.save()
+                            }
+                        }
+                    }
+                }
+                userService.setupAdminAccounts(orgs)
+            }
+        }
+        else if(currentServer == ContextService.SERVER_DEV) {
+            userService.setupAdminAccounts([konsortium:hbz])
+        }
+    }
 }

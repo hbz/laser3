@@ -121,4 +121,41 @@ class UserService {
         }
     }
 
+    void setupAdminAccounts(Map<String,Org> orgs) {
+        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test']
+        List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
+        //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
+        Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
+                                       'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
+                                       'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
+        adminUsers.each { String userKey ->
+            customerTypes.each { String customerKey ->
+                userRights.each { String rightKey, Role userRole ->
+                    String username = "${userKey}_${customerKey}_${rightKey}"
+                    User user = User.findByUsername(username)
+                    if(!user) {
+                        log.debug("create new user ${username}")
+                        user = new User(username: username,
+                                             password: "${username}_skywalker",
+                                             display: username,
+                                             email: "${userKey}@hbz-nrw.de",
+                                             enabled: true
+                        )
+                        if(!user.save()) {
+                            log.error("error on saving user ...")
+                        }
+                        else {
+                            UserRole defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
+                            defaultRole.save()
+                        }
+                    }
+                    else if(user) {
+                        if(orgs[customerKey])
+                            instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
+                        else log.debug("appropriate inst missing for affiliation key, skipping")
+                    }
+                }
+            }
+        }
+    }
 }
