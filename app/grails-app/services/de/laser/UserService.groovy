@@ -86,10 +86,11 @@ class UserService {
 
         if (! user.save()) {
             Set errMess = []
+            Object[] withArticle = new Object[messageSource.getMessage('user.withArticle.label',null,locale)]
             user.errors.fieldErrors.each { FieldError e ->
                 if(e.field == 'username' && e.code == 'unique')
                     errMess.add(messageSource.getMessage('user.not.created.message',null,locale))
-                else errMess.add(messageSource.getMessage('default.not.created.message',[messageSource.getMessage('user.withArticle.label',null,locale)],locale))
+                else errMess.add(messageSource.getMessage('default.not.created.message',withArticle,locale))
             }
             errMess
         }
@@ -135,21 +136,9 @@ class UserService {
                     User user = User.findByUsername(username)
                     if(!user) {
                         log.debug("create new user ${username}")
-                        user = new User(username: username,
-                                             password: "${username}_skywalker",
-                                             display: username,
-                                             email: "${userKey}@hbz-nrw.de",
-                                             enabled: true
-                        )
-                        if(!user.save()) {
-                            log.error("error on saving user ...")
-                        }
-                        else {
-                            UserRole defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
-                            defaultRole.save()
-                        }
+                        user = addNewUser([username: username, password: "${username}_skywalker", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
                     }
-                    else if(user) {
+                    if(user) {
                         if(orgs[customerKey])
                             instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
                         else log.debug("appropriate inst missing for affiliation key, skipping")
