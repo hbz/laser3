@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 " %>
 <laser:serviceInjection />
-
+<% def start = System.currentTimeMillis() %>
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
@@ -69,7 +69,7 @@
                 </label>
                 <g:select id="license"
                           name="license"
-                          from="${validLicenses?.sort{it?.reference}}"
+                          from="${validLicenses}"
                           optionKey="id"
                           optionValue="${{it?.dropdownNamingConvention()}}"
                           value="${ownobj?.id}"
@@ -86,7 +86,7 @@
                 %>
             <g:select id="org"
                       name="org"
-                      from="${validOrgs?.sort {it?.name}}"
+                      from="${validOrgs}"
                       optionKey="id"
                       optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"
                       value="${ownobj?.id}"
@@ -111,9 +111,9 @@
                 <g:select class="ui dropdown many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptions?.sort {it.name}}"
-                          optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"
+                          from="${validSubscriptions}"
                           optionKey="id"
+                          optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
 
@@ -172,7 +172,7 @@
                     </label>
                     <g:select id="responsibleUser"
                               name="responsibleUser.id"
-                              from="${validResponsibleUsers?.sort {it.display.toLowerCase()}}"
+                              from="${validResponsibleUsers}"
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
@@ -183,6 +183,10 @@
         </div>
 
     </g:form>
+    <% def ende = System.currentTimeMillis()
+        def dauer = ende-start
+    %>
+    ****************** DAUER: ${dauer} ******************
     <g:if test="${controllerName == 'myInstitution'}">
         <r:script>
             // initial side call

@@ -14,6 +14,7 @@ class TaskService {
 
     def springSecurityService
     def accessService
+    def filterService
 
     def getTasksByCreator(User user, Map queryMap, flag) {
         def tasks = []
@@ -192,14 +193,21 @@ class TaskService {
     }
 
     def getPreconditions(Org contextOrg) {
+        long start = System.currentTimeMillis()
         def result = [:]
-        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3))"
+        def responsibleUsersQuery   = "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = ? and (uo.status=1 or uo.status=3)) order by lower(u.display)"
         def validResponsibleOrgs    = contextOrg ? [contextOrg] : []
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
         //TODO: MAX und OFFSET anders festlegen
-        Map maxOffset = [max: 1000, offset: 0]
+//        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
+            // Anbieter und Lieferanten
+            def params       = [:]
+            params.sort      = " LOWER(o.shortname), LOWER(o.name)"
+            def fsq          = filterService.getOrgQuery(params)
+            result.validOrgs = Org.findAll(fsq.query, fsq.queryParams)
+
             if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
                 def qry_params_for_lic = [
                     lic_org:    contextOrg,
@@ -208,7 +216,7 @@ class TaskService {
                             RDStore.OR_LICENSING_CONSORTIUM
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
 
             } else if (accessService.checkPerm("ORG_INST")) {
                 def qry_params_for_lic = [
@@ -219,11 +227,26 @@ class TaskService {
                             RDStore.OR_LICENSEE_COLL
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
 
             } else {
                 result.validLicenses = []
             }
+            if (contextOrg.orgType == RDStore.OT_CONSORTIUM){
+                //TODO Sortierung!
+                result.validOrgs << Combo.findAllWhere(
+                        toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_CONSORTIUM)
+//                result.validOrgs.sort{it.sortname+it.name}
+            } else if (contextOrg.orgType == RDStore.OT_INSTITUTION){
+                //TODO Sortierung!
+                result.validOrgs << Combo.findAllWhere(
+                        toOrg: contextOrg,
+                        type:  RDStore.COMBO_TYPE_DEPARTMENT)
+//                result.validOrgs.sort{it.name+it.shortname}
+            }
+            result.validOrgs.sort{it.name}
+
             def qry_params_for_sub = [
                 'roleTypes' : [
                         RDStore.OR_SUBSCRIBER,
@@ -233,20 +256,22 @@ class TaskService {
                 ],
                 'activeInst': contextOrg
             ]
-            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub,  maxOffset)
-        }
-        else { // TODO: admin and datamanager without contextOrg possible ?
-            result.validLicenses = License.list()
+            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by lower(s.name)', qry_params_for_sub)//, maxOffset)
+        } else { // TODO: admin and datamanager without contextOrg possible ?
+            result.validLicenses      = License.list()
             result.validSubscriptions = Subscription.list()
+//            result.validOrgs          = Org.list().sort(it.name+it.shortname)
         }
 
-        result.validOrgs            = Org.list() // TODO
-        result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by p.sortName asc") // TODO
+//        result.validOrgs?.sort{it.dropdownNamingConvention(contextOrg)}
+        result.validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
 
         result.taskCreator          = springSecurityService.getCurrentUser()
         result.validResponsibleOrgs = validResponsibleOrgs
         result.validResponsibleUsers = validResponsibleUsers
-
+        long ende = System.currentTimeMillis()
+        long dauer = ende-start
+        print "Dauer in Millis: " + dauer
         result
     }
 }
