@@ -8,6 +8,7 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityService
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
@@ -617,6 +618,18 @@ class OrganisationController extends AbstractDebugController {
                 result.orgInstance.refresh()
         }
 
+        if (result.orgInstance.createdBy) {
+			if (Combo.findByFromOrgAndToOrg(result.orgInstance, result.orgInstance.createdBy)) {
+
+				result.createdByOrg = result.orgInstance.createdBy
+
+				result.createdByGeneralContacts = PersonRole.executeQuery(
+						"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+								"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+						[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+				)
+			}
+        }
 
         result
     }
