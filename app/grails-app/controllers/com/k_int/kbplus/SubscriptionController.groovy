@@ -729,8 +729,10 @@ class SubscriptionController extends AbstractDebugController {
         result.max = params.max ? Integer.parseInt(params.max) : (Integer) request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def tipp_deleted = TIPP_DELETED
-        def ie_deleted = TIPP_DELETED
+        RefdataValue tipp_deleted = TIPP_DELETED
+        RefdataValue tipp_current = TIPP_STATUS_CURRENT
+        RefdataValue ie_deleted = TIPP_DELETED
+        RefdataValue ie_current = TIPP_STATUS_CURRENT
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -744,15 +746,15 @@ class SubscriptionController extends AbstractDebugController {
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
-            def qry_params = [result.subscriptionInstance, tipp_deleted, result.subscriptionInstance, ie_deleted]
+            def qry_params = [result.subscriptionInstance, tipp_current, result.subscriptionInstance, ie_current]
 
             if (params.filter) {
                 log.debug("Filtering....");
-                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) ) and ( ( lower(tipp.title.title) like ? ) OR ( exists ( select io from IdentifierOccurrence io where io.ti.id = tipp.title.id and io.identifier.value like ? ) ) ) "
                 qry_params.add("%${params.filter.trim().toLowerCase()}%")
                 qry_params.add("%${params.filter}%")
             } else {
-                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status != ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status != ? ) )"
+                basequery = "from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = ? ) and tipp.status = ? and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = ? and ie.tipp.id = tipp.id and ie.status = ? ) )"
             }
 
             if (params.endsAfter && params.endsAfter.length() > 0) {
@@ -2355,7 +2357,7 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
+        def ie_accept_status = IE_ACCEPT_STATUS_FIXED
         //result.user = User.get(springSecurityService.principal.id)
         //result.subscriptionInstance = Subscription.get(params.siid)
         //result.institution = result.subscriptionInstance?.subscriber
