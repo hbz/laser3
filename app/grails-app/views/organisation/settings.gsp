@@ -191,6 +191,7 @@
                                         </tr>
                                     </g:each>
                                 </tbody>
+                                <g:if test="${editable}">
                                 <tfoot>
                                 <tr>
                                     <td colspan="4">
@@ -216,13 +217,14 @@
 
                                                 <div class="field">
                                                     <label>&nbsp;</label>
-                                                    <button type="submit" class="ui icon button"><i class="plus icon"></i></button>
+                                                    <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
                                                 </div>
                                             </div>
                                         </g:form>
                                     </td>
                                 </tr>
                                 </tfoot>
+                                </g:if>
                             </table>
                         </div>
                     </div>
