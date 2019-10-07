@@ -213,10 +213,6 @@ class Org
         return RDStore.ORG_DELETED.id == status?.id
     }
 
-    void afterInsert() {
-        //organisationService.initMandatorySettings(this) //TODO: sorry, folks. David, we've to talk that over.
-    }
-
     @Override
     def beforeInsert() {
         if ( !shortcode ) {

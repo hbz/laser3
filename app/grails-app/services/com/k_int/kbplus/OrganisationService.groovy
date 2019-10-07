@@ -36,7 +36,7 @@ class OrganisationService {
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
-        log.debug('initMandatorySettings for org') //org.id call crashes when called from sync
+        log.debug("initMandatorySettings for org ${org.id}") //org.id call crashes when called from sync
 
         if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
             OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
@@ -2477,50 +2477,71 @@ class OrganisationService {
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
-            hbz = new Org(name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU)
-            hbz.save(flush:true) //I hate flush:true!!!!!
-            OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-            grailsApplication.config.sysusers.each { su ->
-                User admin = User.findByUsername(su.name)
-                instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+            try {
+                hbz = (Org) createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+                OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
+                grailsApplication.config.sysusers.each { su ->
+                    User admin = User.findByUsername(su.name)
+                    instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                }
+            }
+            catch(ClassCastException e) {
+                log.error(hbz)
+                //log.error(e.getStackTrace())
             }
         }
         if(currentServer in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) { //take out server local when pushing code
-            Map<String,Org> modelOrgs = [konsorte: new Org(name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]),
-                                         institut: new Org(name:'Musterinstitut',orgType: [department]),
-                                         singlenutzer: new Org(name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]),
-                                         kollektivnutzer: new Org(name:'Mustereinrichtung Kollektiv',shortname:'Mustereinrichtung Kollektiv',sortname:'Musterstadt, Kollektiv',orgType: [institution]),
-                                         konsortium: new Org(name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium])]
-            Map<String,Org> testOrgs = [konsorte: new Org(name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]),
-                                        institut: new Org(name:'Testinstitut',orgType: [department]),
-                                        singlenutzer: new Org(name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]),
-                                        kollektivnutzer: new Org(name:'Testeinrichtung Kollektiv',shortname:'Testeinrichtung Kollektiv',sortname:'Teststadt, Kollektiv',orgType: [institution]),
-                                        konsortium: new Org(name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium])]
-            [modelOrgs,testOrgs].each { Map<String,Org> orgs ->
-                orgs.each { String customerType, Org org ->
-                    org.sector = RDStore.O_SECTOR_HIGHER_EDU
-                    if(org.save(flush:true)) {
+            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
+                                         institut: [name:'Musterinstitut',orgType: [department]],
+                                         singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
+                                         kollektivnutzer: [name:'Mustereinrichtung Kollektiv',shortname:'Mustereinrichtung Kollektiv',sortname:'Musterstadt, Kollektiv',orgType: [institution]],
+                                         konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
+            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]],
+                                        institut: [name:'Testinstitut',orgType: [department]],
+                                        singlenutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
+                                        kollektivnutzer: [name:'Testeinrichtung Kollektiv',shortname:'Testeinrichtung Kollektiv',sortname:'Teststadt, Kollektiv',orgType: [institution]],
+                                        konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
+            [modelOrgs,testOrgs].each { Map<String,Map> orgs ->
+                Map<String,Org> orgMap = [:]
+                orgs.each { String customerType, Map orgData ->
+                    Org org
+                    try {
+                        org = (Org) createOrg(orgData)
                         //other ones are covered by Org.setDefaultCustomerType()
-                        if(customerType in ['singlenutzer','kollektivnutzer','konsortium']) {
-                            OrgSettings.add(org,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes[customerType])
-                            if(customerType == 'konsortium') {
-                                orgs.konsorte.save()
-                                Combo c = new Combo(fromOrg: orgs.konsorte, toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
+                        if (customerType in ['singlenutzer', 'kollektivnutzer', 'konsortium']) {
+                            OrgSettings.add(org, OrgSettings.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
+                            if (customerType == 'konsortium') {
+                                Combo c = new Combo(fromOrg: Org.findByName(orgs.konsorte.name), toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
                                 c.save()
-                            }
-                            else if(customerType == 'kollektivnutzer') {
-                                orgs.institut.save()
-                                Combo c = new Combo(fromOrg: orgs.institut, toOrg: org, type: RDStore.COMBO_TYPE_DEPARTMENT)
+                            } else if (customerType == 'kollektivnutzer') {
+                                Combo c = new Combo(fromOrg: Org.findByName(orgs.institut.name), toOrg: org, type: RDStore.COMBO_TYPE_DEPARTMENT)
                                 c.save()
                             }
                         }
+                        orgMap[customerType] = org
+                    }
+                    catch(ClassCastException e) {
+                        if(org != null)
+                            log.error(org)
+                        //log.error(e.getStackTrace())
                     }
                 }
-                userService.setupAdminAccounts(orgs)
+                userService.setupAdminAccounts(orgMap)
             }
         }
         else if(currentServer == ContextService.SERVER_DEV) {
             userService.setupAdminAccounts([konsortium:hbz])
+        }
+    }
+
+    def createOrg(Map params) {
+        Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
+        if(obj.save()) {
+            initMandatorySettings(obj)
+            obj
+        }
+        else {
+            obj.errors
         }
     }
 }
