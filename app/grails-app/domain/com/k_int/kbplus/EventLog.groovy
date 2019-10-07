@@ -15,8 +15,8 @@ class EventLog {
            message column:'el_msg', type:'text'
               tstp column:'el_tstp'
 
-      lastUpdated column: 'lastUpdated'
-      dateCreated column: 'dateCreated'
+      lastUpdated column: 'el_lastUpdated'
+      dateCreated column: 'el_dateCreated'
   }
 
   static constraints = {

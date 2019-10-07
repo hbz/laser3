@@ -26,8 +26,8 @@ class Creator extends AbstractBaseDomain{
         lastname column:'cre_lastname'
         gnd_id column:'cre_gnd_id_fk'
         globalUID column:'cre_guid'
-        lastUpdated column:'cre_last_updated'
-        dateCreated column:'cre_date_created'
+        lastUpdated column:'cre_lastUpdated'
+        dateCreated column:'cre_dateCreated'
 
         title   batchSize: 10
     }

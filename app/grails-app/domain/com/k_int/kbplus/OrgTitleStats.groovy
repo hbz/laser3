@@ -15,4 +15,9 @@ class OrgTitleStats {
     lastUpdated (nullable: true, blank: false)
     dateCreated (nullable: true, blank: false)
   }
+
+  static mapping = {
+    lastUpdated column: 'ots_last_updated'
+    dateCreated column: 'ots_date_created'
+  }
 }

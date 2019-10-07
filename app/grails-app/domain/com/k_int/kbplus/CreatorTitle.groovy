@@ -17,8 +17,8 @@ class CreatorTitle {
         role column:'ct_role_rv_fk'
         title column:'ct_title_fk'
         creator column:'ct_creator_fk'
-        lastUpdated column:'ct_last_updated'
-        dateCreated column:'ct_date_created'
+        lastUpdated column:'ct_lastUpdated'
+        dateCreated column:'ct_dateCreated'
 
     }
 

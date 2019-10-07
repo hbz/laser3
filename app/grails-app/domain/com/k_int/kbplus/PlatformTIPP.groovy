@@ -15,6 +15,11 @@ class PlatformTIPP {
             platform: Platform
     ]
 
+    static mapping = {
+        lastUpdated column: 'ptipp_last_updated'
+        dateCreated column: 'ptipp_date_created'
+    }
+
     static constraints = {
         titleUrl    (nullable: true, blank: true)
         rel         (nullable: true, blank: true)
