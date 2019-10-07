@@ -7,17 +7,27 @@ class Order {
     String orderNumber
     Org owner
 
+    Date dateCreated
+    Date lastUpdated
+
   static mapping = {
               table 'ordering'
                 id column:'ord_id'
            version column:'ord_version'
        orderNumber column:'ord_number'
              owner column:'ord_owner', index: 'ord_owner_idx'
+
+      dateCreated column: 'ord_date_created'
+      lastUpdated column: 'ord_last_updated'
   }
 
   static constraints = {
     orderNumber(nullable:false, blank:false);
           owner(nullable:false, blank:false);
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
 

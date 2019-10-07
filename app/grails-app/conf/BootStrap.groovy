@@ -52,9 +52,6 @@ class BootStrap {
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
-        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
-
         // Reset harddata flag for given refdata and properties
 
         RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.isHardData =:reset', [reset: false])

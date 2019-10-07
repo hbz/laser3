@@ -17,6 +17,9 @@ class GlobalRecordSource {
   Long rectype
   Boolean active
 
+  Date dateCreated
+  Date lastUpdated
+
   static mapping = {
                    id column:'grs_id'
               version column:'grs_version'
@@ -31,6 +34,9 @@ class GlobalRecordSource {
           credentials column:'grs_creds'
               rectype column:'grs_rectype'
                active column:'grs_active'
+
+        dateCreated column: 'grs_date_created'
+      lastUpdated   column: 'grs_last_updated'
   }
 
   static constraints = {
@@ -44,6 +50,10 @@ class GlobalRecordSource {
       principal(nullable:true, blank:false)
     credentials(nullable:true, blank:false)
          active(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   @Transient

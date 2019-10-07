@@ -10,9 +10,20 @@ class OrgCustomProperty extends CustomProperty {
     PropertyDefinition type
     Org owner
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         includes    AbstractProperty.mapping
         owner       index:'ocp_owner_idx'
+        dateCreated column: 'ocp_date_created'
+        lastUpdated column: 'ocp_last_updated'
+    }
+
+    static constraints = {
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static belongsTo = [

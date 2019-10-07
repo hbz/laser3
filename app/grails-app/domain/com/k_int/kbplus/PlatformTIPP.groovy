@@ -7,6 +7,9 @@ class PlatformTIPP {
     String titleUrl
     String rel
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [
             tipp    : TitleInstancePackagePlatform,
             platform: Platform
@@ -15,5 +18,9 @@ class PlatformTIPP {
     static constraints = {
         titleUrl    (nullable: true, blank: true)
         rel         (nullable: true, blank: true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 }

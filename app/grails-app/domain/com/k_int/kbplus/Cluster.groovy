@@ -7,6 +7,9 @@ class Cluster {
     String       name
     String       definition
 
+    Date dateCreated
+    Date lastUpdated
+
     @RefdataAnnotation(cat = 'ClusterType')
     RefdataValue type
     
@@ -27,8 +30,16 @@ class Cluster {
         definition column:'cl_definition'
         type       column:'cl_type_rv_fk'
 
+        dateCreated column: 'cl_date_created'
+        lastUpdated column: 'cl_last_updated'
+
         orgs        batchSize: 10
         prsLinks    batchSize: 10
+    }
+    static constraints = {
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static getAllRefdataValues() {

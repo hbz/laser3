@@ -12,6 +12,9 @@ class Transforms {
 	String path_to_stylesheet
 	String return_file_extention
 	String return_mime
+
+	Date dateCreated
+	Date lastUpdated
 	
 //	RefdataValue[] accepts_type // subscription, license
 	@RefdataAnnotation(cat = '?')
@@ -29,6 +32,9 @@ class Transforms {
 		return_mime column: 'tr_return_mime'
 		transformer column: 'tr_transformer_fk' , index:'tr_transformer_id_idxfk'
 		path_to_stylesheet column: 'tr_path_to_stylesheet'
+
+		dateCreated column: 'tr_date_created'
+		lastUpdated column: 'tr_last_updated'
 	}
 	
     static constraints = {
@@ -40,6 +46,10 @@ class Transforms {
 		return_mime(nullable:false, blank:false)
 		path_to_stylesheet(nullable:true, blank:true)
 		transformer(nullable:false, blank:false)
+
+		// Nullable is true, because values are already in the database
+		lastUpdated (nullable: true, blank: false)
+		dateCreated (nullable: true, blank: false)
 	}
 	
 	public def displayTypes(){

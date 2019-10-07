@@ -8,18 +8,28 @@ class SubscriptionPackage {
   Package pkg
   Date finishDate
 
+  Date dateCreated
+  Date lastUpdated
+
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
       subscription column:'sp_sub_fk',  index: 'sp_sub_pkg_idx'
                pkg column:'sp_pkg_fk',  index: 'sp_sub_pkg_idx'
         finishDate column:'sp_finish_date'
+
+    dateCreated column: 'sp_date_created'
+    lastUpdated column: 'sp_last_updated'
   }
 
   static constraints = {
     subscription(nullable:true, blank:false)
     pkg(nullable:true, blank:false)
     finishDate(nullable:true, blank:false)
+
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
   }
 
   @Transient

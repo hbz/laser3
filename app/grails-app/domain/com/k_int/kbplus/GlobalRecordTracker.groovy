@@ -12,6 +12,8 @@ class GlobalRecordTracker {
   Boolean autoAcceptTippUpdate
   Boolean autoAcceptPackageUpdate
 
+  Date dateCreated
+  Date lastUpdated
 
   static mapping = {
                          id column:'grt_id'
@@ -25,6 +27,9 @@ class GlobalRecordTracker {
        autoAcceptTippDelete column:'grt_auto_tipp_del'
        autoAcceptTippUpdate column:'grt_auto_tipp_update'
     autoAcceptPackageUpdate column:'grt_auto_pkg_update'
+
+      dateCreated column: 'grt_date_created'
+      lastUpdated column: 'grt_last_updated'
   }
 
   static constraints = {
@@ -35,6 +40,10 @@ class GlobalRecordTracker {
          autoAcceptTippDelete(nullable:true, blank:false)
          autoAcceptTippUpdate(nullable:true, blank:false)
       autoAcceptPackageUpdate(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
 }

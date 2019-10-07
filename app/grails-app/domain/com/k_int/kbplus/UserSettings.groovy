@@ -79,6 +79,9 @@ class UserSettings {
     String       strValue
     Org          orgValue
 
+    Date dateCreated
+    Date lastUpdated
+
     @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
     RefdataValue rdValue
 
@@ -90,6 +93,9 @@ class UserSettings {
         strValue   column:'us_string_value'
         rdValue    column:'us_rv_fk'
         orgValue   column:'us_org_fk'
+
+        dateCreated column: 'us_date_created'
+        lastUpdated column: 'us_last_updated'
     }
 
     static constraints = {
@@ -98,6 +104,10 @@ class UserSettings {
         strValue   (nullable: true)
         rdValue    (nullable: true)
         orgValue   (nullable: true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     /*

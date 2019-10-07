@@ -7,6 +7,9 @@ class IdentifierOccurrence {
 
     Identifier identifier
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [
             lic:    License,
             org:    Org,
@@ -28,6 +31,9 @@ class IdentifierOccurrence {
         tipp    column:'io_tipp_fk'
         cre    column:'io_cre_fk'
 
+        dateCreated column: 'io_date_created'
+        lastUpdated column: 'io_last_updated'
+
   }
 
   static constraints = {
@@ -38,6 +44,10 @@ class IdentifierOccurrence {
         ti      (nullable:true)
         tipp    (nullable:true)
         cre     (nullable:true)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
 
   }
 
