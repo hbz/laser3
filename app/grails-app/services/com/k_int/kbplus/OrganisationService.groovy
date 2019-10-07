@@ -2477,16 +2477,16 @@ class OrganisationService {
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
-            try {
-                hbz = (Org) createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+            if(!hbz.hasErrors()) {
                 OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 grailsApplication.config.sysusers.each { su ->
                     User admin = User.findByUsername(su.name)
                     instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
                 }
             }
-            catch(ClassCastException e) {
-                log.error(hbz)
+            else if(hbz.hasErrors()) {
+                log.error(hbz.errors)
                 //log.error(e.getStackTrace())
             }
         }
@@ -2504,9 +2504,8 @@ class OrganisationService {
             [modelOrgs,testOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
                 orgs.each { String customerType, Map orgData ->
-                    Org org
-                    try {
-                        org = (Org) createOrg(orgData)
+                    Org org = createOrg(orgData)
+                    if(!org.hasErrors()) {
                         //other ones are covered by Org.setDefaultCustomerType()
                         if (customerType in ['singlenutzer', 'kollektivnutzer', 'konsortium']) {
                             OrgSettings.add(org, OrgSettings.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
@@ -2520,11 +2519,9 @@ class OrganisationService {
                         }
                         orgMap[customerType] = org
                     }
-                    catch(ClassCastException e) {
-                        if(org != null)
-                            log.error(org)
-                        //log.error(e.getStackTrace())
-                    }
+                    else if(org.hasErrors())
+                        log.error(org.erros)
+                    //log.error(e.getStackTrace())
                 }
                 userService.setupAdminAccounts(orgMap)
             }
@@ -2534,14 +2531,11 @@ class OrganisationService {
         }
     }
 
-    def createOrg(Map params) {
+    Org createOrg(Map params) {
         Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
         if(obj.save()) {
             initMandatorySettings(obj)
-            obj
         }
-        else {
-            obj.errors
-        }
+        obj
     }
 }
