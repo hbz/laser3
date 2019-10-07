@@ -2279,9 +2279,10 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+        /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
-        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()
+        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
+
         result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
         result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
 
@@ -4134,9 +4135,34 @@ AND EXISTS (
     private def getSurveyParticipantCounts(Org participant){
         def result = [:]
 
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+                [participant: participant]).groupBy {it.id[1]}.size()
+
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.surResults surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status = :status or surResult.surveyConfig.surveyInfo.status = :status2 or surResult.surveyConfig.surveyInfo.status = :status3)",
+                [status: RDStore.SURVEY_SURVEY_COMPLETED,
+                 status2: RDStore.SURVEY_IN_EVALUATION,
+                 status3: RDStore.SURVEY_COMPLETED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+
+        return result
+    }
+
+    private def getSurveyParticipantCounts_New(Org participant){
+        def result = [:]
+
         result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null)))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
-                participant: participant]).groupBy {it.id[1]}.size()
+                 participant: participant]).groupBy {it.id[1]}.size()
 
 
         result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrgs where surOrgs.org = :participant and (surInfo.status = :status and (not exists (select surResult from surConfig.surResults surResult) or exists (select surResult from surConfig.surResults surResult where surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null)))",

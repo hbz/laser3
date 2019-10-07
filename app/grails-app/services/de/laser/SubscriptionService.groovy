@@ -672,15 +672,13 @@ class SubscriptionService {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
-            return false
         }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT))
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, TIPP_STATUS_CURRENT))
             {
                 throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
-                return false
         } else {
             IssueEntitlement new_ie = new IssueEntitlement(
-					status: TIPP_STATUS_CURRENT,
+					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? escapeService.parseDate(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,

@@ -19,6 +19,7 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def organisationService
     def dataSource
 
     //  indicates this object is created via current bootstrap
@@ -203,7 +204,6 @@ class BootStrap {
                 }
             }
         }
-
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -261,7 +261,12 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            apiService.setupBasicData(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
+            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            if(f.exists())
+                apiService.setupBasicData(f)
+            else {
+                organisationService.createOrgsFromScratch()
+            }
         }
 
         //log.debug("initializeDefaultSettings ..")

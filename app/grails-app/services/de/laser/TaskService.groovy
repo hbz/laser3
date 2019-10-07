@@ -198,7 +198,7 @@ class TaskService {
         def validResponsibleUsers   = contextOrg ? User.executeQuery(responsibleUsersQuery, [contextOrg]) : []
 
         //TODO: MAX und OFFSET anders festlegen
-//        Map maxOffset = [max: 1000, offset: 0]
+        Map maxOffset = [max: 1000, offset: 0]
         if (contextOrg) {
             if(accessService.checkPerm("ORG_CONSORTIUM") || accessService.checkPerm("ORG_CONSORTIUM_SURVEY")){
                 def qry_params_for_lic = [
@@ -208,7 +208,7 @@ class TaskService {
                             RDStore.OR_LICENSING_CONSORTIUM
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
 
             } else if (accessService.checkPerm("ORG_INST")) {
                 def qry_params_for_lic = [
@@ -219,7 +219,7 @@ class TaskService {
                             RDStore.OR_LICENSEE_COLL
                     ]
                 ]
-                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic)//, maxOffset)
+                result.validLicenses = License.executeQuery('select l ' + INSTITUTIONAL_LICENSES_QUERY +' order by l.sortableReference asc', qry_params_for_lic, maxOffset)
 
             } else {
                 result.validLicenses = []
@@ -233,7 +233,7 @@ class TaskService {
                 ],
                 'activeInst': contextOrg
             ]
-            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub)//,  maxOffset)
+            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by s.name asc', qry_params_for_sub,  maxOffset)
         }
         else { // TODO: admin and datamanager without contextOrg possible ?
             result.validLicenses = License.list()

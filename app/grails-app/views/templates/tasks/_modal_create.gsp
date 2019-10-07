@@ -69,7 +69,7 @@
                 </label>
                 <g:select id="license"
                           name="license"
-                          from="${validLicenses?.sort{it?.dropdownNamingConvention().toLowerCase()}}"
+                          from="${validLicenses?.sort{it?.reference}}"
                           optionKey="id"
                           optionValue="${{it?.dropdownNamingConvention()}}"
                           value="${ownobj?.id}"
@@ -86,7 +86,7 @@
                 %>
             <g:select id="org"
                       name="org"
-                      from="${validOrgs?.sort {it?.dropdownNamingConvention(contextService?.org).toLowerCase()}}"
+                      from="${validOrgs?.sort {it?.name}}"
                       optionKey="id"
                       optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"
                       value="${ownobj?.id}"
@@ -111,7 +111,7 @@
                 <g:select class="ui dropdown many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptions?.sort {it.dropdownNamingConvention(contextService.org).toLowerCase()}}"
+                          from="${validSubscriptions?.sort {it.name}}"
                           optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"
                           optionKey="id"
                           value="${ownobj?.id}"

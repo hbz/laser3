@@ -83,7 +83,7 @@
             <i class="history icon large"></i>
             <%
                 def countChanges = 0
-                changes.collect { c ->
+                changes?.collect { c ->
                     countChanges += c[1]
                 }
             %>
@@ -91,13 +91,13 @@
             ${message(code:'myinst.todo.label', default:'To Do')}
         </a>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
+       %{-- <sec:ifAnyGranted roles="ROLE_ADMIN">
         <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        </sec:ifAnyGranted>
+        </sec:ifAnyGranted>--}%
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
@@ -112,7 +112,7 @@
             <g:if test="${grailsApplication.config.featureSurvey}">
             <a class="${US_DASHBOARD_TAB.getValue().value=='Surveys' || US_DASHBOARD_TAB.getValue()=='Surveys' ? 'active item':'item'}" data-tab="fifth">
                 <i class="checked tasks icon large"></i>
-                ${surveys.size()}
+                ${surveys?.size()}
                 ${message(code:'myinst.dash.survey.label')}
             </a>
             </g:if>
@@ -210,7 +210,7 @@
             </div>
         </div>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
+        %{--<sec:ifAnyGranted roles="ROLE_ADMIN">
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
@@ -259,7 +259,7 @@
                 <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
-        </sec:ifAnyGranted>
+        </sec:ifAnyGranted>--}%
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
 
