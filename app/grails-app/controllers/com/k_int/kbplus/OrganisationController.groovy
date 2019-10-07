@@ -13,7 +13,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
 import static de.laser.helper.RDStore.*
-
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
@@ -49,31 +48,45 @@ class OrganisationController extends AbstractDebugController {
         User user = User.get(springSecurityService.principal.id)
         Org org   = Org.get(params.id)
 
+        if (! org) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
         Map result = [
                 user:           user,
                 orgInstance:    org,
                 editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
                 inContextOrg:   contextService.getOrg().id == org.id
         ]
-
         result.editable = result.editable || (result.inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
 
         // forbidden access
         if (! result.editable) {
-            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
+            redirect controller: 'organisation', action: 'show', id: org.id
         }
 
-        if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-            redirect action: 'list'
-            return
+        if (params.addCIPlatform) {
+            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+            if (plt) {
+                CustomerIdentifier ci = new CustomerIdentifier(
+                        owner: org,
+                        platform: plt,
+                        value: params.addCIValue,
+                        type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type') // TODO
+                )
+                ci.save()
+                println ci.errors
+                println ci
+            }
         }
 
         // adding default settings
-        organisationService.initMandatorySettings(result.orgInstance)
+        organisationService.initMandatorySettings(org)
 
         // collecting visible settings by customer type, role and/or combo
-        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(result.orgInstance)
+        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
 
         List<OrgSettings.KEYS> openSet = [
                 OrgSettings.KEYS.API_LEVEL,
@@ -96,6 +109,7 @@ class OrganisationController extends AbstractDebugController {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
             result.settings.addAll(allSettings.findAll { it.key in privateSet })
             result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
         }
         else if (contextService.getOrg().id == org.id) {
             log.debug( 'settings for own org')
@@ -106,8 +120,8 @@ class OrganisationController extends AbstractDebugController {
             }
             else {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
             }
-            println org.customerType
         }
         else if (Combo.findByFromOrgAndToOrg(org, contextService.getOrg())){
             log.debug( 'settings for combo related org > consortia or collective')
@@ -115,9 +129,7 @@ class OrganisationController extends AbstractDebugController {
             result.settings.addAll(allSettings.findAll { it.key in privateSet })
         }
 
-        println allSettings
-        println result.settings
-
+        result.allPlatforms = Platform.executeQuery('select p from Platform p where p.org is not null order by p.name')
         result
     }
 
