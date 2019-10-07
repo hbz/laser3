@@ -214,7 +214,7 @@ class Org
     }
 
     void afterInsert() {
-        organisationService.initMandatorySettings(this)
+        //organisationService.initMandatorySettings(this)
     }
 
     @Override
