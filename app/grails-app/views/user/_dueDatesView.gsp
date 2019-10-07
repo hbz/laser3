@@ -104,12 +104,6 @@
                     </g:if>
                 </g:each>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td>
-                        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
+        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>
