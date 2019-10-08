@@ -1304,6 +1304,10 @@ aside.ui.accordion .title:not(.ui) {
   border: 1px solid #FFFFFF;
 }
 
+.la-filter .ui.form input[type=text]:focus {
+  background-color: #004678;
+}
+
 .la-filter .ui.selection.visible.dropdown > .text:not(.default) {
   color: #FFFFFF;
 }
@@ -19768,13 +19772,13 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 .ui.breadcrumb {
-  color: #454545;
+  color: #1B1C1D;
 }
 
 /* Link */
 
 .ui.breadcrumb a {
-  color: #767676;
+  color: #1B1C1D;
 }
 
 .ui.breadcrumb a:hover {
@@ -21015,8 +21019,9 @@ ol.ui.horizontal.list li:before,
   background: #004678 !important;
 }
 
-.la-filter-dropdown-selected {
+.ui.selection.dropdown.la-filter-dropdown-selected {
   background: #004678 !important;
+  border: 1px solid #FFFFFF;
 }
 
 .ui.icon.input > i.icon#btn-search:not(.link) {
@@ -33062,7 +33067,7 @@ body.dimmable > .dimmer {
   color: rgba(0, 0, 0, 0.87);
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid #FFFFFF;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
