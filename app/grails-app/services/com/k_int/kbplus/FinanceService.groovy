@@ -637,6 +637,8 @@ class FinanceService {
         List<String> rows = tsvFile.getInputStream().text.split('\n')
         Map<String,Integer> colMap = [:]
         rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+            if(headerCol.startsWith("\uFEFF"))
+                headerCol = headerCol.substring(1)
             switch(headerCol.toLowerCase().trim()) {
                 case "bezeichnung":
                 case "title": colMap.title = c

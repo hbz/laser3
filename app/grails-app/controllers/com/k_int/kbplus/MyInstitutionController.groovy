@@ -2506,8 +2506,8 @@ AND EXISTS (
     })
     def subscriptionImport() {
         def result = setResultGenerics()
-        result.mappingCols = ["name","owner","status","type","form","resource","startDate","endDate","instanceOf",
-                              "manualCancellationDate","member","customProperties","privateProperties"]
+        result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
+                              "manualCancellationDate","member","customProperties","privateProperties","notes"]
         result
     }
 

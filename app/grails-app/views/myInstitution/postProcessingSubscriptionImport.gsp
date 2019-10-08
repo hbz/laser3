@@ -51,23 +51,29 @@
                                     <li><g:message code="myinst.subscriptionImport.type"/>: ${genericOIDService.resolveOID(sub.type)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.form"/>: ${genericOIDService.resolveOID(sub.form)?.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.resource"/>: ${genericOIDService.resolveOID(sub.resource)?.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.provider"/>: ${genericOIDService.resolveOID(sub.provider)}</li>
+                                    <li><g:message code="myinst.subscriptionImport.agency"/>: ${genericOIDService.resolveOID(sub.agency)}</li>
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
                                     <li>
-                                        Merkmale:
+                                        <g:message code="properties"/>:
                                         <ul>
                                             <g:each in="${sub.properties?.entrySet()}" var="prop">
                                                 <%
-                                                    String value = genericOIDService.resolveOID(prop.getValue())?.getI10n("value")
+                                                    String value = genericOIDService.resolveOID(prop.getValue().propValue)?.getI10n("value")
                                                     if(!value)
-                                                        value = prop.getValue()
+                                                        value = prop.getValue().propValue
                                                 %>
-                                                <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value}</li>
+                                                <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
                                             </g:each>
                                         </ul>
                                     </li>
-                                    <li>Fehler:
+                                    <li>
+                                        <g:message code="myinst.subscriptionImport.notes"/>: ${sub.notes}
+                                    </li>
+                                    <li>
+                                        <g:message code="default.error"/>:
                                         <ul>
                                             <g:each in="${errors}" var="error">
                                                 <g:if test="${error.getKey() in criticalErrors}">
