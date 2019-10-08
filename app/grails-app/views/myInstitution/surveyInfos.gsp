@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscriptionSurvey.label')}</title>
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="survey.label" class="active"/>
+    <semui:crumb message="subscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
 
@@ -29,8 +29,8 @@
 
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'survey.label')} - ${surveyInfo.name}
-
+${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
+<semui:surveyStatus object="${surveyInfo}"/>
 %{--<g:if test="${surveyInfo.startDate || surveyInfo.endDate}">
 (<g:formatDate formatName="default.date.format.notime"
                date="${surveyInfo.startDate}"/>

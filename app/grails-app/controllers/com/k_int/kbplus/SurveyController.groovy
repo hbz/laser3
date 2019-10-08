@@ -1827,7 +1827,7 @@ class SurveyController {
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
         result.parentSubChilds?.each { sub ->
-            if (sub?.isMultiYearSubscription())
+            if (sub?.isCurrentMultiYearSubscription())
             {
                 result.orgsWithMultiYearTermSub << sub
             }
@@ -2930,7 +2930,7 @@ class SurveyController {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
                         def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-                        if (subChild?.isMultiYearSubscription()) {
+                        if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true
                         }
 

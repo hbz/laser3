@@ -404,7 +404,7 @@
                     <g:set var="surveysConsortiaSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s ,true)}" />
                     <g:set var="surveysSub" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(s.instanceOf ,true)}" />
 
-                    <g:if test="${surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) && contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                    <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && surveysSub && (surveysSub?.surveyInfo?.startDate <= new Date(System.currentTimeMillis())) }">
 
                         <g:link controller="subscription" action="surveys" id="${s?.id}"
                                 class="ui icon button">
@@ -415,7 +415,7 @@
                         </g:link>
                     </g:if>
 
-                    <g:if test="${surveysConsortiaSub && contextService.org?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM']}">
+                    <g:if test="${contextService.org?.getCustomerType() in ['ORG_CONSORTIUM_SURVEY', 'ORG_CONSORTIUM'] && surveysConsortiaSub }">
                         <g:link controller="subscription" action="surveysConsortia" id="${s?.id}"
                                 class="ui icon button">
                             <g:if test="${surveysConsortiaSub?.surveyInfo?.isCompletedforOwner()}">

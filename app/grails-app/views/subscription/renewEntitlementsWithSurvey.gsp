@@ -34,6 +34,21 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     <semui:messages data="${flash}"/>
 </g:if>
 
+<g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
+    <div class="ui icon positive message">
+        <i class="info icon"></i>
+
+        <div class="content">
+            <div class="header"></div>
+
+            <p>
+                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                <g:message code="renewEntitlementsWithSurvey.finish.info" />.
+            </p>
+        </div>
+    </div>
+</g:if>
+
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="tippsToAdd" name="tippsToAdd"/>
     <g:hiddenField id="tippsToDelete" name="tippsToDelete"/>
@@ -41,22 +56,6 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
     <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}" />
 
     <semui:form>
-
-        <g:if test="${com.k_int.kbplus.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
-            <div class="ui icon positive message">
-                <i class="info icon"></i>
-
-                <div class="content">
-                    <div class="header"></div>
-
-                    <p>
-                        <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                        <g:message code="renewEntitlementsWithSurvey.finish.info" />.
-                    </p>
-                </div>
-            </div>
-            <br>
-        </g:if>
 
     <div class="ui grid">
 
@@ -68,7 +67,6 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <div class="sixteen wide column">
                 <g:if test="${editable}">
                 <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
-                <button type="submit" name="process" value="finalise" class="ui red button"><g:message code="renewEntitlementsWithSurvey.submit"/></button>
                 </g:if>
             </div>
         </div>
