@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
@@ -21,6 +22,7 @@ class BootStrap {
     def sessionFactory
     def organisationService
     def dataSource
+    def userService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -200,6 +202,12 @@ class BootStrap {
                     }
                 }
             }
+        }
+        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_DEV) { //include SEVER_LOCAL and remove 'else' when testing locally
+            log.debug("DEV environment, lookup or create set of user accounts ...")
+            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+            if(hbz)
+                userService.setupAdminAccounts([konsortium:hbz])
         }
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 

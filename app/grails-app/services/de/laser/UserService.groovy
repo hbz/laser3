@@ -138,7 +138,7 @@ class UserService {
                         log.debug("create new user ${username}")
                         user = addNewUser([username: username, password: "${username}_skywalker", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
                     }
-                    if(user) {
+                    if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
                         if(orgs[customerKey])
                             instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
                         else log.debug("appropriate inst missing for affiliation key, skipping")
