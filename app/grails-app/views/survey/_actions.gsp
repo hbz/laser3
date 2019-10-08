@@ -40,6 +40,14 @@
                                                        params="[id: params.id]"
                                                        message="openSurveyNow.button" tooltip="${message(code: "openSurveyNow.button.info")}"/>
                 </g:else>
+
+
+                <div class="ui divider"></div>
+            </g:if>
+
+            <g:if test="${surveyInfo && surveyInfo.status?.id == de.laser.helper.RDStore.SURVEY_SURVEY_STARTED?.id}">
+                <semui:actionsDropdownItem controller="survey" action="processEndSurvey" params="[id: params.id]"
+                                           message="endSurvey.button" tooltip="${message(code: "endSurvey.button.info")}"/>
                 <div class="ui divider"></div>
             </g:if>
 

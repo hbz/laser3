@@ -393,6 +393,25 @@ ${surveyInfo?.name}
                         </div>
                     </td>
 
+                    <td>
+                        ${participantResult?.resultOfParticipation?.getResult()}
+
+                        <g:if test="${participantResult?.resultOfParticipation?.comment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.resultOfParticipation?.comment}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.resultOfParticipation?.ownerComment}">
+                                <i class="info circle icon"></i>
+                            </span>
+                        </g:if>
+
+                    </td>
+
                     <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
                         <td>
                     </g:if>
@@ -430,24 +449,7 @@ ${surveyInfo?.name}
                         </td>
                     </g:if>
 
-                    <td>
-                        ${participantResult?.resultOfParticipation?.getResult()}
 
-                        <g:if test="${participantResult?.resultOfParticipation?.comment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResult?.resultOfParticipation?.comment}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-
-                        <g:if test="${participantResult?.resultOfParticipation?.ownerComment}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${participantResult?.resultOfParticipation?.ownerComment}">
-                                <i class="info circle icon"></i>
-                            </span>
-                        </g:if>
-
-                    </td>
 
                     <g:each in="${participantResult?.properties.sort { it?.type?.name }}"
                             var="participantResultProperty">
