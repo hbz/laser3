@@ -1053,7 +1053,24 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
-        result
+
+        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.targetIEs)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        }else {
+            withFormat {
+                html result
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -2611,11 +2628,15 @@ class SubscriptionController extends AbstractDebugController {
 
         def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
 
+        def countTippsToAdd = 0
+        def countTippsToDelete = 0
+
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
                 try {
                     if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status))
                         log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
+                        countTippsToAdd++
                 }
                 catch (EntitlementCreationException e) {
                     flash.error = e.getMessage()
@@ -2624,7 +2645,17 @@ class SubscriptionController extends AbstractDebugController {
             tippsToDelete.each { tipp ->
                 if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
                     log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+                    countTippsToDelete++
             }
+
+            if(countTippsToAdd > 0){
+                flash.message = message(code:'renewEntitlementsWithSurvey.tippsToAdd', args: [countTippsToAdd])
+            }
+
+            if(countTippsToDelete > 0){
+                flash.message = message(code:'renewEntitlementsWithSurvey.tippsToDelete', args: [countTippsToDelete])
+            }
+
             /*if(params.process == "finalise") {
                 if(surveyOrg) {
                     surveyOrg.finishDate = new Date()
@@ -2640,7 +2671,7 @@ class SubscriptionController extends AbstractDebugController {
         else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [surveyConfigID: result.surveyConfig?.id]
+        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetSubscriptionId: params.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

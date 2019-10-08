@@ -482,7 +482,7 @@ class Subscription
     boolean isCurrentMultiYearSubscription()
     {
         def currentDate = new Date(System.currentTimeMillis())
-        println(this.endDate.minus(currentDate))
+        //println(this.endDate.minus(currentDate))
         if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
         {
             return true
