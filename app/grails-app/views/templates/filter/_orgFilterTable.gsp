@@ -447,7 +447,7 @@
             <td>
                 <g:if test="${existSubforOrg}">
 
-                    <g:if test="${orgSub?.isMultiYearSubscription()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -463,7 +463,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                    <g:if test="${orgSub?.isMultiYearSubscription()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -481,7 +481,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                        <g:if test="${orgSub?.isMultiYearSubscription()}">
+                        <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                         </g:if>
                         <g:else>
@@ -497,7 +497,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
             <td class="center aligned x">
 
-            <g:if test="${orgSub?.isMultiYearSubscription()}">
+            <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                 <g:message code="surveyOrg.perennialTerm.available"/>
             </g:if>
             <g:else>
@@ -524,7 +524,7 @@
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
             <td class="x">
 
-                <g:if test="${orgSub?.isMultiYearSubscription()}">
+                <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                     <g:message code="surveyOrg.perennialTerm.available"/>
                 </g:if>
             <g:else>
