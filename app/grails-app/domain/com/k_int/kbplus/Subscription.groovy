@@ -469,6 +469,16 @@ class Subscription
         return match ? Subscription.get(match?.source) : null
     }
 
+    boolean isMultiYearSubscription()
+    {
+        if(this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
+        {
+            return true
+        }else {
+            return false
+        }
+    }
+
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }

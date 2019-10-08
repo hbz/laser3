@@ -181,6 +181,12 @@
 
                         <div class="ui grid">
                             <div class="right aligned wide column">
+
+                                <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participant)}" >
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.newOrg')}">
+                                        <i class="star black large  icon"></i>
+                                    </span>
+                                </g:if>
                                 <g:if test="${surveyConfig?.checkResultsEditByOrg(participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                     <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
                                         <i class="edit green icon"></i>

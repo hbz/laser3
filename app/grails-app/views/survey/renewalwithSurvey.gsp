@@ -161,6 +161,12 @@ ${surveyInfo?.name}
 
                         <div class="ui grid">
                             <div class="right aligned wide column">
+                                <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}" >
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.newOrg')}">
+                                        <i class="star black large  icon"></i>
+                                    </span>
+                                </g:if>
+
                                 <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                     <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
                                         <i class="edit green icon"></i>
@@ -214,6 +220,14 @@ ${surveyInfo?.name}
                         <br>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${participantResult?.newSubPeriodTwoEndDate}"/>
+
+                        <g:if test="${participantResult?.participantPropertyTwoComment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.participantPropertyTwoComment}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+
                     </g:if>
                     <g:if test="${multiYearTermThreeSurvey}">
                         <g:formatDate formatName="default.date.format.notime"
@@ -221,6 +235,13 @@ ${surveyInfo?.name}
                         <br>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${participantResult?.newSubPeriodThreeEndDate}"/>
+
+                        <g:if test="${participantResult?.participantPropertyThreeComment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.participantPropertyThreeComment}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
                     </g:if>
 
                     <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
@@ -341,6 +362,12 @@ ${surveyInfo?.name}
 
                         <div class="ui grid">
                             <div class="right aligned wide column">
+                                <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}" >
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.newOrg')}">
+                                        <i class="star black large  icon"></i>
+                                    </span>
+                                </g:if>
+
                                 <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                     <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
                                         <i class="edit green icon"></i>
@@ -376,6 +403,13 @@ ${surveyInfo?.name}
                         <br>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${participantResult?.newSubPeriodTwoEndDate}"/>
+
+                        <g:if test="${participantResult?.participantPropertyTwoComment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.participantPropertyTwoComment}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
                     </g:if>
                     <g:if test="${multiYearTermThreeSurvey}">
                         <g:formatDate formatName="default.date.format.notime"
@@ -383,6 +417,13 @@ ${surveyInfo?.name}
                         <br>
                         <g:formatDate formatName="default.date.format.notime"
                                       date="${participantResult?.newSubPeriodThreeEndDate}"/>
+
+                        <g:if test="${participantResult?.participantPropertyThreeComment}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                  data-content="${participantResult?.participantPropertyThreeComment}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
                     </g:if>
 
                     <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
@@ -671,6 +712,12 @@ ${surveyInfo?.name}
 
                         <div class="ui grid">
                             <div class="right aligned wide column">
+                                <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}" >
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.newOrg')}">
+                                        <i class="star black large  icon"></i>
+                                    </span>
+                                </g:if>
+
                                 <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                     <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
                                         <i class="edit green icon"></i>
@@ -822,6 +869,12 @@ ${surveyInfo?.name}
 
                         <div class="ui grid">
                             <div class="right aligned wide column">
+                                <g:if test="${!surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(participantResult?.participant)}" >
+                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.newOrg')}">
+                                        <i class="star black large  icon"></i>
+                                    </span>
+                                </g:if>
+
                                 <g:if test="${surveyConfig?.checkResultsEditByOrg(participantResult?.participant) == com.k_int.kbplus.SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                     <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'surveyResult.processedOrg')}">
                                         <i class="edit green icon"></i>
