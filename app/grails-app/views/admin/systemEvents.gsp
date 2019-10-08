@@ -20,21 +20,21 @@
                     <label>Category</label>
                     <g:select name="filter_category" class="ui dropdown"
                               from="${de.laser.SystemEvent.CATEGORY.values()}"
-                              noSelection="['':'']" value=""
+                              noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
                     />
                 </div>
                 <div class="field">
                     <label>Relevance</label>
                     <g:select name="filter_relevance" class="ui dropdown"
                               from="${de.laser.SystemEvent.RELEVANCE.values()}"
-                              noSelection="['':'']" value=""
+                              noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
                     />
                 </div>
                 <div class="field">
                     <label>Source</label>
                     <g:select name="filter_source" class="ui dropdown"
                               from="${de.laser.SystemEvent.getAllSources()}"
-                              noSelection="['':'']" value=""
+                              noSelection="${['' : message(code:'default.select.choose.label')]}" value=""
                     />
                 </div>
                 <div class="field">

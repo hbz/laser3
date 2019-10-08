@@ -12,7 +12,7 @@
 
     <semui:subNavItem controller="survey" action="show" params="${[id: params.id]}" message="surveyShow.label"/>
 
-    <g:if test="${surveyConfig?.pickAndChoose != true}">
+    <g:if test="${!surveyConfig?.pickAndChoose}">
         <semui:subNavItem controller="survey" action="surveyConfigs"
                           params="${[id: params.id, surveyConfigID: surveyConfig?.id]}" message="surveyConfigs.label"
                           class="${(actionName in surveyConfigsViews) ? "active" : ""}"/>
@@ -74,6 +74,10 @@
 
     </g:if>
     <g:else>
+
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" action="surveyTitles"
+                          params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"
+                          message="surveyTitles.label"/>
 
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" action="surveyConfigDocs"
                           params="${[id: params.id, surveyConfigID: surveyConfig?.id]}"

@@ -6,7 +6,7 @@
     <semui:subNavItem controller="license" action="show" params="${[id:params.id]}" message="license.nav.details" />
 
     <g:if test="${showConsortiaFunctions}">
-        <semui:subNavItem controller="license" action="members" params="${[id:params.id]}" message="license.details.incoming.childs" />
+        <semui:subNavItem controller="license" action="members" params="${[id:params.id]}" text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}"/>
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
         </sec:ifAnyGranted>

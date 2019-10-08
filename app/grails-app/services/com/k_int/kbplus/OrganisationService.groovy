@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
 import de.laser.AuditConfig
+import de.laser.ContextService
 import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
@@ -20,6 +21,7 @@ import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
+import com.k_int.kbplus.OrgSettings
 
 @Transactional
 class OrganisationService {
@@ -29,10 +31,29 @@ class OrganisationService {
     def exportService
     def institutionsService
     def grailsApplication
+    def userService
+    def instAdmService
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
-        log.debug('initMandatorySettings for org') //org.id call crashes when called from sync
+        log.debug("initMandatorySettings for org ${org.id}") //org.id call crashes when called from sync
+
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,'')
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, '')
+        }
+        if (OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
+            OrgSettings.add(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                    RefdataValue.getByValueAndCategory('No', 'YN')
+            )
+        }
 
         // called after
         // new Org.save()
@@ -2060,7 +2081,8 @@ class OrganisationService {
                                                         embargo: tipp.embargo,
                                                         coverageDepth: tipp.coverageDepth,
                                                         coverageNote: tipp.coverageNote,
-                                                        ieReason: 'Automatically copied when creating subscription'
+                                                        ieReason: 'Automatically copied when creating subscription',
+                                                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                                                 )
                                                 if(!ie.save()) {
                                                     throw new CreationException(ie.errors)
@@ -2442,4 +2464,78 @@ class OrganisationService {
         out
     }
 
+    void createOrgsFromScratch() {
+        def currentServer = grailsApplication.config.getCurrentServer()
+        Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
+                                          institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
+                                          singlenutzer:Role.findByAuthority('ORG_INST'),
+                                          kollektivnutzer:Role.findByAuthority('ORG_INST_COLLECTIVE'),
+                                          konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
+        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution','OrgRoleType')
+        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium','OrgRoleType')
+        RefdataValue department = RefdataValue.getByValueAndCategory('Department','OrgRoleType')
+        //create home org
+        Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+        if(!hbz) {
+            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+            if(!hbz.hasErrors()) {
+                OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
+                grailsApplication.config.sysusers.each { su ->
+                    User admin = User.findByUsername(su.name)
+                    instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                }
+            }
+            else if(hbz.hasErrors()) {
+                log.error(hbz.errors)
+                //log.error(e.getStackTrace())
+            }
+        }
+        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
+            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
+                                         institut: [name:'Musterinstitut',orgType: [department]],
+                                         singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
+                                         kollektivnutzer: [name:'Mustereinrichtung Kollektiv',shortname:'Mustereinrichtung Kollektiv',sortname:'Musterstadt, Kollektiv',orgType: [institution]],
+                                         konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
+            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]],
+                                        institut: [name:'Testinstitut',orgType: [department]],
+                                        singlenutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
+                                        kollektivnutzer: [name:'Testeinrichtung Kollektiv',shortname:'Testeinrichtung Kollektiv',sortname:'Teststadt, Kollektiv',orgType: [institution]],
+                                        konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
+            [modelOrgs,testOrgs].each { Map<String,Map> orgs ->
+                Map<String,Org> orgMap = [:]
+                orgs.each { String customerType, Map orgData ->
+                    Org org = createOrg(orgData)
+                    if(!org.hasErrors()) {
+                        //other ones are covered by Org.setDefaultCustomerType()
+                        if (customerType in ['singlenutzer', 'kollektivnutzer', 'konsortium']) {
+                            OrgSettings.add(org, OrgSettings.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
+                            if (customerType == 'konsortium') {
+                                Combo c = new Combo(fromOrg: Org.findByName(orgs.konsorte.name), toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
+                                c.save()
+                            } else if (customerType == 'kollektivnutzer') {
+                                Combo c = new Combo(fromOrg: Org.findByName(orgs.institut.name), toOrg: org, type: RDStore.COMBO_TYPE_DEPARTMENT)
+                                c.save()
+                            }
+                        }
+                        orgMap[customerType] = org
+                    }
+                    else if(org.hasErrors())
+                        log.error(org.erros)
+                    //log.error(e.getStackTrace())
+                }
+                userService.setupAdminAccounts(orgMap)
+            }
+        }
+        else if(currentServer == ContextService.SERVER_DEV) {
+            userService.setupAdminAccounts([konsortium:hbz])
+        }
+    }
+
+    Org createOrg(Map params) {
+        Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
+        if(obj.save()) {
+            initMandatorySettings(obj)
+        }
+        obj
+    }
 }

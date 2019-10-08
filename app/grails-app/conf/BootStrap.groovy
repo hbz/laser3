@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
@@ -19,7 +20,9 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def organisationService
     def dataSource
+    def userService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -50,9 +53,6 @@ class BootStrap {
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
-
-        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
         // Reset harddata flag for given refdata and properties
 
@@ -203,7 +203,12 @@ class BootStrap {
                 }
             }
         }
-
+        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_DEV) { //include SEVER_LOCAL and remove 'else' when testing locally
+            log.debug("DEV environment, lookup or create set of user accounts ...")
+            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+            if(hbz)
+                userService.setupAdminAccounts([konsortium:hbz])
+        }
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -264,7 +269,12 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            apiService.setupBasicData(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
+            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            if(f.exists())
+                apiService.setupBasicData(f)
+            else {
+                organisationService.createOrgsFromScratch()
+            }
         }
 
         //log.debug("initializeDefaultSettings ..")
@@ -303,6 +313,7 @@ class BootStrap {
         def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Konsortium'], BOOTSTRAP)
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'], BOOTSTRAP)
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'], BOOTSTRAP)
+        def or_licensee_coll_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Collective', en: 'Collective licensee', de: 'Institut des Lizenznehmers'], BOOTSTRAP)
 
         def or_sc_role            = RefdataValue.loc('Organisational Role', [en: 'Subscription Consortia', de:'Konsortium'], BOOTSTRAP)
         def or_subscr_role        = RefdataValue.loc('Organisational Role', [en: 'Subscriber', de: 'Teilnehmer'], BOOTSTRAP)
@@ -1623,6 +1634,12 @@ class BootStrap {
                         expl: [en: "", de: "Bietet der Verlag einen Deep-Discount-Preis für Printabonnements an?"],
                         descr:allDescr, type: OT.Rdv, cat:'YN'
                 ],
+		[
+                        name: [key: "Späteinsteiger", en: "Späteinsteiger", de: "Späteinsteiger"],
+                        expl: [en: "", de: "Einrichtung, die spät im Jahr nach der Umfrage ins Konsortium eingestiegen ist und daher auch bereits für die Lizenzierung für das Nachfolgejahr entschieden hat."],
+                        descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true
+                ]
+		
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -1654,7 +1671,12 @@ class BootStrap {
                         name: [en: "Multi-year term 3 years", de: "Mehrjahreslaufzeit 3 Jahre"],
                         expl: [en: "Please indicate here, if you wish a licensing directly for three years.", de: "Bitte geben Sie hier an, ob Sie eine Lizenzierung direkt für drei Jahre wünschen."],
                         type: OT.Rdv, cat:'YN'
-                ]
+                ],
+                [
+                        name: [en: "Sim-User Number", de: "Sim-User Zahl"],
+                        expl: [en: "Please indicate which number of Sim users should be licensed.", de: "Bitte geben sie an, welche Anzahl an Sim-Usern lizenziert werden soll."],
+                        type: OT.String
+                ],
 
         ]
         createSurveyPropertiesWithI10nTranslations(requiredProps)
@@ -1912,6 +1934,7 @@ class BootStrap {
         RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'], BOOTSTRAP)
         RefdataCategory.loc('Cost configuration',                        [en: 'Cost configuration', de: 'Kostenkonfiguration'], BOOTSTRAP)
         RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'], BOOTSTRAP)
+        RefdataCategory.loc('CustomerIdentifier.Type',             	        [en: 'Customer Identifier Type', de: 'Kategorie der Kundennummer'], BOOTSTRAP)
         RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'], BOOTSTRAP)
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'], BOOTSTRAP)
@@ -2306,6 +2329,8 @@ class BootStrap {
         RefdataValue.loc('Country', [key: 'ZA', en: 'South Africa', de: 'Südafrika'], BOOTSTRAP)
         RefdataValue.loc('Country', [key: 'ZM', en: 'Zambia', de: 'Sambia'], BOOTSTRAP)
         RefdataValue.loc('Country', [key: 'ZW', en: 'Zimbabwe', de: 'Zimbabwe'], BOOTSTRAP)
+
+        RefdataValue.loc('CustomerIdentifier.Type', [key: 'Default', en: 'Default', de: 'Default'], BOOTSTRAP)
 
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
@@ -3294,6 +3319,7 @@ No Host Platform URL Content
         def namespaces = [
                             [ns: "GND", typ: "com.k_int.kbplus.Creator"],
                             [ns: "ISIL"],
+                            [ns: "ISIL_Paketsigel"],
                             [ns: "uri"],
                             [ns: "zdb"],
                             [ns: "zdb_ppn"],
@@ -3305,7 +3331,8 @@ No Host Platform URL Content
         namespaces.each { namespaceproperties ->
             def namespace = namespaceproperties["ns"]
             def typ = namespaceproperties["typ"]?:null
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ).save(flush: true);
+            //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
+            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false).save(flush: true);
 
         }
 

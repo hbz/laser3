@@ -1,12 +1,11 @@
-<%@ page import="com.k_int.kbplus.License" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <!doctype html>
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.incoming.childs')}</title>
+  <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 <body>
 
@@ -49,14 +48,20 @@
                 </td>
                 <td>
                     <g:each in="${lic.orgLinks}" var="orgRole">
-                        <g:if test="${orgRole?.roleType.value in ['Licensee_Consortial', 'Licensee']}">
+                        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && orgRole?.roleType.id in [RDStore.OR_LICENSEE_CONS.id, RDStore.OR_LICENSEE.id]}">
                             <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>
                             , ${orgRole?.roleType.getI10n('value')} <br />
                         </g:if>
+                        <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE") && orgRole?.roleType.id in [RDStore.OR_LICENSEE_COLL.id, RDStore.OR_LICENSEE.id]}">
+                            <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
+                                ${orgRole?.org.getDesignation()}
+                            </g:link>
+                            , ${orgRole?.roleType.getI10n('value')} <br />
+                        </g:elseif>
 
-                        <g:if test="${license.isTemplate() && orgRole?.roleType.value in ['Licensing Consortium']}">
+                        <g:if test="${license.isTemplate() && orgRole?.roleType.id in [RDStore.OR_LICENSING_CONSORTIUM.id]}">
                             <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>

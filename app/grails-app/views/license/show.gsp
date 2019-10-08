@@ -141,7 +141,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && (contextOrg?.id in sub.orgRelations?.org?.id || accessService.checkPerm("ORG_CONSORTIUM"))}">
+                                    <g:if test="${sub.status == RDStore.SUBSCRIPTION_CURRENT && contextOrg?.id in sub.orgRelations?.org?.id}">
                                         <table class="ui three column table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
@@ -294,8 +294,7 @@
               $("#subscription").dropdown({
                 apiSettings: {
                     url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>" +
-                            "?ctype=${TemplateSupport.CALCULATED_TYPE_CONSORTIAL}" +
-                            "&ctype=${TemplateSupport.CALCULATED_TYPE_COLLECTIVE}" +
+                            "?ltype=${license.getCalculatedType()}" +
                             "&query={query}",
                     cache: false
                 },

@@ -1,4 +1,4 @@
-grails.servlet.version = "3.0" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "3.0"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
@@ -6,13 +6,6 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
 grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
-
-// grails.project.fork = [
-//    test: [maxMemory: 768, minMemory: 64, debug: true, maxPerm: 256], // Removed ", daemon:true" because geb doesn't play nice with forked mode atm
-//    run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256],
-//    war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256],
-//    console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
-// ]
 
 grails.project.dependency.resolver = "maven"
 

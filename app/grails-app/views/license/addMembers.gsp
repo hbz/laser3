@@ -1,18 +1,18 @@
-<%@ page import="com.k_int.kbplus.*" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.interfaces.TemplateSupport" %>
 <laser:serviceInjection />
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}</title>
 </head>
 
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
     <semui:crumb controller="license" action="show" id="${license.id}" text="${license.reference}"/>
-    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label',args:[message(code:'consortium.subscriber')])}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -65,20 +65,20 @@
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="license" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: cons_members,
-                          tmplDisableOrgIds: cons_members_disabled,
+                  model="[orgList: members,
+                          tmplDisableOrgIds: members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
                           tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
-        <g:if test="${cons_members}">
+        <g:if test="${members}">
             <div class="ui two fields">
                 <div class="field">
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
                         <input class="hidden" type="radio" name="generateSlavedLics" value="shared" checked="checked">
-                        <label>${message(code: 'myinst.separate_lics_shared')}</label>
+                        <label><g:message code="myinst.separate_lics_shared" args="${[superOrgType]}"/></label>
                     </div>
 
                     <div class="ui radio checkbox">
@@ -88,13 +88,13 @@
                         <g:else>
                             <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:else>
-                        <label>${message(code: 'myinst.separate_lics_explicit')}</label>
+                        <label><g:message code="myinst.separate_lics_explicit" args="${[superOrgType]}"/></label>
                     </div>
 
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
-                            <label>${message(code: 'myinst.separate_lics_reference')}</label>
+                            <label><g:message code="myinst.separate_lics_reference" args="${[superOrgType]}"/></label>
                         </div>
 
                         <div class="generateSlavedLicsReference-wrapper hidden">
@@ -103,22 +103,22 @@
                                       optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
                                       optionValue="${{ it.getGenericLabel() }}"
                                       name="generateSlavedLicsReference"
-                                />
+                            />
                         </div>
                         <r:script>
                             $('*[name=generateSlavedLics]').change( function(){
                                 $('*[name=generateSlavedLics][value=reference]').prop('checked') ?
                                         $('.generateSlavedLicsReference-wrapper').removeClass('hidden') :
                                         $('.generateSlavedLicsReference-wrapper').addClass('hidden') ;
-                            })
-                            $('*[name=generateSlavedLics]').trigger('change')
+                            });
+                            $('*[name=generateSlavedLics]').trigger('change');
                         </r:script>
                     </g:if>
                 </div>
             </div>
 
             <br/>
-            <g:if test="${cons_members}">
+            <g:if test="${members}">
                 <input type="submit" class="ui button js-click-control"
                         value="${message(code: 'default.button.create.label', default: 'Create')}"/>
             </g:if>
@@ -127,16 +127,22 @@
 
     <g:if test="${accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN")}">
         <hr />
-
         <div class="ui info message">
-            <div class="header">Konsorten verwalten</div>
+            <div class="header"><g:message code="myinst.noMembers.cons.header"/></div>
             <p>
-                Sie können bei Bedarf über
-                <g:link controller="myInstitution" action="addMembers">diesen Link</g:link>
-                Ihre Konsorten verwalten ..
+                <g:message code="myinst.noMembers.body" args="${[createLink([controller: "myInstitution", action: "addMembers"]),message(code:"consortium.member.plural")]}"/>
             </p>
         </div>
     </g:if>
+    <g:elseif test="${accessService.checkPermAffiliation("ORG_INST_COLLECTIVE","INST_ADM")}">
+        <hr />
+        <div class="ui info message">
+            <div class="header"><g:message code="myinst.noMembers.dept.header"/></div>
+            <p>
+                <g:message code="myinst.noMembers.body" args="${[createLink([controller: "myInstitution", action: "addMembers"]),message(code:"collective.member.plural")]}"/>
+            </p>
+        </div>
+    </g:elseif>
 </g:if>
 
 </body>

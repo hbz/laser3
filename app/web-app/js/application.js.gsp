@@ -432,6 +432,9 @@ r2d2 = {
             $(this).data("lastClicked", e.timeStamp);
         });
 
+        //WCAG Improvement
+        $(ctxSel + ' .search.dropdown').children('.search').attr("aria-labelledby","la-legend-searchDropdown");
+
         // confirmation modal
         var buildConfirmationModal =
             function(that){

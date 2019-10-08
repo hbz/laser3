@@ -1,11 +1,11 @@
-<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection/>
 
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.subscriberManagement.label', args:args.memberType)}</title>
 </head>
 
 <body>
@@ -17,18 +17,18 @@
     <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
-    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label')}"/>
+    <semui:crumb class="active" text="${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}"/>
 
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    ${message(code: 'subscription.details.subscriberManagement.label')}
+    ${message(code: 'subscription.details.subscriberManagement.label',args:args.memberType)}
 </h1>
 
-<g:render template="navSubscriberManagement" />
+<g:render template="navSubscriberManagement" model="${[args:args]}"/>
 
 <h3 class="ui left aligned icon header"><semui:headerIcon/>
-${message(code: 'subscription.linkPackagesMembers.header')}
+${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGenitive)}
 </h3>
 
 <semui:messages data="${flash}"/>
@@ -72,7 +72,7 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
 
 
             <div class="field required">
-                <h4>${message(code: 'subscription.linkPackagesMembers.info')}</h4>
+                <h4>${message(code: 'subscription.linkPackagesMembers.info',args: args.memberType)}</h4>
 
                 <label><g:message code="subscription.linkPackagesMembers.package.label" args="${args.superOrgType}"/></label>
                 <g:if test="${validPackages}">
@@ -162,9 +162,10 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
 
                         <div class="ui middle aligned selection list">
                             <g:each in="${sub.packages.sort { it.pkg.name }}" var="sp">
+                                <g:set var="childPkgHasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.id = :sp',[sp:sp.id])}"/>
                                 <div class="item">
                                     <div class="right floated content">
-                                        <g:if test="${editable}">
+                                        <g:if test="${editable && !childPkgHasCostItems}">
                                             <div class="ui icon negative buttons">
                                                 <button class="ui button la-selectable-button"
                                                         onclick="unlinkPackage(${sp.pkg.id}, ${sub.id})">
@@ -173,6 +174,14 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
                                             </div>
                                             <br/>
                                         </g:if>
+                                        <g:elseif test="${editable && childPkgHasCostItems}">
+                                            <div class="ui icon negative buttons">
+                                                <button class="ui button la-selectable-button disabled">
+                                                    <i class="unlink icon"></i>
+                                                </button>
+                                            </div>
+                                            <br/>
+                                        </g:elseif>
                                     </div>
 
                                     <div class="content">
@@ -180,6 +189,9 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
                                                 params="[pkgfilter: sp.pkg?.id]">
                                             ${sp?.pkg?.name}<br>${raw(sp.getIEandPackageSize())}
                                         </g:link>
+                                        <g:if test="${editable && childPkgHasCostItems}">
+                                            <br><g:message code="subscription.delete.existingCostItems"/>
+                                        </g:if>
                                     </div>
                                 </div>
                             </g:each>
@@ -222,8 +234,7 @@ ${message(code: 'subscription.linkPackagesMembers.header')}
     </div>
 </g:if>
 <g:else>
-    <br><strong><g:message code="subscription.details.nomembers.label"
-                           default="No members have been added to this license. You must first add members."/></strong>
+    <br><strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
 </g:else>
 
 <div id="magicArea"></div>

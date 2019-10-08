@@ -69,7 +69,7 @@
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
     <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
-            <g:link controller="home" action="index" class="header item la-logo-item">
+            <g:link controller="home" action="index" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
@@ -131,8 +131,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution"
-                                                      action="documents" message="menu.my.documents" />
+                            <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
 
                     <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
@@ -157,17 +156,14 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR"
-                                                          action="manageMembers" message="menu.my.consortia" />
+                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN"
-                                                          action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                             </g:if>
                             <g:elseif test="${accessService.checkPerm('ORG_INST_COLLECTIVE')}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR"
-                                                          action="manageMembers" message="menu.my.departments" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" specRole="ROLE_ADMIN, ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.departments" />
                             </g:elseif>
 
                             <div class="divider"></div>
@@ -231,8 +227,7 @@
 
                             <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisation" action="users" params="[id: contextOrg?.id]"
-                                                      message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="userList" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
                                    <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
@@ -493,7 +488,7 @@
                                     <g:link class="item" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</g:link>
                                     <g:link class="item" controller="yoda" action="surveyCheck">Update Survey Status</g:link>
                                     <g:link class="item" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="assignNoteOwners">Assign note owners for notes of subscriptions and licenses without owners</g:link>
                                     <g:link class="item" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</g:link>
                                     <g:link class="item" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</g:link>
 
@@ -506,7 +501,7 @@
                                     <%--<g:link class="item" controller="yoda" action="generateBatchUID">${message(code:'menu.admin.batchUID')}</g:link>--%>
                                     <%--<g:link class="item" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</g:link>--%>
                                     <g:link class="item" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</g:link>
-                                    <g:link class="item" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl</g:link>
+                                    <g:link class="item" controller="yoda" action="migratePackageIdentifiers">Remap Package Identifier Namespace</g:link>
                                     <%--<g:link class="item" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</g:link>
                                     <g:link class="item js-open-confirm-modal"
                                             data-confirm-term-content = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
@@ -723,17 +718,17 @@
 
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
+
         <%-- global content container --%>
         <main class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </main><!-- .main -->
+    <sec:ifNotGranted roles="ROLE_USER">
+        <!-- Footer -->
+            <g:render template="/public/templates/footer" />
+        <!-- Footer End -->
+    </sec:ifNotGranted>
 
-        <footer id="Footer">
-            <div class="clearfix"></div>
-            <div class="footer-links container">
-                <div class="row"></div>
-            </div>
-        </footer>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
@@ -775,5 +770,11 @@
         <r:layoutResources/>
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
+
+        <sec:ifAnyGranted roles="ROLE_YODA">
+            <g:if test="${plt}">
+                <p style="padding:1em; text-align: right">page load time (backend only): ${plt} ms</p>
+            </g:if>
+        </sec:ifAnyGranted>
     </body>
 </html>

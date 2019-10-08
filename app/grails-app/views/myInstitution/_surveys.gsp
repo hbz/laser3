@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.OrgRole" %>
 
 <h3><g:message code="surveys.active"/></h3>
 
@@ -16,8 +17,16 @@
             <div class="content">
                 <div class="header">
                     <i class="icon chart pie la-list-icon"></i>
+                    <g:if test="${!surveyConfig?.pickAndChoose}">
                     <g:link controller="myInstitution" action="surveyInfos"
                                           id="${surveyInfo.id}">${surveyConfig?.getSurveyName()}</g:link>
+                    </g:if>
+                    <g:if test="${surveyConfig?.pickAndChoose}">
+                        <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
+                                params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id, surveyConfigID: surveyConfig?.id]}">
+                            ${surveyConfig?.getSurveyName()}
+                        </g:link>
+                    </g:if>
                 </div>
 
                 <div class="meta">
@@ -47,21 +56,14 @@
 
                 <div class="extra">
 
-                    <g:set var="surveyResults" value="${com.k_int.kbplus.SurveyResult.findAllByParticipantAndSurveyConfigInList(institution, surveyInfo?.surveyConfigs)}" />
-
                     <div class="ui label">
                         ${surveyInfo?.status.getI10n('value')}
                     </div>
 
                     <div class="ui label survey-${surveyInfo?.type.value}">
-                        <g:link controller="myInstitution" action="surveyInfos"
-                                id="${surveyInfo.id}">${surveyInfo?.type.getI10n('value')}
-                        </g:link>
+                       ${surveyInfo?.type.getI10n('value')}
                     </div>
 
-                    <g:if test="${surveyResults && !surveyResults?.finishDate?.contains(null) ? "green" : ""}">
-                            <i class="check big green icon"></i>
-                    </g:if>
                 </div>
             </div>
         </div>

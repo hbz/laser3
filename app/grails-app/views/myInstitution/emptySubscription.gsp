@@ -54,6 +54,7 @@
                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                     <%
                         List subscriptionTypes = RefdataCategory.getAllRefdataValues('Subscription Type')
+                        subscriptionTypes-=RDStore.SUBSCRIPTION_TYPE_LOCAL
                     %>
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as')}</label>
@@ -67,15 +68,16 @@
                 <br/>
                 <div id="dynHiddenValues"></div>
 
-                <g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                <%--<g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
-                </g:if>
+                </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label', default:'Create')}" />
             </g:form>
         </semui:form>
 
     <hr>
 
+    <%-- deactivated because of ERMS-1732
         <g:if test="${consortialView || departmentalView}">
 
             <g:if test="${! members}">
@@ -143,7 +145,7 @@
 
                 $('#asOrgType').change(function() {
                     var selVal = $(this).val();
-                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}'].indexOf(selVal) > -1) {
+                    if (['${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}','${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}'].indexOf(selVal) > -1) {
                         $('.cons-options').show()
                     }
                     else {
@@ -153,6 +155,7 @@
             </r:script>
 
         </g:if>
+     --%>
         <r:script language="JavaScript">
             function formatDate(input) {
                 var inArr = input.split(/[\.-]/g);

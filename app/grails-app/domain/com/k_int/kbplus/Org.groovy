@@ -52,6 +52,7 @@ class Org
     String scope
     Date dateCreated
     Date lastUpdated
+    Org createdBy
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
@@ -131,7 +132,7 @@ class Org
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk'
+            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
@@ -143,6 +144,7 @@ class Org
     lastImportDate          column:'org_last_import_date'
        dateCreated          column:'org_date_created'
        lastUpdated          column:'org_last_updated'
+        createdBy           column:'org_created_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [
@@ -189,6 +191,7 @@ class Org
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
+           createdBy(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
@@ -213,10 +216,6 @@ class Org
         return RDStore.ORG_DELETED.id == status?.id
     }
 
-    void afterInsert() {
-        organisationService.initMandatorySettings(this)
-    }
-
     @Override
     def beforeInsert() {
         if ( !shortcode ) {
@@ -224,9 +223,13 @@ class Org
         }
         
         if (impId == null) {
-          impId = java.util.UUID.randomUUID().toString();
+            impId = java.util.UUID.randomUUID().toString();
         }
-        
+
+        if (contextService.getOrg()) {
+            createdBy = contextService.getOrg()
+        }
+
         super.beforeInsert()
     }
 
@@ -623,11 +626,11 @@ class Org
     }
 
     boolean isConsortiaMember() {
-        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM)
     }
 
     boolean isDepartment() {
-        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !accessService.checkPerm("ORG_INST")
+        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
     }
 
     // Only for ISIL, EZB, WIBID

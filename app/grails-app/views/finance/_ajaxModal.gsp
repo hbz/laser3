@@ -328,18 +328,24 @@
 
                 <div class="field">
 
-                    <g:if test="${tab in ["cons","coll"] && (sub || (costItem && costItem.sub))}">
+                    <g:if test="${(sub || (costItem && costItem.sub))}">
                         <%
                             def validSubChilds
                             Subscription contextSub
                             if(costItem && costItem.sub) contextSub = costItem.sub
                             else if(sub) contextSub = sub
-                            //consortial subscription
-                            if(!contextSub.instanceOf)
-                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
-                            //consortial member subscription
-                            else if(contextSub.instanceOf)
+                            if(tab == "cons" && contextSub.instanceOf) {
+                                //consortia member subscriptions
                                 validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub.instanceOf, RDStore.SUBSCRIPTION_DELETED)
+                            }
+                            else if(tab in ["cons","coll","collAsSubscr"]){
+                                //department subscriptions
+                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
+                            }
+                            else if(tab == "subscr" && contextSub.getCollective()?.id == org.id) {
+                                //consortial member subscription for collective
+                                validSubChilds = Subscription.findAllByInstanceOf(contextSub)
+                            }
                         %>
 
                         <g:if test="${validSubChilds}">
@@ -352,7 +358,7 @@
                                           from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                          noSelection="['':'']"
+                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           value="${'com.k_int.kbplus.Subscription:' + contextSub.id}"
                                           onchange="onSubscriptionUpdate()"
                                 />
@@ -370,7 +376,7 @@
                                       from="${[{}] + costItem?.sub?.packages}"
                                       optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                       optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                      noSelection="['':'']"
+                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
                                       value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                         </g:if>
                         <g:else>

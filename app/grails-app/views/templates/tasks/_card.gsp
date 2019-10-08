@@ -1,21 +1,25 @@
 <laser:serviceInjection />
 
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')} @ ${contextOrg} -->
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')} @ ${contextOrg} --%>
 <g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}" />
 
 <semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">
-        <div class="ui small feed content la-js-dont-hide-this-card ">
-            <!--<div class="event">-->
-                    <div id="summary" class="summary">
-                        <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
-                        <br />
-                        <div class="content">
-                            ${message(code:'task.endDate.label')}
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
-                        </div>
-                    </div>
-        <!--</div>-->
+        <div class="ui grid">
+            <div id="summary" class="twelve wide column summary">
+                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                <br />
+                <div class="content">
+                    ${message(code:'task.endDate.label')}
+                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk.endDate}"/>
+                </div>
+            </div>
+            <div class="right aligned four wide column la-column-left-lessPadding">
+                <g:link action="tasks" class="ui mini icon negative button"
+                        params='[deleteId:tsk?.id, id: params.id, returnToShow: true]'>
+                    <i class="trash alternate icon"></i>
+                </g:link>
+            </div>
         </div>
     </g:each>
 </semui:card>

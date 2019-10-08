@@ -3,6 +3,10 @@
 <head>
     <meta name="layout" content="public"/>
     <title>${message(code: 'laser', default: 'LAS:eR')}</title>
+    <script>
+        var gspLocale = "${message(code:'default.locale.label')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
+    </script>
 
 </head>
 
@@ -71,23 +75,30 @@
                         <h1>NEWS</h1>
                     </div>
 
-                    <span class="ui basic blue left pointing  label la-eye-catcher-txt">
+                    <span class="ui basic blue left pointing label la-eye-catcher-txt">
 
-                        <strong>GASCO-Produktsuche via LAS:eR aktiv</strong>
+                        <strong>LAS:eR ist neue hbz-Dienstleistung</strong>
+                        <br />
+                        <br />
+
+                        Ab dem 01.10.2019 ist das Electronic Resource Management System LAS:eR eine Dienstleistung des hbz.
+                        Der Dienst wird bereits bundesweit von Hochschulbibliotheken und Konsortialführern zur Lizenzverwaltung eingesetzt,
+                        die durch das Software as a Service (SaaS)-Modell webbasiert Zugriff auf die jeweils aktuelle Version der Software haben
+                        und somit auch von neu hinzukommenden Features, Komfort-Funktionen und Verbesserungen ohne zusätzlichen Installationsaufwand profitieren.
 
                         <br />
                         <br />
 
-                        Als erstes allgemein nutzbares Zusatzfeature ist ab sofort der GASCO-Monitor unter
-                        <a href="https://laser.hbz-nrw.de/gasco">https://laser.hbz-nrw.de/gasco</a> verfügbar,
-                        <br/>
-
-                        der aus den Eintragungen der projektbeteiligten Konsortialstellen und der GASCO-Teilnehmer automatisiert einen Index
-                        der konsortial verfügbaren Produkte erzeugt und somit die bisher manuell zusammengestellte GASCO-Liste ablöst.
+                        Das LAS:eR-Support-Team (<a href="mailto:laser_support@hbz-nrw.de">laser_support@hbz-nrw.de</a>) unterstützt die teilnehmenden Einrichtungen
+                        durch Schulungen und Dokumentationen und ist erster Ansprechpartner bei technischen Problemen.
 
                         <br />
                         <br />
 
+                        Falls Sie weiterführende Fragen zur LAS:eR-Dienstleistung haben oder LAS:eR an Ihrer Einrichtung zur lokalen Lizenzverwaltung einsetzen möchten,
+                        kontaktieren Sie uns: <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a>
+
+                        <br />
                     </span>
                 </div>
 
@@ -156,76 +167,9 @@
             </div>
         </div>
 
+        <g:render template="templates/footer" />
 
 
-        <div class="ui inverted vertical footer segment ">
-            <div class="ui container">
-                <div class="ui stackable inverted divided equal height stackable grid center aligned">
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">
-                                ${message(code: 'landingpage.footer.1.head')}
-                            </h4>
-
-                            <div class="ui inverted link list">
-                                <a class="item" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/ueber-uns/kontakt/anreise">${message(code: 'landingpage.footer.1.link2')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.1.link3')}</a>
-                                <a target="_blank" class="item" href="https://www.hbz-nrw.de/datenschutz">${message(code:'dse')}</a>
-                            </div>
-                        </div>
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">
-                            ${message(code: 'landingpage.footer.2.head')}
-                            </h4>
-
-                            <div class="ui inverted link list">
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" target="_blank">${message(code: 'landingpage.footer.2.link1')}</a>
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank" >${message(code: 'landingpage.footer.2.link2')}</a>
-                                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Blog" target="_blank" >${message(code: 'landingpage.footer.2.link3')}</a>
-                            </div>
-                        </div>
-
-                        <div class="three wide column left aligned">
-                            <h4 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h4>
-                            <div class="ui inverted link list">
-
-                                <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
-                                    Version: ${grailsApplication.metadata['app.version']}
-                                </a>
-
-                                <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                                    <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
-                                        Branch: ${grailsApplication.metadata['repository.branch']}
-                                    </a>
-                                </g:if>
-
-                                <div class="item">
-                                    <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                                        <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
-                                            Build: ${grailsApplication.metadata['app.buildDate']}
-                                        </a>
-                                    </g:if>
-                                    <g:else>
-                                        Build: ${grailsApplication.metadata['app.buildDate']}
-                                    </g:else>
-                                </div>
-
-                                <!-- (${grailsApplication.metadata['app.buildNumber']}) -->
-                                <!-- (${grailsApplication.metadata['build.DateTimeStamp']}) -->
-                            </div>
-                        </div>
-
-                </div>
-
-                <div class="ui center aligned segment inverted">
-                    <p>
-                        © 2019 Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) Jülicher Straße 6 50674 Köln +49 221 400 75-0
-                    </p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

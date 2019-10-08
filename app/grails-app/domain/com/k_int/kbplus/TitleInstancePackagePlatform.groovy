@@ -49,8 +49,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     Date coreStatusStart
     Date coreStatusEnd
     String rectype="so"
-  String impId
-  String gokbId
+    String impId
+    String gokbId
      URL originEditUrl
 
     @RefdataAnnotation(cat = 'TIPP Status')
@@ -72,6 +72,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
     RefdataValue payment
 
     String hostPlatformURL
+
+    Date dateCreated
+    Date lastUpdated
 
   //TitleInstancePackagePlatform derivedFrom
   //TitleInstancePackagePlatform masterTipp
@@ -126,6 +129,9 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
       ids                   batchSize: 10
       additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
+
+      dateCreated column: 'tipp_date_created'
+      lastUpdated column: 'tipp_last_updated'
   }
 
     static constraints = {
@@ -157,6 +163,10 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         coverageDepth(nullable:true, blank:true)
         coverageNote(nullable:true, blank:true)
          */
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     @Override
@@ -348,7 +358,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
                                                         dep_ie.subscription,
                 // pendingChange.message_TP02
                                                         "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
-                                                                "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,loc)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
+                                                                "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,locale)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [

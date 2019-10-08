@@ -12,9 +12,12 @@ class SurveyOrg {
     Date dateCreated
     Date lastUpdated
 
+    Date finishDate
+
 
     static constraints = {
         priceComment(nullable: true, blank: false)
+        finishDate (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -26,6 +29,7 @@ class SurveyOrg {
         priceComment column: 'surorg_pricecomment', type: 'text'
         dateCreated column: 'surorg_date_created'
         lastUpdated column: 'surorg_last_updated'
+        finishDate  column: 'surorg_finish_date'
     }
 
     boolean existsMultiYearTerm() {
@@ -35,7 +39,7 @@ class SurveyOrg {
             def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-            if (subChild?.getCalculatedSuccessor()) {
+            if (subChild?.isCurrentMultiYearSubscription()) {
                 existsMultiYearTerm = true
                 return existsMultiYearTerm
             }

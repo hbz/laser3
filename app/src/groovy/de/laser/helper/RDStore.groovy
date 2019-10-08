@@ -2,6 +2,7 @@ package de.laser.helper
 
 
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.SurveyProperty
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -13,6 +14,7 @@ class RDStore {
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
+    static final OR_LICENSEE_COLL           = getRefdataValue('Licensee_Collective','Organisational Role')
 
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
@@ -53,6 +55,9 @@ class RDStore {
     static final SUBSCRIPTION_INTENDED      = getRefdataValue('Intended', 'Subscription Status')
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', 'Subscription Status')
+
+    static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', 'Subscription Status')
+    static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', 'Subscription Status')
 
     static final SURVEY_READY               = getRefdataValue('Ready', 'Survey Status')
     static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', 'Survey Status')
@@ -147,7 +152,15 @@ class RDStore {
     static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation','Share Configuration') //maps to key, value is correct!
     static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members','Share Configuration')
 
+    //Properties
+
+    static final SURVEY_PARTICIPATION_PROPERTY = getSurveyProperty('Participation')
+
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
+    }
+
+    static SurveyProperty getSurveyProperty(String name) {
+        (SurveyProperty) GrailsHibernateUtil.unwrapIfProxy( SurveyProperty.getByName(name))
     }
 }

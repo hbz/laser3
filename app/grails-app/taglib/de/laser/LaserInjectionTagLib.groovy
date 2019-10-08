@@ -10,6 +10,7 @@ class LaserInjectionTagLib {
     def genericOIDService
     def instAdmService
     def surveyService
+    def taskService
 
     static namespace = "laser"
 
@@ -27,5 +28,6 @@ class LaserInjectionTagLib {
         g.set( var:'instAdmService', bean:'instAdmService' )
         g.set( var:'surveyService', bean:'surveyService' )
         g.set( var:'orgDocumentService', bean:'orgDocumentService' )
+        g.set( var:'taskService', bean:'taskService' )
     }
 }

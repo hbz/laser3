@@ -25,7 +25,7 @@
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="currentSurveys" controller="myInstitution" method="get" class="form-inline ui small form" params="[tab: params.tab]">
+    <g:form action="currentSurveys" controller="myInstitution" method="post" class="form-inline ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
                 <label for="name">${message(code: 'surveyInfo.name.label')}
@@ -61,6 +61,16 @@
                               optionKey="id"
                               optionValue="value"
                               value="${params.type}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.owner.label')}</label>
+                <g:select class="ui dropdown" name="owner"
+                              from="${com.k_int.kbplus.SurveyInfo.getAll()?.owner.unique { a, b -> a.id <=> b.id }}"
+                              optionKey="id"
+                              optionValue="name"
+                              value="${params.owner}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
@@ -113,6 +123,12 @@
             <g:sortableColumn params="${params}" property="surveyInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
             <th><g:message code="surveyInfo.finished"/></th>
+
+
+            <g:if test="${params.tab == 'finish'}">
+                <th><g:message code="surveyInfo.finishedDate"/></th>
+            </g:if>
+
             <th class="la-action-info">${message(code:'default.actions')}</th>
         </tr>
 
@@ -139,7 +155,7 @@
                         </g:if>
                         <i class="icon chart pie la-list-icon"></i>
 
-                            <g:if test="${surveyConfig?.isSubscriptionSurveyFix}">
+                            <g:if test="${surveyInfo?.isSubscriptionSurvey}">
                                 <g:link controller="subscription" action="show" id="${surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
                                          class="ui ">
                                     ${surveyConfig?.getSurveyName()}
@@ -164,40 +180,38 @@
                 </td>
 
                 <td class="center aligned">
-                    <g:set var="surveyResults"
-                           value="${SurveyResult.findAllByParticipantAndSurveyConfig(institution, surveyConfig)}"/>
 
-                    <g:if test="${surveyResults}">
+                    <semui:surveyFinishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
-                        <g:if test="${surveyResults?.finishDate?.contains(null)}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                      data-variation="tiny"
-                                      data-content="Nicht abgeschlossen">
-                                    <i class="circle red icon"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
 
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right"
-                                      data-variation="tiny"
-                                      data-content="${message(code: 'surveyResult.finish.info.consortia')}">
-                                    <i class="check big green icon"></i>
-                                </span>
-                            </g:else>
-
-                    </g:if>
                 </td>
+                <g:if test="${params.tab == 'finish'}">
+                    <td class="center aligned">
+                        <semui:surveyFinishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                    </td>
+                </g:if>
 
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <span class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                            <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
-                                    class="ui icon button">
-                                <i class="write icon"></i>
-                            </g:link>
-                        </span>
+                        <g:if test="${surveyConfig?.pickAndChoose}">
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
+                                <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
+                                        params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id, surveyConfigID: surveyConfig?.id]}" class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <span class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
+                                        class="ui icon button">
+                                    <i class="write icon"></i>
+                                </g:link>
+                            </span>
+                        </g:else>
                     </g:if>
                 </td>
 

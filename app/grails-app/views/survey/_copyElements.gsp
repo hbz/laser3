@@ -166,9 +166,17 @@
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
                 message(code: 'subscription.details.copyElementsIntoSubscription.copyDeleteElements.button') }" />
-        <div class="sixteen wide field" style="text-align: right;">
-            <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
-            <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()" ${submitDisabled}/>
+        <div class="two fields">
+            <div class="eight wide field" style="text-align: left;">
+                <g:set var="surveyConfig" value="${com.k_int.kbplus.SurveyConfig.findBySubscriptionAndIsSubscriptionSurveyFix(Subscription.get(sourceSubscriptionId), true)}" />
+                <g:link action="renewalwithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                    <g:message code="renewalwithSurvey.back"/>
+                </g:link>
+            </div>
+            <div class="eight wide field" style="text-align: right;">
+                <g:set var="submitDisabled" value="${(sourceSubscription && targetSubscription)? '' : 'disabled'}"/>
+                <input type="submit" class="ui button js-click-control" value="${submitButtonText}" onclick="return jsConfirmation()"  ${submitDisabled}/>
+            </div>
         </div>
     </g:form>
 </semui:form>

@@ -21,12 +21,13 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 import static de.laser.helper.RDStore.getLINKTYPE_FOLLOWS
-import static de.laser.helper.RDStore.getLINKTYPE_FOLLOWS
 import static de.laser.helper.RDStore.getSUBSCRIPTION_INTENDED
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ADMINISTRATIVE
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_ALLIANCE
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_CONSORTIAL
 import static de.laser.helper.RDStore.getSUBSCRIPTION_TYPE_NATIONAL
+import static de.laser.helper.RDStore.getTIPP_DELETED
+import static de.laser.helper.RDStore.getTIPP_STATUS_CURRENT
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SurveyController {
@@ -45,6 +46,7 @@ class SurveyController {
     def taskService
     def subscriptionService
     def comparisonService
+    def surveyUpdateService
 
     public static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     public static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -52,6 +54,15 @@ class SurveyController {
     public static final String WORKFLOW_SUBSCRIBER = '3'
     public static final String WORKFLOW_PROPERTIES = '4'
     public static final String WORKFLOW_END = '6'
+
+    def possible_date_formats = [
+            new SimpleDateFormat('yyyy/MM/dd'),
+            new SimpleDateFormat('dd.MM.yyyy'),
+            new SimpleDateFormat('dd/MM/yyyy'),
+            new SimpleDateFormat('dd/MM/yy'),
+            new SimpleDateFormat('yyyy/MM'),
+            new SimpleDateFormat('yyyy')
+    ]
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -123,7 +134,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: params.type,
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: false
         )
@@ -357,7 +368,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: params.type,
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true
         )
@@ -428,7 +439,7 @@ class SurveyController {
                 endDate: params.endDate ? sdf.parse(params.endDate) : null,
                 type: RefdataValue.getByValueAndCategory('selection','Survey Type'),
                 owner: contextService.getOrg(),
-                status: RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung']),
+                status: RDStore.SURVEY_IN_PROCESSING,
                 comment: params.comment ?: null,
                 isSubscriptionSurvey: true
         )
@@ -483,6 +494,48 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyTitles() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.contextOrg = contextService.getOrg()
+
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        String base_qry = null
+        Map<String,Object> qry_params = [subscription: result.surveyConfig?.subscription]
+
+
+
+        def date_filter
+        date_filter = new Date()
+        result.as_at_date = date_filter
+        base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+        base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+        qry_params.startDate = date_filter
+        qry_params.endDate = date_filter
+
+
+        base_qry += " and ie.status = :current "
+        qry_params.current = TIPP_STATUS_CURRENT
+
+        base_qry += "order by lower(ie.tipp.title.title) asc"
+
+        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
+
+        result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
+
+        result
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
@@ -498,7 +551,7 @@ class SurveyController {
 
         result.properties = getSurveyProperties(result.institution)
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.getConfigNameShort() }
 
@@ -548,7 +601,7 @@ class SurveyController {
         result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
 
@@ -595,7 +648,7 @@ class SurveyController {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
 
-        result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         //Only SurveyConfigs with Subscriptions
         result.surveyConfigs = result.surveyInfo?.surveyConfigs.findAll { it.subscription != null }?.sort {
@@ -746,7 +799,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        //result.editable = (result.surveyInfo.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : true
+        //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : true
 
         result.surveyProperty = SurveyProperty.get(params.prop)
 
@@ -767,8 +820,6 @@ class SurveyController {
         if (!result.editable) {
             response.sendError(401); return
         }
-
-        result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
 
         result.properties = getSurveyProperties(result.institution)
 
@@ -1016,7 +1067,7 @@ class SurveyController {
         }
 
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.surveyInfo && result.editable) {
 
@@ -1108,7 +1159,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.surveyInfo && result.editable) {
 
@@ -1202,7 +1253,7 @@ class SurveyController {
         def surveyInfo = surveyConfig.surveyInfo
         //surveyInfo.removeFromSurveyConfigs(surveyConfig)
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             try {
@@ -1247,7 +1298,7 @@ class SurveyController {
 
         def surveyInfo = surveyConfigProp?.surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             try {
@@ -1361,7 +1412,7 @@ class SurveyController {
         def surveyConfig = SurveyConfig.get(params.surveyConfigID)
         def surveyInfo = surveyConfig?.surveyInfo
 
-        result.editable = (surveyInfo && surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (surveyInfo && surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1400,7 +1451,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
 
@@ -1408,59 +1459,130 @@ class SurveyController {
 
             result.surveyConfigs.each { config ->
 
-                if (config?.type == 'Subscription') {
+                if(!config?.pickAndChoose) {
+                    if (config?.type == 'Subscription') {
 
-                    config.orgs?.org?.each { org ->
+                        config.orgs?.org?.each { org ->
 
-                        config?.surveyProperties?.each { property ->
+                            config?.surveyProperties?.each { property ->
+
+                                def surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: result.surveyInfo.startDate,
+                                        endDate: result.surveyInfo.endDate,
+                                        type: property.surveyProperty,
+                                        surveyConfig: config
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.debug(surveyResult)
+                                }
+                            }
+                        }
+                    } else {
+                        config.orgs?.org?.each { org ->
 
                             def surveyResult = new SurveyResult(
                                     owner: result.institution,
                                     participant: org ?: null,
                                     startDate: result.surveyInfo.startDate,
                                     endDate: result.surveyInfo.endDate,
-                                    type: property.surveyProperty,
+                                    type: config.surveyProperty,
                                     surveyConfig: config
                             )
 
                             if (surveyResult.save(flush: true)) {
-                                log.debug(surveyResult)
-                            } else {
-                                log.debug(surveyResult)
+
                             }
                         }
-
                     }
-
-                } else {
-                    config.orgs?.org?.each { org ->
-
-                        def surveyResult = new SurveyResult(
-                                owner: result.institution,
-                                participant: org ?: null,
-                                startDate: result.surveyInfo.startDate,
-                                endDate: result.surveyInfo.endDate,
-                                type: config.surveyProperty,
-                                surveyConfig: config
-                        )
-
-                        if (surveyResult.save(flush: true)) {
-
-                        }
-
-
-                    }
-
                 }
-
             }
 
-            result.surveyInfo.status = RefdataValue.loc('Survey Status', [en: 'Ready', de: 'Bereit'])
+            result.surveyInfo.status = RDStore.SURVEY_READY
             result.surveyInfo.save(flush: true)
             flash.message = g.message(code: "openSurvey.successfully")
         }
 
-        redirect action: 'surveyEvaluation', id: params.id
+            redirect action: 'show', id: params.id
+
+    }
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processOpenSurveyNow() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+
+        def currentDate = new Date(System.currentTimeMillis())
+
+        if (result.editable) {
+
+            result.surveyConfigs = result.surveyInfo?.surveyConfigs.sort { it?.configOrder }
+
+            result.surveyConfigs.each { config ->
+                if(!config?.pickAndChoose) {
+                    if (config?.type == 'Subscription') {
+
+                        config.orgs?.org?.each { org ->
+
+                            config?.surveyProperties?.each { property ->
+
+                                def surveyResult = new SurveyResult(
+                                        owner: result.institution,
+                                        participant: org ?: null,
+                                        startDate: currentDate,
+                                        endDate: result.surveyInfo.endDate,
+                                        type: property.surveyProperty,
+                                        surveyConfig: config
+                                )
+
+                                if (surveyResult.save(flush: true)) {
+                                    log.debug(surveyResult)
+                                } else {
+                                    log.debug(surveyResult)
+                                }
+                            }
+                        }
+                    } else {
+                        config.orgs?.org?.each { org ->
+
+                            def surveyResult = new SurveyResult(
+                                    owner: result.institution,
+                                    participant: org ?: null,
+                                    startDate: currentDate,
+                                    endDate: result.surveyInfo.endDate,
+                                    type: config.surveyProperty,
+                                    surveyConfig: config
+                            )
+
+                            if (surveyResult.save(flush: true)) {
+
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
+            result.surveyInfo.startDate = currentDate
+            result.surveyInfo.save(flush: true)
+            flash.message = g.message(code: "openSurveyNow.successfully")
+
+            surveyUpdateService.emailsToSurveyUsers([result.surveyInfo?.id])
+
+        }
+
+            redirect action: 'show', id: params.id
 
     }
 
@@ -1474,7 +1596,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (params.selectedOrgs && result.editable) {
 
@@ -1517,7 +1639,7 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.editable = (result.surveyInfo && result.surveyInfo?.status != RefdataValue.loc('Survey Status', [en: 'In Processing', de: 'In Bearbeitung'])) ? false : result.editable
+        result.editable = (result.surveyInfo && result.surveyInfo?.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
         if (result.editable) {
             result.surveyInfo.surveyConfigs.each { config ->
@@ -1677,6 +1799,7 @@ class SurveyController {
         result.parentSubscription = result.surveyConfig?.subscription
         result.parentSubChilds = subscriptionService.getCurrentValidSubChilds(result.parentSubscription)
         result.parentSuccessorSubscription = result.surveyConfig?.subscription?.getCalculatedSuccessor()
+        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.participationProperty = SurveyProperty.findByNameAndOwnerIsNull("Participation")
 
@@ -1699,161 +1822,203 @@ class SurveyController {
 
         }
 
-
+        def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
         def selecetedParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
+        result.orgsLateCommers = []
         result.parentSubChilds?.each { sub ->
-            if (sub?.getCalculatedSuccessor()) {
+            if (sub?.isCurrentMultiYearSubscription())
+            {
                 result.orgsWithMultiYearTermSub << sub
-            } else {
+            }
+            else if (lateCommersProperty && lateCommersProperty?.type == 'class com.k_int.kbplus.RefdataValue') {
+                def subProp = sub?.customProperties?.find { it?.type?.id == lateCommersProperty?.id }
+                if(subProp?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
+                {
+                    result.orgsLateCommers << sub
+                } else
+                {
+                    sub?.getAllSubscribers()?.each { org ->
+                        selecetedParticipantIDs << org?.id
+                    }
+                }
+            }
+            else
+            {
                 sub?.getAllSubscribers()?.each { org ->
                     selecetedParticipantIDs << org?.id
                 }
             }
         }
 
+
+        result.orgsWithParticipationInParentSuccessor = []
+        result.parentSuccessorSubChilds?.each { sub ->
+            sub?.getAllSubscribers()?.each { org ->
+                if(! (org?.id in selecetedParticipantIDs)) {
+                    result.orgsWithParticipationInParentSuccessor  << sub
+                }
+            }
+        }
+
         result.orgsWithTermination = []
 
-        //Orgs with termination there sub
-        SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
-                [participant: selecetedParticipantIDs,
-                 owner      : result.institution?.id,
-                 surProperty: result.participationProperty?.id,
-                 surConfig  : result.surveyConfig?.id,
-                 refValue   : RDStore.YN_NO])?.each {
-            def newSurveyResult = [:]
-            newSurveyResult.participant = it?.participant
-            newSurveyResult.resultOfParticipation = it
-            newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                    [parentSub: result.parentSubscription,
-                     participant:  it?.participant
-                    ])[0]
-            newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
-                it?.type?.getI10n('name')
+            //Orgs with termination there sub
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
+                    [
+                     owner      : result.institution?.id,
+                     surProperty: result.participationProperty?.id,
+                     surConfig  : result.surveyConfig?.id,
+                     refValue   : RDStore.YN_NO])?.each {
+                def newSurveyResult = [:]
+                newSurveyResult.participant = it?.participant
+                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.surveyConfig = result.surveyConfig
+                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub  : result.parentSubscription,
+                         participant: it?.participant
+                        ])[0]
+                newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
+                    it?.type?.getI10n('name')
+                }
+
+                result.orgsWithTermination << newSurveyResult
+
             }
 
-            result.orgsWithTermination << newSurveyResult
-
-        }
 
         // Orgs that renew or new to Sub
         result.orgsContinuetoSubscription = []
         result.newOrgsContinuetoSubscription = []
-        SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
-                [participant: selecetedParticipantIDs,
-                 owner      : result.institution?.id,
-                 surProperty: result.participationProperty?.id,
-                 surConfig  : result.surveyConfig?.id,
-                 refValue   : RDStore.YN_YES])?.each {
-            def newSurveyResult = [:]
-            newSurveyResult.participant = it?.participant
-            newSurveyResult.resultOfParticipation = it
 
-            newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
-                it?.type?.getI10n('name')
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+                    [
+                     owner      : result.institution?.id,
+                     surProperty: result.participationProperty?.id,
+                     surConfig  : result.surveyConfig?.id,
+                     refValue   : RDStore.YN_YES])?.each {
+                def newSurveyResult = [:]
+                newSurveyResult.participant = it?.participant
+                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.surveyConfig = result.surveyConfig
+                newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
+                    it?.type?.getI10n('name')
+                }
+
+                if (it?.participant?.id in selecetedParticipantIDs) {
+
+                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                            [parentSub  : result.parentSubscription,
+                             participant: it?.participant
+                            ])[0]
+
+                    //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+
+                    if (result.multiYearTermTwoSurvey) {
+
+                        newSurveyResult.newSubPeriodTwoStartDate = null
+                        newSurveyResult.newSubPeriodTwoEndDate = null
+
+                        def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                        if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 2.year) : null
+                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo?.comment
+                            }
+                        }
+
+                    }
+                    if (result.multiYearTermThreeSurvey) {
+                        newSurveyResult.newSubPeriodThreeStartDate = null
+                        newSurveyResult.newSubPeriodThreeEndDate = null
+
+                        def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
+                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree?.comment
+                            }
+                        }
+                    }
+
+                    result.orgsContinuetoSubscription << newSurveyResult
+                } else {
+
+                    if (result.multiYearTermTwoSurvey) {
+
+                        newSurveyResult.newSubPeriodTwoStartDate = null
+                        newSurveyResult.newSubPeriodTwoEndDate = null
+
+                        def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                        if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 2.year) : null
+                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo?.comment
+                            }
+                        }
+
+                    }
+                    if (result.multiYearTermThreeSurvey) {
+                        newSurveyResult.newSubPeriodThreeStartDate = null
+                        newSurveyResult.newSubPeriodThreeEndDate = null
+
+                        def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
+                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree?.comment
+                            }
+                        }
+                    }
+
+                    result.newOrgsContinuetoSubscription << newSurveyResult
+                }
+
+
             }
 
-            if (it?.participant?.id in selecetedParticipantIDs) {
-
-                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                        [parentSub: result.parentSubscription,
-                         participant:  it?.participant
-                        ])[0]
-
-                //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
-
-               if (result.multiYearTermTwoSurvey) {
-
-                    newSurveyResult.newSubPeriodTwoStartDate = null
-                    newSurveyResult.newSubPeriodTwoEndDate = null
-
-                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                        use(TimeCategory) {
-                            newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 2.year) : null
-                        }
-                    }
-
-                }
-                if (result.multiYearTermThreeSurvey) {
-                    newSurveyResult.newSubPeriodThreeStartDate = null
-                    newSurveyResult.newSubPeriodThreeEndDate = null
-
-                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                        use(TimeCategory) {
-                            newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
-                        }
-                    }
-                }
-
-                result.orgsContinuetoSubscription << newSurveyResult
-            } else {
-
-                if (result.multiYearTermTwoSurvey) {
-
-                    newSurveyResult.newSubPeriodTwoStartDate = null
-                    newSurveyResult.newSubPeriodTwoEndDate = null
-
-                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                        use(TimeCategory) {
-                            newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 2.year) : null
-                        }
-                    }
-
-                }
-                if (result.multiYearTermThreeSurvey) {
-                    newSurveyResult.newSubPeriodThreeStartDate = null
-                    newSurveyResult.newSubPeriodThreeEndDate = null
-
-                    if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
-                        use(TimeCategory) {
-                            newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
-                            newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
-                        }
-                    }
-                }
-
-                result.newOrgsContinuetoSubscription << newSurveyResult
-            }
-
-
-        }
 
         //Orgs without really result
         result.orgsWithoutResult = []
-        SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
-                [participant: selecetedParticipantIDs,
-                 owner      : result.institution?.id,
-                 surProperty: result.participationProperty?.id,
-                 surConfig  : result.surveyConfig?.id])?.each {
-            def newSurveyResult = [:]
-            newSurveyResult.participant = it?.participant
-            newSurveyResult.resultOfParticipation = it
-            newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
-                it?.type?.getI10n('name')
-            }
 
-            if (it?.participant?.id in selecetedParticipantIDs) {
-                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                        [parentSub: result.parentSubscription,
-                         participant:  it?.participant
-                        ])[0]
-                //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
-            } else {
-                newSurveyResult.sub = null
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
+                    [
+                     owner      : result.institution?.id,
+                     surProperty: result.participationProperty?.id,
+                     surConfig  : result.surveyConfig?.id])?.each {
+                def newSurveyResult = [:]
+                newSurveyResult.participant = it?.participant
+                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.surveyConfig = result.surveyConfig
+                newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it?.participant, result.institution, result.surveyConfig, result.properties).sort {
+                    it?.type?.getI10n('name')
+                }
+
+                if (it?.participant?.id in selecetedParticipantIDs) {
+                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                            [parentSub  : result.parentSubscription,
+                             participant: it?.participant
+                            ])[0]
+                    //newSurveyResult.sub = result.parentSubscription?.getDerivedSubscriptionBySubscribers(it?.participant)
+                } else {
+                    newSurveyResult.sub = null
+                }
+                result.orgsWithoutResult << newSurveyResult
             }
-            result.orgsWithoutResult << newSurveyResult
-        }
 
 
         //MultiYearTerm Subs
-        def sumParticipantWithSub = (result.orgsContinuetoSubscription?.groupBy {
+        def sumParticipantWithSub = ((result.orgsContinuetoSubscription?.groupBy {
             it?.participant.id
-        }?.size() + result.orgsWithTermination?.groupBy { it?.participant.id }?.size() + result.orgsWithMultiYearTermSub?.size())
+        }?.size()?:0) + (result.orgsWithTermination?.groupBy { it?.participant.id }?.size()?:0) + (result.orgsWithMultiYearTermSub?.size()?:0))
 
-        if (sumParticipantWithSub < result.parentSubChilds?.size()) {
+        if (sumParticipantWithSub < result.parentSubChilds?.size()?:0) {
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
             def removeSurveyResultOfOrg = []
@@ -1955,7 +2120,7 @@ class SurveyController {
 
         def baseSub = Subscription.get(params.parentSub ?: null)
 
-        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, LINKTYPE_FOLLOWS)
+        ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub?.id, Subscription.class.name, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
         } else {
@@ -1971,7 +2136,7 @@ class SurveyController {
                     sub_startDate = baseSub?.endDate ? (baseSub?.endDate + 1.day) : null
                     sub_endDate = baseSub?.endDate ? (baseSub?.endDate + 1.year) : null
                 }
-                sub_status = SUBSCRIPTION_INTENDED
+                sub_status = RDStore.SUBSCRIPTION_INTENDED
                 old_subOID = baseSub?.id
                 new_subname = baseSub?.name
             } else {
@@ -2026,7 +2191,7 @@ class SurveyController {
                     }
                 }
                 //link to previous subscription
-                Links prevLink = new Links(source: newSub.id, destination: baseSub?.id, objectType: Subscription.class.name, linkType: LINKTYPE_FOLLOWS, owner: contextService.org)
+                Links prevLink = new Links(source: newSub.id, destination: baseSub?.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
                 if (!prevLink.save(flush: true)) {
                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                 }
@@ -2077,10 +2242,10 @@ class SurveyController {
         result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
-        List<String> subTypSubscriberVisible = [SUBSCRIPTION_TYPE_CONSORTIAL,
-                                                SUBSCRIPTION_TYPE_ADMINISTRATIVE,
-                                                SUBSCRIPTION_TYPE_ALLIANCE,
-                                                SUBSCRIPTION_TYPE_NATIONAL]
+        List<String> subTypSubscriberVisible = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL,
+                                                RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE,
+                                                RDStore.SUBSCRIPTION_TYPE_ALLIANCE,
+                                                RDStore.SUBSCRIPTION_TYPE_NATIONAL]
         result.isSubscriberVisible =
                 result.sourceSubscription &&
                         result.targetSubscription &&
@@ -2765,7 +2930,7 @@ class SurveyController {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
                         def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-                        if (subChild?.getCalculatedSuccessor()) {
+                        if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true
                         }
 
@@ -2957,9 +3122,14 @@ class SurveyController {
                        g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
         ]
 
-        if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey) {
-            titles << g.message(code: 'renewalwithSurvey.period')
+
+        titles << g.message(code: 'renewalwithSurvey.period')
+
+        if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+        {
+            titles << g.message(code: 'renewalwithSurvey.periodComment')
         }
+
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
@@ -2971,7 +3141,7 @@ class SurveyController {
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription?.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.each { participantResult ->
             List row = []
@@ -2987,14 +3157,21 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = participantResult?.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
 
             if (renewalResult?.multiYearTermThreeSurvey) {
-
                 period = participantResult?.newSubPeriodThreeStartDate ? sdf.format(participantResult?.newSubPeriodThreeStartDate) : ""
                 period = participantResult?.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult?.newSubPeriodThreeEndDate) : ""
-                row.add([field: period ?: '', style: null])
+            }
+
+            row.add([field: period ?: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey) {
+                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+            }
+
+            if (renewalResult?.multiYearTermThreeSurvey) {
+                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
             }
 
             participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
@@ -3004,7 +3181,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -3018,7 +3195,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -3039,6 +3216,12 @@ class SurveyController {
                 period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
+
             }
 
 
@@ -3048,7 +3231,77 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label'), style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor?.size() ?: 0})", style: 'positive']])
+
+
+        renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
+            List row = []
+
+            sub.getAllSubscribers().each{ subscriberOrg ->
+
+                row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+
+                row.add([field: '', style: null])
+
+                row.add([field: '', style: null])
+
+                def period = ""
+
+                period = sub?.startDate ? sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
+
+                row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
+            }
+
+
+            renewalData.add(row)
+        }
+
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.orgsLateCommers.label')+ " (${renewalResult.orgsLateCommers?.size() ?: 0})", style: 'positive']])
+
+
+        renewalResult.orgsLateCommers.each { sub ->
+            List row = []
+
+            sub.getAllSubscribers().each{ subscriberOrg ->
+
+                row.add([field: subscriberOrg?.sortname ?: '', style: null])
+                row.add([field: subscriberOrg?.name ?: '', style: null])
+
+                row.add([field: '', style: null])
+
+                row.add([field: '', style: null])
+
+                def period = ""
+
+                period = sub?.startDate ? sdf.format(sub?.startDate) : ""
+                period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
+
+                row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
+            }
+
+
+            renewalData.add(row)
+        }
+
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgstoSubscription?.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.each { participantResult ->
@@ -3066,14 +3319,22 @@ class SurveyController {
             if (renewalResult?.multiYearTermTwoSurvey) {
                 period = participantResult?.newSubPeriodTwoStartDate ? sdf.format(participantResult?.newSubPeriodTwoStartDate) : ""
                 period = period + " - " + participantResult?.newSubPeriodTwoEndDate ? sdf.format(participantResult?.newSubPeriodTwoEndDate) : ""
-                row.add([field: period ?: '', style: null])
             }
             period = ""
             if (renewalResult?.multiYearTermThreeSurvey) {
                 period = participantResult?.newSubPeriodThreeStartDate ?: ""
                 period = period + " - " + participantResult?.newSubPeriodThreeEndDate ?: ""
-                row.add([field: period ?: '', style: null])
             }
+            row.add([field: period ?: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey) {
+                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+            }
+
+            if (renewalResult?.multiYearTermThreeSurvey) {
+                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
+            }
+
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
@@ -3083,7 +3344,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
             row.add([field: costItem?.taxKey ? costItem?.taxKey?.taxRate+'%' : "", style: null])
@@ -3095,7 +3356,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label'), style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalwithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination?.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.each { participantResult ->
@@ -3108,6 +3369,13 @@ class SurveyController {
 
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
 
+            row.add([field: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+            {
+                row.add([field: '', style: null])
+            }
+
             participantResult?.properties.sort {
                 it?.type?.name
             }.each { participantResultProperty ->
@@ -3117,7 +3385,7 @@ class SurveyController {
 
             }
 
-            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.surveyConfig, participantResult?.participant))
+            def costItem = CostItem.findBySurveyOrg(SurveyOrg.findBySurveyConfigAndOrg(participantResult?.resultOfParticipation?.surveyConfig, participantResult?.participant))
 
             row.add([field: costItem?.costInBillingCurrency ? costItem?.costInBillingCurrency : "", style: null])
             row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem?.costInBillingCurrencyAfterTax : "", style: null])
@@ -3337,6 +3605,19 @@ class SurveyController {
         }
 
         result
+    }
+    def parseDate(datestr, possible_formats) {
+        def parsed_date = null;
+        if (datestr && (datestr.toString().trim().length() > 0)) {
+            for (Iterator i = possible_formats.iterator(); (i.hasNext() && (parsed_date == null));) {
+                try {
+                    parsed_date = i.next().parse(datestr.toString());
+                }
+                catch (Exception e) {
+                }
+            }
+        }
+        parsed_date
     }
 
 }

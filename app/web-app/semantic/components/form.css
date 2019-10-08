@@ -314,22 +314,22 @@
 
 /* browsers require these rules separate */
 .ui.form ::-webkit-input-placeholder {
-  color: rgba(191, 191, 191, 0.87);
+  color: rgba(115, 115, 115, 0.87);
 }
 .ui.form :-ms-input-placeholder {
-  color: rgba(191, 191, 191, 0.87) !important;
-}
-.ui.form ::-moz-placeholder {
-  color: rgba(191, 191, 191, 0.87);
-}
-.ui.form :focus::-webkit-input-placeholder {
-  color: rgba(115, 115, 115, 0.87);
-}
-.ui.form :focus:-ms-input-placeholder {
   color: rgba(115, 115, 115, 0.87) !important;
 }
-.ui.form :focus::-moz-placeholder {
+.ui.form ::-moz-placeholder {
   color: rgba(115, 115, 115, 0.87);
+}
+.ui.form :focus::-webkit-input-placeholder {
+  color: rgba(64, 64, 64, 0.87);
+}
+.ui.form :focus:-ms-input-placeholder {
+  color: rgba(64, 64, 64, 0.87) !important;
+}
+.ui.form :focus::-moz-placeholder {
+  color: rgba(64, 64, 64, 0.87);
 }
 
 /* Error Placeholder */
@@ -1172,4 +1172,10 @@ input#spotlightSearch[type="search"] {
 /* Smaller input field for table headers */
 .ui.form .field .ui.input input.la-input-small {
   width: 80px;
+}
+legend {
+  margin: 0 0 .28571429rem 0;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: .92857143em;
+  font-weight: 700;
 }

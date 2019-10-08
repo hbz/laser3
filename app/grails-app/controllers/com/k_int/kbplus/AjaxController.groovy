@@ -33,6 +33,7 @@ class AjaxController {
     def taskService
     def controlledListService
     def dataConsistencyService
+    def accessService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -683,10 +684,14 @@ class AjaxController {
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
           // handle custom constraint(s) ..
-          if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
+          if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
-          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.equalsIgnoreCase('removeValue_administrativeSubscription')) {
+          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
+          //value is correct incorrectly translated!
+          if (it.value.equalsIgnoreCase('local licence') && accessService.checkPerm("ORG_CONSORTIUM") && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -744,10 +749,26 @@ class AjaxController {
     render controlledListService.getLicenses(params) as JSON
   }
 
-  @Secured(['ROLE_USER'])
-  def lookupProviders() {
-      render controlledListService.getProviders(params) as JSON
-  }
+    @Secured(['ROLE_USER'])
+    def lookupProviderAndPlatforms() {
+        def result = []
+
+        List<Org> provider = Org.executeQuery('SELECT o FROM Org o JOIN o.orgType ot WHERE ot = :ot', [ot: RDStore.OT_PROVIDER])
+        provider.each{ prov ->
+            Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
+
+            Platform.findAllByOrg(prov).each { plt ->
+                pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
+            }
+            result.add(pp)
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupProviders() {
+        render controlledListService.getProviders(params) as JSON
+    }
 
   @Secured(['ROLE_USER'])
   def lookupBudgetCodes() {
@@ -827,7 +848,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
 		  def newChecked = [:]
@@ -848,7 +869,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateIssueEntitlementOverwrite() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}")
+      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
       def ieCandidate = issueEntitlementCandidates.get(params.key)
       if(!ieCandidate)

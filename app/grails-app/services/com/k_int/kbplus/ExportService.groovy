@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 import org.w3c.dom.Attr
@@ -88,7 +89,11 @@ class ExportService {
 		XSSFCellStyle csNeutral = wb.createCellStyle()
 		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
 		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative]
+		XSSFCellStyle bold = wb.createCellStyle()
+		XSSFFont font = wb.createFont()
+		font.setBold(true)
+		bold.setFont(font)
+		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
 		sheets.entrySet().each { sheetData ->
@@ -120,6 +125,8 @@ class ExportService {
 							case 'neutral': cell.setCellStyle(csNeutral)
 								break
 							case 'negative': cell.setCellStyle(csNegative)
+								break
+							case 'bold': cell.setCellStyle(bold)
 								break
 						}
 					}

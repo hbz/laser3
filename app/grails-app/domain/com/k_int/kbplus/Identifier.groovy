@@ -10,6 +10,9 @@ class Identifier {
   String value
   IdentifierGroup ig
 
+  Date dateCreated
+  Date lastUpdated
+
   static hasMany = [ occurrences:IdentifierOccurrence]
   static mappedBy = [ occurrences:'identifier']
 
@@ -21,6 +24,10 @@ class Identifier {
       }
     }
     ig(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   static mapping = {
@@ -29,25 +36,31 @@ class Identifier {
        ns column:'id_ns_fk', index:'id_value_idx'
        ig column:'id_ig_fk', index:'id_ig_idx'
 
+      dateCreated column: 'id_date_created'
+      lastUpdated column: 'id_last_updated'
+
       occurrences   batchSize: 10
   }
 
   def beforeUpdate() {
     value = value?.trim()
+      boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
 
-      if(this.ns?.ns == 'wibid')
-      {
-          if(!(this.value =~ /^WIB/) && this.value != '')
+      if(forOrg) {
+          if(this.ns?.ns == 'wibid')
           {
-              this.value = 'WIB'+this.value.trim()
+              if(!(this.value =~ /^WIB/) && this.value != '')
+              {
+                  this.value = 'WIB'+this.value.trim()
+              }
           }
-      }
 
-      if(this.ns?.ns == 'ISIL')
-      {
-          if(!(this.value =~ /^DE-/ ) && this.value != '')
+          if(this.ns?.ns == 'ISIL')
           {
-              this.value = 'DE-'+this.value.trim()
+              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')
+              {
+                  this.value = 'DE-'+this.value.trim()
+              }
           }
       }
 
@@ -164,6 +177,7 @@ class Identifier {
     @Transient
     def afterInsert = {
 
+
         if(this.ns?.ns == 'wibid')
         {
             if(this.value == 'Unknown')
@@ -189,7 +203,7 @@ class Identifier {
                 this.value = ''
                 this.save()
             }
-            else if(!(this.value =~ /^DE-/ ) && this.value != '')
+            else if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')
             {
                 this.value = 'DE-'+this.value.trim()
             }

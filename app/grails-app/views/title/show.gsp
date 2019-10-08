@@ -50,7 +50,7 @@
                     <div class="item"><b><g:message code="title.editionNumber.label"/>:</b> ${ti?.editionNumber}</div>
                     <div class="item"><b><g:message code="title.editionStatement.label"/>:</b> ${ti?.editionStatement}</div>
                     <div class="item"><b><g:message code="title.volume.label"/>:</b> ${ti?.volume}</div>
-                    <div class="item"><b>${message(code: 'title.summaryOfContent.label')}:</b> ${tipp?.title?.summaryOfContent}</div>
+                    <div class="item"> ${tipp?.title?.summaryOfContent}</div>
                     <div class="item"><b><g:message code="title.dateFirstInPrint.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
                     <div class="item"><b><g:message code="title.dateFirstOnline.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
                 </g:if>

@@ -32,7 +32,7 @@
 </g:if>
 
 <g:if test="${tmplUserEdit}"><%-- /user/edit --%>
-    <g:form controller="user" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
+    <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
 
         <div class="two fields">
             <div class="field">

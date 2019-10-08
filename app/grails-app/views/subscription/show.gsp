@@ -104,7 +104,7 @@
                                     <g:else>
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type"
                                                                 config='Subscription Type'
-                                                                constraint="removeValue_administrativeSubscription"
+                                                                constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
                                         />
                                     </g:else>
                                 </dd>
@@ -398,7 +398,7 @@
 
                         <g:set var="derivedPropDefGroups" value="${subscriptionInstance.owner?.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
-                        <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                        <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
                             <div class="ui la-vertical buttons">
                                 <button id="derived-license-properties-toggle" class="ui button la-js-dont-hide-button">Vertragsmerkmale anzeigen</button>
                                 <script>
@@ -417,7 +417,7 @@
                     </div><!-- .content -->
                 </div>
 
-                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.fallback}">
+                <g:if test="${derivedPropDefGroups?.global || derivedPropDefGroups?.local || derivedPropDefGroups?.member || derivedPropDefGroups?.orphanedProperties}">
                     <div id="derived-license-properties" class="hidden" style="margin: 1em 0">
 
                         <g:render template="licProp" model="${[

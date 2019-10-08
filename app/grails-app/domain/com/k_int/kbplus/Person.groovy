@@ -25,6 +25,9 @@ class Person extends AbstractBaseDomain {
     @RefdataAnnotation(cat = 'Person Position')
     RefdataValue roleType
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         id              column:'prs_id'
         globalUID       column:'prs_guid'
@@ -43,6 +46,9 @@ class Person extends AbstractBaseDomain {
         addresses           cascade: 'all', lazy: false
         contacts            cascade: 'all', lazy: false
         privateProperties   cascade: 'all', batchSize: 10
+
+        dateCreated column: 'prs_date_created'
+        lastUpdated column: 'prs_last_updated'
     }
     
     static mappedBy = [
@@ -70,6 +76,10 @@ class Person extends AbstractBaseDomain {
         isPublic    (nullable:false, blank:false)
         contactType (nullable:true)
         roleType    (nullable:true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
     
     static getAllRefdataValues(String category) {

@@ -8,11 +8,12 @@ import de.laser.DeletionService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
+import de.laser.helper.RDStore
+import grails.plugin.springsecurity.SpringSecurityService
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
 import static de.laser.helper.RDStore.*
-
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
@@ -30,6 +31,7 @@ class OrganisationController extends AbstractDebugController {
     def instAdmService
     def organisationService
     def deletionService
+    def userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -38,60 +40,97 @@ class OrganisationController extends AbstractDebugController {
         redirect action: 'list', params: params
     }
 
-    @DebugAnnotation(perm="FAKE,ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
+    @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
     def settings() {
 
         User user = User.get(springSecurityService.principal.id)
         Org org   = Org.get(params.id)
 
-        Map result = [
-                user:           user,
-                orgInstance:    org,
-                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
-                inContextOrg:   contextService.getOrg().id == params.int('id')
-        ]
-
-        result.editable = result.editable || (result.inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
-
-        // forbidden access
-        if (! result.editable) {
-            redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
-        }
-
-        if (! result.orgInstance) {
+        if (! org) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
             redirect action: 'list'
             return
         }
 
-        // adding default settings
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
-            )
-        }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,''
-            )
-        }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID, ''
-            )
-        }
-        if (OrgSettings.get(result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSettings.SETTING_NOT_FOUND) {
-            OrgSettings.add(
-                    result.orgInstance, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
-                    RefdataValue.getByValueAndCategory('No', 'YN')
-            )
+        Map result = [
+                user:           user,
+                orgInstance:    org,
+                editable:   	SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+                inContextOrg:   contextService.getOrg().id == org.id
+        ]
+        result.editable = result.editable || (result.inContextOrg && accessService.checkMinUserOrgRole(user, org, 'INST_ADM'))
+
+        // forbidden access
+        if (! result.editable) {
+            redirect controller: 'organisation', action: 'show', id: org.id
         }
 
-        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
+        if (params.addCIPlatform) {
+            Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
+            if (plt) {
+                CustomerIdentifier ci = new CustomerIdentifier(
+                        owner: org,
+                        platform: plt,
+                        value: params.addCIValue,
+                        type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type') // TODO
+                )
+                ci.save()
+                println ci.errors
+                println ci
+            }
+        }
+
+        // adding default settings
+        organisationService.initMandatorySettings(org)
+
+        // collecting visible settings by customer type, role and/or combo
+        List<OrgSettings> allSettings = OrgSettings.findAllByOrg(org)
+
+        List<OrgSettings.KEYS> openSet = [
+                OrgSettings.KEYS.API_LEVEL,
+                OrgSettings.KEYS.API_KEY,
+                OrgSettings.KEYS.API_PASSWORD,
+                OrgSettings.KEYS.CUSTOMER_TYPE,
+                OrgSettings.KEYS.GASCO_ENTRY
+        ]
+        List<OrgSettings.KEYS> privateSet = [
+                OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
+                OrgSettings.KEYS.NATSTAT_SERVER_ACCESS
+        ]
+        List<OrgSettings.KEYS> credentialsSet = [
+                OrgSettings.KEYS.NATSTAT_SERVER_API_KEY,
+                OrgSettings.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+        ]
+
+        result.settings = allSettings.findAll { it.key in openSet }
+
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
+            result.settings.addAll(allSettings.findAll { it.key in privateSet })
+            result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
+        }
+        else if (contextService.getOrg().id == org.id) {
+            log.debug( 'settings for own org')
+
+            if (! ['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key in privateSet })
+                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            }
+            else {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
+            }
+        }
+        else if (Combo.findByFromOrgAndToOrg(org, contextService.getOrg())){
+            log.debug( 'settings for combo related org > consortia or collective')
+
+            result.settings.addAll(allSettings.findAll { it.key in privateSet })
+        }
+
+        result.allPlatforms = Platform.executeQuery('select p from Platform p where p.org is not null order by p.name')
         result
     }
 
@@ -591,6 +630,18 @@ class OrganisationController extends AbstractDebugController {
                 result.orgInstance.refresh()
         }
 
+        if (result.orgInstance.createdBy) {
+			if (Combo.findByFromOrgAndToOrg(result.orgInstance, result.orgInstance.createdBy)) {
+
+				result.createdByOrg = result.orgInstance.createdBy
+
+				result.createdByGeneralContacts = PersonRole.executeQuery(
+						"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+								"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+						[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+				)
+			}
+        }
 
         result
     }
@@ -684,8 +735,7 @@ class OrganisationController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') ||
-                          instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.hasInstAdmPivileges(result.user, orgInstance, [COMBO_TYPE_DEPARTMENT, COMBO_TYPE_CONSORTIUM])
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
@@ -693,40 +743,80 @@ class OrganisationController extends AbstractDebugController {
 
         }
 
-      if (!orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-        redirect action: 'list'
-        return
-      }
+          if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+          }
 
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
-        //result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
-
-        List baseQuery  = ['select distinct uo from UserOrg uo, User u']
-        List whereQuery = ['uo.user = u and uo.org = :org']
-        Map queryParams = [org: orgInstance]
-
-        whereQuery.add('uo.status = :status')
-        queryParams.put('status', UserOrg.STATUS_APPROVED)
-
-        if (params.authority) {
-            whereQuery.add('uo.formalRole = :role')
-            queryParams.put('role', Role.get(params.authority.toLong()))
-        }
-
-        if (params.name && params.name != '' ) {
-            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
-            queryParams.put('name', "${params.name}")
-        }
-
-        result.users = User.executeQuery(
-                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
-                queryParams,
-                [sort:'user.username', order: 'asc']
-        )
-
         result.orgInstance = orgInstance
-        result
+
+        Map filterParams = params
+        filterParams.status = UserOrg.STATUS_APPROVED
+        filterParams.org = orgInstance
+
+        result.users = userService.getUserSet(filterParams)
+        result.breadcrumb = 'breadcrumb'
+        result.titleMessage = "${orgInstance.name} - ${message(code:'org.nav.users')}"
+        result.inContextOrg = false
+        result.navPath = "nav"
+        result.navConfiguration = [orgInstance: orgInstance, inContextOrg: false]
+        result.multipleAffiliationsWarning = true
+        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:orgInstance])
+        availableComboOrgs.add(orgInstance)
+        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
+        result.tableConfig = [editable: result.editable, editor: result.user, editLink: 'userEdit', users: result.users, showAllAffiliations: false, modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'), availableComboOrgs: availableComboOrgs]
+        result.total = result.users.size()
+        render view: '/templates/user/_list', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def userEdit() {
+        Map result = [user: User.get(params.id), editor: contextService.user, editable: true, orgInstance: contextService.org, manipulateAffiliations: false]
+
+        render view: '/templates/user/_edit', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def userCreate() {
+        Map result = setResultGenericsAndCheckAccess(params)
+        result.availableOrgs = Org.get(params.id)
+        result.availableOrgRoles = Role.findAllByRoleType('user')
+        result.editor = result.user
+        result.breadcrumb = 'breadcrumb'
+
+        render view: '/templates/user/_create', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    def processUserCreate() {
+        def success = userService.addNewUser(params, flash)
+        //despite IntelliJ's warnings, success may be an array other than the boolean true
+        if(success instanceof User) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), success.id])
+            redirect action: 'userEdit', id: success.id
+        }
+        else if(success instanceof List) {
+            flash.error = success.join('<br>')
+            redirect action: 'userCreate'
+        }
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    def addAffiliation() {
+        Map result = userService.setResultGenerics(params)
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect action: 'userEdit', id: params.id
+            return
+        }
+        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
+        redirect action: 'userEdit', id: params.id
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -830,7 +920,16 @@ class OrganisationController extends AbstractDebugController {
             return
         }
 
-        result.visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+        List visiblePersons = addressbookService.getAllVisiblePersons(result.user, result.orgInstance)
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+
+        result.visiblePersons = visiblePersons
 
         result
     }
@@ -949,7 +1048,7 @@ class OrganisationController extends AbstractDebugController {
     private Map setResultGenericsAndCheckAccess(params) {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR'),inContextOrg:true,institutionalView:false,departmentalView:false]
+        Map result = [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR,ROLE_ADMIN'),inContextOrg:true,institutionalView:false,departmentalView:false]
         if(params.id) {
             result.orgInstance = Org.get(params.id)
             result.inContextOrg = result.orgInstance.id == org.id

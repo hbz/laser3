@@ -71,7 +71,7 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
-                            base_qry += " and genfunc_filter_matcher(gProp.stringValue, :prop) = true ) "
+                            base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
                             base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
                         }
                         break

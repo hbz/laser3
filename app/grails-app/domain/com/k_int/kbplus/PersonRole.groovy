@@ -26,6 +26,9 @@ class PersonRole implements Comparable<PersonRole>{
     TitleInstance   title
     Date            start_date 
     Date            end_date
+
+    Date dateCreated
+    Date lastUpdated
     
     static belongsTo = [
         prs:        Person,
@@ -47,6 +50,9 @@ class PersonRole implements Comparable<PersonRole>{
         title       column:'pr_title_fk'
         start_date  column:'pr_startdate'
         end_date    column:'pr_enddate'
+        
+        dateCreated column: 'pr_date_created'
+        lastUpdated column: 'pr_last_updated'
     }
     
     static constraints = {
@@ -62,6 +68,10 @@ class PersonRole implements Comparable<PersonRole>{
         title       (nullable:true)
         start_date  (nullable:true)
         end_date    (nullable:true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     /**
