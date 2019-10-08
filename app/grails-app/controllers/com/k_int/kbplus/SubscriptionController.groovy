@@ -2634,18 +2634,20 @@ class SubscriptionController extends AbstractDebugController {
         if(result.subscriptionInstance) {
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status))
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status)) {
                         log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
                         countTippsToAdd++
+                    }
                 }
                 catch (EntitlementCreationException e) {
                     flash.error = e.getMessage()
                 }
             }
             tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
+                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp)) {
                     log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
                     countTippsToDelete++
+                }
             }
 
             if(countTippsToAdd > 0){
