@@ -4872,6 +4872,8 @@ class SubscriptionController extends AbstractDebugController {
                 sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
+                Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
+                Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
                 if(sub.instanceOf && member)
                     sub.isSlaved = YN_YES
                 if(sub.save()) {
@@ -4910,24 +4912,45 @@ class SubscriptionController extends AbstractDebugController {
                             flash.error += memberRole.getErrors()
                         }
                     }
+                    if(provider) {
+                        OrgRole providerRole = new OrgRole(roleType: OR_PROVIDER, sub: sub, org: provider)
+                        if(!providerRole.save()) {
+                            withErrors = true
+                            flash.error += providerRole.getErrors()
+                        }
+                    }
+                    if(agency) {
+                        OrgRole agencyRole = new OrgRole(roleType: OR_AGENCY, sub: sub, org: agency)
+                        if(!agencyRole.save()) {
+                            withErrors = true
+                            flash.error += agencyRole.getErrors()
+                        }
+                    }
                     //process subscription properties
                     entry.properties.each { k, v ->
-                        log.debug("${k}:${v}")
+                        log.debug("${k}:${v.propValue}")
                         PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
                         List<String> valueList
                         if(propDef.multipleOccurrence) {
-                            valueList = v.split(',')
+                            valueList = v?.propValue?.split(',')
                         }
-                        else valueList = [v]
+                        else valueList = [v.propValue]
                         //in most cases, valueList is a list with one entry
                         valueList.each { value ->
                             try {
-                                createProperty(propDef,sub,contextOrg,value)
+                                createProperty(propDef,sub,contextOrg,value,v.propNote)
                             }
                             catch (Exception e) {
                                 withErrors = true
                                 flash.error += e.getMessage()
                             }
+                        }
+                    }
+                    if(entry.notes) {
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, title: entry.notes, type: RefdataValue.getByValueAndCategory('Note','Document Type'), owner: contextOrg, user: contextService.user)
+                        if(docContent.save()) {
+                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note','Document Type'))
+                            dc.save()
                         }
                     }
                 }
@@ -4942,7 +4965,7 @@ class SubscriptionController extends AbstractDebugController {
         else redirect(url: request.getHeader("referer"))
     }
 
-    private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value) {
+    private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
         //check if private or custom property
         AbstractProperty prop
         if(propDef.tenant == contextOrg) {
@@ -4975,6 +4998,8 @@ class SubscriptionController extends AbstractDebugController {
             default: prop.setStringValue(value)
                 break
         }
+        if(note)
+            prop.note = note
         prop.save()
     }
 
