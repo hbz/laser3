@@ -25,6 +25,9 @@ class Task {
     User            responsibleUser
     Org             responsibleOrg
 
+    Date dateCreated
+    Date lastUpdated
+
     static constraints = {
         license         (nullable:true, blank:false)
         org             (nullable:true, blank:false)
@@ -40,6 +43,10 @@ class Task {
         createDate      (nullable:false, blank:false)
         responsibleUser (nullable:true,  blank:true)
         responsibleOrg  (nullable:true,  blank:true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -63,6 +70,10 @@ class Task {
 
         responsibleUser      column:'tsk_responsible_user_fk'
         responsibleOrg       column:'tsk_responsible_org_fk'
+
+        dateCreated     column: 'tsk_date_created'
+        lastUpdated     column: 'tsk_last_updated'
+
     }
 
     def getObjects() {

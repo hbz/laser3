@@ -35,6 +35,9 @@ class PendingChange {
     String msgToken
     String msgParams
 
+    Date dateCreated
+    Date lastUpdated
+
     @Deprecated
     String desc
 
@@ -62,6 +65,9 @@ class PendingChange {
          actionDate column:'pc_action_date'
                user column:'pc_action_user_fk'
                sort "ts":"asc"
+
+        dateCreated column: 'pc_date_created'
+        lastUpdated column: 'pc_last_updated'
     }
 
     static constraints = {
@@ -80,6 +86,10 @@ class PendingChange {
         status(nullable:true, blank:false);
         actionDate(nullable:true, blank:false);
         user(nullable:true, blank:false);
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     def resolveOID() {

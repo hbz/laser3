@@ -10,6 +10,9 @@ class Identifier {
   String value
   IdentifierGroup ig
 
+  Date dateCreated
+  Date lastUpdated
+
   static hasMany = [ occurrences:IdentifierOccurrence]
   static mappedBy = [ occurrences:'identifier']
 
@@ -21,6 +24,10 @@ class Identifier {
       }
     }
     ig(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   static mapping = {
@@ -28,6 +35,9 @@ class Identifier {
     value column:'id_value', index:'id_value_idx'
        ns column:'id_ns_fk', index:'id_value_idx'
        ig column:'id_ig_fk', index:'id_ig_idx'
+
+      dateCreated column: 'id_date_created'
+      lastUpdated column: 'id_last_updated'
 
       occurrences   batchSize: 10
   }

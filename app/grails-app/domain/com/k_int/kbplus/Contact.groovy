@@ -16,6 +16,10 @@ class Contact implements Comparable<Contact>{
     Person       prs            // person related contact; exclusive with org
     Org          org            // org related contact; exclusive with prs
 
+    Date dateCreated
+    Date lastUpdated
+
+
     @RefdataAnnotation(cat = 'ContactContentType')
     RefdataValue contentType
 
@@ -30,6 +34,9 @@ class Contact implements Comparable<Contact>{
         type        column:'ct_type_rv_fk'
         prs         column:'ct_prs_fk', index: 'ct_prs_idx'
         org         column:'ct_org_fk', index: 'ct_org_idx'
+
+        dateCreated column: 'ct_date_created'
+        lastUpdated column: 'ct_last_updated'
     }
     
     static constraints = {
@@ -38,6 +45,10 @@ class Contact implements Comparable<Contact>{
         type        (nullable:false)
         prs         (nullable:true)
         org         (nullable:true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
     
     static getAllRefdataValues(String category) {

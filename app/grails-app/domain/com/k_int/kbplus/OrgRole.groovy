@@ -30,6 +30,9 @@ class OrgRole implements ShareableTrait {
     OrgRole sharedFrom
     Boolean isShared
 
+    Date dateCreated
+    Date lastUpdated
+
     // dynamic binding for hql queries
     @Transient
     ownerStatus
@@ -49,6 +52,9 @@ class OrgRole implements ShareableTrait {
     isShared column:'or_is_shared'
   sharedFrom column:'or_shared_from_fk'
          org sort: 'name', order: 'asc'
+
+      dateCreated column: 'or_date_created'
+      lastUpdated column: 'or_last_updated'
   }
 
   static constraints = {
@@ -62,6 +68,10 @@ class OrgRole implements ShareableTrait {
     endDate     (nullable:true, blank:false)
     isShared    (nullable:true, blank:false, default:false)
     sharedFrom  (nullable:true, blank:true)
+
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
   }
 
     /**
