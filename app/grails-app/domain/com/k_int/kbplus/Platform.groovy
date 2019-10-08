@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.ClassUtils
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import grails.util.Holders
@@ -13,6 +15,10 @@ class Platform extends AbstractBaseDomain {
 
   @Transient
   def grailsApplication
+
+  @Transient
+  def propertyService
+
   static Log static_logger = LogFactory.getLog(Platform)
 
   String impId
@@ -44,7 +50,8 @@ class Platform extends AbstractBaseDomain {
   static mappedBy = [tipps: 'platform']
   static hasMany = [
       tipps: TitleInstancePackagePlatform,
-      oapp: OrgAccessPointLink
+      oapp: OrgAccessPointLink,
+      customProperties:   PlatformCustomProperty,
   ]
 
   static mapping = {
@@ -65,6 +72,7 @@ class Platform extends AbstractBaseDomain {
               org  column: 'plat_org_fk', index: 'plat_org_idx'
              tipps sort: 'title.title', order: 'asc', batchSize: 10
             oapp batchSize: 10
+    customProperties sort:'type', order:'desc', batchSize: 10
   }
 
   static constraints = {
@@ -150,6 +158,30 @@ class Platform extends AbstractBaseDomain {
     }
 
     platform;
+  }
+
+  Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+    def result = [ 'global':[], 'local':[], 'orphanedProperties':[] ]
+
+    // ALL type depending groups without checking tenants or bindings
+    def groups = PropertyDefinitionGroup.findAllByOwnerType(Platform.class.name)
+    groups.each{ it ->
+
+      def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
+
+      if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
+        if (binding) {
+          result.local << [it, binding]
+        } else {
+          result.global << it
+        }
+      }
+    }
+
+    // storing properties without groups
+    result.orphanedProperties = propertyService.getOrphanedProperties(this, result.global, result.local, [])
+
+    result
   }
   
   static def refdataFind(params) {

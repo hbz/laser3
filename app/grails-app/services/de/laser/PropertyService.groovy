@@ -4,6 +4,8 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseCustomProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformCustomProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionCustomProperty
@@ -202,6 +204,9 @@ class PropertyService {
                 break
             case Org.class.simpleName:
                 result = OrgCustomProperty.findAllByIdInList(orphanedIds)
+                break
+            case Platform.class.simpleName:
+                result = PlatformCustomProperty.findAllByIdInList(orphanedIds)
                 break
         }
 
