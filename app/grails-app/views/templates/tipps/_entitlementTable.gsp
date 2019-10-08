@@ -19,14 +19,14 @@
             <g:message code="subscription" />: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
             <br>
             <br>
-            %{--<g:message code="package" />:
-            <div class="ui bulleted list">
+            %{--<g:message code="package" />:--}%<br>
+            <div class="ui list">
                 <g:each in="${newSub?.packages.sort{it?.pkg?.name}}" var="subPkg">
                     <div class="item">
-                        <b>${subPkg?.pkg?.name}</b>
+                        <br>
                     </div>
                 </g:each>
-            </div>--}%
+            </div>
         </semui:form>
 
     </g:if>
@@ -141,7 +141,12 @@
                             </div>
                             <div class="item">
                                 <b>${message(code: 'default.status.label')}:</b>
-                                <semui:xEditableRefData owner="${tipp}" field="status" config="TIPP Status"/>
+                                <g:if test="${surveyFunction}">
+                                    <semui:xEditableRefData owner="${ie}" field="status" config="TIPP Status"/>
+                                </g:if>
+                                <g:else>
+                                    <semui:xEditableRefData owner="${tipp}" field="status" config="TIPP Status"/>
+                                </g:else>
                             </div>
                             <div class="item">
                                 <b>${message(code: 'tipp.package', default: 'Package')}:</b>

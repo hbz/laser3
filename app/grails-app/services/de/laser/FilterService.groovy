@@ -46,6 +46,12 @@ class FilterService {
             query << "o.sector.id = :orgSector"
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
+        if (params.orgIdentifier?.length() > 0) {
+            query << " exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
+                     " where ioorg = o and LOWER(ioid.value) like LOWER(:orgIdentifier)) "
+            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
+        }
+
         if (params.federalState?.length() > 0) {
             query << "o.federalState.id = :federalState"
              queryParams << [federalState : Long.parseLong(params.federalState)]
@@ -132,6 +138,12 @@ class FilterService {
             query << "exists (select oss from OrgSettings as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
             queryParams << [customerTypeKey : OrgSettings.KEYS.CUSTOMER_TYPE]
+        }
+
+        if (params.orgIdentifier?.length() > 0) {
+            query << " exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
+                    " where ioorg = o and LOWER(ioid.value) like LOWER(:orgIdentifier)) "
+            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
          queryParams << [org : org]

@@ -39,7 +39,7 @@ class SurveyOrg {
             def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
             def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-            if (subChild?.getCalculatedSuccessor()) {
+            if (subChild?.isCurrentMultiYearSubscription()) {
                 existsMultiYearTerm = true
                 return existsMultiYearTerm
             }
