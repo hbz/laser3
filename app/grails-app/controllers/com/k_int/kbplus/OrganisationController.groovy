@@ -68,6 +68,12 @@ class OrganisationController extends AbstractDebugController {
             redirect controller: 'organisation', action: 'show', id: org.id
         }
 
+		if (params.deleteCI) {
+			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+			if (ci && ci.owner == org) {
+				ci.delete()
+			}
+		}
         if (params.addCIPlatform) {
             Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
             if (plt) {
@@ -78,8 +84,6 @@ class OrganisationController extends AbstractDebugController {
                         type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type') // TODO
                 )
                 ci.save()
-                println ci.errors
-                println ci
             }
         }
 
