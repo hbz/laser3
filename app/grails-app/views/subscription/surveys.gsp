@@ -128,9 +128,7 @@
                     <g:if test="${surveyConfig?.pickAndChoose}">
                         <span class="la-popup-tooltip la-delay"
                               data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                            <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
-                                    params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id,
-                                    surveyConfigID: surveyConfig?.id]}"
+                            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"
                                     class="ui icon button">
                                 <i class="write icon"></i>
                             </g:link>

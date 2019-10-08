@@ -9,7 +9,7 @@ class StatsLinkTagLib {
 
     def statsLink = {attrs, body ->
         if (attrs.module) {
-            attrs.base += "/${attrs.module}"
+            attrs.base = attrs.base ? attrs.base+"/${attrs.module}" : "/${attrs.module}"
             attrs.remove('module')
         }
         if (!attrs.params.packages){
