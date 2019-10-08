@@ -22,6 +22,8 @@ if(config.rtl) {
 }
 require('./collections/build')(gulp);
 
+// 2themes: Festlegung der zwei Themes
+const orgs = ['accessibility', 'laser'];
 
 module.exports = function(callback) {
 
@@ -42,9 +44,46 @@ module.exports = function(callback) {
     tasks.push('build-rtl');
   }
 
-  tasks.push('build-javascript');
-  tasks.push('build-css');
-  tasks.push('build-assets');
 
-  runSequence(tasks, callback);
+  for (var i = 0; i < orgs.length; i++) {
+
+    const org = orgs[i];
+
+    // 1.) Die theme.config wird dahin kopiert, wo es die Build Engine erwartet
+    gulp.task('copy theme.config '+ org, function() {
+      return gulp.src('./src/themes/'+org+'/theme.config')
+          .pipe(gulp.dest('./src/'));
+    });
+    //************************ CSS *********************************
+    // 2.) Die Build-CSS wird aufgerufen und in den Ordner temp zwischengespeichert
+    gulp.task('build css '+org, ['build-css']);
+
+    // 3.) Die gebauten CSS-Files werden in die entsprechenden 'dist' Folder gespeichert
+    gulp.task('copy output css '+org, ['build css '+org], function() {
+      return gulp.src('./temp/**/*.css')
+          .pipe(gulp.dest('../web-app/semantic/'+org));
+    });
+
+    tasks.push('copy theme.config '+org);
+    tasks.push('copy output css '+org);
+  }
+
+  //************************ JAVASCRIPT *************************
+  // 4.) Die gebauten Javascript-Files werden in die entsprechenden 'dist' Folder gespeichert
+  gulp.task('copy output javascript', ['build-javascript','package compressed js','package uncompressed js'], function() {
+    return gulp.src('./temp/**/*.js')
+        .pipe(gulp.dest('../web-app/semantic/javascript'));
+  });
+  //************************ ASSETS *************************
+  // 5.) Nur die Assets-Files aus dem default-Theme werden in den entsprechenden 'dist' Folder gespeichert
+  gulp.task('copy assets', function() {
+    // copy assets
+    return gulp.src('./src/themes/default/assets/**/*.*')
+        .pipe(gulp.dest('../web-app/semantic/assets'));
+  });
+  tasks.push('copy output javascript');
+  tasks.push('copy assets');
+
+  // läd alle tasks in ein Array- ES6 Spread Operator
+  runSequence(...tasks, callback);
 };

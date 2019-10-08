@@ -8,12 +8,12 @@
       "themes": "src/themes/"
     },
     "output": {
-      "packaged": "../web-app/semantic/",
-      "uncompressed": "../web-app/semantic/components/",
-      "compressed": "../web-app/semantic/components/",
-      "themes": "../web-app/semantic/themes/"
+      "packaged"     : "temp/",
+      "uncompressed" : "temp/components/",
+      "compressed"   : "temp/components/",
+      "themes"       : "temp/themes/"
     },
-    "clean": "../web-app/semantic/"
+    "clean"        : "temp/"
   },
   "permission": false,
   "autoInstall": false,

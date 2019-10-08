@@ -416,8 +416,8 @@
 --------------------*/
 
 /* For source only. Modified in gulp for dist */
-@imagePath : '../../themes/laser/assets/images';
-@fontPath  : '../../themes/laser/assets/fonts';
+@imagePath : '../assets/images';
+@fontPath  : '../assets/fonts';
 
 /*-------------------
        Em Sizes
