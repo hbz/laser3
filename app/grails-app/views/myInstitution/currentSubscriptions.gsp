@@ -69,7 +69,6 @@
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
-
                 </label>
 
                 <div class="ui input">
@@ -80,7 +79,11 @@
             </div>
             <!-- 1-2 -->
             <div class="field">
-                <label for="identifier">${message(code: 'default.search.identifier')}</label>
+                <label for="identifier">${message(code: 'default.search.identifier')}
+                    <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="Lizenz, Vertrag, Paket, Titel">
+                        <i class="question circle icon"></i>
+                    </span>
+                </label>
 
                 <div class="ui input">
                     <input type="text" id="identifier" name="identifier"

@@ -81,9 +81,9 @@
             <%
                 List<List<String>> tmplConfigShow
                 if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']]
+                    tmplConfigShow = [['name', 'identifier', 'libraryType'], ['federalState', 'libraryNetwork','property']]
                 else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                    tmplConfigShow = [['name'], ['property']]
+                    tmplConfigShow = [['name', 'identifier'], ['property']]
             %>
             <g:render template="/templates/filter/orgFilter"
                   model="[
