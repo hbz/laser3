@@ -29,7 +29,7 @@
     </g:if>
 
     <g:if test="${contextService.org?.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && subscriptionInstance?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
-        <semui:securedSubNavItem orgPerm="ORG_INST" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />

@@ -2625,7 +2625,7 @@ class SubscriptionController extends AbstractDebugController {
                 if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
                     log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
             }
-            if(params.process == "finalise") {
+            /*if(params.process == "finalise") {
                 if(surveyOrg) {
                     surveyOrg.finishDate = new Date()
                     if (!surveyOrg.save()) {
@@ -2635,7 +2635,7 @@ class SubscriptionController extends AbstractDebugController {
                 else {
                     flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
                 }
-            }
+            }*/
         }
         else {
             log.error("Unable to locate subscription instance")

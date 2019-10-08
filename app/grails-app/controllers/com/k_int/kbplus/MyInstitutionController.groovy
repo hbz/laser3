@@ -2670,6 +2670,47 @@ AND EXISTS (
         result
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
+    })
+    def surveyInfosIssueEntitlements() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
+
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        if(result.subscriptionInstance) {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+
+        result
+    }
+
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
@@ -2738,22 +2779,36 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+        if(params.surveyConfigID){
 
-        boolean allResultHaveValue = true
-        surveyResults.each { surre ->
-            SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                allResultHaveValue = false
-        }
-        if(allResultHaveValue) {
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save()
-            }
-            // flash.message = message(code: "surveyResult.finish.info")
+            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
+                if(surveyOrg) {
+                    surveyOrg.finishDate = new Date()
+                    if (!surveyOrg.save(flush: true)) {
+                        flash.error = surveyOrg.getErrors()
+                    } else flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                }
+                else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                }
         }else {
-            flash.error = message(code: "surveyResult.finish.error")
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+
+            boolean allResultHaveValue = true
+            surveyResults.each { surre ->
+                SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+                if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                    allResultHaveValue = false
+            }
+            if (allResultHaveValue) {
+                surveyResults.each {
+                    it.finishDate = new Date()
+                    it.save()
+                }
+                // flash.message = message(code: "surveyResult.finish.info")
+            } else {
+                flash.error = message(code: "surveyResult.finish.error")
+            }
         }
 
         redirect(url: request.getHeader('referer'))

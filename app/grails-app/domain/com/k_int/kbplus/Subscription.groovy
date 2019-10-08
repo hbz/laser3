@@ -479,6 +479,18 @@ class Subscription
         }
     }
 
+    boolean isCurrentMultiYearSubscription()
+    {
+        def currentDate = new Date(System.currentTimeMillis())
+        println(this.endDate.minus(currentDate))
+        if(this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
+        {
+            return true
+        }else {
+            return false
+        }
+    }
+
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }

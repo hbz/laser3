@@ -143,6 +143,15 @@ class SubscriptionService {
         ies
     }
 
+    List getCurrentIssueEntitlements(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
+                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
