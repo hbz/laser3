@@ -15,7 +15,20 @@
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
                     <label for="orgNameContains">${message(code: 'org.search.contains')}</label>
-                    <input type="text" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" id="orgNameContains" name="orgNameContains" value="${params.orgNameContains}"/>
+                    <input type="text" id="orgNameContains" name="orgNameContains"
+                           placeholder="${message(code:'default.search.ph', default:'enter search term...')}"
+                           value="${params.orgNameContains}"/>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('identifier')}">
+                <div class="field">
+                    <label for="orgIdentifier">${message(code: 'default.search.identifier')}</label>
+                    <div class="ui input">
+                        <input type="text" id="orgIdentifier" name="orgIdentifier"
+                               placeholder="${message(code: 'default.search.identifier.ph')}"
+                               value="${params.orgIdentifier}"/>
+                    </div>
                 </div>
             </g:if>
 
