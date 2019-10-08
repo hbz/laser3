@@ -1510,6 +1510,28 @@ class SurveyController {
             redirect action: 'show', id: params.id
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processEndSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if (result.editable) {
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+            result.surveyInfo.save(flush: true)
+            flash.message = g.message(code: "endSurvey.successfully")
+        }
+
+        redirect action: 'show', id: params.id
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
