@@ -1216,8 +1216,6 @@ class YodaController {
                                 password(u.password)
                                 email(u.email)
                                 shibbScope(u.shibbScope)
-                                apikey(u.apikey)
-                                apisecret(u.apisecret)
                                 enabled(u.enabled)
                                 accountExpired(u.accountExpired)
                                 accountLocked(u.accountLocked)
