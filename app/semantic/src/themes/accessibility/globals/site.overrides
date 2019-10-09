@@ -460,6 +460,17 @@ aside.ui.accordion .title:not(.ui) {
     display: none;
 }
 
+// most important object in table
+a{
+    &.la-main-object {
+        color: #183551;
+    }
+    .la-main-object {
+        font-weight: bold;
+    }
+}
+
+
 .la-filter {
 
     .ui.selection.dropdown {
