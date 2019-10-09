@@ -71,10 +71,10 @@
                           name="license"
                           from="${validLicenses}"
                           optionKey="id"
-                          optionValue="${{it?.dropdownNamingConvention()}}"
                           value="${ownobj?.id}"
                           class="ui dropdown many-to-one"
                           noSelection="[null: '']"/>
+                          %{--optionValue="${{it?.dropdownNamingConvention()}}"--}%
             </div>
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
@@ -88,10 +88,10 @@
                       name="org"
                       from="${validOrgs}"
                       optionKey="id"
-                      optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"
                       value="${ownobj?.id}"
                       class="ui dropdown many-to-one"
                       noSelection="[null: '']"/>
+                      %{--optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"--}%
 
         </div>
 
@@ -113,9 +113,17 @@
                           name="subscription"
                           from="${validSubscriptions}"
                           optionKey="id"
-                          optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
+                          %{--optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"--}%
+                %{--<g:select class="ui dropdown many-to-one"--}%
+                          %{--id="subscription"--}%
+                          %{--name="subscription"--}%
+                          %{--from="${validSubscriptionsList}"--}%
+                          %{--value="${ownobj?.id}"--}%
+                          %{--noSelection="[null: '']"/>--}%
+                          %{--optionKey="${it ? it[0] : null}"--}%
+                          %{--optionValue="${it ? it[1] : null}"--}%
 
             </div>
 

@@ -2,6 +2,8 @@
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
+<% def start = System.currentTimeMillis() %>
+<html>
     <head>
         <meta name="layout" content="semanticUI"/>
         <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'myinst.title', default:'Institutional Dash')}</title>
@@ -269,6 +271,15 @@
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
                         <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+                        <g:link controller="myInstitution" action="modal_create" >
+                            ${message(code:'task.create.new')}
+                        </g:link>
+                        <g:link controller="ajax" action="TaskCreate" >
+                            TaskCreate
+                        </g:link>
+                        <g:link controller="ajax" action="TaskEdit" >
+                            TaskEdit
+                        </g:link>
                     </div>
                 </div>
             </g:if>
@@ -360,7 +371,11 @@
         </div>
     </g:if>
 --}%
-        <g:render template="/templates/tasks/modal_create" />
+        %{--<g:render template="/templates/tasks/modal_create" />--}%
+    <% def ende = System.currentTimeMillis()
+    def dauer = ende-start
+    %>
+    ****************** DAUER: ${dauer} ******************
 
     <g:javascript>
         function taskedit(id) {

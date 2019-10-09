@@ -2275,9 +2275,14 @@ AND EXISTS (
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
-        def preCon      = taskService.getPreconditions(contextOrg)
+//        def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
-        result << preCon
+//        result << preCon
+//        result.validSubscriptionsList = new ArrayList()
+//        result.validSubscriptions.each{
+//            result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
+//        }
+
 
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
@@ -2310,6 +2315,32 @@ AND EXISTS (
                  endDate: new Date(System.currentTimeMillis())])*/
 
         result
+    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def modal_create() {
+
+        def result = setResultGenerics()
+
+        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+            flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
+            response.sendError(401)
+            return;
+        }
+
+        // tasks
+
+        def preCon      = taskService.getPreconditions(contextService.org)
+        result << preCon
+//        result.validSubscriptionsList = new ArrayList()
+//        result.validSubscriptions.each{
+//            result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
+//        }
+//        result
+        render template: '/templates/tasks/modal_create', model: result
+//        render template: '/templates/properties/propertyGroupModal', model: result
+
+
     }
 
     private getTodoForInst(result, Integer periodInDays){
