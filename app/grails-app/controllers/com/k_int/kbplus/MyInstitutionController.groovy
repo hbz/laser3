@@ -2779,19 +2779,29 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        if(params.surveyConfigID){
+        if(params.surveyConfigID && params.issueEntitlementsSurvey){
 
-            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
-                if(surveyOrg) {
+            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
+                if(surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
                     if (!surveyOrg.save(flush: true)) {
-                        flash.error = surveyOrg.getErrors()
-                    } else flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                    } else {
+                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+
+                        def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+                        ies.each { ie ->
+                            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                            ie.save(flush: true)
+                        }
+                    }
                 }
                 else {
-                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
-        }else {
+        }
+        if(params.subscriptionSurvey){
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
 
             boolean allResultHaveValue = true
