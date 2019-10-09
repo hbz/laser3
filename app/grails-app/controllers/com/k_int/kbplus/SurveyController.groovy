@@ -2949,7 +2949,14 @@ class SurveyController {
             return
         }
 
-        def orgs = com.k_int.kbplus.Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()
+        def orgs = []
+        def currentMembersSubs = subscriptionService.getCurrentValidSubChilds(surveyConfig.subscription)
+
+        currentMembersSubs.each{ sub ->
+            sub?.getAllSubscribers()?.each { org ->
+                orgs << org
+            }
+        }
 
         if (orgs) {
 

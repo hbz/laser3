@@ -2640,13 +2640,19 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
                 catch (EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: "+e.getMessage())
+                    flash.error = message(code:'renewEntitlementsWithSurvey.noSelectedTipps')
                 }
             }
             tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp)) {
-                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
-                    countTippsToDelete++
+                try {
+                    if (subscriptionService.deleteEntitlement(result.subscriptionInstance, tipp)) {
+                        log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+                        countTippsToDelete++
+                    }
+                } catch (EntitlementCreationException e) {
+                    log.debug("Error: Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}"+e.getMessage())
+                    flash.error = message(code:'renewEntitlementsWithSurvey.noSelectedTipps')
                 }
             }
 
@@ -2657,18 +2663,6 @@ class SubscriptionController extends AbstractDebugController {
             if(countTippsToDelete > 0){
                 flash.message = message(code:'renewEntitlementsWithSurvey.tippsToDelete', args: [countTippsToDelete])
             }
-
-            /*if(params.process == "finalise") {
-                if(surveyOrg) {
-                    surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save()) {
-                        flash.error = surveyOrg.getErrors()
-                    } else flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-                }
-                else {
-                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-                }
-            }*/
         }
         else {
             log.error("Unable to locate subscription instance")

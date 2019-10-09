@@ -1616,4 +1616,9 @@ class YodaController {
         redirect action: 'dashboard'
     }
 
+    @Secured(['ROLE_YODA'])
+    def importEBook() {
+        def result = [:]
+    }
+
 }
