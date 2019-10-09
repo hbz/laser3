@@ -14,7 +14,14 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <g:render template="actions"/>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey" id="${subscriptionInstance?.id}"
+                        params="${[exportKBart:true,
+                                   targetSubscriptionId: subscriptionInstance?.id,
+                                   surveyConfigID: surveyConfig?.id]}">KBart Export</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
 </semui:controlButtons>
 
 <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>
@@ -30,7 +37,7 @@
 <%--<g:set var="counter" value="${offset + 1}"/>
 ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )--%>
 
-<g:if test="${flash.error}">
+<g:if test="${flash}">
     <semui:messages data="${flash}"/>
 </g:if>
 

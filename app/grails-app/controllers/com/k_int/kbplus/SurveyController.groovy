@@ -1510,6 +1510,28 @@ class SurveyController {
             redirect action: 'show', id: params.id
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processEndSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if (result.editable) {
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+            result.surveyInfo.save(flush: true)
+            flash.message = g.message(code: "endSurvey.successfully")
+        }
+
+        redirect action: 'show', id: params.id
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
@@ -1823,30 +1845,39 @@ class SurveyController {
         }
 
         def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
-        def selecetedParticipantIDs = []
+        def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
+        def orgsWithMultiYearTermOrgsID = []
+        def orgsLateCommersOrgsID = []
         result.parentSubChilds?.each { sub ->
             if (sub?.isCurrentMultiYearSubscription())
             {
                 result.orgsWithMultiYearTermSub << sub
+                sub?.getAllSubscribers()?.each { org ->
+                    orgsWithMultiYearTermOrgsID << org?.id
+                }
             }
             else if (lateCommersProperty && lateCommersProperty?.type == 'class com.k_int.kbplus.RefdataValue') {
                 def subProp = sub?.customProperties?.find { it?.type?.id == lateCommersProperty?.id }
                 if(subProp?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
                 {
                     result.orgsLateCommers << sub
+                    sub?.getAllSubscribers()?.each { org ->
+                        orgsLateCommersOrgsID << org?.id
+                    }
+
                 } else
                 {
                     sub?.getAllSubscribers()?.each { org ->
-                        selecetedParticipantIDs << org?.id
+                        currentParticipantIDs << org?.id
                     }
                 }
             }
             else
             {
                 sub?.getAllSubscribers()?.each { org ->
-                    selecetedParticipantIDs << org?.id
+                    currentParticipantIDs << org?.id
                 }
             }
         }
@@ -1855,7 +1886,7 @@ class SurveyController {
         result.orgsWithParticipationInParentSuccessor = []
         result.parentSuccessorSubChilds?.each { sub ->
             sub?.getAllSubscribers()?.each { org ->
-                if(! (org?.id in selecetedParticipantIDs)) {
+                if(! (org?.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor  << sub
                 }
             }
@@ -1905,7 +1936,7 @@ class SurveyController {
                     it?.type?.getI10n('name')
                 }
 
-                if (it?.participant?.id in selecetedParticipantIDs) {
+                if (it?.participant?.id in currentParticipantIDs) {
 
                     newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : result.parentSubscription,
@@ -1945,7 +1976,9 @@ class SurveyController {
                     }
 
                     result.orgsContinuetoSubscription << newSurveyResult
-                } else {
+                }
+                if (!(it?.participant?.id in currentParticipantIDs) && !(it?.participant?.id in orgsLateCommersOrgsID) && !(it?.participant?.id in orgsWithMultiYearTermOrgsID)) {
+
 
                     if (result.multiYearTermTwoSurvey) {
 
@@ -2000,7 +2033,7 @@ class SurveyController {
                     it?.type?.getI10n('name')
                 }
 
-                if (it?.participant?.id in selecetedParticipantIDs) {
+                if (it?.participant?.id in currentParticipantIDs) {
                     newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : result.parentSubscription,
                              participant: it?.participant
@@ -2023,7 +2056,7 @@ class SurveyController {
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
-                if (surveyResult?.participant?.id in selecetedParticipantIDs && surveyResult?.sub) {
+                if (surveyResult?.participant?.id in currentParticipantIDs && surveyResult?.sub) {
 
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (surveyResult?.sub?.customProperties?.find {

@@ -13,7 +13,7 @@
     </g:if>
 
     <g:if test="${side == 'target' && surveyFunction}">
-        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.currentEntitlements" /></h2>
+        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.currentEntitlements" /> (${targetIEs.size()?:0})</h2>
 
         <semui:form>
             <g:message code="subscription" />: <b><g:link action="show" id="${newSub?.id}">${newSub?.name}</g:link></b>
@@ -32,7 +32,7 @@
     </g:if>
 
     <g:if test="${side == 'source' && surveyFunction}">
-        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.selectableTitles" /></h2>
+        <h2 class="ui header center aligned"><g:message code="renewEntitlementsWithSurvey.selectableTitles" /> (${sourceIEs.size()?:0})</h2>
 
         <semui:form>
             <g:message code="subscription" />: <b>${subscription?.name}</b>
