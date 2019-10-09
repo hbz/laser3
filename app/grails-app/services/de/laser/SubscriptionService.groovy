@@ -143,6 +143,15 @@ class SubscriptionService {
         ies
     }
 
+    List getIssueEntitlementsUnderConsideration(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
