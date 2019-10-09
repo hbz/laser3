@@ -42,8 +42,6 @@ class User {
     display blank: true, nullable: true
     email blank: true, nullable: true
     shibbScope blank: true, nullable: true
-    apikey blank: true, nullable: true
-    apisecret blank: true, nullable: true
   }
 
   static mapping = {
