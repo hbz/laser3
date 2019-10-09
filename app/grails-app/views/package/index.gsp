@@ -192,7 +192,7 @@
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
-                                                      href="${record.editUrl ? record.editUrl + '/gokb/resource/show/' + record.uuid : '#'}"><i
+                                                      href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>
