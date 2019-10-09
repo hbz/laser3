@@ -38,6 +38,9 @@ class OrgSettings {
     Org          org
     KEYS         key
 
+    Date dateCreated
+    Date lastUpdated
+
     @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
     RefdataValue rdValue
     String       strValue
@@ -51,6 +54,9 @@ class OrgSettings {
         rdValue    column:'os_rv_fk'
         strValue   column:'os_string_value'
         roleValue  column:'os_role_fk'
+
+        lastUpdated column: 'os_last_updated'
+        dateCreated column: 'os_date_created'
     }
 
     static constraints = {
@@ -59,10 +65,13 @@ class OrgSettings {
         strValue   (nullable: true)
         rdValue    (nullable: true)
         roleValue  (nullable: true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static List<OrgSettings.KEYS> getEditableSettings() {
-
         [
                 OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSettings.KEYS.NATSTAT_SERVER_ACCESS,

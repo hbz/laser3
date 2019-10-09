@@ -749,10 +749,26 @@ class AjaxController {
     render controlledListService.getLicenses(params) as JSON
   }
 
-  @Secured(['ROLE_USER'])
-  def lookupProviders() {
-      render controlledListService.getProviders(params) as JSON
-  }
+    @Secured(['ROLE_USER'])
+    def lookupProviderAndPlatforms() {
+        def result = []
+
+        List<Org> provider = Org.executeQuery('SELECT o FROM Org o JOIN o.orgType ot WHERE ot = :ot', [ot: RDStore.OT_PROVIDER])
+        provider.each{ prov ->
+            Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
+
+            Platform.findAllByOrg(prov).each { plt ->
+                pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
+            }
+            result.add(pp)
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupProviders() {
+        render controlledListService.getProviders(params) as JSON
+    }
 
   @Secured(['ROLE_USER'])
   def lookupBudgetCodes() {

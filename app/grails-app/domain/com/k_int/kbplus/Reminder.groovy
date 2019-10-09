@@ -23,6 +23,8 @@ class Reminder {
     @RefdataAnnotation(cat = '?')
     RefdataValue  trigger  //Subscription manual renewal date
 
+    Date dateCreated
+
     static constraints = {
         reminderMethod  nullable: false, blank: false
         unit    nullable: false, blank: false
@@ -30,6 +32,9 @@ class Reminder {
         amount  nullable: false, blank: false
         active  nullable: false, blank: false
         lastRan nullable: true, blank:false
+
+        // Nullable is true, because values are already in the database
+        dateCreated (nullable: true, blank: false)
     }
 
     static mapping = {

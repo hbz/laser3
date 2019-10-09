@@ -74,13 +74,13 @@
         <tbody>
         <g:each in="${items}" var="item" status="k">
             <tr>
-                <td><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "identifier")}</a><br/>
+                <td><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "identifier")}</a><br/>
                     <g:message code="globalDataSync.updated.brackets"
                                args="[formatDate(date: item.ts, format: 'dd.MM.yyyy HH:mm')]"/></td>
-                <td><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "name")}</a>
-                <hr><a href="${item.source.baseUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
+                <td><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "name")}</a>
+                <hr><a href="${item.source.baseEditUrl}resource/show/${item.identifier}">${fieldValue(bean: item, field: "desc")}</a>
                 </td>
-                <td><a href="${item.source.uri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
+                <td><a href="${item.source.editUri}?verb=getRecord&amp;identifier=${item.identifier}&amp;metadataPrefix=${item.source.fullPrefix}">
                     ${item.source.name}</a></td>
                 %{--<td><a href="${item.source.baseUrl}search/index?qbe=g:1packages">${item.displayRectype}</a></td>--}%
                 <td>${item.kbplusCompliant?.getI10n('value')}</td>

@@ -3376,6 +3376,12 @@ AND EXISTS (
             qarams.put('member', params.long('member'))
         }
 
+        if (params.identifier?.length() > 0) {
+            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
+                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            qarams.put('identifier', "%${params.identifier}%")
+        }
+
         if (params.validOn?.size() > 0) {
             result.validOn = params.validOn
 

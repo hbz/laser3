@@ -30,16 +30,26 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     LicenseCustomProperty instanceOf
     String paragraph
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         includes   AbstractProperty.mapping
         paragraph  type: 'text'
         owner      index:'lcp_owner_idx'
+
+        dateCreated column: 'lcp_date_created'
+        lastUpdated column: 'lcp_last_updated'
     }
 
     static constraints = {
         importFrom AbstractProperty
         instanceOf (nullable: true)
         paragraph  (nullable: true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static belongsTo = [

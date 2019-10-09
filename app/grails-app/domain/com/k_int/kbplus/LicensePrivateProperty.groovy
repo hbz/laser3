@@ -19,6 +19,9 @@ class LicensePrivateProperty extends PrivateProperty {
     License owner
     String paragraph
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         includes AbstractProperty.mapping
 
@@ -28,6 +31,9 @@ class LicensePrivateProperty extends PrivateProperty {
         type    column:'lpp_type_fk'
 
         paragraph type:'text'
+
+        dateCreated column: 'lpp_date_created'
+        lastUpdated column: 'lpp_last_updated'
     }
 
     static constraints = {
@@ -35,6 +41,10 @@ class LicensePrivateProperty extends PrivateProperty {
 
         paragraph (nullable:true)
         owner     (nullable:false, blank:false)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static belongsTo = [

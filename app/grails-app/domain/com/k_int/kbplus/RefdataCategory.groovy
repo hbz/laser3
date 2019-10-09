@@ -44,15 +44,25 @@ class RefdataCategory extends AbstractI10nTranslatable {
     // indicates this object is created via current bootstrap
     boolean isHardData
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
         isHardData column: 'rdc_is_hard_data'
+
+        dateCreated column: 'rdc_date_created'
+        lastUpdated column: 'rdc_last_updated'
     }
 
     static constraints = {
         isHardData (nullable:false, blank:false, default:false)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     /**

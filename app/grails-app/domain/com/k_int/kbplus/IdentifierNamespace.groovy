@@ -35,6 +35,9 @@ class IdentifierNamespace {
     String family
     Boolean isUnique
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         id column:'idns_id'
         ns column:'idns_ns'
@@ -43,6 +46,9 @@ class IdentifierNamespace {
         isUnique    column:'idns_is_unique'
         validationRegex column:'idns_val_regex'
         family column:'idns_family'
+
+        lastUpdated column: 'idns_last_updated'
+        dateCreated column: 'idns_date_created'
     }
 
     static constraints = {
@@ -51,5 +57,9 @@ class IdentifierNamespace {
         validationRegex nullable:true, blank:false
         family          nullable:true, blank:false
         isUnique        nullable:false, blank:false, default: true
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 }

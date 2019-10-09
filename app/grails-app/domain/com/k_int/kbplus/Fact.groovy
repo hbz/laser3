@@ -20,6 +20,9 @@ class Fact {
   Org inst
   IdentifierOccurrence juspio
 
+  Date dateCreated
+  Date lastUpdated
+
   static constraints = {
     factUid(nullable:true, blank:false,unique:true)
     relatedTitle(nullable:true, blank:false)
@@ -28,6 +31,10 @@ class Fact {
     juspio(nullable:true, blank:false)
     reportingYear(nullable:true, blank:false)
     reportingMonth(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   static mapping = {
@@ -40,6 +47,9 @@ class Fact {
       relatedTitle index:'fact_access_idx'
           supplier index:'fact_access_idx'
               inst index:'fact_access_idx'
+
+      dateCreated column: 'fact_date_created'
+      lastUpdated column: 'fact_last_updated'
   }
 
 }

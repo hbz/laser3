@@ -13,6 +13,9 @@ class ElasticsearchSource {
     Boolean gokb_es = false
     String url
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         id column:'ess_id'
         version column:'ess_version'
@@ -26,6 +29,8 @@ class ElasticsearchSource {
         laser_es column: 'ess_laser_es'
         gokb_es column: 'ess_gokb_es'
         url column: 'ess_url'
+        dateCreated column: 'ess_date_created'
+        lastUpdated column: 'ess_last_updated'
     }
 
     static constraints = {
@@ -39,5 +44,9 @@ class ElasticsearchSource {
         laser_es (nullable:true, blank:false)
         gokb_es (nullable:true, blank:false)
         url (nullable:true, blank:false)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 }
