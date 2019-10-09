@@ -459,8 +459,9 @@ aside.ui.accordion .title:not(.ui) {
 a{
     &.la-main-object {
         color: #183551;
+
     }
-    .la-main-object {
-        font-weight: bold;
-    }
+}
+.la-main-object {
+    font-weight: bold;
 }
