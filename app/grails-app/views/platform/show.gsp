@@ -50,15 +50,15 @@
                     <dd>
                         ${platformInstance?.gokbId}
 
-                        <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                                var="gokbAPI">
-                            <g:if test="${platformInstance?.gokbId}">
-                                <a target="_blank"
-                                   href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
-                                    title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                            </g:if>
-                        </g:each>
-                    </dd>
+            <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    var="gokbAPI">
+                <g:if test="${platformInstance?.gokbId}">
+                    <a target="_blank"
+                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
+                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                </g:if>
+            </g:each>
+        </dd>
 
                     <dt>${message(code: 'platform.org', default: 'Platform Provider')}</dt>
                     <dd>

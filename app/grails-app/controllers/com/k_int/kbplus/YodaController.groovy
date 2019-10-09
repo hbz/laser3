@@ -888,6 +888,33 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def insertEditUris() {
+        //ERMS-1758
+        List<ApiSource> apiSources = ApiSource.findAllByEditUrlIsNull()
+        List<GlobalRecordSource> globalRecordSources = GlobalRecordSource.findAllByEditUriIsNull()
+        apiSources.each { ApiSource aps ->
+            if(aps.baseUrl.contains('phaeton.hbz-nrw')) {
+                aps.editUrl = 'https://gokb.org'
+            }
+            else {
+                aps.editUrl = aps.baseUrl
+            }
+            aps.save()
+        }
+        globalRecordSources.each { GlobalRecordSource grs ->
+            if(grs.uri.contains('phaeton.hbz-nrw')) {
+                grs.editUri = 'https://gokb.org/gokb/oai/packages'
+            }
+            else {
+                grs.editUri = grs.uri
+            }
+            grs.save()
+        }
+        flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
+        redirect controller: 'home', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
     def showOldDocumentOwners(){
         List currentDocuments = DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null order by dc.owner.creator.display asc')
         Map<String, Object> result = [currentDocuments:currentDocuments]

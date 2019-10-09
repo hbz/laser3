@@ -22,6 +22,7 @@
             <th>Type</th>
             <th>Up To</th>
             <th>URL</th>
+            <th>URL to editable instance</th>
             <th>URL with Up To</th>
             <th>List Prefix</th>
             <th>Full Prefix</th>
@@ -40,6 +41,7 @@
               <td>${source.type}</td>
               <td>${source.haveUpTo}</td>
               <td>${source.uri}</td>
+              <td>${source.editUri}</td>
               <td><g:link
                       uri="${source.uri + '?verb=ListRecords&metadataPrefix=' + source.fullPrefix + '&from=' + formatDate(format: "yyyy-MM-dd'T'HH:mm:ss'Z'", date: source.haveUpTo)}"
                       target="_blank">Link</g:link></td>
@@ -66,10 +68,17 @@
     <semui:form>
         <g:form action="newGlobalSource" class="ui form">
 
-            <div class="field">
-                <label>Global Source URI</label>
-                <input type="text" name="uri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
+            <div class="fields two">
+                <div class="field">
+                    <label>Global Source URI</label>
+                    <input type="text" name="uri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
+                </div>
+                <div class="field">
+                    <label>Global Source Edit URI</label>
+                    <input type="text" name="editUri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
+                </div>
             </div>
+
 
             <div class="fields two">
                 <div class="field">
