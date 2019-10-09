@@ -70,13 +70,28 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "source", surveyFunction: true]}" />
             <g:render template="/templates/tipps/entitlementTable" model="${[subscriptions: [sourceId: subscription.id,targetId: newSub.id], ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], side: "target", surveyFunction: true]}" />
         </div>
-        <div class="row">
-            <div class="sixteen wide column">
-                <g:if test="${editable}">
-                <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
-                </g:if>
+
+        <div class="sixteen wide column">
+            <div class="two fields">
+
+                <div class="eight wide field" style="text-align: left;">
+                    <g:if test="${editable}">
+                        <button type="submit" name="process" value="preliminary" class="ui green button"><g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
+                    </g:if>
+                </div>
+
+
+                <div class="eight wide field" style="text-align: right;">
+                        <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                                id="${surveyConfig?.id}"
+                                class="ui button">
+                            <g:message code="surveyInfo.backToSurvey"/>
+                        </g:link>
+                </div>
             </div>
         </div>
+
+
     </div>
 
     </semui:form>
