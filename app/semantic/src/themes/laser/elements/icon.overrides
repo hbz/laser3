@@ -1790,8 +1790,8 @@ i.icon.la-laser:before { content: "\e90f"; }
 
 @font-face {
   font-family: 'icomoon';
-  src: url("./themes/laser/assets/fonts/icomoon.eot");
-  src: url("./themes/laser/assets/fonts/icomoon.eot?#iefix") format('embedded-opentype'), url("./themes/laser/assets/fonts/icomoon.woff") format('woff'), url("./themes/laser/assets/fonts/icomoon.ttf") format('truetype'), url("./themes/laser/assets/fonts/icomoon.svg#icons") format('svg');
+  src: url("../assets/fonts/icomoon.eot");
+  src: url("../assets/fonts/icomoon.eot?#iefix") format('embedded-opentype'), url("../assets/fonts/icomoon.woff") format('woff'), url("../assets/fonts/icomoon.ttf") format('truetype'), url("../assets/fonts/icomoon.svg#icons") format('svg');
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

@@ -56,11 +56,14 @@
 .la-calendar-selected input {
   background: @laFilterChosen!important;
 }
-.la-filter-dropdown-selected {
-  background: @laFilterChosen!important;
+.ui.selection.dropdown{
+  &.la-filter-dropdown-selected {
+    background: @laFilterChosen!important;
+    border: 1px solid @white;
+  }
 }
 
-// Search Form Spothlight
+// Search Form SpothlightK
 
 .ui.icon.input > i.icon#btn-search:not(.link){
   pointer-events: auto;
