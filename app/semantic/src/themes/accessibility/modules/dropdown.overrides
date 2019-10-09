@@ -49,12 +49,9 @@
   content: "\f00d";
 }
 
-/* Icons for Reference (Subsetted in 2.4.0)
-  .dropdown.down:before { content: "\f0d7"; }
-  .dropdown.up:before { content: "\f0d8"; }
-  .dropdown.left:before { content: "\f0d9"; }
-  .dropdown.right:before { content: "\f0da"; }
-  .dropdown.close:before { content: "\f00d"; }
-*/
-
-/* Displays like a select box */
+.la-filter{
+  /* Hover */
+  .ui.selection.dropdown:hover {
+    border-color: @white;
+  }
+}
