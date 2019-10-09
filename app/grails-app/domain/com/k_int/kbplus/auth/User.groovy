@@ -20,8 +20,6 @@ class User {
   String password
   String email
   String shibbScope
-  String apikey
-  String apisecret
   Date dateCreated
   Date lastUpdated
 
