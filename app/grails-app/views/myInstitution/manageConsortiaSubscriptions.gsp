@@ -85,6 +85,16 @@
                               value="${params.member}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
+
+            <div class="field fieldcontain">
+                <label for="identifier">${message(code: 'default.search.identifier')}</label>
+                <div class="ui input">
+                    <input type="text" id="identifier" name="identifier"
+                           placeholder="${message(code: 'default.search.identifier.ph')}"
+                           value="${params.identifier}"/>
+                </div>
+            </div>
+
             <div class="field fieldcontain">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>

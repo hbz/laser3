@@ -35,6 +35,7 @@ class AdminController extends AbstractDebugController {
   def sessionFactory
     def genericOIDService
     def deletionService
+    def filterService
 
     def contextService
     def refdataService
@@ -1348,7 +1349,8 @@ class AdminController extends AbstractDebugController {
           target.save(flush:true)
         }
 
-        result.orgList = Org.findAll()
+        def fsq = filterService.getOrgQuery(params)
+        result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.orgListTotal = result.orgList.size()
 
         result
