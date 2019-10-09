@@ -108,7 +108,7 @@
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
@@ -124,7 +124,7 @@
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
@@ -163,7 +163,7 @@
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;
@@ -1113,13 +1113,14 @@
   margin-bottom: 1em;
 }
 .la-filter-selected {
-  background: #d3dae3 !important;
+  background: #004678 !important;
 }
 .la-calendar-selected input {
-  background: #d3dae3 !important;
+  background: #004678 !important;
 }
-.la-filter-dropdown-selected {
-  background: #d3dae3 !important;
+.ui.selection.dropdown.la-filter-dropdown-selected {
+  background: #004678 !important;
+  border: 1px solid #FFFFFF;
 }
 .ui.icon.input > i.icon#btn-search:not(.link) {
   pointer-events: auto;

@@ -1290,6 +1290,14 @@ aside.ui.accordion .title:not(.ui) {
   display: none;
 }
 
+a.la-main-object {
+  color: #183551;
+}
+
+a .la-main-object {
+  font-weight: bold;
+}
+
 .la-filter .ui.selection.dropdown {
   color: #FFFFFF;
 }
@@ -1302,6 +1310,10 @@ aside.ui.accordion .title:not(.ui) {
 .la-filter .ui.form input[type=text]:focus {
   color: #FFFFFF;
   border: 1px solid #FFFFFF;
+}
+
+.la-filter .ui.form input[type=text]:focus {
+  background-color: #004678;
 }
 
 .la-filter .ui.selection.visible.dropdown > .text:not(.default) {
@@ -22255,8 +22267,9 @@ ol.ui.horizontal.list li:before,
   background: #004678 !important;
 }
 
-.la-filter-dropdown-selected {
+.ui.selection.dropdown.la-filter-dropdown-selected {
   background: #004678 !important;
+  border: 1px solid #FFFFFF;
 }
 
 .ui.icon.input > i.icon#btn-search:not(.link) {
@@ -23521,8 +23534,8 @@ legend {
 
 .ui.divided.grid:not([class*="vertically divided"]) > .column:not(.row),
 .ui.divided.grid:not([class*="vertically divided"]) > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0px 0px 0px #d3dae3;
+  box-shadow: -1px 0px 0px 0px #d3dae3;
 }
 
 /* Swap from padding to margin on columns to have dividers align */
@@ -23557,8 +23570,8 @@ legend {
 /* Divided Row */
 
 .ui.grid > .divided.row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0px 0px 0px #d3dae3;
+  box-shadow: -1px 0px 0px 0px #d3dae3;
 }
 
 .ui.grid > .divided.row > .column:first-child {
@@ -23580,8 +23593,8 @@ legend {
   width: calc(98%);
   height: 1px;
   margin: 0% 1rem;
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0px -1px 0px 0px #d3dae3;
+  box-shadow: 0px -1px 0px 0px #d3dae3;
 }
 
 /* Padded Horizontally Divided */
@@ -23862,7 +23875,7 @@ legend {
 .ui.grid > .red.row,
 .ui.grid > .red.column,
 .ui.grid > .row > .red.column {
-  background-color: #DB2828 !important;
+  background-color: #BB1600 !important;
   color: #FFFFFF;
 }
 
@@ -23871,7 +23884,7 @@ legend {
 .ui.grid > .orange.row,
 .ui.grid > .orange.column,
 .ui.grid > .row > .orange.column {
-  background-color: #F2711C !important;
+  background-color: #fa820a !important;
   color: #FFFFFF;
 }
 
@@ -23898,7 +23911,7 @@ legend {
 .ui.grid > .green.row,
 .ui.grid > .green.column,
 .ui.grid > .row > .green.column {
-  background-color: #21BA45 !important;
+  background-color: #98B500 !important;
   color: #FFFFFF;
 }
 
@@ -23916,7 +23929,7 @@ legend {
 .ui.grid > .blue.row,
 .ui.grid > .blue.column,
 .ui.grid > .row > .blue.column {
-  background-color: #2185D0 !important;
+  background-color: #004678 !important;
   color: #FFFFFF;
 }
 
@@ -23925,7 +23938,7 @@ legend {
 .ui.grid > .violet.row,
 .ui.grid > .violet.column,
 .ui.grid > .row > .violet.column {
-  background-color: #6435C9 !important;
+  background-color: #76007A !important;
   color: #FFFFFF;
 }
 
@@ -24023,8 +24036,8 @@ legend {
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0px 0px 0px #d3dae3;
+    box-shadow: -1px 0px 0px 0px #d3dae3;
   }
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -24036,8 +24049,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0px -1px 0px 0px #d3dae3;
+    box-shadow: 0px -1px 0px 0px #d3dae3;
   }
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:last-child:before {
@@ -24081,8 +24094,8 @@ legend {
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0px 0px 0px #d3dae3;
+    box-shadow: -1px 0px 0px 0px #d3dae3;
   }
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -24094,8 +24107,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0px -1px 0px 0px #d3dae3;
+    box-shadow: 0px -1px 0px 0px #d3dae3;
   }
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:last-child:before {
@@ -24139,8 +24152,8 @@ legend {
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0px 0px 0px #d3dae3;
+    box-shadow: -1px 0px 0px 0px #d3dae3;
   }
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -24152,8 +24165,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0px -1px 0px 0px #d3dae3;
+    box-shadow: 0px -1px 0px 0px #d3dae3;
   }
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:last-child:before {
@@ -24467,7 +24480,7 @@ legend {
   .ui.stackable.divided:not(.vertically).grid > .column:not(.row),
   .ui.stackable.celled.grid > .row > .column,
   .ui.stackable.divided:not(.vertically).grid > .row > .column {
-    border-top: 1px solid rgba(34, 36, 38, 0.15);
+    border-top: 1px solid #d3dae3;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     padding-top: 2rem !important;
@@ -24634,6 +24647,14 @@ legend {
 /*******************************
          Theme Overrides
 *******************************/
+
+.ui.grid > .column:not(.row).la-column-right-lessPadding {
+  padding-right: 0.1rem;
+}
+
+.ui.grid > .column:not(.row).la-column-left-lessPadding {
+  padding-left: 0.1rem;
+}
 /*
  * # Semantic - Menu
  * http://github.com/semantic-org/semantic-ui/
@@ -30644,29 +30665,29 @@ a.ui.card:hover,
   margin-top: 0em;
 }
 
-.coverageStatements .ui .card {
+.la-tableCard .ui .card {
   width: 300px;
 }
 
-.coverageStatements .ui .card .content {
+.la-tableCard .ui .card .content {
   padding: 0;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-.coverageStatements .ui .card .content .la-card-column {
+.la-tableCard .ui .card .content .la-card-column {
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
   flex-grow: 1;
   padding: 1em 1em;
 }
 
-.coverageStatements .ui .card .content .la-card-column:first-child {
+.la-tableCard .ui .card .content .la-card-column:first-child {
   border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.coverageStatements .ui .card .content .la-card-column-with-row {
+.la-tableCard .ui .card .content .la-card-column-with-row {
   padding: 1em 1em;
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
@@ -34294,7 +34315,7 @@ body.dimmable > .dimmer {
   color: rgba(0, 0, 0, 0.87);
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid #FFFFFF;
+  border: 1px solid #004678;
   border-radius: 0;
   -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -34414,7 +34435,7 @@ select.ui.dropdown {
 /* Hover */
 
 .ui.selection.dropdown:hover {
-  border-color: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -35566,15 +35587,13 @@ select.ui.dropdown {
   content: "\f00d";
 }
 
-/* Icons for Reference (Subsetted in 2.4.0)
-  .dropdown.down:before { content: "\f0d7"; }
-  .dropdown.up:before { content: "\f0d8"; }
-  .dropdown.left:before { content: "\f0d9"; }
-  .dropdown.right:before { content: "\f0da"; }
-  .dropdown.close:before { content: "\f00d"; }
-*/
+.la-filter {
+  /* Hover */
+}
 
-/* Displays like a select box */
+.la-filter .ui.selection.dropdown:hover {
+  border-color: #FFFFFF;
+}
 /*!
  * # Semantic UI 2.3.1 - Video
  * http://github.com/semantic-org/semantic-ui/

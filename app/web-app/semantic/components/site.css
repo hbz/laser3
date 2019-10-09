@@ -102,7 +102,7 @@ p:last-child {
 
 a {
   color: #275480;
-  text-decoration: none;
+  text-decoration: underline;
 }
 a:hover {
   color: #2185d0;
@@ -195,27 +195,33 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         Global Overrides
 *******************************/
 
+
+
+/*******************************
+        LATO Local Font
+*******************************/
+
 @font-face {
   font-family: 'Lato';
-  src: url('./../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
+  src: url('./../themes/accessibility/assets/fonts/LatoLatin-Regular.woff') format('woff');
   font-style: normal;
   font-weight: 400;
 }
 @font-face {
   font-family: 'Lato';
-  src: url('./../themes/laser/assets/fonts/LatoLatin-Bold.woff') format('woff');
+  src: url('./../themes/accessibility/assets/fonts/LatoLatin-Bold.woff') format('woff');
   font-style: normal;
   font-weight: 700;
 }
 @font-face {
   font-family: 'Lato';
-  src: url('./../themes/laser/assets/fonts/LatoLatin-Italic.woff') format('woff');
+  src: url('./../themes/accessibility/assets/fonts/LatoLatin-Italic.woff') format('woff');
   font-style: italic;
   font-weight: 400;
 }
 @font-face {
   font-family: 'Lato';
-  src: url('./../themes/laser/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
+  src: url('./../themes/accessibility/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
   font-style: italic;
   font-weight: 700;
 }
@@ -291,7 +297,7 @@ aside.ui.segment {
 }
 .ui.accordion .title .dropdown.icon.la-dropdown-accordion:before {
   font-size: 2rem;
-  color: #d3dae3;
+  color: #004678;
 }
 aside.ui.accordion .title:not(.ui) {
   font-weight: 700;
@@ -665,4 +671,30 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
   display: none;
+}
+a.la-main-object {
+  color: #183551;
+}
+a .la-main-object {
+  font-weight: bold;
+}
+.la-filter .ui.selection.dropdown {
+  color: #FFFFFF;
+}
+.la-filter .ui.form .field > label {
+  color: #FFFFFF;
+}
+.la-filter .ui.form input[type=text],
+.la-filter .ui.form input[type=text]:focus {
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+}
+.la-filter .ui.form input[type=text]:focus {
+  background-color: #004678;
+}
+.la-filter .ui.selection.visible.dropdown > .text:not(.default) {
+  color: #FFFFFF;
+}
+.la-filter-temp .ui.form .field > label {
+  color: #FFFFFF;
 }
