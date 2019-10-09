@@ -34,15 +34,9 @@
                         <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                 var="gokbAPI">
                             <g:if test="${object?.gokbId}">
-                                <g:if test="${object instanceof com.k_int.kbplus.Package}">
-                                    <a target="_blank"
-                                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
-                                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                                </g:if><g:else>
                                 <a target="_blank"
-                                   href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + object?.gokbId : '#'}"><i
+                                   href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + object?.gokbId : '#'}"><i
                                         title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                            </g:else>
 
                             </g:if>
                         </g:each>

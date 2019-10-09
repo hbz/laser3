@@ -10,6 +10,7 @@ class ApiSource {
     String identifier
     String name
     String baseUrl
+    String editUrl
     String fixToken
     String variableToken
     ApiTyp typ
@@ -30,6 +31,7 @@ class ApiSource {
         identifier(nullable:true, blank:false)
         name(nullable:true, blank:false, maxSize:2048)
         baseUrl(nullable:true, blank:false)
+        editUrl(nullable:true, blank:false)
         lastUpdatedwithApi(nullable:true, blank:false)
         fixToken(nullable:true, blank:false)
         variableToken(nullable:true, blank:false)
@@ -44,7 +46,6 @@ class ApiSource {
     static mapping = {
         id  column:'as_id'
         version column:'as_version'
-
         identifier column:'as_identifier'
         name column:'as_name', type:'text'
         lastUpdatedwithApi column:'as_lastUpdated_with_Api'
@@ -55,6 +56,7 @@ class ApiSource {
         credentials column:'as_creds'
         active column:'as_active'
         baseUrl column: 'as_baseUrl'
+        editUrl column: 'as_editUrl'
         apikey column: 'as_apikey'
         apisecret column: 'as_apisecret'
 
