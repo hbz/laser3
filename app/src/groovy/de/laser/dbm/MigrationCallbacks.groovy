@@ -2,25 +2,52 @@ package de.laser.dbm
 
 import liquibase.Liquibase
 import liquibase.database.Database
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class MigrationCallbacks {
 
-	protected static Logger LOG = LoggerFactory.getLogger(this)
+	def grailsApplication
 
 	void beforeStartMigration(Database Database) {
-		LOG.info('DBM beforeStartMigration')
-		println 'DBM beforeStartMigration'
+
+		println '--------------------------------------------------------------------------------'
+		println 'Database Migration'
+		println '   new changesets detected ..'
+		println '   dumping current database ..'
+
+		def dataSource = grailsApplication.config.dataSource
+		def uri		   = new URI(dataSource.url.substring(5))
+
+		def backupFile = grailsApplication.config.dbBackupLocation + "/laser-backup-${new Date().format('yyyy-MM-dd HH:mm:ss')}.sql"
+
+		Map<String, String> config = [
+				dbname:	"${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",
+				schema: "public",
+				file: 	"${backupFile}"
+		]
+
+		println '   source: ' + Database
+		println '   target: ' + backupFile
+
+		try {
+			String cmd = "/usr/bin/pg_dump -x " + (config.collect{ '--' + it.key + '=' + it.value }).join(' ')
+			//println cmd
+
+			def result = cmd.execute().waitForProcessOutput(System.out, System.err)
+
+		} catch (Exception e) {
+			println '   error: ' + e.getMessage()
+			e.printStackTrace()
+		}
 	}
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
-		LOG.info('DBM onStartMigration')
-		println 'DBM onStartMigration'
+
+		println '  processing: ' + changelogName
 	}
 
 	void afterMigrations(Database Database) {
-		LOG.info('DBM afterMigrations')
-		println 'DBM afterMigrations'
+
+		println '  done ..'
+		println '--------------------------------------------------------------------------------'
 	}
 }

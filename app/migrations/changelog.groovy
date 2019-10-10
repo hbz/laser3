@@ -33,4 +33,5 @@ databaseChangeLog = {
 
 	include file: 'changelog-2019-10-07.groovy'		// new deployment strategy
 	include file: 'changelog-2019-10-08.groovy'
+	include file: 'changelog-2019-10-10.groovy'
 }
