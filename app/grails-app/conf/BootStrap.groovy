@@ -208,7 +208,7 @@ class BootStrap {
         //else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
             //setup superusers - ourselves ...
             List<Map> QASysUsers = [
-                    [name: 'selbach', display: 'Michaela Selbach', roles: ['ROLE_USER','ROLE_YODA']],
+                    [name: 'selbach', display: 'Michaela Selbach', roles: ['ROLE_USER','ROLE_ADMIN']],
                     [name: 'rupp', display: 'Daniel Rupp', roles: ['ROLE_USER','ROLE_YODA']],
                     [name: 'klober', display: 'David Klober', roles: ['ROLE_USER','ROLE_YODA']],
                     [name: 'djebeniani', display: 'Moe Djebeniani', roles: ['ROLE_USER','ROLE_YODA']],
@@ -216,7 +216,8 @@ class BootStrap {
                     [name: 'albin', display: 'Anja Albin', roles: ['ROLE_USER','ROLE_ADMIN']],
                     [name: 'engels', display: 'Melanie Engels', roles: ['ROLE_USER','ROLE_ADMIN']],
                     [name: 'konze', display: 'Miriam Konze', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'galffy', display: 'Andreas Gálffy', roles: ['ROLE_USER','ROLE_YODA']]
+                    [name: 'galffy', display: 'Andreas Gálffy', roles: ['ROLE_USER','ROLE_YODA']],
+                    [name: 'selbach_yoda', display: 'selbach_yoda', roles: ['ROLE_USER','ROLE_YODA']]
             ]
             QASysUsers.each { su ->
                 log.debug("test ${su.name} ${su.name+'1@$€r'} ${su.display} ${su.roles}")
@@ -229,7 +230,7 @@ class BootStrap {
                             username: su.name,
                             password: su.name+'1@$€r',
                             display: su.display,
-                            email: su.email,
+                            email: su.name+'@hbz-nrw.de',
                             enabled: true)
                     user.save(failOnError: true)
                 }

@@ -31,6 +31,7 @@ class OrganisationService {
     def institutionsService
     def grailsApplication
     def instAdmService
+    def userService
     List<String> errors = []
 
     void initMandatorySettings(Org org) {
@@ -2461,17 +2462,25 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                grailsApplication.config.sysusers.each { su ->
-                    User admin = User.findByUsername(su.name)
+                /*if(currentServer == ContextService.SERVER_LOCAL) {
+                    grailsApplication.config.sysusers.each { su ->
+                        User admin = User.findByUsername(su.name)
+                        instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                    }
+                }
+                else if(currentServer == ContextService.SERVER_QA) {*/
+                List<User> adminsAndYodas = User.executeQuery("select ur.user from UserRole ur where ur.role.authority in ('ROLE_ADMIN','ROLE_YODA')")
+                adminsAndYodas.each { admin ->
                     instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
                 }
+                //}
             }
             else if(hbz.hasErrors()) {
                 log.error(hbz.errors)
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
+        if(currentServer in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          institut: [name:'Musterinstitut',orgType: [department]],
                                          singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
@@ -2486,7 +2495,7 @@ class OrganisationService {
                                       institut: [name:'QA-Institut',orgType: [department]],
                                       singlenutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
                                       kollektivnutzer: [name:'QA-Einrichtung Kollektiv',shortname:'QA-Einrichtung Kollektiv',sortname:'QA-Stadt, Kollektiv',orgType: [institution]],
-                                      konsortium: [name:'QA-Kkonsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
+                                      konsortium: [name:'QA-Konsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
             [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
                 orgs.each { String customerType, Map orgData ->
