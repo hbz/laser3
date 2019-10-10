@@ -205,48 +205,6 @@ class BootStrap {
                 }
             }
         }
-        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
-            //setup superusers - ourselves ...
-            List<Map> QASysUsers = [
-                    [name: 'selbach', display: 'Michaela Selbach', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'rupp', display: 'Daniel Rupp', roles: ['ROLE_USER','ROLE_YODA']],
-                    [name: 'klober', display: 'David Klober', roles: ['ROLE_USER','ROLE_YODA']],
-                    [name: 'djebeniani', display: 'Moe Djebeniani', roles: ['ROLE_USER','ROLE_YODA']],
-                    [name: 'bluoss', display: 'Ingrid Bluoss', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'albin', display: 'Anja Albin', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'engels', display: 'Melanie Engels', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'konze', display: 'Miriam Konze', roles: ['ROLE_USER','ROLE_ADMIN']],
-                    [name: 'galffy', display: 'Andreas Gálffy', roles: ['ROLE_USER','ROLE_YODA']],
-                    [name: 'selbach_yoda', display: 'selbach_yoda', roles: ['ROLE_USER','ROLE_YODA']]
-            ]
-            QASysUsers.each { su ->
-                log.debug("test ${su.name} ${su.name+'1@$€r'} ${su.display} ${su.roles}")
-                User user = User.findByUsername(su.name)
-                if (user) {
-                    log.debug("${su.name} present and correct")
-                } else {
-                    log.debug("create user ..")
-                    user = new User(
-                            username: su.name,
-                            password: su.name+'1@$€r',
-                            display: su.display,
-                            email: su.name+'@hbz-nrw.de',
-                            enabled: true)
-                    user.save(failOnError: true)
-                }
-
-                log.debug("checking roles for ${su.name}")
-                su.roles.each { r ->
-                    Role role = Role.findByAuthority(r)
-                    if (! (user.authorities.contains(role))) {
-                        log.debug("  -> adding role ${role}")
-                        UserRole.create user, role
-                    } else {
-                        log.debug("  -> ${role} already present")
-                    }
-                }
-            }
-        }
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 

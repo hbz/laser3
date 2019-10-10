@@ -135,7 +135,7 @@ class UserService {
                     User user = User.findByUsername(username)
                     if(!user) {
                         log.debug("create new user ${username}")
-                        user = addNewUser([username: username, password: "${username}_skywalker", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
+                        user = addNewUser([username: username, password: "${username}${grailsApplication.config.passwordSuffix}", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
                     }
                     if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
                         if(orgs[customerKey])
