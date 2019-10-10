@@ -189,7 +189,7 @@
 @selectionWidescreenMaxMenuHeight: (@selectionItemHeight * @selectionWidescreenMaxItems);
 
 /* Hover */
-@selectionHoverBorderColor: @white;
+@selectionHoverBorderColor: @selectedBorderColor;
 @selectionHoverBoxShadow: none;
 
 /* Focus */

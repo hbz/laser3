@@ -1290,6 +1290,14 @@ aside.ui.accordion .title:not(.ui) {
   display: none;
 }
 
+a.la-main-object {
+  color: #183551;
+}
+
+.la-main-object {
+  font-weight: bold;
+}
+
 .la-filter .ui.selection.dropdown {
   color: #FFFFFF;
 }
@@ -33187,7 +33195,7 @@ select.ui.dropdown {
 /* Hover */
 
 .ui.selection.dropdown:hover {
-  border-color: #FFFFFF;
+  border-color: rgba(34, 36, 38, 0.35);
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -34339,15 +34347,13 @@ select.ui.dropdown {
   content: "\f00d";
 }
 
-/* Icons for Reference (Subsetted in 2.4.0)
-  .dropdown.down:before { content: "\f0d7"; }
-  .dropdown.up:before { content: "\f0d8"; }
-  .dropdown.left:before { content: "\f0d9"; }
-  .dropdown.right:before { content: "\f0da"; }
-  .dropdown.close:before { content: "\f00d"; }
-*/
+.la-filter {
+  /* Hover */
+}
 
-/* Displays like a select box */
+.la-filter .ui.selection.dropdown:hover {
+  border-color: #FFFFFF;
+}
 /*!
  * # Semantic UI 2.3.1 - Video
  * http://github.com/semantic-org/semantic-ui/
