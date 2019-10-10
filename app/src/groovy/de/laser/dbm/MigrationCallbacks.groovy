@@ -17,7 +17,7 @@ class MigrationCallbacks {
 		def dataSource = grailsApplication.config.dataSource
 		def uri		   = new URI(dataSource.url.substring(5))
 
-		def backupFile = grailsApplication.config.dbBackupLocation + "/laser-backup-${new Date().format('yyyy-MM-dd HH:mm:ss')}.sql"
+		def backupFile = grailsApplication.config.dbBackupLocation + "/laser-backup-${new Date().format('yyyy-MM-dd-HH:mm:ss')}.sql"
 
 		Map<String, String> config = [
 				dbname:	"${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",
