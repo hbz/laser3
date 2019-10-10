@@ -38,8 +38,8 @@ class ReaderNumber {
         semester        column:'num_semester_rv_fk'
         dueDate         column:'num_due_date'
 
-        lastUpdated     column:'num_lastUpdate_date'
-        dateCreated     column:'num_create_date'
+        lastUpdated     column:'num_last_updated'
+        dateCreated     column:'num_date_created'
         org             column:'num_org_fk'
     }
 

@@ -27,8 +27,8 @@ class UserFolder {
    shortcode column:'uf_shortcode'
         name column:'uf_name'
        items cascade: 'all-delete-orphan', batchSize: 10
-      dateCreated column: 'uf_dateCreated'
-      lastUpdated column: 'uf_lastUpdated'
+      dateCreated column: 'uf_date_created'
+      lastUpdated column: 'uf_last_updated'
   }
 
   static constraints = {
