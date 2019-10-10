@@ -743,3 +743,6 @@
   min-width: 350px;
   white-space: normal;
 }
+[data-tooltip]:after {
+  white-space: normal;
+}
