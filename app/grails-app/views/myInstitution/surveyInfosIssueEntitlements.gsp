@@ -325,7 +325,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
             <div class="eight wide field" style="text-align: left;">
                 <g:if test="${subscriptionInstance && editable}">
                     <g:link class="ui button green js-open-confirm-modal"
-                            data-confirm-term-what="renewal"
+                            data-confirm-term-what="renewalEntitlements"
                             data-confirm-term-how="concludeBinding"
                             controller="myInstitution" action="surveyInfoFinish"
                             id="${surveyInfo.id}"
