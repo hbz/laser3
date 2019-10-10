@@ -6,5 +6,4 @@
 
 [data-tooltip]:after {
   white-space: normal;
-  max-width: 200px;
 } 
