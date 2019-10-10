@@ -1181,29 +1181,31 @@ class FinanceController extends AbstractDebugController {
                     flash.error += costItem.getErrors()
                 }
                 else {
-                    String[] budgetCodeKeys
-                    Pattern p = Pattern.compile('.*[,;].*')
-                    String code = budgetCodes.get(c)
-                    Matcher m = p.matcher(code)
-                    if(m.find())
-                        budgetCodeKeys = code.split('[,;]')
-                    else
-                        budgetCodeKeys = [code]
-                    budgetCodeKeys.each { k ->
-                        String bck = k.trim()
-                        BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
-                        if(!bc) {
-                            bc = new BudgetCode(owner: contextOrg, value: bck)
-                        }
-                        if(!bc.save()) {
-                            withErrors = true
-                            flash.error += bc.getErrors()
-                        }
-                        else {
-                            CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
-                            if(!cig.save()) {
+                    if(budgetCodes) {
+                        String[] budgetCodeKeys
+                        Pattern p = Pattern.compile('.*[,;].*')
+                        String code = budgetCodes.get(c)
+                        Matcher m = p.matcher(code)
+                        if(m.find())
+                            budgetCodeKeys = code.split('[,;]')
+                        else
+                            budgetCodeKeys = [code]
+                        budgetCodeKeys.each { k ->
+                            String bck = k.trim()
+                            BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                            if(!bc) {
+                                bc = new BudgetCode(owner: contextOrg, value: bck)
+                            }
+                            if(!bc.save()) {
                                 withErrors = true
-                                flash.error += cig.getErrors()
+                                flash.error += bc.getErrors()
+                            }
+                            else {
+                                CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                                if(!cig.save()) {
+                                    withErrors = true
+                                    flash.error += cig.getErrors()
+                                }
                             }
                         }
                     }
