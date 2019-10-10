@@ -153,7 +153,7 @@
 
 @selectionBoxShadow: none;
 @selectionBorderColor: @borderColor;
-@selectionBorder: 1px solid @white;
+@selectionBorder: 1px solid @selectionBorderColor;
 @selectionBorderRadius: @borderRadius;
 
 @selectionIconOpacity: 0.8;
@@ -189,7 +189,7 @@
 @selectionWidescreenMaxMenuHeight: (@selectionItemHeight * @selectionWidescreenMaxItems);
 
 /* Hover */
-@selectionHoverBorderColor: @white;
+@selectionHoverBorderColor: @selectedBorderColor;
 @selectionHoverBoxShadow: none;
 
 /* Focus */
