@@ -43,6 +43,9 @@
                 <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
             </div>
         </g:elseif>
+        <div class="ui right ribbon label">
+                <strong>${message(code:'globalUID.label')}: ${costItem?.globalUID}</strong>
+        </div>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:hiddenField name="showView" value="${tab}" />
