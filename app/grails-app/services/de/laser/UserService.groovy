@@ -19,6 +19,7 @@ class UserService {
     def instAdmService
     def contextService
     def messageSource
+    def grailsApplication
     Locale locale = LocaleContextHolder.getLocale()
 
     void initMandatorySettings(User user) {
