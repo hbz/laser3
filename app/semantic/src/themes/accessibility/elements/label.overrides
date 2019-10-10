@@ -121,7 +121,6 @@
   font-weight: 700;
   border: 0 solid transparent;
   border-radius: 0;
-  white-space: nowrap;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 #js-confirmation-term-where-detail {

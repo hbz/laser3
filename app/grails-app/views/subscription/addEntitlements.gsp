@@ -191,7 +191,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
+            <g:if test="${tipp?.title instanceof BookInstance }">
                 (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
             </g:if>
 

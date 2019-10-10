@@ -464,6 +464,9 @@ r2d2 = {
                     case "ok":
                         messageHow = "fortfahren";
                         break;
+                    case "concludeBinding":
+                        messageHow = "verbindlich abschließen";
+                        break;
                     default:
                         messageHow = "löschen";
                 }
@@ -475,6 +478,23 @@ r2d2 = {
                 var messageWhat = what;
 
 
+
+                // CONCLUDEBINDING BUTTON
+                if (how == "concludeBinding"){
+                     switch (what) {
+                        case "renewal":
+                             var messageWhat = "die Verlängerung";
+                             break;
+                        case "renewalEntitlements":
+                             var messageWhat = "die Titelauswahl";
+                             break;
+                        case "survey":
+                             var messageWhat = "die Umfrage";
+                             break;
+                        default:
+                             var messageWhat = what;
+                    }
+                }
                 if (how == "inherit"){
                     switch (what) {
                         case "property":
@@ -617,6 +637,9 @@ r2d2 = {
                         break;
                     case "ok":
                         $('#js-confirmation-button').html('OK<i class="check icon"></i>');
+                        break;
+                    case "concludeBinding":
+                        $('#js-confirmation-button').html('Abschließen<i class="check icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');
