@@ -19,7 +19,7 @@
     <semui:exportDropdown>
         <semui:exportDropdownItem>
             <g:link class="item" action="showEntitlementsRenewWithSurvey" id="${surveyConfig?.id}"
-                    params="${[exportKBart: true]}">KBart Export</g:link>
+                    params="${[exportKBart: true]}">KBART Export</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="showEntitlementsRenewWithSurvey" id="${surveyConfig?.id}"

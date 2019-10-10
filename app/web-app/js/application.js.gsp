@@ -485,6 +485,9 @@ r2d2 = {
                         case "renewal":
                              var messageWhat = "die Verlängerung";
                              break;
+                        case "renewalEntitlements":
+                             var messageWhat = "die Titelauswahl";
+                             break;
                         case "survey":
                              var messageWhat = "die Umfrage";
                              break;
