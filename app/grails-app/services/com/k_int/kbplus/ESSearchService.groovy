@@ -65,7 +65,7 @@ class ESSearchService{
             if (params.order) {
               order = SortOrder.valueOf(params.order?.toUpperCase())
             }
-            searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString(), order)
+            searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
           }
           log.debug("searchRequestBuilder start to add query and aggregration query string is ${query_str}")
 
