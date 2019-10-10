@@ -36162,6 +36162,10 @@ a.ui.nag {
   min-width: 350px;
   white-space: normal;
 }
+
+[data-tooltip]:after {
+  white-space: normal;
+}
 /*!
  * # Semantic UI 2.3.1 - Progress Bar
  * http://github.com/semantic-org/semantic-ui/
