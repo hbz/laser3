@@ -6,7 +6,9 @@ import de.laser.dbm.MigrationCallbacks
 
 beans = {
 
-    //migrationCallbacks(MigrationCallbacks)
+    migrationCallbacks(MigrationCallbacks) {
+        grailsApplication = ref('grailsApplication')
+    }
 
     // [ user counter ..
     sessionRegistry(SessionRegistryImpl)
