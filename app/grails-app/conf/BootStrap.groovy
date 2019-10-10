@@ -169,7 +169,7 @@ class BootStrap {
             }
         }
 
-        /*if (grailsApplication.config.localauth) {
+        if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
 
             grailsApplication.config.sysusers.each { su ->
@@ -204,8 +204,8 @@ class BootStrap {
                     }
                 }
             }
-        }*/
-        //else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+        }
+        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
             //setup superusers - ourselves ...
             List<Map> QASysUsers = [
                     [name: 'selbach', display: 'Michaela Selbach', roles: ['ROLE_USER','ROLE_ADMIN']],
@@ -246,7 +246,7 @@ class BootStrap {
                     }
                 }
             }
-        //}
+        }
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 

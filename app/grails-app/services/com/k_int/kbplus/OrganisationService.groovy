@@ -2462,25 +2462,25 @@ class OrganisationService {
             hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSettings.add(hbz,OrgSettings.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                /*if(currentServer == ContextService.SERVER_LOCAL) {
+                if(currentServer == ContextService.SERVER_LOCAL) {
                     grailsApplication.config.sysusers.each { su ->
                         User admin = User.findByUsername(su.name)
                         instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
                     }
                 }
-                else if(currentServer == ContextService.SERVER_QA) {*/
-                List<User> adminsAndYodas = User.executeQuery("select ur.user from UserRole ur where ur.role.authority in ('ROLE_ADMIN','ROLE_YODA')")
-                adminsAndYodas.each { admin ->
-                    instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                else if(currentServer == ContextService.SERVER_QA) {
+                    List<User> adminsAndYodas = User.executeQuery("select ur.user from UserRole ur where ur.role.authority in ('ROLE_ADMIN','ROLE_YODA')")
+                    adminsAndYodas.each { admin ->
+                        instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                    }
                 }
-                //}
             }
             else if(hbz.hasErrors()) {
                 log.error(hbz.errors)
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) { //include SERVER_LOCAL when testing in local environment
+        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          institut: [name:'Musterinstitut',orgType: [department]],
                                          singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
