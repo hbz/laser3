@@ -9,6 +9,7 @@ changeSet(author: "kloberd (manually)", id: "1548252520602-10") {
 		confirm 'Updated Table Data'
 	}
 }
+// select lic_ref from license where lic_ref is null = EMPTY = GOOD
 
 changeSet(author: "kloberd (manually)", id: "1548252520602-25") {
 	grailsChange {
@@ -18,6 +19,7 @@ changeSet(author: "kloberd (manually)", id: "1548252520602-25") {
 		confirm 'Updated Table Data'
 	}
 }
+//select pd_used_for_logic from property_definition where pd_used_for_logic is null = EMPTY = GOOD
 
 // -- changelog-40
 
@@ -30,6 +32,7 @@ changeSet(author: "kloberd (modified)", id: "1553857368060-18") {
 		rollback {}
 	}
 }
+//select * from user_org where status = 4 = EMPTY = GOOD
 
 // -- changelog-60
 
@@ -41,6 +44,7 @@ changeSet(author: "kloberd (modified)", id: "1558613037606-22") {
 		rollback {}
 	}
 }
+//select lic_status_rv_fk from license where lic_status_rv_fk is null = EMPTY = GOOD
 
 changeSet(author: "kloberd (modified)", id: "1558613037606-23") {
 	grailsChange {
@@ -50,6 +54,7 @@ changeSet(author: "kloberd (modified)", id: "1558613037606-23") {
 		rollback {}
 	}
 }
+//select sub_status_rv_fk from subscription where sub_status_rv_fk is null = EMPTY = GOOD
 
 changeSet(author: "kloberd (modified)", id: "1558613037606-26") {
 	grailsChange {
@@ -65,6 +70,8 @@ changeSet(author: "kloberd (modified)", id: "1558613037606-26") {
 		rollback {}
 	}
 }
+// GOOD
+
 
 // -- changelog-70
 
@@ -76,6 +83,7 @@ changeSet(author: "kloberd (modified)", id: "1561453819381-14") {
 		rollback {}
 	}
 }
+//select sub_is_administrative from subscription where sub_is_administrative is null = EMPTY = GOOD
 
 // -- changelog-75
 
@@ -88,6 +96,7 @@ changeSet(author: "kloberd (modified)", id: "1561617411135-3") {
 		rollback {}
 	}
 }
+// Keine Daten
 
 changeSet(author: "kloberd (modified)", id: "1561617411135-6") {
 	grailsChange {
@@ -97,6 +106,7 @@ changeSet(author: "kloberd (modified)", id: "1561617411135-6") {
 		rollback {}
 	}
 }
+// select rdv_value from refdata_value WHERE rdv_value = 'Responsible Contact' = EMPTY = GOOD
 
 // -- changelog-76
 
@@ -117,6 +127,15 @@ update issue_entitlement set ie_status_rv_fk = (
 	}
 }
 
+//select ie_status_rv_fk from issue_entitlement where ie_status_rv_fk in (
+//    SELECT v.rdv_id
+//    FROM refdata_value v
+//             JOIN refdata_category c ON (v.rdv_owner = c.rdc_id)
+//    WHERE c.rdc_description = 'Entitlement Issue Status'
+//      and (
+//        v.rdv_value = 'Live' or v.rdv_value = 'Current'
+//        )) = EMPTY = GOOD
+
 changeSet(author: "kloberd (modified)", id: "1562147170838-2") {
 	grailsChange {
 		change {
@@ -131,7 +150,9 @@ update issue_entitlement set ie_status_rv_fk = (
 		rollback {}
 	}
 }
-
+//select ie_status_rv_fk from issue_entitlement  where ie_status_rv_fk = (
+//    SELECT v.rdv_id FROM refdata_value v JOIN refdata_category c ON (v.rdv_owner = c.rdc_id) WHERE c.rdc_description = 'Entitlement Issue Status' and v.rdv_value = 'Deleted')
+//    = EMPTY = GOOD
 
 // -- changelog-80
 
@@ -148,6 +169,7 @@ UPDATE combo SET combo_type_rv_fk = (
 		rollback {}
 	}
 }
+//select combo_type_rv_fk from combo  WHERE combo_type_rv_fk ISNULL = EMPTY = GOOD
 
 // -- changelog-90
 
@@ -279,6 +301,8 @@ changeSet(author: "kloberd (modified)", id: "1566384977224-10") {
 		rollback {}
 	}
 }
+//select os_key_enum from org_settings  WHERE os_key_enum = 'OA2020_SERVER_ACCESS' = EMPTY = GOOD
+//select os_key_enum from org_settings  WHERE os_key_enum = 'STATISTICS_SERVER_ACCESS' = EMPTY = GOOD
 
 // -- changelog-97
 
@@ -290,6 +314,8 @@ changeSet(author: "kloberd (modified)", id: "1566540202427-2") {
 		rollback {}
 	}
 }
+// select surconf_evaluation_finish from survey_config  WHERE surconf_evaluation_finish is null = EMPTY = GOOD
+
 
 // -- changelog-98
 
@@ -302,6 +328,8 @@ changeSet(author: "kloberd (modified)", id: "1566992531378-4") {
 	}
 }
 
+//select surin_is_subscription_survey from survey_info  WHERE surin_is_subscription_survey is null = EMPTY = GOOD
+
 changeSet(author: "kloberd (modified)", id: "1566992531378-5") {
 	grailsChange {
 		change {
@@ -311,6 +339,9 @@ changeSet(author: "kloberd (modified)", id: "1566992531378-5") {
 		rollback {}
 	}
 }
+
+//select surconf_is_subscription_survey_fix from survey_config  WHERE surconf_sub_fk IS NOT NULL = GOOD
+//select surconf_is_subscription_survey_fix from survey_config  WHERE surconf_sub_fk IS NULL = EMPTY = GOOD
 
 changeSet(author: "kloberd (modified)", id: "1566992531378-6") {
 	grailsChange {
@@ -334,6 +365,7 @@ changeSet(author: "djebeniani (modified)", id: "1569389997414-25") {
 		rollback {}
 	}
 }
+// select tsk_system_create_date from task where tsk_system_create_date IS NULL = EMPTY = GOOD
 
 changeSet(author: "djebeniani (modified)", id: "1569389997414-26") {
 	grailsChange {
@@ -348,6 +380,11 @@ changeSet(author: "djebeniani (modified)", id: "1569389997414-26") {
 	}
 }
 
+//select ie_accept_status_rv_fk from issue_entitlement
+//where ie_id IN
+//      (SELECT ie_id FROM issue_entitlement JOIN refdata_value rv ON issue_entitlement.ie_status_rv_fk = rv.rdv_id
+//					WHERE rdv_value = 'Current') = NOT EMPTY = NOT GOOD
+
 changeSet(author: "djebeniani (modified)", id: "1569389997414-27") {
 	grailsChange {
 		change {
@@ -359,7 +396,8 @@ changeSet(author: "djebeniani (modified)", id: "1569389997414-27") {
 		rollback {}
 	}
 }
-
+//select das_is_hide from dashboard_due_date where das_is_hide IS NULL = EMPTY = GOOD
+//select das_is_done from dashboard_due_date where das_is_done IS NULL = EMPTY = GOOD
 
 // -- changelog-101
 
@@ -371,3 +409,35 @@ changeSet(author: "kloberd (modified)", id: "1569915031100-3") {
 		rollback {}
 	}
 }
+//select surre_is_required from survey_result WHERE surre_is_required IS NULL = EMPTY = GOOD
+
+//ALL QUERYS
+/*select lic_ref from license where lic_ref is null;
+select pd_used_for_logic from property_definition where pd_used_for_logic is null;
+select * from user_org where status = 4;
+select lic_status_rv_fk from license where lic_status_rv_fk is null;
+select sub_status_rv_fk from subscription where sub_status_rv_fk is null;
+select sub_is_administrative from subscription where sub_is_administrative is null;
+select rdv_value from refdata_value WHERE rdv_value = 'Responsible Contact';
+select ie_status_rv_fk from issue_entitlement where ie_status_rv_fk in (
+		SELECT v.rdv_id
+FROM refdata_value v
+JOIN refdata_category c ON (v.rdv_owner = c.rdc_id)
+WHERE c.rdc_description = 'Entitlement Issue Status'
+and (
+		v.rdv_value = 'Live' or v.rdv_value = 'Current'
+));
+select ie_status_rv_fk from issue_entitlement  where ie_status_rv_fk = (SELECT v.rdv_id FROM refdata_value v JOIN refdata_category c ON (v.rdv_owner = c.rdc_id) WHERE c.rdc_description = 'Entitlement Issue Status' and v.rdv_value = 'Deleted');
+select combo_type_rv_fk from combo  WHERE combo_type_rv_fk ISNULL;
+select os_key_enum from org_settings  WHERE os_key_enum = 'OA2020_SERVER_ACCESS';
+select os_key_enum from org_settings  WHERE os_key_enum = 'STATISTICS_SERVER_ACCESS';
+select surconf_evaluation_finish from survey_config  WHERE surconf_evaluation_finish is null;
+select surin_is_subscription_survey from survey_info  WHERE surin_is_subscription_survey is null;
+select surconf_is_subscription_survey_fix from survey_config  WHERE surconf_sub_fk IS NOT NULL;
+select surconf_is_subscription_survey_fix from survey_config  WHERE surconf_sub_fk IS NULL;
+select tsk_system_create_date from task where tsk_system_create_date IS NULL;
+select ie_accept_status_rv_fk from issue_entitlement where ie_id IN (SELECT ie_id FROM issue_entitlement JOIN refdata_value rv ON issue_entitlement.ie_status_rv_fk = rv.rdv_id WHERE rdv_value = 'Current');
+select das_is_hide from dashboard_due_date where das_is_hide IS NULL;
+select das_is_done from dashboard_due_date where das_is_done IS NULL;
+select surre_is_required from survey_result WHERE surre_is_required IS NULL;*/
+
