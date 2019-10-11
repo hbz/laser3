@@ -460,6 +460,18 @@ aside.ui.accordion .title:not(.ui) {
     display: none;
 }
 
+// most important object in table
+a{
+    &.la-main-object {
+        color: #183551;
+
+    }
+}
+.la-main-object {
+    font-weight: bold;
+}
+
+
 .la-filter {
 
     .ui.selection.dropdown {
@@ -472,7 +484,13 @@ aside.ui.accordion .title:not(.ui) {
     .ui.form input[type=text]:focus{
         color: @white;
         border: 1px solid @white;
+
     }
+    .ui.form input[type=text]:focus{
+
+        background-color: @laFilterChosen;
+    }
+
     .ui.selection.visible.dropdown>.text:not(.default){
         color: @white;
     }

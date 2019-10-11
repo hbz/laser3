@@ -118,7 +118,7 @@
 
 -- ALTER TABLE public.user ADD date_created timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
 -- ALTER TABLE public.user ADD last_updated timestamp DEFAULT '2019-07-18 00:00:00.0' not null;
-UPDATE public."user" SET date_created = '2019-07-18 00:00:00.0',last_updated = '2019-07-18 00:00:00.0' where date_created is null;
+-- UPDATE public."user" SET date_created = '2019-01-01 00:00:00.0',last_updated = '2019-01-01 00:00:00.0' where date_created is null;
 
 -- 2019-08-28
 -- new coloumn for survey (gorm auto-creation fail)

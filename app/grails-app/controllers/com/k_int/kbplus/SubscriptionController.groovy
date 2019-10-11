@@ -223,6 +223,9 @@ class SubscriptionController extends AbstractDebugController {
             qry_params.deleted = TIPP_DELETED
         }
 
+        base_qry += " and ie.acceptStatus = :ieAcceptStatus "
+        qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and ie.tipp.pkg.id = :pkgId "
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
@@ -1053,7 +1056,95 @@ class SubscriptionController extends AbstractDebugController {
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
+
         result
+
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def showEntitlementsRenewWithSurvey() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.subscriptionInstance =  result.surveyConfig?.subscription
+
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+
+        def filename = "renewEntitlements_${escapeService.escapeString(result.subscriptionInstance.dropdownNamingConvention())}"
+
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.ies)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        }else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            List titles = [
+                    g.message(code:'title'),
+                    g.message(code:'tipp.volume'),
+                    g.message(code:'author.slash.editor'),
+                    g.message(code:'title.editionStatement.label'),
+                    g.message(code:'title.summaryOfContent.label'),
+                    g.message(code:'identifier.label'),
+                    g.message(code:'title.dateFirstInPrint.label'),
+                    g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'tipp.price')
+            ]
+            List rows = []
+            result.ies.each { ie ->
+                List row = []
+                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                def identifiers = []
+                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
+                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                }
+                row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
+
+                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
+                rows.add(row)
+            }
+            Map sheetData = [:]
+            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:titles,columnData:rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html result
+            }
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -2435,46 +2526,15 @@ class SubscriptionController extends AbstractDebugController {
 
         def addTitlesCount = 0
         if (result.subscriptionInstance) {
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscriptionInstance.id}", contextService.USER_SCOPE)
-            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
-            if(!params.singleTitle) {
-                if(cache.get('checked')) {
-                    Map checked = cache.get('checked')
-                    checked.each { k,v ->
-                        if(v == 'checked') {
-                            try {
-                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                    if(subscriptionService.addEntitlement(result.subscriptionInstance, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                                        log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
-                                }
-                                else if(subscriptionService.addEntitlement(result.subscriptionInstance,k,null,false, ie_accept_status)) {
-                                    log.debug("Added tipp ${k} to sub ${result.subscriptionInstance.id}")
-                                }
-                                addTitlesCount++
-
-                            }
-                            catch (EntitlementCreationException e) {
-                                flash.error = e.getMessage()
-                            }
-                        }
-                    }
-                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [addTitlesCount])
-                }
-                else {
-                    log.error('cache error or no titles selected')
-                }
-            }
-            else if(params.singleTitle) {
+            if(params.singleTitle) {
+                def ie = IssueEntitlement.get(params.singleTitle)
+                def tipp = ie.tipp
                 try {
-                    if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                            log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id} with issue entitlement overwrites")
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
-                    }
-                    else if(subscriptionService.addEntitlement(result.subscriptionInstance, params.singleTitle, null, false, ie_accept_status))
-                        log.debug("Added tipp ${params.singleTitle} to sub ${result.subscriptionInstance.id}")
-                    flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title.title])
 
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                          log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
+                          flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp?.title.title])
+                    }
                 }
                 catch(EntitlementCreationException e) {
                     flash.error = e.getMessage()
@@ -2604,43 +2664,39 @@ class SubscriptionController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        List tippsToAdd = params."tippsToAdd".split(",")
-        List tippsToDelete = params."tippsToDelete".split(",")
+        List iesToAdd = params."iesToAdd".split(",")
+
 
         def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
-        def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, result.surveyConfig)
+        def countIEsToAdd = 0
 
         if(result.subscriptionInstance) {
-            tippsToAdd.each { tipp ->
+            iesToAdd.each { ieID ->
+                def ie = IssueEntitlement.findById(ieID)
+                def tipp = ie.tipp
+
                 try {
-                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp, null, false, ie_accept_status))
-                        log.debug("Added tipp ${tipp} to sub ${result.subscriptionInstance.id}")
+                    if(subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, true, ie_accept_status)) {
+                        log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
+                        countIEsToAdd++
+                    }
                 }
                 catch (EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: "+e.getMessage())
+                    flash.error = message(code:'renewEntitlementsWithSurvey.noSelectedTipps')
                 }
             }
-            tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscriptionInstance,tipp))
-                    log.debug("Deleted tipp ${tipp} from sub ${result.subscriptionInstance.id}")
+
+            if(countIEsToAdd > 0){
+                flash.message = message(code:'renewEntitlementsWithSurvey.tippsToAdd', args: [countIEsToAdd])
             }
-            if(params.process == "finalise") {
-                if(surveyOrg) {
-                    surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save()) {
-                        flash.error = surveyOrg.getErrors()
-                    } else flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-                }
-                else {
-                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-                }
-            }
+
         }
         else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [surveyConfigID: result.surveyConfig?.id]
+        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetSubscriptionId: params.id, surveyConfigID: result.surveyConfig?.id]
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -4872,6 +4928,8 @@ class SubscriptionController extends AbstractDebugController {
                 sub.owner = entry.owner ? genericOIDService.resolveOID(entry.owner) : null
                 sub.instanceOf = entry.instanceOf ? genericOIDService.resolveOID(entry.instanceOf) : null
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
+                Org provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
+                Org agency = entry.agency ? genericOIDService.resolveOID(entry.agency) : null
                 if(sub.instanceOf && member)
                     sub.isSlaved = YN_YES
                 if(sub.save()) {
@@ -4910,24 +4968,45 @@ class SubscriptionController extends AbstractDebugController {
                             flash.error += memberRole.getErrors()
                         }
                     }
+                    if(provider) {
+                        OrgRole providerRole = new OrgRole(roleType: OR_PROVIDER, sub: sub, org: provider)
+                        if(!providerRole.save()) {
+                            withErrors = true
+                            flash.error += providerRole.getErrors()
+                        }
+                    }
+                    if(agency) {
+                        OrgRole agencyRole = new OrgRole(roleType: OR_AGENCY, sub: sub, org: agency)
+                        if(!agencyRole.save()) {
+                            withErrors = true
+                            flash.error += agencyRole.getErrors()
+                        }
+                    }
                     //process subscription properties
                     entry.properties.each { k, v ->
-                        log.debug("${k}:${v}")
+                        log.debug("${k}:${v.propValue}")
                         PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
                         List<String> valueList
                         if(propDef.multipleOccurrence) {
-                            valueList = v.split(',')
+                            valueList = v?.propValue?.split(',')
                         }
-                        else valueList = [v]
+                        else valueList = [v.propValue]
                         //in most cases, valueList is a list with one entry
                         valueList.each { value ->
                             try {
-                                createProperty(propDef,sub,contextOrg,value)
+                                createProperty(propDef,sub,contextOrg,value,v.propNote)
                             }
                             catch (Exception e) {
                                 withErrors = true
                                 flash.error += e.getMessage()
                             }
+                        }
+                    }
+                    if(entry.notes) {
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, title: entry.notes, type: RefdataValue.getByValueAndCategory('Note','Document Type'), owner: contextOrg, user: contextService.user)
+                        if(docContent.save()) {
+                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RefdataValue.getByValueAndCategory('Note','Document Type'))
+                            dc.save()
                         }
                     }
                 }
@@ -4942,7 +5021,7 @@ class SubscriptionController extends AbstractDebugController {
         else redirect(url: request.getHeader("referer"))
     }
 
-    private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value) {
+    private void createProperty(PropertyDefinition propDef, Subscription sub, Org contextOrg, String value, String note) {
         //check if private or custom property
         AbstractProperty prop
         if(propDef.tenant == contextOrg) {
@@ -4975,6 +5054,8 @@ class SubscriptionController extends AbstractDebugController {
             default: prop.setStringValue(value)
                 break
         }
+        if(note)
+            prop.note = note
         prop.save()
     }
 

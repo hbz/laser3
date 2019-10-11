@@ -19,6 +19,7 @@ class UserService {
     def instAdmService
     def contextService
     def messageSource
+    def grailsApplication
     Locale locale = LocaleContextHolder.getLocale()
 
     void initMandatorySettings(User user) {
@@ -121,4 +122,29 @@ class UserService {
         }
     }
 
+    void setupAdminAccounts(Map<String,Org> orgs) {
+        List<String> adminUsers = ['selbach', 'engels', 'konze', 'rupp', 'galffy', 'klober', 'bluoss', 'albin', 'djebeniani', 'test']
+        List<String> customerTypes = ['konsorte','institut','singlenutzer','kollektivnutzer','konsortium']
+        //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
+        Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
+                                       'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
+                                       'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
+        adminUsers.each { String userKey ->
+            customerTypes.each { String customerKey ->
+                userRights.each { String rightKey, Role userRole ->
+                    String username = "${userKey}_${customerKey}_${rightKey}"
+                    User user = User.findByUsername(username)
+                    if(!user) {
+                        log.debug("create new user ${username}")
+                        user = addNewUser([username: username, password: "${username}${grailsApplication.config.passwordSuffix}", display: username, email: "${userKey}@hbz-nrw.de", enabled: true, org: orgs[customerKey]],null)
+                    }
+                    if(user && !user.hasAffiliationForForeignOrg(rightKey,orgs[customerKey])) {
+                        if(orgs[customerKey])
+                            instAdmService.createAffiliation(user,orgs[customerKey],userRole,UserOrg.STATUS_APPROVED,null)
+                        else log.debug("appropriate inst missing for affiliation key, skipping")
+                    }
+                }
+            }
+        }
+    }
 }

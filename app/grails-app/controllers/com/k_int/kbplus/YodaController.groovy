@@ -23,6 +23,7 @@ import org.quartz.impl.matchers.GroupMatcher
 import org.springframework.transaction.TransactionStatus
 import com.k_int.kbplus.OrgSettings
 import groovy.json.JsonOutput
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.lang.reflect.Method
@@ -1616,6 +1617,90 @@ class YodaController {
         result
 
         redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def importSeriesToEBooks() {
+        def result = [:]
+
+
+        if(params.kbartPreselect) {
+            CommonsMultipartFile kbartFile = params.kbartPreselect
+            Integer count = 0
+            Integer countChanges = 0
+            InputStream stream = kbartFile.getInputStream()
+            ArrayList<String> rows = stream.text.split('\n')
+            Map<String,Integer> colMap = [publicationTitleCol:-1,zdbCol:-1, onlineIdentifierCol:-1, printIdentifierCol:-1, doiTitleCol:-1, seriesTitleCol:-1]
+            //read off first line of KBART file
+            rows[0].split('\t').eachWithIndex { headerCol, int c ->
+                switch(headerCol.toLowerCase().trim()) {
+                    case "zdb_id": colMap.zdbCol = c
+                        break
+                    case "print_identifier": colMap.printIdentifierCol = c
+                        break
+                    case "online_identifier": colMap.onlineIdentifierCol = c
+                        break
+                    case "publication_title": colMap.publicationTitleCol = c
+                        break
+                    case "series": colMap.seriesTitleCol = c
+                        break
+                    case "doi_identifier": colMap.doiTitleCol = c
+                        break
+                }
+            }
+            //after having read off the header row, pop the first row
+            rows.remove(0)
+            //now, assemble the identifiers available to highlight
+            Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
+                                                          eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
+                                                          issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn'),
+                                                            doi: IdentifierNamespace.findByNs('doi')]
+            rows.eachWithIndex { row, int i ->
+                log.debug("now processing entitlement ${i}")
+                ArrayList<String> cols = row.split('\t')
+                Map idCandidate
+                if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                    idCandidate = [namespaces:[namespaces.zdb],value:cols[colMap.zdbCol]]
+                }
+                if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                    idCandidate = [namespaces:[namespaces.eissn,namespaces.isbn],value:cols[colMap.onlineIdentifierCol]]
+                }
+                if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                    idCandidate = [namespaces:[namespaces.issn,namespaces.pisbn],value:cols[colMap.printIdentifierCol]]
+                }
+                if(colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                    idCandidate = [namespaces:[namespaces.doi],value:cols[colMap.doiTitleCol]]
+                }
+                if(((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+                }
+                else {
+
+                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
+                    if(tiObj) {
+
+                        tiObj?.each { titleInstance ->
+                                if(titleInstance instanceof BookInstance) {
+                                    count++
+
+                                    if((cols[colMap.seriesTitleCol] != null || cols[colMap.seriesTitleCol] != "") && (titleInstance.summaryOfContent == null || titleInstance.summaryOfContent == "")){
+                                        countChanges++
+                                        titleInstance.summaryOfContent = cols[colMap.seriesTitleCol]
+                                        titleInstance.save(flush: true)
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+
+            flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
+            println(count)
+            println(countChanges)
+            params.remove("kbartPreselct")
+        }
+
     }
 
 }

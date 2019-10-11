@@ -24,7 +24,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
 
 
 
-<g:if test="${flash.error}">
+<g:if test="${flash}">
     <semui:messages data="${flash}"/>
 </g:if>
 

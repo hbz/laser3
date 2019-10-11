@@ -143,6 +143,33 @@ class SubscriptionService {
         ies
     }
 
+    List getIssueEntitlementsUnderConsideration(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
+    List getIssueEntitlementsNotFixed(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
+    List getCurrentIssueEntitlements(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
+                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { or ->
@@ -711,20 +738,39 @@ class SubscriptionService {
                         throw new EntitlementCreationException(ieCoverage.getErrors())
                     }
                 }
-                if(withPriceData) {
-                    PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
-                            listPrice: issueEntitlementOverwrite.listPrice,
-                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency,'Currency'),
-                            localPrice: issueEntitlementOverwrite.localPrice,
-                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
-                            issueEntitlement: new_ie
-                    )
-                    pi.setGlobalUID()
-                    if(pi.save())
-                        return true
-                    else {
-                        throw new EntitlementCreationException(pi.errors)
+                if(withPriceData && issueEntitlementOverwrite) {
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite?.priceItem) {
+                        PriceItem pi = new PriceItem(priceDate: issueEntitlementOverwrite?.priceItem?.priceDate ?: null,
+                                listPrice: issueEntitlementOverwrite?.priceItem?.listPrice ?: null,
+                                listCurrency: issueEntitlementOverwrite?.priceItem?.listCurrency ?: null,
+                                localPrice: issueEntitlementOverwrite?.priceItem?.localPrice ?: null,
+                                localCurrency: issueEntitlementOverwrite?.priceItem?.localCurrency ?: null,
+                                issueEntitlement: new_ie
+                        )
+                        pi.setGlobalUID()
+                        if(pi.save())
+                            return true
+                        else {
+                            throw new EntitlementCreationException(pi.errors)
+                        }
+
+                    }else {
+
+                        PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
+                                listPrice: issueEntitlementOverwrite.listPrice,
+                                listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
+                                localPrice: issueEntitlementOverwrite.localPrice,
+                                localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
+                                issueEntitlement: new_ie
+                        )
+                        pi.setGlobalUID()
+                        if(pi.save())
+                            return true
+                        else {
+                            throw new EntitlementCreationException(pi.errors)
+                        }
                     }
+
                 }
                 else return true
             } else {
@@ -778,13 +824,15 @@ class SubscriptionService {
             parentSubType = [SUBSCRIPTION_TYPE_LOCAL.getI10n('value')]
         }
         Map colMap = [:]
-        Map<String, Map<String, Integer>> propMap = [:]
+        Map<String, Map> propMap = [:]
         Map candidates = [:]
         InputStream fileContent = tsvFile.getInputStream()
         List<String> rows = fileContent.text.split('\n')
         List<String> ignoredColHeads = [], multiplePropDefs = []
         rows[0].split('\t').eachWithIndex { String s, int c ->
             String headerCol = s.trim()
+            if(headerCol.startsWith("\uFEFF"))
+                headerCol = headerCol.substring(1)
             //important: when processing column headers, grab those which are reserved; default case: check if it is a name of a property definition; if there is no result as well, reject.
             switch(headerCol.toLowerCase()) {
                 case "name": colMap.name = c
@@ -826,20 +874,40 @@ class SubscriptionService {
                 case "subscription resource":
                 case "resource": colMap.resource = c
                     break
+                case "anbieter":
+                case "provider:": colMap.provider = c
+                    break
+                case "lieferant":
+                case "agency": colMap.agency = c
+                    break
+                case "anmerkungen":
+                case "notes": colMap.notes = c
+                    break
                 default:
                     //check if property definition
-                    Map queryParams = [propDef:"${headerCol.toLowerCase()}",pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
-                    List<PropertyDefinition> posiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
-                    if(posiblePropDefs.size() == 1) {
-                        PropertyDefinition propDef = posiblePropDefs[0]
-                        String refCategory = ""
-                        if(propDef.type == RefdataValue.toString()) {
-                            refCategory = propDef.refdataCategory
-                        }
-                        Map<String,Integer> defPair = [colno:c,refCategory:refCategory]
-                        propMap[propDef.class.name+':'+propDef.id] = defPair
+                    boolean isNotesCol = false
+                    String propDefString = headerCol.toLowerCase()
+                    if(headerCol.contains('$$notes')) {
+                        isNotesCol = true
+                        propDefString = headerCol.split('\\$\\$')[0].toLowerCase()
                     }
-                    else if(posiblePropDefs.size() > 1)
+                    Map queryParams = [propDef:propDefString,pdClass:PropertyDefinition.class.name,contextOrg:contextOrg]
+                    List<PropertyDefinition> possiblePropDefs = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd, I10nTranslation i where i.referenceId = pd.id and i.referenceClass = :pdClass and (lower(i.valueDe) = :propDef or lower(i.valueEn) = :propDef) and (pd.tenant = :contextOrg or pd.tenant = null)",queryParams)
+                    if(possiblePropDefs.size() == 1) {
+                        PropertyDefinition propDef = possiblePropDefs[0]
+                        if(isNotesCol) {
+                            propMap[propDef.class.name+':'+propDef.id].notesColno = c
+                        }
+                        else {
+                            String refCategory = ""
+                            if(propDef.type == RefdataValue.toString()) {
+                                refCategory = propDef.refdataCategory
+                            }
+                            Map<String,Integer> defPair = [colno:c,refCategory:refCategory]
+                            propMap[propDef.class.name+':'+propDef.id] = [definition:defPair]
+                        }
+                    }
+                    else if(possiblePropDefs.size() > 1)
                         multiplePropDefs << headerCol
                     else
                         ignoredColHeads << headerCol
@@ -945,6 +1013,32 @@ class SubscriptionService {
                     }
                 }
             }
+            //provider
+            if(colMap.provider != null) {
+                String providerIdCandidate = cols[colMap.provider].trim()
+                if(providerIdCandidate) {
+                    Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
+                    Org provider = Org.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
+                    if(provider)
+                        candidate.provider = "${provider.class.name}:${provider.id}"
+                    else {
+                        mappingErrorBag.noValidOrg = providerIdCandidate
+                    }
+                }
+            }
+            //agency
+            if(colMap.agency != null) {
+                String agencyIdCandidate = cols[colMap.agency].trim()
+                if(agencyIdCandidate) {
+                    Long idCandidate = agencyIdCandidate.isLong() ? Long.parseLong(agencyIdCandidate) : null
+                    Org agency = Org.findByIdOrGlobalUID(idCandidate,agencyIdCandidate)
+                    if(agency)
+                        candidate.agency = "${agency.class.name}:${agency.id}"
+                    else {
+                        mappingErrorBag.noValidOrg = agencyIdCandidate
+                    }
+                }
+            }
             /*
             startDate(nullable:true, blank:false, validator: { val, obj ->
                 if(obj.startDate != null && obj.endDate != null) {
@@ -1028,7 +1122,9 @@ class SubscriptionService {
                     globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
             }
             //properties -> propMap
-            propMap.each { String k, Map defPair ->
+            propMap.each { String k, Map propInput ->
+                Map defPair = propInput.definition
+                Map propData = [:]
                 if(cols[defPair.colno].trim()) {
                     def v
                     if(defPair.refCategory) {
@@ -1038,8 +1134,15 @@ class SubscriptionService {
                         }
                     }
                     else v = cols[defPair.colno]
-                    candidate.properties[k] = v
+                    propData.propValue = v
                 }
+                if(propInput.notesColno)
+                    propData.propNote = cols[propInput.notesColno].trim()
+                candidate.properties[k] = propData
+            }
+            //notes
+            if(colMap.notes != null && cols[colMap.notes].trim()) {
+                candidate.notes = cols[colMap.notes].trim()
             }
             candidates.put(candidate,mappingErrorBag)
         }
