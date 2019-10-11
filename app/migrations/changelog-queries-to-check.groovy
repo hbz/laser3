@@ -33,6 +33,7 @@ changeSet(author: "kloberd (modified)", id: "1553857368060-18") {
 	}
 }
 //select * from user_org where status = 4 = EMPTY = GOOD
+//select * from user_org where status = 3 = EMPTY = GOOD
 
 // -- changelog-60
 
@@ -415,6 +416,7 @@ changeSet(author: "kloberd (modified)", id: "1569915031100-3") {
 /*select lic_ref from license where lic_ref is null;
 select pd_used_for_logic from property_definition where pd_used_for_logic is null;
 select * from user_org where status = 4;
+select * from user_org where status = 3;
 select lic_status_rv_fk from license where lic_status_rv_fk is null;
 select sub_status_rv_fk from subscription where sub_status_rv_fk is null;
 select sub_is_administrative from subscription where sub_is_administrative is null;
@@ -440,4 +442,12 @@ select ie_accept_status_rv_fk from issue_entitlement where ie_id IN (SELECT ie_i
 select das_is_hide from dashboard_due_date where das_is_hide IS NULL;
 select das_is_done from dashboard_due_date where das_is_done IS NULL;
 select surre_is_required from survey_result WHERE surre_is_required IS NULL;*/
+
+/*select ie_accept_status_rv_fk from issue_entitlement where ie_id IN (SELECT ie_id FROM issue_entitlement JOIN refdata_value rv ON issue_entitlement.ie_status_rv_fk = rv.rdv_id WHERE rdv_value != 'DELETED' LIMIT ALL);
+
+UPDATE issue_entitlement SET ie_accept_status_rv_fk = (SELECT rdv.rdv_id FROM refdata_value rdv
+JOIN refdata_category rdc ON rdv.rdv_owner = rdc.rdc_id
+WHERE rdv.rdv_value = 'Fixed' AND rdc.rdc_description = 'IE Accept Status') where
+ie_id IN (SELECT ie_id FROM issue_entitlement JOIN refdata_value rv ON issue_entitlement.ie_status_rv_fk = rv.rdv_id
+		WHERE rdv_value != 'DELETED' LIMIT ALL);*/
 
