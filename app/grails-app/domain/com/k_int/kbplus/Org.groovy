@@ -53,6 +53,7 @@ class Org
     Date dateCreated
     Date lastUpdated
     Org createdBy
+    Org legallyObligedBy
     String categoryId
 
     @RefdataAnnotation(cat = 'OrgSector')
@@ -145,6 +146,7 @@ class Org
        dateCreated          column:'org_date_created'
        lastUpdated          column:'org_last_updated'
         createdBy           column:'org_created_by_fk'
+        legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [
@@ -192,6 +194,7 @@ class Org
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
            createdBy(nullable:true, blank:true)
+    legallyObligedBy(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
              orgType(nullable:true, blank:true)
              gokbId (nullable:true, blank:true)
