@@ -39,11 +39,11 @@
                 </g:if>
                 <br>
                 <div class="la-icon-list">
-                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance }">
                         <div class="item">
                             <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                             <div class="content">
-                                ${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+                                ${tipp?.title?.volume}
                             </div>
                         </div>
                     </g:if>

@@ -152,6 +152,15 @@ class SubscriptionService {
         ies
     }
 
+    List getIssueEntitlementsNotFixed(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
+
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
@@ -729,20 +738,39 @@ class SubscriptionService {
                         throw new EntitlementCreationException(ieCoverage.getErrors())
                     }
                 }
-                if(withPriceData) {
-                    PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
-                            listPrice: issueEntitlementOverwrite.listPrice,
-                            listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency,'Currency'),
-                            localPrice: issueEntitlementOverwrite.localPrice,
-                            localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency,'Currency'),
-                            issueEntitlement: new_ie
-                    )
-                    pi.setGlobalUID()
-                    if(pi.save())
-                        return true
-                    else {
-                        throw new EntitlementCreationException(pi.errors)
+                if(withPriceData && issueEntitlementOverwrite) {
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite?.priceItem) {
+                        PriceItem pi = new PriceItem(priceDate: issueEntitlementOverwrite?.priceItem?.priceDate ?: null,
+                                listPrice: issueEntitlementOverwrite?.priceItem?.listPrice ?: null,
+                                listCurrency: issueEntitlementOverwrite?.priceItem?.listCurrency ?: null,
+                                localPrice: issueEntitlementOverwrite?.priceItem?.localPrice ?: null,
+                                localCurrency: issueEntitlementOverwrite?.priceItem?.localCurrency ?: null,
+                                issueEntitlement: new_ie
+                        )
+                        pi.setGlobalUID()
+                        if(pi.save())
+                            return true
+                        else {
+                            throw new EntitlementCreationException(pi.errors)
+                        }
+
+                    }else {
+
+                        PriceItem pi = new PriceItem(priceDate: escapeService.parseDate(issueEntitlementOverwrite.priceDate),
+                                listPrice: issueEntitlementOverwrite.listPrice,
+                                listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
+                                localPrice: issueEntitlementOverwrite.localPrice,
+                                localCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.localCurrency, 'Currency'),
+                                issueEntitlement: new_ie
+                        )
+                        pi.setGlobalUID()
+                        if(pi.save())
+                            return true
+                        else {
+                            throw new EntitlementCreationException(pi.errors)
+                        }
                     }
+
                 }
                 else return true
             } else {
