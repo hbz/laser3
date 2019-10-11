@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; com.k_int.kbplus.Org; com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.Task; org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 " %>
 <laser:serviceInjection />
 <% def start = System.currentTimeMillis() %>
@@ -71,10 +71,10 @@
                           name="license"
                           from="${validLicenses}"
                           optionKey="id"
+                          optionValue="${{it?.dropdownNamingConvention()}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown many-to-one"
+                          class="ui dropdown search many-to-one"
                           noSelection="[null: '']"/>
-                          %{--optionValue="${{it?.dropdownNamingConvention()}}"--}%
             </div>
 
             <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
@@ -89,7 +89,7 @@
                       from="${validOrgs}"
                       optionKey="id"
                       value="${ownobj?.id}"
-                      class="ui dropdown many-to-one"
+                      class="ui dropdown search many-to-one"
                       noSelection="[null: '']"/>
                       %{--optionValue="${{it?.dropdownNamingConvention(contextService?.org)}}"--}%
 
@@ -100,7 +100,7 @@
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.pkg.label" default="Pkg"/>
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
-                          class="ui dropdown many-to-one" noSelection="[null: '']"/>
+                          class="ui dropdown search many-to-one" noSelection="[null: '']"/>
             </div>
 
             <div id="subscriptiondiv"
@@ -108,23 +108,23 @@
                 <label for="subscription">
                     <g:message code="task.linkto" default="Task link to "/><g:message code="task.subscription.label" default="Subscription"/>
                 </label>
-                <g:select class="ui dropdown many-to-one"
+                %{--<g:set var="consortialLicense" value="${message('gasco.filter.consortialLicence')}" />--}%
+                <g:select class="ui dropdown search many-to-one"
                           id="subscription"
                           name="subscription"
-                          from="${validSubscriptions}"
-                          optionKey="id"
+                          from="${validSubscriptionDropdown}"
+                          optionValue="${{it ? (it[1]
+                                  + ((it[2]||it[3]) ? ' (' : ' ')
+                                  + (it[2] ? (it[2]?.format('dd.MM.yy')) : '')
+                                  +  '-'
+                                  + (it[3] ? (it[3]?.format('dd.MM.yy')) : '')
+                                  + ((it[2]||it[3]) ? ') ' : ' ')
+                                  + it[4]  ) : null}}"
+                          optionKey="${{it ? it[0] : null}}"
                           value="${ownobj?.id}"
                           noSelection="[null: '']"/>
-                          %{--optionValue="${{it?.dropdownNamingConvention(contextService.org)}}"--}%
-                %{--<g:select class="ui dropdown many-to-one"--}%
-                          %{--id="subscription"--}%
-                          %{--name="subscription"--}%
-                          %{--from="${validSubscriptionsList}"--}%
-                          %{--value="${ownobj?.id}"--}%
-                          %{--noSelection="[null: '']"/>--}%
-                          %{--optionKey="${it ? it[0] : null}"--}%
-                          %{--optionValue="${it ? it[1] : null}"--}%
 
+                          %{--optionValue="${{it ? (it[1] +  ' ' + (dateFormatter.format(new Date(((java.sql.Timestamp)it[2]).getTime()))) +  '-' + it[3] + it[4]  ) : null}}"--}%
             </div>
 
         </g:if>
@@ -141,7 +141,7 @@
                                   from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Task Status')}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: com.k_int.kbplus.RefdataValue.findByValueAndOwner("Open", com.k_int.kbplus.RefdataCategory.findByDesc('Task Status')).id}"
-                                  class="ui dropdown many-to-one"/>
+                                  class="ui dropdown search many-to-one"/>
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
@@ -184,7 +184,7 @@
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
-                              class="ui dropdown many-to-one"
+                              class="ui dropdown search many-to-one"
                               noSelection="['null': '']"/>
                 </div>
             </div>

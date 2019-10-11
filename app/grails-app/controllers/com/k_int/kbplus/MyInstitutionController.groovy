@@ -13,6 +13,7 @@ import de.laser.helper.*
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import groovy.sql.Sql
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
@@ -2275,13 +2276,9 @@ AND EXISTS (
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
         result.tasksCount    = result.tasks.size()
-//        def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
-//        result << preCon
-//        result.validSubscriptionsList = new ArrayList()
-//        result.validSubscriptions.each{
-//            result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
-//        }
+        def preCon      = taskService.getPreconditions(contextOrg)
+        result << preCon
 
 
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
@@ -2327,20 +2324,20 @@ AND EXISTS (
             response.sendError(401)
             return;
         }
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
 
         // tasks
 
-        def preCon      = taskService.getPreconditions(contextService.org)
+        def preCon      = taskService.getPreconditions(result.institution)
         result << preCon
+
 //        result.validSubscriptionsList = new ArrayList()
-//        result.validSubscriptions.each{
-//            result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.org)])
+//        result.validSubscriptionIds.each{
+//            result.validSubscriptionsList.add([it, Subscription.dropdownNamingConvention(it, sdf)])
 //        }
 //        result
         render template: '/templates/tasks/modal_create', model: result
-//        render template: '/templates/properties/propertyGroupModal', model: result
-
-
     }
 
     private getTodoForInst(result, Integer periodInDays){

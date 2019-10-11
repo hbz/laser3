@@ -371,7 +371,7 @@
         </div>
     </g:if>
 --}%
-        %{--<g:render template="/templates/tasks/modal_create" />--}%
+        <g:render template="/templates/tasks/modal_create" />
     <% def ende = System.currentTimeMillis()
     def dauer = ende-start
     %>

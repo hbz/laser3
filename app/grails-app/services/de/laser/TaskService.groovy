@@ -4,6 +4,8 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import grails.transaction.Transactional
+import org.springframework.context.i18n.LocaleContextHolder
+
 import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_LICENSES_QUERY
 import static com.k_int.kbplus.MyInstitutionController.INSTITUTIONAL_SUBSCRIPTION_QUERY
 
@@ -256,7 +258,11 @@ class TaskService {
                 ],
                 'activeInst': contextOrg
             ]
-            result.validSubscriptions = Subscription.executeQuery("select s " + INSTITUTIONAL_SUBSCRIPTION_QUERY + ' order by lower(s.name)', qry_params_for_sub)//, maxOffset)
+            String i10value = LocaleContextHolder.getLocale().getLanguage()== Locale.GERMAN.getLanguage() ? 'valueDe' : 'valueEn'
+
+            result.validSubscriptionDropdown = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, i10."+i10value+", s.instanceOf from Subscription s,  I10nTranslation i10 where s.status.id = i10.referenceId and ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) )  and i10.referenceField=:referenceField order by lower(s.name), s.endDate", qry_params_for_sub << [referenceField: 'value'])
+
+
         } else { // TODO: admin and datamanager without contextOrg possible ?
             result.validLicenses      = License.list()
             result.validSubscriptions = Subscription.list()

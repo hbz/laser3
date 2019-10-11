@@ -12,6 +12,7 @@ import de.laser.interfaces.*
 import de.laser.traits.AuditableTrait
 import de.laser.traits.ShareableTrait
 import grails.util.Holders
+import org.apache.lucene.index.DocIDMerger
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.TransientDataAccessResourceException
 
@@ -815,6 +816,51 @@ class Subscription
 
            return name + ' - ' + statusString + ' ' +period
        }
+  }
+  static dropdownNamingConvention(long subId, SimpleDateFormat sdf){
+       def list = Subscription.executeQuery('select name from Subscription where id = :subId', [subId: subId])
+      def sub = list[0]
+      def name = sub[1]
+//      def instanceOf = sub[2]
+      print name
+//      def startDate = sub[3]
+//      def endDate = sub[4]
+//      def status = sub[5]
+//       String period = startDate ? sdf.format(startDate)  : ''
+//
+//       period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
+//
+//       period = period ? '('+period+')' : ''
+//
+//       String statusString = status ? status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
+
+//       if(instanceOf) {
+//           def additionalInfo
+//           Map<Long,Org> orgRelationsMap = [:]
+//           orgRelations.each { or ->
+//               orgRelationsMap.put(or.roleType.id,or.org)
+//           }
+//           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
+//               if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
+//                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname
+//               else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))
+//                   additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
+//           }
+//           else if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_COLLECTIVE.id)?.id == contextOrg.id) {
+//               additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_COLLECTIVE.id)?.sortname
+//           }
+//           else{
+//               additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+//           }
+//
+//
+//           return name + ' - ' + statusString + ' ' +period + ' - ' + additionalInfo
+//
+//       } else {
+
+//           return name + ' - ' + statusString + ' ' +period
+//       }
+      return '...'
   }
 
     def dropdownNamingConventionWithoutOrg() {
