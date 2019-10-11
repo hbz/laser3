@@ -53,7 +53,7 @@ class Doc {
           filename column:'doc_filename'
            content column:'doc_content', type:'text'
        blobContent column:'doc_blob_content'
-          mimeType column:'doc_mimeType'
+          mimeType column:'doc_mime_type'
               user column:'doc_user_fk'
              owner column:'doc_owner_fk'
   }
