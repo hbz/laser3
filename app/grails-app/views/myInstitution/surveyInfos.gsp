@@ -340,7 +340,13 @@ ${message(code: 'subscriptionSurvey.label')} - ${surveyInfo.name}
 
 </g:if>
 <g:if test="${editable}">
-    <g:link class="ui button green" controller="myInstitution" action="surveyInfoFinish" id="${surveyInfo.id}" params="[subscriptionSurvey: true]">
+    <g:link class="ui button green js-open-confirm-modal"
+            data-confirm-term-what="survey"
+            data-confirm-term-how="concludeBinding"
+            controller="myInstitution"
+            action="surveyInfoFinish"
+            id="${surveyInfo.id}"
+            params="[subscriptionSurvey: true]">
         <g:message code="surveyResult.finish.info2"/>
     </g:link>
 </g:if>

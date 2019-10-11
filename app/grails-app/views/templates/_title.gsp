@@ -3,7 +3,7 @@
     <div class="item">
       <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
       <div class="content">
-        ${message(code: 'title.volume.label')} ${item?.tipp?.title?.volume}
+         ${item?.tipp?.title?.volume}
       </div>
     </div>
   </g:if>

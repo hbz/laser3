@@ -48,7 +48,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
             <p>
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="renewEntitlementsWithSurvey.finish.info" />.
+                <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
             </p>
         </div>
     </div>
@@ -280,8 +280,37 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                 </div>
             </div>
 
+            <div class="ui card la-time-card">
+                <div class="content">
+                    <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
+                </div>
+
+                <div class="content">
+                    <dl>
+                        <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
+                        <dd>${ies?.size() ?: 0}</dd>
+                    </dl>
+                    <dl>
+                        <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
+                        <dd><g:formatNumber number="${iesListPriceSum}" type="currency"/></dd>
+                    </dl>
+                </div>
+
+                <div class="content">
+                    <div class="ui la-vertical buttons">
+                        <g:link controller="subscription" action="showEntitlementsRenewWithSurvey"
+                                id="${surveyConfig?.id}"
+                                class="ui button">
+                            <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
+                        </g:link>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
+
 
     <aside class="four wide column la-sidekick">
         <div id="container-documents">
@@ -295,8 +324,12 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
             <div class="eight wide field" style="text-align: left;">
                 <g:if test="${subscriptionInstance && editable}">
-                    <g:link class="ui button green" controller="myInstitution" action="surveyInfoFinish"
-                            id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig?.id, issueEntitlementsSurvey: true]">
+                    <g:link class="ui button green js-open-confirm-modal"
+                            data-confirm-term-what="renewalEntitlements"
+                            data-confirm-term-how="concludeBinding"
+                            controller="myInstitution" action="surveyInfoFinish"
+                            id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig?.id, issueEntitlementsSurvey: true]">
                         <g:message code="renewEntitlementsWithSurvey.submit"/>
                     </g:link>
                 </g:if>

@@ -29,11 +29,11 @@
                          data-confirm-term-how="ok"
                          action="index"
                          id="${params.id}"
-                         params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBart Export
+                         params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBART Export
                 </g:link>
             </g:if>
             <g:else>
-                <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBart Export</g:link>
+                <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">

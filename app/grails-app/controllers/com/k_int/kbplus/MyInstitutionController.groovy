@@ -2689,6 +2689,12 @@ AND EXISTS (
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.iesListPriceSum = 0
+        result.ies?.each{
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
+        }
+
         result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
 
         result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
@@ -2711,57 +2717,6 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
-    })
-    def surveyFinishConfig() {
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
-
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
-
-        def allResultHaveValue = true
-        surveyResults.each {
-            def value = null
-            if (it?.type?.type == Integer.toString()) {
-                value = it.intValue.toString()
-            } else if (it?.type?.type == String.toString()) {
-                value = it.stringValue ?: ''
-            } else if (it?.type?.type == BigDecimal.toString()) {
-                value = it.decValue.toString()
-            } else if (it?.type?.type == Date.toString()) {
-                value = it.dateValue.toString()
-            } else if (it?.type?.type == RefdataValue.toString()) {
-                value = it.refValue?.getI10n('value') ?: ''
-            }
-
-            if(value == null || value == "")
-            {
-                allResultHaveValue = false
-            }
-
-        }
-        if(allResultHaveValue) {
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save(flush: true)
-            }
-            flash.message = message(code: "surveyResult.finish.info")
-        }else {
-            flash.error = message(code: "surveyResult.finish.info")
-        }
-
-        redirect(url: request.getHeader('referer'))
-    }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -2783,23 +2738,30 @@ AND EXISTS (
 
             def surveyConfig = SurveyConfig.get(params.surveyConfigID)
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
-                if(surveyOrg && surveyConfig) {
+
+            def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+            ies.each { ie ->
+                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                ie.save(flush: true)
+            }
+
+            if(ies.size() > 0) {
+
+                if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
                     if (!surveyOrg.save(flush: true)) {
                         flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                     } else {
                         flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
 
-                        def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-                        ies.each { ie ->
-                            ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                            ie.save(flush: true)
-                        }
+
                     }
-                }
-                else {
+                } else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
                 }
+            }else {
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
+            }
         }
         if(params.subscriptionSurvey){
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
