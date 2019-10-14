@@ -313,6 +313,7 @@ r2d2 = {
 
         // modals
         $(ctxSel + " *[data-semui='modal']").click(function() {
+            var triggerElement = $(this)
             var href = $(this).attr('data-href')
             if (! href) {
                 href = $(this).attr('href')
@@ -328,6 +329,13 @@ r2d2 = {
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;
+                },
+                onShow : function() {
+                    var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
+                    if ($.isFunction(modalCallbackFunction)) {
+                        //console.log('found modalCallbackFunction: ' + modalCallbackFunction);
+                        modalCallbackFunction(triggerElement)
+                    }
                 }
             }).modal('show')
         });
@@ -920,12 +928,18 @@ bb8 = {
     }
 }
 
-$(document).ready(function() {
+// used as storage for dynamic callbacks
 
+dcbStore = {
+    modal : {
+        show : {
+        }
+    }
+}
+
+$(document).ready(function() {
     r2d2.go();
     bb8.go();
     tooltip.go();
-
-
 })
 

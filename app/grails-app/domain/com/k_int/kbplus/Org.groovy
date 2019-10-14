@@ -259,6 +259,32 @@ class Org
         result
     }
 
+    /*
+	    gets OrgSettings
+	    creating new one (with value) if not existing
+     */
+    def getSetting(OrgSettings.KEYS key, def defaultValue) {
+        def os = OrgSettings.get(this, key)
+        (os == OrgSettings.SETTING_NOT_FOUND) ? OrgSettings.add(this, key, defaultValue) : os
+    }
+
+    /*
+        gets VALUE of OrgSettings
+        creating new OrgSettings (with value) if not existing
+     */
+    def getSettingsValue(OrgSettings.KEYS key, def defaultValue) {
+        def setting = getSetting(key, defaultValue)
+        setting.getValue()
+    }
+
+    /*
+        gets VALUE of OrgSettings
+        creating new OrgSettings if not existing
+     */
+    def getSettingsValue(OrgSettings.KEYS key) {
+        getSettingsValue(key, null)
+    }
+
     @Override
     def beforeUpdate() {
         if ( !shortcode ) {

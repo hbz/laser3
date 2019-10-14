@@ -367,7 +367,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance = new Org(name: params.institution, sector: orgSector)
+                    orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg)
                     orgInstance.save()
 
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
@@ -395,7 +395,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance = new Org(name: params.department, sector: orgSector)
+                    deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg)
                     deptInstance.save()
 
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)

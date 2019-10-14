@@ -1348,10 +1348,24 @@ class AdminController extends AbstractDebugController {
           target.lastUpdated = new Date()
           target.save(flush:true)
         }
+		else if (params.cmd == 'changeLegalInformation') {
+		  Org target = genericOIDService.resolveOID(params.target)
+
+		  if (target) {
+			  target.createdBy = Org.get(params.createdBy)
+			  target.legallyObligedBy = Org.get(params.legallyObligedBy)
+		  }
+		  target.lastUpdated = new Date()
+		  target.save(flush:true)
+	    }
 
         def fsq = filterService.getOrgQuery(params)
         result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.orgListTotal = result.orgList.size()
+
+		result.allConsortia = Org.executeQuery(
+                "select o from OrgSettings os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority in ('ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY')"
+        ).toSorted()
 
         result
     }
