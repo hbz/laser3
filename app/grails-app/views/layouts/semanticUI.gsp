@@ -376,6 +376,7 @@
                                     <g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
                                     <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
                                     <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
+                                    <g:link class="item" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</g:link>
                                     <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                                 </div>
                             </div>

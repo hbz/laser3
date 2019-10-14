@@ -49,8 +49,43 @@ class AdminController extends AbstractDebugController {
   def ESSearchService
   def apiService
 
-  @Secured(['ROLE_ADMIN'])
-  def index() { }
+    @Secured(['ROLE_ADMIN'])
+    def index() { }
+
+
+    @Secured(['ROLE_ADMIN'])
+    def manageDeletedObjects() {
+        Map<String, Object> result = [:]
+        result.stats = [:]
+
+        List<String> jobList = [
+              'DocContext',
+              ['GlobalRecordInfo', 'globalRecordInfoStatus'],
+              'IssueEntitlement',
+              'License',
+              'Org',
+              ['Package', 'packageStatus'],
+              'Platform',
+              'Subscription',
+              'TitleInstance',
+              'TitleInstancePackagePlatform',
+              'Combo',
+              'Doc'
+        ]
+        result.jobList = jobList
+
+        jobList.each { job ->
+            if (job instanceof String) {
+                log.info('processing: ' + job)
+                result.stats."${job}" = Org.executeQuery("select count(obj) from ${job} obj join obj.status s where lower(s.value) like 'deleted'")
+            }
+            else {
+              log.info('processing: ' + job[0])
+                result.stats."${job[0]}" = Org.executeQuery("select count(obj) from ${job[0]} obj join obj.${job[1]} s where lower(s.value) like 'deleted'")
+            }
+        }
+        result
+    }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
     @Secured(closure = {
@@ -58,8 +93,8 @@ class AdminController extends AbstractDebugController {
             ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
     })
     def manageAffiliationRequests() {
+        Map<String, Object> result = [:]
 
-        def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         result << organisationService.getPendingRequests(result.user, contextService.getOrg())
 
@@ -122,7 +157,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def hardDeletePkgs(){
-    def result = [:]
+      Map<String, Object> result = [:]
     //If we make a search while paginating return to start
     if(params.search == "yes"){
         params.offset = 0
