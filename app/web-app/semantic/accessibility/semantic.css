@@ -15794,6 +15794,15 @@ a.ui.basic.label:hover {
   top: -22px;
 }
 
+.ui.modal > .content.la-twoSided-ribbon {
+  padding: 0 1.5rem 0 1.5rem;
+}
+
+.finance_index .ui.right.ribbon.label {
+  left: calc(104.2%);
+  top: -22px;
+}
+
 .ui.card .ui.label {
   margin: 0;
   background-color: #d3dae3;
