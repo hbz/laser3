@@ -38,12 +38,12 @@
                         data-confirm-term-content="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
                         params="${params + [exportKBart: true]}">
-                    KBart Export
+                    KBART Export
                 </g:link>
             </g:if>
             <g:else>
                 <g:link class="item" action="currentTitles"
-                        params="${params + [exportKBart: true]}">KBart Export</g:link>
+                        params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">

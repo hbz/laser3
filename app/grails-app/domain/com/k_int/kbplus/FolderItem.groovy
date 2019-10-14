@@ -16,8 +16,8 @@ class FolderItem {
             version column:'fi_version'
                user column:'fi_owner_id'
       referencedOid column:'fi_ref_oid'
-      dateCreated column: 'fi_dateCreated'
-      lastUpdated column: 'fi_lastUpdated'
+      dateCreated column: 'fi_date_created'
+      lastUpdated column: 'fi_last_updated'
       //folder column: 'fi_userfolder_fk'
   }
 

@@ -71,7 +71,7 @@ class User {
     }
 
     /*
-        gets UserSetting
+        gets UserSettings
         creating new one (with value) if not existing
      */
     def getSetting(UserSettings.KEYS key, def defaultValue) {
