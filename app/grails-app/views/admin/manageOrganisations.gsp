@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -40,6 +40,7 @@
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>
+                <th><%--${message(code:'org.legalInformation.label')}--%></th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
@@ -81,7 +82,6 @@
                             def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSettings.SETTING_NOT_FOUND) {
                                 println customerType.getRoleValue()?.getI10n('authority')
-                                //customerType = "${customerType.getRoleValue().class.name}:${customerType.getRoleValue().id}"
                                 customerType = customerType.getRoleValue().id
                             }
                             else {
@@ -120,6 +120,28 @@
                             }
                         %>
                     </td>
+
+                    <td>
+                        <g:if test="${org.createdBy && org.legallyObligedBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
+                                <i class="ui icon green check circle"></i>
+                            </span>
+                        </g:if>
+                        <g:elseif test="${org.createdBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
+                                <i class="ui icon grey outline circle"></i>
+                            </span>
+                        </g:elseif>
+                        <g:elseif test="${org.legallyObligedBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
+                                <i class="ui icon grey circle"></i>
+                            </span>
+                        </g:elseif>
+                    </td>
+
                     <td>
                         <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
 
@@ -167,7 +189,6 @@
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
-                        <%-- data-customerType="${customerType.class.name}:${customerType.id}" --%>
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                 data-alTarget="${Org.class.name}:${org.id}"
                                 data-apiLevel="${apiLevel}"
