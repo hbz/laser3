@@ -2506,8 +2506,8 @@ AND EXISTS (
     })
     def subscriptionImport() {
         def result = setResultGenerics()
-        result.mappingCols = ["name","owner","status","type","form","resource","startDate","endDate","instanceOf",
-                              "manualCancellationDate","member","customProperties","privateProperties"]
+        result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
+                              "manualCancellationDate","member","customProperties","privateProperties","notes"]
         result
     }
 
@@ -2670,11 +2670,11 @@ AND EXISTS (
         result
     }
 
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
     })
-    def surveyFinishConfig() {
+    def surveyInfosIssueEntitlements() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -2686,41 +2686,37 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, SurveyConfig.get(params.surveyConfigID))
+        result.surveyConfig = SurveyConfig.get(params.id)
+        result.surveyInfo = result.surveyConfig.surveyInfo
 
-        def allResultHaveValue = true
-        surveyResults.each {
-            def value = null
-            if (it?.type?.type == Integer.toString()) {
-                value = it.intValue.toString()
-            } else if (it?.type?.type == String.toString()) {
-                value = it.stringValue ?: ''
-            } else if (it?.type?.type == BigDecimal.toString()) {
-                value = it.decValue.toString()
-            } else if (it?.type?.type == Date.toString()) {
-                value = it.dateValue.toString()
-            } else if (it?.type?.type == RefdataValue.toString()) {
-                value = it.refValue?.getI10n('value') ?: ''
-            }
-
-            if(value == null || value == "")
-            {
-                allResultHaveValue = false
-            }
-
-        }
-        if(allResultHaveValue) {
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save(flush: true)
-            }
-            flash.message = message(code: "surveyResult.finish.info")
-        }else {
-            flash.error = message(code: "surveyResult.finish.info")
+        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+        result.iesListPriceSum = 0
+        result.ies?.each{
+            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it?.priceItem?.listPrice ? it?.priceItem?.listPrice : 0) : 0)
         }
 
-        redirect(url: request.getHeader('referer'))
+        result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
+
+        result.subscriptionInstance = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
+
+        if(result.subscriptionInstance) {
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance?.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        }
+
+        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+
+        result
     }
+
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
@@ -2738,22 +2734,53 @@ AND EXISTS (
             redirect(url: request.getHeader('referer'))
         }
 
-        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+        if(params.surveyConfigID && params.issueEntitlementsSurvey){
 
-        boolean allResultHaveValue = true
-        surveyResults.each { surre ->
-            SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig,result.institution)
-            if(!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
-                allResultHaveValue = false
-        }
-        if(allResultHaveValue) {
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save()
+            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
+
+            def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+            ies.each { ie ->
+                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                ie.save(flush: true)
             }
-            // flash.message = message(code: "surveyResult.finish.info")
-        }else {
-            flash.error = message(code: "surveyResult.finish.error")
+
+            if(ies.size() > 0) {
+
+                if (surveyOrg && surveyConfig) {
+                    surveyOrg.finishDate = new Date()
+                    if (!surveyOrg.save(flush: true)) {
+                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                    } else {
+                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+
+
+                    }
+                } else {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                }
+            }else {
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
+            }
+        }
+        if(params.subscriptionSurvey){
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(result.institution, SurveyInfo.get(params.id).surveyConfigs)
+
+            boolean allResultHaveValue = true
+            surveyResults.each { surre ->
+                SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
+                if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                    allResultHaveValue = false
+            }
+            if (allResultHaveValue) {
+                surveyResults.each {
+                    it.finishDate = new Date()
+                    it.save()
+                }
+                // flash.message = message(code: "surveyResult.finish.info")
+            } else {
+                flash.error = message(code: "surveyResult.finish.error")
+            }
         }
 
         redirect(url: request.getHeader('referer'))
@@ -3309,6 +3336,12 @@ AND EXISTS (
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
+        }
+
+        if (params.identifier?.length() > 0) {
+            query += " and exists (select io from IdentifierOccurrence io join io.org ioorg join io.identifier ioid " +
+                    " where ioorg = roleT.org and LOWER(ioid.value) like LOWER(:identifier)) "
+            qarams.put('identifier', "%${params.identifier}%")
         }
 
         if (params.validOn?.size() > 0) {

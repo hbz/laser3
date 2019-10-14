@@ -1510,6 +1510,28 @@ class SurveyController {
             redirect action: 'show', id: params.id
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def processEndSurvey() {
+        def result = setResultGenericsAndCheckAccess()
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if (result.editable) {
+
+            result.surveyInfo.status = RDStore.SURVEY_SURVEY_COMPLETED
+            result.surveyInfo.save(flush: true)
+            flash.message = g.message(code: "endSurvey.successfully")
+        }
+
+        redirect action: 'show', id: params.id
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
@@ -1823,47 +1845,58 @@ class SurveyController {
         }
 
         def lateCommersProperty = PropertyDefinition.findByName("Späteinsteiger")
-        def selecetedParticipantIDs = []
+        def currentParticipantIDs = []
         result.orgsWithMultiYearTermSub = []
         result.orgsLateCommers = []
+        def orgsWithMultiYearTermOrgsID = []
+        def orgsLateCommersOrgsID = []
         result.parentSubChilds?.each { sub ->
-            if (sub?.getCalculatedSuccessor())
+            if (sub?.isCurrentMultiYearSubscription())
             {
                 result.orgsWithMultiYearTermSub << sub
+                sub?.getAllSubscribers()?.each { org ->
+                    orgsWithMultiYearTermOrgsID << org?.id
+                }
             }
             else if (lateCommersProperty && lateCommersProperty?.type == 'class com.k_int.kbplus.RefdataValue') {
                 def subProp = sub?.customProperties?.find { it?.type?.id == lateCommersProperty?.id }
                 if(subProp?.refValue == RefdataValue.getByValueAndCategory('Yes', lateCommersProperty?.refdataCategory))
                 {
                     result.orgsLateCommers << sub
+                    sub?.getAllSubscribers()?.each { org ->
+                        orgsLateCommersOrgsID << org?.id
+                    }
+
                 } else
                 {
                     sub?.getAllSubscribers()?.each { org ->
-                        selecetedParticipantIDs << org?.id
+                        currentParticipantIDs << org?.id
                     }
                 }
             }
             else
             {
                 sub?.getAllSubscribers()?.each { org ->
-                    selecetedParticipantIDs << org?.id
+                    currentParticipantIDs << org?.id
                 }
             }
         }
+
+
         result.orgsWithParticipationInParentSuccessor = []
         result.parentSuccessorSubChilds?.each { sub ->
             sub?.getAllSubscribers()?.each { org ->
-                if(! (org?.id in selecetedParticipantIDs)) {
+                if(! (org?.id in currentParticipantIDs)) {
                     result.orgsWithParticipationInParentSuccessor  << sub
                 }
             }
         }
 
         result.orgsWithTermination = []
-            if(selecetedParticipantIDs) {
+
             //Orgs with termination there sub
-            SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
-                    [participant: selecetedParticipantIDs,
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
+                    [
                      owner      : result.institution?.id,
                      surProperty: result.participationProperty?.id,
                      surConfig  : result.surveyConfig?.id,
@@ -1883,14 +1916,14 @@ class SurveyController {
                 result.orgsWithTermination << newSurveyResult
 
             }
-        }
+
 
         // Orgs that renew or new to Sub
         result.orgsContinuetoSubscription = []
         result.newOrgsContinuetoSubscription = []
-        if(selecetedParticipantIDs) {
-            SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
-                    [participant: selecetedParticipantIDs,
+
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+                    [
                      owner      : result.institution?.id,
                      surProperty: result.participationProperty?.id,
                      surConfig  : result.surveyConfig?.id,
@@ -1903,7 +1936,7 @@ class SurveyController {
                     it?.type?.getI10n('name')
                 }
 
-                if (it?.participant?.id in selecetedParticipantIDs) {
+                if (it?.participant?.id in currentParticipantIDs) {
 
                     newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : result.parentSubscription,
@@ -1917,10 +1950,13 @@ class SurveyController {
                         newSurveyResult.newSubPeriodTwoStartDate = null
                         newSurveyResult.newSubPeriodTwoEndDate = null
 
-                        if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                        if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 2.year) : null
+                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo?.comment
                             }
                         }
 
@@ -1929,26 +1965,33 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeStartDate = null
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
-                        if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub?.startDate ? (newSurveyResult.sub?.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub?.endDate ? (newSurveyResult.sub?.endDate + 3.year) : null
+                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree?.comment
                             }
                         }
                     }
 
                     result.orgsContinuetoSubscription << newSurveyResult
-                } else {
+                }
+                if (!(it?.participant?.id in currentParticipantIDs) && !(it?.participant?.id in orgsLateCommersOrgsID) && !(it?.participant?.id in orgsWithMultiYearTermOrgsID)) {
+
 
                     if (result.multiYearTermTwoSurvey) {
 
                         newSurveyResult.newSubPeriodTwoStartDate = null
                         newSurveyResult.newSubPeriodTwoEndDate = null
 
-                        if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        def participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+
+                        if (participantPropertyTwo?.refValue?.id == RDStore.YN_YES?.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 2.year) : null
+                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo?.comment
                             }
                         }
 
@@ -1957,10 +2000,12 @@ class SurveyController {
                         newSurveyResult.newSubPeriodThreeStartDate = null
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
-                        if (SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)?.refValue?.id == RDStore.YN_YES?.id) {
+                        def participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it?.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        if (participantPropertyThree?.refValue?.id == RDStore.YN_YES?.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription?.startDate ? (result.parentSubscription?.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription?.endDate ? (result.parentSubscription?.endDate + 3.year) : null
+                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree?.comment
                             }
                         }
                     }
@@ -1970,13 +2015,13 @@ class SurveyController {
 
 
             }
-        }
+
 
         //Orgs without really result
         result.orgsWithoutResult = []
-        if(selecetedParticipantIDs) {
-            SurveyResult.executeQuery("from SurveyResult where participant.id in (:participant) and owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
-                    [participant: selecetedParticipantIDs,
+
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
+                    [
                      owner      : result.institution?.id,
                      surProperty: result.participationProperty?.id,
                      surConfig  : result.surveyConfig?.id])?.each {
@@ -1988,7 +2033,7 @@ class SurveyController {
                     it?.type?.getI10n('name')
                 }
 
-                if (it?.participant?.id in selecetedParticipantIDs) {
+                if (it?.participant?.id in currentParticipantIDs) {
                     newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                             [parentSub  : result.parentSubscription,
                              participant: it?.participant
@@ -1999,7 +2044,6 @@ class SurveyController {
                 }
                 result.orgsWithoutResult << newSurveyResult
             }
-        }
 
 
         //MultiYearTerm Subs
@@ -2012,7 +2056,7 @@ class SurveyController {
 
             def removeSurveyResultOfOrg = []
             result.orgsWithoutResult?.each { surveyResult ->
-                if (surveyResult?.participant?.id in selecetedParticipantIDs && surveyResult?.sub) {
+                if (surveyResult?.participant?.id in currentParticipantIDs && surveyResult?.sub) {
 
                     if (property?.type == 'class com.k_int.kbplus.RefdataValue') {
                         if (surveyResult?.sub?.customProperties?.find {
@@ -2905,7 +2949,14 @@ class SurveyController {
             return
         }
 
-        def orgs = com.k_int.kbplus.Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()
+        def orgs = []
+        def currentMembersSubs = subscriptionService.getCurrentValidSubChilds(surveyConfig.subscription)
+
+        currentMembersSubs.each{ sub ->
+            sub?.getAllSubscribers()?.each { org ->
+                orgs << org
+            }
+        }
 
         if (orgs) {
 
@@ -2919,7 +2970,7 @@ class SurveyController {
                         def subChild = sub?.getDerivedSubscriptionBySubscribers(org)
                         def property = PropertyDefinition.findByName("Mehrjahreslaufzeit ausgewählt")
 
-                        if (subChild?.getCalculatedSuccessor()) {
+                        if (subChild?.isCurrentMultiYearSubscription()) {
                             existsMultiYearTerm = true
                         }
 
@@ -3114,6 +3165,11 @@ class SurveyController {
 
         titles << g.message(code: 'renewalwithSurvey.period')
 
+        if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+        {
+            titles << g.message(code: 'renewalwithSurvey.periodComment')
+        }
+
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
             titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalwithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
@@ -3149,6 +3205,14 @@ class SurveyController {
             }
 
             row.add([field: period ?: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey) {
+                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+            }
+
+            if (renewalResult?.multiYearTermThreeSurvey) {
+                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
+            }
 
             participantResult?.properties.sort { it?.type?.name }.each { participantResultProperty ->
                 row.add([field: participantResultProperty?.getResult() ?: "", style: null])
@@ -3192,6 +3256,12 @@ class SurveyController {
                 period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
+
             }
 
 
@@ -3222,6 +3292,11 @@ class SurveyController {
                 period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
             }
 
 
@@ -3252,6 +3327,11 @@ class SurveyController {
                 period = sub?.endDate ? period + " - " +sdf.format(sub?.endDate) : ""
 
                 row.add([field: period?: '', style: null])
+
+                if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+                {
+                    row.add([field: '', style: null])
+                }
             }
 
 
@@ -3286,6 +3366,14 @@ class SurveyController {
                 period = period + " - " + participantResult?.newSubPeriodThreeEndDate ?: ""
             }
             row.add([field: period ?: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey) {
+                row.add([field: participantResult?.participantPropertyTwoComment ?: '', style: null])
+            }
+
+            if (renewalResult?.multiYearTermThreeSurvey) {
+                row.add([field: participantResult?.participantPropertyThreeComment ?: '', style: null])
+            }
 
             participantResult?.properties.sort {
                 it?.type?.name
@@ -3322,6 +3410,11 @@ class SurveyController {
             row.add([field: participantResult?.resultOfParticipation?.comment ?: '', style: null])
 
             row.add([field: '', style: null])
+
+            if (renewalResult?.multiYearTermTwoSurvey || renewalResult?.multiYearTermThreeSurvey)
+            {
+                row.add([field: '', style: null])
+            }
 
             participantResult?.properties.sort {
                 it?.type?.name

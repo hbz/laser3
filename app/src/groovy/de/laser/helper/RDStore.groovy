@@ -56,6 +56,9 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
     static final SUBSCRIPTION_NO_STATUS     = getRefdataValue('Status not defined', 'Subscription Status')
 
+    static final SUBSCRIPTION_INTENDED_PERENNIAL = getRefdataValue('IntendedPerennial', 'Subscription Status')
+    static final SUBSCRIPTION_EXPIRED_PERENNIAL = getRefdataValue('ExpiredPerennial', 'Subscription Status')
+
     static final SURVEY_READY               = getRefdataValue('Ready', 'Survey Status')
     static final SURVEY_IN_PROCESSING       = getRefdataValue('In Processing', 'Survey Status')
     static final SURVEY_IN_EVALUATION       = getRefdataValue('In Evaluation', 'Survey Status')

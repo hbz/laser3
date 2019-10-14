@@ -3,7 +3,7 @@
     <div class="item">
       <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
       <div class="content">
-        ${message(code: 'title.volume.label')} ${item?.tipp?.title?.volume}
+         ${item?.tipp?.title?.volume}
       </div>
     </div>
   </g:if>
@@ -114,7 +114,7 @@
     <g:if test="${item?.tipp?.gokbId}">
       <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
        data-content="${message(code: 'gokb')}"
-       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + item?.tipp?.gokbId : '#'}"
+       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + item?.tipp?.gokbId : '#'}"
        target="_blank"><i class="la-gokb  icon"></i>
       </a>
     </g:if>

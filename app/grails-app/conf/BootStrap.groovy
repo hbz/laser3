@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
@@ -21,6 +22,7 @@ class BootStrap {
     def sessionFactory
     def organisationService
     def dataSource
+    def userService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -51,9 +53,6 @@ class BootStrap {
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
 
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
-
-        def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
-        def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
         // Reset harddata flag for given refdata and properties
 
@@ -204,6 +203,12 @@ class BootStrap {
                 }
             }
         }
+        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_DEV) { //include SEVER_LOCAL and remove 'else' when testing locally
+            log.debug("DEV environment, lookup or create set of user accounts ...")
+            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+            if(hbz)
+                userService.setupAdminAccounts([konsortium:hbz])
+        }
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -245,6 +250,9 @@ class BootStrap {
 
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
+
+        log.debug("createPlatformProperties ..")
+        createPlatformProperties()
 
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
@@ -1249,6 +1257,95 @@ class BootStrap {
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
+    }
+
+    def createPlatformProperties(){
+
+        def allDescr = [en: PropertyDefinition.PLA_PROP, de: PropertyDefinition.PLA_PROP]
+
+        def requiredPlatformProperties = [
+            [
+                name: [key: "Access Method: IPv4: Supported", en: "IPv4: Supported", de: "IPv4: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: IPv6: Supported", en: "IPv6: Supported", de: "IPv6: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Proxy: Supported", en: "Proxy: Supported", de: "Proxy: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Shibboleth: Supported", en: "Shibboleth: Supported", de: "Shibboleth: Unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Access Method: Shibboleth: SP entityID", en: "Shibboleth: SP entityID", de: "Shibboleth: SP entityID"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.String, multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R3: Reports supported", en: "COUNTER R3: Reports supported", de: "COUNTER R3: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: Reports supported", en: "COUNTER R4: Reports supported", de: "COUNTER R4: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: COUNTER_SUSHI API supported", en: "COUNTER R4: COUNTER_SUSHI API supported", de: "COUNTER R4: COUNTER_SUSHI API unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: SUSHI Server URL", en: "COUNTER R4: SUSHI Server URL", de: "COUNTER R4: SUSHI Server URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R4: Usage Statistics URL", en: "COUNTER R4: Usage Statistics URL", de: "COUNTER R4: Webzugang Statistik"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: Reports supported", en: "COUNTER R5: Reports supported", de: "COUNTER R5: Reports unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: COUNTER_SUSHI API supported", en: "COUNTER R5: COUNTER_SUSHI API supported", de: "COUNTER R5: COUNTER_SUSHI API unterstützt"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.Rdv, cat:'YN', multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: SUSHI Server URL", en: "COUNTER R5: SUSHI Server URL", de: "COUNTER R5: SUSHI Server URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER R5: Usage Statistics URL", en: "COUNTER R5: Usage Statistics URL", de: "COUNTER R5: Webzugang Statistik"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+            [
+                name: [key: "Usage Reporting: NatStat Supplier ID", en: "NatStat Supplier ID", de: "NatStat Anbietername"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.String, multiple: false, isUsedForLogic: true
+            ],
+            [
+                name: [key: "Usage Reporting: COUNTER Registry URL", en: "COUNTER Registry URL", de: "COUNTER Registry URL"],
+                expl: [en: "", de: ""],
+                descr:allDescr, type: OT.URL, multiple: false, isUsedForLogic: false
+            ],
+        ]
+        createPropertyDefinitionsWithI10nTranslations(requiredPlatformProperties)
     }
 
     def createSubscriptionProperties() {

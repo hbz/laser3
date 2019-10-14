@@ -26,6 +26,9 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     // if manual ordering is wanted
     Long order
 
+    Date dateCreated
+    Date lastUpdated
+
     static belongsTo = [
         owner:RefdataCategory
     ]
@@ -40,6 +43,9 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
               isHardData column: 'rdv_is_hard_data'
               order    column: 'rdv_order'
 
+        dateCreated column: 'rdv_date_created'
+        lastUpdated column: 'rdv_last_updated'
+
     }
 
     static constraints = {
@@ -47,6 +53,10 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
         group    (nullable:true,  blank:false)
         isHardData (nullable:false, blank:false, default:false)
         order    (nullable:true,  blank: false)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     /**

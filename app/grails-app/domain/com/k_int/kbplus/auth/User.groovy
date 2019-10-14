@@ -20,8 +20,6 @@ class User {
   String password
   String email
   String shibbScope
-  String apikey
-  String apisecret
   Date dateCreated
   Date lastUpdated
 
@@ -42,8 +40,6 @@ class User {
     display blank: true, nullable: true
     email blank: true, nullable: true
     shibbScope blank: true, nullable: true
-    apikey blank: true, nullable: true
-    apisecret blank: true, nullable: true
   }
 
   static mapping = {
@@ -75,7 +71,7 @@ class User {
     }
 
     /*
-        gets UserSetting
+        gets UserSettings
         creating new one (with value) if not existing
      */
     def getSetting(UserSettings.KEYS key, def defaultValue) {

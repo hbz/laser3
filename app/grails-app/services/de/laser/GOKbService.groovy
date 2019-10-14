@@ -79,7 +79,7 @@ class GOKbService {
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
-
+                    pkg.editUrl = apiSource.editUrl
 
                     if(r.uuid && r.uuid != "null") {
                         result.records << pkg
@@ -140,7 +140,7 @@ class GOKbService {
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
-
+                    pkg.editUrl = apiSource.editUrl
 
                     if(r.uuid && r.uuid != "null") {
                         result.records << pkg

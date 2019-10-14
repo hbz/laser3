@@ -637,6 +637,8 @@ class FinanceService {
         List<String> rows = tsvFile.getInputStream().text.split('\n')
         Map<String,Integer> colMap = [:]
         rows[0].split('\t').eachWithIndex { String headerCol, int c ->
+            if(headerCol.startsWith("\uFEFF"))
+                headerCol = headerCol.substring(1)
             switch(headerCol.toLowerCase().trim()) {
                 case "bezeichnung":
                 case "title": colMap.title = c
@@ -727,6 +729,7 @@ class FinanceService {
                 'eissn':IdentifierNamespace.findByNs('eissn')
         ]
         rows.eachWithIndex { row, Integer r ->
+            log.debug("now processing entry ${r}")
             Map mappingErrorBag = [:]
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...
@@ -1022,12 +1025,14 @@ class FinanceService {
             }
             //financialYear(nullable: true, blank: false) -> to financial year
             if(colMap.financialYear != null) {
-                try {
-                    Year financialYear = Year.parse(cols[colMap.financialYear])
-                    costItem.financialYear = financialYear
-                }
-                catch(Exception e) {
-                    mappingErrorBag.invalidYearFormat = true
+                if(cols[colMap.financialYear])  {
+                    try {
+                        Year financialYear = Year.parse(cols[colMap.financialYear])
+                        costItem.financialYear = financialYear
+                    }
+                    catch(Exception e) {
+                        mappingErrorBag.invalidYearFormat = true
+                    }
                 }
             }
             //costItemStatus(nullable: true, blank: false) -> to status

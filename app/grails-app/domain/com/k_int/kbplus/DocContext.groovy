@@ -34,6 +34,9 @@ class DocContext implements ShareableTrait {
     DocContext sharedFrom
     Boolean isShared
 
+    Date dateCreated
+    Date lastUpdated
+
   // We may attach a note to a particular column, in which case, we set domain here as a discriminator
   String domain
 
@@ -54,6 +57,10 @@ class DocContext implements ShareableTrait {
         shareConf column:'dc_share_conf_fk'
         targetOrg column:'dc_target_org_fk'
      surveyConfig column: 'dc_survey_config_fk'
+
+      dateCreated column: 'dc_date_created'
+      lastUpdated column: 'dc_last_updated'
+
   }
 
   static constraints = {
@@ -71,6 +78,10 @@ class DocContext implements ShareableTrait {
       shareConf(nullable: true,blank: false)
       targetOrg(nullable: true, blank: false)
       surveyConfig (nullable: true,blank: false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
     void afterUpdate(PostUpdateEvent event) {

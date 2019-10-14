@@ -378,10 +378,11 @@ class ApiReaderHelper {
                 }
             }
 
-            // use all custom properties as fallback if no group found
-            if (! groups.fallback) {
-                list = tmp.unique()
+            if (groups.orphanedProperties) {
+                tmp.addAll(groups.orphanedProperties)
             }
+
+            list = tmp.unique()
         }
 
         list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty

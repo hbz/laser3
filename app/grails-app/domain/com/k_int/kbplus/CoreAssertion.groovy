@@ -5,6 +5,9 @@ class CoreAssertion {
   Date startDate
   Date endDate
 
+  Date dateCreated
+  Date lastUpdated
+
   static belongsTo = [ tiinp : TitleInstitutionProvider ]
 
   static mapping = {
@@ -13,6 +16,10 @@ class CoreAssertion {
     startDate column:'ca_start_date'
     endDate column:'ca_end_date'
     version column:'ca_ver'
+
+    dateCreated column: 'ca_date_created'
+    lastUpdated column: 'ca_last_updated'
+
   }
 
   static constraints = {
@@ -29,6 +36,11 @@ class CoreAssertion {
         if(val < obj.startDate) return false;
       }
     }
+
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
+
   }
 
   @Override

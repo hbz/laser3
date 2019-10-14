@@ -2490,7 +2490,7 @@ class OrganisationService {
                 //log.error(e.getStackTrace())
             }
         }
-        if(currentServer in [ContextService.SERVER_QA,ContextService.SERVER_LOCAL]) { //take out server local when pushing code
+        if(currentServer == ContextService.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          institut: [name:'Musterinstitut',orgType: [department]],
                                          singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],

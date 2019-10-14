@@ -528,7 +528,7 @@ class FinanceController extends AbstractDebugController {
                 titles.addAll([message(code: 'financials.taxRate'), message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
-                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number'), message(code: 'globalUID.label')])
             titles.eachWithIndex { titleName, int i ->
                 Cell cell = headerRow.createCell(i)
                 cell.setCellValue(titleName)
@@ -728,6 +728,9 @@ class FinanceController extends AbstractDebugController {
                     //order number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+                    //globalUUID
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.globalUID ?: '')
                     rownum++
                 }
                 rownum++
@@ -1181,29 +1184,31 @@ class FinanceController extends AbstractDebugController {
                     flash.error += costItem.getErrors()
                 }
                 else {
-                    String[] budgetCodeKeys
-                    Pattern p = Pattern.compile('.*[,;].*')
-                    String code = budgetCodes.get(c)
-                    Matcher m = p.matcher(code)
-                    if(m.find())
-                        budgetCodeKeys = code.split('[,;]')
-                    else
-                        budgetCodeKeys = [code]
-                    budgetCodeKeys.each { k ->
-                        String bck = k.trim()
-                        BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
-                        if(!bc) {
-                            bc = new BudgetCode(owner: contextOrg, value: bck)
-                        }
-                        if(!bc.save()) {
-                            withErrors = true
-                            flash.error += bc.getErrors()
-                        }
-                        else {
-                            CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
-                            if(!cig.save()) {
+                    if(budgetCodes) {
+                        String[] budgetCodeKeys
+                        Pattern p = Pattern.compile('.*[,;].*')
+                        String code = budgetCodes.get(c)
+                        Matcher m = p.matcher(code)
+                        if(m.find())
+                            budgetCodeKeys = code.split('[,;]')
+                        else
+                            budgetCodeKeys = [code]
+                        budgetCodeKeys.each { k ->
+                            String bck = k.trim()
+                            BudgetCode bc = BudgetCode.findByOwnerAndValue(contextOrg,bck)
+                            if(!bc) {
+                                bc = new BudgetCode(owner: contextOrg, value: bck)
+                            }
+                            if(!bc.save()) {
                                 withErrors = true
-                                flash.error += cig.getErrors()
+                                flash.error += bc.getErrors()
+                            }
+                            else {
+                                CostItemGroup cig = new CostItemGroup(costItem: costItem, budgetCode: bc)
+                                if(!cig.save()) {
+                                    withErrors = true
+                                    flash.error += cig.getErrors()
+                                }
                             }
                         }
                     }

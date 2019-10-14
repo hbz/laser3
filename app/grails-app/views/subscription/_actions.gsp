@@ -29,11 +29,11 @@
                          data-confirm-term-how="ok"
                          action="index"
                          id="${params.id}"
-                         params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBart Export
+                         params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBART Export
                 </g:link>
             </g:if>
             <g:else>
-                <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBart Export</g:link>
+                <g:link class="item" action="index" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBART Export</g:link>
             </g:else>
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
@@ -81,7 +81,12 @@
 
         <g:if test="${editable}">
             <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-            <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+            <g:if test="${subscriptionInstance.packages}">
+                <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+            </g:if>
+            <g:else>
+                <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
+            </g:else>
         </g:if>
 
         <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>

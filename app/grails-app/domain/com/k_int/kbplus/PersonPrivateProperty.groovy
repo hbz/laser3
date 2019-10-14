@@ -10,6 +10,9 @@ class PersonPrivateProperty extends PrivateProperty {
     PropertyDefinition type
     Person owner
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         includes AbstractProperty.mapping
 
@@ -17,6 +20,10 @@ class PersonPrivateProperty extends PrivateProperty {
         version column:'ppp_version'
         type    column:'ppp_type_fk'
         owner   column:'ppp_owner_fk', index:'ppp_owner_idx'
+        
+        dateCreated column: 'ppp_date_created'
+        lastUpdated column: 'ppp_last_updated'
+        
     }
 
     static constraints = {
@@ -24,6 +31,10 @@ class PersonPrivateProperty extends PrivateProperty {
 
         type    (nullable:false, blank:false)
         owner   (nullable:false, blank:false)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static belongsTo = [

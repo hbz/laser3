@@ -16,6 +16,9 @@ class Address {
     String pobZipcode
     String pobCity
 
+    Date dateCreated
+    Date lastUpdated
+
     @RefdataAnnotation(cat = 'Federal State')
     RefdataValue state
 
@@ -50,6 +53,10 @@ class Address {
         type     column:'adr_type_rv_fk'
         prs      column:'adr_prs_fk', index: 'adr_prs_idx'
         org      column:'adr_org_fk', index: 'adr_org_idx'
+
+        lastUpdated     column: 'adr_last_updated'
+        dateCreated     column: 'adr_date_created'
+
     }
     
     static constraints = {
@@ -68,6 +75,10 @@ class Address {
         type     (nullable:false)
         prs      (nullable:true)
         org      (nullable:true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
     
     static getAllRefdataValues() {

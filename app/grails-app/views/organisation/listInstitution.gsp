@@ -5,7 +5,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.add_consortia_members')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.public.all_insts')}</title>
     </head>
     <body>
 
@@ -36,7 +36,7 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier'], ['federalState', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
@@ -48,7 +48,7 @@
                       consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'consortia',
+                              'sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'legalInformation', 'consortia',
                               (editable ? 'consortiaToggle' : '')
                       ]
               ]"/>

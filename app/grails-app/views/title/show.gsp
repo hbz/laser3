@@ -40,24 +40,82 @@
 
         <div class="ui grid">
 
-            <div class="twelve wide column">
+            <div class="sixteen wide column">
 
-                  <div class="item"><b><g:message code="title.type.label"/>:</b> ${ti.type.getI10n('value')}</div>
+                <semui:form>
+                <div class="la-icon-list">
+                    <div class="item">
+                        <semui:listIcon type="${ti?.type?.value}"/>
+                        <div class="content">
+                            ${ti.type.getI10n('value')}
+                        </div>
+                    </div>
+                    <g:if test="${ti instanceof com.k_int.kbplus.BookInstance && (ti?.firstAuthor || ti?.firstEditor)}">
+                        <div class="item">
+                            <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
+                            <div class="content">
+                                ${ti?.getEbookFirstAutorOrFirstEditor()}
+                            </div>
+                        </div>
+                    </g:if>
 
-                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
-                    <div class="item"><b><g:message code="title.firstAuthor.label"/>:</b> ${ti?.firstAuthor}</div>
-                    <div class="item"><b><g:message code="title.firstEditor.label"/>:</b> ${ti?.firstEditor}</div>
-                    <div class="item"><b><g:message code="title.editionNumber.label"/>:</b> ${ti?.editionNumber}</div>
-                    <div class="item"><b><g:message code="title.editionStatement.label"/>:</b> ${ti?.editionStatement}</div>
-                    <div class="item"><b><g:message code="title.volume.label"/>:</b> ${ti?.volume}</div>
-                    <div class="item"> ${tipp?.title?.summaryOfContent}</div>
-                    <div class="item"><b><g:message code="title.dateFirstInPrint.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
-                    <div class="item"><b><g:message code="title.dateFirstOnline.label"/>:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
-                </g:if>
+                    <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
+                        <div class="item">
+                            <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+                            <div class="content">
+                                 ${ti?.volume})
+                            </div>
+                        </div>
 
-                <div class="item"><b><g:message code="default.status.label"/>:</b> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></div>
+                        <div class="item">
+                            <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
+                            <div class="content">
+                                ${ti?.editionStatement}
+                            </div>
+                        </div>
 
+                        <div class="item">
+                            <i class="grey icon copy outline la-popup-tooltip la-delay" data-content="${message(code: 'title.editionNumber.label')}"></i>
+                            <div class="content">
+                                ${ti?.editionNumber}
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+                            <div class="content">
+                                ${ti?.summaryOfContent}
+                            </div>
+                        </div>
+
+                        <div class="item">
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                        <div class="content">
+                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                  date="${tipp?.title?.dateFirstInPrint}"/>
+                        </div>
+                        </div>
+                        <div class="item">
+                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                        <div class="content"><g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                              date="${tipp?.title?.dateFirstOnline}"/>
+                        </div>
+                        </div>
+                    </g:if>
+
+                    <div class="item">
+                        <i class="grey clipboard check clip icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
+                        <div class="content">
+                            ${ti.status.getI10n("value")}
+                        </div>
+                    </div>
+
+                </div>
+                </semui:form>
             </div><!-- .twelve -->
+        </div>
 
             <div class="twelve wide column">
 
@@ -408,7 +466,7 @@
                           <g:if test="${t?.gokbId}">
                               <a class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                  data-content="${message(code: 'gokb')}"
-                                 href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"
+                                 href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"
                                  target="_blank"><i class="la-gokb  icon"></i>
                               </a>
                           </g:if>

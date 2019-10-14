@@ -110,7 +110,7 @@ class CostItem
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
-        subPkg          column: 'ci_subPkg_fk'
+        subPkg          column: 'ci_sub_pkg_fk'
         issueEntitlement    column: 'ci_e_fk'
         surveyOrg       column: 'ci_surorg_fk'
         order           column: 'ci_ord_fk'

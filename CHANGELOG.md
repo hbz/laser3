@@ -1,6 +1,6 @@
-1.1
+1.0.2
 
-- TODO
+1.0.1
 
 1.0
 
@@ -8,7 +8,7 @@
 
 0.20.7
 
--hotfix: show latecomers on renewal for survey
+- hotfix: show latecomers on renewal for survey
 
 0.20.6
 

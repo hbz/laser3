@@ -191,7 +191,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
             <strong><g:link controller="title" action="show"
                             id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
 
-            <g:if test="${tipp?.title instanceof BookInstance && tipp?.title?.volume}">
+            <g:if test="${tipp?.title instanceof BookInstance }">
                 (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
             </g:if>
 
@@ -207,7 +207,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
                     var="gokbAPI">
                 <g:if test="${tipp?.gokbId}">
                     <a target="_blank"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"><i
+                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                 </g:if>
             </g:each>

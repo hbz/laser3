@@ -371,7 +371,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                    orgInstance = new Org(name: params.institution, sector: orgSector)
+                    orgInstance = new Org(name: params.institution, sector: orgSector, createdBy: contextOrg)
                     orgInstance.save()
 
                     Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:COMBO_TYPE_CONSORTIUM)
@@ -399,7 +399,7 @@ class OrganisationController extends AbstractDebugController {
 
             try {
                 if(accessService.checkPerm("ORG_INST_COLLECTIVE")) {
-                    deptInstance = new Org(name: params.department, sector: orgSector)
+                    deptInstance = new Org(name: params.department, sector: orgSector, createdBy: contextOrg)
                     deptInstance.save()
 
                     Combo newMember = new Combo(fromOrg:deptInstance,toOrg:contextOrg,type:COMBO_TYPE_DEPARTMENT)
@@ -635,17 +635,21 @@ class OrganisationController extends AbstractDebugController {
         }
 
         if (result.orgInstance.createdBy) {
-			if (Combo.findByFromOrgAndToOrg(result.orgInstance, result.orgInstance.createdBy)) {
-
-				result.createdByOrg = result.orgInstance.createdBy
-
-				result.createdByGeneralContacts = PersonRole.executeQuery(
-						"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
-								"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
-						[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
-				)
-			}
+			result.createdByOrg = result.orgInstance.createdBy
+			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
+					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+					[org: result.createdByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+			)
         }
+		if (result.orgInstance.legallyObligedBy) {
+			result.legallyObligedByOrg = result.orgInstance.legallyObligedBy
+			result.legallyObligedByOrgGeneralContacts = PersonRole.executeQuery(
+					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
+							"where oo = :org and pr.functionType = :ft and prs.isPublic = true",
+					[org: result.legallyObligedByOrg, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+			)
+		}
 
         result
     }

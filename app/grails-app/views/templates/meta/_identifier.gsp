@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.License; de.laser.helper.RDStore; com.k_int.kbplus.Package" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <aside class="ui segment metaboxContent accordion">
@@ -34,16 +34,16 @@
                         <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                                 var="gokbAPI">
                             <g:if test="${object?.gokbId}">
-                                <g:if test="${object instanceof com.k_int.kbplus.Package}">
+                                <g:if test="${object instanceof Package}">
                                     <a target="_blank"
-                                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                                </g:if><g:else>
-                                <a target="_blank"
-                                   href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + object?.gokbId : '#'}"><i
-                                        title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                            </g:else>
-
+                                </g:if>
+                                <g:else>
+                                    <a target="_blank"
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + object?.gokbId : '#'}"><i
+                                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                                </g:else>
                             </g:if>
                         </g:each>
                     </dd>

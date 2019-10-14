@@ -3,25 +3,25 @@
 *******************************/
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Regular.woff') format('woff');
+    src: url('../assets/fonts/LatoLatin-Regular.woff') format('woff');
     font-style: normal;
     font-weight: 400;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Bold.woff') format('woff');
+    src: url('../assets/fonts/LatoLatin-Bold.woff') format('woff');
     font-style: normal;
     font-weight: 700;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-Italic.woff') format('woff');
+    src: url('../assets/fonts/LatoLatin-Italic.woff') format('woff');
     font-style: italic;
     font-weight: 400;
 }
 @font-face {
     font-family: 'Lato';
-    src: url('../../themes/laser/assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
+    src: url('../assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
     font-style: italic;
     font-weight: 700;
 }
@@ -130,7 +130,7 @@ aside.ui.accordion .title:not(.ui) {
             h2{
                 color: white!important;
             }
-            background-image: url('../images/landingpage/hero.jpg') !important;
+            background-image: url('../../images/landingpage/hero.jpg') !important;
             background-repeat: no-repeat !important;
             background-position: top center !important;
             background-color: #447294;
@@ -454,4 +454,14 @@ aside.ui.accordion .title:not(.ui) {
 }
 .js-gost {
     display: none;
+}
+// most important object in table
+a{
+    &.la-main-object {
+        color: #183551;
+
+    }
+}
+.la-main-object {
+    font-weight: bold;
 }

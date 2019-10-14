@@ -555,37 +555,53 @@ ${orgInstance.name} - ${message(code:'profile.errorOverview.label')}</h1>
                     </div>
                 </div><!-- .card -->
 
-                <g:if test="${createdByOrg && createdByGeneralContacts}">
-                    <div class="ui card">
-                        <div class="content">
-                            <dl>
-                              <dt>
-                                    <g:if test="${createdByOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
-                                        <g:message code="org.prsLinks.consortia.label" default="Konsortialkontakt"/>
-                                    </g:if>
-                                    <g:elseif test="${createdByOrg.getCustomerType() in ['ORG_INST_COLLECTIVE']}">
-                                        <g:message code="org.prsLinks.collective.label" default="Einrichtungskontakt"/>
-                                    </g:elseif>
-                                    <g:else>
-                                        ?
-                                    </g:else>
-                                </dt>
-                                <dd>
-                                    <g:each in="${createdByGeneralContacts}" var="cbgc">
-                                        <g:render template="/templates/cpa/person_full_details" model="${[
-                                                person              : cbgc,
-                                                personContext       : createdByOrg,
-                                                tmplShowFunctions       : true,
-                                                tmplShowPositions       : true,
-                                                tmplShowResponsiblities : true,
-                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
-                                                editable            : false
-                                        ]}"/>
-                                    </g:each>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div><!-- .card -->
+                <g:if test="${contextService.getUser().isAdmin() || contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_SURVEY']}">
+                    <g:if test="${createdByOrgGeneralContacts || legallyObligedByOrgGeneralContacts}">
+                        <div class="ui card">
+                            <div class="content">
+                                <g:if test="${createdByOrgGeneralContacts}">
+                                    <dl>
+                                        <dt>
+                                            <g:message code="org.createdBy.label" default="createdBy"/>
+                                        </dt>
+                                        <dd>
+                                            <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : cbogc,
+                                                        personContext       : createdByOrg,
+                                                        tmplShowFunctions       : true,
+                                                        tmplShowPositions       : true,
+                                                        tmplShowResponsiblities : true,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        editable            : false
+                                                ]}"/>
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </g:if>
+                                <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                    <dl>
+                                        <dt>
+                                            <g:message code="org.legallyObligedBy.label" default="legallyObligedBy"/>
+                                        </dt>
+                                        <dd>
+                                            <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                                <g:render template="/templates/cpa/person_full_details" model="${[
+                                                        person              : lobogc,
+                                                        personContext       : legallyObligedByOrg,
+                                                        tmplShowFunctions       : true,
+                                                        tmplShowPositions       : true,
+                                                        tmplShowResponsiblities : true,
+                                                        tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                        editable            : false
+                                                ]}"/>
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </g:if>
+                            </div>
+                        </div><!-- .card -->
+                    </g:if>
                 </g:if>
 
             </g:if>

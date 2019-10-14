@@ -16,9 +16,9 @@ class SystemMessage {
 
         org column: 'sm_org_fk'
         text column: 'sm_text'
-        showNow column: 'sm_showNow'
-        dateCreated column: 'sm_dateCreated'
-        lastUpdated column: 'sm_lastUpdated'
+        showNow column: 'sm_show_now'
+        dateCreated column: 'sm_date_created'
+        lastUpdated column: 'sm_last_updated'
     }
 
     static constraints = {

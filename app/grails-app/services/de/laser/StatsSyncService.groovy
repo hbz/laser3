@@ -541,7 +541,7 @@ class StatsSyncService {
             instances.each {
                 def metric = it.MetricType.text()
                 if (isAllowedMetric(metric)) {
-                    def usage = it.Count.text()
+                    def usage = it.Count.text().toInteger()
                     if (!map[begin][metric]){
                         map[begin][metric] = usage
                     } else {

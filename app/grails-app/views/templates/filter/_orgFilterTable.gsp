@@ -76,6 +76,9 @@
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+            <th><%--${message(code: 'org.legalInformation.label')}--%></th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('country')}">
             <th>${message(code: 'org.country.label')}</th>
         </g:if>
@@ -398,6 +401,28 @@
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <td>${org.libraryType?.getI10n('value')}</td>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('legalInformation')}">
+            <td>
+                <g:if test="${org.createdBy && org.legallyObligedBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
+                        <i class="ui icon green check circle"></i>
+                    </span>
+                </g:if>
+                <g:elseif test="${org.createdBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
+                        <i class="ui icon grey outline circle"></i>
+                    </span>
+                </g:elseif>
+                <g:elseif test="${org.legallyObligedBy}">
+                    <span class="la-popup-tooltip la-delay" data-position="top right"
+                          data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
+                        <i class="ui icon grey circle"></i>
+                    </span>
+                </g:elseif>
+            </td>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('country')}">
             <td>${org.country?.getI10n('value')}</td>
         </g:if>
@@ -447,7 +472,7 @@
             <td>
                 <g:if test="${existSubforOrg}">
 
-                    <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -463,7 +488,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStartEndDate')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                    <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                    <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
@@ -481,7 +506,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubInfoStatus')}">
             <td>
                 <g:if test="${existSubforOrg}">
-                        <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                        <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                         </g:if>
                         <g:else>
@@ -497,7 +522,7 @@
         <g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
             <td class="center aligned x">
 
-            <g:if test="${orgSub?.getCalculatedSuccessor()}">
+            <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                 <g:message code="surveyOrg.perennialTerm.available"/>
             </g:if>
             <g:else>
@@ -524,7 +549,7 @@
         <g:if test="${tmplConfigShow?.contains('surveyCostItem')}">
             <td class="x">
 
-                <g:if test="${orgSub?.getCalculatedSuccessor()}">
+                <g:if test="${orgSub?.isCurrentMultiYearSubscription()}">
                     <g:message code="surveyOrg.perennialTerm.available"/>
                 </g:if>
             <g:else>

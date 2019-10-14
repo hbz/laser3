@@ -27,14 +27,24 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
     Subscription owner
     SubscriptionCustomProperty instanceOf
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
         includes    AbstractProperty.mapping
         owner       index:'scp_owner_idx'
+
+        dateCreated column: 'scp_date_created'
+        lastUpdated column: 'scp_last_updated'
     }
 
     static constraints = {
         importFrom  AbstractProperty
         instanceOf (nullable: true)
+
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true, blank: false)
+        dateCreated (nullable: true, blank: false)
     }
 
     static belongsTo = [

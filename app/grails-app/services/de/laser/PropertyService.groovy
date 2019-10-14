@@ -4,6 +4,8 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.LicenseCustomProperty
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.Platform
+import com.k_int.kbplus.PlatformCustomProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.SubscriptionCustomProperty
@@ -69,7 +71,7 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
-                            base_qry += " and genfunc_filter_matcher(gProp.stringValue, :prop) = true ) "
+                            base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
                             base_qry_params.put('prop', "%${AbstractProperty.parseValue(params.filterProp, pd.type)}%")
                         }
                         break
@@ -202,6 +204,9 @@ class PropertyService {
                 break
             case Org.class.simpleName:
                 result = OrgCustomProperty.findAllByIdInList(orphanedIds)
+                break
+            case Platform.class.simpleName:
+                result = PlatformCustomProperty.findAllByIdInList(orphanedIds)
                 break
         }
 

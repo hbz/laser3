@@ -22,6 +22,9 @@ class OnixplLicense implements Permissions {
   Date lastmod;
   String title;
 
+  Date dateCreated
+  Date lastUpdated
+
   // An ONIX-PL license relates to a a doc
   Doc doc;
 
@@ -67,12 +70,19 @@ class OnixplLicense implements Permissions {
     doc column: 'opl_doc_fk'
     lastmod column: 'opl_lastmod'
     title column: 'opl_title'
+
+    dateCreated column: 'opl_date_created'
+    lastUpdated column: 'opl_last_updated'
   }
 
   static constraints = {
     doc(nullable: false, blank: false)
     lastmod(nullable: true, blank: true)
     title(nullable: false, blank: false)
+
+    // Nullable is true, because values are already in the database
+    lastUpdated (nullable: true, blank: false)
+    dateCreated (nullable: true, blank: false)
   }
 
   boolean isEditableBy(user) {

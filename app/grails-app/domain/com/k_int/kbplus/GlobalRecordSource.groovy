@@ -10,12 +10,16 @@ class GlobalRecordSource {
   String type
   Date haveUpTo
   String uri
+  String editUri
   String listPrefix
   String fullPrefix
   String principal
   String credentials
   Long rectype
   Boolean active
+
+  Date dateCreated
+  Date lastUpdated
 
   static mapping = {
                    id column:'grs_id'
@@ -24,6 +28,7 @@ class GlobalRecordSource {
                  name column:'grs_name', type:'text'
              haveUpTo column:'grs_have_up_to'
                   uri column:'grs_uri'
+              editUri column:'grs_edit_uri'
            fullPrefix column:'grs_full_prefix'
            listPrefix column:'grs_list_prefix'
                  type column:'grs_type'
@@ -31,6 +36,9 @@ class GlobalRecordSource {
           credentials column:'grs_creds'
               rectype column:'grs_rectype'
                active column:'grs_active'
+
+        dateCreated column: 'grs_date_created'
+      lastUpdated   column: 'grs_last_updated'
   }
 
   static constraints = {
@@ -38,12 +46,17 @@ class GlobalRecordSource {
            name(nullable:true, blank:false, maxSize:2048)
        haveUpTo(nullable:true, blank:false)
             uri(nullable:true, blank:false)
+        editUri(nullable:true, blank:false)
            type(nullable:true, blank:false)
      fullPrefix(nullable:true, blank:false)
      listPrefix(nullable:true, blank:false)
       principal(nullable:true, blank:false)
     credentials(nullable:true, blank:false)
          active(nullable:true, blank:false)
+
+      // Nullable is true, because values are already in the database
+      lastUpdated (nullable: true, blank: false)
+      dateCreated (nullable: true, blank: false)
   }
 
   @Transient
@@ -51,6 +64,12 @@ class GlobalRecordSource {
     // For now, assume type=gokb - and trim off the oai/packages
     def result = uri.replaceAll('oai.*','');
     result
+  }
+
+  @Transient
+  def getBaseEditUrl() {
+      def result = editUri.replaceAll('oai.*','')
+      result
   }
 
   @Transient
