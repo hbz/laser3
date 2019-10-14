@@ -528,7 +528,7 @@ class FinanceController extends AbstractDebugController {
                 titles.addAll([message(code: 'financials.taxRate'), message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
-                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number'), message(code: 'globalUID.label')])
             titles.eachWithIndex { titleName, int i ->
                 Cell cell = headerRow.createCell(i)
                 cell.setCellValue(titleName)
@@ -728,6 +728,9 @@ class FinanceController extends AbstractDebugController {
                     //order number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+                    //globalUUID
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.globalUID ?: '')
                     rownum++
                 }
                 rownum++
