@@ -34,18 +34,24 @@
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem?.globalUID}">
         <g:if test="${costItem?.isVisibleForSubscriber && tab == "cons"}">
-            <div class="ui orange ribbon label">
-                <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+            <div class="content la-twoSided-ribbon">
+                <div class="ui orange ribbon label">
+                    <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+                </div>
             </div>
         </g:if>
         <g:elseif test="${fromConsortia}">
-            <div class="ui blue ribbon label">
-                <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+            <div class="content la-twoSided-ribbon">
+                <div class="ui blue ribbon label">
+                    <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+                </div>
             </div>
         </g:elseif>
-        <div class="ui right ribbon label">
-                <strong>${message(code:'globalUID.label')}: ${costItem?.globalUID}</strong>
-        </div>
+            <div class="content la-twoSided-ribbon">
+                <div class="ui orange right ribbon label">
+                    <strong>${message(code:'globalUID.label')}: ${costItem?.globalUID}</strong>
+                </div>
+            </div>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:hiddenField name="showView" value="${tab}" />
