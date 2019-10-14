@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; com.k_int.kbplus.auth.Role; com.k_int.kbplus.OrgSettings; de.laser.helper.RDStore; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <!doctype html>
 
@@ -40,6 +40,7 @@
                 <th>${message(code: 'org.type.label', default: 'Type')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>${message(code:'org.apiLevel.label')}</th>
+                <th><%--${message(code:'org.legalInformation.label')}--%></th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
                 <th class="la-action-info">${message(code:'default.actions')}</th>
             </tr>
@@ -80,12 +81,19 @@
                         <%
                             def customerType = OrgSettings.get(org, OrgSettings.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSettings.SETTING_NOT_FOUND) {
-                                println customerType.getValue()?.getI10n('authority')
+                                println customerType.getRoleValue()?.getI10n('authority')
+                                customerType = customerType.getRoleValue().id
+                            }
+                            else {
+                                customerType = null
                             }
 
                             def gascoEntry = OrgSettings.get(org, OrgSettings.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSettings.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
                                 println '<i class="icon green globe"></i>'
+                                gascoEntry = gascoEntry.getValue()
+                            } else {
+                                gascoEntry = RDStore.YN_NO
                             }
                         %>
                     </td>
@@ -95,23 +103,45 @@
                             def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
                             if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
                                 println '<div>' + apiLevel.getValue() + '</div>'
+                                apiLevel = apiLevel.getValue()
+                            }
+                            else {
+                                apiLevel = 'Kein Zugriff'
                             }
 
                             def accessStatistics = OrgSettings.get(org, OrgSettings.KEYS.NATSTAT_SERVER_ACCESS)
-                            if (accessStatistics != OrgSettings.SETTING_NOT_FOUND) {
-                                if (accessStatistics.getValue()?.value == 'Yes') {
-                                    println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
-                                }
+                            if (accessStatistics != OrgSettings.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
+                                println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
                             }
 
                             def accessOA = OrgSettings.get(org, OrgSettings.KEYS.OAMONITOR_SERVER_ACCESS)
-                            if (accessOA!= OrgSettings.SETTING_NOT_FOUND) {
-                                if (accessOA.getValue()?.value == 'Yes') {
-                                    println '<div><i class="ui icon lock open"></i> OAMontior</div>'
-                                }
+                            if (accessOA!= OrgSettings.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
+                                println '<div><i class="ui icon lock open"></i> OAMontior</div>'
                             }
                         %>
                     </td>
+
+                    <td>
+                        <g:if test="${org.createdBy && org.legallyObligedBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
+                                <i class="ui icon green check circle"></i>
+                            </span>
+                        </g:if>
+                        <g:elseif test="${org.createdBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
+                                <i class="ui icon grey outline circle"></i>
+                            </span>
+                        </g:elseif>
+                        <g:elseif test="${org.legallyObligedBy}">
+                            <span class="la-popup-tooltip la-delay" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
+                                <i class="ui icon grey circle"></i>
+                            </span>
+                        </g:elseif>
+                    </td>
+
                     <td>
                         <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
 
@@ -132,19 +162,39 @@
                     <td class="x">
                         <g:if test="${org.hasPerm('org_consortium')}">
                             <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                    data-gascoTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
-                                    data-semui="modal" data-href="#gascoEntryModal"
+                                    data-gascoTarget="${Org.class.name}:${org.id}"
+                                    data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
+                                    data-orgName="${org.name}"
+                                    data-semui="modal"
+                                    data-href="#gascoEntryModal"
                                     data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
                         </g:if>
 
+                        <g:if test="${org.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE']}">
+                            <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                                    data-liTarget="${Org.class.name}:${org.id}"
+                                    data-createdBy="${org.createdBy?.id}"
+                                    data-legallyObligedBy="${org.legallyObligedBy?.id}"
+                                    data-orgName="${org.name}"
+                                    data-semui="modal"
+                                    data-href="#legalInformationModal"
+                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="handshake outline icon"></i></button>
+                        </g:if>
+
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                data-ctTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
-                                data-semui="modal" data-href="#customerTypeModal"
+                                data-ctTarget="${Org.class.name}:${org.id}"
+                                data-customerType="${customerType}"
+                                data-orgName="${org.name}"
+                                data-semui="modal"
+                                data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
                         <button type="button" class="ui icon button la-popup-tooltip la-delay"
-                                data-alTarget="${Org.class.name}:${org.id}" data-orgName="${org.name}"
-                                data-semui="modal" data-href="#apiLevelModal"
+                                data-alTarget="${Org.class.name}:${org.id}"
+                                data-apiLevel="${apiLevel}"
+                                data-orgName="${org.name}"
+                                data-semui="modal"
+                                data-href="#apiLevelModal"
                                 data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
                     </td>
                 </tr>
@@ -177,11 +227,68 @@
         </g:form>
 
         <r:script>
-            $('button[data-gascoTarget]').on('click', function(){
+            dcbStore.modal.show.gascoEntryModal = function(trigger) {
+                $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
+                $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
+                $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
+            }
+        </r:script>
 
-                $('#gascoEntryModal #orgName_gasco').attr('value', $(this).attr('data-orgName'))
-                $('#gascoEntryModal input[name=target]').attr('value', $(this).attr('data-gascoTarget'))
-            })
+    </semui:modal>
+
+    <%-- changing legal information --%>
+
+    <semui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
+
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="changeLegalInformation"/>
+            <input type="hidden" name="target" value="" />
+
+            <div class="field">
+                <label for="orgName_li">${message(code:'org.label')}</label>
+                <input type="text" id="orgName_li" name="orgName" value="" readonly />
+            </div>
+
+            <div class="field">
+                <label for="createdBy">${message(code:'org.createdBy.label')}</label>
+                <g:select id="createdBy" name="createdBy"
+                              from="${allConsortia}"
+                              optionKey="id"
+                              optionValue="name"
+                              class="ui dropdown search"
+                />
+            </div>
+
+            <div class="field">
+                <label for="legallyObligedBy">${message(code:'org.legallyObligedBy.label')}</label>
+                <g:select id="legallyObligedBy" name="legallyObligedBy"
+                              from="${allConsortia}"
+                              optionKey="id"
+                              optionValue="name"
+                              value=""
+                              class="ui dropdown search"
+                />
+            </div>
+        </g:form>
+
+        <r:script>
+            dcbStore.modal.show.legalInformationModal = function(trigger) {
+                $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
+                $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
+
+                var createdBy = $(trigger).attr('data-createdBy')
+                if (createdBy) {
+                    $('#legalInformationModal select[name=createdBy]').dropdown('set selected', createdBy)
+                } else {
+                    $('#legalInformationModal select[name=createdBy]').dropdown('clear')
+                }
+                var legallyObligedBy = $(trigger).attr('data-legallyObligedBy')
+                if (legallyObligedBy) {
+                    $('#legalInformationModal select[name=legallyObligedBy]').dropdown('set selected', legallyObligedBy)
+                } else {
+                    $('#legalInformationModal select[name=legallyObligedBy]').dropdown('clear')
+                }
+            }
         </r:script>
 
     </semui:modal>
@@ -217,11 +324,17 @@
         </g:form>
 
         <r:script>
-            $('button[data-ctTarget]').on('click', function(){
+            dcbStore.modal.show.customerTypeModal = function(trigger) {
+                $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
+                $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
 
-                $('#customerTypeModal #orgName_ct').attr('value', $(this).attr('data-orgName'))
-                $('#customerTypeModal input[name=target]').attr('value', $(this).attr('data-ctTarget'))
-            })
+                var customerType = $(trigger).attr('data-customerType')
+                if (customerType) {
+                    $('#customerTypeModal select[name=customerType]').dropdown('set selected', customerType)
+                } else {
+                    $('#customerTypeModal select[name=customerType]').dropdown('clear')
+                }
+            }
         </r:script>
 
     </semui:modal>
@@ -249,11 +362,17 @@
         </g:form>
 
         <r:script>
-            $('button[data-alTarget]').on('click', function(){
+            dcbStore.modal.show.apiLevelModal = function(trigger) {
+                $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
+                $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
 
-                $('#apiLevelModal #orgName_al').attr('value', $(this).attr('data-orgName'))
-                $('#apiLevelModal input[name=target]').attr('value', $(this).attr('data-alTarget'))
-            })
+                var apiLevel = $(trigger).attr('data-apiLevel')
+                if (apiLevel) {
+                    $('#apiLevelModal select[name=apiLevel]').dropdown('set selected', apiLevel)
+                } else {
+                    $('#apiLevelModal select[name=apiLevel]').dropdown('clear')
+                }
+            }
         </r:script>
 
     </semui:modal>
