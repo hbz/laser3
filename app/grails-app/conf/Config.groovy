@@ -451,7 +451,7 @@ environments {
     }
 }
 
-basicDataPath = documentStorageLocation+'/basic_data_dumps/'
+basicDataPath = "${grailsApplication.config.documentStorageLocation}/basic_data_dumps/"
 basicDataFileName = 'basicDataDump.xml'
 orgDumpFileNamePattern = 'orgDump_'
 orgDumpFileExtension = '.xml'
