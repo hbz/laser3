@@ -68,6 +68,12 @@ class OrganisationController extends AbstractDebugController {
             redirect controller: 'organisation', action: 'show', id: org.id
         }
 
+		if (params.deleteCI) {
+			CustomerIdentifier ci = genericOIDService.resolveOID(params.deleteCI)
+			if (ci && ci.owner == org) {
+				ci.delete()
+			}
+		}
         if (params.addCIPlatform) {
             Platform plt = genericOIDService.resolveOID(params.addCIPlatform)
             if (plt) {
@@ -78,8 +84,6 @@ class OrganisationController extends AbstractDebugController {
                         type: RefdataValue.getByValueAndCategory('Default', 'CustomerIdentifier.Type') // TODO
                 )
                 ci.save()
-                println ci.errors
-                println ci
             }
         }
 
@@ -115,22 +119,22 @@ class OrganisationController extends AbstractDebugController {
         else if (contextService.getOrg().id == org.id) {
             log.debug( 'settings for own org')
 
-            if (! ['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key in privateSet })
-                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            if (['FAKE', 'ORG_BASIC_MEMBER'].contains(org.getCustomerType())) {
+                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
             }
             else {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSettings.KEYS.NATSTAT_SERVER_ACCESS })
+                result.settings.addAll(allSettings.findAll { it.key in privateSet })
+                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
                 result.customerIdentifier = CustomerIdentifier.findAllByOwner(org)
             }
         }
         else if (Combo.findByFromOrgAndToOrg(org, contextService.getOrg())){
-            log.debug( 'settings for combo related org > consortia or collective')
+            log.debug( 'settings for combo related org: consortia or collective')
 
             result.settings.addAll(allSettings.findAll { it.key in privateSet })
         }
 
-        result.allPlatforms = Platform.executeQuery('select p from Platform p where p.org is not null order by p.name')
+        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         result
     }
 
