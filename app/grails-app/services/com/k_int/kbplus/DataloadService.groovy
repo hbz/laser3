@@ -43,8 +43,6 @@ class DataloadService {
 
     def updateFTIndexes() {
         log.debug("updateFTIndexes ${this.hashCode()}")
-        // TODO: remove due SystemEvent
-        new EventLog(event:'kbplus.updateFTIndexes', message:'Update FT indexes', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
         SystemEvent.createEvent('FT_INDEX_UPDATE_START')
 
@@ -452,8 +450,6 @@ class DataloadService {
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
-        // TODO: remove due SystemEvent
-        new EventLog(event:'kbplus.updateFTIndexes', message:"Problem with FT index ${domain.name}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
         SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
     }
@@ -714,8 +710,6 @@ class DataloadService {
         }
         catch ( Exception e ) {
             log.warn("Problem deleting index ..", e)
-            // TODO: remove due SystemEvent
-            new EventLog(event:'kbplus.fullReset', message:"Problem deleting index .. ${es_index}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
             SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
         }
