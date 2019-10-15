@@ -34,28 +34,6 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
-                                ${message(code:'org.confProperties')}
-                            </h5>
-
-                            <div id="custom_props_div_1">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.ORG_CONF,
-                                        ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.customProperties,
-                                        custom_props_div: "custom_props_div_1" ]}"/>
-                            </div>
-                        </div><!-- .content -->
-                    </div><!-- .card -->
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
-                        });
-                    </r:script>
-
-                    <div class="ui card la-dl-no-table la-js-hideable">
-                        <div class="content">
-                            <h5 class="ui header">
                                 ${message(code:'org.orgSettings')}
                             </h5>
 
@@ -153,6 +131,29 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
+                                ${message(code:'org.confProperties')}
+                            </h5>
+
+                            <div id="custom_props_div_1">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.ORG_CONF,
+                                        ownobj: orgInstance,
+                                        orphanedProperties: orgInstance.customProperties,
+                                        custom_props_div: "custom_props_div_1" ]}"/>
+                            </div>
+                        </div><!-- .content -->
+                    </div><!-- .card -->
+
+                    <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+                                });
+                    </r:script>
+
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
                                 ${message(code:'org.customerIdentifier')}
                             </h5>
 
@@ -205,11 +206,11 @@
 
                                                 <div class="eight wide column">
                                                 <div class="field">
-                                                    <label for="addCIPlatform">Anbieter/Plattform</label>
+                                                    <label for="addCIPlatform">Anbieter : Plattform</label>
                                                     <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
                                                               from="${allPlatforms}"
                                                               optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
-                                                              optionValue="${{it.org.toString() + ' / ' + it.name}}" />
+                                                              optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
                                                 </div>
                                             </div>
 
