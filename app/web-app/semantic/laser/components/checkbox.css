@@ -758,3 +758,12 @@ table tr td div.willBeReplacedStrong {
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
+.la-legend .la-added {
+  padding: 5px;
+  background-color: #D4E096;
+}
+.la-legend .la-removed {
+  padding: 5px;
+  background-color: #EDC0BA;
+  text-decoration: line-through;
+}
