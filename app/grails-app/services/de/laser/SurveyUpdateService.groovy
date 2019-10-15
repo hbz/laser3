@@ -1,6 +1,5 @@
 package de.laser
 
-import com.k_int.kbplus.EventLog
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.SurveyInfo
 import com.k_int.kbplus.SurveyOrg
@@ -172,10 +171,7 @@ class SurveyUpdateService extends AbstractLockableService {
                 String eMsg = e.message
 
                 log.error("SurveyUpdateService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
-                // TODO: remove due SystemEvent
-                new EventLog(event: 'SurveyUpdateService.sendEmail', message: 'Unable to perform email due to exception ' + eMsg, tstp: new Date(System.currentTimeMillis())).save(flush: true)
-
-                SystemEvent.createEvent('SUS_SERVICE_ERROR_3', ['error': eMsg])
+                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', ['error': eMsg])
             }
         }
     }

@@ -331,7 +331,6 @@
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
                                     <g:link class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
-                                    <g:link class="item" controller="admin" action="eventLog">Event Log (old)</g:link>
 
                                     <div class="divider"></div>
 

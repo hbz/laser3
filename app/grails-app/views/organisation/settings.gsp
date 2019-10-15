@@ -34,28 +34,6 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
-                                ${message(code:'org.confProperties')}
-                            </h5>
-
-                            <div id="custom_props_div_1">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.ORG_CONF,
-                                        ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.customProperties,
-                                        custom_props_div: "custom_props_div_1" ]}"/>
-                            </div>
-                        </div><!-- .content -->
-                    </div><!-- .card -->
-
-                    <r:script language="JavaScript">
-                        $(document).ready(function(){
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
-                        });
-                    </r:script>
-
-                    <div class="ui card la-dl-no-table la-js-hideable">
-                        <div class="content">
-                            <h5 class="ui header">
                                 ${message(code:'org.orgSettings')}
                             </h5>
 
@@ -153,6 +131,29 @@
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <h5 class="ui header">
+                                ${message(code:'org.confProperties')}
+                            </h5>
+
+                            <div id="custom_props_div_1">
+                                <g:render template="/templates/properties/custom" model="${[
+                                        prop_desc: PropertyDefinition.ORG_CONF,
+                                        ownobj: orgInstance,
+                                        orphanedProperties: orgInstance.customProperties,
+                                        custom_props_div: "custom_props_div_1" ]}"/>
+                            </div>
+                        </div><!-- .content -->
+                    </div><!-- .card -->
+
+                    <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_1");
+                                });
+                    </r:script>
+
+
+                    <div class="ui card la-dl-no-table la-js-hideable">
+                        <div class="content">
+                            <h5 class="ui header">
                                 ${message(code:'org.customerIdentifier')}
                             </h5>
 
@@ -160,7 +161,7 @@
                                 <thead>
                                 <tr>
                                     <th>Anbieter</th>
-                                    <th>Platform</th>
+                                    <th>Plattform</th>
                                     <th>Kundennummer</th>
                                     <th></th>
                                 </tr>
@@ -182,10 +183,10 @@
                                                 </g:else>
                                             </td>
                                             <td>
-                                            <g:if test="${editable}"><%--
+                                            <g:if test="${editable}">
                                                 <g:link controller="organisation" action="settings" id="${orgInstance.id}"
+                                                    params="${[deleteCI:ci.class.name + ':' + ci.id]}"
                                                     class="ui button icon red"><i class="trash alternate icon"></i></g:link>
-                                                    --%>
                                             </g:if>
                                             </td>
                                         </tr>
@@ -196,28 +197,35 @@
                                 <tr>
                                     <td colspan="4">
                                         <g:form class="ui form" controller="organisation" action="settings" id="${orgInstance.id}">
-                                            <div class="fields">
+                                            <div class="ui grid">
                                                 <%--
                                                 <g:select id="addCIProvider" name="addCIProvider" class="ui dropdown selection"
                                                           from="${formAllProviders}"
                                                           optionKey="${{'com.k_int.kbplus.Org:' + it.id}}" optionValue="${{'(' + it.sortname +') ' + it.name}}" />
                                                 --%>
 
+                                                <div class="eight wide column">
                                                 <div class="field">
-                                                    <label for="addCIPlatform">Platform</label>
-                                                    <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown selection"
+                                                    <label for="addCIPlatform">Anbieter : Plattform</label>
+                                                    <g:select id="addCIPlatform" name="addCIPlatform" class="ui dropdown fluid search selection"
                                                               from="${allPlatforms}"
-                                                              optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}" optionValue="${{it.name}}" />
+                                                              optionKey="${{'com.k_int.kbplus.Platform:' + it.id}}"
+                                                              optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}" />
                                                 </div>
+                                            </div>
 
-                                                <div class="field">
+                                                <div class="four wide column">
+                                                    <div class="field">
                                                     <label for="addCIValue">Kundennummer</label>
                                                     <input type="text" id="addCIValue" name="addCIValue" value=""/>
                                                 </div>
+                                                </div>
 
-                                                <div class="field">
+                                                <div class="four wide column">
+                                                    <div class="field">
                                                     <label>&nbsp;</label>
                                                     <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+                                                </div>
                                                 </div>
                                             </div>
                                         </g:form>
