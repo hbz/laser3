@@ -423,9 +423,6 @@ class YodaController {
         if (ftupdate_running == false) {
             try {
                 ftupdate_running = true
-                // TODO: remove due SystemEvent
-                new EventLog(event:'kbplus.fullReset',message:'Full Reset ES Start',tstp:new Date(System.currentTimeMillis())).save(flush:true)
-
                 SystemEvent.createEvent('YODA_ES_RESET_START')
 
                 log.debug("Delete all existing FT Control entries");

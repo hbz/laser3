@@ -49,9 +49,6 @@ class BootStrap {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
-        // TODO: remove due SystemEvent
-        def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
-
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
         // Reset harddata flag for given refdata and properties

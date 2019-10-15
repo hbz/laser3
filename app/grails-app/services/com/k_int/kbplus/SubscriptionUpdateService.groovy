@@ -43,13 +43,8 @@ class SubscriptionUpdateService extends AbstractLockableService {
                         [status: RDStore.SUBSCRIPTION_CURRENT, ids: intendedSubsIds1]
                 )
 
-                log.debug("Writing events")
                 intendedSubsIds1.each { id ->
-                    new EventLog(
-                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT,
-                            message: 'SQL Update',
-                            tstp: currentDate
-                    ).save()
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_CURRENT)
                 }
             }
 
@@ -69,13 +64,8 @@ class SubscriptionUpdateService extends AbstractLockableService {
                         [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds2]
                 )
 
-                log.debug("Writing events")
                 intendedSubsIds2.each { id ->
-                    new EventLog(
-                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
-                            message: 'SQL Update',
-                            tstp: currentDate
-                    ).save()
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
@@ -95,13 +85,8 @@ class SubscriptionUpdateService extends AbstractLockableService {
                         [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds]
                 )
 
-                log.debug("Writing events")
                 currentSubsIds.each { id ->
-                    new EventLog(
-                            event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
-                            message: 'SQL Update',
-                            tstp: currentDate
-                    ).save()
+                    log.info('SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED)
                 }
             }
 
