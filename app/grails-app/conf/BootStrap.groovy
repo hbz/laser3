@@ -171,13 +171,13 @@ class BootStrap {
 
         if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
+            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
             grailsApplication.config.sysusers.each { su ->
                 log.debug("test ${su.name} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
                     log.debug("${su.name} present and correct")
-                    user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
+                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 } else {
                     log.debug("create user ..")
                     user = new User(
