@@ -13,11 +13,6 @@ laserSystemId = 'local'
 documentStorageLocation = '/tmp/laser'
 dbBackupLocation = documentStorageLocation + '/laserDatabaseBackups'
 
-basicDataPath = documentStorageLocation + '/basic_data_dumps/'
-basicDataFileName = 'basicDataDump.xml'
-orgDumpFileNamePattern = 'orgDump_'
-orgDumpFileExtension = '.xml'
-
 featureSurvey = false
 
 globalDataSync = [
@@ -457,6 +452,10 @@ environments {
         grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
     }
 }
+
+basicDataFileName = 'basicDataDump.xml'
+orgDumpFileNamePattern = 'orgDump_'
+orgDumpFileExtension = '.xml'
 
 subscriptionTransforms = [
     'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],

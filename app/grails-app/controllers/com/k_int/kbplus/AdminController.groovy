@@ -637,7 +637,7 @@ class AdminController extends AbstractDebugController {
         oldBase = slurper.parse(lastDump)
       }
       else {
-        File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+        File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
         lastDumpDate = new Date(f.lastModified())
         if(f.exists()) {
           //complicated way - determine most recent org and user creation dates
@@ -1038,7 +1038,7 @@ class AdminController extends AbstractDebugController {
 
   @Secured(['ROLE_ADMIN'])
   def orgsImport() {
-    File basicDataDir = new File(grailsApplication.config.basicDataPath)
+    File basicDataDir = new File("${grailsApplication.config.documentStorageLocation}/basic_data_dumps/")
     List<File> dumpFiles = basicDataDir.listFiles(new FilenameFilter() {
       @Override
       boolean accept(File dir, String name) {

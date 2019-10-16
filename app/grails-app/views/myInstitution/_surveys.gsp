@@ -22,8 +22,8 @@
                                           id="${surveyInfo.id}">${surveyConfig?.getSurveyName()}</g:link>
                     </g:if>
                     <g:if test="${surveyConfig?.pickAndChoose}">
-                        <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id}"
-                                params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id, surveyConfigID: surveyConfig?.id]}">
+                        <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig?.id}"
+                                params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
                             ${surveyConfig?.getSurveyName()}
                         </g:link>
                     </g:if>
