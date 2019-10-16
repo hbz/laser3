@@ -57,7 +57,7 @@ class SurveyService {
 
         if(accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN')) {
 
-            if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig).finishDate) {
+            if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
             } else {
                 return true

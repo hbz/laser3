@@ -1051,11 +1051,83 @@ class SubscriptionController extends AbstractDebugController {
     def renewEntitlementsWithSurvey() {
         params.id = params.targetSubscriptionId
         params.sourceSubscriptionId = Subscription.get(params.targetSubscriptionId)?.instanceOf?.id
-        def result = loadDataFor_PackagesEntitlements()
+        params.offset = 0
+        params.max = 2000
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        result.sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params)
+        result.targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params)
+        result.newSub = newSub
+        result.subscription = baseSub
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.subscriber = result.newSub.getSubscriber()
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
+
+        def filename = "${escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())}"
+
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String, List> tableData = titleStreamService.generateTitleExportList(result.sourceIEs)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        }else if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            List titles = [
+                    g.message(code:'title'),
+                    g.message(code:'tipp.volume'),
+                    g.message(code:'author.slash.editor'),
+                    g.message(code:'title.editionStatement.label'),
+                    g.message(code:'title.summaryOfContent.label'),
+                    g.message(code:'identifier.label'),
+                    g.message(code:'title.dateFirstInPrint.label'),
+                    g.message(code:'title.dateFirstOnline.label'),
+                    g.message(code:'tipp.price')
+            ]
+            List rows = []
+            result.sourceIEs.each { ie ->
+                List row = []
+                row.add([field: ie?.tipp?.title?.title ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.volume ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor() ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.editionStatement ?: '', style:null])
+                row.add([field: ie?.tipp?.title?.summaryOfContent ?: '', style:null])
+
+                def identifiers = []
+                ie?.tipp?.title?.ids?.sort { it?.identifier?.ns?.ns }.each{ id ->
+                    identifiers << "${id.identifier.ns.ns}: ${id.identifier.value}"
+                }
+                row.add([field: identifiers ? identifiers.join(', ') : '', style:null])
+
+                row.add([field: ie?.tipp?.title?.dateFirstInPrint ? g.formatDate(date: ie?.tipp?.title?.dateFirstInPrint, format: message(code: 'default.date.format.notime')): '', style:null])
+                row.add([field: ie?.tipp?.title?.dateFirstOnline ? g.formatDate(date: ie?.tipp?.title?.dateFirstOnline, format: message(code: 'default.date.format.notime')): '', style:null])
+
+                row.add([field: ie.priceItem?.listPrice ? g.formatNumber(number: ie?.priceItem?.listPrice, type: 'currency', currencySymbol: ie?.priceItem?.listCurrency, currencyCode: ie?.priceItem?.listCurrency) : '', style:null])
+                row.add([field: ie.priceItem?.localPrice ? g.formatNumber(number: ie?.priceItem?.localPrice, type: 'currency', currencySymbol: ie?.priceItem?.localCurrency, currencyCode: ie?.priceItem?.localCurrency) : '', style:null])
+
+                rows.add(row)
+            }
+            Map sheetData = [:]
+            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:titles,columnData:rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html result
+            }
+        }
 
         result
 
