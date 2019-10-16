@@ -32,7 +32,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String sortTitle
   String impId
   String gokbId
-  URL originEditUrl
+  //URL originEditUrl
 
   @RefdataAnnotation(cat = 'TitleInstanceStatus')
   RefdataValue status
@@ -68,7 +68,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           version column:'ti_version'
             impId column:'ti_imp_id', index:'ti_imp_id_idx'
            gokbId column:'ti_gokb_id', type:'text'
-    originEditUrl column:'ti_origin_edit_url'
+    //originEditUrl column:'ti_origin_edit_url'
            status column:'ti_status_rv_fk'
              type column:'ti_type_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
@@ -91,7 +91,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         keyTitle(nullable:true, blank:false,maxSize:2048)
         creators(nullable:true, blank:false)
         gokbId (nullable:true, blank:false)
-        originEditUrl(nullable:true, blank:false)
+        //originEditUrl(nullable:true, blank:false)
     }
 
   String getIdentifierValue(idtype) {
@@ -237,7 +237,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   static TitleInstance lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
     def result = null
     def origin_uri = null
-    URL originEditUrl = null
     def skip_creation = false
     def valid_match = false
     List<TitleInstance> ti_candidates = []
@@ -260,14 +259,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
     if(!result){
 
       candidate_identifiers.each { i ->
-        if(i.namespace == 'originEditUrl') {
-          originEditUrl = new URL(i.value)
-          //the qualified reference is needed here, we should normally deploy this method into a service ...
-          TitleInstance ti_candidate = TitleInstance.findByOriginEditUrl(originEditUrl)
-          if(ti_candidate)
-            ti_candidates << ti_candidate
-        }
-        else {
           if(i.namespace.toLowerCase() == 'uri'){
             origin_uri = i.value
           }
@@ -292,7 +283,6 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           else {
             static_logger.debug("error processing candidate identifier ${i}");
           }
-        }
       }
     }
 
@@ -310,14 +300,10 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         boolean origin_match = false
         boolean origin_uri_match = false
 
-        if ( cti.originEditUrl == originEditUrl ){
-          origin_match = true
-        }
-
         cti.ids.each { ctio ->
 
           if ( !canonical_ids.contains(ctio.identifier) ){
-            if ( ctio.identifier.ns.ns != 'originediturl' && ctio.identifier.ns.ns != 'uri'){
+            if ( ctio.identifier.ns.ns != 'uri'){
               full_match = false
             }
           }else{
@@ -328,6 +314,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             intersection++;
           }
         }
+        /* origin_match is based on originediturl which has been taken off
         if ( origin_match ) {
           if( !result ) {
             result = cti
@@ -336,7 +323,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
           }else{
             log.warn("Multiple TIs with the same originediturl found: ${result} AND ${cti}! This should not be possible!")
           }
-        }
+        }*/
 
         if ( full_match ){
           full_matches.add(cti)
@@ -434,7 +421,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       boolean modified = false;
       // Check that all the identifiers listed are present
       canonical_ids.each { cid ->
-        if(cid.ns.ns.toLowerCase() != 'originediturl'){
+        //if(cid.ns.ns.toLowerCase() != 'originediturl'){
           static_logger.debug("looking for identifier ${cid.ns.ns}:${cid.value}");
 
           def matched_io = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.ti = ?",[cid,result])
@@ -444,7 +431,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
             def new_io = new IdentifierOccurrence(identifier:cid, ti:result).save(flush:true, failOnError: true);
             modified=true;
           }
-        }
+        //}
       }
       if ( modified ) {
         result.save(failOnError: true);

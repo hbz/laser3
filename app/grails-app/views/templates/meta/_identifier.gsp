@@ -69,14 +69,7 @@
                                     ${io.identifier.ns.ns}
                                 </td>
                                 <td>
-                                    <g:if test="${io.identifier.value =~ /^http/}">
-                                        <a href="${io.identifier.value}" target="_blank">
-                                            ${message(code: 'component.originediturl.label', default: "${io.identifier.value}")}
-                                        </a>
-                                    </g:if>
-                                    <g:else>
-                                        ${io.identifier.value}
-                                    </g:else>
+                                    ${io.identifier.value}
                                 </td>
                                 <td>
                                     <g:if test="${editable}">

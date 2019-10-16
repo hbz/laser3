@@ -657,20 +657,12 @@ class ApiService {
                     orgData.ids.id.each { idData ->
                         //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                         //log.debug("value: ${idData.@value.text()}")
-                        if(idData.@namespace.text() == 'originEditUrl') {
-                            URL originEditUrl = new URL(idData.@value.text())
-                            if(org.originEditUrl != originEditUrl) {
-                                org.originEditUrl = originEditUrl
-                            }
-                        }
-                        else {
-                            Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
-                            //log.debug("org: ${orgData.globalUID.text()}")
-                            IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
-                            if(!idOcc) {
-                                idOcc = new IdentifierOccurrence()
-                                idOcc.save()
-                            }
+                        Identifier id = Identifier.lookupOrCreateCanonicalIdentifier(idData.@namespace.text(), idData.@value.text())
+                        //log.debug("org: ${orgData.globalUID.text()}")
+                        IdentifierOccurrence idOcc = IdentifierOccurrence.findByOrgAndIdentifier(org, id)
+                        if(!idOcc) {
+                            idOcc = new IdentifierOccurrence()
+                            idOcc.save()
                         }
                     }
                     orgData.settings.setting.each { st ->

@@ -211,9 +211,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.parsed_rec.publishers.add(publisher)
         }
         md.gokb.title.identifiers.identifier.each { id ->
-            if(id.'@namespace'.text() == 'originEditUrl')
-                result.parsed_rec.originEditUrl = id.'@value'.text()
-            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         result.parsed_rec.identifiers.add([namespace: 'uri', value: md.gokb.title.'@id'.text()]);
 
@@ -959,9 +957,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result.parsed_rec.nominalPlatformPrimaryUrl = md.gokb.package.nominalPlatform.primaryUrl.text() ?: null
 
         md.gokb.package.identifiers.identifier.each { id ->
-            if(id.'@namespace'.text() == 'originEditUrl')
-                result.parsed_rec.originEditUrl = id.'@value'.text()
-            else result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+            result.parsed_rec.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         int ctr = 0
@@ -1010,9 +1006,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newtip.coverage = newtip.coverage.toSorted { a, b -> a.startDate <=> b.startDate }
 
             tip.title.identifiers.identifier.each { id ->
-                if(id.'@namespace'.text() == 'originEditUrl')
-                    newtip.title.originEditUrl = id.'@value'.text()
-                else newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
+                newtip.title.identifiers.add([namespace: id.'@namespace'.text(), value: id.'@value'.text()])
             }
             newtip.title.identifiers.add([namespace: 'uri', value: newtip.titleId]);
 
@@ -1056,9 +1050,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             // merge in any new identifiers we have
             newtitle.identifiers.each {
                 log.debug("Checking title has ${it.namespace}:${it.value}");
-                if(it.namespace == 'originEditUrl')
-                    title_instance.originEditUrl = new URL(it.value)
-                else title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
+                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value);
             }
             title_instance.save()
 
@@ -1526,10 +1518,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
             titleinfo.identifiers.each {
                 log.debug("Checking title has ${it.namespace}:${it.value}")
-                if(it.namespace == 'originEditUrl')
-                    title_instance.originEditUrl = new URL(it.value)
-                else
-                    title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
+                title_instance.checkAndAddMissingIdentifier(it.namespace, it.value)
             }
             title_instance.save();
 

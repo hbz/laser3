@@ -192,7 +192,7 @@ class GOKbService {
     }
 
     private String buildUri(final String stub, final String query, final String type, final String role, final Integer max) {
-        String url = stub + "?"
+        String url = stub + "?status=Current&"
         if (query) {
             url += "q=" + query + "&"
         }
