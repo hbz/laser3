@@ -332,8 +332,8 @@ r2d2 = {
                 },
                 onShow : function() {
                     var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
-                    if ($.isFunction(modalCallbackFunction)) {
-                        //console.log('found modalCallbackFunction: ' + modalCallbackFunction);
+                    if (typeof modalCallbackFunction === "function") {
+                        alert('found modalCallbackFunction: ' + modalCallbackFunction);
                         modalCallbackFunction(triggerElement)
                     }
                 }
@@ -887,7 +887,7 @@ bb8 = {
 
         var url = $(elem).attr('href')
         var before = $(elem).attr('data-before')      // before
-        var done = $(elem).attr('data-done')          // onSuccess
+        var done = $(elem).attr('data-done')          // onSuccesstrigger
         var fail = $(elem).attr('data-fail')
         var always = $(elem).attr('data-always')      // onComplete
         var update = '#' + $(elem).attr('data-update')
@@ -896,7 +896,7 @@ bb8 = {
             url: url,
 
             beforeSend: function (xhr) {
-                if (before) {
+                if (before) {trigger
                     //console.log('before')
                     eval(before)
                 }
