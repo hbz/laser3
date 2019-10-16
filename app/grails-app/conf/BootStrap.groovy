@@ -258,7 +258,7 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
             if(f.exists())
                 apiService.setupBasicData(f)
             else {
