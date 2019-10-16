@@ -333,7 +333,7 @@ r2d2 = {
                 onShow : function() {
                     var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        alert('found modalCallbackFunction: ' + modalCallbackFunction);
+                        //console.log('found modalCallbackFunction: ' + modalCallbackFunction);
                         modalCallbackFunction(triggerElement)
                     }
                 }
