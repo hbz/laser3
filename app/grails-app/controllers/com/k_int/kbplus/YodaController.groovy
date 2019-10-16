@@ -913,11 +913,12 @@ class YodaController {
     def makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
         try {
-            File dir = new File(grailsApplication.config.basicDataPath)
+            String basicDataPath = "${grailsApplication.config.documentStorageLocation}/basic_data_dumps/"
+            File dir = new File(basicDataPath)
             if(!dir.exists()) {
                 dir.mkdir()
             }
-            new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName).withWriter { writer ->
+            new File("${basicDataPath}${grailsApplication.config.basicDataFileName}").withWriter { writer ->
                 MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
                 orgDataBuilder.data {
                     organisations {
