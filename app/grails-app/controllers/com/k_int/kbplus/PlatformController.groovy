@@ -246,54 +246,6 @@ class PlatformController extends AbstractDebugController {
         }
     }
 
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def accessMethods() {
-        def editable
-        def platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
-
-        [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def link() {
-        def result = [:]
-        def platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label', default: 'Platform'), params.id])
-            redirect action: 'list'
-            return
-        }
-        def selectedInstitution = contextService.getOrg()
-
-        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
-        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-            hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-            notActiveAPLinkQuery += "and not exists ("
-            notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-            notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
-
-        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        result.accessPointLinks = results
-        result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
-        result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution.id
-        result
-    }
-
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
