@@ -593,8 +593,7 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def orgsExport() {
     Date now = new Date()
-    String basicDataPath = "${grailsApplication.config.documentStorageLocation}/basic_data_dumps/"
-    File basicDataDir = new File(basicDataPath)
+    File basicDataDir = new File(grailsApplication.config.basicDataPath)
     if(basicDataDir) {
       GPathResult oldBase
       XmlSlurper slurper = new XmlSlurper()
@@ -614,7 +613,7 @@ class AdminController extends AbstractDebugController {
         oldBase = slurper.parse(lastDump)
       }
       else {
-        File f = new File("${basicDataPath}${grailsApplication.config.basicDataFileName}")
+        File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
         lastDumpDate = new Date(f.lastModified())
         if(f.exists()) {
           //complicated way - determine most recent org and user creation dates
@@ -654,7 +653,7 @@ class AdminController extends AbstractDebugController {
         //data collected: prepare export!
         if(newOrgData || newUserData) {
           //List<Person> newPersonData = Person.executeQuery('select pr.prs from PersonRole pr where pr.org in :org',[org:newOrgData])
-          File newDump = new File("${basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
+          File newDump = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.orgDumpFileNamePattern}${now.format("yyyy-MM-dd")}${grailsApplication.config.orgDumpFileExtension}")
           StringBuilder exportReport = new StringBuilder()
           exportReport.append("<p>Folgende Organisationen wurden erfolgreich exportiert: <ul><li>")
           newDump.withWriter { writer ->
