@@ -1713,7 +1713,7 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg = :sp',[sp:pkg])) {
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
                     def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     def queryParams = [sub: subChild, pkg_id: pkg.id]
 
