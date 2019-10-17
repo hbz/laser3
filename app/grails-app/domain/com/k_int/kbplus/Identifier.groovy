@@ -6,41 +6,91 @@ import javax.persistence.Transient
 
 class Identifier {
 
-  IdentifierNamespace ns
-  String value
-  IdentifierGroup ig
+    IdentifierNamespace ns
+    String value
+    IdentifierGroup ig
 
-  Date dateCreated
-  Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
-  static hasMany = [ occurrences:IdentifierOccurrence]
-  static mappedBy = [ occurrences:'identifier']
+    static hasMany = [ occurrences:IdentifierOccurrence]
+    static mappedBy = [ occurrences:'identifier']
 
-  static constraints = {
-    value validator: {val,obj ->
-      if (obj.ns.validationRegex){
-        def pattern = ~/${obj.ns.validationRegex}/
-        return pattern.matcher(val).matches() 
-      }
+    static belongsTo = [
+            lic:    License,
+            org:    Org,
+            pkg:    Package,
+            sub:    Subscription,
+            ti:     TitleInstance,
+            tipp:   TitleInstancePackagePlatform,
+            cre:    Creator
+    ]
+
+	static constraints = {
+		value validator: {val,obj ->
+		  if (obj.ns.validationRegex){
+			def pattern = ~/${obj.ns.validationRegex}/
+			return pattern.matcher(val).matches()
+		  }
+		}
+
+    	ig(nullable:true, blank:false)
+	  	lic     (nullable:true)
+	  	org     (nullable:true)
+	  	pkg     (nullable:true)
+	  	sub     (nullable:true)
+	  	ti      (nullable:true)
+	  	tipp    (nullable:true)
+	  	cre     (nullable:true)
+
+		// Nullable is true, because values are already in the database
+      	lastUpdated (nullable: true, blank: false)
+      	dateCreated (nullable: true, blank: false)
+  	}
+
+    static mapping = {
+       id   column:'id_id'
+    value   column:'id_value', index:'id_value_idx'
+       ns   column:'id_ns_fk', index:'id_value_idx'
+       ig   column:'id_ig_fk', index:'id_ig_idx'
+
+       lic  column:'id_lic_fk'
+       org  column:'id_org_fk'
+       pkg  column:'id_pkg_fk'
+       sub  column:'id_sub_fk'
+       ti   column:'id_ti_fk',  index:'io_title_idx'
+       tipp column:'id_tipp_fk'
+       cre  column:'id_cre_fk'
+
+        dateCreated column: 'id_date_created'
+        lastUpdated column: 'id_last_updated'
+
+        occurrences   batchSize: 10
     }
-    ig(nullable:true, blank:false)
 
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true, blank: false)
-      dateCreated (nullable: true, blank: false)
-  }
+    void setReference(def owner) {
+        lic  = owner instanceof License ? owner : lic
+        org  = owner instanceof Org ? owner : org
+        pkg  = owner instanceof Package ? owner : pkg
+        sub  = owner instanceof Subscription ? owner : sub
+        tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
+        ti   = owner instanceof TitleInstance ? owner : ti
+        cre  = owner instanceof Creator ? owner : cre
+    }
 
-  static mapping = {
-       id column:'id_id'
-    value column:'id_value', index:'id_value_idx'
-       ns column:'id_ns_fk', index:'id_value_idx'
-       ig column:'id_ig_fk', index:'id_ig_idx'
+    static String getAttributeName(def object) {
+        def name
 
-      dateCreated column: 'id_date_created'
-      lastUpdated column: 'id_last_updated'
+        name = object instanceof License ?  'lic' : name
+        name = object instanceof Org ?      'org' : name
+        name = object instanceof Package ?  'pkg' : name
+        name = object instanceof Subscription ?                 'sub' :  name
+        name = object instanceof TitleInstancePackagePlatform ? 'tipp' : name
+        name = object instanceof TitleInstance ?                'ti' :   name
+        name = object instanceof Creator ?                      'cre' :  name
 
-      occurrences   batchSize: 10
-  }
+        name
+    }
 
   def beforeUpdate() {
     value = value?.trim()
