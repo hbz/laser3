@@ -3,7 +3,7 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <!doctype html>
 <html>

@@ -6,18 +6,18 @@ modules = {
         }
     }
 
-    annotations {
+    annotations { // not used in working code of laser
         //dependsOn 'semanticUI'
 
-        resource url:'js/libs/summernote.min.js'
-        resource url:'css/summernote.css', attrs: [media: 'screen,print']
-        resource url:'css/summernote-bs2.css', attrs: [media: 'screen,print']
+        resource url:'js/deprecated/summernote.min.js' //used in annotations.js
+        resource url:'css/deprecated/summernote.css', attrs: [media: 'screen,print']
+        resource url:'css/deprecated/summernote-bs2.css', attrs: [media: 'screen,print']
 
-        resource url:'js/legacy.annotations.js'
-        resource url:'css/legacy.annotations.css', attrs: [media: 'screen,print']
+        resource url:'js/deprecated/legacy.annotations.js' // used in deprecated code
+        resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
     }
 
-    treeSelects {
+    treeSelects { // used only for onix witch will be rebuild
         dependsOn 'jquery'
 
         resource url:'css/jstree-themes/default/style.min.css'
@@ -26,7 +26,7 @@ modules = {
         resource url:'js/legacy.tree-selects.js'
     }
 
-    onixMatrix {
+    onixMatrix { //  modules="onixMatrix" not used in working code of laser
         dependsOn 'semanticUI'
 
         resource url:'css/legacy.onix.css', attrs: [media: 'screen,print']

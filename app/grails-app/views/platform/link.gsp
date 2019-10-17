@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Platform" %>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 <!doctype html>
 <html>
 <head>

@@ -1,6 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition;de.laser.interfaces.TemplateSupport" %>
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 <laser:serviceInjection />
 
 <html>

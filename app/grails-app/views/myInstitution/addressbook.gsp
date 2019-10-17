@@ -3,7 +3,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 %>
 
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <html>
     <head>
