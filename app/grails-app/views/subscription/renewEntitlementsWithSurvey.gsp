@@ -13,6 +13,25 @@
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
 </semui:breadcrumbs>
 
+<semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub?.id}"
+                    params="${[targetSubscriptionId: newSub?.id,
+                               surveyConfigID      : surveyConfig?.id,
+                               exportKBart: true]}">KBART Export "${message(code:'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub?.id}"
+                    params="${[targetSubscriptionId: newSub?.id,
+                               surveyConfigID      : surveyConfig?.id,
+                               exportXLS:true]}">${message(code:'default.button.exports.xls')} "${message(code:'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+</semui:controlButtons>
+
 <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="Survey"/>
 <g:message code="issueEntitlementsSurvey.label" />: ${surveyConfig?.surveyInfo?.name}
 </h1>
@@ -44,6 +63,46 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </div>
     </div>
 </g:if>
+
+<semui:filter>
+    <g:form action="renewEntitlementsWithSurvey"
+            id="${newSub?.id}"
+            params="${[targetSubscriptionId: newSub?.id,
+                       surveyConfigID      : surveyConfig?.id]}" method="post" class="ui form">
+
+        <div class="three fields">
+            <div class="field">
+                <label for="filter">${message(code: 'default.filter.label')}</label>
+                <input name="filter" id="filter" value="${params.filter}"/>
+            </div>
+
+            <div class="field">
+                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
+                <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
+                    <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
+                    <g:each in="${subscription.packages}" var="sp">
+                        <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
+                    </g:each>
+                </select>
+            </div>
+            <g:if test="${params.mode != 'advanced'}">
+                <div class="field">
+                    <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
+                                      value="${params.asAt}"/>
+                </div>
+            </g:if>
+            <div class="field la-field-right-aligned">
+                <g:link action="renewEntitlementsWithSurvey"
+                id="${newSub?.id}"
+                params="${[targetSubscriptionId: newSub?.id,
+                           surveyConfigID      : surveyConfig?.id]}"
+                        class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</g:link>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label', default: 'Filtern')}"/>
+            </div>
+        </div>
+    </g:form>
+</semui:filter>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="iesToAdd" name="iesToAdd"/>
