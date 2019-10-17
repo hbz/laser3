@@ -1713,37 +1713,41 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
-                    def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    def queryParams = [sub: subChild, pkg_id: pkg.id]
+
+                def pkg_to_unlink = params.package_All ? SubscriptionPackage.get(params.package_All).pkg : null
+
+                if(pkg_to_unlink == null || pkg_to_unlink == pkg) {
+
+                    f(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
+                        def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+                        def queryParams = [sub: subChild, pkg_id: pkg.id]
 
 
+                        if (subChild.isEditableBy(result.user)) {
+                            result.editable = true
+                            if (params.withIE) {
+                                //delete matches
+                                IssueEntitlement.withTransaction { status ->
+                                    removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
+                                    def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
 
-                    if (subChild.isEditableBy(result.user)) {
-                        result.editable = true
-                        if (params.withIE) {
-                            //delete matches
-                            IssueEntitlement.withTransaction { status ->
-                                removePackagePendingChanges(pkg.id, subChild.id, params.withIE)
-                                def deleteIdList = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams)
+                                    if (deleteIdList) {
+                                        IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                                        PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)", [delList: deleteIdList])
+                                        IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                                    }
+                                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                                if (deleteIdList) {
-                                    IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ieCov where ieCov.issueEntitlement.id in (:delList)", [delList: deleteIdList])
-                                    PriceItem.executeUpdate("delete from PriceItem pi where pi.issueEntitlement.id in (:delList)",[delList: deleteIdList])
-                                    IssueEntitlement.executeUpdate("delete from IssueEntitlement ie where ie.id in (:delList)", [delList: deleteIdList])
+                                    flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
                                 }
+                            } else {
                                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
 
-                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.successful')
+                                flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                             }
-                        } else {
-                            SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=? and sp.subscription=? ", [pkg, subChild])
-
-                            flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                         }
-                    }
+                    } else flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
                 }
-                else flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
             }
         }
 
@@ -1826,6 +1830,8 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
+        params.tab = params.tab ?: 'generalProperties'
+
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
@@ -1852,6 +1858,19 @@ class SubscriptionController extends AbstractDebugController {
             if (filteredSubscr) {
                 result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
             }
+        }
+
+        if(params.tab == 'providerAgency') {
+
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+            result.visibleOrgRelations = []
+            result.parentSub.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it?.org?.sortname }
         }
 
         params.id = oldID
@@ -3117,6 +3136,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
+                log.debug("linkPackage. Global Record Source URL: " +gri.source.baseUrl)
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({

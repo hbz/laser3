@@ -247,7 +247,8 @@
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksSimpleModal"

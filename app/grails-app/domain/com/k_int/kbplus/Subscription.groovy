@@ -60,6 +60,8 @@ class Subscription
     boolean isSlaved
 	boolean isPublic
 
+    boolean isMultiYear
+
   String name
   String identifier
   String impId
@@ -137,6 +139,7 @@ class Subscription
         isPublic        column:'sub_is_public'
         noticePeriod    column:'sub_notice_period'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
+        isMultiYear column: 'sub_is_multi_year'
 
         ids                 batchSize: 10
         packages            batchSize: 10
@@ -179,6 +182,7 @@ class Subscription
         isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
+        isMultiYear(nullable: true, blank: false)
     }
 
     // TODO: implement

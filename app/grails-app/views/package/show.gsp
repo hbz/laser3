@@ -143,7 +143,8 @@
                                   model="${[roleLinks: visibleOrgs,
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
