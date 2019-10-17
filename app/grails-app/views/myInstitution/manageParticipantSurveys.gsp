@@ -220,7 +220,7 @@
                         <g:if test="${surveyConfig?.pickAndChoose}">
                             %{--<span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id}"
+                                <g:link controller="subscription" action="surveyInfosIssueEntitlements" id="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id}"
                                         params="${[targetSubscriptionId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)?.id]}"
                                         class="ui icon button">
                                     <i class="write icon"></i>

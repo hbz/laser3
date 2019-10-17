@@ -166,18 +166,13 @@ class BootStrap {
 
         if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-
+            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
             grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}")
+                log.debug("test ${su.name} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
-                    if (user.password != su.pass) {
-                        log.debug("hard change of user password from config ${user.password} -> ${su.pass}")
-                        user.password = su.pass;
-                        user.save(failOnError: true)
-                    } else {
-                        log.debug("${su.name} present and correct")
-                    }
+                    log.debug("${su.name} present and correct")
+                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 } else {
                     log.debug("create user ..")
                     user = new User(
@@ -200,12 +195,7 @@ class BootStrap {
                 }
             }
         }
-        else if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_DEV) { //include SEVER_LOCAL and remove 'else' when testing locally
-            log.debug("DEV environment, lookup or create set of user accounts ...")
-            Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
-            if(hbz)
-                userService.setupAdminAccounts([konsortium:hbz])
-        }
+
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
@@ -266,7 +256,7 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            File f = new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName)
+            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
             if(f.exists())
                 apiService.setupBasicData(f)
             else {
