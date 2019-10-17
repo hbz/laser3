@@ -1828,6 +1828,8 @@ class SubscriptionController extends AbstractDebugController {
             redirect(url: request.getHeader('referer'))
         }
 
+        params.tab = params.tab ?: 'generalProperties'
+
         result.parentSub = result.subscriptionInstance.instanceOf && result.subscription.getCalculatedType() != TemplateSupport.CALCULATED_TYPE_PARTICIPATION_AS_COLLECTIVE ? result.subscriptionInstance.instanceOf : result.subscriptionInstance
 
         def validSubChilds = Subscription.findAllByInstanceOf(result.parentSub)
@@ -1854,6 +1856,19 @@ class SubscriptionController extends AbstractDebugController {
             if (filteredSubscr) {
                 result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
             }
+        }
+
+        if(params.tab == 'providerAgency') {
+
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+            result.visibleOrgRelations = []
+            result.parentSub.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.id in [OR_SUBSCRIBER.id, OR_SUBSCRIBER_CONS.id, OR_SUBSCRIBER_COLLECTIVE.id])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort { it?.org?.sortname }
         }
 
         params.id = oldID
