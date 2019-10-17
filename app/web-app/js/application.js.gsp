@@ -151,7 +151,7 @@ r2d2 = {
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
         $.fn.editableform.template =
-            '<form class="ui form form-inline editableform">' +
+            '<form class="ui form editableform">' +
             '	<div class="control-group">' +
             '		<div class="ui calendar xEditable-datepicker">' +
             '			<div class="ui input right icon editable-input">' +

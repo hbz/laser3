@@ -1394,8 +1394,3 @@ table .badge:hover {
 	margin-bottom: 0.25em;
 }
 
-/* identifier forms */
-
-form.form-inline > * {
-  margin: 0 10px 10px 0;
-}
