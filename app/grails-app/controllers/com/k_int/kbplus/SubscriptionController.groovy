@@ -621,12 +621,12 @@ class SubscriptionController extends AbstractDebugController {
         if (params.startsBefore && params.startsBefore.length() > 0) {
             def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
             def d = sdf.parse(params.startsBefore)
-            base_qry += " and ie.startDate <= ?"
+            base_qry += " and (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie) <= ?"
             qry_params.add(d)
         }
 
         if (asAt != null) {
-            base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, ie.startDate) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
+            base_qry += " and ( ( ? >= coalesce(ie.tipp.accessStartDate, (select min(ic.startDate) from IssueEntitlementCoverage ic where ic.ie = ie)) ) and ( ( ? <= ie.tipp.accessEndDate ) or ( ie.tipp.accessEndDate is null ) ) ) "
             qry_params.add(asAt);
             qry_params.add(asAt);
         }
@@ -763,14 +763,14 @@ class SubscriptionController extends AbstractDebugController {
             if (params.endsAfter && params.endsAfter.length() > 0) {
                 def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
                 def d = sdf.parse(params.endsAfter)
-                basequery += " and tipp.endDate >= ?"
+                basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
                 qry_params.add(d)
             }
 
             if (params.startsBefore && params.startsBefore.length() > 0) {
                 def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
                 def d = sdf.parse(params.startsBefore)
-                basequery += " and tipp.startDate <= ?"
+                basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
                 qry_params.add(d)
             }
 
