@@ -218,7 +218,7 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
                             </g:form>
 
                         </g:if><g:else>
-                        ${message(code: 'subscription.linkPackagesMembers.noValidLicenses')}
+                        ${message(code: 'subscription.linkPackagesMembers.noValidLicenses', args:[ message(code: 'myinst.currentSubscriptions.filter.consortial.label')])}
                     </g:else>
                     </td>
 

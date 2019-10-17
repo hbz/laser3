@@ -3117,6 +3117,7 @@ class SubscriptionController extends AbstractDebugController {
                     }
                 }
 
+                log.debug("Global Record Source URL: " +gri.source.baseUrl)
                 //if(Package.findByGokbId(grt.owner.uuid)) {
                 String addType = params.addType
                     executorWrapperService.processClosure({
