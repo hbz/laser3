@@ -109,14 +109,14 @@ class IssueEntitlementController extends AbstractDebugController {
       if ( params.endsAfter && params.endsAfter.length() > 0 ) {
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.endsAfter)
-        base_qry += " and tipp.endDate >= ?"
+        base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= ?"
         qry_params.add(d)
       }
 
       if ( params.startsBefore && params.startsBefore.length() > 0 ) {
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         def d = sdf.parse(params.startsBefore)
-        base_qry += " and tipp.startDate <= ?"
+        base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= ?"
         qry_params.add(d)
       }
 
