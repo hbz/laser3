@@ -105,14 +105,14 @@ class UsageController extends AbstractDebugController {
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.user = User.get(springSecurityService.principal.id)
-        def providersWithStatssid = factService.providersWithStatssid()
+        def platformsWithNatstatId = factService.platformsWithNatstatId()
         def providerList = []
         if (!result.institutionList.isEmpty()) {
             def joinedInstitutions = result.institutionList.id.join(',')
-            providersWithStatssid.each {
+            platformsWithNatstatId.each {
                 def hql = "select s.id from Subscription s join s.orgRelations as institution " +
-                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
-                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id])
+                    "where institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.platform  as platform where ie.subscription=s and platform.id=:platform_id)"
+                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [platform_id: it.id])
                 def listItem = [:]
                 listItem.id = it.id
                 listItem.name = it.name

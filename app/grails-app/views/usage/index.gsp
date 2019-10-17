@@ -21,7 +21,7 @@
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
             <div class="field fieldcontain">
-                <label for="supplier">${message(code: 'default.usage.adminPage.supplierLabel')}</label>
+                <label for="supplier">${message(code: 'default.usage.adminPage.platformLabel')}</label>
                 <g:select class="ui dropdown" id="supplier" name="supplier"
                               from="${providerList}"
                               optionKey="id"
@@ -92,7 +92,7 @@
 
         <div class="two fields">
             <div class="field fieldcontain">
-                <label for="supplier">${message(code: 'default.usage.adminPage.supplierLabel')}</label>
+                <label for="supplier">${message(code: 'default.usage.adminPage.natStatSupplierLabel')}</label>
                 <g:select class="ui dropdown" id="supplier" name="supplier"
                           from="${natstatProviders}"
                           value="${params.supplier}"
@@ -122,7 +122,7 @@
   <thead>
   <tr>
     <g:sortableColumn property="customerId" title="Customer" params="${params}"/>
-    <g:sortableColumn property="supplierId" title="Supplier" params="${params}"/>
+    <g:sortableColumn property="supplierId" title="${message(code: 'default.usage.adminPage.natStatSupplierLabel')}" params="${params}"/>
     <g:sortableColumn property="availFrom" title="Von" params="${params}"/>
     <g:sortableColumn property="availTo" title="Bis" params="${params}"/>
     <g:sortableColumn property="numFacts" title="Fact Count" params="${params}"/>
