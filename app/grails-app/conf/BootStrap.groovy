@@ -19,7 +19,9 @@ class BootStrap {
     def apiService
     def refdataReorderService
     def sessionFactory
+    def organisationService
     def dataSource
+    def userService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -169,18 +171,13 @@ class BootStrap {
 
         if (grailsApplication.config.localauth) {
             log.debug("localauth is set.. ensure user accounts present (From local config file) ${grailsApplication.config.sysusers}")
-
+            //Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
             grailsApplication.config.sysusers.each { su ->
-                log.debug("test ${su.name} ${su.pass} ${su.display} ${su.roles}")
+                log.debug("test ${su.name} ${su.display} ${su.roles}")
                 def user = User.findByUsername(su.name)
                 if (user) {
-                    if (user.password != su.pass) {
-                        log.debug("hard change of user password from config ${user.password} -> ${su.pass}")
-                        user.password = su.pass;
-                        user.save(failOnError: true)
-                    } else {
-                        log.debug("${su.name} present and correct")
-                    }
+                    log.debug("${su.name} present and correct")
+                    //user.getSetting(UserSettings.KEYS.DASHBOARD,hbz)
                 } else {
                     log.debug("create user ..")
                     user = new User(
@@ -261,7 +258,12 @@ class BootStrap {
         log.debug("checking database ..")
         if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
             log.debug("database is probably empty; setting up essential data ..")
-            apiService.setupBasicData(new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName))
+            File f = new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}")
+            if(f.exists())
+                apiService.setupBasicData(f)
+            else {
+                organisationService.createOrgsFromScratch()
+            }
         }
 
         //log.debug("initializeDefaultSettings ..")

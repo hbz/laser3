@@ -917,7 +917,7 @@ class YodaController {
             if(!dir.exists()) {
                 dir.mkdir()
             }
-            new File(grailsApplication.config.basicDataPath+grailsApplication.config.basicDataFileName).withWriter { writer ->
+            new File("${grailsApplication.config.basicDataPath}${grailsApplication.config.basicDataFileName}").withWriter { writer ->
                 MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
                 orgDataBuilder.data {
                     organisations {

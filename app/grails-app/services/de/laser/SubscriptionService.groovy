@@ -143,6 +143,87 @@ class SubscriptionService {
         ies
     }
 
+    List getIssueEntitlementsWithFilter(Subscription subscription, params) {
+
+        if(subscription) {
+            String base_qry = null
+            Map<String,Object> qry_params = [subscription: subscription]
+
+            def date_filter
+            if (params.asAt && params?.asAt?.length() > 0) {
+                def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'));
+                date_filter = sdf.parse(params.asAt)
+                /*result.as_at_date = date_filter
+                result.editable = false;*/
+            } else {
+                date_filter = new Date()
+               /* result.as_at_date = date_filter*/
+            }
+            // We dont want this filter to reach SQL query as it will break it.
+            def core_status_filter = params.sort == 'core_status'
+            if (core_status_filter) params.remove('sort');
+
+            if (params.filter) {
+                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+                if (params.mode != 'advanced') {
+                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+                    // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                    // qry_params.add(deleted_ie);
+                    base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                    qry_params.startDate = date_filter
+                    qry_params.endDate = date_filter
+                }
+                base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from IdentifierOccurrence io where io.ti.id = ie.tipp.title.id and io.identifier.value like :identifier ) ) ) "
+                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
+                qry_params.identifier = "%${params.filter}%"
+            } else {
+                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+                if (params.mode != 'advanced') {
+                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+
+                    base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                    qry_params.startDate = date_filter
+                    qry_params.endDate = date_filter
+                }
+            }
+
+            if(params.mode != 'advanced') {
+                base_qry += " and ie.status = :current "
+                qry_params.current = TIPP_STATUS_CURRENT
+            }
+            else {
+                base_qry += " and ie.status != :deleted "
+                qry_params.deleted = TIPP_DELETED
+            }
+
+            if(params.ieAcceptStatusFixed) {
+                base_qry += " and ie.acceptStatus = :ieAcceptStatus "
+                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+            }
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                base_qry += " and ie.tipp.pkg.id = :pkgId "
+                qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            if ((params.sort != null) && (params.sort.length() > 0)) {
+                base_qry += "order by ie.${params.sort} ${params.order} "
+            } else {
+                base_qry += "order by lower(ie.tipp.title.title) asc"
+            }
+
+            List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
+
+            ies.sort { it.tipp.title.title }
+            ies
+        }else{
+            List<IssueEntitlement> ies = []
+            ies
+        }
+    }
+
+
+
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat",
