@@ -3742,7 +3742,7 @@ AND EXISTS (
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
         result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-        result.countSurveys = getSurveyParticipantCounts_New(result.institution)
+        result.countSurveys = getSurveyParticipantCounts_New(result.participant)
 
         result
     }
