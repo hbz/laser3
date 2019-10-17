@@ -217,9 +217,10 @@ ${message(code: 'subscription.linkPackagesMembers.header',args:args.memberTypeGe
 
                             </g:form>
 
-                        </g:if><g:else>
-                        ${message(code: 'subscription.linkPackagesMembers.noValidLicenses')}
-                    </g:else>
+                        </g:if>
+                        <g:else>
+                            <g:message code="subscription.linkPackagesMembers.noValidLicenses" args="${args.superOrgType}"/>
+                        </g:else>
                     </td>
 
                     <td class="x">
