@@ -65,7 +65,7 @@
         %{--<div class="four fields">--}%
             <!-- 1-1 -->
             <div class="field">
-                <label for="search-title"">${message(code: 'default.search.text', default: 'Search text')}
+                <label for="search-title">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
