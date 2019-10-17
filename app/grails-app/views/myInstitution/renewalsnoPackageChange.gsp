@@ -97,22 +97,26 @@
                         <td>${++index}</td>
                         <td><input type="hidden" name="entitlements.${++counter}.tipp_id" value="${e.tipp.id}"/>
                             <input type="hidden" name="entitlements.${counter}.core_status" value="${e.coreStatus}"/>
-                            <input type="hidden" name="entitlements.${counter}.start_date" value="${e.startDate}"/>
+                            <input type="hidden" name="entitlements.${counter}.coverages" value="${e.coverages}"/>
+                            <%--<input type="hidden" name="entitlements.${counter}.start_date" value="${e.startDate}"/>
                             <input type="hidden" name="entitlements.${counter}.end_date" value="${e.endDate}"/>
                             <input type="hidden" name="entitlements.${counter}.coverage" value="${e.coverageDepth}"/>
-                            <input type="hidden" name="entitlements.${counter}.coverage_note"
-                                   value="${e.coverageNote}"/>
+                            <input type="hidden" name="entitlements.${counter}.coverage_note" value="${e.coverageNote}"/>--%>
                             ${e.tipp.title.title}</td>
                         <td><g:link controller="package" action="show"
                                     id="${e.tipp.pkg.id}">${e.tipp.pkg.name}(${e.tipp.pkg.id})</g:link></td>
                         <td>${e.tipp.title.getIdentifierValue('ISSN')}</td>
                         <td>${e.tipp.title.getIdentifierValue('eISSN')}</td>
-                        <td><g:formatDate formatName="default.date.format.notime" date="${e.startDate}"/></td>
-                        <td><g:formatDate formatName="default.date.format.notime" date="${e.endDate}"/></td>
-                        <td>${e.tipp.startVolume}</td>
-                        <td>${e.tipp.endVolume}</td>
-                        <td>${e.tipp.startIssue}</td>
-                        <td>${e.tipp.endIssue}</td>
+                        <td>
+                            <g:each in="${e.coverages}" var="covStmt">
+                                <g:formatDate formatName="default.date.format.notime" date="${covStmt.startDate}"/>
+                                <g:formatDate formatName="default.date.format.notime" date="${covStmt.endDate}"/>
+                                ${covStmt.startVolume}
+                                ${covStmt.endVolume}
+                                ${covStmt.startIssue}
+                                ${covStmt.endIssue}
+                            </g:each>
+                        </td>
                         <td>${e.coreStatus ?: 'N'}</td>
                     </tr>
                 </g:each>
