@@ -53,6 +53,15 @@
 <g:link controller="subscription" class="ui button" action="index" id="${surveyConfig?.subscription?.id}">
     ${surveyConfig?.subscription?.name} (${surveyConfig?.subscription?.status?.getI10n('value')})
 </g:link>
+
+<g:link controller="subscription" class="ui button" action="linkPackage" id="${surveyConfig?.subscription?.id}">
+    <g:message code="subscription.details.linkPackage.label"/>
+</g:link>
+
+<g:link controller="subscription" class="ui button" action="addEntitlements" id="${surveyConfig?.subscription?.id}">
+    <g:message code="subscription.details.addEntitlements.label"/>
+</g:link>
+
 </div>
 
 </div>
