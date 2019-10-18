@@ -4,9 +4,6 @@
   min-height: 1px;
   margin-left: 20px;
 }
-
-
-
 .span9 {
   width: 700px;
 }
@@ -17,62 +14,13 @@
 .span6 {
   width: 460px;
 }
-.span5 {
-  width: 380px;
-}
-.span4 {
-  width: 300px;
-}
 .span3 {
   width: 220px;
 }
 .span2 {
   width: 140px;
 }
-.span1 {
-  width: 60px;
-}
-.muted {
-  color: #999999;
-}
-a.muted:hover,
-a.muted:focus {
-  color: #808080;
-}
-.text-warning {
-  color: #c09853;
-}
-a.text-warning:hover,
-a.text-warning:focus {
-  color: #a47e3c;
-}
-.text-error {
-  color: #b94a48;
-}
-a.text-error:hover,
-a.text-error:focus {
-  color: #953b39;
-}
-.text-info {
-  color: #3a87ad;
-}
-a.text-info:hover,
-a.text-info:focus {
-  color: #2d6987;
-}
-.text-success {
-  color: #468847;
-}
-a.text-success:hover,
-a.text-success:focus {
-  color: #356635;
-}
-.text-left {
-  text-align: left;
-}
-.text-right {
-  text-align: right;
-}
+
 .text-center {
   text-align: center;
 }
@@ -90,30 +38,7 @@ dt {
 dd {
   margin-left: 10px;
 }
-.dl-horizontal {
-  *zoom: 1;
-}
-.dl-horizontal:before,
-.dl-horizontal:after {
-  display: table;
-  content: "";
-  line-height: 0;
-}
-.dl-horizontal:after {
-  clear: both;
-}
-.dl-horizontal dt {
-  float: left;
-  width: 160px;
-  clear: left;
-  text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.dl-horizontal dd {
-  margin-left: 180px;
-}
+
 hr {
   margin: 20px 0;
   border: 0;
@@ -209,8 +134,7 @@ input[type="checkbox"]:focus {
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
-.uneditable-input,
-.uneditable-textarea {
+.uneditable-input {
   color: #999999;
   background-color: #fcfcfc;
   border-color: #cccccc;
@@ -223,10 +147,7 @@ input[type="checkbox"]:focus {
   overflow: hidden;
   white-space: nowrap;
 }
-.uneditable-textarea {
-  width: auto;
-  height: auto;
-}
+
 input:-moz-placeholder,
 textarea:-moz-placeholder {
   color: #999999;
@@ -1351,10 +1272,6 @@ body.public #Footer .footer-sublinks a:hover {
 
 /* --- OVERRIDES --- */
 
-
-.container > .span12 {
-	margin-left: 0;
-}
 /*.container > dl > dt {
     margin-top: 10px;
 }*/

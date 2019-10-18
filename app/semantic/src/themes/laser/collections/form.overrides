@@ -1,3 +1,6 @@
+form {
+  margin: 0 0 20px;
+}
 /* Field */
 .ui.form .inline.fields {
   margin: 0;
@@ -48,17 +51,7 @@
   margin-bottom: 1em;
 }
 
-// Filter Selected
 
-.la-filter-selected {
-  background:  @laFilterChosen!important;
-}
-.la-calendar-selected input {
-  background: @laFilterChosen!important;
-}
-.la-filter-dropdown-selected {
-  background: @laFilterChosen!important;
-}
 
 // Search Form Spothlight
 

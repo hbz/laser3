@@ -6,7 +6,7 @@ modules = {
         }
     }
 
-    annotations { // not used in working code of laser
+/*    annotations { // not used in working code of laser
         //dependsOn 'semanticUI'
 
         resource url:'js/deprecated/summernote.min.js' //used in annotations.js
@@ -15,7 +15,7 @@ modules = {
 
         resource url:'js/deprecated/legacy.annotations.js' // used in deprecated code
         resource url:'css/deprecated/legacy.annotations.css', attrs: [media: 'screen,print']
-    }
+    }*/
 
     treeSelects { // used only for onix witch will be rebuild
         dependsOn 'jquery'

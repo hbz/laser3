@@ -61,6 +61,17 @@
     }
   }
 }
-.ui.inverted.list .item a:not(.ui):hover {
-
+// from bootstrap css, already woven into laser
+dl {
+  margin-bottom: 20px;
+}
+dt,
+dd {
+  line-height: 20px;
+}
+dt {
+  font-weight: bold;
+}
+dd {
+  margin-left: 10px;
 }
