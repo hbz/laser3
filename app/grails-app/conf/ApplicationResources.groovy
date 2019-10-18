@@ -36,10 +36,13 @@ modules = {
     deprecated {
         resource url:'css/datatables.css', attrs: [media: 'screen,print']
         //resource url:'css/select2.css'
-        resource url:"css/instances/deprecated.css", attrs: [media: 'screen,print']   // legacy
+
 
         resource url:'js/tmp_semui.js'   // only tmp
         resource url:'css/tmp_semui.css', attrs: [media: 'screen,print']   // only tmp
+    }
+    scaffolding {
+        resource url:"css/instances/deprecated.css", attrs: [media: 'screen,print']   // legacy
     }
 
 
