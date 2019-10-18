@@ -34,7 +34,7 @@ modules = {
     }
 
     deprecated {
-        resource url:'css/datatables.css', attrs: [media: 'screen,print']
+        //resource url:'css/deprecated/datatables.css', attrs: [media: 'screen,print'] // not used any longer
         //resource url:'css/select2.css'
 
 
@@ -76,7 +76,7 @@ modules = {
         resource url:'js/libs/moment-with-locales.min.js'
         resource url:'js/libs/moment.min.js'
 
-        resource url:'js/libs/datatables.min.js'            // updated stuff // new version 1.10.16
+        //resource url:'js/libs/datatables.min.js'            // not used any longer
 
 
 
