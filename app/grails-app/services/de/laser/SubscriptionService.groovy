@@ -1208,7 +1208,7 @@ class SubscriptionService {
             propMap.each { String k, Map propInput ->
                 Map defPair = propInput.definition
                 Map propData = [:]
-                if(cols[defPair.colno].trim()) {
+                if(cols[defPair.colno]) {
                     def v
                     if(defPair.refCategory) {
                         v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
