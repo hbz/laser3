@@ -1120,60 +1120,6 @@ aside.ui.accordion .title:not(.ui) {
   color: #767676;
 }
 
-.tip-yellowsimple {
-  /*
-    margin-top: 28px;
-    margin-left: 58px;
-    */
-  margin-top: -1rem;
-  z-index: 10;
-  position: absolute;
-  text-transform: none;
-  text-align: left;
-  white-space: nowrap;
-  font-size: 1rem;
-  border: 1px solid #d4d4d5;
-  line-height: 1.4285em;
-  max-width: none;
-  background: #fff;
-  padding: .5em 0.5em;
-  -webkit-box-shadow: 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
-  box-shadow: 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
-}
-
-.tip-yellowsimple form.form-inline > * {
-  margin: 0;
-}
-
-.tip-yellowsimple:before {
-  -webkit-box-sizing: inherit;
-  box-sizing: inherit;
-  -webkit-box-shadow: 1px 1px 0 0 #bababc;
-  box-shadow: 1px 1px 0 0 #bababc;
-  z-index: 2;
-  position: absolute;
-  content: '';
-  font-size: 1rem;
-  width: .71428571em;
-  height: .71428571em;
-  -webkit-transition: all .1s ease;
-  transition: all .1s ease;
-  -webkit-transform-origin: center top;
-  transform-origin: center top;
-  top: auto;
-  right: auto;
-  bottom: -14%;
-  left: 50%;
-  background: #fff;
-  margin-left: -0.07142857rem;
-  margin-bottom: .14285714rem;
-  visibility: visible;
-  pointer-events: auto;
-  -webkit-transform: rotate(45deg) scale(1) !important;
-  transform: rotate(45deg) scale(1) !important;
-  opacity: 1;
-}
-
 .editableform .control-group {
   background-color: #f4f8f9;
   padding: 10px;
@@ -1294,31 +1240,37 @@ aside.ui.accordion .title:not(.ui) {
   font-weight: bold;
 }
 
-.la-filter .ui.selection.dropdown {
-  color: #FFFFFF;
-}
+/*
 
-.la-filter .ui.form .field > label {
-  color: #FFFFFF;
-}
+.la-filter {
 
-.la-filter .ui.form input[type=text],
-.la-filter .ui.form input[type=text]:focus {
-  color: #FFFFFF;
-  border: 1px solid #FFFFFF;
-}
+    .ui.selection.dropdown {
+        color: @white;
+    }
+    .ui.form .field>label {
+        color: @white;
+    }
+    .ui.form input[type=text],
+    .ui.form input[type=text]:focus{
+        color: @white;
+        border: 1px solid @white;
 
-.la-filter .ui.form input[type=text]:focus {
-  background-color: #004678;
-}
+    }
+    .ui.form input[type=text]:focus{
 
-.la-filter .ui.selection.visible.dropdown > .text:not(.default) {
-  color: #FFFFFF;
-}
+        background-color: @laFilterChosen;
+    }
 
-.la-filter-temp .ui.form .field > label {
-  color: #FFFFFF;
+    .ui.selection.visible.dropdown>.text:not(.default){
+        color: @white;
+    }
 }
+.la-filter-temp {
+    .ui.form .field>label {
+        color: @white;
+    }
+
+}*/
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -17113,6 +17065,23 @@ ol.ui.horizontal.list li:before,
   width: 100%;
   padding: 0 0 .2em .5em;
 }
+
+dl {
+  margin-bottom: 20px;
+}
+
+dt,
+dd {
+  line-height: 20px;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  margin-left: 10px;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -18957,6 +18926,45 @@ ol.ui.horizontal.list li:before,
 .ui.segment.la-footer {
   padding: 3em 1em;
 }
+
+.la-filter .ui.selection.dropdown {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.form .field > label {
+  color: #FFFFFF;
+}
+
+.la-filter .ui.form input[type=text],
+.la-filter .ui.form input[type=text]:focus {
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+}
+
+.la-filter .ui.form input[type=text]:focus {
+  background-color: #004678;
+}
+
+.la-filter .ui.selection.visible.dropdown > .text:not(.default) {
+  color: #FFFFFF;
+}
+
+.la-filter-temp .ui.form .field > label {
+  color: #FFFFFF;
+}
+
+.la-filter-selected {
+  background: #004678 !important;
+}
+
+.la-calendar-selected input {
+  background: #004678 !important;
+}
+
+.ui.selection.dropdown.la-filter-dropdown-selected {
+  background: #004678 !important;
+  border: 1px solid #FFFFFF;
+}
 /*!
  * # Semantic UI 2.3.1 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -19909,7 +19917,7 @@ ol.ui.horizontal.list li:before,
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
@@ -19926,7 +19934,7 @@ ol.ui.horizontal.list li:before,
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
@@ -19967,7 +19975,7 @@ ol.ui.horizontal.list li:before,
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid #004678;
+  border: 1px solid #d3dae3;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
   box-shadow: 0em 0em 0em 0em transparent inset;
@@ -20969,6 +20977,10 @@ ol.ui.horizontal.list li:before,
   font-size: 1.71428571rem;
 }
 
+form {
+  margin: 0 0 20px;
+}
+
 /* Field */
 
 .ui.form .inline.fields {
@@ -21022,19 +21034,6 @@ ol.ui.horizontal.list li:before,
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field {
   margin-bottom: 1em;
-}
-
-.la-filter-selected {
-  background: #004678 !important;
-}
-
-.la-calendar-selected input {
-  background: #004678 !important;
-}
-
-.ui.selection.dropdown.la-filter-dropdown-selected {
-  background: #004678 !important;
-  border: 1px solid #FFFFFF;
 }
 
 .ui.icon.input > i.icon#btn-search:not(.link) {

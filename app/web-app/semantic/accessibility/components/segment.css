@@ -903,3 +903,33 @@
 .ui.segment.la-footer {
   padding: 3em 1em;
 }
+.la-filter .ui.selection.dropdown {
+  color: #FFFFFF;
+}
+.la-filter .ui.form .field > label {
+  color: #FFFFFF;
+}
+.la-filter .ui.form input[type=text],
+.la-filter .ui.form input[type=text]:focus {
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+}
+.la-filter .ui.form input[type=text]:focus {
+  background-color: #004678;
+}
+.la-filter .ui.selection.visible.dropdown > .text:not(.default) {
+  color: #FFFFFF;
+}
+.la-filter-temp .ui.form .field > label {
+  color: #FFFFFF;
+}
+.la-filter-selected {
+  background: #004678 !important;
+}
+.la-calendar-selected input {
+  background: #004678 !important;
+}
+.ui.selection.dropdown.la-filter-dropdown-selected {
+  background: #004678 !important;
+  border: 1px solid #FFFFFF;
+}
