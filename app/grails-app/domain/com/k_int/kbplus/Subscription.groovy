@@ -182,7 +182,7 @@ class Subscription
         isPublic    (nullable:false, blank:false)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        isMultiYear(nullable: true, blank: false, default: false))
+        isMultiYear(nullable: true, blank: false, default: false)
     }
 
     // TODO: implement
