@@ -324,36 +324,34 @@
         <i class="icon thumbtack"></i>
     </a><br><br>
 
+    <h2 class="ui dividing header">Modale<a class="anchor" id="icons"></a></h2>
+    <h4 class="ui header">Mehrere Modale auf einer Seite-Values in Formularfeldern werden mit Data-Attributen übertrage</h4>
+    <div class="html ui top attached segment example">
+        <div class="ui top attached label">Javascript in der View definiert die Data-Attribute</div>
+        <pre>
+Javascript:
+
+dcbStore.modal.show.customerTypeModal = function(trigger) {
+    $('#customerTypeModal #orgName_ct').attr('value', $(trigger).<b>attr('data-orgName')</b>)
+    $('#customerTypeModal input[name=target]').attr('value', $(trigger).<b>attr('data-ctTarget')</b>)
+                .
+                .
+                .</pre>
+    </div>
+            <div class="html ui top attached segment example">
+                <div class="ui top attached label"></div>
+                <pre>
+
+var customerType = $(trigger).attr('data-customerType')
+if (customerType) {
+        $('#customerTypeModal select[name=customerType]').dropdown(<b>'set selected'</b>, customerType)
+} else {
+    $('#customerTypeModal select[name=customerType]').dropdown('clear')
+}</pre>
+    </div>
 </section>
-<%@ page import="java.util.Locale;java.util.List" %>
-<%
-    Locale localeDe = new Locale.Builder().setLanguage("de").build()
-    Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
-    List<String> translations = [
-            'statusbar.hideButtons.tooltip',
-            'statusbar.showButtons.tooltip'
-    ]
 
-    println """
-dict = {
-    get: function (key, lang) {
-        return dict[key][lang]
-    },
-    'test': {
-        de: 'öö',
-        en: 'Translation'
-    }, """
-
-    translations.eachWithIndex { it, index ->
-        println "    '${it}' : {"
-        println "        de: '" + message(code: "${it}", locale: localeDe) + "',"
-        println "        en: '" + message(code: "${it}", locale: localeEn) + "' "
-        println (index < translations.size() - 1 ? "    }, " : "    }")
-    }
-
-    println "} "
-%>
 
 
 </body>

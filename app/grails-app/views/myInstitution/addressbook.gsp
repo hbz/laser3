@@ -3,7 +3,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
 %>
 
 <!doctype html>
-<r:require module="annotations" />
+<%-- r:require module="annotations" / --%>
 
 <html>
     <head>
@@ -43,7 +43,7 @@ import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRo
         ]"/>
 
             <semui:filter>
-                <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
+                <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
                     <div class="four fields">
                         <div class="field">
                             <label for="prs">${message(code: 'person.filter.name')}</label>

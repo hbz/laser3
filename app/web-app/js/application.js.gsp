@@ -151,7 +151,7 @@ r2d2 = {
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
         $.fn.editableform.template =
-            '<form class="ui form form-inline editableform">' +
+            '<form class="ui form editableform">' +
             '	<div class="control-group">' +
             '		<div class="ui calendar xEditable-datepicker">' +
             '			<div class="ui input right icon editable-input">' +
@@ -332,7 +332,7 @@ r2d2 = {
                 },
                 onShow : function() {
                     var modalCallbackFunction = dcbStore.modal.show[$(this).attr('id')];
-                    if ($.isFunction(modalCallbackFunction)) {
+                    if (typeof modalCallbackFunction === "function") {
                         //console.log('found modalCallbackFunction: ' + modalCallbackFunction);
                         modalCallbackFunction(triggerElement)
                     }
@@ -887,7 +887,7 @@ bb8 = {
 
         var url = $(elem).attr('href')
         var before = $(elem).attr('data-before')      // before
-        var done = $(elem).attr('data-done')          // onSuccess
+        var done = $(elem).attr('data-done')          // onSuccesstrigger
         var fail = $(elem).attr('data-fail')
         var always = $(elem).attr('data-always')      // onComplete
         var update = '#' + $(elem).attr('data-update')
@@ -896,7 +896,7 @@ bb8 = {
             url: url,
 
             beforeSend: function (xhr) {
-                if (before) {
+                if (before) {trigger
                     //console.log('before')
                     eval(before)
                 }
