@@ -1718,7 +1718,7 @@ class SubscriptionController extends AbstractDebugController {
 
                 if(pkg_to_unlink == null || pkg_to_unlink == pkg) {
 
-                    f(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
+                    if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
                         def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                         def queryParams = [sub: subChild, pkg_id: pkg.id]
 
@@ -1746,7 +1746,9 @@ class SubscriptionController extends AbstractDebugController {
                                 flash.message = message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful')
                             }
                         }
-                    } else flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
+                    } else {
+                        flash.error += "Für das Paket ${pkg.name} von ${subChild.getSubscriber().name} waren noch Kosten anhängig. Das Paket wurde daher nicht entknüpft."
+                        }
                 }
             }
         }
