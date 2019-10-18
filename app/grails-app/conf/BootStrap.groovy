@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.ContextService
 import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
@@ -199,6 +200,27 @@ class BootStrap {
                     }
                 }
             }
+        }
+        if(grailsApplication.config.getCurrentServer() == ContextService.SERVER_QA) {
+            log.debug("check if all user accounts are existing on QA ...")
+            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
+                                         institut: Org.findByName('Musterinstitut'),
+                                         singlenutzer: Org.findByName('Mustereinrichtung'),
+                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
+                                         konsortium: Org.findByName('Musterkonsortium')]
+            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
+                                        institut: Org.findByName('Testinstitut'),
+                                        singlenutzer: Org.findByName('Testeinrichtung'),
+                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
+                                        konsortium: Org.findByName('Testkonsortium')]
+            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
+                                      institut: Org.findByName('QA-Institut'),
+                                      singlenutzer: Org.findByName('QA-Einrichtung'),
+                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
+                                      konsortium: Org.findByName('QA-Konsortium')]
+            userService.setupAdminAccounts(modelOrgs)
+            userService.setupAdminAccounts(testOrgs)
+            userService.setupAdminAccounts(QAOrgs)
         }
 
         // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()

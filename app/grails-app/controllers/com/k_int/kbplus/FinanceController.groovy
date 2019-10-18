@@ -1168,7 +1168,7 @@ class FinanceController extends AbstractDebugController {
                 costItem.costInLocalCurrency = ci.costInLocalCurrency ?: 0.0
                 costItem.currencyRate = ci.currencyRate ?: 0.0
                 costItem.invoiceDate = ci.invoiceDate ? sdf.parse(ci.invoiceDate) : null
-                costItem.financialYear = Year.parse(ci.financialYear?.value?.toString()) ?: null
+                costItem.financialYear = ci.financialYear ? Year.parse(ci.financialYear.value.toString()) : null
                 costItem.costTitle = ci.costTitle ?: null
                 costItem.costDescription = ci.costDescription ?: null
                 costItem.reference = ci.reference ?: null

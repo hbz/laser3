@@ -60,12 +60,14 @@
                                         <g:message code="properties"/>:
                                         <ul>
                                             <g:each in="${sub.properties?.entrySet()}" var="prop">
-                                                <%
-                                                    String value = genericOIDService.resolveOID(prop.getValue().propValue)?.getI10n("value")
-                                                    if(!value)
-                                                        value = prop.getValue().propValue
-                                                %>
-                                                <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
+                                                <g:if test="${prop.getValue().propValue}">
+                                                    <%
+                                                        String value = genericOIDService.resolveOID(prop.getValue().propValue)?.getI10n("value")
+                                                        if(!value)
+                                                            value = prop.getValue().propValue
+                                                    %>
+                                                    <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
+                                                </g:if>
                                             </g:each>
                                         </ul>
                                     </li>

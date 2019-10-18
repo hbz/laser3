@@ -1713,7 +1713,7 @@ class SubscriptionController extends AbstractDebugController {
         validSubChilds.each { subChild ->
 
             subChild.packages.pkg.each { pkg ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.sub = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:pkg,sub:subChild])) {
                     def query = "from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     def queryParams = [sub: subChild, pkg_id: pkg.id]
 
@@ -5056,21 +5056,23 @@ class SubscriptionController extends AbstractDebugController {
                     }
                     //process subscription properties
                     entry.properties.each { k, v ->
-                        log.debug("${k}:${v.propValue}")
-                        PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
-                        List<String> valueList
-                        if(propDef.multipleOccurrence) {
-                            valueList = v?.propValue?.split(',')
-                        }
-                        else valueList = [v.propValue]
-                        //in most cases, valueList is a list with one entry
-                        valueList.each { value ->
-                            try {
-                                createProperty(propDef,sub,contextOrg,value,v.propNote)
+                        if(v.propValue?.trim()) {
+                            log.debug("${k}:${v.propValue}")
+                            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(k)
+                            List<String> valueList
+                            if(propDef.multipleOccurrence) {
+                                valueList = v?.propValue?.split(',')
                             }
-                            catch (Exception e) {
-                                withErrors = true
-                                flash.error += e.getMessage()
+                            else valueList = [v.propValue]
+                            //in most cases, valueList is a list with one entry
+                            valueList.each { value ->
+                                try {
+                                    createProperty(propDef,sub,contextOrg,value,v.propNote)
+                                }
+                                catch (Exception e) {
+                                    withErrors = true
+                                    flash.error += e.getMessage()
+                                }
                             }
                         }
                     }
