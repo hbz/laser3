@@ -527,8 +527,8 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YN'
             ],
             [
-                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung"],
-                    expl : [en: "", de: "Nutzt die Organisation Shibboleth?"],
+                    name: [key: "Shibboleth Usage", en: "Shibboleth Usage", de: "Shibboleth: Nutzung für Bibliotheksangebote"],
+                    expl : [en: "", de: "Nutzt die Organisation Shibboleth für Bibliotheksangebote?"],
                     descr:allDescr, type: OT.Rdv, cat:'YNU'
             ],
             [
