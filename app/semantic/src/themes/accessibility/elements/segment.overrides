@@ -33,3 +33,47 @@
 .ui.segment.la-footer {
   padding: 3em 1em;
 }
+
+.la-filter {
+
+  .ui.selection.dropdown {
+    color: @white;
+  }
+  .ui.form .field>label {
+    color: @white;
+  }
+  .ui.form input[type=text],
+  .ui.form input[type=text]:focus{
+    color: @white;
+    border: 1px solid @white;
+
+  }
+  .ui.form input[type=text]:focus{
+
+    background-color: @laFilterChosen;
+  }
+
+  .ui.selection.visible.dropdown>.text:not(.default){
+    color: @white;
+  }
+}
+.la-filter-temp {
+  .ui.form .field>label {
+    color: @white;
+  }
+
+}
+// Filter Selected
+
+.la-filter-selected {
+  background:  @laFilterChosen!important;
+}
+.la-calendar-selected input {
+  background: @laFilterChosen!important;
+}
+.ui.selection.dropdown{
+  &.la-filter-dropdown-selected {
+    background: @laFilterChosen!important;
+    border: 1px solid @white;
+  }
+}

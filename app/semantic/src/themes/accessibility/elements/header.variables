@@ -1,9 +1,0 @@
- @iconHeaderTopMargin       : 1rem;
- @iconHeaderBottomMargin    : 1rem;
- @h1                        : 1.8rem;
- //@iconHeaderSize            : 1.5em;
-
-
- @iconHeaderSize            : 1.5em;
-
- @circularHeaderIconSize    : 22px;

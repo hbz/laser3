@@ -415,6 +415,7 @@ aside.ui.accordion .title:not(.ui) {
     font-weight: bold;
 }
 
+/*
 
 .la-filter {
 
@@ -444,4 +445,4 @@ aside.ui.accordion .title:not(.ui) {
         color: @white;
     }
 
-}
+}*/
