@@ -301,7 +301,8 @@
                                   model="${[roleLinks: visibleOrgRelations,
                                             roleObject: subscriptionInstance,
                                             roleRespValue: 'Specific subscription editor',
-                                            editmode: editable
+                                            editmode: editable,
+                                            showPersons: true
                                   ]}" />
 
                         <div class="ui la-vertical buttons la-js-hide-this-card">
